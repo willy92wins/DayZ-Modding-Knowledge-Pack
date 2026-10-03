@@ -684,9 +684,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Fixed entry for the dayz-model-pipeline references/lods-and-geometry.md py3d block of the GLB/glTF source case, which reversed proxy triangles against the rule above it; the block now keeps the single triangle of each proxy-named selection (weight-0 entries not counting), reverses every other face once, refuses a vertex list that would be reversed twice, and a sentence says what P3D.transform() has already done. Measured offline with py3d 1.9.0 and on 411 MLODs as recorded on the lods-and-geometry.md input of the same change. The merge of main 3e22429 also removes the three conflict-marker lines that the squash merge of PR #52 committed in the [Unreleased] Fixed list (<<<<<<< HEAD, =======, >>>>>>> 4de8b5a...), keeping both entries verbatim (#52's dayz-animation-pipeline entry, then #70's dayz-mcp-verify entry), as each parent had them. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ad0a8fe5724928c330d1b3faaa37be501ace3e0570eb4dcf5eb5abe63b666c07",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-glb-proxy-loop@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-03: py3d 1.10.0 _check_component_coverage. Up to 1.9.0 every Geometry, View or Fire face that no ComponentNN selection holds raised WARN_COMPONENT_COVERAGE, whose message said that faces outside every component beside covered ones were not measured, but to expect them to take no part in collision. The in-game A/B of #65 (DayZDiag 1.29.163709, 2026-10-02, dayz-mcp run cf2d6bb3; CLAIM-P3D-UNCOVERED-FACES-INGAME) measured that case on whole closed parts: beside box A in Component01, box B in no component of its Geometry, View and Fire LODs took 0 of 46 rays (geom, view, fire, RayCastBullet) and the player walked through it, while as Component02 it took 26 of 26 and stopped the player; the Expert tutorial's closed lever, in no component in Geometry and Fire and a component in View only, took no Geometry, Fire or physics ray and was hit in View only; a part left out only in part was not measured (#65 review round 1, F2). Owner's choices (AskUserQuestion, 2026-10-02): an ERROR only where measured; version 1.10.0, because the 1.9.0 wheel pinned by #60 carries the 1.9.0 check; the change built on #65 and opened after it merged. Implementation: the LOD's faces, proxy triangles aside, are grouped into pieces that share a corner position, read as the MLOD stores it (float32); a piece that is a closed solid (every edge used by two of its faces, once each way, and thicker, twice its volume over its area with the volume summed by math.fsum from the piece's own first corner, than 16 float32 steps at its distance from the origin, at least 1 m) with no face and no point in any component raises ERR_COMPONENT_COVERAGE (ERROR); its message names the measured omissions (all three LODs for the box, Geometry and Fire for the lever) and says that a part left out of one LOD alone, component selections that hold nothing, and weapon fire were not measured. Every other face in no component (a part left out in part, an open piece, a flat double-sided sheet) and the points-only case stay WARN_COMPONENT_COVERAGE, whose message now says not measured and no longer counts the ERROR's faces. Consumers read before the choice: dayz-model-preflight runner.py turns an ERROR into PREFLIGHT_PY3D_ERROR and a FAIL verdict, dayz-vehicle-proxy-contract audit.py refuses an MLOD with any ERROR other than a deferred ERR_AXIS_SELECTION_MISSING, python -m py3d validate exits 1, and validate() skips its in-memory round trip. Offline: py3d suite 386 passed, 11 skipped (base 334 passed, 11 skipped; the 7 CANON tests were not run, no upstream clone); dayz-model-preflight 74 passed and dayz-vehicle-proxy-contract 128 passed (239 subtests) with this py3d on PYTHONPATH (round 0 code). Read-only impact on 414 unique MLODs (the owner's projects on the P: drive and the dayz-doors samples) through P3D._scan_v12_findings with the 1.9.0 and 1.10.0 modules: Expert_Mode's Geometry and Fire LODs move from the WARN to the ERROR (the lever, one closed 18-face piece in no component), a vehicle Fire LOD keeps the WARN, with the new message, for two stray 1 mm triangles, and no other finding changed in any model; with the full validate(), making every coverage finding an ERROR would flip one verdict (Expert_Mode, PASS to FAIL) while 160 of the 414 already fail on other ERRORs. Cross-family review (Codex gpt-6.1-sol, read-only, cap of 2 rounds set before round 1): round 1 UNSOUND on 756daa7, F1 P1 (the volume summed from the model's origin cancelled, so a flat double-sided sheet 1.8 mm across near 62.5 m read as a solid and raised the ERROR), F2 P2 (per-kind message projected a three-LOD and a two-LOD omission onto one LOD), F3 P2 (no test for exactly one covered face, either winding, float32 rounding), F4 P2 (README counted the unrun CANON tests); all four fixed as above, with tests. Round 2 SOUND-WITH-FIXES on 32d1178 (F1, F3, F4 resolved, F2 partial): N1 P2 (the WARN called a closed slab under the cutoff not a closed solid; it now says too thin to count as solid at its distance from the origin), N2 P2 (the ERROR message, and the openings of killer #8 in SKILL.md and killers-detail.md section 8, gave the lever the box's walk-through; each part now has its own readings, the old text quoted in dated notes), N3 P2 (a 32-step cutoff and a 3V/A thickness survived; now pinned by a box-size oracle and slabs 10 % under and over the cutoff), N4 P3 (an exactly flat sheet gives 0 or a residue far below the cutoff, not always 0); fixed after the cap and checked mechanically, no third round. On the final code: test_s2_validate12.py (138 tests) fails 36 of them on the 1.9.0 module, 22 on the round-0 head 756daa7 and 6 on the round-1 head 32d1178; all 21 mutants of the check are killed, among them the reviewers' (one covered face, the volume's sign, a 32-step cutoff, a 3V/A thickness) and the volume summed from the model's origin, which only the exact-zero flat-sheet test kills (200,000 float32-exact flat sheets never brought that sum above 0.05 % of the cutoff); the 414-model impact on the final code is as above (two models change, nothing else, no exception). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "1f389d8b22c18b85ae715737021a59bca1e7727b79d31e93e30282057882e2f0",
+          "source_hash": "faa234e09917698e6c36f6065d469b1be52b582f12a8997797c5312c28221aef",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-py3d-coverage-ingame@2026-10-03",
@@ -694,7 +704,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1f389d8b22c18b85ae715737021a59bca1e7727b79d31e93e30282057882e2f0",
+      "output_hash": "faa234e09917698e6c36f6065d469b1be52b582f12a8997797c5312c28221aef",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3267,10 +3277,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-1d03d90@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03 promotion of main 3e22429 following #69 (receipt 99e5902a3c6a1c3ebb68e0ab of the promotion of 1d03d90): the owner asked to merge #52 and promote main to the live trees; promotion is per commit, so it carries what main gained since 1d03d90 (#64, #69, #63, #70, then #52). #69's closing check had come back from a fresh worktree of its merge bd362c9 with only PROMOTION-DRIFT and no receipt finding, its sealing worktree removed. promote --check from a fresh worktree of 3e22429 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (78 of 119 operations: five skills on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's own alias localization, the skill changes are exactly the 21 paths git changed under skills/ since 1d03d90: dayz-animation-pipeline SKILL.md, references/weapon-anim-authoring-viewer.md and, new, scripts/extract_empties.py and tests/test_extract_empties.py; dayz-doors SKILL.md, references/door-model-cfg-and-config.md, references/lods-and-object-builder.md, references/worked-examples.md, and nine files removed from the live trees as #64 stopped shipping them (assets/Door, assets/Door_w_Button and assets/Expert_Mode: the .cfg, .p3d and config.cpp of each; their preimages are in the transaction backup); dayz-mcp-verify SKILL.md; dayz-model-pipeline SKILL.md and references/py3d-direct-generation.md; dayz-p3d-inspector SKILL.md. promote --apply PASS, transaction eb9e9571ca46bed0fb3ee409, COMMIT event 236 at 2026-10-03T00:35:28Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's operations and no absolute path, 10 of 82 adjudicated pairs advanced, exactly the 10 that had to. Known defect carried by the source commit: 3e22429's CHANGELOG.md holds conflict markers (lines 143-163, from #52's last merge of main), so the root/changelog snapshot of 3e22429 holds them too; the #72 session resolves them in main. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "dc82567b058b9d82cfa82fd13e63f6b52291cfd7070ce5235cf340ee9ef102a8",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-3e22429@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b30069928db6a9895ad0c53c0322046f02ae5a10475c370bcca2493cc4690c30",
+      "output_hash": "dc82567b058b9d82cfa82fd13e63f6b52291cfd7070ce5235cf340ee9ef102a8",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -8000,10 +8020,20 @@
           "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "kp-update-rule12@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: dayz-model-pipeline references/lods-and-geometry.md, 'Fix in py3d for the GLB/glTF source case'. The bullet above it (GLB/glTF-sourced geometry via the pure swap, det=-1) reverses the vertex order of every face in every LOD except proxy triangles, and SKILL.md 'GLB/glTF imports - LL-020 refined' says the same, but the loop under it (for lod in model.lods: for face in lod.faces: face.vertices.reverse()) reversed the proxy triangles too. The new block keeps the order of each proxy triangle, the only face of a selection whose name matches py3d.PROXY_NAME_RE (tools/py3d/py3d/__init__.py:200, the pattern LOD.add_proxy and LOD.get_proxies use) when that face is a triangle, read through LOD.selections (name -> Selection, :1794) and Selection.faces (a dict of the LOD's Face objects to weights, :1701), entries of weight 0 not counting; every other face is reversed once, so a selection under a proxy name with more faces, or a quad, is reversed as geometry; a vertex list that would be reversed twice (one Face listed twice, in two LODs or twice in one, or two Face objects sharing one list) raises ValueError before any face changes, as py3d.blender_to_dayz() refuses shared points. A new sentence says that P3D.transform() with a det<0 matrix reverses every face of every LOD itself, proxy triangles included (:2957-2959), so after it only the proxy triangles are reversed back. Cross-family review round 1 (Codex gpt-6.1-sol, SOUND-WITH-FIXES): F01 (P2) the first version skipped every face of a proxy-named selection, so a box or a quad under a proxy name stayed unreversed; F02 (P2) a Face shared by two LODs was reversed twice; both fixed as above. The reviewer proposed rejecting any proxy-named selection that is not one triangle plus its three corner points; a read-only scan of 411 MLODs of the owner's projects found 2,007 proxy-named selections, 219 of them outside that shape (191 debinarized SUB_BRZ round-trip proxies whose selection lists the face but no points, 18 six-quad selections in the collision LODs of the LFPowerGrid logic gates gate_and, gate_or and gate_xor, 10 faceless ones), so the block keeps the single triangle and reverses the rest instead of rejecting. F03 (P1, the GLB reversal itself) and F04 (P2, the Blender Flip recipe also flips proxy triangles) are pre-existing and left to a separate task by the owner's choice. Review round 2, the last under the cap set before round 1 (SOUND-WITH-FIXES): F01 and F02 closed, the departure from the strict rule judged justified; F06 (P2) a weight-0 entry counted as a selected face, so a proxy triangle with a 0-weight face beside it was reversed and a selection whose only entry had weight 0 kept an ordinary face; F05 (P2) two Face objects sharing one vertex list were reversed twice; both fixed after the cap and verified mechanically. Measured offline 2026-10-03 with py3d 1.9.0 (the repository source and the installed wheel) by a script that runs the documented block itself, judged by face indices recorded while building each model: on a 5-LOD model with 5 proxy triangles (add_proxy, a hand-made isosceles one, one in View Geometry) and on a model with a 12-face box and a quad under proxy names, an add_proxy triangle and a proxy triangle whose selection lists no points, and on a model with a 0-weight face added to a proxy selection and a proxy-named selection whose only entry has weight 0, every proxy triangle keeps its order and every other face is reversed, also after an MLOD write and read; a repeated Face or two Faces sharing one vertex list raise with nothing changed; the old block, the first and second versions, a loop on py3d._proxy_triangle_faces (it requires the three points), the block without its duplicate check and a no-op fail. transform() with the swap matrix reversed every face, proxies included; transform() and then the block broke the rule on all 53 faces; the swap applied by hand and then the block gives the same vertex orders and points as transform() followed by reversing only the proxy triangles. On the 411 MLODs (13,688,834 faces, in memory) the block raised on none, kept 1,979 faces (the scan's count of single-triangle proxy selections) and reversed every other face once (48 degenerate faces have a palindromic order). The replaced block is quoted in a dated note (checked mechanically against the base, with negative controls). The GLB reversal itself is unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bf19acfe17270a6edf1ba211fa588058079d86084606481979417e5d51938a9a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "kp-update-glb-proxy-loop@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2b755efa18ae527b52bdd351083ec2e6ad3c2690ae7cf390daa0cf66dca25859",
+      "output_hash": "bf19acfe17270a6edf1ba211fa588058079d86084606481979417e5d51938a9a",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -29434,6 +29464,28 @@
       "license": "MIT",
       "output_hash": "5124cf7de60037b1a8eced2cb0f0b6d0803384a047aec2bd46f379ed1d78175d",
       "output_path": "promotions/receipts/99e5902a3c6a1c3ebb68e0ab.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/eb9e9571ca46bed0fb3ee409.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03 promotion of main 3e22429 following #69 (receipt 99e5902a3c6a1c3ebb68e0ab of the promotion of 1d03d90): the owner asked to merge #52 and promote main to the live trees; promotion is per commit, so it carries what main gained since 1d03d90 (#64, #69, #63, #70, then #52). #69's closing check had come back from a fresh worktree of its merge bd362c9 with only PROMOTION-DRIFT and no receipt finding, its sealing worktree removed. promote --check from a fresh worktree of 3e22429 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (78 of 119 operations: five skills on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's own alias localization, the skill changes are exactly the 21 paths git changed under skills/ since 1d03d90: dayz-animation-pipeline SKILL.md, references/weapon-anim-authoring-viewer.md and, new, scripts/extract_empties.py and tests/test_extract_empties.py; dayz-doors SKILL.md, references/door-model-cfg-and-config.md, references/lods-and-object-builder.md, references/worked-examples.md, and nine files removed from the live trees as #64 stopped shipping them (assets/Door, assets/Door_w_Button and assets/Expert_Mode: the .cfg, .p3d and config.cpp of each; their preimages are in the transaction backup); dayz-mcp-verify SKILL.md; dayz-model-pipeline SKILL.md and references/py3d-direct-generation.md; dayz-p3d-inspector SKILL.md. promote --apply PASS, transaction eb9e9571ca46bed0fb3ee409, COMMIT event 236 at 2026-10-03T00:35:28Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's operations and no absolute path, 10 of 82 adjudicated pairs advanced, exactly the 10 that had to. Known defect carried by the source commit: 3e22429's CHANGELOG.md holds conflict markers (lines 143-163, from #52's last merge of main), so the root/changelog snapshot of 3e22429 holds them too; the #72 session resolves them in main. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2a5cd5781928144e0fc8f430fccdc3d6ecefdf1dcaebf6e68e64dee77357be61",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/eb9e9571ca46bed0fb3ee409.json",
+          "source_revision": "kp-update-promotion-3e22429@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2a5cd5781928144e0fc8f430fccdc3d6ecefdf1dcaebf6e68e64dee77357be61",
+      "output_path": "promotions/receipts/eb9e9571ca46bed0fb3ee409.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
