@@ -63,8 +63,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `dayz-mcp-verify`: two sections that a session testing a mod through the MCP wrote into the
   installed copy on 2026-10-03, ported in English without private names; the live copy is
   re-adjudicated in `promotions/adjudications.json`, so the next promotion replaces it with this one.
-  "Check which mod a run loaded before reading its verdict": `dayz_test_run` accepts any `project`
-  and reports `succeeded` whatever mod set it booted; one run loaded another mod, and the missing
+  "Check which mod a run loaded before reading its verdict": `dayz_test_run` boots the registered
+  project its `project` argument names (an unregistered name is rejected with `bad_project`) and
+  reports `succeeded` for it, intended or not; one run loaded another registered mod, and the missing
   compile errors of the mod under test were read as a fix, so the run's `-mod=` and `-mission=` are
   read in its RPT first, with `dayz-test-ingame`'s procedure. "`unapproved_debug_image` on a host
   with a non-English culture: check the server's code first": a build on a host with a Spanish

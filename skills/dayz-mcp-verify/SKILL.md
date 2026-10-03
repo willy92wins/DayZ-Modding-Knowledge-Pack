@@ -1163,8 +1163,10 @@ routes) [EXACT][CLAIM-MCPV-WORN-MANNEQUIN]:
 
 ## Check which mod a run loaded before reading its verdict (added 2026-10-03)
 
-`dayz_test_run` accepts any `project` and reports `succeeded` whatever mod set it booted. In one run
-the `project` argument named another mod's project by mistake: the server loaded that mod and
+`dayz_test_run` boots the registered project its `project` argument names (a name with no launcher
+policy is rejected with `bad_project`) and reports `succeeded` for that run, whether or not it is the
+mod you meant to test. In one run the `project` argument named another registered mod by mistake: the
+server loaded that mod and
 `@DayZ_MCP` with another mission, never the mod under test, and the missing compile errors of the
 mod under test were read as a fix. A "defect measured in the engine" was written from it and had to
 be retracted. Before you attribute a compile result or any verdict to the mod under test, read the
