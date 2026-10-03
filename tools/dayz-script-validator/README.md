@@ -66,8 +66,12 @@ on a tree that compiles clean.
 
 ```powershell
 python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
-    --external-scripts <CF_scripts_root>
+    --external-scripts <CF_root>
 ```
+
+Pass each dependency's root, the folder that holds its `config.cpp`: the rule
+reads that file's `CfgPatches` to know which `requiredAddons[]` entry the
+root covers, so a root without it leaves the dependency uncovered.
 
 It judges only when it can see every place the type could be declared, and
 otherwise lists what it could not judge under `info.skipped_checks` (and as a
@@ -75,22 +79,29 @@ otherwise lists what it could not judge under `info.skipped_checks` (and as a
 
 | Situation | Result |
 |---|---|
-| no vanilla tree | SKIP: every vanilla type would look undefined |
-| `requiredAddons[]` names a mod (not `DZ_*`) that no scanned root declares in `CfgPatches` | SKIP with the unresolved names; pass that mod's scripts with `--external-scripts` to get verdicts |
+| no vanilla tree, or a folder that declares no `class Managed` | SKIP: every vanilla type would look undefined |
+| `requiredAddons[]` names an addon that is not a vanilla patch and that no scanned root declares in `CfgPatches`, directly or as the dependency of a scanned dependency | SKIP with the unresolved names; pass that addon's root with `--external-scripts` to get verdicts |
+| a `requiredAddons[]` entry that is not a string literal (a macro) | SKIP: that dependency is unknown |
 | no `config.cpp` in the tree lists any `requiredAddons[]` entry | SKIP: dependencies unknown |
 | code under `#ifdef`/`#ifndef` of a macro that vanilla does not test and no scanned script `#define`s or `CfgMods defines[]` lists | not judged: usually another mod's flag |
+| the `#ifndef` or `#else` branch of a macro that a scanned script `#define`s outside any `#if` block, or that a scanned `CfgMods defines[]` lists | not judged: that branch never compiles |
 
 A mod that uses another mod's classes without listing it in `requiredAddons[]`
-does get the FAIL; the message names both remedies. `P:\DZ` has 206
-`CfgPatches` names and all start with `DZ_`, which is what "vanilla" means
-above.
+does get the FAIL; the message names both remedies. "Vanilla patch" means one
+of the 211 `CfgPatches` names of `P:\DZ` (1.29.0.163451), the scripts tree and
+the 1.30.164014 Exp data, listed in `scripts/shared/vanilla_patches.py`. A
+`DZ_` prefix is not enough: four mod patches under `P:\` use it too.
 
-Measured on 2026-09-19: 33 003 references judged on the vanilla tree with no
-finding; over 161 addon roots under `P:\` it left 12 FAILs in 3 roots (one
-probable real bug, two recovered-source trees that use a sibling mod they do
-not declare) and 32 SKIPs whose unresolved names all belong to mods. Reading
-the vanilla tree adds about 0.9 s per invocation (2.6 s against 1.7 s on a
-23-file addon, four runs each).
+Measured on 2026-09-19 with the first version of the rule: 33 003 references
+judged on the vanilla tree with no finding; over 161 addon roots under `P:\`
+it left 12 FAILs in 3 roots (one probable real bug, two recovered-source trees
+that use a sibling mod they do not declare) and 32 SKIPs whose unresolved
+names all belong to mods. Reading the vanilla tree adds about 0.9 s per
+invocation (2.6 s against 1.7 s on a 23-file addon, four runs each). On
+2026-10-03, after the review fixes (comma-separated variables, dead
+preprocessor branches, the dependency closure and the patch inventory), the
+vanilla tree gave the same 33 003 references and no finding; the 161 roots
+were not measured again.
 
 ## Compile errors read from one file
 

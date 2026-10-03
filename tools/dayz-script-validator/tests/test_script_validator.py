@@ -2322,22 +2322,32 @@ class TestUndefinedClassRef(unittest.TestCase):
                 "FX_MissingDecl",
                 "FX_MissingTemplateArg",
                 "FX_MissingStatic",
-                # judged: DIAG_DEVELOPER is tested by vanilla, FX_FORMS_ON is in
-                # the addon's defines[], FX_LOCAL_FLAG is #define'd, and #else
-                # of a known macro is as knowable as its first branch
+                # a space before the call's parenthesis, as in vanilla's
+                # `Math.Sqrt (` (5_mission/dayzintroscenepc.c:31)
+                "FX_MissingSpacedCall",
+                # judged: DIAG_DEVELOPER is a build flag vanilla tests, so both
+                # of its branches compile in some build; FX_FORMS_ON is in the
+                # addon's defines[] and FX_LOCAL_FLAG is #define'd, so the
+                # branch where they are defined compiles
                 "FX_MissingUnderVanillaMacro",
+                "FX_MissingUnderVanillaElse",
                 "FX_MissingUnderConfigDefine",
                 "FX_MissingUnderLocalDefine",
-                "FX_MissingUnderElse",
+                # FX_DIAG_ONLY_FLAG is #define'd only under #ifdef DIAG_DEVELOPER,
+                # so it is not always on and its #ifndef branch compiles too
+                "FX_MissingUnderConditionalDefine",
             },
             flagged,
         )
         # Not flagged: a PascalCase member used as a receiver (Planner), enum
         # access, a typedef, a template parameter, a vanilla class declared
-        # under #ifdef, a `/*sealed*/ class`, and code under another mod's flag.
+        # under #ifdef, a `/*sealed*/ class`, code under another mod's flag,
+        # the second variable of `string fx_first, FX_Second;`, and the
+        # #ifndef / #else branches of macros the addon always defines.
         for name in ("Planner", "EVanillaMode", "TStringArray", "TItem",
                      "FX_VanillaDiagOnly", "PlayerBase", "FX_OptionalDependency",
-                     "SurfaceDetectionParameters"):
+                     "SurfaceDetectionParameters", "FX_Second",
+                     "FX_DeadUnderIfndef", "FX_DeadUnderElse"):
             self.assertNotIn(name, flagged)
         assert_standard_findings(self, result)
 
@@ -2366,6 +2376,68 @@ class TestUndefinedClassRef(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertIn("FX_GonePlanner", errors[0]["message"])
         self.assertEqual([], _rule_skips(result))
+
+    def test_dependency_named_by_a_macro_is_unknown(self):
+        exit_code, result = _undefined_run("macro_required_addon")
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], _rule_errors(result))
+        skips = _rule_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("FX_DEPENDENCY (not a string literal)", skips[0]["reason"])
+
+    def test_dependency_of_a_dependency_must_be_scanned_too(self):
+        exit_code, result = _undefined_run(
+            "transitive",
+            "--external-scripts", UNDEFINED / "transitive_dep_a",
+        )
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], _rule_errors(result))
+        skips = _rule_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("FX_DepB_Scripts", skips[0]["reason"])
+
+        exit_code, result = _undefined_run(
+            "transitive",
+            "--external-scripts", UNDEFINED / "transitive_dep_a",
+            "--external-scripts", UNDEFINED / "transitive_dep_b",
+        )
+
+        self.assertEqual(1, exit_code)
+        self.assertEqual(
+            ["FX_GoneEverywhere"],
+            [e["message"].split("'")[1] for e in _rule_errors(result)],
+        )
+        self.assertEqual([], _rule_skips(result))
+
+    def test_a_dz_prefixed_mod_patch_is_not_vanilla(self):
+        exit_code, result = _undefined_run("dz_prefixed_dependency")
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], _rule_errors(result))
+        skips = _rule_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("DZ_FX_ThirdParty", skips[0]["reason"])
+
+    def test_a_file_is_not_a_vanilla_root(self):
+        path, reason = vanilla_tree.resolve_vanilla_root(
+            str(UNDEFINED / "bad_mission_ref" / "config.cpp")
+        )
+
+        self.assertIsNone(path)
+        self.assertIn("vanilla tree not found", reason)
+
+    def test_vanilla_root_that_is_empty_or_a_file_skips(self):
+        with tempfile.TemporaryDirectory() as empty:
+            for vanilla in (empty, UNDEFINED / "bad_mission_ref" / "config.cpp"):
+                exit_code, result = script_validator.run(
+                    [str(UNDEFINED / "bad_mission_ref"), "--vanilla-root", str(vanilla)]
+                )
+
+                self.assertEqual(0, exit_code)
+                self.assertEqual([], _rule_errors(result))
+                self.assertEqual(1, len(_rule_skips(result)))
 
     def test_empty_required_addons_means_unknown_dependencies(self):
         exit_code, result = _undefined_run("no_required_addons")

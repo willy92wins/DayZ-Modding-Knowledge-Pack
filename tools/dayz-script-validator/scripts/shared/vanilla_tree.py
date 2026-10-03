@@ -16,21 +16,21 @@ def resolve_vanilla_root(explicit=None):
     """Return (path, None) or (None, reason).
 
     Order: the explicit argument, then DAYZ_VANILLA_ROOT, then P:\\scripts.
-    An explicit or env path that does not exist is a reason, never a silent
-    fallback to the next candidate.
+    An explicit or env path that is not a directory is a reason, never a
+    silent fallback to the next candidate.
     """
     if explicit:
         path = Path(explicit)
-        if path.exists():
+        if path.is_dir():
             return path, None
         return None, "vanilla tree not found: %s" % explicit
     env = os.environ.get("DAYZ_VANILLA_ROOT")
     if env:
         path = Path(env)
-        if path.exists():
+        if path.is_dir():
             return path, None
         return None, "vanilla tree not found: %s (DAYZ_VANILLA_ROOT)" % env
-    if PDRIVE_SCRIPTS.exists():
+    if PDRIVE_SCRIPTS.is_dir():
         return PDRIVE_SCRIPTS, None
     return (
         None,

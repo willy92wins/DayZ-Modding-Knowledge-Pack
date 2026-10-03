@@ -2,6 +2,9 @@ import functools
 import pathlib
 import re
 
+# Bohemia's own patches, by name: mods use the DZ_ prefix too.
+from shared.vanilla_patches import VANILLA_PATCHES
+
 
 ES_UNDEFINED_CLASS_REF_RULE_ID = "ES-UNDEFINED-CLASS-REF"
 
@@ -32,17 +35,23 @@ ES_UNDEFINED_CLASS_REF_RULE_ID = "ES-UNDEFINED-CLASS-REF"
 # The universe of declarations is the addon, the vanilla scripts tree and every
 # --external-scripts root. A verdict needs that universe to be complete, so the
 # rule reports SKIP in the result's info block -- never a finding -- when:
-#   - there is no vanilla tree: every vanilla type would look undefined;
-#   - config.cpp requires a non-vanilla addon (not DZ_*) that no scanned root
-#     declares in CfgPatches: the type may live there;
+#   - there is no usable vanilla tree (absent, or declaring no class Managed):
+#     every vanilla type would look undefined;
+#   - the addon requires, directly or through a scanned dependency, an addon
+#     that is not a vanilla patch (shared/vanilla_patches.py) and that no
+#     scanned root declares in CfgPatches, or a requiredAddons[] entry is not
+#     a string literal: the type may live there;
 #   - no config.cpp in the tree declares requiredAddons[] at all: the
 #     dependencies are unknown.
-# The SKIP lists the unresolved names; passing the dependency's scripts with
-# --external-scripts turns the list into verdicts.
+# The SKIP lists the unresolved names; passing the dependency's root (the
+# folder with its config.cpp) with --external-scripts turns them into verdicts.
 # Code under #ifdef/#ifndef is judged only when the macro is known: tested by
 # vanilla (engine and build flags), #define'd by the scanned scripts, or listed
 # in a scanned CfgMods defines[]. Anything else is usually an optional mod's
-# flag, and that code compiles only when the mod is loaded.
+# flag, and that code compiles only when the mod is loaded. A macro the scanned
+# scripts #define outside any #if block, or a scanned CfgMods defines[] lists,
+# is always on, so its #ifndef and #else branches never compile and are not
+# judged either.
 
 _CLASS_LIKE_RE = re.compile(r"^[A-Z]")
 
@@ -78,6 +87,14 @@ _DECLARED_NAME_RE = re.compile(
     r"\b[A-Za-z_]\w*(?:[ \t]*<[^;{}()\n]*?>)?(?:[ \t]*\[[^\]\n]*\])?"
     r"[ \t]+(?P<name>[A-Z]\w*)[ \t]*(?=[=;,)\[:])"
 )
+# The first declarator of `Type a, B;` (any case), so the names after its
+# top-level commas can be collected too: `string errorMessage, path;` is
+# vanilla (3_game/cfgplayerrestrictedareahandler.c:33).
+_DECLARATION_START_RE = re.compile(
+    r"\b[A-Za-z_]\w*(?:[ \t]*<[^;{}()\n]*?>)?(?:[ \t]*\[[^\]\n]*\])?"
+    r"[ \t]+[A-Za-z_]\w*[ \t]*(?=[=,\[])"
+)
+_NEXT_DECLARATOR_RE = re.compile(r"\s*(?P<name>[A-Za-z_]\w*)[ \t]*(?=[=;,)\[:])")
 
 _STATIC_CALL_RE = re.compile(
     r"(?<![\w.])(?P<name>[A-Z]\w*)\s*\.\s*(?P<method>[A-Za-z_]\w*)\s*\("
@@ -90,9 +107,10 @@ _DECL_RE = re.compile(
 )
 _IDENT_RE = re.compile(r"[A-Za-z_]\w*")
 
-_PP_OPEN_RE = re.compile(r"^\s*#\s*(?:ifdef|ifndef)\s+(?P<macro>\w+)")
+_PP_OPEN_RE = re.compile(r"^\s*#\s*(?P<kind>ifdef|ifndef)\s+(?P<macro>\w+)")
 _PP_OPEN_UNSUPPORTED_RE = re.compile(r"^\s*#\s*if\b")
 _PP_ELIF_RE = re.compile(r"^\s*#\s*elif\b")
+_PP_ELSE_RE = re.compile(r"^\s*#\s*else\b")
 _PP_ENDIF_RE = re.compile(r"^\s*#\s*endif\b")
 
 _MODULE_RE = re.compile(r"(?:^|[\\/])scripts[\\/](?P<module>[0-9]_[A-Za-z]+)[\\/]", re.I)
@@ -107,9 +125,11 @@ _CLASS_NAME_RE = re.compile(r"\bclass\s+(?P<name>\w+)")
 _BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.S)
 _LINE_COMMENT_RE = re.compile(r"//[^\n]*")
 
-# Measured 2026-09-19: 206 distinct CfgPatches names across the config.cpp files
-# under P:\DZ, all prefixed DZ_. requiredAddons outside that prefix are mods.
-VANILLA_ADDON_PREFIX = "DZ_"
+# A class every DayZ scripts tree declares (1_core/proto/enscript.c:117 in
+# 1.29.0.163451 and 1.30.164014): a "vanilla tree" without it is an empty or
+# wrong folder, and judging against it would call every vanilla type undefined.
+VANILLA_ANCHOR_CLASS = "Managed"
+_UNQUOTED_TOKEN_RE = re.compile(r"[A-Za-z_]\w*")
 
 ES_UNDEFINED_CLASS_REF_MESSAGE = (
     "[FAIL] {rel_path} line {line}: '{name}' is used as a type ({form}) but no "
@@ -117,8 +137,8 @@ ES_UNDEFINED_CLASS_REF_MESSAGE = (
     "vanilla scripts tree or in any --external-scripts root. A script module "
     "that names an unknown type does not compile, so {module} fails to load. "
     "Restore the declaration or update the reference; if the type comes from a "
-    "dependency mod, list it in config.cpp requiredAddons[] and pass its "
-    "scripts root with --external-scripts."
+    "dependency mod, list it in config.cpp requiredAddons[] and pass its root "
+    "(the folder with its config.cpp) with --external-scripts."
 )
 
 
@@ -164,7 +184,28 @@ class Definitions:
 
 
 def declared_variables(text):
-    return {match.group("name") for match in _DECLARED_NAME_RE.finditer(text)}
+    names = {match.group("name") for match in _DECLARED_NAME_RE.finditer(text)}
+    for start in _DECLARATION_START_RE.finditer(text):
+        # The later declarators of the same statement: what follows a comma
+        # outside every bracket, up to the `;` that ends it.
+        depth = 0
+        index = start.end()
+        while index < len(text):
+            char = text[index]
+            if char in "([{":
+                depth += 1
+            elif char in ")]}":
+                if depth == 0:
+                    break
+                depth -= 1
+            elif depth == 0 and char == ";":
+                break
+            elif depth == 0 and char == ",":
+                declarator = _NEXT_DECLARATOR_RE.match(text, index + 1)
+                if declarator and _CLASS_LIKE_RE.match(declarator.group("name")):
+                    names.add(declarator.group("name"))
+            index += 1
+    return names
 
 
 def _vanilla_texts(vanilla_root):
@@ -229,6 +270,49 @@ def required_addons(config_sources):
     return _config_array_values(config_sources, _REQUIRED_ADDONS_RE)
 
 
+def unquoted_required_addons(config_sources):
+    """Tokens of requiredAddons[] that are not string literals (macros...).
+
+    Their value is unknown, so the dependency they name is unknown too.
+    """
+    tokens = set()
+    for _rel_path, text in config_sources:
+        for block in _REQUIRED_ADDONS_RE.finditer(_strip_config_comments(text)):
+            rest = _QUOTED_RE.sub(" ", block.group("body"))
+            tokens |= set(_UNQUOTED_TOKEN_RE.findall(rest))
+    return tokens
+
+
+def dependency_closure(addon_configs, external_configs):
+    """(required, unquoted) over the addon and every scanned dependency.
+
+    A config.cpp under an --external-scripts root contributes its own
+    requiredAddons[] once one of its CfgPatches classes is required: the type
+    can live in a dependency of a dependency. `unquoted` holds the
+    requiredAddons[] tokens that are not string literals along the way.
+    """
+    required = set(required_addons(addon_configs))
+    unquoted = set(unquoted_required_addons(addon_configs))
+    providers = [
+        (
+            declared_patches([config]),
+            required_addons([config]),
+            unquoted_required_addons([config]),
+        )
+        for config in external_configs or []
+    ]
+    pending = list(required)
+    while pending:
+        dependency = pending.pop()
+        for patches, needs, tokens in providers:
+            if dependency in patches:
+                unquoted |= tokens
+                for need in needs - required:
+                    required.add(need)
+                    pending.append(need)
+    return required, unquoted
+
+
 def config_defines(config_sources):
     """Every CfgMods defines[] entry: macros a loaded mod turns on."""
     return _config_array_values(config_sources, _DEFINES_RE)
@@ -261,9 +345,18 @@ def declared_patches(config_sources):
     return patches
 
 
-def _gated_by_unknown_macro(stack, known_macros):
-    for macro in stack:
+def _gated(stack, known_macros, always_on):
+    """True when the current line may not compile in a build the rule knows.
+
+    Each entry is (macro, branch_when_defined): `#ifdef X` opens (X, True),
+    `#ifndef X` opens (X, False) and `#else` flips it. A macro that is always
+    on (see unconditional_defines) never compiles its False branch; a build
+    flag vanilla tests compiles in both directions.
+    """
+    for macro, when_defined in stack:
         if macro is None or macro not in known_macros:
+            return True
+        if macro in always_on and not when_defined:
             return True
     return False
 
@@ -272,20 +365,24 @@ def _update_pp_stack(stack, line):
     """True when `line` is a preprocessor directive (and has been applied)."""
     opened = _PP_OPEN_RE.match(line)
     if opened:
-        stack.append(opened.group("macro"))
+        stack.append((opened.group("macro"), opened.group("kind") == "ifdef"))
         return True
     if _PP_OPEN_UNSUPPORTED_RE.match(line):
-        stack.append(None)
+        stack.append((None, True))
         return True
     if _PP_ELIF_RE.match(line):
         if stack:
-            stack[-1] = None
+            stack[-1] = (None, True)
+        return True
+    if _PP_ELSE_RE.match(line):
+        if stack:
+            macro, when_defined = stack[-1]
+            stack[-1] = (macro, not when_defined)
         return True
     if _PP_ENDIF_RE.match(line):
         if stack:
             stack.pop()
         return True
-    # `#else` keeps the macro: its branch is as knowable as the first one.
     return line.lstrip().startswith("#")
 
 
@@ -297,13 +394,34 @@ def _template_args(args):
     ]
 
 
-def find_type_references(stripped, known_macros):
+def unconditional_defines(stripped):
+    """Macros `#define`d outside every #if / #ifdef / #ifndef block.
+
+    Only those are always on. A #define inside a block depends on that block's
+    condition (vanilla's 1_core/defines.c lists its build flags under
+    `#ifdef DOXYGEN`), so its macro stays a two-way build flag.
+    """
+    names = set()
+    depth = 0
+    for line in stripped.split("\n"):
+        if _PP_OPEN_RE.match(line) or _PP_OPEN_UNSUPPORTED_RE.match(line):
+            depth += 1
+        elif _PP_ENDIF_RE.match(line):
+            depth = max(0, depth - 1)
+        elif depth == 0:
+            match = _MACRO_DEFINE_RE.match(line)
+            if match:
+                names.add(match.group("name"))
+    return names
+
+
+def find_type_references(stripped, known_macros, always_on=frozenset()):
     """Yield (line, name, form) for every class-like name used as a type."""
     stack = []
     for line_number, line in enumerate(stripped.split("\n"), start=1):
         if _update_pp_stack(stack, line):
             continue
-        if _gated_by_unknown_macro(stack, known_macros):
+        if _gated(stack, known_macros, always_on):
             continue
         seen = set()
 
@@ -365,16 +483,35 @@ def check_es_undefined_class_ref(
         ]
 
     vanilla_key = str(pathlib.Path(vanilla_root).resolve())
+    if VANILLA_ANCHOR_CLASS not in vanilla_definitions(vanilla_key).types:
+        return [], [
+            {
+                "rule_id": ES_UNDEFINED_CLASS_REF_RULE_ID,
+                "status": "SKIP",
+                "reason": (
+                    "the vanilla tree %s declares no class %s, so it is not a "
+                    "DayZ scripts tree; judging against it would call every "
+                    "vanilla type undefined, so the rule does not run."
+                    % (vanilla_root, VANILLA_ANCHOR_CLASS)
+                ),
+            }
+        ]
     definitions = Definitions()
     definitions.merge(vanilla_definitions(vanilla_key))
+    always_on = set()
     for _rel_path, stripped in list(addon_sources) + list(external_sources or []):
         definitions.add_source(stripped)
+        always_on |= unconditional_defines(stripped)
     all_configs = list(addon_configs) + list(external_configs or [])
-    definitions.macros |= config_defines(all_configs)
+    defines = config_defines(all_configs)
+    definitions.macros |= defines
+    always_on |= defines
 
     unresolved = []
     for rel_path, stripped in addon_sources:
-        for line, name, form in find_type_references(stripped, definitions.macros):
+        for line, name, form in find_type_references(
+            stripped, definitions.macros, always_on
+        ):
             if definitions.is_type(name):
                 continue
             if form.startswith("static call") and (
@@ -390,23 +527,24 @@ def check_es_undefined_class_ref(
     shown = "%d type name(s) resolve nowhere (%s)" % (
         len(names), ", ".join(names[:10]) + (", ..." if len(names) > 10 else "")
     )
-    required = required_addons(addon_configs)
+    direct = required_addons(addon_configs) | unquoted_required_addons(addon_configs)
+    required, unquoted = dependency_closure(addon_configs, external_configs)
     provided = declared_patches(all_configs)
     uncovered = sorted(
         dependency
         for dependency in required
-        if not dependency.startswith(VANILLA_ADDON_PREFIX)
-        and dependency not in provided
-    )
+        if dependency not in VANILLA_PATCHES and dependency not in provided
+    ) + sorted("%s (not a string literal)" % token for token in unquoted)
     reason = None
     if uncovered:
         reason = (
             "config.cpp requires %s, and no scanned root declares %s in "
-            "CfgPatches. %s and may come from there; pass the dependency's "
-            "scripts root with --external-scripts to judge them."
+            "CfgPatches. %s and may come from there; pass the root of each "
+            "dependency (the folder with its config.cpp) with --external-scripts "
+            "to judge them."
             % (", ".join(uncovered), "it" if len(uncovered) == 1 else "them", shown)
         )
-    elif not required and not addon_is_vanilla:
+    elif not direct and not addon_is_vanilla:
         # Observed on 2026-09-19 across 161 addon roots under P:\: three mods
         # (six trees) with `requiredAddons[]={};` use CF, Expansion or LBmaster
         # classes outside any #ifdef. They can only compile next to those mods,
@@ -416,8 +554,8 @@ def check_es_undefined_class_ref(
         reason = (
             "no config.cpp in the tree lists any requiredAddons[] entry, so the "
             "addon's dependencies are unknown. %s; declare the dependencies in "
-            "requiredAddons[] and pass their scripts roots with "
-            "--external-scripts to judge them." % shown
+            "requiredAddons[] and pass their roots with --external-scripts to "
+            "judge them." % shown
         )
     if reason:
         return [], [

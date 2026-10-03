@@ -1,4 +1,7 @@
 #define FX_LOCAL_FLAG
+#ifdef DIAG_DEVELOPER
+#define FX_DIAG_ONLY_FLAG
+#endif
 
 class FX_Known
 {
@@ -30,20 +33,31 @@ class FX_Forms<Class TItem>
         TStringArray names = new TStringArray();
         PlayerBase player = PlayerBase.Cast(source);
         SurfaceDetectionParameters params = new SurfaceDetectionParameters();
+        FX_MissingSpacedCall.Hook ();
+        string fx_first, FX_Second;
+        int length = FX_Second.Length();
 #ifdef FX_SOME_OTHER_MOD
         FX_OptionalDependency.Hook();
 #endif
 #ifdef DIAG_DEVELOPER
         FX_MissingUnderVanillaMacro.Debug();
         FX_VanillaDiagOnly diag;
+#else
+        FX_MissingUnderVanillaElse.Hook();
 #endif
 #ifdef FX_FORMS_ON
         FX_MissingUnderConfigDefine.Hook();
 #endif
+#ifndef FX_FORMS_ON
+        FX_DeadUnderIfndef.Hook();
+#endif
 #ifdef FX_LOCAL_FLAG
         FX_MissingUnderLocalDefine.Hook();
 #else
-        FX_MissingUnderElse.Hook();
+        FX_DeadUnderElse.Hook();
+#endif
+#ifndef FX_DIAG_ONLY_FLAG
+        FX_MissingUnderConditionalDefine.Hook();
 #endif
     }
 }

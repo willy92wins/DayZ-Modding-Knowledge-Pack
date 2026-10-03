@@ -227,12 +227,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Not booted: the compile failure follows from the missing declaration. Where it cannot see every
   place the type could be declared, it lists what it could not judge under `info.skipped_checks`
   (and as a `SKIP` line in `--terse`) instead of a finding, and the status does not change: no
-  vanilla tree, a `requiredAddons[]` entry outside `DZ_*` that no scanned root declares in
-  `CfgPatches` (pass that mod's scripts with `--external-scripts` to get verdicts), or no
-  `requiredAddons[]` entry at all. `vanilla_control.py` passes the tree as its own vanilla root, so
-  the rule runs there instead of skipping: on vanilla 1.29.0.163451 it judges 33 003 references,
-  reports none, and the control still matches its baseline. On the TransferZ tree with CF passed it
-  reported one FAIL, on that line, and none on the mod's `main` at `2c7d5c1` (2026-09-19).
+  usable vanilla tree (absent, or declaring no `class Managed`); a dependency, direct or required
+  by a scanned dependency, that is not one of the 211 vanilla patch names
+  (`scripts/shared/vanilla_patches.py`; mods use the `DZ_` prefix too) and that no scanned root
+  declares in `CfgPatches`; a `requiredAddons[]` entry that is not a string literal; or no
+  `requiredAddons[]` entry at all. Pass each dependency's root, the folder with its `config.cpp`,
+  with `--external-scripts` to get verdicts. Variables declared after a comma
+  (`string a, B;`) count as variables, and the `#ifndef`/`#else` branch of a macro the scanned
+  code always defines is not judged. `vanilla_control.py` passes the tree as its own vanilla
+  root, so the rule runs there instead of skipping, and the control still matches its baseline.
+  On the TransferZ tree with CF passed, the first version of the rule reported one FAIL, on that
+  line, and none on the mod's `main` at `2c7d5c1` (2026-09-19).
 
 ### Changed
 
