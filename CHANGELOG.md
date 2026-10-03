@@ -782,11 +782,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `tests/packctl/test_promotion.py`: on a Spanish-locale Windows host, the eight tests that create a
   directory link (nine runs, one test being parametrized) passed with a
   `PytestUnhandledThreadExceptionWarning` per link. Without Developer Mode `try_dir_link` falls back
-  to `cmd /c mklink /J`, cmd writes its message in the OEM code page (cp850 here: `UnicodeDecodeError`
-  on byte `0xa2`, the `ó` of `Unión`), and the helper decoded it as UTF-8 in subprocess's reader
-  thread. It now keeps the output as bytes and reads only the return code. Under
-  `-W error::pytest.PytestUnhandledThreadExceptionWarning` the nine runs go from failed to passed.
-  CI never showed it: its `tests/packctl` step on `ea7b396` reports 359 passed and no warning.
+  to `cmd /c mklink /J`, cmd writes its message in the console code page, the OEM one unless the
+  console runs UTF-8 (cp850 here: `UnicodeDecodeError` on byte `0xa2`, the `ó` of `Unión`), and the
+  helper decoded it as UTF-8 in subprocess's reader thread. It now keeps the output as bytes and
+  reads only the return code. Under `-W error::pytest.PytestUnhandledThreadExceptionWarning` the nine
+  runs go from failed to passed (in a console at code page 65001 both versions pass). CI never
+  showed it: its `tests/packctl` step on `ea7b396` reports 359 passed and no warning.
 
 ## [1.5.0] - 2026-10-02
 

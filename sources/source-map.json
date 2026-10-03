@@ -784,9 +784,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "chips 2026-10-03: two Unreleased Fixed entries. (1) packctl git_tracked_files listed a path in conflict once per index stage mid-merge (git ls-files prints each stage entry); it now lists each tracked path once, sorted; the effect on each caller (validate's link check, the gate's python_compile list and count, build's symlink check) and why the others were unaffected (source-map, privacy and conflict-marker checks read it through a set; promote --check returns on PROMOTION-DIRTY before _tracked_projection). (2) tests/packctl/test_promotion.py try_dir_link decoded cmd's mklink /J output as UTF-8 while cmd writes it in the OEM code page (cp850 on this host: UnicodeDecodeError on byte 0xa2), so each directory link raised PytestUnhandledThreadExceptionWarning; the output is kept as bytes. Measured on main ea7b396 and on this change, Python 3.14.3, pytest 9.1.1, OEM code page 850: the nine junction test runs, 10 warnings and under -W error::pytest.PytestUnhandledThreadExceptionWarning 9 failed before, no warning and 9 passed after; CI's Test packctl step on ea7b396 (run 37140346524) logs 359 passed and no warning.",
+          "decision_evidence": "chips 2026-10-03: two Unreleased Fixed entries. (1) packctl git_tracked_files listed a path in conflict once per index stage mid-merge (git ls-files prints each stage entry); it now lists each tracked path once, sorted; the effect on each caller (validate's link check, the gate's python_compile list and count, build's symlink check) and why the others were unaffected (source-map, privacy and conflict-marker checks read it through a set; promote --check returns on PROMOTION-DIRTY before _tracked_projection). (2) tests/packctl/test_promotion.py try_dir_link decoded cmd's mklink /J output as UTF-8 while cmd writes it in the console code page, the OEM one (cp850 on this host: UnicodeDecodeError on byte 0xa2) unless the console runs UTF-8, so each directory link raised PytestUnhandledThreadExceptionWarning; the output is kept as bytes. Measured on main ea7b396 and on this change, Python 3.14.3, pytest 9.1.1, console code page 850: the nine junction test runs, 10 warnings and under -W error::pytest.PytestUnhandledThreadExceptionWarning 9 failed before, no warning and 9 passed after; at code page 65001 the old helper passes too (review round 1, Codex gpt-6.1-sol, reproduced by the author); CI's Test packctl step on ea7b396 (run 37140346524) logs 359 passed and no warning.",
           "license": "MIT",
-          "source_hash": "9aa80bf0c43b2096bf43b5a9dffd6e28153a2c8fe879052ae3f9e23da714ecf0",
+          "source_hash": "19330e270718b66e57b7472770917a36825a9dee1726e02fae18c31346ef9de8",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-chips-packctl@2026-10-03",
@@ -794,7 +794,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9aa80bf0c43b2096bf43b5a9dffd6e28153a2c8fe879052ae3f9e23da714ecf0",
+      "output_hash": "19330e270718b66e57b7472770917a36825a9dee1726e02fae18c31346ef9de8",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -16727,9 +16727,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "chips 2026-10-03: try_dir_link captures the cmd /c mklink /J fallback's output as bytes and never decodes it; only the return code is read. cmd writes that message in the OEM code page (cp850 on a Spanish-locale Windows host, where Developer Mode is off and os.symlink is refused), and decoding it as UTF-8 failed in subprocess's reader thread ('utf-8' codec can't decode byte 0xa2 in position 3), which pytest reported as PytestUnhandledThreadExceptionWarning while every test still passed. Port of a local commit of 2026-09-24 that was never pushed (59d002c on branch claude/mklink-decode-20260924; same two lines removed, plus a comment saying why). Measured on main ea7b396 and on this change (Python 3.14.3, pytest 9.1.1, OEM code page 850): the eight tests that create a directory link, nine runs with one parametrized, give 10 warnings and, under -W error::pytest.PytestUnhandledThreadExceptionWarning, 9 failed before; no warning and 9 passed after. No other cmd or mklink subprocess call exists under packctl/ or tests/ (grep).",
+          "decision_evidence": "chips 2026-10-03: try_dir_link captures the cmd /c mklink /J fallback's output as bytes and never decodes it; only the return code is read. cmd writes that message in the console code page, the OEM one (cp850 on a Spanish-locale Windows host, where Developer Mode is off and os.symlink is refused) unless the console runs UTF-8, and decoding it as UTF-8 failed in subprocess's reader thread ('utf-8' codec can't decode byte 0xa2 in position 3), which pytest reported as PytestUnhandledThreadExceptionWarning while every test still passed. Port of a local commit of 2026-09-24 that was never pushed (59d002c on branch claude/mklink-decode-20260924; the same two lines removed, plus a comment saying why). Measured on main ea7b396 and on this change (Python 3.14.3, pytest 9.1.1, console code page 850): the eight tests that create a directory link, nine runs with one parametrized, give 10 warnings and, under -W error::pytest.PytestUnhandledThreadExceptionWarning, 9 failed before; no warning and 9 passed after. With the console at code page 65001 the old helper passes the nine runs too (measured by review round 1, Codex gpt-6.1-sol, and again by the author), so the comment names the console code page. No other cmd or mklink subprocess call exists under packctl/ or tests/ (grep).",
           "license": "MIT",
-          "source_hash": "33fc645c2714e564fc8be3a237f82faf6e3cc9298291e4f7d2ac78100de1cc05",
+          "source_hash": "01bd3b5359a834cd2ef70fb6ecc504d8f29ecd128380177c7d249c4fb0467724",
           "source_id": "pack-r21-authored",
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "kp-chips-packctl@2026-10-03",
@@ -16737,7 +16737,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "33fc645c2714e564fc8be3a237f82faf6e3cc9298291e4f7d2ac78100de1cc05",
+      "output_hash": "01bd3b5359a834cd2ef70fb6ecc504d8f29ecd128380177c7d249c4fb0467724",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
