@@ -198,18 +198,22 @@ three ways to cross that binding.
    the radius, under another class name or still unloaded, and the restore creates a second one.
    SecretRock keeps the id in a script member, so no entity carries it across a restart. Rule
    [DESIGN]:
+   - an id is identity only while exactly one registry entry and exactly one live entity carry it.
+     Two entries, or two live entities, with one id identify neither: record the conflict for an
+     admin, and bind, apply state and create nothing for that id until it is settled;
    - make the id durable before using it: write it to the registry first, and if that save fails,
      bind and create nothing for that entry in this pass;
    - bind only by id, never by position or class;
-   - create an entry's entity only where the restore can prove it absent: the engine does not
-     persist these entities (only the restore creates them), and the restore keeps a census, id to
-     entity, of what it created or bound in this mission, dropping an entity when it is deleted and
-     clearing the census when the mission ends. An entry whose id is not in the census is absent;
-     an entity the restore did not create, such as an admin's console spawn, is left alone;
-   - where the engine persists these entities, keep the id on the entity itself (its own
-     `OnStoreSave` stream, Contract 1) and bind each one as it loads. An entry that no loaded entity
-     claims is a conflict kept in the registry for an admin, never a reason to create: no pass can
-     prove the engine has finished loading.
+   - create an entry's entity only when the mod can prove that no live entity carries its id. That
+     takes a list of every live entity of the class that lasts exactly as long as they do: each one
+     adds itself in `EEInit` and leaves in `EEDelete`, whoever created it, an admin's console spawn
+     included. A radius search is no such proof, and neither is a list kept per mission or per
+     restore pass, which a mission change can empty while the entities live. A list that can have
+     been emptied while its entities lived (a script reload) proves nothing: create nothing;
+   - where the engine persists these entities, keep the id on the entity itself, with the entity's
+     state, in its own `OnStoreSave` stream (Contract 1); the registry only indexes it. No pass can
+     prove the engine has finished loading, so an entry that no loaded entity claims is a conflict
+     kept in the registry for an admin, never a reason to create.
 
    Read in the code; neither the failures nor this rule were tested in game, and the rule is
    implemented nowhere.
