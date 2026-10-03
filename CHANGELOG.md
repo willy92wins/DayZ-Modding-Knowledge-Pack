@@ -561,6 +561,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   points) and reversed every other face once, the 108 faces of 18 six-face proxy-named selections
   in the LFPowerGrid logic gates' collision LODs included. The replaced block is quoted in a dated
   note. The GLB reversal itself is unchanged.
+- `ai-3d-to-dayz` SP-071 no longer reverses every visual face of a Blender, OBJ, glTF or FBX
+  import, and its census no longer reads a correct export as inverted. It said to reverse "every
+  **visual** face" whenever the measured axis transform preserves winding, a det=+1 map: the recipe
+  `dayz-model-pipeline` Rule 12 replaced after the in-game test of 2026-10-01, where that map with
+  reversed faces rendered solid but mirrored. Every route of the skill reaches the MLOD as geometry
+  authored in Blender, so it now takes Rule 12's FBX / Blender-authored recipe, whatever format the
+  generator wrote (det=-1 map, faces in their order, normals negated); on that route LFInfectedBig,
+  an AI-generated GLB retopologized in Blender, read correctly in game with Rule 12's map and
+  mirrored with the det=+1 map and reversed faces (`dayz-characters`
+  `references/character-rigging.md` §6, 2026-10-02). SP-071 had one calibration, the LFHeli OH-1 of
+  2026-07-19: an artist's Blender model exported as OBJ, mapped with `x'=x, y'=z, z'=-y` (det=+1),
+  every visual face reversed, and judged by its render side only. The reversal now needs a source
+  lineage measured by an in-game A/B plus a chirality check. The census thresholds (at least 95 %
+  negative `SOLID`, positive-dominant `INVERTED`) came from that pipeline's outward stored normals.
+  Measured offline on the MLODs of the Rule 12 in-game test, which `tools/py3d/tests` rebuilds byte
+  for byte, the export that rendered solid and read correctly reads 0 % negative, `INVERTED`, while
+  the same export with every face reversed (inside-out) and SP-071's recipe (a mirror) read 100 %,
+  `SOLID`. The section now sends a Rule 12 export to `dayz-p3d-audit`, whose signed volume is read
+  per closed shell, never summed over the LOD, and says that the in-game A/B cannot see a mirror.
+  `dayz-vehicles` invariant #10, whose generic-DCC case said "flip visual by default (SP-071;
+  proxies exempt)", points to Rule 12 too. The old text is quoted in dated notes. Docs only;
+  nothing re-measured in game for this change.
 
 ## [1.5.0] - 2026-10-02
 
