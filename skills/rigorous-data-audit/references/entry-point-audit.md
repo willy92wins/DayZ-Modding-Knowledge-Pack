@@ -157,12 +157,12 @@ Grep "Closest|Nearest|GetObjectsAtPosition" --type c --output_mode content -n tr
 For each hit, ask whether it decides which registry entry an entity owns.
 If it does, a matching id must win; an entity without an id must not remove
 an entry; on restore a candidate in the radius that does not carry the
-entry's id is not a match (the first candidate is not even the nearest one:
-`GetObjectsAtPosition3D` promises no order); and an empty radius does not
-prove the entry's entity gone, so a restore that creates on it can make a
-second one. How a restore should bind and create is an open problem: no rule
-for it has come out of review sound (`dayz-persistence`, Hard stops item 9
-and point 2 of its section on registry entries).
+entry's id is not a match (the first candidate is not guaranteed to be the
+nearest one: `GetObjectsAtPosition3D` promises no order); and an empty radius
+does not prove the entry's entity gone, so a restore that creates on it can
+make a second one. How a restore should bind and create is an open problem:
+no rule for it has come out of review sound (`dayz-persistence`, Hard stops
+item 9 and point 2 of its section on registry entries).
 
 ### Step 4 — Output
 

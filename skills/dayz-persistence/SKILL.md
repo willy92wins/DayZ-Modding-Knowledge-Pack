@@ -216,12 +216,13 @@ three ways to cross that binding.
      stop a pass that reloads the registry and gets a copy of the entry without the reservation
      (R21-09).
 
-   The same reservation, once a creation fails, keeps the entry from ever getting its entity
-   (R21-10). These are traces, not observations: none was reproduced in game, and several need
-   conditions not shown to occur in SecretRock: a pass started from an entity's `EEInit` (SecretRock
-   starts its restore passes only from `MissionServer`), two loaded entities with one id, entities
-   that live through a mission change. Whether the engine persists SecretRock's rocks is not
-   established. The Pack gives no rule for this restore; Hard stops item 9 names what it must not do.
+   Where later passes do see the reservation, a creation that fails keeps the entry from ever
+   getting its entity (R21-10). These are traces, not observations: none was reproduced in game,
+   and several need conditions not shown to occur in SecretRock: a pass started from an entity's
+   `EEInit` (SecretRock starts its restore passes only from `MissionServer`), two loaded entities
+   with one id, entities that live through a mission change. Whether the engine persists
+   SecretRock's rocks is not established. The Pack gives no rule for this restore; Hard stops item 9
+   names what it must not do.
 3. **A restore pass still queued can reopen saving at shutdown.** If the restore clears the
    shutdown flag (for a mission restart in the same process), a restore `CallLater` still in
    `CALL_CATEGORY_SYSTEM`, which is processed "without any restrictions"
