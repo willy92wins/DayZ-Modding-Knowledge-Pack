@@ -2027,6 +2027,33 @@ class TestReservedWordIdentifier(unittest.TestCase):
              for e in _errors_of(result, RESERVED_RULE)],
         )
 
+    def test_else_follows_its_macro_both_ways(self):
+        _code, result = script_validator.run([str(RESERVED / "else_branches")])
+
+        # FX_ELSE_ON is always defined: the #else of its #ifndef compiles
+        # (`vector local;`) and so does its #ifdef branch (`EntityAI owned;`);
+        # `vector sealed;` and `int out;` never compile.
+        self.assertEqual(
+            [(12, "local"), (15, "owned")],
+            [(e["line"], e["message"].split("'")[1])
+             for e in _errors_of(result, RESERVED_RULE)],
+        )
+
+    def test_names_without_their_type_before_them_on_the_line(self):
+        exit_code, result = script_validator.run(
+            [str(RESERVED / "bad_more_declarations")]
+        )
+
+        # A parameter split over two lines, a later declarator, a foreach
+        # variable and the second variable of a for header; not the use of
+        # `out` among the arguments of line 10.
+        self.assertEqual(1, exit_code)
+        self.assertEqual(
+            [(7, "sealed"), (9, "out"), (11, "local"), (14, "owned")],
+            [(e["line"], e["message"].split("'")[1])
+             for e in _errors_of(result, RESERVED_RULE)],
+        )
+
 
 MODULO = FIXTURES / "modulo_float_context"
 MODULO_RULE = "ES-MODULO-FLOAT-CONTEXT"
@@ -2079,14 +2106,79 @@ class TestModuloFloatContext(unittest.TestCase):
         self.assertFalse(flagged("int k = n % 4; float c = k * 0.5;"))
         self.assertFalse(flagged("float d = Math.Floor(n % 4) * 0.5;"))
         self.assertFalse(flagged("n %= 4;"))
-        # A string literal makes `+` a concatenation: not judged.
+        # A string literal makes `+` a concatenation: not judged, also when
+        # the string comes first.
         self.assertFalse(flagged('Print("cell " + (n % 4) + " of " + 0.5);'))
-        # A comment is not part of the expression.
+        self.assertFalse(flagged('Print("cell " + (n % 4) + 0.5);'))
+        # A comment is not part of the expression, quotes in it included.
         self.assertFalse(flagged("int k = n % 4; // scale by 0.5 later"))
         self.assertTrue(flagged("float e = (n % 4) /* cell */ * 0.5;"))
+        self.assertTrue(flagged('float e2 = (n % 4) /* "cell" */ * 0.5;'))
+        self.assertTrue(flagged('float e3 = (n % 4) // "cell"\n            * 0.5;'))
+        # An int cast makes an int of its operand, float literal or not.
+        self.assertFalse(flagged("int j = n % (int)2.5;"))
+        self.assertFalse(flagged("int j2 = n % ((int)-2.5);"))
+        self.assertFalse(flagged("int j3 = n % (int)(2.5 * i);"))
+        self.assertTrue(flagged("float j4 = (n % 4) * (int)i + 0.5;"))
+        # A condition in parentheses is a value of its own; behind a `?` only
+        # the results count; arithmetic before a comparison is still judged.
+        self.assertFalse(flagged("int b = n % (i > 0.5);"))
+        self.assertFalse(flagged("float t = (n % 4) * (i > 0.5 ? 1 : 2);"))
+        self.assertTrue(flagged("float t2 = (n % 4) * (i > 1 ? 0.5 : 2);"))
+        self.assertTrue(flagged("bool t3 = (n % 4 * 0.5 > 2);"))
+        self.assertTrue(flagged("float t4 = (n % 4) * (Max(i > 1, 2) + 0.5);"))
         # Code that never compiles is not judged; another mod's branch is.
         self.assertFalse(flagged("#if 0\nfloat g = (n % 4) * 0.5;\n#endif"))
         self.assertTrue(flagged("#ifdef FX_OTHER_MOD\nfloat h = (n % 4) * 0.5;\n#endif"))
+
+    def test_an_expression_is_read_only_across_lines_that_compile_together(self):
+        from detectors.es_modulo_float_context import check_es_modulo_float_context
+        from stripper import strip_enforce_comments_and_strings
+
+        def flagged(body):
+            source = "class C\n{\n    int F(int n)\n    {\n%s\n    }\n}\n" % body
+            stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+            return bool(check_es_modulo_float_context(source, stripped, "x.c"))
+
+        # A float in a branch that never compiles is no part of the
+        # expression (review round 1, R01).
+        self.assertFalse(flagged(
+            "#define FX_INTEGER\n"
+            "        return (n % 4)\n"
+            "#ifdef FX_INTEGER\n            + 1\n"
+            "#else\n            * 0.5\n#endif\n        ;"
+        ))
+        # Nor is a float in the other branch of the block the `%` sits in,
+        # whatever the macro: the two never compile together.
+        self.assertFalse(flagged(
+            "        return n\n"
+            "#ifdef FX_OTHER_MOD\n            % 4\n"
+            "#else\n            * 0.5\n#endif\n        ;"
+        ))
+        # A float in a branch that compiles along with the `%` is.
+        self.assertTrue(flagged(
+            "        return (n % 4)\n"
+            "#ifdef FX_OTHER_MOD\n            * 0.5\n#endif\n        ;"
+        ))
+
+    def test_string_spans_are_the_strings_the_stripper_blanks(self):
+        from detectors.es_modulo_float_context import _string_spans
+        from stripper import strip_enforce_comments_and_strings
+
+        source = (
+            'a = "x \\" // y" + b; // "not a string"\n'
+            '/* "nor this" */ c = "z";\n'
+            'd = "open'
+        )
+        stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+        spans = _string_spans(source)
+
+        self.assertEqual(
+            ['"x \\" // y"', '"z"', '"open'],
+            [source[start:end] for start, end in spans],
+        )
+        for start, end in spans:
+            self.assertEqual("", stripped[start:end].strip())
 
 
 if __name__ == "__main__":

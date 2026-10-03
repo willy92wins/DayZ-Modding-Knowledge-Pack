@@ -10,6 +10,10 @@ never compiled is not judged:
   - the `#ifndef X` branch, or the `#else` of `#ifdef X`, when this file
     #defines X before that point on a line it always keeps (outside every
     block, or under an #ifdef of a macro it #defined the same way).
+
+line_branches() and compatible() tell which live lines can compile in the
+same build: two branches of one block never do, so an expression is never
+read across them.
 """
 
 import re
@@ -70,3 +74,34 @@ def dead_lines(stripped):
         ):
             dead.add(number)
     return dead
+
+
+def line_branches(stripped):
+    """{1-based line: the conditional blocks around it, outermost first}.
+
+    Each block is a (block, branch) pair: `block` numbers the #if, #ifdef and
+    #ifndef of the file in order, and `branch` counts the #elif and #else
+    clauses before the line. Blocks open and close exactly as in dead_lines().
+    """
+    branches = {}
+    stack = []
+    opened = 0
+    for number, line in enumerate(stripped.split("\n"), start=1):
+        if _OPEN_RE.match(line) or _IF_RE.match(line):
+            opened += 1
+            stack.append((opened, 0))
+        elif _ELIF_RE.match(line) or _ELSE_RE.match(line):
+            if stack:
+                block, branch = stack[-1]
+                stack[-1] = (block, branch + 1)
+        elif _ENDIF_RE.match(line):
+            if stack:
+                stack.pop()
+        branches[number] = tuple(stack)
+    return branches
+
+
+def compatible(branches_a, branches_b):
+    """False when two lines sit in different branches of the same block."""
+    taken = dict(branches_a)
+    return all(taken.get(block, branch) == branch for block, branch in branches_b)

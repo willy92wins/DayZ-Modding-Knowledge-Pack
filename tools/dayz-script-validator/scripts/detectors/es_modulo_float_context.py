@@ -1,6 +1,6 @@
 import re
 
-from shared.dead_branches import dead_lines
+from shared.dead_branches import compatible, dead_lines, line_branches
 
 
 ES_MODULO_FLOAT_CONTEXT_RULE_ID = "ES-MODULO-FLOAT-CONTEXT"
@@ -24,10 +24,12 @@ ES_MODULO_FLOAT_CONTEXT_RULE_ID = "ES-MODULO-FLOAT-CONTEXT"
 # `?` `:`, `return`, an index bracket, and the parentheses of a call or of
 # if/while/for/switch. A float literal counts only at that level or inside
 # grouping parentheses: one inside a call's arguments or an index belongs to
-# another expression. An expression that holds a string literal is not judged:
-# there `+` concatenates, and no failure is on record for that case. A float
+# another expression. An expression that holds a string literal anywhere, its
+# first token included, is not judged: there `+` concatenates, and no failure
+# is on record for that case. Quotes inside a comment are no string. A float
 # VARIABLE is not seen (types are not tracked): only the literal case is found.
-# What never compiles (shared/dead_branches.py) is not judged.
+# What never compiles (shared/dead_branches.py) is not judged and is no part
+# of any expression; neither is another branch of a block the `%` sits in.
 
 _TOKEN_RE = re.compile(
     r"(?P<float>(?<![\w.])(?:\d+\.\d*|\.\d+)(?:[eE][-+]?\d+)?f?(?![\w.]))"
@@ -44,15 +46,64 @@ _STOP_OPS = {
 _STOP_WORDS = {"return", "case", "new", "delete"}
 
 
-def _tokens(stripped):
-    """(kind, text, line, start, end) for every token of the stripped source."""
+def _string_spans(source):
+    """(start, end) of every string literal, found the way stripper.py does.
+
+    The stripper turns strings and comments alike into spaces, so the stripped
+    text cannot tell them apart; this walks the source through the same
+    states (line comment, block comment, string with backslash escapes).
+    """
+    spans = []
+    index = 0
+    length = len(source)
+    while index < length:
+        pair = source[index:index + 2]
+        if pair == "//":
+            end = source.find("\n", index)
+            index = length if end < 0 else end
+            continue
+        if pair == "/*":
+            end = source.find("*/", index + 2)
+            index = length if end < 0 else end + 2
+            continue
+        if source[index] == '"':
+            cursor = index + 1
+            escaped = False
+            while cursor < length:
+                char = source[cursor]
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    break
+                cursor += 1
+            spans.append((index, min(cursor + 1, length)))
+            index = cursor + 1
+            continue
+        index += 1
+    return spans
+
+
+def _tokens(source, stripped):
+    """(kind, text, line, start, end) for every token, string literals included.
+
+    The stripper keeps every offset and line, so a string found in the source
+    sits where the stripped text holds its blanks.
+    """
+    found = [
+        (match.start(), match.end(), match.lastgroup, match.group())
+        for match in _TOKEN_RE.finditer(stripped)
+    ]
+    found.extend((start, end, "string", '"') for start, end in _string_spans(source))
+    found.sort()
     tokens = []
     line = 1
     pos = 0
-    for match in _TOKEN_RE.finditer(stripped):
-        line += stripped.count("\n", pos, match.start())
-        pos = match.start()
-        tokens.append((match.lastgroup, match.group(), line, match.start(), match.end()))
+    for start, end, kind, text in found:
+        line += stripped.count("\n", pos, start)
+        pos = start
+        tokens.append((kind, text, line, start, end))
     return tokens
 
 
@@ -145,6 +196,47 @@ def _span(tokens, partner, index):
     return first, last
 
 
+_BOOLEAN_OPS = {"==", "!=", "<", ">", "<=", ">=", "&&", "||"}
+
+
+def _after_cast_operand(tokens, partner, cursor):
+    """Index of the token after the first operand of a cast, signs included.
+
+    A call's arguments or an index that follow a name are skipped by the
+    caller anyway, so the operand ends with its literal, name or parentheses.
+    """
+    while cursor < len(tokens) and tokens[cursor][1] in ("-", "+", "!", "~"):
+        cursor += 1
+    if cursor < len(tokens) and tokens[cursor][1] == "(":
+        closer = partner.get(cursor)
+        return len(tokens) if closer is None else closer + 1
+    return cursor + 1
+
+
+def _group_value_start(tokens, partner, opener, closer):
+    """First token of a grouping parenthesis whose floats reach its value.
+
+    Behind a `?` only the two results do; a comparison or logical operator
+    without one makes the group a condition, whose floats never reach it.
+    """
+    condition = False
+    cursor = opener + 1
+    while cursor < closer:
+        text = tokens[cursor][1]
+        if text == "?":
+            return cursor + 1
+        if text in _BOOLEAN_OPS:
+            condition = True
+        if text in ("(", "["):
+            inner = partner.get(cursor)
+            if inner is None:
+                return None
+            cursor = inner + 1
+            continue
+        cursor += 1
+    return None if condition else opener + 1
+
+
 def _float_literal_at_level(tokens, partner, first, last):
     cursor = first
     while cursor <= last:
@@ -157,13 +249,29 @@ def _float_literal_at_level(tokens, partner, first, last):
                 return None
             cursor = closer + 1
             continue
+        if text == "(":
+            closer = partner.get(cursor)
+            if closer is None or closer > last:
+                # The expression starts inside this parenthesis: read on.
+                cursor += 1
+                continue
+            if closer == cursor + 2 and tokens[cursor + 1][1] == "int":
+                # `(int)x`: the cast's operand is an int, whatever it holds.
+                cursor = _after_cast_operand(tokens, partner, closer + 1)
+                continue
+            start = _group_value_start(tokens, partner, cursor, closer)
+            if start is not None:
+                literal = _float_literal_at_level(tokens, partner, start, closer - 1)
+                if literal is not None:
+                    return literal
+            cursor = closer + 1
+            continue
         cursor += 1
     return None
 
 
-def _holds_string_literal(source, start, end):
-    """The stripper blanks strings in place, so offsets match the source."""
-    return '"' in source[start:end]
+def _holds_string_literal(tokens, first, last):
+    return any(tokens[cursor][0] == "string" for cursor in range(first, last + 1))
 
 
 ES_MODULO_FLOAT_CONTEXT_MESSAGE = (
@@ -178,22 +286,30 @@ ES_MODULO_FLOAT_CONTEXT_MESSAGE = (
 def check_es_modulo_float_context(source, stripped_source, rel_path):
     if "%" not in stripped_source:
         return []
-    tokens = _tokens(stripped_source)
-    partner = _matching(tokens)
     dead = dead_lines(stripped_source)
+    branches = line_branches(stripped_source)
+    # Tokens of lines that never compile take no part in any expression.
+    live = [t for t in _tokens(source, stripped_source) if t[2] not in dead]
+    # One view of the file per set of blocks a `%` sits in: the live tokens
+    # that can compile in the same build as that `%`.
+    views = {}
     errors = []
     seen_lines = set()
-    for index, token in enumerate(tokens):
+    for token in live:
         if token[1] != "%":
             continue
         line = token[2]
-        if line in dead:
-            continue
-        first, last = _span(tokens, partner, index)
+        where = branches[line]
+        if where not in views:
+            tokens = [t for t in live if compatible(where, branches[t[2]])]
+            index_of = {t[3]: position for position, t in enumerate(tokens)}
+            views[where] = (tokens, _matching(tokens), index_of)
+        tokens, partner, index_of = views[where]
+        first, last = _span(tokens, partner, index_of[token[3]])
         literal = _float_literal_at_level(tokens, partner, first, last)
         if literal is None or line in seen_lines:
             continue
-        if _holds_string_literal(source, tokens[first][3], tokens[last][4]):
+        if _holds_string_literal(tokens, first, last):
             continue
         seen_lines.add(line)
         errors.append(

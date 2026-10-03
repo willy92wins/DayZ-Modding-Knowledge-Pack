@@ -21,4 +21,15 @@ class FX_Modifiers
     void Read(notnull out array<EntityAI> items)
     {
     }
+
+    // A modifier at the start of a continued parameter line, later
+    // declarators and foreach variables with ordinary names.
+    void Split(int a, int b,
+        out vector pos, out int index)
+    {
+        bool first = a < b, outside = false;
+        foreach (int i, vector localPos : m_Points)
+        {
+        }
+    }
 }

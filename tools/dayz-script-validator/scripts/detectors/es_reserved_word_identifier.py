@@ -44,18 +44,56 @@ _NOT_A_TYPE = {
     "continue", "default",
 }
 
-# `Type <word>` followed by what can only follow a declared name: `;`, `=`
-# (not `==`), `[`, `,` or `)`. The leading `(` / `,` covers parameters; the
-# leading `;`, `{`, `}` or start of line covers locals and members.
-_DECL_RE = re.compile(
-    r"(?:^|[;{}(,])[ \t]*"
+_MODIFIERS = (
     r"(?:(?:ref|autoptr|const|static|private|protected|owned|notnull|out|"
     r"inout|local|reference)[ \t]+)*"
-    r"(?P<type>[A-Za-z_]\w*)(?:[ \t]*<[^;{}()\n]*?>)?(?:[ \t]*\[[^\]\n]*\])?"
-    r"[ \t]+(?P<name>" + "|".join(RESERVED_WORDS) + r")\b"
-    r"[ \t]*(?=;|=(?!=)|\[|,|\))",
+)
+_TYPE = r"(?P<type>[A-Za-z_]\w*)(?:[ \t]*<[^;{}()\n]*?>)?(?:[ \t]*\[[^\]\n]*\])?"
+_WORD = r"(?P<name>" + "|".join(RESERVED_WORDS) + r")\b"
+
+# `Type <word>` followed by what can only follow a declared name: `;`, `=`
+# (not `==`), `[`, `,`, `)`, or the `:` of a foreach. The leading `(` / `,`
+# covers parameters and foreach variables; the leading `;`, `{`, `}` or start
+# of line covers locals and members. The name may sit on the next line.
+_DECL_RE = re.compile(
+    r"(?:^|[;{}(,])[ \t]*" + _MODIFIERS + _TYPE
+    + r"\s+" + _WORD + r"\s*(?=;|=(?!=)|\[|,|\)|:(?!:))",
     re.M,
 )
+
+# A later declarator of a declaration statement, `int a = 1, out = 0;`: a
+# statement that opens with `Type name` and, outside every bracket, a comma
+# followed by the word and then `;`, `=`, `[` or `,`.
+_FIRST_DECL_RE = re.compile(
+    r"(?:^|[;{}(])[ \t]*" + _MODIFIERS + _TYPE
+    + r"\s+[A-Za-z_]\w*\s*(?=[=,;\[])",
+    re.M,
+)
+_LATER_NAME_RE = re.compile(r",\s*" + _WORD + r"\s*(?=;|=(?!=)|\[|,)")
+
+
+def _later_declarators(stripped):
+    """(offset, word) of each reserved word named after a comma of a declaration."""
+    for match in _FIRST_DECL_RE.finditer(stripped):
+        if match.group("type") in _NOT_A_TYPE:
+            continue
+        depth = 0
+        cursor = match.end()
+        while cursor < len(stripped):
+            char = stripped[cursor]
+            if char in "([{":
+                depth += 1
+            elif char in ")]}":
+                depth -= 1
+                if depth < 0:
+                    break
+            elif char == ";" and depth == 0:
+                break
+            elif char == "," and depth == 0:
+                later = _LATER_NAME_RE.match(stripped, cursor)
+                if later:
+                    yield later.start("name"), later.group("name")
+            cursor += 1
 
 ES_RESERVED_WORD_IDENTIFIER_MESSAGE = (
     "[FAIL] {rel_path} line {line}: '{name}' is an Enforce keyword and cannot "
@@ -66,15 +104,20 @@ ES_RESERVED_WORD_IDENTIFIER_MESSAGE = (
 )
 
 
+def _declared_words(stripped_source):
+    """(offset, word) of every reserved word in a declared-name position."""
+    for match in _DECL_RE.finditer(stripped_source):
+        if match.group("type") not in _NOT_A_TYPE:
+            yield match.start("name"), match.group("name")
+    yield from _later_declarators(stripped_source)
+
+
 def check_es_reserved_word_identifier(stripped_source, rel_path):
     errors = []
     seen = set()
     dead = None
-    for match in _DECL_RE.finditer(stripped_source):
-        if match.group("type") in _NOT_A_TYPE:
-            continue
-        line = stripped_source.count("\n", 0, match.start("name")) + 1
-        name = match.group("name")
+    for offset, name in sorted(_declared_words(stripped_source)):
+        line = stripped_source.count("\n", 0, offset) + 1
         if dead is None:
             dead = dead_lines(stripped_source)
         if (line, name) in seen or line in dead:

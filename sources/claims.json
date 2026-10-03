@@ -1631,7 +1631,7 @@
       "claim_id": "CLAIM-ENFORCE-MODULO-FLOAT-CONTEXT",
       "evidence_locator": "In game. DayZDiag 1.29 (defines DAYZ_1_29), 2026-09-28 03:43, LFPowerGrid client script log: lfpg_probe3d.c,255: Unknown operator '%', then Can't compile \"Mission\" script module! (log re-read on 2026-10-03; the probe source is deleted: its author filed the expression as `((g % 5) - 2) * 7.0` in pipeline inbox fb-20260928-032137-7ce1, the correction of fb-20260928-014950-7b9e, which had replaced it with `g - (g / 5) * 5`). DayZ 1.30 Exp, 2026-09-24: `float ox = (n % 4) * 0.7 - 1.05;` failed with the same error and compiled once the `%` went into an int local first (vault lessons-learned, revision of 2026-09-24; that log is deleted). Vanilla 1.29.0.163451 holds 69 `%` operators and 1.30.164014 Exp 94, none in an expression with a float literal. Offline: fixtures under tests/fixtures/modulo_float_context; nothing on either vanilla tree.",
       "license": "MIT",
-      "line_end": 30,
+      "line_end": 32,
       "line_start": 9,
       "observed_at": "2026-09-28",
       "promotion_artifact_id": "knowledge",
