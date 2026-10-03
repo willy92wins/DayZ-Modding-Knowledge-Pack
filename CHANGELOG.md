@@ -199,6 +199,33 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `rip-import.md` §3.5 and `vehicle-structural-parity.md`; `dayz-clothing`
   `autofit-from-official-rig.md`), and item 1 describes the 1.9.0 `ERR_WINDING_INVERTED` message
   next to the 1.8.0 one.
+- py3d wheel pinned at 1.10.1 (`tools/py3d/rollout/wheel-manifest.json`):
+  `py3d_dayz-1.10.1-py3-none-any.whl`, SHA-256
+  `c9f000a51e6aca83104a8f021ef5e3eefe8d7f0a5b053623544b49dbdd5d1785`, built by
+  `rollout/build-wheel.ps1 -UpdateManifest` from the source on main at `ea7b396` (`tools/py3d` as
+  #78 left it), at the owner's request (2026-10-03). Since the 1.9.0 pin it carries
+  `ERR_COMPONENT_COVERAGE` (#72, 1.10.0) and the part-by-part normals step of the two winding
+  messages (#78, 1.10.1), whose entries (#72's above, #78's under Fixed) say no wheel carried them.
+  The toolchain was checked first: the same script rebuilt the 1.9.0 pin (`33d8b5ba…`) byte for byte
+  from the commit that sealed it (`4626f4b`), with Python 3.14.3 and setuptools 83.0.0; then 1.10.1
+  built six times to one hash, two of them in the seal. The wheel's `py3d/` files and `LICENSE` are
+  byte-identical to the source, `verify-wheel-restock.ps1` passed against it on synthetic skill
+  roots, and the 7 CANON tests passed against upstream `7acd58b` (py3d suite with the upstream
+  clone: 398 passed, 4 skipped). No installed skill tree vendors the wheel, so nothing was
+  restocked; a dry run of the applicator on temporary copies of the build machine's skill roots
+  planned 46 replacements, all in trees this rollout does not manage, and wrote nothing. The 1.9.0
+  wheel is kept as the rollback, and the user site-packages install follows the merge. The skill
+  notes that called 1.9.0 the pinned wheel, or said the pinned wheel's winding messages close with
+  the per-corner normals step, now give 1.9.0 as the pin from 2026-10-02 to 2026-10-03 and name the
+  1.10.1 pin (`dayz-p3d-audit` item 1 of "The three py3d gates", killer #8, "Absolute winding check"
+  rule 5 and `references/killers-detail.md` §8; `dayz-doors`
+  `references/lods-and-object-builder.md`, the Expert lever paragraph and the checklist line;
+  `dayz-clothing` `autofit-from-official-rig.md`), and `TOOLS.md`, `README.md` and
+  `GETTING-STARTED.md` give the current version, 1.10.1, and the pin, where they said 1.5.0, as do
+  `dayz-model-pipeline` `references/py3d-direct-generation.md` (it said 1.7.0) and the docstring of
+  `dayz-p3d-inspector` `scripts/p3d_inspector_extract.py` (it named the 1.5.0 wheel).
+  `dayz-animation-pipeline` `SKILL.md` and `tools/dayz-3d-viewer/README.md`, which gave 1.6.0 as the
+  pack fork's version, now give it as the minimum they need.
 
 ### Removed
 
@@ -219,6 +246,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-vehicles`: `references/gauge-needles.md` (twice) and
+  `references/vehicle-config-and-modelcfg.md` named an unpublished skill as the tool that read the
+  vanilla cars' animation classes from their ODOL, and `promotions/adjudications.json` named it in
+  the reason of the `skill/ai-3d-to-dayz` adjudication. The three passages now name the capability,
+  the ODOL reader of the external ODOL->MLOD converter, in the phrase the pack already uses for that
+  converter. Where an installation sets the phrase alias for it (`packctl/promotion.py`,
+  `promotions/local-targets.example.json`), a promotion writes the converter's local name in its
+  place, so that installed copy still points at the tool; without the alias the public wording
+  ships as it is. The adjudication's reason says "external converter -> the converter's local
+  name"; its key and digest are unchanged, and `promote` uses only those (of a reason it checks that
+  there is one). The measurements and what they cite are unchanged.
 - `dayz-physics-engine` engine truth 2 said that a model with no View Geometry LOD gets no action.
   Read in the 1.29 source (not measured): at a camera pitch of −45° or lower, targeting also takes
   the objects of a 30°, 3 m cone and scores them by their distance to the cursor ray, with no hit on

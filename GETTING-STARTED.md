@@ -60,7 +60,8 @@ pip install -e tools/py3d
 python -c "import py3d; assert py3d.IS_DAYZ_FORK; print(py3d.__version__)"
 ```
 
-Current fork version is **1.5.0**. Details and limits: [`TOOLS.md`](TOOLS.md).
+Current fork version is **1.10.1**, the version the pinned wheel carries
+(`tools/py3d/rollout/wheel-manifest.json`). Details and limits: [`TOOLS.md`](TOOLS.md).
 
 ### Give the pack to your agent
 

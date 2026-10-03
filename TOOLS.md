@@ -108,7 +108,11 @@ this one:
 python -c "import py3d; assert py3d.IS_DAYZ_FORK; print(py3d.__version__)"
 ```
 
-Current version **1.5.0**. Upstream for this fork:
+Current version **1.10.1**. The pinned wheel is built from that source:
+`py3d_dayz-1.10.1-py3-none-any.whl`, SHA-256
+`c9f000a51e6aca83104a8f021ef5e3eefe8d7f0a5b053623544b49dbdd5d1785`
+(`tools/py3d/rollout/wheel-manifest.json`; the wheel itself is not in the pack).
+Upstream for this fork:
 [willy92wins/py3d-dayz](https://github.com/willy92wins/py3d-dayz). Known
 limitations are listed in `tools/py3d/KNOWN-ISSUES.md` — read it before
 assuming a bug is yours. **Licence:** MIT, `tools/py3d/LICENSE` (© 2017 Felix
