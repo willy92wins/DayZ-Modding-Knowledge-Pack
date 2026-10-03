@@ -164,7 +164,11 @@ changed, and `@DayZ_MCP` as additional dependency:
    (→ `!Workshop`); Steam junctions ARE NOT valid.** Two layers, confusing them costs a session:
    - Public boundary `_valid_public_mod` (`DayZ_MCP_dev\tools\dayz_mcp\dayz_test_tool.py:75-85`)
      rejects `:`, `\` and `/` across **all** projects → absolute workshop path never passes
-     through tool. That is by design, NOT a gap in your project's policy.
+     through tool. That is by design, NOT a gap in your project's policy. *(Updated 2026-10-03: the
+     boundary now also accepts an absolute path inside the selected project's `mod_roots`;
+     `_valid_public_mod` calls `dayz_test_request._valid_mod_entry` (`dayz_test_tool.py:269-272`,
+     `dayz_test_request.py:222-233`, DayZ_MCP_dev `506de5d`). A workshop path lies outside them and
+     still fails, with `bad_mod`.)*
    - Subscribed mods exposed by Steam in `!Workshop` (`@CF`, `@Dabs Framework`,
      `@VPPAdminTools`) are **Junctions** to `steamapps\workshop\content\221100\<id>`, and path
      identity guard rejects them → `dayz_test_failed`, which is the generic catch-all of
@@ -180,6 +184,23 @@ changed, and `@DayZ_MCP` as additional dependency:
    Measured 2026-08-02 with `preflight=true` (pure dry-check: `dayz_test_worker.py:533-534` returns
    before build and launching anything): without mods OK · `@DayZ_MCP` OK · `@A6_SR2M` OK · `@CF` FAIL ·
    `base_mods=["@CF"]` FAIL.
+
+   **When the mod under test does not compile, test a probe copy of it** (added 2026-10-03,
+   measured 2026-10-02, dayz-mcp run 606a5dbb) [EXACT][CLAIM-MCPV-PROBE-COPY], for example when
+   its build packed another session's untracked test scripts:
+   - copy the deployed PBO entry for entry without those entries (every other entry byte-identical,
+     the same header properties, the SHA-1 trailer recomputed) into a probe folder of its own under
+     `P:\Mods`;
+   - host it in another approved project whose `default_base_mods` carry what the mod needs (CF and
+     Dabs there): an absolute workshop path in `base_mods` fails with `bad_mod`, since each entry
+     must be a folder name or an absolute path inside the project's `mod_roots`
+     (`dayz_test_tool.py:399`, `dayz_test_request.py:222-233`);
+   - writing under `P:\Mods` changes what every later run can load: ask the owner in chat first (in
+     that session the agent harness's auto-mode permission check blocked the write until the owner
+     agreed), and move the probe out of `P:\Mods` when done.
+
+   In that run the copy (641 of the 645 entries) compiled the mission module, and its models were
+   the deployed ones byte for byte.
 
    ⚠ **Before blaming the bridge for `version_blocked`/`last_poll_age_s=null`**: check that
    `key` of `dayz_mcp.json` in project profiles is the SAME as
@@ -297,10 +318,51 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   or holes (winding). Hole/missing-face from one angle and solid from opposite = inverted
   winding.
 - **Collision**: `scene_raycast(from_pos, to)` (default `method="rvproxy"`: LOD intersection in the
-  `intersect` mode) aimed at object from ≥2 angles (for
-  buildings: multi-point — walls, corners, floor). PASS = rays that should hit yield
-  `hit=true` with `object_type`/`object_class` of object. No hit where it should hit = ViewGeo/FireGeo
-  missing or improperly resolved (LODs).
+  `intersect` mode) aimed at the object in each of `geom`, `view` and `fire`: the battery below for a
+  small object or an item, multi-point for a building (walls, corners, floor). PASS = rays that
+  should hit yield `hit=true` with `object_type`/`object_class` of object. No hit where it should
+  hit = ViewGeo/FireGeo missing or improperly resolved (LODs). *(Changed 2026-10-03: this bullet
+  asked for rays "from ≥2 angles", which do not tell the causes below apart.)*
+- **Ray battery and its controls** (added 2026-10-03; the battery of `dayz-p3d-audit` "Absolute
+  winding check" rule 6, fired on DayZDiag 1.29.163709 on 2026-10-02, dayz-mcp run 606a5dbb)
+  [EXACT][CLAIM-MCPV-COLLISION-BATTERY]: nine rays per mode.
+  - One vertical ray down the object's axis. On a solid box whose collision spans its own axis,
+    like the measured kit box, a LOD recentred by a missing `autocenter=0` (`dayz-p3d-audit`
+    killer #3) still sits on that ray, so a miss there is not the recentring. On an object with gaps
+    or several separate parts the shifted collision can leave the axis: check that the ray crosses
+    the collider both where it is modelled and where the recentring would put it.
+  - Four horizontal rays through the middle, one from each side, and two more heights on one side.
+  - Two rays from inside the object outward: a sound object answers `entry 0, exit 1` at distance 0.
+
+  Fire the same battery, in the same run, at two controls: an object from the same PBO and load
+  path, which separates the model from the build and the loading, and a vanilla object of the same
+  physics layer (`physLayer`; `WoodenCrate` sets none and takes `item_small` from `Inventory_Base`,
+  `DZ/data/config.cpp:3152`; for a static, the `Land_Container_1Aoh` control under WHAT IT DOES NOT
+  COVER). In that run the LFPowerGrid kit box took 0 of 27, while the same PBO's logic-gate kit and
+  `WoodenCrate` took 21 of 21 each (the battery without the two extra heights). The battery locates
+  a miss; it does not name the cause. When the suspect is the winding, only a pair that changes the
+  winding alone decides: the kit's paired run in rule 6 did; the Rule 12 pair, which also turned the
+  Visual LOD and the normals, supports the cause without deciding it.
+- **Picking an item up proves nothing about its collision** (added 2026-10-03; vanilla 1.29 and
+  bridge source read, the pickup seen in the same run) [EXACT][CLAIM-MCPV-PICKUP-NO-RAY]. Vanilla
+  targeting casts `RaycastRVProxy` from the camera, 5 m, with the default `ObjIntersectView`
+  (`4_world/classes/useractionscomponent/actiontargets.c:211-219`, `3_game/global/dayzphysics.c:88`),
+  and at a camera pitch of −45° or lower it also takes the objects of a 30°, 3 m cone and scores them
+  by their distance to that ray, with no hit on them needed (`actiontargets.c:286-287`, `:444-445`,
+  `:730-735`). The take action's target condition then checks only the distance to the object's
+  position: `ActionTakeItemToHands` uses `CCTObject`
+  (`4_world/classes/useractionscomponent/actions/interact/actiontakeitemtohands.c:13`,
+  `4_world/classes/useractionscomponent/targetconditionscomponents/cctobject.c:10-22`), and its other
+  conditions (takeable, not being placed or deleted, attachment state, room in the hands;
+  `actiontakeitemtohands.c:31-41`)
+  do not look at collision either. `action_use`
+  builds its world target from the nearest object of the class, with `componentIndex -1` and the
+  object's position as the cursor hit, and casts no ray (`MCPClientBridge.c:3769`, `:3783`,
+  `:3861`). In that run `action_use(ActionTakeItemToHands)` put the kit box in the player's hands
+  while all 27 rays of its battery missed it. Read collision from `scene_raycast` against a
+  same-layer control. `intersect="view"` is the cursor's mode, but the bridge casts a 0.05 m sphere
+  when the radius is 0 (`MCPBridge.c:2496`, `:2528-2531`), where the vanilla ray has none. The cone
+  path is read in the source, not measured: no MCP verb sets the camera pitch.
 - **Physics and player collision** (added 2026-10-02, measured on DayZDiag 1.29.163709)
   [EXACT][CLAIM-MCPV-COLLISION-PROBES]: `scene_raycast(method="bullet", radius=0)` casts
   `DayZPhysics.RayCastBullet` in the server's physics world, restricted to the layers BUILDING,
@@ -405,6 +467,9 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   meshes tend to fail.
 - `telemetry_read object_at` → `attachment_count`, `health01`. Telemetry PASS = found + healthy
   stats.
+- Collision: as for a static object, the ray battery with its two controls. Picking the item up, by
+  hand or with `action_use`, does not test it (static-object playbook, "Picking an item up proves
+  nothing about its collision").
 
 ### Vehicle (placement/structure only)
 - Load + visible + collision + telemetry. `vehicle_enter(pos)` → `seated=true` confirms
@@ -511,6 +576,9 @@ Key takeaways:
   nor use it as a threshold (`dot >= 0.9` is never reached); a face normal comes from `method="bullet"`.
   *(Corrected 2026-10-02: this line said to use it only as direction (sign/axis).)* A mod that filters
   `!hit.entry` discards natural ground (hologram that never snaps to ground: LFSecure I-1).
+  *(Qualified 2026-10-03: a ray that starts inside an object also reads `entry=0`: the inside rays of
+  run 606a5dbb read `entry 0, exit 1` at distance 0 on the controls. Tell terrain by its empty
+  `object_type`, not by `entry=0` alone; `entry=1` holds for hits from outside.)*
 - **Collision probe with vanilla CONTROL before blaming the mesh** (measured 2026-09-07, LFSecure L3 -> L4):
   if `scene_raycast` does not hit a mod static, repeat the SAME ray (view, fire, and geom; from outside AND
   from inside) against a vanilla static spawned next to it (`world_spawn(type="Land_Container_1Aoh")`: flat
@@ -519,6 +587,9 @@ Key takeaways:
   ODOL preserves them, engine does not see them); control HIT + mod HIT only from inside = reversed faces only in
   visuals. With the source winding restored (L4) the same ray gave the front face at +0.079 m and a wall
   of 0.42 m. The correction rule lives in `dayz-p3d-audit` (0% agreement = discrepancy, not direction).
+  *(Qualified 2026-10-03: the two readings above name the likely cause, not a measured one; only a pair
+  that changes the winding alone decides it, as "Ray battery and its controls" in the static-object
+  playbook says.)*
 
 ## REPORTING
 
@@ -683,8 +754,15 @@ telemetry). To condition for real (authoritative wheels+fluids) without touching
 `vehicle_drive {throttle:0.01, duration:0.5}` — its PREP phase executes `car.OnDebugSpawn()`
 SERVER-side (MCPBridge.c:2104-2112) and the 0.5 s micro-drive is negligible. NOTE:
 `vehicle_drive` requires the SERVER-side seat (gives `not_seated` with owner-client seat).
-`vehicle_prepare_fixture` does NOT work outside the Mercedes (`MERCEDES_AMGLF` hardcoded in
-MCPBridge.c:835 and loopback.py:113; open issue to generalize it). Raw `/enqueue`
+`vehicle_prepare_fixture` takes any `CarScript` classname: an object of another class fails with
+`fixture_not_vehicle` (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:1214-1280`).
+[EXACT][CLAIM-MCPV-PREPARE-FIXTURE-ANY-CARSCRIPT] Between 2026-08-18 and 2026-10-01 it returned
+`vehicle_fixture_ready=1` with `wheel_count` 4 on 15 other `CarScript` types, among them `SUB_BRZ`,
+`LFQuad2`, `Arma2Quad`, `Hatchback_02` and the vanilla `CivilianSedan`; three test variants of one
+quad returned `fixture_not_ready`. *(Corrected 2026-10-03: this said "`vehicle_prepare_fixture` does
+NOT work outside the Mercedes (`MERCEDES_AMGLF` hardcoded in MCPBridge.c:835 and loopback.py:113;
+open issue to generalize it)". The loopback copy of 2026-07-25 still had that check; the tools'
+2026-08-16 release does not.)* Raw `/enqueue`
 requires `{identity, lease_token}` in body in addition to `?key=` (identity/token come from
 `session_acquire`). gear idx of `vehicle_telemetry`: 0=R, 1=N, 2=1st ... 7=6th.
 Verified in-game SUB_BRZ s37 (wheel_count 0->4, fuel 1.0, complete kit, run B3 to 6th).
@@ -996,21 +1074,37 @@ Validated pattern:
    between marks. Cross this pattern with `dayz-test-ingame`.
 6. [EXACT] Archive the case directory on completion — always, not only between runs — and never execute a command that already has its `res_<seq>.json`. Measured failure (2026-09-27, LFPowerGrid): a driver whose sequence reset to 1 on a stale `cmd_1.json` re-ran the bank-mounting command every ~1.5 s; half an hour later the world held thousands of duplicate objects and the user aborted the next session for performance. The log lines dismissed as harness noise were the signal: a repeated `OP seq=1` means the command IS running again, and duplicated live device ids mean two entities share one id. Before filing a repeated or `ERR` line as noise, write in one sentence what it would mean if true; if that sentence describes damage, it is signal. (measured in game, DayZ 1.30.164014 Exp)
 
-## Lease preflight, capped telemetry, and zombie commands (SP-152, added 2026-08-31)
+## Lease preflight, object telemetry, and zombie commands (SP-152, added 2026-08-31; corrected 2026-10-03)
 
-- On the frozen platform, `telemetry_read(mode="object_at")` only accepts
-  `type="MERCEDES_AMGLF"`: the limit is in the Python loopback, even though the Enforce bridge is
-  generic. For another classname, plan diagnosis with server logs and user
-  tests; do not promise object telemetry.
+- `telemetry_read(mode="object_at")` reads any classname: the bridge matches it by exact
+  `GetType()` inside the radius (`DayZ_MCP_dev/addon/scripts/5_Mission/MCPBridge.c:3007-3051`), and
+  the loopback checks `type` only for a non-empty string (`DayZ_MCP_dev/tools/dayz_mcp/loopback.py:1349-1358`).
+  [EXACT][CLAIM-MCPV-OBJECT-AT-ANY-TYPE] On 2026-10-02 (DayZDiag 1.29.163709, run `1c289781`) it
+  answered `telemetry.found=1` with `pos`, `orientation`, `health01` and `declared_slots` (the reply's
+  top-level `found` stays 0) for three types:
+  `KP_CharAB_V1` (`health01` 0), the vanilla `ZmbM_SoldierNormal` (0) and `KP_CharAB_V3` (0.7525).
+  `inventory_attach` returned the same telemetry block for `SurvivorM_Francis`. It reads only the
+  fields the bridge fills, not a mod's script members or sync variables.
+  *(Corrected 2026-10-03: this bullet said "On the frozen platform, `telemetry_read(mode="object_at")`
+  only accepts `type="MERCEDES_AMGLF"`: the limit is in the Python loopback, even though the Enforce
+  bridge is generic. For another classname, plan diagnosis with server logs and user tests; do not
+  promise object telemetry." The oldest copy of the tools on disk (2026-07-25) has the
+  `type != "MERCEDES_AMGLF"` check only in the loopback's `vehicle_prepare_fixture` branch, whose
+  arguments also carry `mode="object_at"`, and its `telemetry_read` took any non-empty `type`; which
+  verb returned the `bad_args` behind SP-152 on 2026-08-02 is not recorded. The tools' 2026-08-16
+  release has no such check.)*
 - `query_*`, telemetry, raycast, and captures cross the bridge and require
   `session_acquire`. Only `dayz_test_run`/`dayz_test_stop` manage their own lease; do not extrapolate
   that management to other verbs. (rev. 2026-09-06: "require `session_acquire`" includes ADOPTING the
   run that launch left `RUNNING_IDLE`; the grant of `session_acquire_wait` does so and declares it in
   `adopted_run` — §COMPOSITION, "Bridge startup sequence".)
 - A `world_spawn` timeout leaves a zombie command: it may execute after losing the
-  `object_id`. Before retrying, reconcile the effect with supported telemetry for that type;
-  if the `object_at` cap prevents it, use logs plus user inspection. Do not blindly duplicate
-  spawn.
+  `object_id`. Before retrying, reconcile the effect with `telemetry_read(mode="object_at")` for that
+  type at the spawn position: `telemetry.found` 0 means none of that type is inside the radius when the
+  read runs (the zombie command can still run later), and two or more of that type inside the radius
+  fail with `ambiguous_fixture` (`MCPBridge.c:3031-3045`; not exercised on a zombie spawn).
+  Do not blindly duplicate spawn. *(Corrected 2026-10-03: this said "if the `object_at` cap prevents
+  it, use logs plus user inspection"; there is no such cap, first bullet.)*
 
 ## `inventory_give`: one call does not equal one unit (SP-300, added 2026-08-31)
 
