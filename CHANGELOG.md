@@ -7,6 +7,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-animation-pipeline`: the frame a vanilla ikpose keys its helpers in, and what to do when a
+  held item points the wrong way (from CocaLab). `player-skeleton.md` (claim
+  `CLAIM-ANIM-IKPOSE-OBJECT-FRAME`): `LeftHandIKTarget` is keyed in the held object's frame, the
+  frame of `RightHand_Dummy`. Measured offline on five vanilla two-handed ikposes extracted with
+  DayZATool 1.3: the right wrist in that frame (`-Rᵀt` of the `RightHand_Dummy` key) mirrors
+  `LeftHandIKTarget` in the four symmetric grips, 0.47 to 7.31 cm off on the worst axis, and the
+  truck battery and radiator rule out the opposite quaternion reading. `RightHandOrigin`'s frame is
+  not known (in game, counter-rotating it with the object broke the right arm) and
+  `LeftHandOrigin`'s was not tested; neither is in the bind-pose parent table. In that frame SEAnim
+  Z is the object's vertical and SEAnim Y its depth, signs not fixed: read against the LOD0 of the
+  vanilla pot and truck battery, and in game a 90-degree turn about SEAnim Y tipped a tray over.
+  `item-ik-and-hide.md` (claim `CLAIM-ANIM-ITEM-TURN-MODEL`, confirmed in game 2026-09-27): when a
+  vanilla ikpose gives a natural pose and only the item's direction is wrong, turn the model about
+  its vertical, origin kept, rather than edit the ikpose; CocaLab's tray, turned 90 degrees, holds
+  with the truck battery's ikpose and the pot's animation set. SKILL.md's routing rows name both.
 - `dayz-mcp-verify` static-object playbook and tool table: two probes from the killer #2 run
   (2026-10-02, DayZDiag 1.29.163709). `scene_raycast(method="bullet")` queries the server's physics
   world on a fixed layer mask (`DayZPhysics.RayCastBullet`), next to the LOD rays; a hit counts only
@@ -133,6 +148,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   the shutdown's deletions cannot unregister entries; both were read in the code and not reproduced
   in game. The entry-point audit gains the worked example, the invariant's entry points and a search
   for proximity used as identity.
+- `dayz-model-pipeline` `references/lods-and-geometry.md`: "Collision of a large building with an
+  interior", from a rock-shaped building generated from Blender with a hangar, an attic and a lift
+  inside (SecretRock RocaHeli R7.1-R7.3, 2026-10-01 to 2026-10-03; ledger SP-453, SP-457 and
+  SP-458). An MLOD stores each named selection as one byte per point and per face of its LOD
+  (py3d `Selection.write`), so collision pieces cost about the square of their count: 478 MB with
+  1,150 pieces, 55-75 MB with 827-997 pieces of 6 points. Then: no room-membership test on open
+  meshes; collision prisms that follow the visible face (geometric normal, neighbours by
+  position, a room test with horizontal rays, every exterior triangle probed at 7 points), with
+  the scope of each figure; the visual budget split into two models; and a `binarize` limit that
+  prints nothing. With too many pieces in its collision LODs, `binarize.exe` wrote no ODOL and no
+  capacity line (`OTHER_FAIL`). Over 9 variants, faces, named selections × points and selection
+  bytes separate the passes from the failures equally, the piece and point counts alone do not,
+  and the variable is not isolated; a truncated MLOD gives the same verdict. The fix, a second
+  collision-only model with the same transform, took rays in game (0 holes in Geometry, Fire and
+  View). Also: the pre-binarize check in `config-and-packing.md`, a pointer in `SKILL.md`'s Quick
+  Reference and at `ComponentXX`, this cause of `OTHER_FAIL` with its two checks in `dayz-vehicles`
+  `references/binarize-vertex-budget.md` and in `dayz-p3d-audit` SP-359, and a `dayz-p3d-audit`
+  section on source meshes (zero-area faces and orphan points; faces against their normals read
+  with Check A, not turned to them; `bmesh.ops.convex_hull` hulls recomputed with Qhull).
 
 ### Changed
 
@@ -310,6 +344,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   "Gate ordering" paragraph says AddonBuilder's own exit code is 0 on a failed build. Not
   measured: what an empty material does in game. The replaced sentences are quoted in dated
   notes.
+- `dayz-animation-pipeline` `scripts/seanim_writer.py` keeps SEAnim bone modifiers. `read_seanim`
+  skipped them and `write_seanim` always wrote a count of 0, so a DayZATool extract read and
+  written back lost them: `p_1hd_erc_idle_low` (65 bones, ABSOLUTE header) lost its 60 RELATIVE
+  modifiers, and editing one track of a vanilla clip turned every bone ABSOLUTE. `read_seanim` now
+  returns each bone's `modifier` (None when it has none) and refuses a modifier index out of range
+  or repeated; `write_seanim` writes one entry per bone that carries one, in bone order, two bytes
+  wide past 255 bones (four past 65,535), and refuses a value that is not a byte. That extract and
+  four clips spliced from it read and write back byte for byte; bones without `modifier` write
+  what they wrote before. Regression test `tests/test_seanim_writer.py`: fixtures built byte by
+  byte from the SEAnim layout, 22 cases, all failing on the previous script; each mutant the
+  review found surviving (modifier 0 dropped on read or write, the index width off by one at 255
+  or 65,535 bones, only 0 to 3 accepted, 255 modifiers refused, `False` accepted, a repeated index
+  of the same type accepted, a modifier equal to the header's type dropped) fails at least one of
+  them. `skeletal-anm-enfusion.md` (claim `CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS`): DayZATool's
+  `--generate-anim` does not keep them either; the `.anm` built from that extract unchanged
+  re-extracts with none. `weapon-anim-authoring-viewer.md` and a comment in `seanim_export.py` no
+  longer say that `read_seanim` drops them.
+- `dayz-model-pipeline` `references/animations.md`: a translation's `offset0`/`offset1` count
+  lengths of its axis, not metres. Section 5's "Scale" rule said "Axis vector doesn't define
+  scale; only direction matters" for every axis, and the examples read their offsets as metres.
+  Read on 2026-10-03: Binarize stores a translation's offsets as `model.cfg` writes them and its
+  axis at its own length (CocaLab's `offset1 = 1` on twelve 12.1 to 16.2 mm axes reads 1.0 in its
+  binarized tray, each axis at its source length). If the older binarizer of the vanilla m249
+  (ODOL v54) kept offsets the same way, the m249's compiled offsets are its authors' and only make
+  sense in axis lengths (the belt runs from -1 to 0 on axes 1.11 to 1.15 cm long, the bolt from 0
+  to +1 on 8.34 cm, the magazine from 0 to +1.45 on 10 cm); its rotation axes are stored as unit
+  vectors. Inferred from that, not measured in game: the engine moves a selection by the offset
+  times the axis. The rule now separates rotation (direction only) from translation (offset times
+  axis length; on a 1 m axis the offset reads in metres, the axis `dayz-vehicles` recommends), the
+  examples say their offsets assume a 1 m axis, and the troubleshooting table gains the symptom (a
+  translation that barely moves or leaves the model). A dated note qualifies its "Multiple
+  animations fight" row: the same m249 binds up to eight animations to one bone. Claim
+  `CLAIM-MODEL-TRANSLATION-AXIS-LENGTH`; the replaced sentences are quoted in dated notes, and the
+  example comments keep their text with "on a 1 m axis" added.
 - `dayz-vehicles`: `references/gauge-needles.md` (twice) and
   `references/vehicle-config-and-modelcfg.md` named an unpublished skill as the tool that read the
   vanilla cars' animation classes from their ODOL, and `promotions/adjudications.json` named it in

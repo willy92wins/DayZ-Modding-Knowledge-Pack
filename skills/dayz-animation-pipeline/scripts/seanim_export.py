@@ -204,7 +204,8 @@ def main():
                 rot_keys.append((fr, seanim_rot(frame, q)))
         # Rest offset: the rig's, through the map. Not the --rest-pose reference's: DayZATool marks
         # most bones of vanilla action extracts RELATIVE (SEAnim bone modifiers, inherited by child
-        # bones, dropped by seanim_writer.read_seanim), so their positions are offsets from rest.
+        # bones; read_seanim returns them, this script writes none), so their positions are offsets
+        # from rest.
         pos_keys = [(0, seanim_pos_cm(frame, rest_pos[name]))]
         bones.append({'name': name, 'pos_keys': pos_keys, 'rot_keys': rot_keys})
 
