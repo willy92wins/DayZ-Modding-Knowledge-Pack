@@ -711,6 +711,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   has 6 of its 12 corners against their faces while healthy. The old sentence stays quoted in a
   dated note. Finding R21-ALIGN-01 of the cross-family review of #67; the normals rules answer
   this change's own review (two rounds).
+- `dayz-model-pipeline` SP-071 ("Generic DCC visual-winding profile") no longer reverses every visual
+  face of other raw OBJ imports, and its census no longer reads a correct export as inverted. The
+  section said to reverse the vertices of every **visual** MLOD face of a raw OBJ whose measured axis
+  transform preserves the source winding, a det=+1 map; from Blender's right-handed coordinates any
+  det=+1 map mirrors the model, as Rule 12 measured in game on 2026-10-01. Every lineage the Pack
+  records with that reversal started from Blender coordinates: SP-071's one calibration, the LFHeli
+  OH-1 of 2026-07-19 (an artist's Blender model exported as OBJ, mapped with `x'=x, y'=z, z'=-y` and
+  judged by which side rendered), LFInfectedBig, which read mirrored in game (`dayz-characters`
+  `references/character-rigging.md` §6), and the SP-432 recipe. An OBJ exported from Blender with
+  Forward Y / Up Z now follows Rule 12 as it stands, an OBJ in any other frame of a right-handed
+  counter-clockwise source takes a det=-1 map derived from that frame with its faces in their order,
+  and the reversal needs a source lineage measured by an in-game A/B plus a chirality check, as
+  `ai-3d-to-dayz` SP-071 says. The census thresholds (at least 95 % negative `SOLID`,
+  positive-dominant `INVERTED`) came from the OH-1 pipeline, which stored its normals outward against
+  an inward winding: measured offline on the MLODs of the Rule 12 in-game test, which
+  `tools/py3d/tests` rebuilds byte for byte, the export that rendered solid and read correctly reads
+  0 % negative, `INVERTED`, while the same export with every face reversed (inside-out) and SP-071's
+  recipe (a mirror) read 100 %, `SOLID`. The section now says the census reads stored normals against
+  winding, sends a Rule 12 export to `dayz-p3d-audit` (agreement, then the signed volume per closed
+  shell) and says the in-game A/B cannot see a mirror. The Path A note on imported vehicles no longer
+  names a generic flip default, and in `dayz-characters` the LFInfectedBig case-log entry that gave
+  "reverse every visual face" as the inside-out fix carries a dated note: the det=+1 map caused the
+  inside-out render, and the reversal hid a mirror (`references/character-rigging.md` §6, in game
+  2026-10-02). The old text is quoted in dated notes. Docs only; nothing re-measured in game for this
+  change.
 
 ## [1.5.0] - 2026-10-02
 
