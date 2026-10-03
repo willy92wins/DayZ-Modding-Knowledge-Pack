@@ -157,8 +157,8 @@ Stop and resolve the violation before recommending or shipping persistence work:
 7. Promotion reports `PROMOTION-UNROUTED` or `PROMOTION-DRIFT`.
 8. Live `CargoBase` is walked by frozen index across ticks while items can be removed mid-walk (SP-418).
 9. An entry of the mod's own registry of world entities is removed by proximity, bound on
-   restore to an entity that does not carry its id, or given a new entity after a search that
-   cannot prove the old one gone (SP-456).
+   restore to an entity that does not carry its id, or given a new entity while one it already
+   had may still live; no rule for that restore has come out of review sound (SP-456).
 
 ### Live cargo capture across ticks (SP-418, added 2026-09-21, measured in game, DayZ 1.30.164014 Exp)
 
@@ -184,42 +184,44 @@ three ways to cross that binding.
    registered one horizontally (0.37 m apart, inside the radius) and then deleted left the registry
    byte-identical (same SHA-256), and the registered one came back after the restart
    [EXACT][CLAIM-PERS-UNREGISTER-BY-ID]; the failure itself was read in the code, not reproduced.
-2. **Restore binds by id; a position search proves neither identity nor absence.**
-   `GetObjectsAtPosition3D` returns the objects in a sphere and promises no order
-   (`VANILLA/3_game/global/game.c:924-929`) [EXACT][CLAIM-PERS-RESTORE-BIND-BY-ID], so taking the
-   first unclaimed candidate of the class inside the radius can swap ids and states between two
-   nearby entities of that class, and a second restore pass (one 2 s after start, to bind what the
-   mission created) runs that code on every boot. SecretRock's fix takes the entity already bound to
-   the entry's id, else the nearest one not yet claimed in the pass. The cross-family review traced
-   through that code three ways in which an entry still takes the wrong entity or gets a second one
-   (a neighbour that carries another entry's id, an admin's console entity with no id next to an
-   entry whose own entity is gone, an id regenerated after a failed save), and a fourth through the
-   rule this section first gave, which read an empty radius as "absent": the entity sits outside
-   the radius, under another class name or still unloaded, and the restore creates a second one.
-   SecretRock keeps the id in a script member, so no entity carries it across a restart. Rule
-   [DESIGN]:
-   - an id is identity only while exactly one registry entry and exactly one live entity carry it.
-     Two entries, or two live entities, with one id identify neither: record the conflict for an
-     admin, and bind, apply state and create nothing for that id until it is settled;
-   - make the id durable before using it: write it to the registry first, and if that save fails,
-     bind and create nothing for that entry in this pass;
-   - bind only by id, never by position or class;
-   - create an entry's entity only when the mod can prove that no live entity carries its id. That
-     takes a list of every live entity of the class that lasts exactly as long as they do: each one
-     adds itself in `EEInit` and leaves in `EEDelete`, whoever created it, an admin's console spawn
-     included. A radius search is no such proof, and neither is a list kept per mission or per
-     restore pass, which a mission change can empty while the entities live. A list that can have
-     been emptied while its entities lived (a script reload) proves nothing: create nothing;
-   - make that creation exclusive: reserve the entry before creating its entity and keep the
-     reservation until the id is on the entity and bound, so that a pass finding the entry reserved,
-     one started from the new entity's own `EEInit` included, does nothing for it;
-   - where the engine persists these entities, keep the id on the entity itself, with the entity's
-     state, in its own `OnStoreSave` stream (Contract 1); the registry only indexes it. No pass can
-     prove the engine has finished loading, so an entry that no loaded entity claims is a conflict
-     kept in the registry for an admin, never a reason to create.
+2. **Restore: only the id can bind an entity to the entry, a position match proves nothing, and how
+   to restore is an open problem.** `GetObjectsAtPosition3D` returns the objects in a sphere and
+   promises no order (`VANILLA/3_game/global/game.c:924-929`)
+   [EXACT][CLAIM-PERS-RESTORE-BIND-BY-ID], so taking the first unclaimed candidate of the class
+   inside the radius can swap ids and states between two nearby entities of that class, and a
+   second restore pass (one 2 s after start, to bind what the mission created) runs that code on
+   every boot. SecretRock's fix takes the entity already bound to the entry's id, else the nearest
+   one not yet claimed in the pass; it keeps the id in a script member, so no entity carries it
+   across a restart. A position match proves nothing: an entity near the entry's position, or of its
+   class, is not shown to be the entry's, and finding none there does not show the entry's entity
+   gone. An id that two entries, or two live entities, carry identifies neither.
 
-   Read in the code; neither the failures nor this rule were tested in game, and the rule is
-   implemented nowhere.
+   No automatic restore rule has come out of review sound. Six rounds of cross-family review (Codex,
+   2026-10-03), one on each restore rule this section gave in #97 and #99, traced every one of them,
+   through SecretRock's fixed code or through the rule's own text, into an entry that takes the
+   wrong entity or gets a second one:
+   - **the wrong entity**: an entry left in the registry by an unregister whose save failed takes
+     the nearest unclaimed entity of the class although it carries another entry's id (R21-01), or
+     an admin's console entity that carries no id (R21-03); of two loaded entities that carry one
+     id, the second to load takes the binding (R21-07);
+   - **a second entity**: a rule that refuses every entity with another id creates again for an
+     entry whose id was regenerated after a failed save (`I1` given to the entity in memory, the
+     save fails, a later pass saves `I2`) (R21-04); a rule that reads an empty radius as absence
+     creates while the entity sits outside the radius, under another class name or not yet loaded
+     by the engine (R21-05); a list of the restore's own creations, cleared when the mission ends,
+     misses the previous mission's entities if they still live (R21-06); a list of every live
+     entity kept by the entities' own `EEInit` and `EEDelete` misses a creation in flight, which
+     joins it from its `EEInit` before it carries the id, so a pass started from that `EEInit`
+     creates a second one (R21-08); and a reservation of the entry during that creation does not
+     stop a pass that reloads the registry and gets a copy of the entry without the reservation
+     (R21-09).
+
+   The same reservation, once a creation fails, keeps the entry from ever getting its entity
+   (R21-10). These are traces, not observations: none was reproduced in game, and several need
+   conditions not shown to occur in SecretRock: a pass started from an entity's `EEInit` (SecretRock
+   starts its restore passes only from `MissionServer`), two loaded entities with one id, entities
+   that live through a mission change. Whether the engine persists SecretRock's rocks is not
+   established. The Pack gives no rule for this restore; Hard stops item 9 names what it must not do.
 3. **A restore pass still queued can reopen saving at shutdown.** If the restore clears the
    shutdown flag (for a mission restart in the same process), a restore `CallLater` still in
    `CALL_CATEGORY_SYSTEM`, which is processed "without any restrictions"

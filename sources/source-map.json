@@ -904,9 +904,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "[Unreleased] Fixed entry for the fix-forward of PR #97: the [DESIGN] restore rule no longer creates on an empty radius; an id is identity only while one entry and one live entity carry it, the id is durable before use, binding is by id only, and creation needs a lifecycle list of every live entity of the class (post-merge review R21-05; this PR's round 1, R21-06 and R21-07).",
+          "decision_evidence": "[Unreleased] Fixed entry for the fix-forward of PR #97: point 2 no longer gives a restore rule; the rule merged in #97 and the three [DESIGN] rules written to replace it came out UNSOUND in cross-family review, and the traced failures are listed as an open problem. The #97 Added entry now says its [DESIGN] restore rule is withdrawn.",
           "license": "MIT",
-          "source_hash": "074331aba5266a7f91829a490130d8f58d2711ef823d920b51a26cb25ea45cd3",
+          "source_hash": "e63fbb38521d633d22cd0149fe61cb096270cda4f60a776af36e4e2aa1ffa631",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
@@ -914,7 +914,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "074331aba5266a7f91829a490130d8f58d2711ef823d920b51a26cb25ea45cd3",
+      "output_hash": "e63fbb38521d633d22cd0149fe61cb096270cda4f60a776af36e4e2aa1ffa631",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10147,9 +10147,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97 after its post-merge cross-family review (Codex gpt-6.1-sol, read-only, on f42f503: UNSOUND, R21-05 P2): Hard stops item 9 and point 2 of the section 'A registry entry leaves by its id, never by proximity'. The [DESIGN] restore rule merged in #97 created an entity whenever the radius held none of the class; the review traced that into a second entity (an id regenerated after a failed save, then the entity moved out of the radius; an entity outside the radius, under another class name, or not yet loaded by the engine). The rule now treats an id as identity only while exactly one entry and one live entity carry it, makes the id durable before use (save first; on a failed save bind and create nothing for that entry in that pass), binds only by id, and creates only when no live entity carries the id by a list the entities keep themselves (EEInit in, EEDelete out), never a radius or a per-mission list (round 1 of this PR's own review: R21-06, R21-07); where the engine persists them, the id and state live in the entity's OnStoreSave stream and an unclaimed entry is a conflict kept for an admin. Round 2 of this PR's review found R21-08 (a creation in flight seen as absence by a reentrant pass); a reservation of the entry until the id is on the new entity was added after the review cap and is not reviewed. Still [DESIGN], implemented and tested nowhere; claim CLAIM-PERS-RESTORE-BIND-BY-ID updated, CLAIM-PERS-SHUTDOWN-QUEUE moved to its marker. Cross-family review by Codex. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97 (SP-456): point 2 of the section 'A registry entry leaves by its id, never by proximity' no longer gives a restore rule, and Hard stops item 9 says so. The [DESIGN] rule merged in #97 (an empty radius read as absence) came out UNSOUND in its post-merge cross-family review (R21-05), and the three [DESIGN] rules this PR wrote in its place came out UNSOUND in its three review rounds (R21-06 and R21-07; R21-08; R21-09 and R21-10). Point 2 keeps what the vanilla scripts and SecretRock's code show (only the id can bind; GetObjectsAtPosition3D promises no order, so a position match proves nothing) and lists the traced failures, the wrong entity (R21-01, R21-03, R21-07) and a second one (R21-04 to R21-06, R21-08, R21-09), plus the liveness defect R21-10, as an open problem with no automatic rule reviewed sound; item 9 stops a restore that gives an entry a new entity while one it already had may still live. Claim CLAIM-PERS-RESTORE-BIND-BY-ID updated, CLAIM-PERS-SHUTDOWN-QUEUE moved to its marker. Cross-family review by Codex. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "bca8c6147ebef4658fd4bdc5d12ee95acecdc7e97154792d1940c949922c8916",
+          "source_hash": "e62f0cf01609efbd9bce6567861023728fc6c5a02966a53105ccfa9b49967430",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
@@ -10157,7 +10157,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bca8c6147ebef4658fd4bdc5d12ee95acecdc7e97154792d1940c949922c8916",
+      "output_hash": "e62f0cf01609efbd9bce6567861023728fc6c5a02966a53105ccfa9b49967430",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -15157,9 +15157,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97: the Step 3 search 'Proximity used as identity' adds that an empty radius does not prove the entry's entity gone, so a restore that creates on it can make a second one (post-merge review R21-05), with a pointer to dayz-persistence Hard stops item 9. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-03, fix-forward of PR #97: the Step 3 search 'Proximity used as identity' no longer calls a candidate without the entry's id 'a conflict to log' (part of the withdrawn [DESIGN] restore rule); it keeps that such a candidate is not a match and that an empty radius does not prove the entry's entity gone (post-merge review R21-05), and says that how a restore should bind and create is an open problem, with a pointer to dayz-persistence Hard stops item 9 and point 2. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "b56de919411b06a1d3185b287594355928bf201f068fca2164afddc0f40151b5",
+          "source_hash": "6aef1003b3b8662329a005afb56a313c8eb3aa3648b3ced1af06afd20b11b44a",
           "source_id": "pack-r21-authored",
           "source_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
@@ -15167,7 +15167,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b56de919411b06a1d3185b287594355928bf201f068fca2164afddc0f40151b5",
+      "output_hash": "6aef1003b3b8662329a005afb56a313c8eb3aa3648b3ced1af06afd20b11b44a",
       "output_path": "skills/rigorous-data-audit/references/entry-point-audit.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -16808,9 +16808,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Updates CLAIM-PERS-RESTORE-BIND-BY-ID (source_verified) with the post-merge review of PR #97 (R21-05) and the rule's new wording, and moves CLAIM-PERS-SHUTDOWN-QUEUE to the line its marker now holds; its evidence and level are unchanged.",
+          "decision_evidence": "Updates CLAIM-PERS-RESTORE-BIND-BY-ID (source_verified) with the six review rounds of the restore rules (R21-01, R21-03 to R21-10) and the rule's withdrawal, and moves CLAIM-PERS-SHUTDOWN-QUEUE to the line its marker now holds; its evidence and level are unchanged.",
           "license": "MIT",
-          "source_hash": "4ec4a80b584b6070d8dd910bd2cd3fd2587ff08887350b925eb7a03ff612f60c",
+          "source_hash": "a74a1fb3fab83e577bbbf9c6e66660482890156f2a941bf555b9361fd2686fde",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-spb-restore-absence@2026-10-03",
@@ -16818,7 +16818,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4ec4a80b584b6070d8dd910bd2cd3fd2587ff08887350b925eb7a03ff612f60c",
+      "output_hash": "a74a1fb3fab83e577bbbf9c6e66660482890156f2a941bf555b9361fd2686fde",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
