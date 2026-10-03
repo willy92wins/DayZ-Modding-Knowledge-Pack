@@ -535,7 +535,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Blender now takes Rule 12's recipe (`py3d.blender_to_dayz()`); a glTF read without Blender bakes
   its node transforms, reversing the faces of mirrored instances (glTF winds them clockwise, glTF
   2.0 §3.7.4), derives its own det=-1 map from the asset's frame and keeps that order (not tested
-  in game), and ripped `.glb` assets stay with `dayz-vehicles`. `lods-and-geometry.md` also drops
+  in game), and ripped `.glb` assets stay with `dayz-vehicles`. A mirrored node brought through
+  Blender arrives there as an object with negative scale; the text marks that case as not checked
+  and points to `check_dayz_winding.py` to read the exported part. `lods-and-geometry.md` also drops
   "Flipped Geometry faces cause physics pass-through": `dayz-p3d-audit` killer #1 measured outward
   2 m collision boxes that the LOD raycasts miss while physics still stops a walking player, and a
   walk alone does not diagnose winding. `check_face_winding` could not catch the old recipe (it

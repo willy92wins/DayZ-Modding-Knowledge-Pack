@@ -139,8 +139,9 @@ The RV engine uses face winding order to determine which side of a face is
 - Object appears transparent or invisible from outside
 - Object appears solid black from outside (shadow-only)
 
-**Rule (source: [`SKILL.md`](../SKILL.md), Rule 12):** Blender-authored and
-GLB/glTF-sourced geometry take the same det=-1 map, and neither is reversed:
+**Rule (source: [`SKILL.md`](../SKILL.md), Rule 12):** Blender-authored geometry and
+GLB/glTF-sourced geometry brought through Blender take the same det=-1 map, and
+neither is reversed (a glTF read without Blender: SKILL.md "GLB/glTF imports"):
 - **Blender-authored geometry** via the reflection `x'=x, y'=z, z'=y` (det=-1):
   apply it to ALL vertices and normals in ALL LODs, keep the vertex order (it comes
   out INWARD, the MLOD convention) and negate the normals. The old det=+1 rotation
