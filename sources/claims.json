@@ -1300,6 +1300,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-anim-empties@2026-10-02",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-physics-engine/skill.md",
+      "claim_id": "CLAIM-PHYS-PLATFORM-WALK-INGAME",
+      "evidence_locator": "In game, DayZDiag 1.29.163709, 2026-10-01, one client on localhost, dayz-mcp run 8e032fd9 (project DayZ_MCP plus the SecretRock lift spike mod SR_LiftSpike2; platform SR_LiftPlatform2 in mode B: a House inheriting HouseNoDestruct with animPhysDetachSpeed=100, moved with SetPosition every frame on server and client), four 8.9 m trips (y 15.03 to 6.13 and back, twice) played by hand by the owner, the player's [SR2T] rows logged at 20 Hz: 1,448 server and 1,369 client samples. Walking: link=1 in every sample of the trips until the player stepped off onto the deck at the end of trip 4, slide=0 in every sample; share of samples within 8 cm of the start height above the face (walk_detail.json, excl_jumps.frac_008): trip 2 up 0.978 server / 0.992 client, trip 3 down without its two jumps 0.968 / 0.996, trip 4 up 0.960 / 0.984. Jumps: two, both on trip 3 (descending), fall=1 and floor=0 for 0.42-0.47 s, link=1 throughout, peak 0.30-0.32 m above the face, the next sample back on the face within 0.05 m with link=1. Vanilla jump StartCommand_Fall(2.6) at 4_world/entities/dayzplayerimplementjumpclimb.c:97, StartCommand_Fall(float pYVelocity) at 3_game/human.c:1467 (1.29 scripts); 0.345 m and 0.53 s are v^2/2g and 2v/g with g 9.81, computed, not measured; the 0.5-0.6 m figure is (2.6+v)^2/2g with the platform's 0.60-0.83 m/s at the two jumps, also computed. Boarding: first link=1 sample 8.4 s (server) and 8.3 s (client) before trip 1 started, no preparatory step, no fall. Exit at the bottom: off-platform samples 0.04-0.065 m above the 5.78 floor, the platform face at 6.13; exit at the top: 0.56 s before the end of trip 4, the platform within 3 cm of the deck, no fall. Spikes: largest offset outside the jumps 0.222 m on the server and 0.126 m on the client (both trip 4, one sample each; the client one the only sample with the sign against the travel), episodes of one to three samples on the server and one on the client, the next sample within 0.05 m; correlation of the offset with speed x frame time 0.72 on the client per RESULTS2.md (0.71 when recomputed over every on-floor sample of the four trips) and 0.31 on the server; mean client frame 53 ms at the spikes against 8 ms elsewhere. Sources: SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/ (walk_detail.json, analysis.json, server_script.log, client_script.log).",
+      "license": "MIT",
+      "line_end": 75,
+      "line_start": 75,
+      "observed_at": "2026-10-01",
+      "promotion_artifact_id": "skill/dayz-physics-engine",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-spb-physics-walk@2026-10-03",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

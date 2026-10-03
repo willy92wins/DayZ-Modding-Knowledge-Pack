@@ -76,6 +76,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   A third section it had written, a Mission-module lesson about a class holding a `static ref` to
   itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
   contradicts it as well (`VicinityItemManager` holds one and its module compiles).
+- `dayz-physics-engine` engine truth 11, the moving platform that is a separate entity: walking and
+  jumping on it, from four trips played by hand (SP-452; DayZDiag 1.29.163709, one client on
+  localhost, 2026-10-01). Walking during the travel kept the player linked, with no slide, and
+  96.0-97.8 % of the server samples and 98.4-99.6 % of the client samples within 8 cm of the face. Two
+  jumps on the way down kept the link, peaked 0.30-0.32 m above the face and landed on it, close to
+  the vanilla jump on still ground (`StartCommand_Fall(2.6)`, 0.345 m by ballistics), so the jump
+  runs in the platform's frame. A player who walked aboard was linked without the step a teleport
+  needs, and stepping off at either end caused no fall. Short spikes of up to 22 cm (server) and
+  12.6 cm (client) lasted one to three samples; on the client they follow long frames, and on the
+  server the cause is open. A jump while the platform rises was not tried.
 
 ### Changed
 
