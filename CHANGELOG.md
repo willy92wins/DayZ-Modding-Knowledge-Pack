@@ -863,6 +863,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   reads only the return code. Under `-W error::pytest.PytestUnhandledThreadExceptionWarning` the nine
   runs go from failed to passed (in a console at code page 65001 both versions pass). CI never
   showed it: its `tests/packctl` step on `ea7b396` reports 359 passed and no warning.
+- `dayz-test-ingame`, "Testing a mod that is not in the allow-list": project `DayZ_MCP` works as a
+  carrier. The bullet said `@DayZ_MCP` could not carry other mods (its `5_Mission` failed with
+  `CParser: quoted string not closed`, SP-128, 2026-07-28). On 2026-10-02 (DayZDiag 1.29.163709) it
+  carried two extra mods in run `13cc2542` and four in run `1c289781`, and both peers compiled every
+  script module (`Module: Mission; loaded 217x files; 540x classes`, no `CParser` line). Ten minutes
+  before `13cc2542`, `LFPowerGrid`, the carrier the bullet recommended, carrying `@DayZ_MCP` and the
+  same two mods, stopped at `Can't compile "Mission" script module!` on an error in its own
+  `5_Mission` (run `f1afd2c3`). The bullet now says to check the carrier's `Module: Mission` line on
+  the day, and quotes the replaced sentence in a dated note.
+- `dayz-mcp-verify`: `telemetry_read(mode="object_at")` reads any classname, and
+  `vehicle_prepare_fixture` any `CarScript`. SP-152 said object telemetry only took
+  `type="MERCEDES_AMGLF"`. On 2026-10-02 `object_at` answered `telemetry.found=1` for `KP_CharAB_V1`, the
+  vanilla `ZmbM_SoldierNormal` and `KP_CharAB_V3`, and the loopback checks `type` only for a non-empty
+  string. The oldest copy of the tools on disk (2026-07-25) had the `MERCEDES_AMGLF` check only in the
+  `vehicle_prepare_fixture` branch, and the tools' 2026-08-16 release has none: between 2026-08-18
+  and 2026-10-01 that verb returned `vehicle_fixture_ready=1` on 15 other `CarScript` types, which
+  the 2026-07-18 server-side conditioning section and `dayz-aviation`'s tooling note also denied.
+  The zombie-command bullet now reconciles a lost spawn with `object_at` instead of logs and user
+  inspection. The replaced sentences are quoted in dated notes.
 
 ## [1.5.0] - 2026-10-02
 
