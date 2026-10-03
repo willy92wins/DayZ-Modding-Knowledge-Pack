@@ -16168,7 +16168,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Registers CLAIM-PHYS-PLATFORM-WALK-INGAME (runtime_verified) for the dayz-physics-engine truth 11 sub-bullet on walking and jumping on the moving platform (SP-452): DayZDiag 1.29.163709, 2026-10-01, dayz-mcp run 8e032fd9, four 8.9 m trips played by hand on SR_LiftPlatform2 in mode B, 1,448 server and 1,369 client samples at 20 Hz; numbers from SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, the ballistic figures computed from StartCommand_Fall(2.6) (4_world/entities/dayzplayerimplementjumpclimb.c:97). No other claim moves.",
+          "decision_evidence": "Registers CLAIM-PHYS-PLATFORM-WALK-INGAME (runtime_verified) for the dayz-physics-engine truth 11 sub-bullet on walking and jumping on the moving platform (SP-452): DayZDiag 1.29.163709, 2026-10-01, dayz-mcp run 8e032fd9, four 8.9 m trips played by hand on SR_LiftPlatform2 in mode B, 1,448 server and 1,369 client samples (20 Hz while the platform moved, 2 Hz while it stood); numbers from SecretRock_dev/reviews/2026-10-01-lift-spike2/RESULTS2.md (run 5) and run5_8e032fd9/walk_detail.json, the ballistic figures computed from StartCommand_Fall(2.6) (4_world/entities/dayzplayerimplementjumpclimb.c:97). No other claim moves.",
           "license": "MIT",
           "source_hash": "210b9926edba952dfefc01def213db2006c17c2d998a8cbda4ccdc6f60a84d0b",
           "source_id": "pack-r21-authored",
