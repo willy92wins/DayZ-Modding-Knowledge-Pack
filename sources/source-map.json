@@ -781,10 +781,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: Unreleased Fixed entry: three dayz-vehicles passages and one promotion adjudication named an unpublished skill; they now name the capability (the ODOL reader of the external ODOL->MLOD converter) in the pack's phrase for that converter, which the promotion's phrase alias (packctl/promotion.py PROMOTION_PHRASE_PLACEHOLDERS) writes as the converter's local name on an installed tree. Checked: git grep on main ea7b396 finds the unpublished name in no other tracked file; promote reads an adjudication's artifact_id, target_id and observed_digest only, and checks that its reason is a non-empty string (packctl/promotion.py:1010-1046).",
+          "license": "MIT",
+          "source_hash": "c0479cf33de82a37c1b09632d8c3907d6db0c8ca40c534c6889d5f2e47e53200",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-chips-privname@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "857df1ea410ee0f946c585be23b453c12bb785e55859b2a974b57216e82cfb1f",
+      "output_hash": "c0479cf33de82a37c1b09632d8c3907d6db0c8ca40c534c6889d5f2e47e53200",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3407,10 +3417,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-b97026c@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: the reason of the skill/ai-3d-to-dayz adjudication (target claude_user_skills) named an unpublished skill as the value of the promotion's phrase alias; it now reads 'external converter -> the converter's local name'. Only that substring changed: the file stays canonical JSON (packctl.common.canonical_json_bytes), its artifact_id, target_id and observed_digest are unchanged, and promote reads only those plus a non-empty reason (packctl/promotion.py:1010-1046; _advance_matching_adjudications, 1063-1105, rewrites observed_digest on apply). No receipt under promotions/receipts names this file (grep), and CONTRIBUTING.md sets no rule for it.",
+          "license": "MIT",
+          "source_hash": "e44d97a72c1daba45f3630da940cd4bc888c0bf40092e26a5d11f11f0ff34274",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-chips-privname@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a21f25ca9ceedadbf85859908944887134b5271cfc01e30dabaffa68c2a19db1",
+      "output_hash": "e44d97a72c1daba45f3630da940cd4bc888c0bf40092e26a5d11f11f0ff34274",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -12774,10 +12794,20 @@
           "source_path": "skills/dayz-vehicles/references/gauge-needles.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: the two citations of the tool that read the vanilla cars' ODOL (the native-sources paragraph, line 348; Trap 5, lines 386-387) named an unpublished skill and its script path. They now name the capability, the ODOL reader of the external ODOL->MLOD converter, in the pack's phrase for that converter (packctl/promotion.py PROMOTION_PHRASE_PLACEHOLDERS), kept on one line so that a promotion writes it as the converter's local name (checked with packctl.promotion._localized_payload_bytes and a placeholder alias: lines 348 and 387 change, no other). No line added or removed; the measurements, tables and corrections are unchanged.",
+          "license": "MIT",
+          "source_hash": "8cfea93def35342c2deaaee9008ef4c5de55cfc8b2729a28f5cc2dd7871e27ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/gauge-needles.md",
+          "source_revision": "kp-chips-privname@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a218bb63cdeb454c856963879091189eca861084cdb4893a6fa9da183889fd64",
+      "output_hash": "8cfea93def35342c2deaaee9008ef4c5de55cfc8b2729a28f5cc2dd7871e27ce",
       "output_path": "skills/dayz-vehicles/references/gauge-needles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -13328,10 +13358,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
           "source_revision": "kp-update-wp-misc@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "chips 2026-10-03: the dashboard-needles section (line 547) named the tool that read the vanilla cars' ODOL as an unpublished skill's script. It now names the capability, the ODOL reader of the external ODOL->MLOD converter, in the pack's phrase for that converter, which a promotion writes as the converter's local name (checked with packctl.promotion._localized_payload_bytes and a placeholder alias: line 547 changes, no other). No line added or removed; the measured table is unchanged.",
+          "license": "MIT",
+          "source_hash": "612fa060527e7692dee9e06c73ffabc9f847022be04018a566986f8e561cb075",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
+          "source_revision": "kp-chips-privname@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d654ed36077dd025ecb8272ed62b9fe89681d42fd03fbcea30c7962501c7ab5b",
+      "output_hash": "612fa060527e7692dee9e06c73ffabc9f847022be04018a566986f8e561cb075",
       "output_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"

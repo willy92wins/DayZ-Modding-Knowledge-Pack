@@ -202,6 +202,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-vehicles`: `references/gauge-needles.md` (twice) and
+  `references/vehicle-config-and-modelcfg.md` named an unpublished skill as the tool that read the
+  vanilla cars' animation classes from their ODOL, and `promotions/adjudications.json` named it in
+  the reason of the `skill/ai-3d-to-dayz` adjudication. The three passages now name the capability,
+  the ODOL reader of the external ODOL->MLOD converter, in the phrase the pack already uses for that
+  converter: a promotion writes it as the converter's local name (the phrase alias in
+  `packctl/promotion.py`), so an installed copy still points at the tool. The adjudication's reason
+  says "external converter -> the converter's local name"; its key and digest are unchanged, and
+  `promote` uses only those (of a reason it checks that there is one). The measurements and what
+  they cite are unchanged.
 - `dayz-animation-pipeline` `weapon-anim-authoring-viewer.md`: why the helpers' world is composed
   by hand. It said plain `matrix_world` returns 0 before a depsgraph update, and even after for
   bone-parented empties. Measured on the BI FBX, `hide_viewport` decides: the 17 of 38 empties
