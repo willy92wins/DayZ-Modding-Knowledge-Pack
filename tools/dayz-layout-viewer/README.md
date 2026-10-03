@@ -2,9 +2,13 @@
 
 Parse a DayZ `.layout` and emit one self-contained `*.preview.html` with
 **four viewports** (1080p 16:9, 1440p 16:9, ultrawide 21:9, 720p 16:9) plus
-parser diagnostics. Switching resolutions is the point: exact-pixel widgets
-keep their px while proportional widgets scale — the usual "looked right in
-the mockup, wrong in-game" failure.
+parser diagnostics. In it exact widgets keep their declared px at every
+viewport while proportional widgets scale. The engine draws exact units as
+1/1080 of the screen height (`dayz-ui-development` Rule 3, measured in game),
+so off 1080p that difference is this model's, not the game's: the parser lays
+exact units out as pixels (`tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775`). *(Corrected
+2026-10-03: this called it the usual "looked right in the mockup, wrong
+in-game" failure.)*
 
 Geometry, attributes and diagnostics come from the pack format parser
 `tools/dayz-ui-lab/dayz_ui_lab/parse.py` (`LayoutDoc`). This tool is **not**

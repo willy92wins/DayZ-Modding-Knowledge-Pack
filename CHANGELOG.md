@@ -355,6 +355,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   "Gate ordering" paragraph says AddonBuilder's own exit code is 0 on a failed build. Not
   measured: what an empty material does in game. The replaced sentences are quoted in dated
   notes.
+- `dayz-ui-development`: exact units are 1/1080 of the screen height, and an unnumbered face
+  with no size key follows its box. Rule 3 called `hexact*`/`vexact* 1` physical screen pixels and advised
+  proportional units by default. Measured in game, exact units scale with the screen height on
+  both axes: `ui_tree` rects at heights 461 to 1108 (2026-08-28/29), and on SimpleGroup's frames
+  (2026-09-28) a 400-unit panel drew 400 px wide at 1920x1080 and at 2560x1080 and 267 px at
+  1280x720. TEXT SIZING LAWS said the font-only default ignores the widget box, against
+  `hot-iteration.md`'s "glyph height tracks the WIDGET height". SimpleGroup's shipped panel
+  (unsized `Metron`/`MetronBook`, captures at 1080p and 720p) sides with the box, and the
+  section now holds one law per face: an unnumbered bitmap face or an SDF face with no size key
+  follows its box, a numbered bitmap face keeps its pixel size (the same ink at 1080p and 720p;
+  text that must fit at 720p fills at most 2/3 of its box at 1080p), and an SDF face with
+  `"exact text size"` N draws about N px per 1080 of height; the mockup calibration follows. Also from those captures:
+  `WrapSpacer` + `"Size To Content V"` stacking, case-sensitive attribute keys (a GridSpacer's
+  lowercase `columns`/`rows`), `rover_sim_colorable` honouring alpha, and a button with no style
+  drawing no body. Aligned: the troubleshooting row, the offline preview step, S2 sorter rule 3,
+  `layout-format.md` (unit comments, rect arithmetic, spacers), `layout-empirical-corpus.md`
+  (the attribute table), `plan-to-implementation.md`
+  (§0, §1.1, §2, the previewer note, §6.3), `widget-api.md`, `styles-format.md`,
+  `advanced-patterns.md`, `admin-ui-patterns.md` (exact values need no script scaling),
+  `hot-iteration.md`, the comments of the three templates, `TOOLS.md` and the layout viewer's README. The pack
+  parser still lays exact units out as pixels (`tools/dayz-ui-lab/dayz_ui_lab/parse.py:772-775`);
+  the docs now say so. Replaced passages are quoted in dated notes.
 - `dayz-animation-pipeline` `scripts/seanim_writer.py` keeps SEAnim bone modifiers. `read_seanim`
   skipped them and `write_seanim` always wrote a count of 0, so a DayZATool extract read and
   written back lost them: `p_1hd_erc_idle_low` (65 bones, ABSOLUTE header) lost its 60 RELATIVE

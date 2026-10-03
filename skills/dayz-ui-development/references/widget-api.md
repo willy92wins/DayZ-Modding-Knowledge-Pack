@@ -105,7 +105,7 @@ CENTER         // centers text horizontally
 VCENTER        // centers text vertically
 HEXACTPOS      // exact horizontal position
 VEXACTPOS      // exact vertical position
-EXACTPOS       // both exact pos (physical resolution)
+EXACTPOS       // both exact pos (engine comment: "physical resolution"; drawn as 1/1080 of screen height, SKILL.md Rule 3)
 HEXACTSIZE     // exact horizontal size
 VEXACTSIZE     // exact vertical size
 EXACTSIZE      // both exact size

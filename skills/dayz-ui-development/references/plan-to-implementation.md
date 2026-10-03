@@ -12,8 +12,13 @@ unpacked `gui/`) or an AnswerOverflow URL. If a citation is missing, treat the l
 
 ## 0. TL;DR — the five moves that close most of the gap
 
-1. **Author in proportional units (flags = 0) by default**, exact pixels (= 1) only for things that
-   must be pixel-true. All-exact layouts look right at 1080p and wrong everywhere else (§1.1, §2).
+1. **Pick the unit per widget, knowing what each one is** (§1.1, §2): exact (= 1) is 1/1080 of
+   the screen height and keeps a widget's shape at every resolution; proportional (= 0) stretches
+   with the parent. Never rescale exact widgets from script. *(corrected 2026-10-03: this move
+   said «**Author in proportional units (flags = 0) by default**, exact pixels (= 1) only for
+   things that must be pixel-true. All-exact layouts look right at 1080p and wrong everywhere
+   else».
+   SimpleGroup's all-exact panel measured right at 1920x1080, 1280x720 and 2560x1080.)*
 2. **If you use the Workbench Layout Editor, register your imagesets/styles TWICE** — in
    `dayz.gproj` (so the editor previews them) AND in `config.cpp class defs` (so the game loads
    them). Missing either side is a direct mockup-vs-game divergence (§3).
@@ -33,17 +38,28 @@ unpacked `gui/`) or an AnswerOverflow URL. If a citation is missing, treat the l
 Six independent mechanisms. Each is a real, verified reason the in-game result differs from what
 was drawn or specified. Knowing which one bit you is half the fix.
 
-### 1.1 Exact flags mean PHYSICAL PIXELS, not "defined position"
-`hexactpos/vexactpos/hexactsize/vexactsize 1` switches that axis to **physical screen resolution**
-units, so a layout authored at 1920×1080 occupies a different fraction of the screen at 2560×1440,
-ultrawide, or console.
-- Evidence: `scripts/1_core/proto/enwidgets.c:68-71` — `EXACTPOS //< Uses physical resolution
-  (g_iWidth, h_iHeight)`, `HEXACTSIZE //< Uses physical resolution (g_iWidth)`.
+### 1.1 Exact flags mean units of 1/1080 of the screen height, not pixels and not "defined position"
+`hexactpos/vexactpos/hexactsize/vexactsize 1` switches that axis to **exact units**: the engine
+draws `declared × height/1080` px on both axes, whatever the width (measured in game at heights
+461 to 1108 and at 2560x1080; SKILL.md Rule 3). A layout in exact units keeps its share of the
+screen height at every resolution measured; at another aspect ratio only the horizontal room
+changes.
+- The header comments say otherwise: `scripts/1_core/proto/enwidgets.c:68-71` — `EXACTPOS //< Uses
+  physical resolution (g_iWidth, h_iHeight)`, `HEXACTSIZE //< Uses physical resolution (g_iWidth)`.
+  The frame decides: a 400-unit panel drew 400 px wide at 1920x1080 and at 2560x1080, and
+  267 px at 1280x720.
 - `0` = **fraction of parent (0.0–1.0)**. Vanilla predominantly uses proportional: over
   `gui/layouts`, `hexactsize 0` appears 5851× vs `hexactsize 1` 2727×.
-- Community corroboration: "It will only work on 1 resolution and 1 aspect ratio" —
-  https://www.answeroverflow.com/m/535469900702154753
-- **This is the single most common cause of "looked right in my mockup, wrong in-game."**
+- The divergence that does come with exact units is script-made: a script that rescales exact
+  widgets by height/1080 scales them twice (SKILL.md TEXT SIZING LAWS).
+- *(corrected 2026-10-03)* This section was titled «Exact flags mean PHYSICAL PIXELS», said a
+  layout authored at 1920×1080 «occupies a different fraction of the screen at 2560×1440,
+  ultrawide, or console», quoted a community post («It will only work on 1 resolution and 1
+  aspect ratio», https://www.answeroverflow.com/m/535469900702154753) and called it «the single
+  most common cause of "looked right in my mockup, wrong in-game."» The in-game measurements
+  above contradict the pixel reading: at 16:9 the fraction stayed the same at every height
+  measured, and at 2560x1080 only the horizontal fraction changed. 2560×1440 itself was not
+  measured, and nothing measured how common the cause is.
 
 ### 1.2 Colors are re-lit by the engine (global LV), and a script `SetColor` can override the layout
 Two things move color away from what you authored:
@@ -67,7 +83,7 @@ in-game but fine in the mockup, this is why.
 ### 1.4 Script-driven spacers overwrite authored child geometry at runtime
 Any widget carrying a spacer `scriptclass` (e.g. `AutoHeightSpacer`, the vanilla spacer handlers)
 force `EXACTPOS|EXACTSIZE` onto every child at init and on `OnChildAdd`, then reposition children in
-screen pixels — so proportional pos/size you authored on those children is **silently discarded**
+exact units (§1.1) — so proportional pos/size you authored on those children is **silently discarded**
 in-game while the editor preview still shows the authored values.
 - Evidence: `scripts/3_game/gui/spacers/spacerbase.c:13-19,32-37`
   (`child.SetFlags(WidgetFlags.EXACTPOS | WidgetFlags.EXACTSIZE, false)` inside
@@ -100,14 +116,24 @@ definition and the gap is judged by eye between two hand-made artifacts.
 
 ---
 
-## 2. Authoring resolution-independent layouts (the fix for §1.1)
+## 2. Authoring resolution-independent layouts (what §1.1 means in practice)
 
-- **Default to proportional (flags 0).** Position/size are then fractions of the parent, so the UI
-  scales with resolution and aspect. Use `halign`/`valign` `*_ref` anchors to pin to an edge/center
-  of the parent (`valign` 4518× + `halign` 4157× in the corpus — heavily used, not "rare").
-- **Reach for exact (flags 1) only** for elements that must keep a pixel size (icon tiles, 1px
-  borders, fixed-size buttons). Mixing pixel-pos + proportional-size on the SAME widget is fragile
-  under resize — keep a widget all-exact or all-proportional.
+- **Proportional (flags 0):** position/size are fractions of the parent, so the widget scales with
+  the parent and stretches with its aspect. Use `halign`/`valign` `*_ref` anchors to pin to an
+  edge/center of the parent (`valign` 4518× + `halign` 4157× in the corpus — heavily used, not
+  "rare").
+- **Exact (flags 1):** units of 1/1080 of the screen height, so the widget keeps its shape and
+  scales with the screen height. It does not keep a pixel size: by that law a 1-unit border is
+  2/3 of a pixel at 720p (how the engine rasterizes it was not measured).
+  Mixing exact and proportional axes on one widget is the vanilla norm (SKILL.md Rule 3, corpus
+  refinements).
+- *(corrected 2026-10-03)* This section was titled «the fix for §1.1» and said: «Default to
+  proportional (flags 0)», «so the UI scales with resolution and aspect», «**Reach for exact
+  (flags 1) only** for elements that must keep a pixel size (icon tiles, 1px borders, fixed-size
+  buttons). Mixing pixel-pos + proportional-size on the SAME widget is fragile under resize —
+  keep a widget all-exact or all-proportional.» Exact widgets scale with the screen height
+  (§1.1), and SKILL.md Rule 3 had already refuted the mixing warning from the corpus on
+  2026-07-04.
 - **Canonical resolution-independent full-screen 16:9 background:**
   ```
   ImageWidgetClass Background {
@@ -220,9 +246,11 @@ assembled from tools that already exist on this machine.
   widget-height; v1 pinned all text ~14px), renders ALL roots (v1 only the first), surfaces parser
   diagnostics (missing-child-block etc.), badges anchors the resolver marks `assumed` (center/right/
   bottom_ref phase-1), badges spacer containers (children auto-laid-out in-game), shows MVC
-  `Binding_Name`/`Relay_Command`, and — the money feature — the **resolution switcher makes the
-  exact-flag divergence VISIBLE**: exact-pixel widgets keep their px while proportional widgets scale, so
-  you SEE which parts of the layout break off-1080p before ever launching the game. Still an
+  `Binding_Name`/`Relay_Command`, and a resolution switcher. In it exact widgets keep their declared
+  px at every viewport while proportional widgets scale; the engine scales both (§1.1), so off-1080p
+  that difference is the previewer's, not the game's. *(corrected 2026-10-03: this called the
+  switcher «the money feature» that makes «the exact-flag divergence VISIBLE», so «you SEE which
+  parts of the layout break off-1080p before ever launching the game».)* Still an
   approximation (real Metron fonts, PAA/EDDS textures shown hatched, and script-side `SetColor`/`SetPos`
   are NOT emulated — trust in-game for pixels/colors/fonts). Self-tested headless 2026-07-03 on
   `loading.layout` (vanilla, 25 widgets), `day_z_hud.layout` (292 widgets) and `LFPG_SorterTag.layout`
@@ -252,9 +280,11 @@ assembled from tools that already exist on this machine.
 2. `python tools/dayz-script-validator/scripts/script_validator.py <addon_root>` → fix all findings.
 3. Reconciliation gate (§6.2): `python tools/dayz-script-validator/scripts/ui_reconcile.py <addon>` — FindAnyWidget
    names + `#STR` keys cross-checked against layouts + stringtable.
-4. Faithful-ish preview: `build_viewer.py <layout>` (v2 — respects `visible`, models `text_proportion`,
-   resolution switcher exposes exact-flag breakage). Open the `*.preview.html`, flip through resolutions,
-   diff the 1080p view against the design mockup for gross layout.
+4. Faithful-ish preview: `build_viewer.py <layout>` (v2 — respects `visible`, models `text_proportion`;
+   its resolution switcher draws exact widgets as pixels, so only its 1080p view places them as the
+   game does, §1.1). Open the `*.preview.html` and diff the 1080p view against the design mockup for
+   gross layout. *(corrected 2026-10-03: this step said the «resolution switcher exposes exact-flag
+   breakage» and had you «flip through resolutions».)*
 5. Deploy via `dayz-test-ingame` (DayZDiag + filePatching, no signing) with a keybind-toggled test menu
    (LF_ColorTest / LFPG_UITest pattern). Optionally add a DbgUI slider panel for live tuning.
 6. Post-session: grep RPT for `Cannot open layout` + harness PASS/FAIL; screenshot at target
@@ -276,7 +306,8 @@ Rules for filling it:
 - Every visual element in the mockup MUST appear as a row with a real widget **class** (no element
   that only exists as a CSS effect). If it can't be expressed as a widget + verified attribute, it is
   not in the plan (§1.6).
-- Choose **Mode** per widget up front: proportional unless it must be pixel-true (§2).
+- Choose **Mode** per widget up front (§2): exact keeps its shape, proportional stretches with
+  its parent.
 - Name every widget you will `FindAnyWidget`/bind — the name in this table is the contract §6 checks.
 - Record where each color comes from (layout attribute vs script `SetColor`) so the preview's
   limitations are known and the in-game color is planned, not discovered.
@@ -327,8 +358,10 @@ typo-likely / 2 WARN verify; `--json` for machine output). It cross-checks the w
 8. Render the WRITTEN `.layout` (v1 renderer, labelled) and eyeball it against the mockup for gross
    layout — then trust ONLY the in-game screenshot for pixels/colors/fonts.
 9. Screenshot in-game at 1080p **and** one non-1080p resolution; diff against the calibrated mockup.
-   Resolution divergence here = an exact-flag issue (§1.1); asset-blank divergence = dual-registration
-   (§3); color divergence = SetLV / script SetColor (§1.2).
+   Resolution divergence here = a script rescaling exact widgets, a bitmap face that does not
+   shrink with its box (SKILL.md TEXT SIZING LAWS) or a proportional width at another aspect
+   (§1.1); asset-blank divergence = dual-registration (§3); color divergence = SetLV / script
+   SetColor (§1.2).
 
 ---
 

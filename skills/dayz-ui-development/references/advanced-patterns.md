@@ -330,7 +330,8 @@ class CurrencyToggleController extends ScriptView
    - Verify focus is set when UI opens
 
 6. **Check exact positioning**
-   - `hexactpos 1 vexactpos 1` = exact pixel coords from parent
+   - `hexactpos 1 vexactpos 1` = exact coords from parent, in units of 1/1080 of the screen
+     height (SKILL.md Rule 3; corrected 2026-10-03: this said «exact pixel coords from parent»)
    - `hexactpos 0 vexactpos 0` = fill parent (size 1 1 means full parent)
    - Mismatched pos/size can place widget outside clickable bounds
 
@@ -409,7 +410,8 @@ void UpdatePriceCard(float currentPrice, float change)
 **Key:**
 - Parent FrameWidget is fixed size (93x52)
 - Background uses `hexactsize 0 vexactsize 0` (fill) + `size 1 1` (full parent)
-- Text uses `hexactsize 1 vexactsize 1` (exact pixels)
+- Text uses `hexactsize 1 vexactsize 1` (exact units, 1/1080 of the screen height: SKILL.md
+  Rule 3; corrected 2026-10-03 from «(exact pixels)»)
 - All child widgets have `ignorepointer 1` (decorative)
 - Optional: add click handler to parent for card interaction
 
