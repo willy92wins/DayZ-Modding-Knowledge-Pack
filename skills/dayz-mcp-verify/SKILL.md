@@ -1165,22 +1165,26 @@ routes) [EXACT][CLAIM-MCPV-WORN-MANNEQUIN]:
 
 `dayz_test_run` accepts any `project` and reports `succeeded` whatever mod set it booted. In one run
 the `project` argument named another mod's project by mistake: the server loaded that mod and
-`@DayZ_MCP` with another mission, never the mod under test, and the absence of that mod's compile
-errors was read as a fix. A "defect measured in the engine" was written from it and had to be
-retracted. Before you attribute a compile result or any verdict to the mod under test, read the
-run's RPT and check the `-mod=` and `-mission=` it was started with (the reading of SP-124 above,
-applied to your own run).
+`@DayZ_MCP` with another mission, never the mod under test, and the missing compile errors of the
+mod under test were read as a fix. A "defect measured in the engine" was written from it and had to
+be retracted. Before you attribute a compile result or any verdict to the mod under test, read the
+`-mod=` and `-mission=` of that run in its RPT: the procedure is `dayz-test-ingame`'s "An in-game
+observation is worth whatever the `-mod=` line of ITS run is worth" (SP-124 above reads the same
+line to know whose box it is).
 
-## `dayz_test_run(build=true)`: the native debug gate rejects localized .NET satellites (added 2026-10-03)
+## `unapproved_debug_image` on a host with a non-English culture: check the server's code first (added 2026-10-03)
 
-On a host whose culture is Spanish (`es`), `dayz_test_run(build=true)` on a project whose build
-runs AddonBuilder fails with `native_debug_gate_rejected:unapproved_debug_image`. The .NET helper
-loads satellite resource assemblies
-(`C:\Windows\Microsoft.NET\assembly\GAC_MSIL\*.resources\v4.0_*_es_*`; measured:
-`mscorlib.resources.dll`), and the server's allowlist of modules for addon builds does not cover
-them. The reply on the wire carries no detail (kind, pid, image): read it in the MCP server's
-stderr log (search for `unapproved_debug_image`). It is a defect of the MCP server, not of the mod
-under test.
+On a host with a Spanish (`es`) culture, `dayz_test_run(build=true)` on a project whose build runs
+AddonBuilder was seen failing with `native_debug_gate_rejected:unapproved_debug_image` on
+2026-10-03: the .NET helper loads localized resource satellites
+(`C:\Windows\Microsoft.NET\assembly\GAC_MSIL\*.resources\v4.0_*_es_*`; seen:
+`mscorlib.resources.dll`). The MCP server's debug gate admits structurally valid `GAC_MSIL` resource
+satellites since a fix of 2026-10-01, so the rejection depends on the code the running server was
+started from. The reply on the wire carries no detail (kind, pid, image): read the rejected image in
+the MCP server's stderr log (search for `unapproved_debug_image`), and restart the server on current
+code before treating the rejection as a defect of the gate. It is never a defect of the mod under
+test.
 
 Source: written into the installed copy on 2026-10-03 by a session testing a mod through the MCP;
-ported here in English, without private names.
+ported here in English, without private names, and checked against the MCP server's code (its debug
+gate's satellite rule dates from 2026-10-01).

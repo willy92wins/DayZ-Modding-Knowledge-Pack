@@ -66,9 +66,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   "Check which mod a run loaded before reading its verdict": `dayz_test_run` accepts any `project`
   and reports `succeeded` whatever mod set it booted; one run loaded another mod, and the missing
   compile errors of the mod under test were read as a fix, so the run's `-mod=` and `-mission=` are
-  read in its RPT first. "`dayz_test_run(build=true)`: the native debug gate rejects localized .NET
-  satellites": on a host with a Spanish culture the AddonBuilder helper loads `*.resources`
-  satellites that the allowlist does not cover (`native_debug_gate_rejected:unapproved_debug_image`).
+  read in its RPT first, with `dayz-test-ingame`'s procedure. "`unapproved_debug_image` on a host
+  with a non-English culture: check the server's code first": a build on a host with a Spanish
+  culture was seen rejected for loading a localized .NET resource satellite; the MCP server's debug
+  gate admits those since a fix of 2026-10-01, so the section sends the reader to the code the
+  running server was started from and to its stderr log, instead of calling it a standing defect as
+  the live text did.
   A third section it had written, a Mission-module lesson about a class holding a `static ref` to
   itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
   contradicts it as well (`VicinityItemManager` holds one and its module compiles).
