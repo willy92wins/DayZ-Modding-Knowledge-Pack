@@ -687,6 +687,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   the shells between 10 % and 90 %, and the by-hand alternative to its pool fix, now read the
   shells part by part (its measurement, thresholds and exit codes are unchanged), and `SKILL.md`
   "OFFLINE GATE" says so, with the old text quoted in a dated note.
+- `dayz-p3d-audit` "Absolute winding check", rule 5: when the winding was the wrong side, it
+  reversed every face of every LOD, which on a model whose LODs are not all wrong moves the
+  inversion onto the healthy ones, against killer #1 and rule 7. It now reverses only the faces
+  the direction check of their kind reads wrong: Rule 18's per-component check on a collision
+  component (prerequisites as killer #1 says), the signed volume of each closed Visual shell, read
+  after Check B, against the side meant to be seen (an open or double-sided part has no sign), and
+  rule 4's sign on walkable Roadway faces. The stored normals of those faces are read before the
+  reversal with the Check A table, part by part (a group inside a part face by face, as "From
+  Check B to fix" step 3 reads it), and a part with no clean reading keeps them; never by one
+  corner's sign, which smoothed normals turn against faces that are right. Every face of every
+  LOD only inside a whole-model operation, undoing the reversal `P3D.transform()` applies for a
+  det<0 matrix or rule 8's reflection. The normals branch negates the whole pool only when every
+  part of the LOD reads the table's third row, as on the LFSecure exports the rule was written
+  for, and otherwise only those parts, through a negated copy of any entry a kept corner also
+  uses. Measured offline (py3d 1.9.0, synthetic models): a correct exterior Visual LOD (signed
+  volume −8) over a Geometry box wound outward (+8) ended at Visual +8 and Geometry −8 under the
+  old rule, `ERR_WINDING_INVERTED` still raised, and at −8 and −8 with no winding finding under
+  the new one; on an export with every face of every LOD reversed, the two write the same faces
+  and normals; in a Visual LOD whose healthy and broken boxes share six pool entries, negating the
+  whole pool left 24 of 48 corners agreeing and turned the healthy box's normals, where six
+  negated copies for the broken box left 48 of 48; a flat tetrahedron with area-weighted normals
+  has 6 of its 12 corners against their faces while healthy. The old sentence stays quoted in a
+  dated note. Finding R21-ALIGN-01 of the cross-family review of #67; the normals rules answer
+  this change's own review (two rounds).
 
 ## [1.5.0] - 2026-10-02
 
