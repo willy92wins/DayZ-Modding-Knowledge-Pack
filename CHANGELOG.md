@@ -12,7 +12,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `CLAIM-ANIM-IKPOSE-OBJECT-FRAME`): `LeftHandIKTarget` is keyed in the held object's frame, the
   frame of `RightHand_Dummy`. Measured offline on five vanilla two-handed ikposes extracted with
   DayZATool 1.3: the right wrist in that frame (`-Rᵀt` of the `RightHand_Dummy` key) mirrors
-  `LeftHandIKTarget` in the four symmetric grips, 0.5 to 7.3 cm off on the worst axis, and the
+  `LeftHandIKTarget` in the four symmetric grips, 0.48 to 7.31 cm off on the worst axis, and the
   truck battery and radiator rule out the opposite quaternion reading. `RightHandOrigin`'s frame is
   not known (in game, counter-rotating it with the object broke the right arm) and
   `LeftHandOrigin`'s was not tested; neither is in the bind-pose parent table. In that frame SEAnim
@@ -223,10 +223,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and editing one track of a vanilla clip turned every bone ABSOLUTE. `read_seanim` now returns each
   bone's `modifier` (None when it has none) and refuses a modifier index out of range or repeated;
   `write_seanim` writes one entry per bone that carries one, in bone order, two bytes wide past 255
-  bones, and refuses a value that is not a byte. That extract and four clips spliced from it read
-  and write back byte for byte; bones without `modifier` write what they wrote before. Regression
-  test `tests/test_seanim_writer.py`: fixtures built byte by byte from the SEAnim layout, 13 cases,
-  all failing on the previous script. `skeletal-anm-enfusion.md` (claim
+  bones (four past 65,535), and refuses a value that is not a byte. That extract and four clips
+  spliced from it read and write back byte for byte; bones without `modifier` write what they wrote
+  before. Regression test `tests/test_seanim_writer.py`: fixtures built byte by byte from the SEAnim
+  layout, 20 cases, all failing on the previous script; each mutant the review found surviving the
+  first 13 (modifier 0 dropped on read or write, the index width off by one at 255 or 65,535 bones,
+  only 0 to 3 accepted, 255 modifiers refused, `False` accepted) fails at least one of them.
+  `skeletal-anm-enfusion.md` (claim
   `CLAIM-ANIM-DAYZATOOL-NO-MODIFIERS`): DayZATool's `--generate-anim` does not keep them either; the
   `.anm` built from that extract unchanged re-extracts with none. `weapon-anim-authoring-viewer.md`
   and a comment in `seanim_export.py` no longer say that `read_seanim` drops them.

@@ -159,6 +159,42 @@ def test_past_255_bones_the_modifier_index_is_two_bytes_wide(tmp_path):
     assert _write_back(tmp_path / "wide_back.seanim", data) == raw
 
 
+def test_modifier_0_is_kept_as_a_value_and_255_is_a_valid_byte(tmp_path):
+    # 0 (ABSOLUTE) under a RELATIVE header is an override, not "no modifier": a truthiness
+    # test on read or on write would drop it. 255 is the top of the byte the format stores.
+    bones = [("Root", [(0, (0.0, 0.0, 0.0))], [(0, IDENTITY)]), ("Spine", [], [(0, TURN)]),
+             ("Neck", [], [(0, IDENTITY)])]
+    raw = build_seanim(bones, [(1, ABSOLUTE), (2, 255)], frame_count=1, anim_type=RELATIVE)
+    path = tmp_path / "zero.seanim"
+    path.write_bytes(raw)
+    data = sw.read_seanim(str(path))
+    assert [b["modifier"] for b in data["bones"]] == [None, ABSOLUTE, 255]
+    assert _write_back(tmp_path / "zero_back.seanim", data) == raw
+
+
+@pytest.mark.parametrize("bone_count", [255, 256, 65535, 65536])
+def test_the_modifier_index_widens_exactly_past_255_and_65535_bones(tmp_path, bone_count):
+    # bone_t is one byte up to 255 bones, two up to 65535, four above (seanim.py)
+    bones = [("B%05d" % i, [], []) for i in range(bone_count)]
+    bones[0] = ("B00000", [(0, (0.0, 1.0, 0.0))], [(0, IDENTITY)])
+    modifiers = [(bone_count - 1, RELATIVE)]
+    raw = build_seanim(bones, modifiers, frame_count=1)
+    path = tmp_path / "width.seanim"
+    path.write_bytes(raw)
+    data = sw.read_seanim(str(path))
+    assert data["bones"][-1]["modifier"] == RELATIVE
+    assert _write_back(tmp_path / "width_back.seanim", data) == raw
+
+
+def test_write_accepts_255_modifiers_the_most_the_header_counts(tmp_path):
+    bones = [("Bone%03d" % i, [], [(0, IDENTITY)]) for i in range(255)]
+    bones[0] = ("Bone000", [(0, (0.0, 1.0, 0.0))], [(0, IDENTITY)])
+    raw = build_seanim(bones, [(i, RELATIVE) for i in range(255)], frame_count=1)
+    path = tmp_path / "most.seanim"
+    path.write_bytes(raw)
+    assert _write_back(tmp_path / "most_back.seanim", sw.read_seanim(str(path))) == raw
+
+
 def test_bones_without_a_modifier_key_write_no_modifier_block(tmp_path):
     # What every caller in this skill passes (seanim_export.py, ik_pose_to_seanim.py):
     # the output must keep the layout it had before modifiers were written.
@@ -184,7 +220,8 @@ def test_read_refuses_a_modifier_it_cannot_attach_to_one_bone(tmp_path, modifier
         sw.read_seanim(str(path))
 
 
-@pytest.mark.parametrize("value", [-1, 256, 2.0, True], ids=["negative", "over-a-byte", "float", "bool"])
+@pytest.mark.parametrize("value", [-1, 256, 2.0, True, False],
+                         ids=["negative", "over-a-byte", "float", "bool-true", "bool-false"])
 def test_write_refuses_a_modifier_that_is_not_a_byte(tmp_path, value):
     bones = [{"name": "Spine", "rot_keys": [(0, IDENTITY)], "modifier": value}]
     with pytest.raises(ValueError, match="modifier"):
