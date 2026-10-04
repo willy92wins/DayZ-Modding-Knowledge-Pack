@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-04
+
+Collision measured in game and carried into `dayz-p3d-audit`, `dayz-model-pipeline` and py3d: a
+model with no `ComponentNN` selection in its collision LODs, or a closed part left out of every
+component, collides with nothing, and winding is repaired per convex component or closed shell,
+never by reversing a collision LOD to match the Visual LOD; py3d 1.9.0, 1.10.0 and the pinned
+1.10.1; new FAIL rules in `dayz-script-validator`; `packctl validate` against merge-conflict markers
+and a gate that runs every skill and tool test folder; collision probes in `dayz-mcp-verify`;
+`types.xml` lifetimes in `dayz-persistence`; and `dayz-doors` without its third-party `assets/`.
+
 ### Added
 
 - `dayz-persistence`: two sections from the LFPowerGrid mod (SP-459, SP-460; DayZDiag 1.29.163709). A class

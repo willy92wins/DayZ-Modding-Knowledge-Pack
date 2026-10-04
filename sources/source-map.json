@@ -971,10 +971,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcpv-pbo-index-port@2026-10-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 release v1.6.0, version approved by the owner (the notes are shown to the owner before the tag): [Unreleased] renamed [1.6.0] - 2026-10-04 with a summary paragraph, and an empty [Unreleased] kept above it. Its entries come from the pull requests merged after v1.5.0 (#37 to #102) and are unchanged. The summary was drafted by Muse Spark through OpenCode Zen from the entries and revised by Claude against the full entries, with every phrase cited to the changelog lines it summarizes and the citations checked line by line. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "485f5ae5ea790eb26c8d35d6c48437d61f9fb67975f7499148ace3d4456d700a",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.6.0@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1d7782108a916e5b0fd2a86ee23d6f8bce5767b08ee36702ba529f01d7310be8",
+      "output_hash": "485f5ae5ea790eb26c8d35d6c48437d61f9fb67975f7499148ace3d4456d700a",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
