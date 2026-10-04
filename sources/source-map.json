@@ -5230,10 +5230,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 (LFSkateboard): the 2026-06-11 note discarded PreAnim_SetFloat/SetInt on the vanilla player graph because 'vanilla graph variable IDs are not exposed to script'. Appended a correction, original text kept: IDs are bound by name with HumanAnimInterface.BindVariableFloat/Int/Bool(string) (exp/scripts/scripts/3_Game/human.c:312-314) through GetAnimInterface (human.c:1420-1421); player_main.agr:11,21,88 declare MovementDirection, TurnAmount, Lean; SIBNIC's shipped gunner binds Stance and sets it with PreAnim_SetInt (skills/dayz-vehicles/references/gunner-shoot-from-vehicle.md:48-51). Each line opened in DayZ 1.30.164014 Exp by Claude (Anthropic). Runtime survival of a value written every PreAnimUpdate against the graph's own VarUpdate (Locomotion.agf:9481-9488) is NOT measured and is labelled [DESIGN]. No cross-family review yet. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6b6f5a6734a31de07fb7d24285c13b81cc13589c0e5b29ccff0b251986ff4aaa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-anim-vanilla-var-bind@2026-10-04",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "545944e91a8e0f4df00d1194ececac521b908b9710ad4c10ddef321e58bd6a96",
+      "output_hash": "6b6f5a6734a31de07fb7d24285c13b81cc13589c0e5b29ccff0b251986ff4aaa",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -17249,10 +17259,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 (LFSkateboard): registered CLAIM-ANIM-VANILLA-VAR-BIND-130 for the dayz-animation-pipeline SKILL.md correction (bind vanilla graph variables by name). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2b97d8a7d829a288553eecee6f62d17856aa8c64bfcdbb5b5181f52c574e10a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-anim-vanilla-var-bind@2026-10-04",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "bd9d0c2e9fdbc70b4f5c6d7950f483bfce84bb01018deed23e5dfdcbee9f28ca",
+      "output_hash": "2b97d8a7d829a288553eecee6f62d17856aa8c64bfcdbb5b5181f52c574e10a0",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
