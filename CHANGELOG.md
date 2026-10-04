@@ -42,7 +42,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   readings say DirectX (curl residuals 0.013 against 0.024), not confirmed another way; nothing
   was checked in game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
   `tests/test_normal_convention.py` (34 tests) encodes synthetic height fields as DirectX and as
-  OpenGL and reads them back; eight mutants of the detector, nine of the floor and eighteen of the
+  OpenGL and reads them back; nine mutants of the detector, nine of the floor and eighteen of the
   block check each fail it. It skips where numpy
   or Pillow is missing, as on the CI runner. The ticket's second script (`uv_convencion.py`,
   V convention of a validated p3d) is not part of this change.

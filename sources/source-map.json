@@ -994,9 +994,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-03: Unreleased Added entry for dayz-texture-pipeline scripts/normal_convention.py and its test. Evidence as recorded on the script input of the same change. Written by Claude (Anthropic). Updated after review round 1. Updated after review round 2: a candidate to confirm another way, not proof. Updated after review round 3 (2026-10-04): one sentence on N5, the known limit of a raking-light confirmation. Wording only. Updated 2026-10-04 (owner's request): one sentence on the limit found by the vanilla product test, an OpenGL candidate cannot tell an inverted green from a red inverted against the relief. Updated 2026-10-04 (v2, owner's option 1, not merged): the curl floor sentence and the test count (19; eight detector mutants and nine floor mutants). Updated 2026-10-04 (v3): the block-check sentence and the test count (34; eighteen block-check mutants). Updated 2026-10-04 (v3 product test): the out-of-sample result and the design-sample map that still reads wrong (kancel_008_nohq); not passed. Updated 2026-10-04 (owner's decision): the combined rates and the owner's acceptance of the mixed-map limit.",
+          "decision_evidence": "kp-update 2026-10-03: Unreleased Added entry for dayz-texture-pipeline scripts/normal_convention.py and its test. Evidence as recorded on the script input of the same change. Written by Claude (Anthropic). Updated after review round 1. Updated after review round 2: a candidate to confirm another way, not proof. Updated after review round 3 (2026-10-04): one sentence on N5, the known limit of a raking-light confirmation. Wording only. Updated 2026-10-04 (owner's request): one sentence on the limit found by the vanilla product test, an OpenGL candidate cannot tell an inverted green from a red inverted against the relief. Updated 2026-10-04 (v2, owner's option 1, not merged): the curl floor sentence and the test count (19; eight detector mutants and nine floor mutants). Updated 2026-10-04 (v3): the block-check sentence and the test count (34; eighteen block-check mutants). Updated 2026-10-04 (v3 product test): the out-of-sample result and the design-sample map that still reads wrong (kancel_008_nohq); not passed. Updated 2026-10-04 (owner's decision): the combined rates and the owner's acceptance of the mixed-map limit. Corrected 2026-10-04: nine detector mutants, not eight (the round-2 commit message and the PR body list nine; review round 3 noted the mismatch).",
           "license": "MIT",
-          "source_hash": "90be1d71b64cbb6bb1b446009abe1710dbc4814447af6cd576131994e3cfc15a",
+          "source_hash": "22434d62d95a061c2851f735222731cfd588639fc83561b423a689325f3c82c0",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
@@ -1004,7 +1004,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "90be1d71b64cbb6bb1b446009abe1710dbc4814447af6cd576131994e3cfc15a",
+      "output_hash": "22434d62d95a061c2851f735222731cfd588639fc83561b423a689325f3c82c0",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
