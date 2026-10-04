@@ -961,10 +961,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04: Unreleased Added entry for the dayz-mcp-verify port of the section a session wrote into the installed copy ('Audit the deployed PBO's file index, not just the source tree, before attributing compile failures': what the PBO packs versus why a compile failed; the grep listing claim corrected; the rebuild advice narrowed in review) and the re-adjudication of the live copy; the unnamed session's control outcome and narrative are not ported. Evidence as recorded on the SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1d7782108a916e5b0fd2a86ee23d6f8bce5767b08ee36702ba529f01d7310be8",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-mcpv-pbo-index-port@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "de3b5a786d056d4871169f143b96f3243c98b2e286cdefb8f0a7acad264ee75b",
+      "output_hash": "1d7782108a916e5b0fd2a86ee23d6f8bce5767b08ee36702ba529f01d7310be8",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3647,10 +3657,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-chips-privname@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04: re-adjudication of skill/dayz-mcp-verify in claude_user_skills and agents_user_skills at the live digest 67c26345e5362bf54a1dbdfba8d7ce106f4008d5c1370b866873643612c668a9 (packctl tree_digest at 01:41, 02:04, 02:42 and 03:06 UTC; newest live file SKILL.md at 01:39:01 UTC), so the next promotion replaces the live copy with a backup; only observed_digest and reason of those two pairs change, as in PR #81 (confirmed by the cross-family review). Port and evidence as recorded on the skills/dayz-mcp-verify/SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2c50598d5ab4ad0400b6fb0bbf5dd02ec80c2cbbf84fe9fa41c177a5ee1ff02e",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-mcpv-pbo-index-port@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e44d97a72c1daba45f3630da940cd4bc888c0bf40092e26a5d11f11f0ff34274",
+      "output_hash": "2c50598d5ab4ad0400b6fb0bbf5dd02ec80c2cbbf84fe9fa41c177a5ee1ff02e",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -7950,10 +7970,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-spb-item-collision@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04: port of one section that a session wrote into the INSTALLED dayz-mcp-verify (both skill roots), found when packctl promote --check of main 7f76226 failed with PROMOTION-TARGET-UNEXPLAINED on skill/dayz-mcp-verify (expected 863f7aed..., the after-digest of receipt 065bcb4e; observed f98560d0... at 01:18 UTC). The section, 'Audit the deployed PBO's file index, not just the source tree, before attributing compile failures', was first written 2026-10-03 23:50 UTC and rewritten by its author 2026-10-04 01:39 UTC with a paragraph of limits; with it removed the live tree reproduces 863f7aed... (packctl tree_digest, checked on a copy and again by the reviewer in memory). Ported: the build can pack untracked scratch files, so know what the PBO holds before a decisive boot; the index is plaintext near the start of the binary; keep experiments out of the packed tree; the index audit says WHAT is packed, never WHY a compile failed. Corrected: grep -a \"scripts\\\\\\\\\" <mod>.pbo does not list every file; measured 2026-10-04 with GNU grep and the repository's parse_pbo on two real PBOs, it prints whole newline-delimited chunks of binary (one 1119-byte chunk holding all 21 names; on a 611-entry PBO with 14 newline bytes in its header, 4 chunks holding all 159 scripts entries but 218 of 611 names), so the section points at dayz-aviation's index reader and dayz-test-ingame's packed .c count instead. Narrowed in review (MCPV2-01, P2): the source's 'or rebuilding before every decisive boot keeps attribution clean' became: a rebuild packs the scratch files still in the tree and, without -clear, its -temp sync can serve stale source (skills/dayz-pbo-build/SKILL.md:483-487), so the index is read again after a rebuild. Not ported: the source's two-boot suspicion of probe files and the single-variable control that cleared them (an unnamed session, no run, no mod; whether it is the PBO state of the 2026-10-02 probe-copy run in PREREQUISITES 4 is not established, and the reviewer found no evidence either way), the undescribed edit to the file under test, and what the Pack already states (skills/dayz-mcp-verify/SKILL.md:343-345, :1144-1145; skills/dayz-test-ingame/SKILL.md:229-235; skills/dayz-pbo-build/SKILL.md:266 and skills/enforce-script-reference/references/pitfalls-advanced.md:92 for static analysis not replacing the game compile). Content drafted by opencode/muse-spark-1.3-contributor-free through OpenCode Zen (the GX10 lane stayed FULL for 31 min, owner's rule G7), two rounds against a calibrated gate, one wording fix by the receiver. Cross-family review: Codex gpt-6.1-sol, cap of two rounds set before round 1; round 1 SOUND-WITH-FIXES: MCPV2-01 (P2) fixed as above and checked mechanically, MCPV2-02 (P3) on the drafting report's citations, answered by the citations above; the adjudication, the digests and the source map were confirmed; PREREQUISITES 4 and CLAIM-MCPV-PROBE-COPY are left as they are (the reviewer noted that the probe copy changed two things at once and that #95's 'offending entries' reads causally). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7ddf472ee72c26189004716d3500392023385c3fcb57bef5a59c86e51f19b555",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-mcpv-pbo-index-port@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "26fcab5735a2f766ac2aaf7fa790c9db4f7a4150056078b21fa927bbbe2d71e2",
+      "output_hash": "7ddf472ee72c26189004716d3500392023385c3fcb57bef5a59c86e51f19b555",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"

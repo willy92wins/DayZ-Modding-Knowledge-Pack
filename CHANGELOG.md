@@ -108,6 +108,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   A third section it had written, a Mission-module lesson about a class holding a `static ref` to
   itself, was retracted by its author as measured on the wrong mod and is not ported; vanilla 1.29
   contradicts it as well (`VicinityItemManager` holds one and its module compiles).
+- `dayz-mcp-verify`: the section the installed copy added on 2026-10-04 ("Audit the deployed PBO's
+  file index, not just the source tree, before attributing compile failures"), ported in English
+  without private names; the live copy is re-adjudicated in `promotions/adjudications.json`, so the
+  next promotion replaces it with this one. Ported: the WHAT-is-packed versus WHY-it-failed limit,
+  keeping experiments out of the packed tree (narrowed in review: a rebuild packs what is still in the
+  tree and, without `-clear`, can pack stale source, so the index is read again after it), and the
+  header-plaintext fact with the listing claim corrected (the source's grep form finds the names but
+  prints whole newline-delimited chunks of binary, not one name per line, per a measurement on real
+  PBOs; the section points at `dayz-aviation`'s index reader and `dayz-test-ingame`'s packed `.c`
+  count check instead). Not ported: the lists-every-file reading of that grep (overstated per the
+  measurement); the two-boot suspicion and its control outcome (an unnamed session, and the suspected
+  construct is ordinary code, see `VicinityItemManager` above); the undescribed edit to the file under
+  test; the multi-variable and one-variable-control morals, that static analysis is not a compiler,
+  and the list-before-testing prescription, already in the Pack; the session narrative.
 - `dayz-mcp-verify` static-object playbook, collision: the ray battery of `dayz-p3d-audit` rule 6 as
   a recipe with its two controls, and why picking an item up is not a collision test (SP-454;
   DayZDiag 1.29.163709, dayz-mcp run 606a5dbb, 2026-10-02). Nine rays per mode in `geom`, `view` and

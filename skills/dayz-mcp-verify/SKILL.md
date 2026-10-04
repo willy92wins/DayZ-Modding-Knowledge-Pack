@@ -1284,3 +1284,22 @@ test.
 Source: written into the installed copy on 2026-10-03 by a session testing a mod through the MCP;
 ported here in English, without private names, and checked against the MCP server's code (its debug
 gate's satellite rule dates from 2026-10-01).
+
+## Audit the deployed PBO's file index, not just the source tree, before attributing compile failures (added 2026-10-04)
+
+The build can pack untracked scratch files, so assuming the PBO holds exactly the source tree
+misattributes a compile verdict read from the boot's log: know what the build actually packed
+before a decisive boot. The PBO index is plaintext near the start of the binary. A
+`grep -a "scripts\\\\" <mod>.pbo` finds the names, but it prints whole newline-delimited chunks
+of binary, not one name per line, so it is not a file list. To read the index itself,
+`dayz-aviation`'s "Read the PBO index before extracting" describes a reader over the header, and
+`dayz-test-ingame` lists the PBO and compares the packed `.c` count with the source's.
+Keep experiments out of the packed tree: a rebuild packs the scratch files still in it, and without
+`-clear` its `-temp` sync can serve stale source (`dayz-pbo-build`, "Temp-stale trap"), so after a
+rebuild read the deployed PBO's index again before the decisive boot.
+
+Limits: the index audit establishes WHAT is packed, never WHY a compile failed.
+
+Source: written into the installed copy on 2026-10-04 by a session that spent two days on a mod's
+compile failures; ported here in English, without private names, with the listing claim corrected
+against a measurement on real PBOs.
