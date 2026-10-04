@@ -202,5 +202,58 @@ def test_cli_exit_codes_and_json(maps, tmp_path, capsys):
     assert "differ in size" in capsys.readouterr().err
 
 
+@pytest.mark.parametrize("convention", ["DirectX", "OpenGL"])
+def test_the_curl_floor_compares_the_residual_difference(maps, convention):
+    r = nc.detect(maps[convention], maps["albedo"])
+    assert r["curl_verdict"] == convention
+    d = abs(r["curl_residual_directx"] - r["curl_residual_opengl"])
+    raised = nc.detect(maps[convention], maps["albedo"], curl_floor=d + 1e-9)
+    assert raised["curl_verdict"] == "INCONCLUSIVE", raised
+    assert raised["verdict"] == "INCONCLUSIVE", raised
+    lowered = nc.detect(maps[convention], maps["albedo"], curl_floor=d - 1e-9)
+    assert lowered["curl_verdict"] == convention, lowered
+    # a difference exactly equal to the floor is noise too (receptor addition: kills <= -> <)
+    at = nc.detect(maps[convention], maps["albedo"], curl_floor=d)
+    assert at["curl_verdict"] == "INCONCLUSIVE", at
+
+
+def test_residuals_within_one_quantization_step_are_inconclusive():
+    # smooth single-period field: the residuals sit half an 8-bit step apart (0 and 1/255),
+    # under the floor (2/255), so the ratio test alone would name DirectX but the floor abstains
+    rows, cols = np.mgrid[0:SIZE, 0:SIZE].astype(np.float64)
+    omega = 2.0 * np.pi / SIZE
+    h = 0.3 * np.cos(omega * cols) * np.cos(omega * rows)
+    result = nc.detect(
+        _encode(np.gradient(h, axis=1), np.gradient(h, axis=0), "DirectX"),
+        _albedo(h),
+    )
+    rd = result["curl_residual_directx"]
+    rg = result["curl_residual_opengl"]
+    assert min(rd, rg) < nc.CURL_RATIO * max(rd, rg), result
+    assert abs(rd - rg) <= nc.CURL_FLOOR, result
+    assert result["curl_verdict"] == "INCONCLUSIVE", result
+
+
+def test_json_reports_the_curl_floor(maps, tmp_path, capsys):
+    normal_path = tmp_path / "normal.png"
+    albedo_path = tmp_path / "albedo.png"
+    maps["DirectX"].save(normal_path)
+    maps["albedo"].save(albedo_path)
+    nc.main(["--normal", str(normal_path), "--albedo", str(albedo_path), "--json"])
+    out = _strict_json(capsys.readouterr().out)
+    assert out["curl_floor"] == pytest.approx(2.0 / 255.0)
+
+
+def test_a_difference_of_exactly_one_step_is_noise():
+    # the residual medians of vanilla vineyardfence_wires_nohq (product test, 2026-10-04): 4/255 and
+    # 2/255 as computed. Their difference is one step plus a few ulps, so a bare <= let it through.
+    rd, rg = 0.015686274509803977, 0.007843137254901933
+    assert abs(rd - rg) > nc.CURL_FLOOR
+    assert nc._curl_verdict(rd, rg, nc.CURL_RATIO, nc.CURL_FLOOR) == "INCONCLUSIVE"
+    # one and a half steps apart is signal
+    assert nc._curl_verdict(rd + 1.0 / 255.0, rg, nc.CURL_RATIO, nc.CURL_FLOOR) == "OpenGL"
+    assert nc._curl_verdict(rg, rd + 1.0 / 255.0, nc.CURL_RATIO, nc.CURL_FLOOR) == "DirectX"
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q", "-p", "no:cacheprovider"]))

@@ -41,7 +41,12 @@ when they agree:
   or undefined (a flat or clean albedo).
 - **Curl reading.** With p = −nx/nz and q = ny/nz, the slopes of a height field satisfy
   d(p)/d(row) = d(q)/d(col) under OpenGL and d(p)/d(row) = −d(q)/d(col) under DirectX. The
-  convention whose median residual is under 0.8 of the other's wins; otherwise no answer.
+  convention whose median residual is under 0.8 of the other's wins, provided the two medians
+  differ by more than one 8-bit step of the normal (2/255); otherwise no answer. Rounding to
+  8 bits alone moves each residual by up to one step (p and q by half a step, the central
+  difference keeps that, the residual adds two of them), so closer medians are noise. The
+  floor was added after a vanilla map whose residuals sat one half-step apart read OpenGL
+  (product test, 2026-10-04).
 
 Exit 0 = a candidate, `DirectX` or `OpenGL` (both readings agree), 2 = `INCONCLUSIVE`, 1 = bad
 input. **A candidate is not proof.** The cross-family review (2026-10-03) built known-DirectX

@@ -29,7 +29,9 @@ that groove as a ridge.
 2. Curl reading (added in review, no albedo): the slopes of a height field have no curl. With
    p = -nx/nz and q = ny/nz, d(p)/d(row) - d(q)/d(col) is ~0 under OpenGL and
    d(p)/d(row) + d(q)/d(col) is ~0 under DirectX. The smaller median residual wins if it is
-   below CURL_RATIO times the other.
+   below CURL_RATIO times the other and the two differ by more than CURL_FLOOR, one 8-bit step
+   of the normal (2/255): rounding alone moves each residual by up to one step, so closer
+   medians are noise (added after a vanilla map at the quantization floor read OpenGL).
 
 What it does NOT check: inverting the green channel of the same map only negates the green
 correlation and swaps the two curl residuals, so it always flips the verdict and is no control.
@@ -71,6 +73,7 @@ BLUR_RADIUS = 6     # Gaussian radius of the albedo's low-pass, in pixels
 MIN_CORR = 0.02     # weaker albedo correlations are INCONCLUSIVE
 NZ_MIN = 0.2        # floor for nz when normals are turned into slopes
 CURL_RATIO = 0.8    # the smaller curl residual must be below this times the other
+CURL_FLOOR = 2.0 / 255.0  # one 8-bit step of the normal: residual medians closer than this are rounding noise
 
 DIRECTX, OPENGL, INCONCLUSIVE = "DirectX", "OpenGL", "INCONCLUSIVE"
 
@@ -108,7 +111,7 @@ def _albedo_reading(nx, ny, albedo_img, blur_radius, detail_min, luma_min, min_c
     return {"verdict": verdict, "corr_red": red, "corr_green": green, "pixels": int(mask.sum())}
 
 
-def _curl_reading(nx, ny, nz, detail_min, curl_ratio) -> dict:
+def _curl_reading(nx, ny, nz, detail_min, curl_ratio, curl_floor) -> dict:
     nz = np.clip(nz, NZ_MIN, None)
     p = -nx / nz                       # dh/dcol in both conventions
     q = ny / nz                        # dh/drow under OpenGL, -dh/drow under DirectX
@@ -119,18 +122,25 @@ def _curl_reading(nx, ny, nz, detail_min, curl_ratio) -> dict:
         return {"verdict": INCONCLUSIVE, "residual_directx": float("nan"), "residual_opengl": float("nan")}
     res_opengl = float(np.median(np.abs(dp_drow - dq_dcol)[mask]))
     res_directx = float(np.median(np.abs(dp_drow + dq_dcol)[mask]))
-    if res_directx < curl_ratio * res_opengl:
-        verdict = DIRECTX
-    elif res_opengl < curl_ratio * res_directx:
-        verdict = OPENGL
-    else:
-        verdict = INCONCLUSIVE
+    verdict = _curl_verdict(res_directx, res_opengl, curl_ratio, curl_floor)
     return {"verdict": verdict, "residual_directx": res_directx, "residual_opengl": res_opengl}
+
+
+def _curl_verdict(res_directx: float, res_opengl: float, curl_ratio: float, curl_floor: float) -> str:
+    # Medians of 8-bit data sit on multiples of 1/255 up to float error: a difference of exactly
+    # one step computes as 2/255 plus a few ulps, and the relative tolerance keeps it on the noise side.
+    if abs(res_directx - res_opengl) <= curl_floor * (1.0 + 1e-9):
+        return INCONCLUSIVE
+    if res_directx < curl_ratio * res_opengl:
+        return DIRECTX
+    if res_opengl < curl_ratio * res_directx:
+        return OPENGL
+    return INCONCLUSIVE
 
 
 def detect(normal_img: Image.Image, albedo_img: Image.Image, *, blur_radius: float = BLUR_RADIUS,
            detail_min: float = DETAIL_MIN, luma_min: float = LUMA_MIN, min_corr: float = MIN_CORR,
-           curl_ratio: float = CURL_RATIO) -> dict:
+           curl_ratio: float = CURL_RATIO, curl_floor: float = CURL_FLOOR) -> dict:
     """Return the verdict and the numbers behind it. Raises ValueError on mismatched sizes."""
     if normal_img.size != albedo_img.size:
         raise ValueError("normal map %s and albedo %s differ in size" % (normal_img.size, albedo_img.size))
@@ -140,7 +150,7 @@ def detect(normal_img: Image.Image, albedo_img: Image.Image, *, blur_radius: flo
     nz = nrm[:, :, 2] * 2.0 - 1.0
 
     albedo = _albedo_reading(nx, ny, albedo_img, blur_radius, detail_min, luma_min, min_corr)
-    curl = _curl_reading(nx, ny, nz, detail_min, curl_ratio)
+    curl = _curl_reading(nx, ny, nz, detail_min, curl_ratio, curl_floor)
     if albedo["verdict"] == curl["verdict"] and albedo["verdict"] != INCONCLUSIVE:
         verdict = albedo["verdict"]
     else:
@@ -157,6 +167,7 @@ def detect(normal_img: Image.Image, albedo_img: Image.Image, *, blur_radius: flo
         "curl_residual_opengl": curl["residual_opengl"],
         "min_corr": min_corr,
         "curl_ratio": curl_ratio,
+        "curl_floor": curl_floor,
     }
 
 
