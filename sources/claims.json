@@ -1638,6 +1638,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-val-compile-errors@2026-10-03",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
+      "claim_id": "CLAIM-ENFORCE-UNDEFINED-TYPE-REF",
+      "evidence_locator": "netcopdev/TransferZ (public), PR #12 at 11da911, audited offline on 2026-09-19: Scripts/5_Mission/TransferZ/TransferZ_MaintenanceClient.c:59 calls TransferZExternalStagingSortPlanner.Sort(player, source) while the PR deletes Scripts/4_World/TransferZ/TransferZ_ExternalStagingSortPlanner.c, the type's only declaration; no declaration of it in the mod, the vanilla scripts tree or CF. The linter at Pack bc042c2 answered WARN with 0 errors on that tree. With the first version of this rule and the CF scripts passed: 1 FAIL, on that line, at 11da911, and none on the mod's main at 2c7d5c1. Re-read on 2026-10-03 through the GitHub API: line 59 at 11da911 holds that call, and the 4_World file is absent at 11da911 and present at 2c7d5c1 (the PR was merged later at 2a7b241, whose line 59 calls TransferZTransactionalSortPlanner.Sort instead). Not booted: the compile failure follows from the missing declaration. Fixtures under tests/fixtures/undefined_class_ref (bad_mission_ref is that shape with fixture names). Vanilla control on 1.29.0.163451 after the cross-family review fixes of 2026-10-03: 33 003 references judged, no finding, findings match the baseline.",
+      "license": "MIT",
+      "line_end": 55,
+      "line_start": 12,
+      "observed_at": "2026-09-19",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1

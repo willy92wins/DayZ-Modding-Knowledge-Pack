@@ -951,10 +951,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-compile-errors@2026-10-04",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: ES-UNDEFINED-CLASS-REF, the tree-level check written on 2026-09-19 in the Pack's main checkout and never committed, ported to main unchanged: tools/dayz-script-validator is identical at bc042c2 and main ea7b396, and every ported file was compared by sha256 with the checkout's copy. The rule flags a class-like name used where only a type fits (Name.Method(, Name.Cast(, new Name, a template argument, a typed declaration at the start of a line) when no class, enum or typedef of that name is declared in the addon, the vanilla tree (--vanilla-root, then DAYZ_VANILLA_ROOT, then P:\\scripts) or an --external-scripts root, and lists under info.skipped_checks, never as a finding, what it cannot judge: no vanilla tree, a requiredAddons[] entry outside DZ_* that no scanned root declares in CfgPatches, or no requiredAddons[] entry at all. Evidence: netcopdev/TransferZ PR #12 at 11da911 deletes a 4_World class that 5_Mission still calls (TransferZ_MaintenanceClient.c:59), and the linter answered WARN with 0 errors (CLAIM-ENFORCE-UNDEFINED-TYPE-REF, offline_tested, not booted). script_validator.py wires the rule and --vanilla-root and prints SKIP lines in --terse; vanilla_control.py passes the tree as its own vanilla root, and the resolver moves to scripts/shared/vanilla_tree.py; the README documents the rule; tests/test_script_validator.py adds TestUndefinedClassRef (10 tests) and hides DAYZ_VANILLA_ROOT and P:\\scripts from the module, so no verdict depends on what the machine mounts. Measured: python -m unittest discover tests, 174 passed; vanilla_control.py on vanilla 1.29.0.163451, PASS, findings match the baseline, with 33 003 references judged and no finding of the new rule. CHANGELOG.md: an Unreleased Added entry; sources/claims.json: CLAIM-ENFORCE-UNDEFINED-TYPE-REF. Cross-family review round 1 (Codex gpt-6.1-sol, 2026-10-03) reported two P1 false FAILs and four P2 wrong FAIL-versus-SKIP decisions, each with an executable repro, all fixed and each fix guarded by a test that a mutant of it turns red: the second variable of `string a, B;` is now a variable (comma declarators are collected); the #ifndef and #else branches of a macro the scanned code #defines outside any #if block, or that a scanned CfgMods defines[] lists, are not judged (a #define inside a block stays a two-way flag, as vanilla's 1_core/defines.c build flags are); a requiredAddons[] token that is not a string literal is an unknown dependency; the requiredAddons[] of every scanned dependency that the addon requires is followed, so a dependency of a dependency must be scanned too; a vanilla root must be a directory that declares class Managed (1_core/proto/enscript.c:117); and only the 211 CfgPatches names of P:\\DZ (1.29.0.163451), the scripts tree and the 1.30.164014 Exp data count as vanilla, listed in scripts/shared/vanilla_patches.py, since four mod patches under P:\\ use the DZ_ prefix too. After the fixes: 179 tests passed, and the vanilla control still PASSes with the same 33 003 references judged and no finding. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "de3b5a786d056d4871169f143b96f3243c98b2e286cdefb8f0a7acad264ee75b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5e38432040c91e6711d284fd788c40cd59dd13e2b799627d78fe8092576d312b",
+      "output_hash": "de3b5a786d056d4871169f143b96f3243c98b2e286cdefb8f0a7acad264ee75b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17055,10 +17065,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-compile-errors@2026-10-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: ES-UNDEFINED-CLASS-REF, the tree-level check written on 2026-09-19 in the Pack's main checkout and never committed, ported to main unchanged: tools/dayz-script-validator is identical at bc042c2 and main ea7b396, and every ported file was compared by sha256 with the checkout's copy. The rule flags a class-like name used where only a type fits (Name.Method(, Name.Cast(, new Name, a template argument, a typed declaration at the start of a line) when no class, enum or typedef of that name is declared in the addon, the vanilla tree (--vanilla-root, then DAYZ_VANILLA_ROOT, then P:\\scripts) or an --external-scripts root, and lists under info.skipped_checks, never as a finding, what it cannot judge: no vanilla tree, a requiredAddons[] entry outside DZ_* that no scanned root declares in CfgPatches, or no requiredAddons[] entry at all. Evidence: netcopdev/TransferZ PR #12 at 11da911 deletes a 4_World class that 5_Mission still calls (TransferZ_MaintenanceClient.c:59), and the linter answered WARN with 0 errors (CLAIM-ENFORCE-UNDEFINED-TYPE-REF, offline_tested, not booted). script_validator.py wires the rule and --vanilla-root and prints SKIP lines in --terse; vanilla_control.py passes the tree as its own vanilla root, and the resolver moves to scripts/shared/vanilla_tree.py; the README documents the rule; tests/test_script_validator.py adds TestUndefinedClassRef (10 tests) and hides DAYZ_VANILLA_ROOT and P:\\scripts from the module, so no verdict depends on what the machine mounts. Measured: python -m unittest discover tests, 174 passed; vanilla_control.py on vanilla 1.29.0.163451, PASS, findings match the baseline, with 33 003 references judged and no finding of the new rule. CHANGELOG.md: an Unreleased Added entry; sources/claims.json: CLAIM-ENFORCE-UNDEFINED-TYPE-REF. Cross-family review round 1 (Codex gpt-6.1-sol, 2026-10-03) reported two P1 false FAILs and four P2 wrong FAIL-versus-SKIP decisions, each with an executable repro, all fixed and each fix guarded by a test that a mutant of it turns red: the second variable of `string a, B;` is now a variable (comma declarators are collected); the #ifndef and #else branches of a macro the scanned code #defines outside any #if block, or that a scanned CfgMods defines[] lists, are not judged (a #define inside a block stays a two-way flag, as vanilla's 1_core/defines.c build flags are); a requiredAddons[] token that is not a string literal is an unknown dependency; the requiredAddons[] of every scanned dependency that the addon requires is followed, so a dependency of a dependency must be scanned too; a vanilla root must be a directory that declares class Managed (1_core/proto/enscript.c:117); and only the 211 CfgPatches names of P:\\DZ (1.29.0.163451), the scripts tree and the 1.30.164014 Exp data count as vanilla, listed in scripts/shared/vanilla_patches.py, since four mod patches under P:\\ use the DZ_ prefix too. After the fixes: 179 tests passed, and the vanilla control still PASSes with the same 33 003 references judged and no finding. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bd9d0c2e9fdbc70b4f5c6d7950f483bfce84bb01018deed23e5dfdcbee9f28ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "caacf36411a18cecfd64dd478fc93257fd5d53840b45c7c5bd9d1970c4e53df3",
+      "output_hash": "bd9d0c2e9fdbc70b4f5c6d7950f483bfce84bb01018deed23e5dfdcbee9f28ca",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20260,10 +20280,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-compile-errors@2026-10-04",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: ES-UNDEFINED-CLASS-REF, the tree-level check written on 2026-09-19 in the Pack's main checkout and never committed, ported to main unchanged: tools/dayz-script-validator is identical at bc042c2 and main ea7b396, and every ported file was compared by sha256 with the checkout's copy. The rule flags a class-like name used where only a type fits (Name.Method(, Name.Cast(, new Name, a template argument, a typed declaration at the start of a line) when no class, enum or typedef of that name is declared in the addon, the vanilla tree (--vanilla-root, then DAYZ_VANILLA_ROOT, then P:\\scripts) or an --external-scripts root, and lists under info.skipped_checks, never as a finding, what it cannot judge: no vanilla tree, a requiredAddons[] entry outside DZ_* that no scanned root declares in CfgPatches, or no requiredAddons[] entry at all. Evidence: netcopdev/TransferZ PR #12 at 11da911 deletes a 4_World class that 5_Mission still calls (TransferZ_MaintenanceClient.c:59), and the linter answered WARN with 0 errors (CLAIM-ENFORCE-UNDEFINED-TYPE-REF, offline_tested, not booted). script_validator.py wires the rule and --vanilla-root and prints SKIP lines in --terse; vanilla_control.py passes the tree as its own vanilla root, and the resolver moves to scripts/shared/vanilla_tree.py; the README documents the rule; tests/test_script_validator.py adds TestUndefinedClassRef (10 tests) and hides DAYZ_VANILLA_ROOT and P:\\scripts from the module, so no verdict depends on what the machine mounts. Measured: python -m unittest discover tests, 174 passed; vanilla_control.py on vanilla 1.29.0.163451, PASS, findings match the baseline, with 33 003 references judged and no finding of the new rule. CHANGELOG.md: an Unreleased Added entry; sources/claims.json: CLAIM-ENFORCE-UNDEFINED-TYPE-REF. Cross-family review round 1 (Codex gpt-6.1-sol, 2026-10-03) reported two P1 false FAILs and four P2 wrong FAIL-versus-SKIP decisions, each with an executable repro, all fixed and each fix guarded by a test that a mutant of it turns red: the second variable of `string a, B;` is now a variable (comma declarators are collected); the #ifndef and #else branches of a macro the scanned code #defines outside any #if block, or that a scanned CfgMods defines[] lists, are not judged (a #define inside a block stays a two-way flag, as vanilla's 1_core/defines.c build flags are); a requiredAddons[] token that is not a string literal is an unknown dependency; the requiredAddons[] of every scanned dependency that the addon requires is followed, so a dependency of a dependency must be scanned too; a vanilla root must be a directory that declares class Managed (1_core/proto/enscript.c:117); and only the 211 CfgPatches names of P:\\DZ (1.29.0.163451), the scripts tree and the 1.30.164014 Exp data count as vanilla, listed in scripts/shared/vanilla_patches.py, since four mod patches under P:\\ use the DZ_ prefix too. After the fixes: 179 tests passed, and the vanilla control still PASSes with the same 33 003 references judged and no finding. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fcd0bd3d5dfa03aa4de5e242c349e272f0369772c62a14e282b6e5c4485895fc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0ee21435c8d1bd2fc01d10e5a2d5c0a7edad215015e09deac0ef5e89afc8bc42",
+      "output_hash": "fcd0bd3d5dfa03aa4de5e242c349e272f0369772c62a14e282b6e5c4485895fc",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21040,10 +21070,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-val-compile-errors@2026-10-04",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: ES-UNDEFINED-CLASS-REF, the tree-level check written on 2026-09-19 in the Pack's main checkout and never committed, ported to main unchanged: tools/dayz-script-validator is identical at bc042c2 and main ea7b396, and every ported file was compared by sha256 with the checkout's copy. The rule flags a class-like name used where only a type fits (Name.Method(, Name.Cast(, new Name, a template argument, a typed declaration at the start of a line) when no class, enum or typedef of that name is declared in the addon, the vanilla tree (--vanilla-root, then DAYZ_VANILLA_ROOT, then P:\\scripts) or an --external-scripts root, and lists under info.skipped_checks, never as a finding, what it cannot judge: no vanilla tree, a requiredAddons[] entry outside DZ_* that no scanned root declares in CfgPatches, or no requiredAddons[] entry at all. Evidence: netcopdev/TransferZ PR #12 at 11da911 deletes a 4_World class that 5_Mission still calls (TransferZ_MaintenanceClient.c:59), and the linter answered WARN with 0 errors (CLAIM-ENFORCE-UNDEFINED-TYPE-REF, offline_tested, not booted). script_validator.py wires the rule and --vanilla-root and prints SKIP lines in --terse; vanilla_control.py passes the tree as its own vanilla root, and the resolver moves to scripts/shared/vanilla_tree.py; the README documents the rule; tests/test_script_validator.py adds TestUndefinedClassRef (10 tests) and hides DAYZ_VANILLA_ROOT and P:\\scripts from the module, so no verdict depends on what the machine mounts. Measured: python -m unittest discover tests, 174 passed; vanilla_control.py on vanilla 1.29.0.163451, PASS, findings match the baseline, with 33 003 references judged and no finding of the new rule. CHANGELOG.md: an Unreleased Added entry; sources/claims.json: CLAIM-ENFORCE-UNDEFINED-TYPE-REF. Cross-family review round 1 (Codex gpt-6.1-sol, 2026-10-03) reported two P1 false FAILs and four P2 wrong FAIL-versus-SKIP decisions, each with an executable repro, all fixed and each fix guarded by a test that a mutant of it turns red: the second variable of `string a, B;` is now a variable (comma declarators are collected); the #ifndef and #else branches of a macro the scanned code #defines outside any #if block, or that a scanned CfgMods defines[] lists, are not judged (a #define inside a block stays a two-way flag, as vanilla's 1_core/defines.c build flags are); a requiredAddons[] token that is not a string literal is an unknown dependency; the requiredAddons[] of every scanned dependency that the addon requires is followed, so a dependency of a dependency must be scanned too; a vanilla root must be a directory that declares class Managed (1_core/proto/enscript.c:117); and only the 211 CfgPatches names of P:\\DZ (1.29.0.163451), the scripts tree and the 1.30.164014 Exp data count as vanilla, listed in scripts/shared/vanilla_patches.py, since four mod patches under P:\\ use the DZ_ prefix too. After the fixes: 179 tests passed, and the vanilla control still PASSes with the same 33 003 references judged and no finding. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "da5101225292e7296117c572e224e510b9586dacccd85a8a6a71933ed36d8d2f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "730074a37b818218cae4abf05eb83e88e6947c495a2d949fe94c80fa41c3f723",
+      "output_hash": "da5101225292e7296117c572e224e510b9586dacccd85a8a6a71933ed36d8d2f",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21216,10 +21256,20 @@
           "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
           "source_revision": "r21-vanilla-control@2026-08-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: ES-UNDEFINED-CLASS-REF, the tree-level check written on 2026-09-19 in the Pack's main checkout and never committed, ported to main unchanged: tools/dayz-script-validator is identical at bc042c2 and main ea7b396, and every ported file was compared by sha256 with the checkout's copy. The rule flags a class-like name used where only a type fits (Name.Method(, Name.Cast(, new Name, a template argument, a typed declaration at the start of a line) when no class, enum or typedef of that name is declared in the addon, the vanilla tree (--vanilla-root, then DAYZ_VANILLA_ROOT, then P:\\scripts) or an --external-scripts root, and lists under info.skipped_checks, never as a finding, what it cannot judge: no vanilla tree, a requiredAddons[] entry outside DZ_* that no scanned root declares in CfgPatches, or no requiredAddons[] entry at all. Evidence: netcopdev/TransferZ PR #12 at 11da911 deletes a 4_World class that 5_Mission still calls (TransferZ_MaintenanceClient.c:59), and the linter answered WARN with 0 errors (CLAIM-ENFORCE-UNDEFINED-TYPE-REF, offline_tested, not booted). script_validator.py wires the rule and --vanilla-root and prints SKIP lines in --terse; vanilla_control.py passes the tree as its own vanilla root, and the resolver moves to scripts/shared/vanilla_tree.py; the README documents the rule; tests/test_script_validator.py adds TestUndefinedClassRef (10 tests) and hides DAYZ_VANILLA_ROOT and P:\\scripts from the module, so no verdict depends on what the machine mounts. Measured: python -m unittest discover tests, 174 passed; vanilla_control.py on vanilla 1.29.0.163451, PASS, findings match the baseline, with 33 003 references judged and no finding of the new rule. CHANGELOG.md: an Unreleased Added entry; sources/claims.json: CLAIM-ENFORCE-UNDEFINED-TYPE-REF. Cross-family review round 1 (Codex gpt-6.1-sol, 2026-10-03) reported two P1 false FAILs and four P2 wrong FAIL-versus-SKIP decisions, each with an executable repro, all fixed and each fix guarded by a test that a mutant of it turns red: the second variable of `string a, B;` is now a variable (comma declarators are collected); the #ifndef and #else branches of a macro the scanned code #defines outside any #if block, or that a scanned CfgMods defines[] lists, are not judged (a #define inside a block stays a two-way flag, as vanilla's 1_core/defines.c build flags are); a requiredAddons[] token that is not a string literal is an unknown dependency; the requiredAddons[] of every scanned dependency that the addon requires is followed, so a dependency of a dependency must be scanned too; a vanilla root must be a directory that declares class Managed (1_core/proto/enscript.c:117); and only the 211 CfgPatches names of P:\\DZ (1.29.0.163451), the scripts tree and the 1.30.164014 Exp data count as vanilla, listed in scripts/shared/vanilla_patches.py, since four mod patches under P:\\ use the DZ_ prefix too. After the fixes: 179 tests passed, and the vanilla control still PASSes with the same 33 003 references judged and no finding. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "71c43a0535d29d9bef44a65414e6e02fcd0a6887f177098c071f206592084214",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e99bda82afc0c6ac9de86f36a3aeaad5e6c3c1b2b06eb31ca84d56bc7b1cac85",
+      "output_hash": "71c43a0535d29d9bef44a65414e6e02fcd0a6887f177098c071f206592084214",
       "output_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24614,10 +24664,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-compile-errors@2026-10-04",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-03: ES-UNDEFINED-CLASS-REF, the tree-level check written on 2026-09-19 in the Pack's main checkout and never committed, ported to main unchanged: tools/dayz-script-validator is identical at bc042c2 and main ea7b396, and every ported file was compared by sha256 with the checkout's copy. The rule flags a class-like name used where only a type fits (Name.Method(, Name.Cast(, new Name, a template argument, a typed declaration at the start of a line) when no class, enum or typedef of that name is declared in the addon, the vanilla tree (--vanilla-root, then DAYZ_VANILLA_ROOT, then P:\\scripts) or an --external-scripts root, and lists under info.skipped_checks, never as a finding, what it cannot judge: no vanilla tree, a requiredAddons[] entry outside DZ_* that no scanned root declares in CfgPatches, or no requiredAddons[] entry at all. Evidence: netcopdev/TransferZ PR #12 at 11da911 deletes a 4_World class that 5_Mission still calls (TransferZ_MaintenanceClient.c:59), and the linter answered WARN with 0 errors (CLAIM-ENFORCE-UNDEFINED-TYPE-REF, offline_tested, not booted). script_validator.py wires the rule and --vanilla-root and prints SKIP lines in --terse; vanilla_control.py passes the tree as its own vanilla root, and the resolver moves to scripts/shared/vanilla_tree.py; the README documents the rule; tests/test_script_validator.py adds TestUndefinedClassRef (10 tests) and hides DAYZ_VANILLA_ROOT and P:\\scripts from the module, so no verdict depends on what the machine mounts. Measured: python -m unittest discover tests, 174 passed; vanilla_control.py on vanilla 1.29.0.163451, PASS, findings match the baseline, with 33 003 references judged and no finding of the new rule. CHANGELOG.md: an Unreleased Added entry; sources/claims.json: CLAIM-ENFORCE-UNDEFINED-TYPE-REF. Cross-family review round 1 (Codex gpt-6.1-sol, 2026-10-03) reported two P1 false FAILs and four P2 wrong FAIL-versus-SKIP decisions, each with an executable repro, all fixed and each fix guarded by a test that a mutant of it turns red: the second variable of `string a, B;` is now a variable (comma declarators are collected); the #ifndef and #else branches of a macro the scanned code #defines outside any #if block, or that a scanned CfgMods defines[] lists, are not judged (a #define inside a block stays a two-way flag, as vanilla's 1_core/defines.c build flags are); a requiredAddons[] token that is not a string literal is an unknown dependency; the requiredAddons[] of every scanned dependency that the addon requires is followed, so a dependency of a dependency must be scanned too; a vanilla root must be a directory that declares class Managed (1_core/proto/enscript.c:117); and only the 211 CfgPatches names of P:\\DZ (1.29.0.163451), the scripts tree and the 1.30.164014 Exp data count as vanilla, listed in scripts/shared/vanilla_patches.py, since four mod patches under P:\\ use the DZ_ prefix too. After the fixes: 179 tests passed, and the vanilla control still PASSes with the same 33 003 references judged and no finding. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f6e97fe9cca47fd3044204006431e4c20d3e8802ca62152ce5b4e407c09b5a3a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ff58cf436067fd5fdeafb92da68c5e523e81da6ace0228d631d07f4c459efc4b",
+      "output_hash": "f6e97fe9cca47fd3044204006431e4c20d3e8802ca62152ce5b4e407c09b5a3a",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -29992,6 +30052,710 @@
       "license": "MIT",
       "output_hash": "828a5dd84c5aa82b9ac504ca84c680058ba485754a9e5ac973e811c8d3b9d52c",
       "output_path": "tools/dayz-script-validator/tests/fixtures/reserved_word_identifier/preprocessor/scripts/4_World/fx_branches.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: the ES-UNDEFINED-CLASS-REF detector, written for the pack on 2026-09-19 in its main checkout and ported unchanged (sha256 equal to the checkout's copy). The rule comes from a compile failure found offline in netcopdev/TransferZ PR #12 at 11da911: a 5_Mission call to a class the PR deletes and no module declares. Not booted. Lines 9-45 carry the marker of CLAIM-ENFORCE-UNDEFINED-TYPE-REF. Tests: TestUndefinedClassRef in tests/test_script_validator.py; vanilla control PASS on vanilla 1.29.0.163451 with 33 003 references judged and no finding. Cross-family review round 1 (Codex gpt-6.1-sol, 2026-10-03) reported two P1 false FAILs and four P2 wrong FAIL-versus-SKIP decisions, each with an executable repro, all fixed and each fix guarded by a test that a mutant of it turns red: the second variable of `string a, B;` is now a variable (comma declarators are collected); the #ifndef and #else branches of a macro the scanned code #defines outside any #if block, or that a scanned CfgMods defines[] lists, are not judged (a #define inside a block stays a two-way flag, as vanilla's 1_core/defines.c build flags are); a requiredAddons[] token that is not a string literal is an unknown dependency; the requiredAddons[] of every scanned dependency that the addon requires is followed, so a dependency of a dependency must be scanned too; a vanilla root must be a directory that declares class Managed (1_core/proto/enscript.c:117); and only the 211 CfgPatches names of P:\\DZ (1.29.0.163451), the scripts tree and the 1.30.164014 Exp data count as vanilla, listed in scripts/shared/vanilla_patches.py, since four mod patches under P:\\ use the DZ_ prefix too. After the fixes: 179 tests passed, and the vanilla control still PASSes with the same 33 003 references judged and no finding. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "65856d80b4c3fa3cbc05e062327493ded6ca09fa6f1d212a276c024f1365d562",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "65856d80b4c3fa3cbc05e062327493ded6ca09fa6f1d212a276c024f1365d562",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/shared/vanilla_patches.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: the CfgPatches names of Bohemia's vanilla data, which ES-UNDEFINED-CLASS-REF treats as covered by the vanilla scripts tree. Measured that day with declared_patches() over every config.cpp: 206 names in P:\\DZ (DayZ 1.29.0.163451), DZ_Scripts from the scripts tree's config.cpp, and 202 in the extracted 1.30.164014 Exp data, 211 together, every one DZ_-prefixed; four mod patches under P:\\ use the prefix too (DZ_Expansion_AI_Weapons_Debug, DZ_ZenDiscordAPI_Preload and two of the owner's), which is why a prefix test was replaced (cross-family review round 1, finding R21-06). Names only, no game data. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0723dde4fc0ab9e2b37d1dd3a470715000fbc9963d18c8e1dafc7e3ecc0ef81d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_patches.py",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0723dde4fc0ab9e2b37d1dd3a470715000fbc9963d18c8e1dafc7e3ecc0ef81d",
+      "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_patches.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/shared/vanilla_tree.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: the vanilla-tree resolver, moved out of scripts/vanilla_control.py with the same order and messages (the explicit argument, then DAYZ_VANILLA_ROOT, then P:\\scripts), an explicit=None default, and, after cross-family review round 1, a candidate that is not a directory is a reason instead of a tree (an existing file used to pass), so script_validator.py --vanilla-root and the vanilla control resolve the tree the same way. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "36b3d3cb5330372f6aacb940ec15ccb9ca025bd49b32175c2d100f3beaaad6f0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_tree.py",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "36b3d3cb5330372f6aacb940ec15ccb9ca025bd49b32175c2d100f3beaaad6f0",
+      "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_tree.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/$PBOPREFIX$",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ee75c5e274741203c2bb416d66140daafe9be080ad274535429c1966c4567d0e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/$PBOPREFIX$",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee75c5e274741203c2bb416d66140daafe9be080ad274535429c1966c4567d0e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/$PBOPREFIX$",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fab2be002378274d8c8905aacfcdec39d7a654affd54f39776785bf86b08f6a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fab2be002378274d8c8905aacfcdec39d7a654affd54f39776785bf86b08f6a1",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/scripts/4_World/fx_sort_planner.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5f5e804fca9eb6050fabb0ed63003b99a1ff9adf0db3383456bd440bb172f7c7",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/scripts/4_World/fx_sort_planner.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5f5e804fca9eb6050fabb0ed63003b99a1ff9adf0db3383456bd440bb172f7c7",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/scripts/4_World/fx_sort_planner.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/scripts/5_Mission/fx_maintenance_client.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8ff4875232156c6d52847539993d6a80d759310ea3f763a730dbe7d6ced65d8d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/scripts/5_Mission/fx_maintenance_client.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8ff4875232156c6d52847539993d6a80d759310ea3f763a730dbe7d6ced65d8d",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/bad_mission_ref/scripts/5_Mission/fx_maintenance_client.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f292b4c4976d18074cc8f7051b2dd967a253e95f9d90a56e7a49a8a6080e78d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f292b4c4976d18074cc8f7051b2dd967a253e95f9d90a56e7a49a8a6080e78d7",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency/scripts/4_World/fx_consumer.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "177b523c5a4054b55bfd86948daf3abfe900c40e2bf91c173505ca4164841863",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency/scripts/4_World/fx_consumer.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "177b523c5a4054b55bfd86948daf3abfe900c40e2bf91c173505ca4164841863",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency/scripts/4_World/fx_consumer.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency_external/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d2b9f9682645fa80c0c328e22812f9b56f092cf27ff88c39053b13e15d9fa68b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency_external/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d2b9f9682645fa80c0c328e22812f9b56f092cf27ff88c39053b13e15d9fa68b",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency_external/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency_external/scripts/3_Game/fx_dep_manager.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "dcb66a34f71a24334067b42d85e2fb7e21883c86cb8d76409712a3cdd925c8b5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency_external/scripts/3_Game/fx_dep_manager.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "dcb66a34f71a24334067b42d85e2fb7e21883c86cb8d76409712a3cdd925c8b5",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dependency_external/scripts/3_Game/fx_dep_manager.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dz_prefixed_dependency/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fc83a2a6420ce6896dcd11c35e4cadf70e875a67b4f62e12506800373e601f73",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dz_prefixed_dependency/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fc83a2a6420ce6896dcd11c35e4cadf70e875a67b4f62e12506800373e601f73",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dz_prefixed_dependency/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dz_prefixed_dependency/scripts/4_World/fx_dz_consumer.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4c8d8e7c0d1169bcbc8d60140a822082ccd6bcf5a0a58defbbea5836b7784b84",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dz_prefixed_dependency/scripts/4_World/fx_dz_consumer.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4c8d8e7c0d1169bcbc8d60140a822082ccd6bcf5a0a58defbbea5836b7784b84",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/dz_prefixed_dependency/scripts/4_World/fx_dz_consumer.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/forms/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7c821033ec186ab57496726e3f7fb6dd389b08a5e3442e9f3d98677cb2b351b3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/forms/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7c821033ec186ab57496726e3f7fb6dd389b08a5e3442e9f3d98677cb2b351b3",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/forms/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/forms/scripts/4_World/fx_forms.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. After cross-family review round 1 it also holds a call with a space before its parenthesis, a comma-declared variable used as a receiver, the #else of a vanilla build flag, the #ifndef and #else of macros the addon always defines, and the #ifndef of a macro #define'd only under #ifdef DIAG_DEVELOPER. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Round 3, one extra and final round authorised by the orchestrator for the post-cap fixes only (read-only, on dfeb51a), closed R21-07..R21-10 and reported two new P1 false FAILs with executable repros: `bool a = x<y, B = false;` read `x<y` as a template and lost B, and a defines[] under an #ifdef of a macro the same config #defines first was not counted as always on. Fixed without a fourth review round: a `<` opens template arguments only when names, spaces, commas and nested `<...>` lead to its matching `>`, and a line is kept for certain outside every block or under an #ifdef of a macro the same file #defines before it, for configs and scripts alike, each defines[] entry judged on its own line. 179 tests pass, the round-3 repros now give no finding (and a defines[] entry under an unknown #ifdef still leaves its #ifndef judged), each of 19 mutants of the fixes turns a test red, and the vanilla control still PASSes with 33 003 references judged. Not merged: the orchestrator's rule holds a P1 fixed after the review cap for its decision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "380600f4cbb0fc3bee1696e4930ddd5343a0f0f6785a78b4769dafbf8f0159ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/forms/scripts/4_World/fx_forms.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "380600f4cbb0fc3bee1696e4930ddd5343a0f0f6785a78b4769dafbf8f0159ee",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/forms/scripts/4_World/fx_forms.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/macro_required_addon/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "706969f562dd0e54a9850eca4dfde8e3ff73a2bc8384b786c01a721b5e48184a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/macro_required_addon/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "706969f562dd0e54a9850eca4dfde8e3ff73a2bc8384b786c01a721b5e48184a",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/macro_required_addon/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/macro_required_addon/scripts/4_World/fx_macro_consumer.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "08a9378163c090bd59e07ff3820bd0d0fc6502da305696c831974a927be5d95a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/macro_required_addon/scripts/4_World/fx_macro_consumer.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "08a9378163c090bd59e07ff3820bd0d0fc6502da305696c831974a927be5d95a",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/macro_required_addon/scripts/4_World/fx_macro_consumer.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/no_required_addons/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e47c582ef76203361f31abfd9a60f940a1e4afc6ea04e9410cf230f14bbecb48",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/no_required_addons/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e47c582ef76203361f31abfd9a60f940a1e4afc6ea04e9410cf230f14bbecb48",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/no_required_addons/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/no_required_addons/scripts/4_World/fx_undeclared.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3be8fc89ce36f5f1e61d23d921445087da5d7e155de629802490084fec2d4f68",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/no_required_addons/scripts/4_World/fx_undeclared.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3be8fc89ce36f5f1e61d23d921445087da5d7e155de629802490084fec2d4f68",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/no_required_addons/scripts/4_World/fx_undeclared.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/$PBOPREFIX$",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ee75c5e274741203c2bb416d66140daafe9be080ad274535429c1966c4567d0e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/$PBOPREFIX$",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee75c5e274741203c2bb416d66140daafe9be080ad274535429c1966c4567d0e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/$PBOPREFIX$",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fab2be002378274d8c8905aacfcdec39d7a654affd54f39776785bf86b08f6a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fab2be002378274d8c8905aacfcdec39d7a654affd54f39776785bf86b08f6a1",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/4_World/fx_external_staging_sort_planner.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7870e91de9786221ec4887e485369ff64219c2bcade55c59d579404cde1f6a7a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/4_World/fx_external_staging_sort_planner.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7870e91de9786221ec4887e485369ff64219c2bcade55c59d579404cde1f6a7a",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/4_World/fx_external_staging_sort_planner.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/4_World/fx_sort_planner.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5f5e804fca9eb6050fabb0ed63003b99a1ff9adf0db3383456bd440bb172f7c7",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/4_World/fx_sort_planner.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5f5e804fca9eb6050fabb0ed63003b99a1ff9adf0db3383456bd440bb172f7c7",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/4_World/fx_sort_planner.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/5_Mission/fx_maintenance_client.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8ff4875232156c6d52847539993d6a80d759310ea3f763a730dbe7d6ced65d8d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/5_Mission/fx_maintenance_client.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8ff4875232156c6d52847539993d6a80d759310ea3f763a730dbe7d6ced65d8d",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/ok_mission_ref/scripts/5_Mission/fx_maintenance_client.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "011e53bac075c20c19f1e4de58542c2bdbaa11f45a00f87beaf0944889d00c88",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "011e53bac075c20c19f1e4de58542c2bdbaa11f45a00f87beaf0944889d00c88",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive/scripts/4_World/fx_transitive_consumer.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f7542de8afde624472a4290560ea7af059a99b4e37f7349a352a798709328865",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive/scripts/4_World/fx_transitive_consumer.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f7542de8afde624472a4290560ea7af059a99b4e37f7349a352a798709328865",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive/scripts/4_World/fx_transitive_consumer.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_a/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Round 2, the last under the cap of two (on d9cab80), closed all six round-1 findings and reported four more with executable repros, fixed after the cap and checked mechanically, not re-reviewed: commas inside template arguments (`new Param3<int, X, int>(...)`) no longer declare variables; a CfgMods defines[] written under a preprocessor condition is not always on; any requiredAddons[] entry that is not a string literal (a number too) is an unknown dependency; and the vanilla anchor must be a class Managed, not an enum. A test also covers a dependency config that declares two patches. 179 tests pass, each of 14 mutants of the fixes turns at least one red, and the vanilla control still PASSes. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6ad983e37cbae74182082bc99d5bdbadec1aee2ca7980096d4a27c668b18d6d0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_a/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6ad983e37cbae74182082bc99d5bdbadec1aee2ca7980096d4a27c668b18d6d0",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_a/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_a/scripts/3_Game/fx_dep_a.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c5b5347cb4fbe410b4ee1ba9b7eb022e0e75ac8c30335ea4a28569da5c0d107e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_a/scripts/3_Game/fx_dep_a.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c5b5347cb4fbe410b4ee1ba9b7eb022e0e75ac8c30335ea4a28569da5c0d107e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_a/scripts/3_Game/fx_dep_a.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_b/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d9502e1f722c8294ab3c7732e493c2fb3aa2ffa2163f0f166348cc0132553055",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_b/config.cpp",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d9502e1f722c8294ab3c7732e493c2fb3aa2ffa2163f0f166348cc0132553055",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_b/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_b/scripts/3_Game/fx_dep_b.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture added after cross-family review round 1 for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py): a requiredAddons[] entry named through a macro, a dependency required only by a scanned dependency, or a mod patch that uses the DZ_ prefix. Each makes the rule SKIP instead of FAIL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "106622fb2c487ace2b5d9b8e511bded2e592c0bc671dfb4336595bdb6a1f8c21",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_b/scripts/3_Game/fx_dep_b.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "106622fb2c487ace2b5d9b8e511bded2e592c0bc671dfb4336595bdb6a1f8c21",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/transitive_dep_b/scripts/3_Game/fx_dep_b.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/vanilla/3_game/fx_vanilla_types.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f117c128d329da73dbe47fa02c7e1a548fc48074b06cc284347d6e3adbf224aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/vanilla/3_game/fx_vanilla_types.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f117c128d329da73dbe47fa02c7e1a548fc48074b06cc284347d6e3adbf224aa",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/vanilla/3_game/fx_vanilla_types.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_class_ref/vanilla/4_world/fx_vanilla_player.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-03: fixture authored for the pack for ES-UNDEFINED-CLASS-REF (TestUndefinedClassRef in tests/test_script_validator.py), written on 2026-09-19 and ported unchanged. bad_mission_ref is the shape found offline in netcopdev/TransferZ PR #12 with fixture names; vanilla/ is a stand-in that declares only the names the fixtures use, not Bohemia code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "50f4021a6ef5a1ac23a3a1f0f2d244429fb2d63f73a6a006e574c8b08b0bf0f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/vanilla/4_world/fx_vanilla_player.c",
+          "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "50f4021a6ef5a1ac23a3a1f0f2d244429fb2d63f73a6a006e574c8b08b0bf0f5",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_class_ref/vanilla/4_world/fx_vanilla_player.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
