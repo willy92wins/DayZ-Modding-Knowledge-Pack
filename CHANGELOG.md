@@ -30,11 +30,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   against the relief; the docs say to check red on a known joint first. The same test found a
   vanilla map whose curl residuals sat half a quantization step apart read OpenGL: the curl
   reading now abstains unless its two medians differ by more than one 8-bit step of the normal
-  (2/255). On the heater both
+  (2/255). A second product test found a flat brick decal and a cloth bag that read OpenGL with
+  readings that agree on the whole map but not block by block: a candidate now also has to hold
+  across a 6×6 grid of blocks, with at most 1 block in 10 against it for the curl reading and
+  1 in 3 for the albedo reading. On the heater both
   readings say DirectX (curl residuals 0.013 against 0.024), not confirmed another way; nothing
   was checked in game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
-  `tests/test_normal_convention.py` (19 tests) encodes synthetic height fields as DirectX and as
-  OpenGL and reads them back; eight mutants of the detector and nine of the floor each fail it. It skips where numpy
+  `tests/test_normal_convention.py` (34 tests) encodes synthetic height fields as DirectX and as
+  OpenGL and reads them back; eight mutants of the detector, nine of the floor and eighteen of the
+  block check each fail it. It skips where numpy
   or Pillow is missing, as on the CI runner. The ticket's second script (`uv_convencion.py`,
   V convention of a validated p3d) is not part of this change.
 - `dayz-mcp-verify`: one section ported from the installed copy (added 2026-10-04, written by the

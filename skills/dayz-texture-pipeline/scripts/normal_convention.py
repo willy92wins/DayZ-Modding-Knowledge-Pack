@@ -32,6 +32,13 @@ that groove as a ridge.
    below CURL_RATIO times the other and the two differ by more than CURL_FLOOR, one 8-bit step
    of the normal (2/255): rounding alone moves each residual by up to one step, so closer
    medians are noise (added after a vanilla map at the quantization floor read OpenGL).
+3. Block stability (added after a product test on vanilla maps, 2026-10-04): a candidate stands only
+   if each reading keeps it across a BLOCK_GRID x BLOCK_GRID grid of blocks. Each block gets each
+   reading's verdict from its own pixels (the derivatives, masks and thresholds of the whole map);
+   among the blocks that name a convention, at most BLOCK_CURL_MAX_OPPOSED (curl) or
+   BLOCK_ALBEDO_MAX_OPPOSED (albedo) may name the other one, and at least one must name the
+   candidate. A really inverted convention inverts a reading wherever there is relief; a curved
+   bake, a decal or a map stitched from two sources leaves blocks that disagree.
 
 What it does NOT check: inverting the green channel of the same map only negates the green
 correlation and swaps the two curl residuals, so it always flips the verdict and is no control.
@@ -47,7 +54,8 @@ DayZ Tools ImageToPAA; a `_nohq` name makes it write the RGB normal.
 
 Usage:
   python normal_convention.py --normal heater_Normal.png --albedo heater_BaseColor.png [--json]
-Exit: 0 = both readings agree on a candidate (DirectX or OpenGL), 2 = INCONCLUSIVE, 1 = bad input.
+Exit: 0 = both readings agree on a candidate (DirectX or OpenGL), stable across the blocks,
+2 = INCONCLUSIVE, 1 = bad input.
 JSON keeps the key "verdict" for that candidate.
 
 Provenance: the albedo reading is adapted from LFPowerGrid_dev `assets/heater/normal_convencion.py`
@@ -63,6 +71,7 @@ import argparse
 import json
 import math
 import sys
+from fractions import Fraction
 
 import numpy as np
 from PIL import Image, ImageFilter
@@ -74,6 +83,9 @@ MIN_CORR = 0.02     # weaker albedo correlations are INCONCLUSIVE
 NZ_MIN = 0.2        # floor for nz when normals are turned into slopes
 CURL_RATIO = 0.8    # the smaller curl residual must be below this times the other
 CURL_FLOOR = 2.0 / 255.0  # one 8-bit step of the normal: residual medians closer than this are rounding noise
+BLOCK_GRID = 6                             # blocks per axis in the block-stability check
+BLOCK_CURL_MAX_OPPOSED = Fraction(1, 10)   # at most this share of the voting blocks may oppose the curl candidate
+BLOCK_ALBEDO_MAX_OPPOSED = Fraction(1, 3)  # at most this share of the voting blocks may oppose the albedo candidate
 
 DIRECTX, OPENGL, INCONCLUSIVE = "DirectX", "OpenGL", "INCONCLUSIVE"
 
@@ -88,7 +100,7 @@ def _corr(a: np.ndarray, b: np.ndarray, mask: np.ndarray) -> float:
     return float((a * b).sum() / denom)
 
 
-def _albedo_reading(nx, ny, albedo_img, blur_radius, detail_min, luma_min, min_corr) -> dict:
+def _albedo_fields(nx, ny, albedo_img, blur_radius, detail_min, luma_min) -> tuple:
     alb_rgb = albedo_img.convert("RGB")
     alb = np.asarray(alb_rgb).astype(np.float64) / 255.0
     luma = 0.2126 * alb[:, :, 0] + 0.7152 * alb[:, :, 1] + 0.0722 * alb[:, :, 2]
@@ -99,29 +111,44 @@ def _albedo_reading(nx, ny, albedo_img, blur_radius, detail_min, luma_min, min_c
     dny_dy = np.gradient(ny, axis=0)
 
     mask = ((np.abs(nx) + np.abs(ny)) > detail_min) & (luma > luma_min)
-    red = _corr(dnx_dx, hollow, mask) if mask.any() else float("nan")
-    green = _corr(dny_dy, hollow, mask) if mask.any() else float("nan")
+    return dnx_dx, dny_dy, hollow, mask
 
+
+def _albedo_verdict(red, green, min_corr) -> str:
     if not (math.isfinite(red) and math.isfinite(green)) or abs(red) < min_corr or abs(green) < min_corr:
-        verdict = INCONCLUSIVE
-    elif (red > 0) == (green > 0):
-        verdict = DIRECTX
-    else:
-        verdict = OPENGL
-    return {"verdict": verdict, "corr_red": red, "corr_green": green, "pixels": int(mask.sum())}
+        return INCONCLUSIVE
+    if (red > 0) == (green > 0):
+        return DIRECTX
+    return OPENGL
 
 
-def _curl_reading(nx, ny, nz, detail_min, curl_ratio, curl_floor) -> dict:
+def _albedo_reading(fields, window, min_corr) -> dict:
+    dnx_dx, dny_dy, hollow, mask = fields
+    m = mask[window]
+    red = _corr(dnx_dx[window], hollow[window], m) if m.any() else float("nan")
+    green = _corr(dny_dy[window], hollow[window], m) if m.any() else float("nan")
+    return {"verdict": _albedo_verdict(red, green, min_corr), "corr_red": red, "corr_green": green,
+            "pixels": int(m.sum())}
+
+
+def _curl_fields(nx, ny, nz, detail_min) -> tuple:
     nz = np.clip(nz, NZ_MIN, None)
     p = -nx / nz                       # dh/dcol in both conventions
     q = ny / nz                        # dh/drow under OpenGL, -dh/drow under DirectX
     dp_drow = np.gradient(p, axis=0)
     dq_dcol = np.gradient(q, axis=1)
     mask = (np.abs(nx) + np.abs(ny)) > detail_min
-    if not mask.any():
+    # DirectX residual per pixel, OpenGL residual per pixel, detail mask
+    return np.abs(dp_drow + dq_dcol), np.abs(dp_drow - dq_dcol), mask
+
+
+def _curl_reading(fields, window, curl_ratio, curl_floor) -> dict:
+    res_dx, res_gl, mask = fields
+    m = mask[window]
+    if not m.any():
         return {"verdict": INCONCLUSIVE, "residual_directx": float("nan"), "residual_opengl": float("nan")}
-    res_opengl = float(np.median(np.abs(dp_drow - dq_dcol)[mask]))
-    res_directx = float(np.median(np.abs(dp_drow + dq_dcol)[mask]))
+    res_opengl = float(np.median(res_gl[window][m]))
+    res_directx = float(np.median(res_dx[window][m]))
     verdict = _curl_verdict(res_directx, res_opengl, curl_ratio, curl_floor)
     return {"verdict": verdict, "residual_directx": res_directx, "residual_opengl": res_opengl}
 
@@ -138,9 +165,40 @@ def _curl_verdict(res_directx: float, res_opengl: float, curl_ratio: float, curl
     return INCONCLUSIVE
 
 
+def _block_edges(size, grid) -> list:
+    return [int(v) for v in np.linspace(0, size, grid + 1).round()]
+
+
+def _block_counts(albedo_fields, curl_fields, shape, verdict, grid, min_corr, curl_ratio, curl_floor) -> dict:
+    other = OPENGL if verdict == DIRECTX else DIRECTX
+    row_edges = _block_edges(shape[0], grid)
+    col_edges = _block_edges(shape[1], grid)
+    counts = {"albedo": [0, 0], "curl": [0, 0]}
+    for i in range(grid):
+        for j in range(grid):
+            window = (slice(row_edges[i], row_edges[i + 1]), slice(col_edges[j], col_edges[j + 1]))
+            albedo_v = _albedo_reading(albedo_fields, window, min_corr)["verdict"]
+            if albedo_v == verdict:
+                counts["albedo"][0] += 1
+            elif albedo_v == other:
+                counts["albedo"][1] += 1
+            curl_v = _curl_reading(curl_fields, window, curl_ratio, curl_floor)["verdict"]
+            if curl_v == verdict:
+                counts["curl"][0] += 1
+            elif curl_v == other:
+                counts["curl"][1] += 1
+    return counts
+
+
+def _stable(agree, opposed, max_opposed) -> bool:
+    return agree >= 1 and opposed <= Fraction(max_opposed) * (agree + opposed)
+
+
 def detect(normal_img: Image.Image, albedo_img: Image.Image, *, blur_radius: float = BLUR_RADIUS,
            detail_min: float = DETAIL_MIN, luma_min: float = LUMA_MIN, min_corr: float = MIN_CORR,
-           curl_ratio: float = CURL_RATIO, curl_floor: float = CURL_FLOOR) -> dict:
+           curl_ratio: float = CURL_RATIO, curl_floor: float = CURL_FLOOR,
+           block_grid: int = BLOCK_GRID, block_curl_max_opposed: Fraction = BLOCK_CURL_MAX_OPPOSED,
+           block_albedo_max_opposed: Fraction = BLOCK_ALBEDO_MAX_OPPOSED) -> dict:
     """Return the verdict and the numbers behind it. Raises ValueError on mismatched sizes."""
     if normal_img.size != albedo_img.size:
         raise ValueError("normal map %s and albedo %s differ in size" % (normal_img.size, albedo_img.size))
@@ -149,12 +207,23 @@ def detect(normal_img: Image.Image, albedo_img: Image.Image, *, blur_radius: flo
     ny = nrm[:, :, 1] * 2.0 - 1.0
     nz = nrm[:, :, 2] * 2.0 - 1.0
 
-    albedo = _albedo_reading(nx, ny, albedo_img, blur_radius, detail_min, luma_min, min_corr)
-    curl = _curl_reading(nx, ny, nz, detail_min, curl_ratio, curl_floor)
+    albedo_fields = _albedo_fields(nx, ny, albedo_img, blur_radius, detail_min, luma_min)
+    curl_fields = _curl_fields(nx, ny, nz, detail_min)
+    whole = (slice(None), slice(None))
+    albedo = _albedo_reading(albedo_fields, whole, min_corr)
+    curl = _curl_reading(curl_fields, whole, curl_ratio, curl_floor)
     if albedo["verdict"] == curl["verdict"] and albedo["verdict"] != INCONCLUSIVE:
         verdict = albedo["verdict"]
+        blocks = _block_counts(albedo_fields, curl_fields, nx.shape, verdict, block_grid,
+                               min_corr, curl_ratio, curl_floor)
+        stable = (_stable(*blocks["curl"], block_curl_max_opposed)
+                  and _stable(*blocks["albedo"], block_albedo_max_opposed))
+        if not stable:
+            verdict = INCONCLUSIVE
     else:
         verdict = INCONCLUSIVE
+        blocks = None
+        stable = None
     return {
         "verdict": verdict,
         "albedo_verdict": albedo["verdict"],
@@ -168,6 +237,14 @@ def detect(normal_img: Image.Image, albedo_img: Image.Image, *, blur_radius: flo
         "min_corr": min_corr,
         "curl_ratio": curl_ratio,
         "curl_floor": curl_floor,
+        "block_grid": block_grid,
+        "block_curl_max_opposed": float(block_curl_max_opposed),
+        "block_albedo_max_opposed": float(block_albedo_max_opposed),
+        "curl_blocks_agree": None if blocks is None else blocks["curl"][0],
+        "curl_blocks_opposed": None if blocks is None else blocks["curl"][1],
+        "albedo_blocks_agree": None if blocks is None else blocks["albedo"][0],
+        "albedo_blocks_opposed": None if blocks is None else blocks["albedo"][1],
+        "blocks_stable": stable,
     }
 
 
@@ -202,12 +279,21 @@ def main(argv: list[str] | None = None) -> int:
               % (_fmt(result["corr_red"]), _fmt(result["corr_green"]), result["albedo_verdict"]))
         print("curl reading: median residual DirectX %s, OpenGL %s -> %s"
               % (_fmt(result["curl_residual_directx"]), _fmt(result["curl_residual_opengl"]), result["curl_verdict"]))
+        if result["blocks_stable"] is not None:
+            print("blocks (%dx%d): curl %d agree / %d opposed (max %.1f %%), albedo %d agree / %d opposed (max %.1f %%) -> %s"
+                  % (result["block_grid"], result["block_grid"],
+                     result["curl_blocks_agree"], result["curl_blocks_opposed"], 100.0 * result["block_curl_max_opposed"],
+                     result["albedo_blocks_agree"], result["albedo_blocks_opposed"], 100.0 * result["block_albedo_max_opposed"],
+                     "stable" if result["blocks_stable"] else "unstable"))
         if result["verdict"] == DIRECTX:
             print("CANDIDATE: DirectX (Y-) -> DayZ's convention; confirm it independently before shipping")
         elif result["verdict"] == OPENGL:
             print("CANDIDATE: OpenGL (Y+) -> invert the green channel once an independent check agrees")
         else:
-            print("INCONCLUSIVE: the two readings do not agree on a convention")
+            if result["blocks_stable"] is False:
+                print("INCONCLUSIVE: the two readings agree on the whole map but not across its blocks")
+            else:
+                print("INCONCLUSIVE: the two readings do not agree on a convention")
     return 2 if result["verdict"] == INCONCLUSIVE else 0
 
 

@@ -47,13 +47,31 @@ when they agree:
   difference keeps that, the residual adds two of them), so closer medians are noise. The
   floor was added after a vanilla map whose residuals sat one half-step apart read OpenGL
   (product test, 2026-10-04).
+- **Block stability.** When the two readings agree, the map is cut into a 6×6 grid of blocks
+  and each block gets each reading from its own pixels, with the derivatives, masks and
+  thresholds of the whole map. Among the blocks that name a convention, at most 1 in 10 may name
+  the other one for the curl reading and 1 in 3 for the albedo reading, and at least one must
+  name the candidate; otherwise no answer. A convention that is really inverted inverts a reading
+  wherever there is relief. The albedo reading gets more room because it can flip legitimately
+  where the surface curves opposite ways along x and y. Added after the second product test
+  (2026-10-04): a flat brick decal (`decal_bricks_01_nohq`) and a cloth bag (`bagpack_nohq`),
+  both DirectX by their own features, read OpenGL with readings that agreed on the whole map;
+  block by block the decal's curl reading and the bag's albedo reading split.
 
-Exit 0 = a candidate, `DirectX` or `OpenGL` (both readings agree), 2 = `INCONCLUSIVE`, 1 = bad
-input. **A candidate is not proof.** The cross-family review (2026-10-03) built known-DirectX
-maps that both readings call OpenGL: a valid tangent-space bake on a sphere patch (the curved
-frame turns the slopes the readings assume into something else) and undersampled tileable
-detail. Confirm a candidate before inverting a channel: the baker's export setting, or a
-render under a raking light in which a known groove reads as a groove.
+Exit 0 = a candidate, `DirectX` or `OpenGL` (both readings agree, stable across the blocks),
+2 = `INCONCLUSIVE`, 1 = bad input. With `--json` the block counts are
+`curl_blocks_agree`/`curl_blocks_opposed`, `albedo_blocks_agree`/`albedo_blocks_opposed` and
+`blocks_stable` (null when the readings do not agree). **A candidate is not proof.** The
+cross-family review (2026-10-03) built known-DirectX maps that both readings call OpenGL: a
+valid tangent-space bake on a sphere patch (the curved frame turns the slopes the readings
+assume into something else) and undersampled tileable detail. The block check cannot see an
+error that is the same in every block: the tileable detail still reads OpenGL in all 36
+blocks. Neither can it see a map that mixes two conventions inside every block: vanilla
+`kancel_008_nohq` is a door whose glass panes read DirectX by their own edges while its hinge
+bolts and the outer step of its windows, a few pixels away, read OpenGL; it reads OpenGL with
+stable blocks (2026-10-04). Confirm a candidate before
+inverting a channel: the baker's export setting, or a render under a raking light in which a
+known groove reads as a groove.
 
 **What a raking-light render does not confirm** (known limit, cross-family review round 3,
 2026-10-03). Inverting the green channel changes the shading only through the light's V

@@ -12,7 +12,7 @@ Use this checklist before handing off texture/material work.
 ## Texture files
 
 - Final game-facing paths reference `.paa`.
-- `_nohq` source orientation is known; OpenGL/Y+ sources were converted to DayZ DirectX/Y-. A source that does not state it got a candidate from `scripts/normal_convention.py` (exit 0: its albedo and curl readings agree; `INCONCLUSIVE` is not an answer), confirmed another way: the baker's export setting, or a raking-light render where a known groove reads as a groove. The light crosses V (not parallel to U), the groove runs along U, and the inverted-green copy reads it as a ridge; renders that look the same are inconclusive. Exit 0 alone is not proof.
+- `_nohq` source orientation is known; OpenGL/Y+ sources were converted to DayZ DirectX/Y-. A source that does not state it got a candidate from `scripts/normal_convention.py` (exit 0: its albedo and curl readings agree and stay stable across the map's blocks; `INCONCLUSIVE` is not an answer), confirmed another way: the baker's export setting, or a raking-light render where a known groove reads as a groove. The light crosses V (not parallel to U), the groove runs along U, and the inverted-green copy reads it as a ridge; renders that look the same are inconclusive. Exit 0 alone is not proof.
 - Written `_nohq` packing was derived from the file (DXT5nm: raw R=0, X in alpha, SWIZ `05 04 02 03`) or from an `ImageToPAA` `_nohq` round-trip, not from the suffix. Amplitude/relief measured on the deswizzled PNG.
 - If the normal was built from albedo luminance: a known dark seam was swept as a **valley** (not a ridge), and Sobel gain was calibrated on this atlas, not copied from another map.
 - `_smdi` channels are intentional: R near white, G specular, B gloss/specular power.

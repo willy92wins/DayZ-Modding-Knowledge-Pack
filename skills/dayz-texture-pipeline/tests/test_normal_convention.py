@@ -10,6 +10,7 @@ Run: python -m pytest skills/dayz-texture-pipeline/tests -q
 import json
 import math
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
@@ -253,6 +254,151 @@ def test_a_difference_of_exactly_one_step_is_noise():
     # one and a half steps apart is signal
     assert nc._curl_verdict(rd + 1.0 / 255.0, rg, nc.CURL_RATIO, nc.CURL_FLOOR) == "OpenGL"
     assert nc._curl_verdict(rg, rd + 1.0 / 255.0, nc.CURL_RATIO, nc.CURL_FLOOR) == "DirectX"
+
+
+def _split_curl(base, k=1):
+    """Pits encoded in `base`; the last k block-columns (16 px each on the 6x6 grid of a 96-px map) in the
+    other convention, with a flat albedo there: only the curl reading splits across the blocks."""
+    other = "OpenGL" if base == "DirectX" else "DirectX"
+    h = _height()
+    n = np.asarray(_normal_map(h, base)).copy()
+    n[:, SIZE - 16 * k:] = np.asarray(_normal_map(h, other))[:, SIZE - 16 * k:]
+    a = np.asarray(_albedo(h)).copy()
+    a[:, SIZE - 16 * k:] = 140
+    return Image.fromarray(n, "RGB"), Image.fromarray(a, "RGB")
+
+
+def _split_albedo(base, k):
+    """Pits on the left, ribs on the last k block-columns, all encoded in `base`: the curl reading is right
+    everywhere, the albedo reading is wrong on the ribs, so only the albedo reading splits."""
+    h = _height()
+    rh, rdx, rdy = _ribs(SIZE)
+    dhc, dhr = np.gradient(h, axis=1), np.gradient(h, axis=0)
+    w = 16 * k
+    dhc[:, SIZE - w:] = rdx[:, SIZE - w:]
+    dhr[:, SIZE - w:] = rdy[:, SIZE - w:]
+    a = np.asarray(_albedo(h)).copy()
+    a[:, SIZE - w:] = np.asarray(_albedo(rh))[:, SIZE - w:]
+    return _encode(dhc, dhr, base), Image.fromarray(a, "RGB")
+
+
+def test_block_edges_round_to_the_nearest_pixel():
+    assert nc._block_edges(1024, 6) == [0, 171, 341, 512, 683, 853, 1024]
+    assert nc._block_edges(96, 6) == [0, 16, 32, 48, 64, 80, 96]
+
+
+def test_stable_needs_one_agreeing_block_and_bounds_the_opposed_share():
+    F = Fraction
+    # an exactly full third of opposed blocks still passes, one more is too much
+    assert nc._stable(2, 1, F(1, 3)) is True
+    assert nc._stable(1, 1, F(1, 3)) is False
+    assert nc._stable(9, 1, F(1, 10)) is True
+    assert nc._stable(8, 1, F(1, 10)) is False
+    # no agreeing block, no stability, even with nothing opposed
+    assert nc._stable(0, 0, F(1, 3)) is False
+    assert nc._stable(1, 0, F(1, 10)) is True
+
+
+def test_every_block_gets_the_thresholds_of_the_whole_map(maps):
+    # receptor addition: min_corr, the curl ratio and the curl floor reach each block's reading.
+    # A threshold no block can clear silences that reading in every block.
+    nrm = np.asarray(maps["DirectX"]).astype(np.float64) / 255.0 * 2.0 - 1.0
+    nx, ny, nz = nrm[:, :, 0], nrm[:, :, 1], nrm[:, :, 2]
+    albedo = nc._albedo_fields(nx, ny, maps["albedo"], nc.BLUR_RADIUS, nc.DETAIL_MIN, nc.LUMA_MIN)
+    curl = nc._curl_fields(nx, ny, nz, nc.DETAIL_MIN)
+
+    def counts(min_corr=nc.MIN_CORR, ratio=nc.CURL_RATIO, floor=nc.CURL_FLOOR):
+        return nc._block_counts(albedo, curl, nx.shape, "DirectX", 6, min_corr, ratio, floor)
+
+    assert counts() == {"albedo": [36, 0], "curl": [36, 0]}
+    assert counts(min_corr=2.0)["albedo"] == [0, 0]
+    assert counts(floor=1.0)["curl"] == [0, 0]
+    assert counts(ratio=0.0)["curl"] == [0, 0]
+
+
+@pytest.mark.parametrize("convention", ["DirectX", "OpenGL"])
+def test_known_convention_is_stable_across_the_blocks(maps, convention):
+    r = nc.detect(maps[convention], maps["albedo"])
+    assert r["verdict"] == convention
+    assert r["block_grid"] == 6
+    assert r["curl_blocks_agree"] == 36 and r["curl_blocks_opposed"] == 0, r
+    assert r["albedo_blocks_agree"] == 36 and r["albedo_blocks_opposed"] == 0, r
+    assert r["blocks_stable"] is True
+
+
+@pytest.mark.parametrize("base", ["DirectX", "OpenGL"])
+def test_one_block_column_in_the_other_convention_abstains(base):
+    n, a = _split_curl(base)
+    r = nc.detect(n, a)
+    # the global readings still name the base convention ...
+    assert r["albedo_verdict"] == base and r["curl_verdict"] == base, r
+    # ... but one block-column of six in the other convention is 1/6, over the 1/10 curl bound
+    assert r["curl_blocks_agree"] == 30 and r["curl_blocks_opposed"] == 6, r
+    assert r["blocks_stable"] is False
+    assert r["verdict"] == "INCONCLUSIVE"
+    # with a single block there is nothing to compare against, so the check passes by default
+    r1 = nc.detect(n, a, block_grid=1)
+    assert r1["verdict"] == base
+    assert (r1["curl_blocks_agree"], r1["curl_blocks_opposed"],
+            r1["albedo_blocks_agree"], r1["albedo_blocks_opposed"]) == (1, 0, 1, 0), r1
+
+
+@pytest.mark.parametrize("base", ["DirectX", "OpenGL"])
+@pytest.mark.parametrize("k, expected, opposed", [(1, "candidate", 6), (2, "candidate", 12), (3, "INCONCLUSIVE", 18)])
+def test_the_albedo_reading_tolerates_a_third_of_the_blocks(base, k, expected, opposed):
+    n, a = _split_albedo(base, k)
+    r = nc.detect(n, a)
+    want = base if expected == "candidate" else "INCONCLUSIVE"
+    assert r["verdict"] == want, r
+    assert r["albedo_blocks_opposed"] == opposed, r
+    assert r["albedo_blocks_agree"] == 36 - opposed, r
+    # the curl reading is right everywhere on this fixture
+    assert r["curl_blocks_opposed"] == 0, r
+
+
+def test_inverting_green_mirrors_the_block_counts(maps):
+    arr = np.asarray(maps["DirectX"]).copy()
+    arr[:, :, 1] = 255 - arr[:, :, 1]
+    flipped = nc.detect(Image.fromarray(arr, "RGB"), maps["albedo"])
+    original = nc.detect(maps["DirectX"], maps["albedo"])
+    assert flipped["verdict"] == "OpenGL"
+    assert (flipped["curl_blocks_agree"], flipped["curl_blocks_opposed"]) == \
+           (original["curl_blocks_agree"], original["curl_blocks_opposed"]), flipped
+    assert (flipped["albedo_blocks_agree"], flipped["albedo_blocks_opposed"]) == \
+           (original["albedo_blocks_agree"], original["albedo_blocks_opposed"]), flipped
+    n, a = _split_curl("DirectX")
+    arr = np.asarray(n).copy()
+    arr[:, :, 1] = 255 - arr[:, :, 1]
+    inverted = nc.detect(Image.fromarray(arr, "RGB"), a)
+    assert inverted["verdict"] == "INCONCLUSIVE"
+    assert inverted["curl_verdict"] == "OpenGL"
+    assert inverted["curl_blocks_agree"] == 30 and inverted["curl_blocks_opposed"] == 6, inverted
+
+
+def test_json_reports_the_block_counts(maps, tmp_path, capsys):
+    n, a = _split_curl("DirectX")
+    normal_path = tmp_path / "normal.png"
+    albedo_path = tmp_path / "albedo.png"
+    n.save(normal_path)
+    a.save(albedo_path)
+    code = nc.main(["--normal", str(normal_path), "--albedo", str(albedo_path), "--json"])
+    out = _strict_json(capsys.readouterr().out)
+    assert code == 2
+    assert out["verdict"] == "INCONCLUSIVE"
+    assert out["curl_blocks_opposed"] == 6
+    assert out["blocks_stable"] is False
+    assert out["block_grid"] == 6
+    assert out["block_curl_max_opposed"] == pytest.approx(0.1)
+    assert out["block_albedo_max_opposed"] == pytest.approx(1 / 3)
+    # an undefined albedo reading reports no counts and no stability
+    maps["OpenGL"].save(normal_path)
+    maps["flat_albedo"].save(albedo_path)
+    nc.main(["--normal", str(normal_path), "--albedo", str(albedo_path), "--json"])
+    out = _strict_json(capsys.readouterr().out)
+    assert out["verdict"] == "INCONCLUSIVE"
+    assert out["blocks_stable"] is None
+    for key in ("curl_blocks_agree", "curl_blocks_opposed", "albedo_blocks_agree", "albedo_blocks_opposed"):
+        assert out[key] is None
 
 
 if __name__ == "__main__":
