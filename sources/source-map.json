@@ -3667,10 +3667,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-mcpv-pbo-index-port@2026-10-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 promotion of main 09adb27 following #82 (receipt 065bcb4e2d96d07c20104681 of the promotion of b97026c): one promotion carrying everything main gained since b97026c (#82, #66, #86, #89, #96, #84, #91, #95, #92, #97, #85, #88, #87, #93, #94, #90, #99, #101, #100, #83 and #102). The first check, from a fresh worktree of 7f76226, failed with PROMOTION-TARGET-UNEXPLAINED on skill/dayz-mcp-verify in both skill roots: another session had written a section into the installed copy on 2026-10-04. By the owner's choice #102 (09adb27) ported it and re-adjudicated the live copy (67c26345...), re-measured with packctl tree_digest in both roots right before the apply. promote --check from a fresh worktree of 09adb27 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (92 of 119 operations: nineteen skills on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the 67 paths (59 entries, eight of them renames) git changed under skills/ since b97026c; nothing else is changed or removed. promote --apply PASS, transaction c2b694bd76ef48cc2ff51fe1, COMMIT event 278 at 2026-10-04T03:28:20Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's operations and no absolute path, 38 of 82 adjudicated pairs advanced, exactly the 38 that had to, no .packctl-stage/old/recover residue, and every changed destination's pre-image is in the transaction backup at its before_digest; the live dayz-mcp-verify SKILL.md is byte-identical to 09adb27's. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b4682e014b71b5459b6643b012aa78651318e406bd1a5a21fd6b9d2d50bc0ad6",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-09adb27@2026-10-04",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2c50598d5ab4ad0400b6fb0bbf5dd02ec80c2cbbf84fe9fa41c177a5ee1ff02e",
+      "output_hash": "b4682e014b71b5459b6643b012aa78651318e406bd1a5a21fd6b9d2d50bc0ad6",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -32194,6 +32204,28 @@
       "license": "MIT",
       "output_hash": "77bec8b5f3c21b8786dc2fbe4b4ddecc6d9c53075012fbdb4e59bd060ff87199",
       "output_path": "promotions/receipts/065bcb4e2d96d07c20104681.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/c2b694bd76ef48cc2ff51fe1.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-04 promotion of main 09adb27 following #82 (receipt 065bcb4e2d96d07c20104681 of the promotion of b97026c): one promotion carrying everything main gained since b97026c (#82, #66, #86, #89, #96, #84, #91, #95, #92, #97, #85, #88, #87, #93, #94, #90, #99, #101, #100, #83 and #102). The first check, from a fresh worktree of 7f76226, failed with PROMOTION-TARGET-UNEXPLAINED on skill/dayz-mcp-verify in both skill roots: another session had written a section into the installed copy on 2026-10-04. By the owner's choice #102 (09adb27) ported it and re-adjudicated the live copy (67c26345...), re-measured with packctl tree_digest in both roots right before the apply. promote --check from a fresh worktree of 09adb27 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (92 of 119 operations: nineteen skills on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the 67 paths (59 entries, eight of them renames) git changed under skills/ since b97026c; nothing else is changed or removed. promote --apply PASS, transaction c2b694bd76ef48cc2ff51fe1, COMMIT event 278 at 2026-10-04T03:28:20Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's operations and no absolute path, 38 of 82 adjudicated pairs advanced, exactly the 38 that had to, no .packctl-stage/old/recover residue, and every changed destination's pre-image is in the transaction backup at its before_digest; the live dayz-mcp-verify SKILL.md is byte-identical to 09adb27's. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1b56a8505ebdadf624be10eee3843fa7489f5fe8f4b30b083e33f0fe2cc4149a",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/c2b694bd76ef48cc2ff51fe1.json",
+          "source_revision": "kp-update-promotion-09adb27@2026-10-04",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1b56a8505ebdadf624be10eee3843fa7489f5fe8f4b30b083e33f0fe2cc4149a",
+      "output_path": "promotions/receipts/c2b694bd76ef48cc2ff51fe1.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
