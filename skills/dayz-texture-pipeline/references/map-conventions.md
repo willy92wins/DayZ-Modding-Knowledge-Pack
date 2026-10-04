@@ -42,11 +42,13 @@ when they agree:
 - **Curl reading.** With p = −nx/nz and q = ny/nz, the slopes of a height field satisfy
   d(p)/d(row) = d(q)/d(col) under OpenGL and d(p)/d(row) = −d(q)/d(col) under DirectX. The
   convention whose median residual is under 0.8 of the other's wins, provided the two medians
-  differ by more than one 8-bit step of the normal (2/255); otherwise no answer. Rounding to
-  8 bits alone moves each residual by up to one step (p and q by half a step, the central
-  difference keeps that, the residual adds two of them), so closer medians are noise. The
-  floor was added after a vanilla map whose residuals sat one half-step apart read OpenGL
-  (product test, 2026-10-04).
+  differ by more than one 8-bit step of the normal (2/255); otherwise no answer. The floor is a
+  heuristic, not a bound on rounding noise. Where the normals are nearly flat (nz close to 1),
+  rounding to 8 bits moves p and q by up to about half a step, and the residual, which adds two
+  central differences, by up to about one step; where they tilt, dividing by a smaller nz
+  amplifies the error (one unit normal with nz = 0.4 already moves p by about 4 half-steps). The floor
+  was added after a vanilla map whose residuals sat one half-step apart read OpenGL (product
+  test, 2026-10-04).
 - **Block stability.** When the two readings agree, the map is cut into a 6×6 grid of blocks
   and each block gets each reading from its own pixels, with the derivatives, masks and
   thresholds of the whole map. Among the blocks that name a convention, at most 1 in 10 may name

@@ -401,5 +401,63 @@ def test_json_reports_the_block_counts(maps, tmp_path, capsys):
         assert out[key] is None
 
 
+def _invert_green(img):
+    arr = np.asarray(img).copy()
+    arr[:, :, 1] = 255 - arr[:, :, 1]
+    return Image.fromarray(arr, "RGB")
+
+
+@pytest.mark.parametrize("case", ["pits", "split_curl", "split_albedo"])
+def test_inverting_green_is_exactly_antisymmetric(maps, case):
+    # review v3 round 1: with a decoding that only negates up to a few ulps, a tie in the ratio test could
+    # give a candidate in one copy only. (2c - 255) / 255 negates exactly, so every number flips exactly.
+    if case == "pits":
+        n, a = maps["DirectX"], maps["albedo"]
+    elif case == "split_curl":
+        n, a = _split_curl("DirectX")
+    else:
+        n, a = _split_albedo("DirectX", 3)
+    original, flipped = nc.detect(n, a), nc.detect(_invert_green(n), a)
+    assert flipped["corr_green"] == -original["corr_green"]
+    assert flipped["corr_red"] == original["corr_red"]
+    assert flipped["curl_residual_directx"] == original["curl_residual_opengl"]
+    assert flipped["curl_residual_opengl"] == original["curl_residual_directx"]
+    swap = {"DirectX": "OpenGL", "OpenGL": "DirectX", "INCONCLUSIVE": "INCONCLUSIVE"}
+    assert flipped["verdict"] == swap[original["verdict"]], (original, flipped)
+    for key in ("curl_blocks_agree", "curl_blocks_opposed", "albedo_blocks_agree", "albedo_blocks_opposed",
+                "blocks_stable"):
+        assert flipped[key] == original[key], key
+
+
+def test_blocks_partition_the_map_and_reuse_the_whole_map_fields(maps, monkeypatch):
+    # review v3 round 1: windows that drop a row or a column, or blocks read with other masks, passed the
+    # count-based tests. Record every reading: the first is the whole map, then one per block.
+    calls = {"albedo": [], "curl": []}
+    real_albedo, real_curl = nc._albedo_reading, nc._curl_reading
+
+    def spy_albedo(fields, window, min_corr):
+        calls["albedo"].append((fields, window, (min_corr,)))
+        return real_albedo(fields, window, min_corr)
+
+    def spy_curl(fields, window, curl_ratio, curl_floor):
+        calls["curl"].append((fields, window, (curl_ratio, curl_floor)))
+        return real_curl(fields, window, curl_ratio, curl_floor)
+
+    monkeypatch.setattr(nc, "_albedo_reading", spy_albedo)
+    monkeypatch.setattr(nc, "_curl_reading", spy_curl)
+    result = nc.detect(maps["DirectX"], maps["albedo"])
+    assert result["verdict"] == "DirectX", result
+    for name in ("albedo", "curl"):
+        (fields, window, thresholds), blocks = calls[name][0], calls[name][1:]
+        assert window == (slice(None), slice(None)), name
+        assert len(blocks) == nc.BLOCK_GRID ** 2, name
+        cover = np.zeros((SIZE, SIZE), dtype=int)
+        for block_fields, block_window, block_thresholds in blocks:
+            assert block_fields is fields, name            # the whole map's derivatives and masks, unchanged
+            assert block_thresholds == thresholds, name
+            cover[block_window] += 1
+        assert (cover == 1).all(), name                    # every pixel in exactly one block
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q", "-p", "no:cacheprovider"]))

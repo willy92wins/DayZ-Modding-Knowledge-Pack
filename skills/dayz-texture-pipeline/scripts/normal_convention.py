@@ -30,8 +30,10 @@ that groove as a ridge.
    p = -nx/nz and q = ny/nz, d(p)/d(row) - d(q)/d(col) is ~0 under OpenGL and
    d(p)/d(row) + d(q)/d(col) is ~0 under DirectX. The smaller median residual wins if it is
    below CURL_RATIO times the other and the two differ by more than CURL_FLOOR, one 8-bit step
-   of the normal (2/255): rounding alone moves each residual by up to one step, so closer
-   medians are noise (added after a vanilla map at the quantization floor read OpenGL).
+   of the normal (2/255). The floor is a heuristic, not a bound on rounding noise: where the
+   normals are nearly flat (nz close to 1) rounding to 8 bits moves each residual by up to about
+   one step, but dividing by a smaller nz amplifies that error. It was added after a vanilla map
+   whose residuals sat half a step apart read OpenGL.
 3. Block stability (added after a product test on vanilla maps, 2026-10-04): a candidate stands only
    if each reading keeps it across a BLOCK_GRID x BLOCK_GRID grid of blocks. Each block gets each
    reading's verdict from its own pixels (the derivatives, masks and thresholds of the whole map);
@@ -86,7 +88,7 @@ BLUR_RADIUS = 6     # Gaussian radius of the albedo's low-pass, in pixels
 MIN_CORR = 0.02     # weaker albedo correlations are INCONCLUSIVE
 NZ_MIN = 0.2        # floor for nz when normals are turned into slopes
 CURL_RATIO = 0.8    # the smaller curl residual must be below this times the other
-CURL_FLOOR = 2.0 / 255.0  # one 8-bit step of the normal: residual medians closer than this are rounding noise
+CURL_FLOOR = 2.0 / 255.0  # one 8-bit step of the normal: residual medians closer than this are not trusted
 BLOCK_GRID = 6                             # blocks per axis in the block-stability check
 BLOCK_CURL_MAX_OPPOSED = Fraction(1, 10)   # at most this share of the voting blocks may oppose the curl candidate
 BLOCK_ALBEDO_MAX_OPPOSED = Fraction(1, 3)  # at most this share of the voting blocks may oppose the albedo candidate
@@ -158,8 +160,9 @@ def _curl_reading(fields, window, curl_ratio, curl_floor) -> dict:
 
 
 def _curl_verdict(res_directx: float, res_opengl: float, curl_ratio: float, curl_floor: float) -> str:
-    # Medians of 8-bit data sit on multiples of 1/255 up to float error: a difference of exactly
-    # one step computes as 2/255 plus a few ulps, and the relative tolerance keeps it on the noise side.
+    # Where the normals are flat enough that nz decodes to 1, the medians sit on multiples of 1/255 up
+    # to float error: a difference of exactly one step computes as 2/255 plus a few ulps, and the
+    # relative tolerance keeps it below the floor.
     if abs(res_directx - res_opengl) <= curl_floor * (1.0 + 1e-9):
         return INCONCLUSIVE
     if res_directx < curl_ratio * res_opengl:
@@ -206,10 +209,12 @@ def detect(normal_img: Image.Image, albedo_img: Image.Image, *, blur_radius: flo
     """Return the verdict and the numbers behind it. Raises ValueError on mismatched sizes."""
     if normal_img.size != albedo_img.size:
         raise ValueError("normal map %s and albedo %s differ in size" % (normal_img.size, albedo_img.size))
-    nrm = np.asarray(normal_img.convert("RGB")).astype(np.float64) / 255.0
-    nx = nrm[:, :, 0] * 2.0 - 1.0
-    ny = nrm[:, :, 1] * 2.0 - 1.0
-    nz = nrm[:, :, 2] * 2.0 - 1.0
+    # (2c - 255) / 255 is exactly antisymmetric: a channel inverted as 255 - c decodes to exactly the
+    # negated value, so an inverted-green copy flips every reading and keeps every block count.
+    nrm = np.asarray(normal_img.convert("RGB")).astype(np.float64)
+    nx = (2.0 * nrm[:, :, 0] - 255.0) / 255.0
+    ny = (2.0 * nrm[:, :, 1] - 255.0) / 255.0
+    nz = (2.0 * nrm[:, :, 2] - 255.0) / 255.0
 
     albedo_fields = _albedo_fields(nx, ny, albedo_img, blur_radius, detail_min, luma_min)
     curl_fields = _curl_fields(nx, ny, nz, detail_min)

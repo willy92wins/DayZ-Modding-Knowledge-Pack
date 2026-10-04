@@ -30,7 +30,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   against the relief; the docs say to check red on a known joint first. The same test found a
   vanilla map whose curl residuals sat half a quantization step apart read OpenGL: the curl
   reading now abstains unless its two medians differ by more than one 8-bit step of the normal
-  (2/255). A second product test found a flat brick decal and a cloth bag that read OpenGL with
+  (2/255), a heuristic floor rather than a bound on rounding noise. A second product test found a flat brick decal and a cloth bag that read OpenGL with
   readings that agree on the whole map but not block by block: a candidate now also has to hold
   across a 6×6 grid of blocks, with at most 1 block in 10 against it for the curl reading and
   1 in 3 for the albedo reading. On 284 vanilla pairs never used to design that check it gave
@@ -38,12 +38,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   features; one design-sample map (`kancel_008_nohq`, DirectX by its glass panes) still reads
   OpenGL with stable blocks. Over the three samples that is 1 wrong candidate in 502, no N1 error
   and about 41 % `INCONCLUSIVE`; the Pack owner accepted that rate on 2026-10-04, and maps that mix
-  the two conventions inside every block are documented as a known limit. On the heater both
+  the two conventions inside every block are documented as a known limit. The review of that
+  version found that an inverted-green copy could break a tie only on one side: the normal is now
+  decoded as (2c − 255)/255, which negates exactly, so the copy always gives the opposite verdict
+  and the same block counts. On the heater both
   readings say DirectX (curl residuals 0.013 against 0.024), not confirmed another way; nothing
   was checked in game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
-  `tests/test_normal_convention.py` (34 tests) encodes synthetic height fields as DirectX and as
-  OpenGL and reads them back; nine mutants of the detector, nine of the floor and eighteen of the
-  block check each fail it. It skips where numpy
+  `tests/test_normal_convention.py` (38 tests) encodes synthetic height fields as DirectX and as
+  OpenGL and reads them back; nine mutants of the detector, nine of the floor and twenty-three of
+  the block check and the decoding each fail it. It skips where numpy
   or Pillow is missing, as on the CI runner. The ticket's second script (`uv_convencion.py`,
   V convention of a validated p3d) is not part of this change.
 - `dayz-mcp-verify`: one section ported from the installed copy (added 2026-10-04, written by the
