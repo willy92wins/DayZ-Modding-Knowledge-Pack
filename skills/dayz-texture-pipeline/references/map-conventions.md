@@ -21,7 +21,7 @@ Canon for this skill:
 - DayZ `_nohq` is DirectX/Y-.
 - Blender/Cycles and many baking workflows output OpenGL/Y+ by default.
 - If source is OpenGL/Y+, invert the green channel before final DayZ export.
-- A source of unknown convention is measured, not guessed: `scripts/normal_convention.py` (below).
+- A source of unknown convention is not guessed from where it came from: `scripts/normal_convention.py` (below) proposes a candidate, and the candidate is confirmed another way.
 - Shipped `_nohq` is **DXT5nm**, not an RGB normal sitting in a DXT5 container. Do not audit the raw DXT block as `(X,Y,Z)` in RGB.
 
 ### Measuring a source map's convention (`scripts/normal_convention.py`, added 2026-10-03)
@@ -49,6 +49,22 @@ maps that both readings call OpenGL: a valid tangent-space bake on a sphere patc
 frame turns the slopes the readings assume into something else) and undersampled tileable
 detail. Confirm a candidate before inverting a channel: the baker's export setting, or a
 render under a raking light in which a known groove reads as a groove.
+
+**What a raking-light render does not confirm** (known limit, cross-family review round 3,
+2026-10-03). Inverting the green channel changes the shading only through the light's V
+component (n·L moves by 2·ny·Ly), so the render confirms a convention only when:
+
+- the light crosses V: it comes from the top or the bottom of the texture, or diagonally, not
+  only from a side. A light parallel to U renders the map and its inverted-green copy
+  identically: maximum difference 0.0 on the reviewer's tileable fixture against 0.51 with the
+  light along V (reproduced 2026-10-04; 0.0 against 0.92 on vanilla `bull_brown_nohq`);
+- the known groove has relief along V: it runs along U, so its walls face the top and the bottom
+  of the image. A groove that runs along V renders the same with either green under any light;
+- the same render with the green inverted reads that groove as a ridge.
+
+When the two renders look the same, the check is inconclusive, not a confirmation. On a mesh, U
+and V are the texture's axes as the UV island lies on the surface, so a rotated island changes
+which light in the scene crosses V.
 
 - Measured: LFPowerGrid's heater (Sketchfab) gave the candidate **DirectX** both ways: red
   −0.130 and green −0.085 over 491,775 of 1,048,576 pixels (2026-09-21), and curl residuals

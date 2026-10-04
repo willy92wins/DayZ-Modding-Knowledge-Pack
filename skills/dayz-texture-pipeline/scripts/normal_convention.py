@@ -7,7 +7,12 @@ otherwise a guess, and a wrong guess turns every groove into a ridge.
 Two independent readings; a candidate needs both to agree, otherwise INCONCLUSIVE. A candidate
 is not proof: both readings agreed on the wrong convention for a valid tangent-space bake on a
 sphere patch and for undersampled tileable detail (R21 round 2). Confirm it independently (the
-baker's export setting, or a render under a raking light) before inverting a channel.
+baker's export setting, or a render under a raking light) before inverting a channel. A raking
+light confirms only if it crosses V (R21 round 3): the green changes the shading only through the
+light's V component, so a light parallel to U, or a groove that runs along V, renders this map
+and its inverted-green copy alike and leaves the check inconclusive. What confirms: a light from
+the top or the bottom of the texture, a groove that runs along U, and the inverted copy reading
+that groove as a ridge.
 
 1. Albedo reading (the contributed `normal_convencion.py`, arithmetic unchanged, see
    Provenance): across a groove (a valley) the surface normals converge.
@@ -161,7 +166,8 @@ def _fmt(value: float) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="OpenGL (Y+) or DirectX (Y-) normal map, measured.")
+    parser = argparse.ArgumentParser(
+        description="Propose OpenGL (Y+) or DirectX (Y-) for a normal map: a candidate to confirm, not proof.")
     parser.add_argument("--normal", required=True, help="tangent-space normal map (RGB)")
     parser.add_argument("--albedo", required=True, help="albedo/base colour of the same UV layout")
     parser.add_argument("--min-corr", type=float, default=MIN_CORR, help="weakest albedo correlation that counts (default 0.02)")
