@@ -92,14 +92,24 @@ which light in the scene crosses V.
 - Measured: LFPowerGrid's heater (Sketchfab) gave the candidate **DirectX** both ways: red
   −0.130 and green −0.085 over 491,775 of 1,048,576 pixels (2026-09-21), and curl residuals
   0.013 under DirectX against 0.024 under OpenGL (2026-10-03). Not confirmed another way and not
-  checked in game.
+  checked in game. With the block check it stays **DirectX**: curl 19 blocks for, 0 against;
+  albedo 29 for, 2 against.
+- Measured on vanilla `_nohq`/`_co` pairs decoded with ImageToPAA (product test v3, 2026-10-04).
+  - On 284 pairs never used to design the block check (every tenth pair of `P:\DZ`, offset 2),
+    the script gave 157 `DirectX`, 119 `INCONCLUSIVE` (41.9 %) and 8 `OpenGL`.
+  - Each of the 8 `OpenGL` is consistent with OpenGL by its own features: ring targets, knobs,
+    perforation holes, pores. None of them was a wrong candidate (0 of 165).
+  - The `DirectX` answers are presumed right, not checked one by one.
+  - On the two samples used to design it, 1 of the 18 `OpenGL` answers is wrong: `kancel_008_nohq`
+    (above).
+  - At least 25 of these 848 vanilla `_nohq` files (about 3 %) are consistent with OpenGL by
+    their own features. Do not take a vanilla file as a sign reference without checking it.
 - Limits of each reading, with a fixture in `tests/test_normal_convention.py`: the albedo
   reading is wrong, with strong correlations, on a surface that curves one way along x and the other
   along y (ribs whose amplitude grows down the image; found by the cross-family review,
   2026-10-03), and the two readings then disagree; the curl reading has no signal on a surface
   that is a sum of one function of x and one of y. Painted dark marks with no relief dilute the
-  albedo reading, like the 1D sweep below. How often the curl reading is conclusive on real
-  maps was measured on the heater only. An inverted-green rerun is no control (it flips both
+  albedo reading, like the 1D sweep below. An inverted-green rerun is no control (it flips both
   readings).
 - Which channel is off: both readings compare the sign of the green channel with the red one,
   so they cannot tell which of the two disagrees with the real relief. A map whose red is
