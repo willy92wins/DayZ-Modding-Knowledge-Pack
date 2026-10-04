@@ -8,12 +8,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - `dayz-mcp-verify`: one section ported from the installed copy (added 2026-10-04, written by the
-  orchestration session that ran a seed-and-prune strike scenario against an LFPowerGrid PR): "A
-  server HANG is bounded by log tails first" — read the `script*.log` tail (not the RPT tail, which
-  ends in world-streaming warnings) to bound a hang to the region between the last printed stage
-  and the first missing one; verify the region's loop structure in source before suspecting it; and
-  attribute a hang to a revision only when the path has run under both (single-variable A/B or a
-  within-revision scenario bisect closes it; the merge stays on hold meanwhile).
+  orchestration session that ran a seed-and-prune strike scenario against an LFPowerGrid PR) and
+  corrected in the review of PR #105: "A server HANG is bounded by log tails first" — read both log
+  tails of the run and start from the one that carries the markers (in that run the RPT tail ended
+  in world-streaming warnings and the markers were in `script*.log`); the interval between the last
+  printed stage and the first missing one is a candidate until the source and the run's logs
+  confirm the markers' order and obligation, that they belong to the same flow and to this run,
+  and that their emission is visible (otherwise instrument the stages' entries and exits; a
+  missing stage proves lack of observed progress, not where the server spins); verify the
+  candidate region's loop structure in source before suspecting it; and a scenario bisect within
+  one revision yields a candidate sub-path, while only a controlled comparison between revisions
+  (same scenario, one variable) is evidence of a regression, so the attribution to the newest
+  change stays unproven and the merge on hold until that comparison closes.
 
 ## [1.6.0] - 2026-10-04
 

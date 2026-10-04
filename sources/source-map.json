@@ -984,9 +984,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-04: Unreleased Added entry for the dayz-mcp-verify port of the section 'A server HANG is bounded by log tails first' (script.log tail as the hang datum, region-not-branch attribution, and the both-revisions requirement for blaming a revision) and the re-adjudication of the live copy. Evidence as recorded on the skills/dayz-mcp-verify/SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-04: Unreleased Added entry for the dayz-mcp-verify port of the section 'A server HANG is bounded by log tails first' as corrected after round 1 of the PR #105 review (both log tails read, the one carrying the markers first; the marker interval a candidate until the source and the run's logs confirm it; a scenario bisect within one revision localizes a sub-path, and only a controlled comparison between revisions is evidence of a regression, the merge on hold until it closes) and the re-adjudication of the live copy. Evidence as recorded on the skills/dayz-mcp-verify/SKILL.md input of the same change. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "66d35094a19c14bd42f6999948f0b8e6d94ef3d91a86039d680050662f298277",
+          "source_hash": "97ea3a53df11e422c62941e6e8cc62db6ef412ddf227ce72733d30a17be73eed",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mcpv-hang-log-tails@2026-10-04",
@@ -994,7 +994,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "66d35094a19c14bd42f6999948f0b8e6d94ef3d91a86039d680050662f298277",
+      "output_hash": "97ea3a53df11e422c62941e6e8cc62db6ef412ddf227ce72733d30a17be73eed",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3700,9 +3700,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-04: re-adjudication of skill/dayz-mcp-verify in claude_user_skills and agents_user_skills at the live digest fae2ff70788bc4ba1e00dde95d03d7314072b6f2809dba30d48edfb5cf318e07 (packctl.common.tree_digest measured 2026-10-04 evening, identical in both roots after the installed copy gained the hang-log-tails section), so the next promotion replaces the live copy with a backup; only observed_digest and reason of those two pairs change, as in PR #81 and #102. Port and evidence as recorded on the skills/dayz-mcp-verify/SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-04: re-adjudication of skill/dayz-mcp-verify in claude_user_skills and agents_user_skills at the live digest fae2ff70788bc4ba1e00dde95d03d7314072b6f2809dba30d48edfb5cf318e07 (packctl.common.tree_digest measured 2026-10-04 evening, identical in both roots after the installed copy gained the hang-log-tails section), so the next promotion replaces the live copy with a backup; only observed_digest and reason of those two pairs change, as in PR #81 and #102. The reason of both pairs was rewritten after round 1 of the PR #105 review: it says the section is ported corrected and lists the corrections, and 'bounded the spin' became 'gave a candidate region for the spin'; observed_digest unchanged (both roots re-measured at fae2ff70... on 2026-10-04 at 17:15 UTC). Port and evidence as recorded on the skills/dayz-mcp-verify/SKILL.md input of the same change. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "5e6b9c23877f65d44694bc65547d956f3036e2f79276d099d78820beec719874",
+          "source_hash": "3e9a4b56df72a474ba2954863c133bf3a5f4a6b8e0a0e28a66619d7d7b418890",
           "source_id": "pack-r21-authored",
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-mcpv-hang-log-tails@2026-10-04",
@@ -3710,7 +3710,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5e6b9c23877f65d44694bc65547d956f3036e2f79276d099d78820beec719874",
+      "output_hash": "3e9a4b56df72a474ba2954863c133bf3a5f4a6b8e0a0e28a66619d7d7b418890",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -8023,9 +8023,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-04: port of one section that the orchestration session wrote into the INSTALLED dayz-mcp-verify in place (both skill roots), after the last line of the section port-commit 09adb27 brought in. The section, 'A server HANG is bounded by log tails first: read script.log's tail, and attribute to a REGION, not to the branch you hypothesize', was written 2026-10-04 afternoon after a seed-and-prune strike scenario (LFPowerGrid PR #58, run d5eb2c5d) hung the DayZDiag server between init and the first prune snapshot: obs_1_load_1.json recorded the seed exactly as pre-registered (vanilla_count 3, strike_values [1,2,3]), then one driver snapshot in 16 minutes, RPT frozen, process spinning at ~17-27% CPU, forced kill. Ported: the RPT tail is usually useless for a hang (ends in world-streaming warnings) while the script*.log tail carries the mod MARK and stage lines, so one zero-cost read bounds the spin to the region between the last printed stage and the first missing one (measured: script.log frozen right after '[LFPG_Balance_Native] Orphan sweep pass executed' with zero [VanillaPrune] lines); verify the region's loop structure in source before suspecting it (the prune loop at NetworkManagerImpl :3443-3517 is a descending while whose every branch decrements the index, resolution is per-tick capped, and the endpoint resolver is loop-free, which eliminates the cheap suspects); and attribute a hang to a revision only when the path has run under both revisions (this strike path never ran in-engine under any revision before that day), closing it with a single-variable A/B or a within-revision scenario bisect that toggles one sub-path (delete threshold vs marking only), merge on hold meanwhile. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-04: port of one section that the orchestration session wrote into the INSTALLED dayz-mcp-verify in place (both skill roots), after the last line of the section port-commit 09adb27 brought in. The section, 'A server HANG is bounded by log tails first: read script.log's tail, and attribute to a REGION, not to the branch you hypothesize', was written 2026-10-04 afternoon after a seed-and-prune strike scenario (LFPowerGrid PR #58, run d5eb2c5d) hung the DayZDiag server between init and the first prune snapshot: obs_1_load_1.json recorded the seed exactly as pre-registered (vanilla_count 3, strike_values [1,2,3]), then one driver snapshot in 16 minutes, RPT frozen, process spinning at ~17-27% CPU, forced kill. As written in the installed copy, the section said: the RPT tail is usually useless for a hang (ends in world-streaming warnings) while the script*.log tail carries the mod MARK and stage lines, so one zero-cost read bounds the spin to the region between the last printed stage and the first missing one (measured: script.log frozen right after '[LFPG_Balance_Native] Orphan sweep pass executed' with zero [VanillaPrune] lines); verify the region's loop structure in source before suspecting it (the prune loop at NetworkManagerImpl :3443-3517 is a descending while whose every branch decrements the index, resolution is per-tick capped, and the endpoint resolver is loop-free, which eliminates the cheap suspects); and attribute a hang to a revision only when the path has run under both revisions (this strike path never ran in-engine under any revision before that day), closing it with a single-variable A/B or a within-revision scenario bisect that toggles one sub-path (delete threshold vs marking only), merge on hold meanwhile. Corrected before landing, after round 1 of the PR #105 review (Codex gpt-6.1-sol, cap of two rounds set before round 1; round 1 UNSOUND): R1-01 (P1) the text no longer says that a path that never ran 'cannot' hang because of the newest change; the attribution stays unproven, a scenario bisect within one revision yields a candidate sub-path, and only a controlled comparison between revisions (same scenario, one variable: the revision, or only the newest change reverted) is evidence of a regression, with the merge on HOLD until it closes; R1-02 (P2) the RPT observation is scoped to this run, and both log tails of a run are read, the one carrying the markers first; R1-03 (P2) the interval between the last printed stage and the first missing one is a candidate until the source and the run's logs confirm the markers' order and obligation, that they belong to the same flow and to this run (a marker printed from a deferred CallLater callback, as in the skill's file-based driver pattern, is not in the init flow), and that their emission is visible; otherwise the stages' entries and exits are instrumented, and a missing stage proves only a lack of observed progress. 'veredicto' became 'verdict', and the Source line records the correction. Corrected text drafted by GLM-5.3-Flash-EXL3 on the GX10 lane through prime-agent (-nc -ns, one run, stopReason stop) and revised by the receiver: item 1's lead and source checks, item 3's grammar, the prune-stage example restored, and the Source clause. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "455183e36b15460dddb5aa4778b3c53133300ad40313676396f3a842f2501c2b",
+          "source_hash": "407436caf26f96967689f8e843ced5402168461492af314c6535d6c8ecdfe7c6",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-mcpv-hang-log-tails@2026-10-04",
@@ -8033,7 +8033,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "455183e36b15460dddb5aa4778b3c53133300ad40313676396f3a842f2501c2b",
+      "output_hash": "407436caf26f96967689f8e843ced5402168461492af314c6535d6c8ecdfe7c6",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"

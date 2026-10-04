@@ -1307,25 +1307,40 @@ against a measurement on real PBOs.
 ## A server HANG is bounded by log tails first: read script.log's tail, and attribute to a REGION, not to the branch you hypothesize (added 2026-10-04)
 
 A boot that never finishes (1 of N driver snapshots, RPT frozen, process alive spinning at low
-CPU) is a veredicto without a location. Before attributing the hang to a specific branch:
+CPU) is a verdict without a location. Before attributing the hang to a specific branch:
 
-1. **The RPT tail is usually useless for a hang** (it ends in world-streaming warnings); the
-   **`script*.log` tail is the datum** — mod `MARK` lines, `[VanillaPrune]`-style stage messages
-   and init-completion lines live there, not in the RPT. One zero-cost read bounds the spin to the
-   region between the last printed stage and the first missing one; a hang "after init, before the
-   first prune-stage message" is a different fact from "inside the prune loop".
-2. **Verify the region's loop structure in source before suspecting it** (descending loop with
-   every branch decrementing; per-tick resolution capped; helper functions loop-free) — this
-   eliminates the cheap suspects and moves the suspicion to the remaining ones (world-scan helpers,
-   engine-side recursion/re-entry), without ever NAMING them as cause.
-3. **Attribution to a revision requires the path to have run under both.** A code path that never
-   executed in-engine under any revision (the instrument compiled for the first time the same day)
-   cannot hang "because of" the newest change: the hang may be a regression, a pre-existing bug
-   surfacing for the first time, or an instrument artifact. Only a single-variable A/B (same
-   scenario, one revision's line reverted) — or a within-revision scenario bisect that toggles one
-   sub-path (crossing the delete threshold vs marking strikes only) — closes it. Merge stays on
-   HOLD meanwhile.
+1. **Read both log tails of the run, and start from the one that carries the markers.** In the
+   run this section comes from, the RPT tail did not locate the hang (it ended in world-streaming
+   warnings); the useful markers (mod `MARK` lines, `[VanillaPrune]`-style stage messages,
+   init-completion lines) were in `script*.log`. The interval between the last printed stage and
+   the first missing one is a CANDIDATE, not a location. Before turning it into a location, check
+   in the source and in the run's own logs: (a) the order of the markers and that each one is
+   mandatory on that path; (b) that they belong to the same flow and to this run; (c) that their
+   emission is visible. A marker printed from a deferred callback (the file-based driver pattern
+   above starts with `CallLater`) is not in the same flow as the init stages, so its order
+   relative to them is not guaranteed. If any of these guarantees is missing, instrument the
+   entries and exits of the stages before narrowing. A missing stage proves lack of OBSERVED
+   progress, not where the server spins: "no prune-stage message after init" is a different fact
+   from "spinning inside the prune loop".
+2. **Verify the candidate region's loop structure in source before suspecting it** (descending
+   loop with every branch decrementing; per-tick resolution capped; helper functions loop-free) —
+   this eliminates the cheap suspects and moves the suspicion to the remaining ones (world-scan
+   helpers, engine-side recursion/re-entry), without ever NAMING them as cause.
+3. **Regression evidence requires a controlled comparison between revisions; a bisect inside one
+   revision only localizes.** For a code path that never executed in-engine under any revision
+   (the instrument compiled for the first time the same day), the attribution to the newest
+   change remains unproven: the hang may be a regression, a pre-existing bug surfacing for the
+   first time, or an instrument artifact, and the path never having run before does not clear the
+   newest change either. A scenario bisect within one revision (one sub-path toggled: crossing
+   the delete threshold vs marking strikes only) yields a CANDIDATE SUB-PATH where the hang
+   triggers, never evidence of a regression: the base revision may carry the same defect.
+   Evidence of a REGRESSION comes only from a controlled comparison between revisions: the same
+   scenario, one variable (the revision, or only the newest change reverted). The merge stays on
+   HOLD until that comparison closes.
 
 Source: written into the installed copy on 2026-10-04 by the same session as the lesson above,
 after a seed-and-prune strike scenario hung the server between init and the first prune snapshot;
-ported here in English, without private names.
+ported here in English, without private names, and corrected in the review of PR #105: the log
+observation scoped to its run, the interval between markers made a candidate until the source and
+the run's logs confirm it, and localization within one revision separated from attribution to a
+revision.
