@@ -67,9 +67,10 @@ Two rules come from script modules that did not compile, each with its log:
   not listed until a failure is on record. A name counts after its type,
   on the same line or the next, as a later declarator (`int a = 1, out;`)
   and as a foreach variable; a later use of the variable is not reported
-  again. Later declarators are found by counting brackets over every live
-  line, so one that follows brackets which differ between two branches of
-  an `#ifdef` can go unseen.
+  again. Later declarators are found by counting brackets in the text as
+  written, lines that never compile included, so one that follows brackets
+  which differ between two branches of an `#ifdef`, or a bracket in a
+  branch that never compiles, can go unseen.
 - `ES-MODULO-FLOAT-CONTEXT` (FAIL): `%` inside an arithmetic expression that
   also holds a float literal, such as `(n % 4) * 0.7`. Both operands of `%`
   can be integers and it still fails with `Unknown operator '%'` (DayZDiag

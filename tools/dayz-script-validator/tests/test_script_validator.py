@@ -2189,6 +2189,26 @@ class TestModuloFloatContext(unittest.TestCase):
         self.assertEqual([5], [e["line"] for e in errors])
         self.assertIn("0.7", errors[0]["message"])
 
+    def test_an_index_before_the_float_does_not_end_the_expression(self):
+        from detectors.es_modulo_float_context import check_es_modulo_float_context
+        from stripper import strip_enforce_comments_and_strings
+
+        # The index is skipped and the expression reads on to the float after
+        # it, at the top level and inside a group (review round 3, R3-01:
+        # ending the expression at an index kept every other test green).
+        source = (
+            "class C\n{\n    int m_Values[2];\n    float F(int n, int i)\n    {\n"
+            "        float a = (n % 4) + m_Values[i] * 0.5;\n"
+            "        return (n % 4) * (m_Values[0] + 2.5);\n"
+            "    }\n}\n"
+        )
+        stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+        errors = check_es_modulo_float_context(source, stripped, "x.c")
+
+        self.assertEqual([6, 7], [e["line"] for e in errors])
+        self.assertIn("float literal 0.5.", errors[0]["message"])
+        self.assertIn("float literal 2.5.", errors[1]["message"])
+
     def test_string_spans_are_the_strings_the_stripper_blanks(self):
         from detectors.es_modulo_float_context import _string_spans
         from stripper import strip_enforce_comments_and_strings
