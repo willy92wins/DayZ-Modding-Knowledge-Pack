@@ -47,7 +47,11 @@ a height field's slopes (painted, hand-edited, heavily compressed) can leave the
 inconclusive. Nor does it tell which channel is off: both readings compare the green's sign with
 the red's, so a map whose red is inverted against the real relief (X-, Y-) also reads OpenGL, and
 inverting its green then gives a consistent map with the relief upside down. Check red on a
-feature of known relief before choosing the channel.
+feature of known relief before choosing the channel. Nor does the block check see a map that
+mixes the two conventions inside every block (known limit, accepted by the Pack owner on
+2026-10-04): vanilla kancel_008_nohq, whose glass panes read DirectX and whose bolts and window
+frames read OpenGL a few pixels away, reads OpenGL with stable blocks. Measured on three vanilla
+samples: 1 wrong candidate in 502, 0 in the 165 not used to design the check.
 
 Input: 8-bit PNG (or any format Pillow reads) of the same size. Convert a `.paa` first with
 DayZ Tools ImageToPAA; a `_nohq` name makes it write the RGB normal.

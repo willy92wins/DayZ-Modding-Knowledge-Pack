@@ -36,7 +36,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   1 in 3 for the albedo reading. On 284 vanilla pairs never used to design that check it gave
   157 `DirectX`, 119 `INCONCLUSIVE` and 8 `OpenGL`, all 8 OpenGL-consistent by their own
   features; one design-sample map (`kancel_008_nohq`, DirectX by its glass panes) still reads
-  OpenGL with stable blocks. On the heater both
+  OpenGL with stable blocks. Over the three samples that is 1 wrong candidate in 502, no N1 error
+  and about 41 % `INCONCLUSIVE`; the Pack owner accepted that rate on 2026-10-04, and maps that mix
+  the two conventions inside every block are documented as a known limit. On the heater both
   readings say DirectX (curl residuals 0.013 against 0.024), not confirmed another way; nothing
   was checked in game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
   `tests/test_normal_convention.py` (34 tests) encodes synthetic height fields as DirectX and as

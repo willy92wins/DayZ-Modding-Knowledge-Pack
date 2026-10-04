@@ -66,12 +66,9 @@ cross-family review (2026-10-03) built known-DirectX maps that both readings cal
 valid tangent-space bake on a sphere patch (the curved frame turns the slopes the readings
 assume into something else) and undersampled tileable detail. The block check cannot see an
 error that is the same in every block: the tileable detail still reads OpenGL in all 36
-blocks. Neither can it see a map that mixes two conventions inside every block: vanilla
-`kancel_008_nohq` is a door whose glass panes read DirectX by their own edges while its hinge
-bolts and the outer step of its windows, a few pixels away, read OpenGL; it reads OpenGL with
-stable blocks (2026-10-04). Confirm a candidate before
-inverting a channel: the baker's export setting, or a render under a raking light in which a
-known groove reads as a groove.
+blocks. Neither can it see a map that mixes the two conventions inside every block (known
+limit below). Confirm a candidate before inverting a channel: the baker's export setting, or a
+render under a raking light in which a known groove reads as a groove.
 
 **What a raking-light render does not confirm** (known limit, cross-family review round 3,
 2026-10-03). Inverting the green channel changes the shading only through the light's V
@@ -101,9 +98,21 @@ which light in the scene crosses V.
     perforation holes, pores. None of them was a wrong candidate (0 of 165).
   - The `DirectX` answers are presumed right, not checked one by one.
   - On the two samples used to design it, 1 of the 18 `OpenGL` answers is wrong: `kancel_008_nohq`
-    (above).
+    (known limit below).
+  - Over the three samples (848 valid pairs, 502 candidates): 1 wrong candidate, no N1 error,
+    and `INCONCLUSIVE` on about 41 % of the pairs.
   - At least 25 of these 848 vanilla `_nohq` files (about 3 %) are consistent with OpenGL by
     their own features. Do not take a vanilla file as a sign reference without checking it.
+- **Maps that mix the two conventions inside every block** (known limit; the Pack owner accepted
+  the measured rate on 2026-10-04). The block check only sees a convention that changes from one
+  region to another. A map whose features disagree a few pixels apart, the same way in every
+  block, passes it and can get a wrong candidate. Vanilla `kancel_008_nohq` is a door whose glass
+  panes read DirectX by their own edges, located in the albedo (7 of 7 that count), while its
+  hinge bolts and the outer step of its windows read OpenGL. The script calls it OpenGL with stable
+  blocks (curl 28 for, 0 against; albedo 27 for, 4 against). Measured rate: 1 wrong candidate in
+  502 over three vanilla samples, 0 in the 165 of the sample not used to design the check. Before
+  inverting a channel, check features of known relief of more than one kind (a recessed panel and
+  a raised bolt, for example).
 - Limits of each reading, with a fixture in `tests/test_normal_convention.py`: the albedo
   reading is wrong, with strong correlations, on a surface that curves one way along x and the other
   along y (ribs whose amplitude grows down the image; found by the cross-family review,
