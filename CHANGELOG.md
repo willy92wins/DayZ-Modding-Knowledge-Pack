@@ -44,9 +44,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and the same block counts. On the heater both
   readings say DirectX (curl residuals 0.013 against 0.024), not confirmed another way; nothing
   was checked in game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
-  `tests/test_normal_convention.py` (38 tests) encodes synthetic height fields as DirectX and as
-  OpenGL and reads them back; nine mutants of the detector, nine of the floor and twenty-three of
-  the block check and the decoding each fail it. It skips where numpy
+  `tests/test_normal_convention.py` (40 tests) encodes synthetic height fields as DirectX and as
+  OpenGL and reads them back; nine mutants of the detector, nine of the floor and twenty-nine of
+  the block check, the decoding and the readers' masks each fail it. It skips where numpy
   or Pillow is missing, as on the CI runner. The ticket's second script (`uv_convencion.py`,
   V convention of a validated p3d) is not part of this change.
 - `dayz-mcp-verify`: one section ported from the installed copy (added 2026-10-04, written by the

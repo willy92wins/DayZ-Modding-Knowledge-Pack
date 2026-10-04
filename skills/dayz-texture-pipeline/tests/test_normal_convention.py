@@ -459,5 +459,40 @@ def test_blocks_partition_the_map_and_reuse_the_whole_map_fields(maps, monkeypat
         assert (cover == 1).all(), name                    # every pixel in exactly one block
 
 
+def _faint_half(base):
+    """Pits encoded in `base` on the left half; on the right half (three block-columns) a faint relief in the
+    other convention whose decoded |nx| + |ny| never exceeds 10/255, below DETAIL_MIN, so it lies outside both
+    masks, with an albedo dark in its hollows: it would vote the other convention if a mask were ignored."""
+    other = "OpenGL" if base == "DirectX" else "DirectX"
+    h = _height()
+    n = np.asarray(_normal_map(h, base)).copy()
+    a = np.asarray(_albedo(h)).copy()
+    rows, cols = np.mgrid[0:SIZE, 0:SIZE].astype(np.float64)
+    omega = 2.0 * np.pi / 8
+    faint = np.cos(omega * cols) * np.cos(omega * rows)
+    half = SIZE // 2
+    n[:, half:] = np.asarray(_encode(np.gradient(faint, axis=1), np.gradient(faint, axis=0), other, k=0.04))[:, half:]
+    a[:, half:] = np.asarray(_albedo(faint))[:, half:]
+    return Image.fromarray(n, "RGB"), Image.fromarray(a, "RGB")
+
+
+@pytest.mark.parametrize("base", ["DirectX", "OpenGL"])
+def test_relief_outside_the_masks_does_not_vote(base):
+    # review v3 round 2 (R3, P3): a reader that ignores its mask, in the blocks or on the whole map, passed the
+    # tests. Here the right half carries the other convention below DETAIL_MIN: only masked pixels may count.
+    n, a = _faint_half(base)
+    nrm = np.asarray(n).astype(np.int64)
+    alb = np.asarray(a).astype(np.float64) / 255.0
+    tilt = (np.abs(2 * nrm[:, :, 0] - 255) + np.abs(2 * nrm[:, :, 1] - 255)) / 255.0
+    luma = 0.2126 * alb[:, :, 0] + 0.7152 * alb[:, :, 1] + 0.0722 * alb[:, :, 2]
+    assert tilt[:, SIZE // 2:].max() <= nc.DETAIL_MIN            # the faint half is outside the detail mask
+    result = nc.detect(n, a)
+    assert result["pixels_with_detail"] == int(((tilt > nc.DETAIL_MIN) & (luma > nc.LUMA_MIN)).sum()), result
+    assert result["verdict"] == base, result
+    assert (result["curl_blocks_agree"], result["curl_blocks_opposed"]) == (18, 0), result
+    assert (result["albedo_blocks_agree"], result["albedo_blocks_opposed"]) == (18, 0), result
+    assert result["blocks_stable"] is True, result
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q", "-p", "no:cacheprovider"]))
