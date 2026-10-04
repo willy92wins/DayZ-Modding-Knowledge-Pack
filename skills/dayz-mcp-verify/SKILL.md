@@ -1303,3 +1303,29 @@ Limits: the index audit establishes WHAT is packed, never WHY a compile failed.
 Source: written into the installed copy on 2026-10-04 by a session that spent two days on a mod's
 compile failures; ported here in English, without private names, with the listing claim corrected
 against a measurement on real PBOs.
+
+## A server HANG is bounded by log tails first: read script.log's tail, and attribute to a REGION, not to the branch you hypothesize (added 2026-10-04)
+
+A boot that never finishes (1 of N driver snapshots, RPT frozen, process alive spinning at low
+CPU) is a veredicto without a location. Before attributing the hang to a specific branch:
+
+1. **The RPT tail is usually useless for a hang** (it ends in world-streaming warnings); the
+   **`script*.log` tail is the datum** — mod `MARK` lines, `[VanillaPrune]`-style stage messages
+   and init-completion lines live there, not in the RPT. One zero-cost read bounds the spin to the
+   region between the last printed stage and the first missing one; a hang "after init, before the
+   first prune-stage message" is a different fact from "inside the prune loop".
+2. **Verify the region's loop structure in source before suspecting it** (descending loop with
+   every branch decrementing; per-tick resolution capped; helper functions loop-free) — this
+   eliminates the cheap suspects and moves the suspicion to the remaining ones (world-scan helpers,
+   engine-side recursion/re-entry), without ever NAMING them as cause.
+3. **Attribution to a revision requires the path to have run under both.** A code path that never
+   executed in-engine under any revision (the instrument compiled for the first time the same day)
+   cannot hang "because of" the newest change: the hang may be a regression, a pre-existing bug
+   surfacing for the first time, or an instrument artifact. Only a single-variable A/B (same
+   scenario, one revision's line reverted) — or a within-revision scenario bisect that toggles one
+   sub-path (crossing the delete threshold vs marking strikes only) — closes it. Merge stays on
+   HOLD meanwhile.
+
+Source: written into the installed copy on 2026-10-04 by the same session as the lesson above,
+after a seed-and-prune strike scenario hung the server between init and the first prune snapshot;
+ported here in English, without private names.

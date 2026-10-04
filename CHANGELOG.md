@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-mcp-verify`: one section ported from the installed copy (added 2026-10-04, written by the
+  orchestration session that ran a seed-and-prune strike scenario against an LFPowerGrid PR): "A
+  server HANG is bounded by log tails first" — read the `script*.log` tail (not the RPT tail, which
+  ends in world-streaming warnings) to bound a hang to the region between the last printed stage
+  and the first missing one; verify the region's loop structure in source before suspecting it; and
+  attribute a hang to a revision only when the path has run under both (single-variable A/B or a
+  within-revision scenario bisect closes it; the merge stays on hold meanwhile).
+
 ## [1.6.0] - 2026-10-04
 
 Collision measured in game on 2 m boxes (DayZDiag 1.29.163709) and carried into the audit and model
