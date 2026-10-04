@@ -78,6 +78,14 @@ which light in the scene crosses V.
   albedo reading, like the 1D sweep below. How often the curl reading is conclusive on real
   maps was measured on the heater only. An inverted-green rerun is no control (it flips both
   readings).
+- Which channel is off: both readings compare the sign of the green channel with the red one,
+  so they cannot tell which of the two disagrees with the real relief. A map whose red is
+  inverted against the relief (X−, Y−) reads `OpenGL` like a map whose green is inverted, and
+  inverting its green gives a consistent DirectX map with the relief upside down. Measured
+  2026-10-04 on two vanilla maps the script calls OpenGL, `generalstore_int_003_nohq` and
+  `busstop_pavements_nohq`: their red reads the grout and curb joints, which are recessed, as
+  ridges. Before inverting a channel, check red on a feature of known relief: across a recessed
+  joint that runs along V, red goes bright then dark from left to right.
 - Source: the albedo reading is contributed from LFPowerGrid_dev
   `assets/heater/normal_convencion.py` (commit `a4c6e29`, the Pack owner's) through pipeline
   ticket `fb-20260921-164248-a140`; on the heater maps it returns the same two correlations and

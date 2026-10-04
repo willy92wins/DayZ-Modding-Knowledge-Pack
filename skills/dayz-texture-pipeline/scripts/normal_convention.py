@@ -35,7 +35,10 @@ What it does NOT check: inverting the green channel of the same map only negates
 correlation and swaps the two curl residuals, so it always flips the verdict and is no control.
 The controls are maps of known convention (tests/test_normal_convention.py). A map that is not
 a height field's slopes (painted, hand-edited, heavily compressed) can leave the curl reading
-inconclusive.
+inconclusive. Nor does it tell which channel is off: both readings compare the green's sign with
+the red's, so a map whose red is inverted against the real relief (X-, Y-) also reads OpenGL, and
+inverting its green then gives a consistent map with the relief upside down. Check red on a
+feature of known relief before choosing the channel.
 
 Input: 8-bit PNG (or any format Pillow reads) of the same size. Convert a `.paa` first with
 DayZ Tools ImageToPAA; a `_nohq` name makes it write the RGB normal.

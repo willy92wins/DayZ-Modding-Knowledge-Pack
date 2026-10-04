@@ -25,7 +25,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   output became a candidate to confirm, and one-weak-channel tests followed. Its third round
   found that a raking light parallel to U renders a map and its inverted-green copy alike: the
   docs now say that the light must cross V and the inverted copy must read the known groove as a
-  ridge, and that renders that look the same are inconclusive. On the heater both
+  ridge, and that renders that look the same are inconclusive. A product test on vanilla maps
+  (2026-10-04) found that an `OpenGL` candidate cannot tell an inverted green from a red inverted
+  against the relief; the docs say to check red on a known joint first. On the heater both
   readings say DirectX (curl residuals 0.013 against 0.024), not confirmed another way; nothing
   was checked in game. SKILL.md rule 3, `map-conventions.md` and `validation-checklist.md` point at it.
   `tests/test_normal_convention.py` (14 tests) encodes synthetic height fields as DirectX and as
