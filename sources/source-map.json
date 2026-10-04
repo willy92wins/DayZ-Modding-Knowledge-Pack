@@ -3717,10 +3717,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-mcpv-hang-log-tails@2026-10-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 promotion of main 81f7ca2 following #103 (receipt c2b694bd76ef48cc2ff51fe1 of the promotion of 09adb27): the single promotion the owner authorised on 2026-10-04 once #105 and #98 merged, carrying what main gained since 09adb27 (#103, #104, #105 and #98). #105 (fc197e9) ported, corrected in review, the hang log-tails section another session had written into the installed dayz-mcp-verify and re-adjudicated that copy (fae2ff70...) in both skill roots; #98 (81f7ca2) added dayz-texture-pipeline's normal_convention.py. promote --check from a fresh worktree of 81f7ca2 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (75 of 119 operations: skill/dayz-mcp-verify and skill/dayz-texture-pipeline on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the 6 paths git changed under skills/ since 09adb27: dayz-mcp-verify SKILL.md; dayz-texture-pipeline SKILL.md, references/map-conventions.md, references/validation-checklist.md and, new, scripts/normal_convention.py and tests/test_normal_convention.py; nothing else is changed or removed. Right before the apply all 119 destinations were at their planned before_digest, dayz-mcp-verify at fae2ff70... in both roots, and the handle scan of the skill roots, the vault snapshots and the backup root found only the read/list directory handles that codex.exe processes of the ChatGPT desktop app hold on ~/.agents/skills itself, a directory the apply does not write; the coordinator authorised applying with them. promote --apply PASS, transaction e6059d83b537e4cfacd1424d, COMMIT event 227 at 2026-10-04T21:52:23Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's operations and no absolute path, 4 of 82 adjudicated pairs advanced, exactly the 4 that had to (dayz-mcp-verify and dayz-texture-pipeline on both targets), no .packctl-stage/old/recover residue, every changed destination's pre-image is in the transaction backup at its before_digest (the hand-written dayz-mcp-verify copy included), and through both roots every live file of the two skills equals packctl's projection of 81f7ca2, byte-identical to the commit except the path aliases of dayz-mcp-verify references/drive_ladder.py. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8e1796a1cf867859472fd725c58e042a54b637d049d46df5c9172a9e69324c2e",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-81f7ca2@2026-10-04",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3e9a4b56df72a474ba2954863c133bf3a5f4a6b8e0a0e28a66619d7d7b418890",
+      "output_hash": "8e1796a1cf867859472fd725c58e042a54b637d049d46df5c9172a9e69324c2e",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -32350,6 +32360,28 @@
       "license": "MIT",
       "output_hash": "1b56a8505ebdadf624be10eee3843fa7489f5fe8f4b30b083e33f0fe2cc4149a",
       "output_path": "promotions/receipts/c2b694bd76ef48cc2ff51fe1.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/e6059d83b537e4cfacd1424d.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-04 promotion of main 81f7ca2 following #103 (receipt c2b694bd76ef48cc2ff51fe1 of the promotion of 09adb27): the single promotion the owner authorised on 2026-10-04 once #105 and #98 merged, carrying what main gained since 09adb27 (#103, #104, #105 and #98). #105 (fc197e9) ported, corrected in review, the hang log-tails section another session had written into the installed dayz-mcp-verify and re-adjudicated that copy (fae2ff70...) in both skill roots; #98 (81f7ca2) added dayz-texture-pipeline's normal_convention.py. promote --check from a fresh worktree of 81f7ca2 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (75 of 119 operations: skill/dayz-mcp-verify and skill/dayz-texture-pipeline on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the 6 paths git changed under skills/ since 09adb27: dayz-mcp-verify SKILL.md; dayz-texture-pipeline SKILL.md, references/map-conventions.md, references/validation-checklist.md and, new, scripts/normal_convention.py and tests/test_normal_convention.py; nothing else is changed or removed. Right before the apply all 119 destinations were at their planned before_digest, dayz-mcp-verify at fae2ff70... in both roots, and the handle scan of the skill roots, the vault snapshots and the backup root found only the read/list directory handles that codex.exe processes of the ChatGPT desktop app hold on ~/.agents/skills itself, a directory the apply does not write; the coordinator authorised applying with them. promote --apply PASS, transaction e6059d83b537e4cfacd1424d, COMMIT event 227 at 2026-10-04T21:52:23Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's operations and no absolute path, 4 of 82 adjudicated pairs advanced, exactly the 4 that had to (dayz-mcp-verify and dayz-texture-pipeline on both targets), no .packctl-stage/old/recover residue, every changed destination's pre-image is in the transaction backup at its before_digest (the hand-written dayz-mcp-verify copy included), and through both roots every live file of the two skills equals packctl's projection of 81f7ca2, byte-identical to the commit except the path aliases of dayz-mcp-verify references/drive_ladder.py. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3694f123925212b3a70de4084598e2c335ed7089e55b4c394705f8d3a0dae779",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/e6059d83b537e4cfacd1424d.json",
+          "source_revision": "kp-update-promotion-81f7ca2@2026-10-04",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3694f123925212b3a70de4084598e2c335ed7089e55b4c394705f8d3a0dae779",
+      "output_path": "promotions/receipts/e6059d83b537e4cfacd1424d.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
