@@ -974,9 +974,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-04 release v1.6.0, version approved by the owner (the notes are shown to the owner before the tag): [Unreleased] renamed [1.6.0] - 2026-10-04 with a summary paragraph, and an empty [Unreleased] kept above it. Its entries come from the pull requests merged after v1.5.0 (#37 to #102) and are unchanged. The summary was drafted by Muse Spark through OpenCode Zen from the entries and revised by Claude against the full entries, with every phrase cited to the changelog lines it summarizes and the citations checked line by line. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-04 release v1.6.0, version approved by the owner (the notes are shown to the owner before the tag): [Unreleased] renamed [1.6.0] - 2026-10-04 with a summary paragraph, and an empty [Unreleased] kept above it. Its entries come from the pull requests merged after v1.5.0 (#37 to #102) and are unchanged. The summary was drafted by Muse Spark through OpenCode Zen from the entries and revised by Claude against the full entries, with every phrase cited to the changelog lines it summarizes and the citations checked line by line; reviewed cross-family by Codex gpt-6.1-sol in one read-only round (no P1; its five P2 and one P3 on wording applied). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "485f5ae5ea790eb26c8d35d6c48437d61f9fb67975f7499148ace3d4456d700a",
+          "source_hash": "7ae3057d83d881399d7518ca4b3c884aec33e3a35c45a1336ee7eb1f2b839e10",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "release-v1.6.0@2026-10-04",
@@ -984,7 +984,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "485f5ae5ea790eb26c8d35d6c48437d61f9fb67975f7499148ace3d4456d700a",
+      "output_hash": "7ae3057d83d881399d7518ca4b3c884aec33e3a35c45a1336ee7eb1f2b839e10",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"

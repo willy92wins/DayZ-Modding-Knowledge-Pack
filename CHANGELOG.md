@@ -7,12 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [1.6.0] - 2026-10-04
 
-Collision measured in game and carried into `dayz-p3d-audit`, `dayz-model-pipeline` and py3d: a
-model with no `ComponentNN` selection in its collision LODs, or a closed part left out of every
-component, collides with nothing, and winding is repaired per convex component or closed shell,
-never by reversing a collision LOD to match the Visual LOD; py3d 1.9.0, 1.10.0 and the pinned
-1.10.1; new FAIL rules in `dayz-script-validator`; `packctl validate` against merge-conflict markers
-and a gate that runs every skill and tool test folder; collision probes in `dayz-mcp-verify`;
+Collision measured in game on 2 m boxes (DayZDiag 1.29.163709) and carried into the audit and model
+skills and py3d: a box with no `ComponentNN` selection in its collision LODs, or left out of every
+component beside a covered one, collided with nothing; winding is repaired per convex component or
+closed shell, a collision LOD never reversed to match the Visual LOD; py3d 1.9.0, 1.10.0 and the
+pinned 1.10.1; new FAIL rules in `dayz-script-validator`; `packctl validate` against merge-conflict
+markers and a gate over every skill and tool test folder; collision probes in `dayz-mcp-verify`;
 `types.xml` lifetimes in `dayz-persistence`; and `dayz-doors` without its third-party `assets/`.
 
 ### Added
