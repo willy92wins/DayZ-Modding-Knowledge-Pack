@@ -1014,9 +1014,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-06: Unreleased entries for the LFSkateboard R1c measurements: Added (dayz-animation-pipeline measured paragraph and sync-events subsection; dayz-physics-engine gravity paragraph) and Changed (the dayz-animation-pipeline heading, the 2026-06-11 qualification and the [DESIGN] tail of the #106 paragraph). Drafted by GLM-5.3-Flash-EXL3 on the GX10 from the final skill text, corrected and checked by Claude against that text (one wrong attribution fixed: R1c does not separate MovementSpeed from the GetCurrentMovement override). Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-06: Unreleased entries for the LFSkateboard R1c measurements: Added (dayz-animation-pipeline measured paragraph and sync-events subsection; dayz-physics-engine gravity paragraph) and Changed (the dayz-animation-pipeline heading, the 2026-06-11 qualification and the [DESIGN] tail of the #106 paragraph). Drafted by GLM-5.3-Flash-EXL3 on the GX10 from the final skill text, corrected and checked by Claude against that text (one wrong attribution fixed: R1c does not separate MovementSpeed from the GetCurrentMovement override); then aligned with the round-1 fixes of the Codex review (FallMaster, the logged pose, the fix scoped to Walk and RunSprint, the qualification). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "aaa85cc01a7a75b499b6de9c44c2b14d4c9f48ebde94863613e4415d59082de4",
+          "source_hash": "27843b4a98784bc6316ea6fa4f5afcec4dcc6adf90e88c952fdcd4c8273312c9",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
@@ -1024,7 +1024,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "aaa85cc01a7a75b499b6de9c44c2b14d4c9f48ebde94863613e4415d59082de4",
+      "output_hash": "27843b4a98784bc6316ea6fa4f5afcec4dcc6adf90e88c952fdcd4c8273312c9",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5273,9 +5273,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-06 (LFSkateboard test R1c, DayZDiag 1.30.164014 Exp, two cycles on 2026-10-06 03:25-03:45, server and one client on one machine): measured in game what PR #106 had left [DESIGN]. New paragraph CLAIM-ANIM-VANILLA-GRAPH-INGAME-130: the binds of MovementSpeed, MovementDirection, LookDirX, Stance, Look, CMD_Jump, CMD_Land and TagFall returned the same ids, none -1, in the 12 bind lines of six rides on server and owner client; PreAnim_CallCommand(CMD_Jump) put the graph in the TagFall state machine (2 of 2 landed flights per side, and in cycle 1, whose build left the body on the ground); MovementSpeed written every PreAnimUpdate with the matching GetCurrentMovement override played the walk, run and sprint sources, and test R1 (same override, byte-identical locomotion clips, no MovementSpeed write) stayed in the idle clip's pelvis band: a cross-build comparison, stated as such in the text; MovementDirection not isolated, kept [DESIGN]. New subsection CLAIM-ANIM-SYNC-EVENTS-130: the vanilla walk, run and sprint sources are AnimSrcNodeSourceSync on SyncLine Walk and RunSprint (player_main/Locomotion.agf:9463-9467, :5427-5431, :6096-6100), lines defined by foot events (Player_SyncTable.asy:23-62); swapped clips without events froze the pose (pelvis identical on 50 of 53 state lines), with the four events of the line in cyclic order they played (0.86-1.17 m over 153 lines); the fix, and the SEAnim note form 'RFootDown||-1' that DayZATool stored in the .anm like the vanilla foot events. Section heading renamed and the 2026-06-11 paragraph qualified; the [DESIGN] tail of the #106 paragraph narrowed to MovementDirection. Each figure re-read in the project's logs and build sources, each vanilla line opened in the 1.30.164014 Exp extract; the vanilla clips' events read in a P: drive copy from an earlier build. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-06 (LFSkateboard test R1c, DayZDiag 1.30.164014 Exp, two cycles on 2026-10-06 03:25-03:45, server and one client on one machine): measured in game what PR #106 had left [DESIGN]. New paragraph CLAIM-ANIM-VANILLA-GRAPH-INGAME-130: the binds of MovementSpeed, MovementDirection, LookDirX, Stance, Look, CMD_Jump, CMD_Land and TagFall returned the same ids, none -1, in the 12 bind lines of six rides on server and owner client; PreAnim_CallCommand(CMD_Jump) put the graph in FallMaster, the TagFall state machine (2 of 2 landed flights per side, and in cycle 1, whose build left the body on the ground; which state played was not read); MovementSpeed written every PreAnimUpdate with the matching GetCurrentMovement override got the walk, run and sprint sources, and test R1 (same override, byte-identical locomotion clips, no MovementSpeed write) stayed in the idle clip's pelvis band: a cross-build comparison, stated as such; MovementDirection not isolated, kept [DESIGN]. New subsection CLAIM-ANIM-SYNC-EVENTS-130: the vanilla walk, run and sprint sources are AnimSrcNodeSourceSync on SyncLine Walk and RunSprint (player_main/Locomotion.agf:9463-9467, :5427-5431, :6096-6100), lines defined by foot events (Player_SyncTable.asy:23-62); with swapped clips without events the logged pose stopped moving (pelvis identical on 50 of 53 state lines; only pelvis and head x/y and toe distances are logged), with the four events of the line in cyclic order it moved (0.86-1.17 m over 153 lines); the fix, scoped to Walk and RunSprint, and the SEAnim note form 'RFootDown||-1' that DayZATool turned into .anm events with the vanilla foot events' fields. Section heading renamed and the 2026-06-11 paragraph qualified; the [DESIGN] tail of the #106 paragraph narrowed to MovementDirection. Each figure re-read in the project's logs and build sources, each vanilla line opened in the 1.30.164014 Exp extract; the vanilla clips' events read in a P: drive copy from an earlier build. Cross-family review: Codex gpt-6.1-sol round 1 (on 1c78568) UNSOUND with three P1 and one P2, all addressed: the fix is now scoped to the Walk and RunSprint lines (the table's other lines carry other events: Turn, Transitions, TurnCro); 'into its jump states' became 'into FallMaster', with the jump-state reading kept as an inference from the graph; 'the whole pose freezes' became 'the logged pose stopped moving', with what the log covers; and the qualification of the 2026-06-11 paragraph no longer reads as an isolated attribution. All of its recounts reproduced the figures. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "5f6fd3c145201b3ceeac7c03ebf3c57246f8566ff5345122d2891b1b41cfccb8",
+          "source_hash": "357ab3768e9b718d4f79a7b16b7d89b8a4b3a66bd5709719a3304c63236bf7bc",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
@@ -5283,7 +5283,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5f6fd3c145201b3ceeac7c03ebf3c57246f8566ff5345122d2891b1b41cfccb8",
+      "output_hash": "357ab3768e9b718d4f79a7b16b7d89b8a4b3a66bd5709719a3304c63236bf7bc",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -10587,9 +10587,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-06 (LFSkateboard test R1c, DayZDiag 1.30.164014 Exp): the Player CCT section gains the measured paragraph CLAIM-PHYS-SCRIPTCMD-GRAVITY-130. With the controller gravity on, neither the y of PrePhys_SetTranslation nor a PostPhys_SetPosition pin lifted the player in a HumanCommandScript (first air tick 0.088 m under the integration on both sides; 1 cm under the take-off height 0.2 s in); with Human.PhysicsEnableGravity(false) (exp/scripts/scripts/3_Game/human.c:1443) from take-off to landing, the only script change of the next build, the body followed (no pin needed on the server; client apex 0.996 and 1.001 x vy^2/2g); gravity switched back on at the landing and in OnDeactivate. Figures re-read in the R1c-run1 and R1c-run2 logs; vanilla lines opened in the 1.30.164014 Exp extract. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-06 (LFSkateboard test R1c, DayZDiag 1.30.164014 Exp): the Player CCT section gains the measured paragraph CLAIM-PHYS-SCRIPTCMD-GRAVITY-130. With the controller gravity on, neither the y of PrePhys_SetTranslation nor a PostPhys_SetPosition pin lifted the player in a HumanCommandScript (first air tick 0.088 m under the integration on both sides; 1 cm under the take-off height 0.2 s in); with Human.PhysicsEnableGravity(false) (exp/scripts/scripts/3_Game/human.c:1443) from take-off to landing, the only script change of the next build, the body followed (no pin needed on the server; client apex 0.996 and 1.001 x vy^2/2g); gravity switched back on at the landing and in OnDeactivate. Figures re-read in the R1c-run1 and R1c-run2 logs; vanilla lines opened in the 1.30.164014 Exp extract. Codex gpt-6.1-sol round 1 (on 1c78568) recounted every figure of this paragraph and found nothing in it; 'the only code change' became 'the only script change'. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "a3b4e3fed5397e260255e07c574b0795ad340aaa410223613db6f262a7fb62e1",
+          "source_hash": "168036621c363a1f1489d1af1d8b75dd66af138e2c9eebb494f8b2f6e204bb55",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
@@ -10597,7 +10597,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a3b4e3fed5397e260255e07c574b0795ad340aaa410223613db6f262a7fb62e1",
+      "output_hash": "168036621c363a1f1489d1af1d8b75dd66af138e2c9eebb494f8b2f6e204bb55",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -17322,9 +17322,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-06 (LFSkateboard test R1c): registered CLAIM-ANIM-VANILLA-GRAPH-INGAME-130 and CLAIM-ANIM-SYNC-EVENTS-130 (dayz-animation-pipeline SKILL.md) and CLAIM-PHYS-SCRIPTCMD-GRAVITY-130 (dayz-physics-engine SKILL.md), runtime_verified, with the evidence cited by project-relative log path, line and sha256 prefix. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-06 (LFSkateboard test R1c): registered CLAIM-ANIM-VANILLA-GRAPH-INGAME-130 and CLAIM-ANIM-SYNC-EVENTS-130 (dayz-animation-pipeline SKILL.md) and CLAIM-PHYS-SCRIPTCMD-GRAVITY-130 (dayz-physics-engine SKILL.md), runtime_verified, with the evidence cited by project-relative log path, line and sha256 prefix; the first two locators extended after the Codex round-1 review (what the tag probe and the pose log cover; the other sync lines). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "9c2488fd86f3270f234862c3f05afc3cc48037b7e2f3f892153bdb302096cfd7",
+          "source_hash": "e3e72e214c038a38d06e723998e9f7fa546be9e17e13f95ecb3152a3597ad193",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
@@ -17332,7 +17332,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9c2488fd86f3270f234862c3f05afc3cc48037b7e2f3f892153bdb302096cfd7",
+      "output_hash": "e3e72e214c038a38d06e723998e9f7fa546be9e17e13f95ecb3152a3597ad193",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

@@ -68,16 +68,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   player graph bound `MovementSpeed`, `MovementDirection` and `LookDirX` with `BindVariableFloat`,
   `Stance` with `BindVariableInt`, `Look` with `BindVariableBool`, `CMD_Jump` and `CMD_Land` with
   `BindCommand` and `TagFall` with `BindTag`; the 12 bind lines of six rides returned the same ids on
-  server and owner client, none −1; `PreAnim_CallCommand(CMD_Jump)` took the graph into its jump states
-  (`TagFall` seen in both landed flights on each side, and in a flight whose build left the body on the
-  ground); and with `MovementSpeed` written every `PreAnimUpdate` (0-3) and the matching
+  server and owner client, none −1; `PreAnim_CallCommand(CMD_Jump)` took the graph into `FallMaster`,
+  its jump-and-fall state machine (`TagFall` seen in both landed flights on each side, and in a flight
+  whose build left the body on the ground; the probe reads only the tag, so which state played was not
+  read); and with `MovementSpeed` written every `PreAnimUpdate` (0-3) and the matching
   `GetCurrentMovement()` override, the walk, run and sprint sources played. R1c alone does not separate
   those two inputs; test R1 the night before, with the same override and no `MovementSpeed` write, stayed
   on the idle clip, which points at the write without isolating it. A subsection with claim
   `CLAIM-ANIM-SYNC-EVENTS-130` (`runtime_verified`): a clip that replaces a walk, run or sprint sync
-  source needs the four foot events of its line, in the line's cyclic order — without them the whole
-  pose froze (the pelvis read the same position on 50 of 53 state lines while rolling, pushing and
-  turning at 0.5-6.5 m/s); with them it played. A clip with the events out of order was not tested.
+  source needs the four foot events of its line (`Walk` or `RunSprint`), in the line's cyclic order —
+  without them the logged pose stopped moving (the pelvis read the same position on 50 of 53 state
+  lines while rolling, pushing and turning at 0.5-6.5 m/s; the log has only pelvis and head positions
+  and toe distances); with them it moved. The other sync lines carry other events, and neither they nor
+  a clip with the events out of order were tested.
 - `dayz-physics-engine` `SKILL.md` adds to its Player CCT section "Lifting the player from a
   `HumanCommandScript` needs the controller's gravity off" (measured in game, DayZDiag 1.30.164014 Exp,
   LFSkateboard test R1c, 2026-10-06), claim `CLAIM-PHYS-SCRIPTCMD-GRAVITY-130` (`runtime_verified`). A
@@ -86,7 +89,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   With gravity on, the default, the body did not rise: the first air tick ended 0.088 m under the
   integrated height, and 0.2 s into the flight, pin already on, the server read the body 1 cm under its
   take-off height where the integration asked for about +0.34 m. With
-  `Human.PhysicsEnableGravity(false)` from take-off to landing — the only code change — the body
+  `Human.PhysicsEnableGravity(false)` from take-off to landing — the only script change — the body
   followed the translation; the server never needed the pin, and the owner client's root peaked at
   0.996 and 1.001 × vy²/2g in the two landed flights. The command switched the gravity back on at the
   landing and in `OnDeactivate`, and after the landing the rider rolled down a slope again. Not
@@ -98,12 +101,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `dayz-animation-pipeline` `SKILL.md`: the section heading now reads "Locomotion in scripted commands:
   driving the vanilla graph (added 2026-06-11, measured on 1.30 Exp 2026-10-06)". The 2026-06-11
   paragraph (LFSlidingFloor, `GetCurrentMovement()` override) ends with a dated qualification: on 1.30
-  Exp that override alone did not take LFSkateboard's ride command off the idle clip, and writing
-  `MovementSpeed` did. The paragraph corrected 2026-10-04 (LFSkateboard), claim
+  Exp, with that override alone LFSkateboard's ride command left the graph on the idle clip, and with a
+  `MovementSpeed` written as well the walk, run and sprint sources played, a comparison that points at
+  the write without isolating it. The paragraph corrected 2026-10-04 (LFSkateboard), claim
   `CLAIM-ANIM-VANILLA-VAR-BIND-130` (`source_verified`), replaces its closing [DESIGN] sentence: both
   routes are measured in game as of 2026-10-06 — the binds hold on the server and on the owner client,
-  `PreAnim_CallCommand(CMD_Jump)` takes the graph into its jump states, and a `MovementSpeed` written
-  every `PreAnimUpdate` moves the locomotion — and only the continuous `MovementDirection` blend stays
+  `PreAnim_CallCommand(CMD_Jump)` takes the graph into its jump-and-fall state machine, and
+  `MovementSpeed` written every `PreAnimUpdate`, with a matching `GetCurrentMovement()`, gets the walk,
+  run and sprint sources — and only the continuous `MovementDirection` blend stays
   [DESIGN]: it was bound and written (the lean × 85), but the test lap leaned only while pushing, so
   there were no rolling samples at full lean and its continuous blend was not isolated.
 
