@@ -205,6 +205,13 @@ by naming (inference — internal assignment not script-visible).
 `PhysicsSetSimpleDeath` (from 1.30 Exp: `:1449`), `PhysicsIsRagdoll` (from 1.30 Exp: `:1452`; also `HumanCommandUnconscious.IsRagdoll` at `:647`),
 `CheckFreeSpace` :1354, `CollisionMoveTest` :1357, `LinkToLocalSpaceOf` :1361.
 
+**Lifting the player from a `HumanCommandScript` needs the controller's gravity off** (measured in game, DayZDiag 1.30.164014 Exp, LFSkateboard test R1c, 2026-10-06, server and one client on one machine) [EXACT][CLAIM-PHYS-SCRIPTCMD-GRAVITY-130]. A skateboard ride command integrated its own ollie (`dy = vy·dt − ½g·dt²` each tick, vy 2.69 m/s at take-off) and passed `dy` as the y of `PrePhys_SetTranslation`, which is local space (`exp/scripts/scripts/3_Game/human.c:1313`). In `PostPhysUpdate` it compared `PostPhys_GetPosition` with the integrated height and, past 3 cm, pinned the height with `PostPhys_SetPosition` on every air tick (world space, `human.c:1325-1327`).
+- *Gravity on, the default:* the body did not rise. The first air tick ended 0.088 m under the integrated height on the server and on the owner client, which is that tick's whole 0.084 m step lost. 0.2 s into the flight, with the pin already on, the server read the body 1 cm under its take-off height, where the integration asked for about +0.34 m.
+- *`Human.PhysicsEnableGravity(false)` from take-off to landing* (`human.c:1443`), the only code change in the next build: the body followed the translation. The server never needed the pin (every air tick within 3 cm). On the owner client the root peaked at 0.996 and 1.001 × vy²/2g in the two landed flights, sampled at about 10 Hz; in the second one the client had switched to the pin after reading the body 0.079 m above the integration on its second air tick.
+- *`PhysicsEnableGravity(true)` at the landing*, and in `OnDeactivate` for a ride that ends in the air: after the first landing the rider rolled down a slope again, 2.6 m of descent over the next 11 s.
+
+Vanilla calls `PhysicsEnableGravity` once, with `true`, when a vehicle death's simulation ends (`exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:32`), so a command that switches the gravity off owns switching it back on every exit path. Not measured: a remote observer, flights longer than the 0.6 s these lasted, and fall damage after a flight with the gravity off.
+
 ### Joints
 
 `dJointCreateHinge/Hinge2/Slider/BallSocket/Fixed/ConeTwist/6DOF/6DOFSpring(..., bool block, float breakThreshold)`
