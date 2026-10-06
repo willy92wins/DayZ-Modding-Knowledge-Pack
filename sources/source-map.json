@@ -3737,10 +3737,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-81f7ca2@2026-10-04",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-06 promotion of main f567785 following #107 (receipt e6059d83b537e4cfacd1424d of the promotion of 81f7ca2): the promotion the owner authorised when asking to finish #106, carrying what main gained since 81f7ca2 (#107 and #106). promote --check from a fresh worktree of f567785 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (74 of 119 operations: skill/dayz-animation-pipeline on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the one path git changed under skills/ since 81f7ca2, dayz-animation-pipeline SKILL.md (#106); nothing else is changed or removed. Right before the apply all 119 destinations were at their planned before_digest, and the handle scan of the skill roots, the vault snapshots and the backup root found no open handle. promote --apply PASS, transaction b36e0c5717f6ea0571dae137, COMMIT event 224 at 2026-10-06T02:16:35Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's completed_at, source_commit and operations and no absolute path, 2 of 82 adjudicated pairs advanced, exactly the 2 that had to (dayz-animation-pipeline on both targets), no .packctl-stage/old/recover residue, every changed destination's pre-image is in the transaction backup at its before_digest, and through both roots every live file of the skill equals packctl's projection of f567785, byte-identical to the commit except the path aliases of four scripts (extract_empties.py, extract_weapon.py, fbx_extract.py and seanim_export.py). Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "56616ca6df9a4062e2a9da0b8df887d9d02605d0e9156d5183536a7416e8d168",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-f567785@2026-10-06",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8e1796a1cf867859472fd725c58e042a54b637d049d46df5c9172a9e69324c2e",
+      "output_hash": "56616ca6df9a4062e2a9da0b8df887d9d02605d0e9156d5183536a7416e8d168",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -32412,6 +32422,28 @@
       "license": "MIT",
       "output_hash": "3694f123925212b3a70de4084598e2c335ed7089e55b4c394705f8d3a0dae779",
       "output_path": "promotions/receipts/e6059d83b537e4cfacd1424d.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/b36e0c5717f6ea0571dae137.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-06 promotion of main f567785 following #107 (receipt e6059d83b537e4cfacd1424d of the promotion of 81f7ca2): the promotion the owner authorised when asking to finish #106, carrying what main gained since 81f7ca2 (#107 and #106). promote --check from a fresh worktree of f567785 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (74 of 119 operations: skill/dayz-animation-pipeline on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the one path git changed under skills/ since 81f7ca2, dayz-animation-pipeline SKILL.md (#106); nothing else is changed or removed. Right before the apply all 119 destinations were at their planned before_digest, and the handle scan of the skill roots, the vault snapshots and the backup root found no open handle. promote --apply PASS, transaction b36e0c5717f6ea0571dae137, COMMIT event 224 at 2026-10-06T02:16:35Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash with the plan's completed_at, source_commit and operations and no absolute path, 2 of 82 adjudicated pairs advanced, exactly the 2 that had to (dayz-animation-pipeline on both targets), no .packctl-stage/old/recover residue, every changed destination's pre-image is in the transaction backup at its before_digest, and through both roots every live file of the skill equals packctl's projection of f567785, byte-identical to the commit except the path aliases of four scripts (extract_empties.py, extract_weapon.py, fbx_extract.py and seanim_export.py). Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2ad1443b99be6b909ac4e78824f687d670c8f38e5195b55476edf8f356bc616f",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/b36e0c5717f6ea0571dae137.json",
+          "source_revision": "kp-update-promotion-f567785@2026-10-06",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2ad1443b99be6b909ac4e78824f687d670c8f38e5195b55476edf8f356bc616f",
+      "output_path": "promotions/receipts/b36e0c5717f6ea0571dae137.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
