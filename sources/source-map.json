@@ -3757,10 +3757,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-f567785@2026-10-06",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-06 promotion of main 0db8e57 following #108 (receipt b36e0c5717f6ea0571dae137 of the promotion of f567785): the promotion the owner authorised when asking for the R1c PR, carrying what main gained since f567785 (#108 and #109). promote --check from a fresh worktree of 0db8e57 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (75 of 119 operations: skill/dayz-animation-pipeline and skill/dayz-physics-engine on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the two paths git changed under skills/ since f567785, the SKILL.md of dayz-animation-pipeline and of dayz-physics-engine (#109); nothing else is changed or removed. Right before the apply all 119 destinations were at their planned before_digest. The handle scan found only read/list directory handles on ~/.claude/skills and ~/.agents/skills themselves, held by Grok CLI processes (an interactive agent.exe and grok.exe workers of another session's gauntlet); a probe that opens ~/.claude/skills the way a rename opens the destination's parent succeeded with them in place (controls: a free directory opened, and one held with read-only sharing failed with a sharing violation), and the coordinator authorised the apply. promote --apply PASS, transaction 173bdf562db07e02cc26e6cb, COMMIT event 227 at 2026-10-06T14:06:17Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash, its completed_at equals the COMMIT event's, its source_commit and operations equal the plan's, and it holds no absolute path, 4 of 82 adjudicated pairs advanced, exactly the 4 that had to (dayz-animation-pipeline and dayz-physics-engine on both targets), no .packctl-stage/old/recover residue, every changed destination's pre-image is in the transaction backup at its before_digest, and through both roots every live file of the two skills equals packctl's projection of 0db8e57, byte-identical to the commit except the path aliases of four dayz-animation-pipeline scripts. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8ad9326e0e438da713fee18e40666481031aa26173fdeebb0fcbca7232ca8fbb",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-0db8e57@2026-10-06",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "56616ca6df9a4062e2a9da0b8df887d9d02605d0e9156d5183536a7416e8d168",
+      "output_hash": "8ad9326e0e438da713fee18e40666481031aa26173fdeebb0fcbca7232ca8fbb",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -32484,6 +32494,28 @@
       "license": "MIT",
       "output_hash": "2ad1443b99be6b909ac4e78824f687d670c8f38e5195b55476edf8f356bc616f",
       "output_path": "promotions/receipts/b36e0c5717f6ea0571dae137.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/173bdf562db07e02cc26e6cb.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-06 promotion of main 0db8e57 following #108 (receipt b36e0c5717f6ea0571dae137 of the promotion of f567785): the promotion the owner authorised when asking for the R1c PR, carrying what main gained since f567785 (#108 and #109). promote --check from a fresh worktree of 0db8e57 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (75 of 119 operations: skill/dayz-animation-pipeline and skill/dayz-physics-engine on agents_user_skills+claude_user_skills and 73 new vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the two paths git changed under skills/ since f567785, the SKILL.md of dayz-animation-pipeline and of dayz-physics-engine (#109); nothing else is changed or removed. Right before the apply all 119 destinations were at their planned before_digest. The handle scan found only read/list directory handles on ~/.claude/skills and ~/.agents/skills themselves, held by Grok CLI processes (an interactive agent.exe and grok.exe workers of another session's gauntlet); a probe that opens ~/.claude/skills the way a rename opens the destination's parent succeeded with them in place (controls: a free directory opened, and one held with read-only sharing failed with a sharing violation), and the coordinator authorised the apply. promote --apply PASS, transaction 173bdf562db07e02cc26e6cb, COMMIT event 227 at 2026-10-06T14:06:17Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash, its completed_at equals the COMMIT event's, its source_commit and operations equal the plan's, and it holds no absolute path, 4 of 82 adjudicated pairs advanced, exactly the 4 that had to (dayz-animation-pipeline and dayz-physics-engine on both targets), no .packctl-stage/old/recover residue, every changed destination's pre-image is in the transaction backup at its before_digest, and through both roots every live file of the two skills equals packctl's projection of 0db8e57, byte-identical to the commit except the path aliases of four dayz-animation-pipeline scripts. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "72228653fbb2dabacf33ee150d93f3a6619daee5a59b5f7ed43b2d9cc3a34879",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/173bdf562db07e02cc26e6cb.json",
+          "source_revision": "kp-update-promotion-0db8e57@2026-10-06",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "72228653fbb2dabacf33ee150d93f3a6619daee5a59b5f7ed43b2d9cc3a34879",
+      "output_path": "promotions/receipts/173bdf562db07e02cc26e6cb.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
