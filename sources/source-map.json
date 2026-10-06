@@ -1001,10 +1001,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-06: Unreleased Fixed entry for the dayz-animation-pipeline SKILL.md correction of PR #106 (the graph's variable, command and tag IDs are bound by name, so both routes the 2026-06-11 note discarded, PreAnim_SetFloat/SetInt and PreAnim_CallCommand, are reopened on the player graph; their runtime behaviour is not measured, [DESIGN]). Evidence as recorded on the skills/dayz-animation-pipeline/SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1d029e0b5a7acc0c4a5c78bf304b43585d527ce05c29585bb780bdfe8151b58d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-anim-vanilla-var-bind@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d21c7ec9235d49a0aa5d1157c05d694f347c5e880b44bf3fd88ffa448fd87cd9",
+      "output_hash": "1d029e0b5a7acc0c4a5c78bf304b43585d527ce05c29585bb780bdfe8151b58d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5230,10 +5240,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 (LFSkateboard), finished 2026-10-06: the 2026-06-11 note discarded PreAnim_SetFloat/SetInt on the vanilla player graph because 'vanilla graph variable IDs are not exposed to script', and PreAnim_CallCommand for '0 call-sites in vanilla script, graph command IDs undocumented'. Appended a correction, original text kept (the original now opens with a pointer to it): both ID reasons rest on one false assumption, since HumanAnimInterface binds by name - BindVariableFloat/Int/Bool(string) (exp/scripts/scripts/3_Game/human.c:313-315), BindCommand(string) (human.c:309-310) and BindTag(string) (human.c:318) - on GetAnimInterface (human.c:1420-1421); player_main.agr:11,21,88 declare MovementDirection, TurnAmount, Lean and player_main.agr:211-419 the Commands block (69 AnimSrcGCTCmd); SIBNIC's shipped gunner binds Stance (AnimSrcGCTVarInt, player_main.agr:16) and sets it with PreAnim_SetInt (skills/dayz-vehicles/references/gunner-shoot-from-vehicle.md:48-51); PreAnim_CallCommand's 0 call-sites confirmed by a grep of exp/scripts (declarations only). Each line opened in DayZ 1.30.164014 Exp by Claude (Anthropic). NOT measured, labelled [DESIGN]: whether a value written every PreAnimUpdate survives the graph's own VarUpdate (player_main/Locomotion.agf:9481-9488), and what a vanilla graph command does when PreAnim_CallCommand calls it. Citations corrected 2026-10-06: the binds were cited as human.c:312-314, where 312 is a comment and BindVariableBool is at 315; Locomotion.agf is cited with its player_main folder (the extract has three files of that name, at player_main, infected_main and samples/cow_example); player_main.agr:16 added for Stance. Cross-family review: Codex gpt-6.1-sol round 1 (on 5cf5629) SOUND with two P2, both addressed: the pointer at the head of the original note (drafted by GLM-5.3-Flash-EXL3 on the GX10, checked by Claude), and the PreAnim_CallCommand sentence, which kept it discarded 'for the reason above'; it now says that commands and tags are bound by name too and that both routes are reopened, not proven. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "59bec59c518dbc73750c9d538853ddbc809e5c9dce98b795a43fe6a4747dff34",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-anim-vanilla-var-bind@2026-10-04",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "545944e91a8e0f4df00d1194ececac521b908b9710ad4c10ddef321e58bd6a96",
+      "output_hash": "59bec59c518dbc73750c9d538853ddbc809e5c9dce98b795a43fe6a4747dff34",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -17249,10 +17269,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-04 (LFSkateboard): registered CLAIM-ANIM-VANILLA-VAR-BIND-130 for the dayz-animation-pipeline SKILL.md correction (graph IDs are bound by name). evidence_locator corrected 2026-10-06 while finishing PR #106: human.c:313-315 (was 312-314), player_main.agr:16 added for Stance, Locomotion.agf cited with its player_main path; then human.c:309-310 (BindCommand), human.c:318 (BindTag), player_main.agr:211-419 (Commands block) and the 0 call-sites of PreAnim_CallCommand added when the correction came to cover PreAnim_CallCommand too. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "34ba3549e1a3e200ad5cf41a5b468a20cc6adbd6172f368e0c6db2dc9021a468",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-anim-vanilla-var-bind@2026-10-04",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "bd9d0c2e9fdbc70b4f5c6d7950f483bfce84bb01018deed23e5dfdcbee9f28ca",
+      "output_hash": "34ba3549e1a3e200ad5cf41a5b468a20cc6adbd6172f368e0c6db2dc9021a468",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

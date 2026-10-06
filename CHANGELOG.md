@@ -63,6 +63,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (same scenario, one variable) is evidence of a regression, so the attribution to the newest
   change stays unproven and the merge on hold until that comparison closes.
 
+### Fixed
+
+- `dayz-animation-pipeline` `SKILL.md` discarded two ways to drive the vanilla player graph from a
+  `HumanCommandScript` (note of 2026-06-11): `PreAnim_SetFloat/SetInt` because "vanilla graph
+  variable IDs are not exposed to script", and `PreAnim_CallCommand` for "0 call-sites in vanilla
+  script, graph command IDs undocumented". The ID reasons rest on one false assumption: script gets
+  the graph's IDs by name, on `Human.GetAnimInterface()` (`human.c:1420-1421`, DayZ 1.30.164014
+  Exp), with `HumanAnimInterface.BindVariableFloat/Int/Bool(string)` (`human.c:313-315`),
+  `BindCommand(string)` (`human.c:309-310`) and `BindTag(string)` (`human.c:318`). The vanilla
+  `player_main.agr` declares `MovementDirection`, `Stance`, `TurnAmount` and `Lean` and a
+  `Commands` block, and SIBNIC's shipped gunner binds `Stance` and forces it with `PreAnim_SetInt`
+  in `OnActivate` (`dayz-vehicles` `references/gunner-shoot-from-vehicle.md`); the 0 call-sites
+  only mean vanilla shows no example. A dated correction (LFSkateboard session, 2026-10-04)
+  follows the original note, which is kept and now opens with a pointer to it, with claim
+  `CLAIM-ANIM-VANILLA-VAR-BIND-130` (`source_verified`). Both routes are reopened, not proven:
+  whether a value written every `PreAnimUpdate` survives the graph's own update of that variable
+  (the `AnimSrcNodeVarUpdate` on `MovementDirection` in the player `Locomotion.agf`), and what a
+  vanilla graph command does when `PreAnim_CallCommand` calls it, were not measured in game and
+  are marked [DESIGN]. The pointer and the `PreAnim_CallCommand` half came from reviewing PR #106.
+
 ## [1.6.0] - 2026-10-04
 
 Collision measured in game on 2 m boxes (DayZDiag 1.29.163709) and carried into the audit and model
