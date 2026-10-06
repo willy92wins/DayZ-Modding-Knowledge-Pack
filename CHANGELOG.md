@@ -65,19 +65,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-- `dayz-animation-pipeline` `SKILL.md` discarded `PreAnim_SetFloat/SetInt` as a way to drive the
-  vanilla player graph from a `HumanCommandScript` because "vanilla graph variable IDs are not
-  exposed to script" (note of 2026-06-11). That reason does not hold: an ID is bound by name with
-  `HumanAnimInterface.BindVariableFloat/Int/Bool(string)` (`human.c:313-315`, DayZ 1.30.164014
-  Exp) on `Human.GetAnimInterface()` (`human.c:1420-1421`), the vanilla `player_main.agr`
-  declares `MovementDirection`, `Stance`, `TurnAmount` and `Lean`, and SIBNIC's shipped gunner
-  binds `Stance` and forces it with `PreAnim_SetInt` in `OnActivate` (`dayz-vehicles`
-  `references/gunner-shoot-from-vehicle.md`). A dated correction (LFSkateboard session,
-  2026-10-04) follows the original note, which is kept, with claim
-  `CLAIM-ANIM-VANILLA-VAR-BIND-130` (`source_verified`). The route is reopened, not proven:
+- `dayz-animation-pipeline` `SKILL.md` discarded two ways to drive the vanilla player graph from a
+  `HumanCommandScript` (note of 2026-06-11): `PreAnim_SetFloat/SetInt` because "vanilla graph
+  variable IDs are not exposed to script", and `PreAnim_CallCommand` for "0 call-sites in vanilla
+  script, graph command IDs undocumented". The ID reasons rest on one false assumption: script gets
+  the graph's IDs by name, on `Human.GetAnimInterface()` (`human.c:1420-1421`, DayZ 1.30.164014
+  Exp), with `HumanAnimInterface.BindVariableFloat/Int/Bool(string)` (`human.c:313-315`),
+  `BindCommand(string)` (`human.c:309-310`) and `BindTag(string)` (`human.c:318`). The vanilla
+  `player_main.agr` declares `MovementDirection`, `Stance`, `TurnAmount` and `Lean` and a
+  `Commands` block, and SIBNIC's shipped gunner binds `Stance` and forces it with `PreAnim_SetInt`
+  in `OnActivate` (`dayz-vehicles` `references/gunner-shoot-from-vehicle.md`); the 0 call-sites
+  only mean vanilla shows no example. A dated correction (LFSkateboard session, 2026-10-04)
+  follows the original note, which is kept and now opens with a pointer to it, with claim
+  `CLAIM-ANIM-VANILLA-VAR-BIND-130` (`source_verified`). Both routes are reopened, not proven:
   whether a value written every `PreAnimUpdate` survives the graph's own update of that variable
-  (the `AnimSrcNodeVarUpdate` on `MovementDirection` in the player `Locomotion.agf`) was not
-  measured in game and is marked [DESIGN]. `PreAnim_CallCommand` stays discarded.
+  (the `AnimSrcNodeVarUpdate` on `MovementDirection` in the player `Locomotion.agf`), and what a
+  vanilla graph command does when `PreAnim_CallCommand` calls it, were not measured in game and
+  are marked [DESIGN]. The pointer and the `PreAnim_CallCommand` half came from reviewing PR #106.
 
 ## [1.6.0] - 2026-10-04
 
