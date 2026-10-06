@@ -1655,11 +1655,11 @@
     {
       "artifact_id": "file/skills/dayz-animation-pipeline/skill.md",
       "claim_id": "CLAIM-ANIM-VANILLA-VAR-BIND-130",
-      "evidence_locator": "exp/scripts/scripts/3_Game/human.c:312-314 (HumanAnimInterface.BindVariableFloat/Int/Bool(string pVariable)), :1420-1421 (GetAnimInterface, 'usable in HumanCommandScript implementations'); exp/anims_workspaces/DZ/anims/workspaces/player/player_main/player_main.agr:11,21,88 (MovementDirection, TurnAmount, Lean); Locomotion.agf:9481-9488 (AnimSrcNodeVarUpdate on MovementDirection, UpdateOnInit 1, UpdateOnMainPath 1); skills/dayz-vehicles/references/gunner-shoot-from-vehicle.md:48-51 (SIBNIC BindVariableInt(\"Stance\") + PreAnim_SetInt)",
+      "evidence_locator": "exp/scripts/scripts/3_Game/human.c:313-315 (HumanAnimInterface.BindVariableFloat/Int/Bool(string pVariable)), :1420-1421 (GetAnimInterface, 'usable in HumanCommandScript implementations'); exp/anims_workspaces/DZ/anims/workspaces/player/player_main/player_main.agr:11,16,21,88 (MovementDirection, Stance, TurnAmount, Lean); exp/anims_workspaces/DZ/anims/workspaces/player/player_main/Locomotion.agf:9481-9488 (AnimSrcNodeVarUpdate on MovementDirection, UpdateOnInit 1, UpdateOnMainPath 1); skills/dayz-vehicles/references/gunner-shoot-from-vehicle.md:48-51 (SIBNIC BindVariableInt(\"Stance\") + PreAnim_SetInt)",
       "license": "MIT",
       "line_end": 256,
       "line_start": 256,
-      "observed_at": "2026-10-04",
+      "observed_at": "2026-10-06",
       "promotion_artifact_id": "skill/dayz-animation-pipeline",
       "source_id": "dayz-vanilla",
       "source_revision": "1.30.164014-exp",

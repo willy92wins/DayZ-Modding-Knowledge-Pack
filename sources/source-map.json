@@ -1001,10 +1001,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-06: Unreleased Fixed entry for the dayz-animation-pipeline SKILL.md correction of PR #106 (vanilla graph variables are bound by name, so PreAnim_SetFloat/SetInt is reopened on the player graph; whether a value written every PreAnimUpdate survives the graph's own update is not measured). Evidence as recorded on the skills/dayz-animation-pipeline/SKILL.md input of the same change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "97a15de796fa7116df83a1306ab3e280804d4109378777337884565418a45401",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-anim-vanilla-var-bind@2026-10-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d21c7ec9235d49a0aa5d1157c05d694f347c5e880b44bf3fd88ffa448fd87cd9",
+      "output_hash": "97a15de796fa7116df83a1306ab3e280804d4109378777337884565418a45401",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5233,9 +5243,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-04 (LFSkateboard): the 2026-06-11 note discarded PreAnim_SetFloat/SetInt on the vanilla player graph because 'vanilla graph variable IDs are not exposed to script'. Appended a correction, original text kept: IDs are bound by name with HumanAnimInterface.BindVariableFloat/Int/Bool(string) (exp/scripts/scripts/3_Game/human.c:312-314) through GetAnimInterface (human.c:1420-1421); player_main.agr:11,21,88 declare MovementDirection, TurnAmount, Lean; SIBNIC's shipped gunner binds Stance and sets it with PreAnim_SetInt (skills/dayz-vehicles/references/gunner-shoot-from-vehicle.md:48-51). Each line opened in DayZ 1.30.164014 Exp by Claude (Anthropic). Runtime survival of a value written every PreAnimUpdate against the graph's own VarUpdate (Locomotion.agf:9481-9488) is NOT measured and is labelled [DESIGN]. No cross-family review yet. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-04 (LFSkateboard): the 2026-06-11 note discarded PreAnim_SetFloat/SetInt on the vanilla player graph because 'vanilla graph variable IDs are not exposed to script'. Appended a correction, original text kept: IDs are bound by name with HumanAnimInterface.BindVariableFloat/Int/Bool(string) (exp/scripts/scripts/3_Game/human.c:313-315) through GetAnimInterface (human.c:1420-1421); player_main.agr:11,21,88 declare MovementDirection, TurnAmount, Lean; SIBNIC's shipped gunner binds Stance (AnimSrcGCTVarInt, player_main.agr:16) and sets it with PreAnim_SetInt (skills/dayz-vehicles/references/gunner-shoot-from-vehicle.md:48-51). Each line opened in DayZ 1.30.164014 Exp by Claude (Anthropic). Runtime survival of a value written every PreAnimUpdate against the graph's own VarUpdate (player_main/Locomotion.agf:9481-9488) is NOT measured and is labelled [DESIGN]. Citations corrected 2026-10-06 while finishing PR #106, each line re-opened in the same extract: the binds were cited as human.c:312-314, where 312 is a comment and BindVariableBool is at 315; Locomotion.agf is now cited with its player_main folder (the extract has three files of that name, at player_main, infected_main and samples/cow_example); player_main.agr:16 added for Stance. Cross-family review pending (Codex gpt-6.1-sol, round 1). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "6b6f5a6734a31de07fb7d24285c13b81cc13589c0e5b29ccff0b251986ff4aaa",
+          "source_hash": "6f4f134bba8701614e36566783bec362f816ac92c2d179476474f7cede8c67af",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-anim-vanilla-var-bind@2026-10-04",
@@ -5243,7 +5253,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6b6f5a6734a31de07fb7d24285c13b81cc13589c0e5b29ccff0b251986ff4aaa",
+      "output_hash": "6f4f134bba8701614e36566783bec362f816ac92c2d179476474f7cede8c67af",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -17262,9 +17272,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-04 (LFSkateboard): registered CLAIM-ANIM-VANILLA-VAR-BIND-130 for the dayz-animation-pipeline SKILL.md correction (bind vanilla graph variables by name). Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-04 (LFSkateboard): registered CLAIM-ANIM-VANILLA-VAR-BIND-130 for the dayz-animation-pipeline SKILL.md correction (bind vanilla graph variables by name). evidence_locator corrected 2026-10-06 while finishing PR #106: human.c:313-315 (was 312-314), player_main.agr:16 added for Stance, Locomotion.agf cited with its player_main path. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "2b97d8a7d829a288553eecee6f62d17856aa8c64bfcdbb5b5181f52c574e10a0",
+          "source_hash": "38afdcc9c364fba97c395711eed3f448b1ebe31d2fe34748d220c705acfe7c66",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-anim-vanilla-var-bind@2026-10-04",
@@ -17272,7 +17282,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2b97d8a7d829a288553eecee6f62d17856aa8c64bfcdbb5b5181f52c574e10a0",
+      "output_hash": "38afdcc9c364fba97c395711eed3f448b1ebe31d2fe34748d220c705acfe7c66",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
