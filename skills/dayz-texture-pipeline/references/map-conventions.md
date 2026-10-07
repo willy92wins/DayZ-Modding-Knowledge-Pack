@@ -194,19 +194,22 @@ Evidence:
 ### From a metallic/roughness set to the G channel (added 2026-10-07)
 
 Community rule (Strykar, DayZ Modders Discord, 2026-10-07, `unverified` in game): do not copy a metallic map
-straight into specular. Its black (insulators: wood, cloth, plastic) means 0 % reflectance, and real insulators
-sit near 4 % linear (2-16 %), metals at 70-100 %. Replace the black with **#383838** and keep the bright metal.
+straight into specular. Metallic is a blend factor between dielectric and metal, not a reflectance: copied as
+specular, its black (insulators: wood, cloth, plastic) becomes zero specular, while real insulators reflect about
+4 % at normal incidence (2-16 %) and metals 70-100 %. Replace the black with **#383838** and keep the bright metal.
 
 - Arithmetic, checked offline: 4 % linear encoded to sRGB = 0.2209 → **56 = 0x38**; read back as sRGB it is 3.95 %.
   56 sits inside the G ranges of the table above for rubber, plastic and wood (20-90).
-- **Not verified: whether the Super shader decodes `_smdi` G as sRGB.** If it reads G as raw linear, 0x38 means
-  22 % reflectance, not 4 %. The rule rests on the sRGB assumption; confirm against a vanilla `_smdi` or in game
+- **Not verified: whether the Super shader decodes `_smdi` G as sRGB.** If it reads G as raw linear, 0x38 is 0.22
+  of full scale, about 5.6 times the intended 4 %; and that G behaves like a PBR F0 at all is not established
+  either, so neither number is a calibrated reflectance. The rule rests on the sRGB assumption; confirm against a vanilla `_smdi` or in game
   before treating 0x38 as a calibrated value instead of a sensible starting point. A hint against it: DayZ Tools
   `Bin/ImageToPAA/TexConvert.cfg` comments the colour classes (`_co`, `_ca`, macro) as "sRGB color space" and gives
   `*_smdi.*` no such comment (read 2026-10-07). A comment, not the shader, so it does not settle the question.
 - Strykar's right-click tool (`DayZ_Specular_Converter.zip`, ImageMagick) composites solid #383838 over the
-  metallic map using the inverted metallic map as mask. Derived from ImageMagick's masked-composite rule, not run
-  here (no ImageMagick on this machine): `out = m·m + 0.2196·(1 − m)`, so 0 → 56, 64 → 58, 128 → 92, 255 → 255.
+  metallic map using the inverted metallic map as mask. Derived from ImageMagick's masked-composite rule for opaque
+  inputs without an alpha channel (with alpha, ImageMagick masks by the mask's alpha instead of its intensity), not
+  run here (no ImageMagick on this machine): `out = m·m + 0.2196·(1 − m)`, so 0 → 56, 64 → 58, 128 → 92, 255 → 255.
   Correct for a binary metallic map; it **darkens antialiased or grey transitions** (m² instead of m).
   [DESIGN] The textbook form is the linear blend `out = 0.2196 + (1 − 0.2196)·m` (128 → 156); pick one on purpose.
 - Metal comes out at the metallic value (white = 255), not at the albedo's F0 colour. DayZ's G is a scalar, so that
@@ -235,22 +238,26 @@ That matches the packing table above. What reading the script shows:
   the `.tga` RLE-compressed is not verified here; if it does, ImageToPAA rejects it (see `SKILL.md`).
 - The inputs must share dimensions; how `-combine` handles a size mismatch is not verified here, so resize first.
 
-- **Painting R white is redundant when the file goes through ImageToPAA.** `TexConvert.cfg` class
+- [EXACT][CLAIM-TEX-SMDI-SUFFIX-R255] **Painting R white is redundant when the file goes through ImageToPAA.** `TexConvert.cfg` class
   `specular_diffuseinverse_map` (`*_smdi.*`): DXT1, `channelSwizzleR="1"`, G and B kept, `channelSwizzleA="1"`.
   Round trip 2026-10-07 on a 64² flat fixture with R = 0, G = 56, B = 200, one file per folder (NTFS folds case, so
   `x_smdi.png` and `x_SMDI.png` in one folder are the same file): `x_SMDI` and `x_smdi` both decode back as
   (255, 56, 200, 255); the control `x_plain` keeps (0, 56, 200, 255). So the match is case-insensitive, and the
   suffix, not the content, forces R to 255. That is also why the measured `_smdi` PAAs above read R = 255.
-- **The procedural `#(argb,...)color(r,g,b,a,SMDI)` has no single "default".** Census of every vanilla `.rvmat`
-  under `P:\DZ` (2026-10-07): 993 procedural SMDI textures; R = 1 in 372, R = 0 in 564, other values in 55. The most
-  common is `color(0,0,1,1,SMDI)` (297; e.g. `DZ/characters/bodies/data/jeans_f_grd.rvmat`, `PixelShaderID="Super"`):
-  G = 0, no specular at all, not a neutral one. Since vanilla Super materials ship R = 0 that often, R being white
-  looks conventional rather than required; its effect in the shader is not verified. For a neutral dielectric
-  without a metallic map, Strykar suggests a flat G of #383838 (same sRGB caveat as above).
-- **Bit depth: the file must be 8 bits per channel.** A 16-bit PNG fails ImageToPAA (see `SKILL.md`, ImageToPAA
-  section). Strykar advises the 64-bit Q8 ImageMagick build; what matters is the written file's depth, so on a Q16
-  build force `-depth 8`. [DESIGN] Not run here (no ImageMagick on this machine). `Pack_SMDI.bat` passes no `-depth`,
-  so a 16-bit source run through a Q16 build would give a 16-bit `_SMDI`.
+- [EXACT][CLAIM-TEX-SMDI-PROCEDURAL-CENSUS] **The procedural `#(argb,...)color(r,g,b,a,SMDI)` has no single "default".**
+  Census of every vanilla `.rvmat` under `P:\DZ` (2026-10-07): 993 procedural SMDI textures: R = 1 in 372, R = 0 in
+  564, 0 < R < 1 in 55, and 2 out of range (`color(100,100,100,1,SMDI)` in two `ww2monument` rvmats). 914 of them sit in
+  `PixelShaderID="Super"` materials: R = 0 in 543, R = 1 in 325, 0 < R < 1 in 44, 2 out of range. The most common is
+  `color(0,0,1,1,SMDI)` (297; e.g. `DZ/characters/bodies/data/jeans_f_grd.rvmat`, a Super material): G = 0, no
+  specular at all. Since Super materials ship R = 0 that often, R being white looks conventional rather than
+  required; its effect in the shader is not verified, and the census says nothing about which G is neutral for a
+  given material. For a neutral dielectric without a metallic map, Strykar suggests a flat G of #383838 (same sRGB
+  caveat as above).
+- **Bit depth: write 8 bits per channel.** A 16-bit greyscale PNG fails ImageToPAA (tested, see `SKILL.md`,
+  ImageToPAA section); 16-bit RGB was not tested, so 8 bits is the safe target, not a requirement proven for every
+  format. Strykar advises the 64-bit Q8 ImageMagick build; what matters is the depth of the file actually written,
+  so on a Q16 build force `-depth 8`. [DESIGN] Not run here (no ImageMagick on this machine). `Pack_SMDI.bat` passes
+  no `-depth`, so a 16-bit source run through a Q16 build can give a 16-bit `_SMDI`, depending on the output format.
 - Same licence rule: cite, do not vendor.
 
 ## Export and path rules

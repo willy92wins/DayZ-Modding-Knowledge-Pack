@@ -1703,6 +1703,58 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-texture-pipeline/skill.md",
+      "claim_id": "CLAIM-TEX-IMAGETOPAA-RLE-16BIT",
+      "evidence_locator": "Offline test 2026-10-07, DayZ Tools ImageToPAA CLI on 256x256 fixtures written by PIL: an RLE TGA (header image type 10) prints 'Error (Loading of img failed)' with rc 1 and writes no .paa, while the same pixels saved as uncompressed TGA (type 2) convert with rc 0; a 16-bit greyscale PNG (IHDR bit depth 16, colour type 0) fails the same way. 16-bit RGB not tested. ImageToPAA x.paa x.png and x.paa x.tga both exit 0 and the TGA written is type 2. ImageMagick commands in the same paragraph are [DESIGN], not run (no ImageMagick on the machine).",
+      "license": "MIT",
+      "line_end": 426,
+      "line_start": 420,
+      "observed_at": "2026-10-07",
+      "promotion_artifact_id": "skill/dayz-texture-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "pbr-to-specular-review1@2026-10-07",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-texture-pipeline/skill.md",
+      "claim_id": "CLAIM-TEX-PAA-REG-WRAPPERS",
+      "evidence_locator": "Read 2026-10-07: Strykar's Install_PAA_Converter_ContextMenu.reg lines 7 and 13 hold cmd /c \"for %%i in (\\\"%1\\\") do ImageToPAA ...\"; Install_TGA_Decompressor_ContextMenu.reg line 7 holds cmd /c magick \"%1\" -compress none \"%1\". Repro (Codex gpt-6.1-sol review of this PR, confirmed by Claude the same day): cmd /d /c 'for %%i in (input.paa) do @echo reached %%~fi' prints 'No se esperaba %%i en este momento.' rc 1; with a single %i it prints the path, rc 0. Explorer verb substitution of %% not tested (the .reg files were not installed).",
+      "license": "MIT",
+      "line_end": 437,
+      "line_start": 431,
+      "observed_at": "2026-10-07",
+      "promotion_artifact_id": "skill/dayz-texture-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "pbr-to-specular-review1@2026-10-07",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-texture-pipeline/references/map-conventions.md",
+      "claim_id": "CLAIM-TEX-SMDI-SUFFIX-R255",
+      "evidence_locator": "DayZ Tools Bin/ImageToPAA/TexConvert.cfg class specular_diffuseinverse_map (name *_smdi.*): format DXT1, channelSwizzleR=\"1\", G and B kept, channelSwizzleA=\"1\" (read 2026-10-07). Round trip 2026-10-07: 64x64 flat PNG R=0,G=56,B=200, one file per folder: up/x_SMDI.png and low/x_smdi.png both decode back (ImageToPAA paa->png) as (255,56,200,255); the control plain/x_plain.png keeps (0,56,200,255).",
+      "license": "MIT",
+      "line_end": 246,
+      "line_start": 241,
+      "observed_at": "2026-10-07",
+      "promotion_artifact_id": "skill/dayz-texture-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "pbr-to-specular-review1@2026-10-07",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-texture-pipeline/references/map-conventions.md",
+      "claim_id": "CLAIM-TEX-SMDI-PROCEDURAL-CENSUS",
+      "evidence_locator": "Census 2026-10-07 over every .rvmat under the P: vanilla tree (DZ): regex #(argb,n,n,n)color(r,g,b,a,SMDI), PixelShaderID of the same file. 993 matches: R=1 372, R=0 564, 0<R<1 55, out of range 2 (color(100,100,100,1,SMDI) in structures/specific/statues/data/ww2monument_stele_flags.rvmat and ww2monument_wall_floor.rvmat). Super: 914 (R=0 543, R=1 325, 0<R<1 44, out of range 2). color(0,0,1,1,SMDI) 297, e.g. characters/bodies/data/jeans_f_grd.rvmat (PixelShaderID Super).",
+      "license": "MIT",
+      "line_end": 255,
+      "line_start": 247,
+      "observed_at": "2026-10-07",
+      "promotion_artifact_id": "skill/dayz-texture-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "pbr-to-specular-review1@2026-10-07",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1

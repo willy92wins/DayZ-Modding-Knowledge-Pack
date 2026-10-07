@@ -11938,10 +11938,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "pbr-to-specular@2026-10-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Codex review round 1 (gpt-6.1-sol, UNSOUND) fixes: the PAA context-menu wrappers are no longer said to wrap the working CLI; their doubled %%i inside cmd /c fails when given to cmd directly (repro confirmed by Claude 2026-10-07), Explorer substitution untested; ImageMagick commands marked [DESIGN]; claim markers CLAIM-TEX-IMAGETOPAA-RLE-16BIT and CLAIM-TEX-PAA-REG-WRAPPERS. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cc510648a38bb3fc4ac71b2474da2facf6cb96fc0e2cab968ff0a67d7fbfc35c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "pbr-to-specular-review1@2026-10-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "581fab897306befd50dd81976e3e588080d7a978b495f523144e0613c3091952",
+      "output_hash": "cc510648a38bb3fc4ac71b2474da2facf6cb96fc0e2cab968ff0a67d7fbfc35c",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -12042,10 +12052,20 @@
           "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "smdi-case-control@2026-10-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Codex review round 1 fixes: metallic described as a blend factor, not reflectance; the 22 % figure reworded (G as F0 not established); alpha precondition on the composite formula; census completed (2 out-of-range values, 993 = 372+564+55+2) and split by shader (Super 914: R=0 543, R=1 325, 0<R<1 44, 2 out of range); bit depth as a safe target, not a proven requirement; claim markers CLAIM-TEX-SMDI-SUFFIX-R255 and CLAIM-TEX-SMDI-PROCEDURAL-CENSUS. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c267273080bf0a9b98bdcb859ac20d40a12203eb3605ab7467dc16ef497ca5f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
+          "source_revision": "pbr-to-specular-review1@2026-10-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "631e08cd5959e8f2df210fb847da10af1ee1c1739e254be8045a2828778bc6c9",
+      "output_hash": "c267273080bf0a9b98bdcb859ac20d40a12203eb3605ab7467dc16ef497ca5f2",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -17419,10 +17439,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Four offline_tested claims for dayz-texture-pipeline registered after Codex review round 1: CLAIM-TEX-IMAGETOPAA-RLE-16BIT, CLAIM-TEX-PAA-REG-WRAPPERS, CLAIM-TEX-SMDI-SUFFIX-R255, CLAIM-TEX-SMDI-PROCEDURAL-CENSUS. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9deefa2f9a031b7106b0826ef2057cb398ae4f8c4191eec74630a9b5c688b5f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "pbr-to-specular-review1@2026-10-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e3e72e214c038a38d06e723998e9f7fa546be9e17e13f95ecb3152a3597ad193",
+      "output_hash": "9deefa2f9a031b7106b0826ef2057cb398ae4f8c4191eec74630a9b5c688b5f5",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
