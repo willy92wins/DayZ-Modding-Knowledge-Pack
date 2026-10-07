@@ -17449,10 +17449,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "pbr-to-specular-review1@2026-10-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Codex review round 2 (gpt-6.1-sol, SOUND-with-fixes) N1: CLAIM-TEX-IMAGETOPAA-RLE-16BIT now covers SKILL.md 420-429, including the PAA to PNG/TGA paragraph its evidence names. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6a0c413a59bf5f988cb7409f3c52d876fafb22c765439a18b541cd82a1c23211",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "pbr-to-specular-review2@2026-10-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9deefa2f9a031b7106b0826ef2057cb398ae4f8c4191eec74630a9b5c688b5f5",
+      "output_hash": "6a0c413a59bf5f988cb7409f3c52d876fafb22c765439a18b541cd82a1c23211",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

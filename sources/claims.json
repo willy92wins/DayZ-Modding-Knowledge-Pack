@@ -1709,7 +1709,7 @@
       "claim_id": "CLAIM-TEX-IMAGETOPAA-RLE-16BIT",
       "evidence_locator": "Offline test 2026-10-07, DayZ Tools ImageToPAA CLI on 256x256 fixtures written by PIL: an RLE TGA (header image type 10) prints 'Error (Loading of img failed)' with rc 1 and writes no .paa, while the same pixels saved as uncompressed TGA (type 2) convert with rc 0; a 16-bit greyscale PNG (IHDR bit depth 16, colour type 0) fails the same way. 16-bit RGB not tested. ImageToPAA x.paa x.png and x.paa x.tga both exit 0 and the TGA written is type 2. ImageMagick commands in the same paragraph are [DESIGN], not run (no ImageMagick on the machine).",
       "license": "MIT",
-      "line_end": 426,
+      "line_end": 429,
       "line_start": 420,
       "observed_at": "2026-10-07",
       "promotion_artifact_id": "skill/dayz-texture-pipeline",
