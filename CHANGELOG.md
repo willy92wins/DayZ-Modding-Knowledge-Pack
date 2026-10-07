@@ -7,6 +7,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-texture-pipeline` `references/map-conventions.md`: converting a metallic map into the
+  `_smdi` G source. Strykar's community rule replaces the metallic black with #383838 (4 % linear,
+  0x38 checked offline); whether the Super shader reads G as sRGB is recorded as not verified, and
+  his ImageMagick tool's output (`m·m + 0.2196·(1 − m)`) is derived, not run. `SKILL.md`: an RLE TGA
+  and a 16-bit greyscale PNG both fail ImageToPAA with `Loading of img failed` (offline-tested);
+  PAA to PNG/TGA works from the CLI. Third-party scripts cited, not vendored.
+- `dayz-texture-pipeline` `references/map-conventions.md`: packing the `_smdi` from `_Specular` and
+  roughness/gloss (Strykar's SMDI Channel Packer; `Pack_SMDI.bat` read, not run: roughness
+  beats gloss when both exist, siblings must share the extension, no `-depth 8`). ImageToPAA forces R and A to
+  255 for any `*_smdi.*` name, case-insensitive (TexConvert.cfg plus a round trip), so painting R white is
+  redundant. A census of vanilla procedural SMDI (993) finds R = 0 in 564 and the commonest, `color(0,0,1,1)`,
+  with G = 0, so there is no neutral "default". TexConvert.cfg labels only colour maps as sRGB, a hint
+  against the sRGB reading of #383838.
 - `dayz-texture-pipeline` `scripts/normal_convention.py`: proposes whether a normal map is
   OpenGL (Y+) or DirectX (Y-) from two independent readings, and only when they agree; the
   candidate is confirmed another way before a channel is inverted. The albedo reading: the albedo's dark grooves mark the hollows; across a hollow

@@ -169,7 +169,7 @@ Operational default:
 
 | Channel | Meaning | Starting value |
 | --- | --- | --- |
-| R | Keep near white unless cloning a vanilla exception | 255 |
+| R | Keep near white; ImageToPAA forces it to 255 for `*_smdi.*` anyway | 255 |
 | G | Specular intensity | dark matte, brighter shiny |
 | B | Gloss/specular power | roughness inverted |
 | A | Usually unused by the material | preserve/export safely |
@@ -190,6 +190,75 @@ Evidence:
 - BI Super shader channel description: https://community.bistudio.com/wiki/Super_shader
 - Community DayZ Modders SMDI discussion: https://www.answeroverflow.com/m/1512098192869818471
 - Measured DayZ `_smdi` PAAs (ticket fb-20260921-164235-718f, 2026-09-21): four assets (searchlight, battery_adapter, housing, battery_charger) decode with R min/mean **255**; G/B carry specular/gloss. `dayz-model-pipeline/references/procedural-textures.md` §7 generator/presets were wrong (old R=specular / B=Detail Index) and are now aligned to this packing.
+
+### From a metallic/roughness set to the G channel (added 2026-10-07)
+
+Community rule (Strykar, DayZ Modders Discord, 2026-10-07, `unverified` in game): do not copy a metallic map
+straight into specular. Metallic is a blend factor between dielectric and metal, not a reflectance: copied as
+specular, its black (insulators: wood, cloth, plastic) becomes zero specular, while real insulators reflect about
+4 % at normal incidence (2-16 %) and metals 70-100 %. Replace the black with **#383838** and keep the bright metal.
+
+- Arithmetic, checked offline: 4 % linear encoded to sRGB = 0.2209 → **56 = 0x38**; read back as sRGB it is 3.95 %.
+  56 sits inside the G ranges of the table above for rubber, plastic and wood (20-90).
+- **Not verified: whether the Super shader decodes `_smdi` G as sRGB.** If it reads G as raw linear, 0x38 is 0.22
+  of full scale, about 5.6 times the intended 4 %; and that G behaves like a PBR F0 at all is not established
+  either, so neither number is a calibrated reflectance. The rule rests on the sRGB assumption; confirm against a vanilla `_smdi` or in game
+  before treating 0x38 as a calibrated value instead of a sensible starting point. A hint against it: DayZ Tools
+  `Bin/ImageToPAA/TexConvert.cfg` comments the colour classes (`_co`, `_ca`, macro) as "sRGB color space" and gives
+  `*_smdi.*` no such comment (read 2026-10-07). A comment, not the shader, so it does not settle the question.
+- Strykar's right-click tool (`DayZ_Specular_Converter.zip`, ImageMagick) composites solid #383838 over the
+  metallic map using the inverted metallic map as mask. Derived from ImageMagick's masked-composite rule for opaque
+  inputs without an alpha channel (with alpha, ImageMagick masks by the mask's alpha instead of its intensity), not
+  run here (no ImageMagick on this machine): `out = m·m + 0.2196·(1 − m)`, so 0 → 56, 64 → 58, 128 → 92, 255 → 255.
+  Correct for a binary metallic map; it **darkens antialiased or grey transitions** (m² instead of m).
+  [DESIGN] The textbook form is the linear blend `out = 0.2196 + (1 − 0.2196)·m` (128 → 156); pick one on purpose.
+- Metal comes out at the metallic value (white = 255), not at the albedo's F0 colour. DayZ's G is a scalar, so that
+  loss is inherent to the packing, not a tool bug.
+- The tool writes a greyscale `<name>_Specular.<ext>` beside the source. It is the **G source of `_smdi`**, not a
+  `_smdi`: pack R = 255, G = this map, B = gloss (inverted roughness) per the table above.
+- Third-party payload with unknown licence: cite it, do not vendor it into the pack.
+
+### Packing the `_smdi` from `_Specular` + roughness/gloss (added 2026-10-07)
+
+Strykar's second tool ("DayZ SMDI Channel Packer", DayZ Modders Discord, 2026-10-07; `DayZ_SMDI_Packer.zip`,
+`Pack_SMDI.bat` read 2026-10-07, not run: no ImageMagick on this machine). Right-click any image; the batch strips
+`_Specular` from the name to get `<base>`, looks for `<base>_gloss`, `_glossy`, `_glossiness`, `_rough`,
+`_roughness` or `_r` **with the same extension**, and runs one ImageMagick `-combine`: R = the specular filled
+white, G = the specular as grey, B = the gloss as grey (`-negate` when it is roughness). Output `<base>_SMDI<ext>`.
+That matches the packing table above. What reading the script shows:
+
+- **Roughness beats gloss.** The roughness loop runs after the gloss loop and overwrites the match, so with both
+  `<base>_gloss` and `<base>_rough` present the B channel is the inverted roughness, whatever the user meant.
+- **Only exact siblings match**: same `<base>`, same extension. A `.png` specular next to a `.tga` roughness gives
+  "Could not find a matching gloss or roughness map". The `_r` suffix is narrower than the post suggests
+  (`<base>_r<ext>` only), but a red mask named that way would still be read as roughness.
+- `cmd` substitution is case-insensitive, so `_Specular`, `_specular` and `_SPECULAR` all strip, wherever they sit
+  in the name. Under `EnableDelayedExpansion`, a path containing `!` breaks the lookup.
+- The output keeps the input's extension: a `.jpg` specular gives a lossy `_SMDI.jpg`. Whether ImageMagick writes
+  the `.tga` RLE-compressed is not verified here; if it does, ImageToPAA rejects it (see `SKILL.md`).
+- The inputs must share dimensions; how `-combine` handles a size mismatch is not verified here, so resize first.
+
+- [EXACT][CLAIM-TEX-SMDI-SUFFIX-R255] **Painting R white is redundant when the file goes through ImageToPAA.** `TexConvert.cfg` class
+  `specular_diffuseinverse_map` (`*_smdi.*`): DXT1, `channelSwizzleR="1"`, G and B kept, `channelSwizzleA="1"`.
+  Round trip 2026-10-07 on a 64² flat fixture with R = 0, G = 56, B = 200, one file per folder (NTFS folds case, so
+  `x_smdi.png` and `x_SMDI.png` in one folder are the same file): `x_SMDI` and `x_smdi` both decode back as
+  (255, 56, 200, 255); the control `x_plain` keeps (0, 56, 200, 255). So the match is case-insensitive, and the
+  suffix, not the content, forces R to 255. That is also why the measured `_smdi` PAAs above read R = 255.
+- [EXACT][CLAIM-TEX-SMDI-PROCEDURAL-CENSUS] **The procedural `#(argb,...)color(r,g,b,a,SMDI)` has no single "default".**
+  Census of every vanilla `.rvmat` under `P:\DZ` (2026-10-07): 993 procedural SMDI textures: R = 1 in 372, R = 0 in
+  564, 0 < R < 1 in 55, and 2 out of range (`color(100,100,100,1,SMDI)` in two `ww2monument` rvmats). 914 of them sit in
+  `PixelShaderID="Super"` materials: R = 0 in 543, R = 1 in 325, 0 < R < 1 in 44, 2 out of range. The most common is
+  `color(0,0,1,1,SMDI)` (297; e.g. `DZ/characters/bodies/data/jeans_f_grd.rvmat`, a Super material): G = 0, no
+  specular at all. Since Super materials ship R = 0 that often, R being white looks conventional rather than
+  required; its effect in the shader is not verified, and the census says nothing about which G is neutral for a
+  given material. For a neutral dielectric without a metallic map, Strykar suggests a flat G of #383838 (same sRGB
+  caveat as above).
+- **Bit depth: write 8 bits per channel.** A 16-bit greyscale PNG fails ImageToPAA (tested, see `SKILL.md`,
+  ImageToPAA section); 16-bit RGB was not tested, so 8 bits is the safe target, not a requirement proven for every
+  format. Strykar advises the 64-bit Q8 ImageMagick build; what matters is the depth of the file actually written,
+  so on a Q16 build force `-depth 8`. [DESIGN] Not run here (no ImageMagick on this machine). `Pack_SMDI.bat` passes
+  no `-depth`, so a 16-bit source run through a Q16 build can give a 16-bit `_SMDI`, depending on the output format.
+- Same licence rule: cite, do not vendor.
 
 ## Export and path rules
 
