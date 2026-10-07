@@ -1031,10 +1031,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "pbr-to-specular@2026-10-07",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Added entry for the dayz-texture-pipeline SMDI packing subsection, written from the final skill text. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "664532a383d6388be258a979a1ac31c9401971a3413e02c2f354e4a1ea0799ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "smdi-packer@2026-10-07",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1b5024516470c4e8171346dd535d8e7fe62009dbde0c5db4515bb2297ab907cb",
+      "output_hash": "664532a383d6388be258a979a1ac31c9401971a3413e02c2f354e4a1ea0799ed",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11992,10 +12002,20 @@
           "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "pbr-to-specular@2026-10-07",
           "verification_level": "unverified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "New subsection 'Packing the _smdi from _Specular + roughness/gloss' (Strykar's SMDI Channel Packer, described from his Discord post; the zip was not reviewed). Offline-tested 2026-10-07: DayZ Tools TexConvert.cfg class specular_diffuseinverse_map (*_smdi.*) is DXT1 with channelSwizzleR=1 and channelSwizzleA=1, and a 64x64 fixture with R=0,G=56,B=200 named t_smdi.png and t_SMDI.png both decode back as (255,56,200,255). Census of every vanilla .rvmat under the P: drive: 993 procedural SMDI, R=1 in 372, R=0 in 564, other 55; commonest color(0,0,1,1,SMDI) x297. The sRGB caveat gains the TexConvert.cfg comment hint (colour classes commented sRGB, _smdi not). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d71b6297442dd934a99b7a740798a797e00d97b78dfaff2d8a697190551447cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
+          "source_revision": "smdi-packer@2026-10-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3809d8b5fb10b661b12131666507ca7faef8d3a18cf049a45d3df322b2e8485d",
+      "output_hash": "d71b6297442dd934a99b7a740798a797e00d97b78dfaff2d8a697190551447cc",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"

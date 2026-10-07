@@ -169,7 +169,7 @@ Operational default:
 
 | Channel | Meaning | Starting value |
 | --- | --- | --- |
-| R | Keep near white unless cloning a vanilla exception | 255 |
+| R | Keep near white; ImageToPAA forces it to 255 for `*_smdi.*` anyway | 255 |
 | G | Specular intensity | dark matte, brighter shiny |
 | B | Gloss/specular power | roughness inverted |
 | A | Usually unused by the material | preserve/export safely |
@@ -201,7 +201,9 @@ sit near 4 % linear (2-16 %), metals at 70-100 %. Replace the black with **#3838
   56 sits inside the G ranges of the table above for rubber, plastic and wood (20-90).
 - **Not verified: whether the Super shader decodes `_smdi` G as sRGB.** If it reads G as raw linear, 0x38 means
   22 % reflectance, not 4 %. The rule rests on the sRGB assumption; confirm against a vanilla `_smdi` or in game
-  before treating 0x38 as a calibrated value instead of a sensible starting point.
+  before treating 0x38 as a calibrated value instead of a sensible starting point. A hint against it: DayZ Tools
+  `Bin/ImageToPAA/TexConvert.cfg` comments the colour classes (`_co`, `_ca`, macro) as "sRGB color space" and gives
+  `*_smdi.*` no such comment (read 2026-10-07). A comment, not the shader, so it does not settle the question.
 - Strykar's right-click tool (`DayZ_Specular_Converter.zip`, ImageMagick) composites solid #383838 over the
   metallic map using the inverted metallic map as mask. Derived from ImageMagick's masked-composite rule, not run
   here (no ImageMagick on this machine): `out = m·m + 0.2196·(1 − m)`, so 0 → 56, 64 → 58, 128 → 92, 255 → 255.
@@ -212,6 +214,31 @@ sit near 4 % linear (2-16 %), metals at 70-100 %. Replace the black with **#3838
 - The tool writes a greyscale `<name>_Specular.<ext>` beside the source. It is the **G source of `_smdi`**, not a
   `_smdi`: pack R = 255, G = this map, B = gloss (inverted roughness) per the table above.
 - Third-party payload with unknown licence: cite it, do not vendor it into the pack.
+
+### Packing the `_smdi` from `_Specular` + roughness/gloss (added 2026-10-07)
+
+Strykar's second tool ("DayZ SMDI Channel Packer", DayZ Modders Discord, 2026-10-07; zip not reviewed, behaviour
+as his post describes it): right-click a `*_Specular` map; it looks in the same folder for a sibling ending in
+`_gloss`, `_glossy`, `_rough`, `_roughness` or `_r`, inverts it when it is roughness, and writes `<name>_SMDI`
+with R = white, G = specular, B = gloss. That matches the packing table above.
+
+- **Painting R white is redundant when the file goes through ImageToPAA.** `TexConvert.cfg` class
+  `specular_diffuseinverse_map` (`*_smdi.*`): DXT1, `channelSwizzleR="1"`, G and B kept, `channelSwizzleA="1"`.
+  Round trip 2026-10-07 on a 64² flat fixture with R = 0, G = 56, B = 200: both `t_smdi.png` and `t_SMDI.png`
+  decode back as (255, 56, 200, 255), so the name match is case-insensitive and R is forced to 255 whatever the
+  source holds. That is also why the measured `_smdi` PAAs above read R = 255.
+- **The procedural `#(argb,...)color(r,g,b,a,SMDI)` has no single "default".** Census of every vanilla `.rvmat`
+  under `P:\DZ` (2026-10-07): 993 procedural SMDI textures; R = 1 in 372, R = 0 in 564, other values in 55. The most
+  common is `color(0,0,1,1,SMDI)` (297; e.g. `DZ/characters/bodies/data/jeans_f_grd.rvmat`, `PixelShaderID="Super"`):
+  G = 0, no specular at all, not a neutral one. Since vanilla Super materials ship R = 0 that often, R being white
+  looks conventional rather than required; its effect in the shader is not verified. For a neutral dielectric
+  without a metallic map, Strykar suggests a flat G of #383838 (same sRGB caveat as above).
+- **Bit depth: the file must be 8 bits per channel.** A 16-bit PNG fails ImageToPAA (see `SKILL.md`, ImageToPAA
+  section). Strykar advises the 64-bit Q8 ImageMagick build; what matters is the written file's depth, so on a Q16
+  build force `-depth 8`. [DESIGN] Not run here (no ImageMagick on this machine).
+- The `_r` suffix is loose: any `*_r.*` sibling, such as a red mask, would be taken as roughness. Check which
+  file the tool picked before trusting the B channel.
+- Same licence rule: cite, do not vendor.
 
 ## Export and path rules
 
