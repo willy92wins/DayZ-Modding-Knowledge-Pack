@@ -1041,10 +1041,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "smdi-packer@2026-10-07",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The SMDI packing entry updated to the reviewed script. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "308ee53b16191d6c8a795e446b43d18069f4cfbe5d50a6e57d5ba282a1adbb76",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "smdi-packer-script@2026-10-07",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "664532a383d6388be258a979a1ac31c9401971a3413e02c2f354e4a1ea0799ed",
+      "output_hash": "308ee53b16191d6c8a795e446b43d18069f4cfbe5d50a6e57d5ba282a1adbb76",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -12012,10 +12022,20 @@
           "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "smdi-packer@2026-10-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The SMDI packer subsection rewritten from Strykar's Pack_SMDI.bat (DayZ_SMDI_Packer.zip, read 2026-10-07, not run: no ImageMagick on the machine): suffix lists as coded (_gloss/_glossy/_glossiness, _rough/_roughness/_r), roughness overwriting a gloss match, same-extension siblings only, case-insensitive cmd substitution, the ! break under EnableDelayedExpansion, output extension kept, no -depth. Third-party, cited not vendored. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bae23ce7c548e398b1abbb2ac48d176e1272f8e8a620e69a5428b7a40df4bf06",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
+          "source_revision": "smdi-packer-script@2026-10-07",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d71b6297442dd934a99b7a740798a797e00d97b78dfaff2d8a697190551447cc",
+      "output_hash": "bae23ce7c548e398b1abbb2ac48d176e1272f8e8a620e69a5428b7a40df4bf06",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"

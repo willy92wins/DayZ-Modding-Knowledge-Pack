@@ -14,7 +14,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   and a 16-bit greyscale PNG both fail ImageToPAA with `Loading of img failed` (offline-tested);
   PAA to PNG/TGA works from the CLI. Third-party scripts cited, not vendored.
 - `dayz-texture-pipeline` `references/map-conventions.md`: packing the `_smdi` from `_Specular` and
-  roughness/gloss (Strykar's SMDI Channel Packer, post only, zip not reviewed). ImageToPAA forces R and A to
+  roughness/gloss (Strykar's SMDI Channel Packer; `Pack_SMDI.bat` read, not run: roughness
+  beats gloss when both exist, siblings must share the extension, no `-depth 8`). ImageToPAA forces R and A to
   255 for any `*_smdi.*` name, case-insensitive (TexConvert.cfg plus a round trip), so painting R white is
   redundant. A census of vanilla procedural SMDI (993) finds R = 0 in 564 and the commonest, `color(0,0,1,1)`,
   with G = 0, so there is no neutral "default". TexConvert.cfg labels only colour maps as sRGB, a hint

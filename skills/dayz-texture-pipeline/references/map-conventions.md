@@ -217,10 +217,23 @@ sit near 4 % linear (2-16 %), metals at 70-100 %. Replace the black with **#3838
 
 ### Packing the `_smdi` from `_Specular` + roughness/gloss (added 2026-10-07)
 
-Strykar's second tool ("DayZ SMDI Channel Packer", DayZ Modders Discord, 2026-10-07; zip not reviewed, behaviour
-as his post describes it): right-click a `*_Specular` map; it looks in the same folder for a sibling ending in
-`_gloss`, `_glossy`, `_rough`, `_roughness` or `_r`, inverts it when it is roughness, and writes `<name>_SMDI`
-with R = white, G = specular, B = gloss. That matches the packing table above.
+Strykar's second tool ("DayZ SMDI Channel Packer", DayZ Modders Discord, 2026-10-07; `DayZ_SMDI_Packer.zip`,
+`Pack_SMDI.bat` read 2026-10-07, not run: no ImageMagick on this machine). Right-click any image; the batch strips
+`_Specular` from the name to get `<base>`, looks for `<base>_gloss`, `_glossy`, `_glossiness`, `_rough`,
+`_roughness` or `_r` **with the same extension**, and runs one ImageMagick `-combine`: R = the specular filled
+white, G = the specular as grey, B = the gloss as grey (`-negate` when it is roughness). Output `<base>_SMDI<ext>`.
+That matches the packing table above. What reading the script shows:
+
+- **Roughness beats gloss.** The roughness loop runs after the gloss loop and overwrites the match, so with both
+  `<base>_gloss` and `<base>_rough` present the B channel is the inverted roughness, whatever the user meant.
+- **Only exact siblings match**: same `<base>`, same extension. A `.png` specular next to a `.tga` roughness gives
+  "Could not find a matching gloss or roughness map". The `_r` suffix is narrower than the post suggests
+  (`<base>_r<ext>` only), but a red mask named that way would still be read as roughness.
+- `cmd` substitution is case-insensitive, so `_Specular`, `_specular` and `_SPECULAR` all strip, wherever they sit
+  in the name. Under `EnableDelayedExpansion`, a path containing `!` breaks the lookup.
+- The output keeps the input's extension: a `.jpg` specular gives a lossy `_SMDI.jpg`. Whether ImageMagick writes
+  the `.tga` RLE-compressed is not verified here; if it does, ImageToPAA rejects it (see `SKILL.md`).
+- The inputs must share dimensions; how `-combine` handles a size mismatch is not verified here, so resize first.
 
 - **Painting R white is redundant when the file goes through ImageToPAA.** `TexConvert.cfg` class
   `specular_diffuseinverse_map` (`*_smdi.*`): DXT1, `channelSwizzleR="1"`, G and B kept, `channelSwizzleA="1"`.
@@ -235,9 +248,8 @@ with R = white, G = specular, B = gloss. That matches the packing table above.
   without a metallic map, Strykar suggests a flat G of #383838 (same sRGB caveat as above).
 - **Bit depth: the file must be 8 bits per channel.** A 16-bit PNG fails ImageToPAA (see `SKILL.md`, ImageToPAA
   section). Strykar advises the 64-bit Q8 ImageMagick build; what matters is the written file's depth, so on a Q16
-  build force `-depth 8`. [DESIGN] Not run here (no ImageMagick on this machine).
-- The `_r` suffix is loose: any `*_r.*` sibling, such as a red mask, would be taken as roughness. Check which
-  file the tool picked before trusting the B channel.
+  build force `-depth 8`. [DESIGN] Not run here (no ImageMagick on this machine). `Pack_SMDI.bat` passes no `-depth`,
+  so a 16-bit source run through a Q16 build would give a 16-bit `_SMDI`.
 - Same licence rule: cite, do not vendor.
 
 ## Export and path rules
