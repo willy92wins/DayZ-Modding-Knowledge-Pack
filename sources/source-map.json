@@ -3797,10 +3797,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-0db8e57@2026-10-06",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-07 promotion of main 8f3e874 following #110 (receipt 173bdf562db07e02cc26e6cb of the promotion of 0db8e57): the promotion the owner authorised in chat on 2026-10-07 («fusiona y promociona») for #111, carrying what main gained since 0db8e57 (#110, receipt only, and #111, dayz-texture-pipeline: metallic to specular, _smdi packing and two more ImageToPAA load failures). promote --check from a fresh worktree of 8f3e874 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (74 of 119 operations: skill/dayz-texture-pipeline on agents_user_skills+claude_user_skills and 73 vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the two paths git changed under skills/ since 0db8e57, dayz-texture-pipeline SKILL.md and references/map-conventions.md (#111); nothing else is changed or removed. Right before the apply all 119 destinations were at their planned before_digest. Among the handles it could name, the handle scan found only read/list directory handles (0x00100081) on ~/.agents/skills itself, held by three codex.exe processes (one of the ChatGPT desktop app, two of node parents); it cannot name every handle (286 name queries timed out and 162 processes could not be opened). The parent-open probe passed (controls 0 and 32; both skill roots opened with 0); that a rename opens the destination's parent in that way is an assumption, not checked against the kernel. promote --apply PASS, transaction ca6a553e92e09e4ce3b86993, COMMIT event 224, completed_at 2026-10-07T15:31:00Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash, its completed_at equals the COMMIT event's, its source_commit and operations equal the plan's, and it holds no absolute path, 2 of 82 adjudicated pairs advanced, exactly the 2 that had to (dayz-texture-pipeline on both roots), no .packctl-stage/old/recover residue, every changed destination's pre-image is in the transaction backup at its before_digest, and through both roots the 12 live files of dayz-texture-pipeline equal packctl's projection of 8f3e874, with no placeholder difference. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "38ef4542aafea1e360d79621097ce30555a5cdfb9cec38b7941f1b7264e66d9d",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "kp-update-promotion-8f3e874@2026-10-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8ad9326e0e438da713fee18e40666481031aa26173fdeebb0fcbca7232ca8fbb",
+      "output_hash": "38ef4542aafea1e360d79621097ce30555a5cdfb9cec38b7941f1b7264e66d9d",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -32636,6 +32646,28 @@
       "license": "MIT",
       "output_hash": "72228653fbb2dabacf33ee150d93f3a6619daee5a59b5f7ed43b2d9cc3a34879",
       "output_path": "promotions/receipts/173bdf562db07e02cc26e6cb.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/ca6a553e92e09e4ce3b86993.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-07 promotion of main 8f3e874 following #110 (receipt 173bdf562db07e02cc26e6cb of the promotion of 0db8e57): the promotion the owner authorised in chat on 2026-10-07 («fusiona y promociona») for #111, carrying what main gained since 0db8e57 (#110, receipt only, and #111, dayz-texture-pipeline: metallic to specular, _smdi packing and two more ImageToPAA load failures). promote --check from a fresh worktree of 8f3e874 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT and no receipt finding (74 of 119 operations: skill/dayz-texture-pipeline on agents_user_skills+claude_user_skills and 73 vault snapshots). Projected with packctl's alias localization, the skill changes are exactly the two paths git changed under skills/ since 0db8e57, dayz-texture-pipeline SKILL.md and references/map-conventions.md (#111); nothing else is changed or removed. Right before the apply all 119 destinations were at their planned before_digest. Among the handles it could name, the handle scan found only read/list directory handles (0x00100081) on ~/.agents/skills itself, held by three codex.exe processes (one of the ChatGPT desktop app, two of node parents); it cannot name every handle (286 name queries timed out and 162 processes could not be opened). The parent-open probe passed (controls 0 and 32; both skill roots opened with 0); that a rename opens the destination's parent in that way is an assumption, not checked against the kernel. promote --apply PASS, transaction ca6a553e92e09e4ce3b86993, COMMIT event 224, completed_at 2026-10-07T15:31:00Z; verify_applied.py: 119/119 destinations at their after_digest, the receipt's sha256 equals the COMMIT receipt_hash, its completed_at equals the COMMIT event's, its source_commit and operations equal the plan's, and it holds no absolute path, 2 of 82 adjudicated pairs advanced, exactly the 2 that had to (dayz-texture-pipeline on both roots), no .packctl-stage/old/recover residue, every changed destination's pre-image is in the transaction backup at its before_digest, and through both roots the 12 live files of dayz-texture-pipeline equal packctl's projection of 8f3e874, with no placeholder difference. Registered by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a52455aaf0c3355cf5c4ebd8eb793aad86d7af1853c4d4b031fc5f2cc2a1f463",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/ca6a553e92e09e4ce3b86993.json",
+          "source_revision": "kp-update-promotion-8f3e874@2026-10-07",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a52455aaf0c3355cf5c4ebd8eb793aad86d7af1853c4d4b031fc5f2cc2a1f463",
+      "output_path": "promotions/receipts/ca6a553e92e09e4ce3b86993.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
