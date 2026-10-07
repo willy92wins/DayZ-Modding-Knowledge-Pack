@@ -237,9 +237,10 @@ That matches the packing table above. What reading the script shows:
 
 - **Painting R white is redundant when the file goes through ImageToPAA.** `TexConvert.cfg` class
   `specular_diffuseinverse_map` (`*_smdi.*`): DXT1, `channelSwizzleR="1"`, G and B kept, `channelSwizzleA="1"`.
-  Round trip 2026-10-07 on a 64² flat fixture with R = 0, G = 56, B = 200: both `t_smdi.png` and `t_SMDI.png`
-  decode back as (255, 56, 200, 255), so the name match is case-insensitive and R is forced to 255 whatever the
-  source holds. That is also why the measured `_smdi` PAAs above read R = 255.
+  Round trip 2026-10-07 on a 64² flat fixture with R = 0, G = 56, B = 200, one file per folder (NTFS folds case, so
+  `x_smdi.png` and `x_SMDI.png` in one folder are the same file): `x_SMDI` and `x_smdi` both decode back as
+  (255, 56, 200, 255); the control `x_plain` keeps (0, 56, 200, 255). So the match is case-insensitive, and the
+  suffix, not the content, forces R to 255. That is also why the measured `_smdi` PAAs above read R = 255.
 - **The procedural `#(argb,...)color(r,g,b,a,SMDI)` has no single "default".** Census of every vanilla `.rvmat`
   under `P:\DZ` (2026-10-07): 993 procedural SMDI textures; R = 1 in 372, R = 0 in 564, other values in 55. The most
   common is `color(0,0,1,1,SMDI)` (297; e.g. `DZ/characters/bodies/data/jeans_f_grd.rvmat`, `PixelShaderID="Super"`):

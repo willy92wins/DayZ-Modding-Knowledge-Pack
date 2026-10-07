@@ -12032,10 +12032,20 @@
           "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "smdi-packer-script@2026-10-07",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Corrected the case-insensitivity evidence: the first test wrote t_smdi.png and t_SMDI.png into one NTFS folder, which is one file. Re-run 2026-10-07 with one file per folder: x_SMDI and x_smdi both decode to (255,56,200,255) after ImageToPAA; the negative control x_plain keeps (0,56,200,255). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "631e08cd5959e8f2df210fb847da10af1ee1c1739e254be8045a2828778bc6c9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
+          "source_revision": "smdi-case-control@2026-10-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "bae23ce7c548e398b1abbb2ac48d176e1272f8e8a620e69a5428b7a40df4bf06",
+      "output_hash": "631e08cd5959e8f2df210fb847da10af1ee1c1739e254be8045a2828778bc6c9",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
