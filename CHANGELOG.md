@@ -7,6 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-texture-pipeline` `references/map-conventions.md`: converting a metallic map into the
+  `_smdi` G source. Strykar's community rule replaces the metallic black with #383838 (4 % linear,
+  0x38 checked offline); whether the Super shader reads G as sRGB is recorded as not verified, and
+  his ImageMagick tool's output (`m·m + 0.2196·(1 − m)`) is derived, not run. `SKILL.md`: an RLE TGA
+  and a 16-bit greyscale PNG both fail ImageToPAA with `Loading of img failed` (offline-tested);
+  PAA to PNG/TGA works from the CLI. Third-party scripts cited, not vendored.
 - `dayz-texture-pipeline` `scripts/normal_convention.py`: proposes whether a normal map is
   OpenGL (Y+) or DirectX (Y-) from two independent readings, and only when they agree; the
   candidate is confirmed another way before a channel is inverted. The albedo reading: the albedo's dark grooves mark the hollows; across a hollow

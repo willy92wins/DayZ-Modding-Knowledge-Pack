@@ -191,6 +191,28 @@ Evidence:
 - Community DayZ Modders SMDI discussion: https://www.answeroverflow.com/m/1512098192869818471
 - Measured DayZ `_smdi` PAAs (ticket fb-20260921-164235-718f, 2026-09-21): four assets (searchlight, battery_adapter, housing, battery_charger) decode with R min/mean **255**; G/B carry specular/gloss. `dayz-model-pipeline/references/procedural-textures.md` §7 generator/presets were wrong (old R=specular / B=Detail Index) and are now aligned to this packing.
 
+### From a metallic/roughness set to the G channel (added 2026-10-07)
+
+Community rule (Strykar, DayZ Modders Discord, 2026-10-07, `unverified` in game): do not copy a metallic map
+straight into specular. Its black (insulators: wood, cloth, plastic) means 0 % reflectance, and real insulators
+sit near 4 % linear (2-16 %), metals at 70-100 %. Replace the black with **#383838** and keep the bright metal.
+
+- Arithmetic, checked offline: 4 % linear encoded to sRGB = 0.2209 → **56 = 0x38**; read back as sRGB it is 3.95 %.
+  56 sits inside the G ranges of the table above for rubber, plastic and wood (20-90).
+- **Not verified: whether the Super shader decodes `_smdi` G as sRGB.** If it reads G as raw linear, 0x38 means
+  22 % reflectance, not 4 %. The rule rests on the sRGB assumption; confirm against a vanilla `_smdi` or in game
+  before treating 0x38 as a calibrated value instead of a sensible starting point.
+- Strykar's right-click tool (`DayZ_Specular_Converter.zip`, ImageMagick) composites solid #383838 over the
+  metallic map using the inverted metallic map as mask. Derived from ImageMagick's masked-composite rule, not run
+  here (no ImageMagick on this machine): `out = m·m + 0.2196·(1 − m)`, so 0 → 56, 64 → 58, 128 → 92, 255 → 255.
+  Correct for a binary metallic map; it **darkens antialiased or grey transitions** (m² instead of m).
+  [DESIGN] The textbook form is the linear blend `out = 0.2196 + (1 − 0.2196)·m` (128 → 156); pick one on purpose.
+- Metal comes out at the metallic value (white = 255), not at the albedo's F0 colour. DayZ's G is a scalar, so that
+  loss is inherent to the packing, not a tool bug.
+- The tool writes a greyscale `<name>_Specular.<ext>` beside the source. It is the **G source of `_smdi`**, not a
+  `_smdi`: pack R = 255, G = this map, B = gloss (inverted roughness) per the table above.
+- Third-party payload with unknown licence: cite it, do not vendor it into the pack.
+
 ## Export and path rules
 
 - Final config/rvmat references should point to `.paa`, not `.png`, `.tga`, `.jpg`, or `.dds`.

@@ -1021,10 +1021,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Added entry for the dayz-texture-pipeline metallic-to-specular subsection and the two ImageToPAA load failures (RLE TGA, 16-bit PNG), written from the final skill text. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1b5024516470c4e8171346dd535d8e7fe62009dbde0c5db4515bb2297ab907cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "pbr-to-specular@2026-10-07",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "27843b4a98784bc6316ea6fa4f5afcec4dcc6adf90e88c952fdcd4c8273312c9",
+      "output_hash": "1b5024516470c4e8171346dd535d8e7fe62009dbde0c5db4515bb2297ab907cb",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11898,10 +11908,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two more causes of ImageToPAA 'Error (Loading of img failed)', offline-tested 2026-10-07 with the DayZ Tools ImageToPAA CLI on 256x256 fixtures written by PIL: an RLE TGA (image type 10) fails while the same pixels as uncompressed TGA (type 2) convert; a 16-bit greyscale PNG fails (16-bit RGB not tested). PAA to PNG and PAA to TGA from the CLI both exit 0, the TGA uncompressed. Context: Strykar's Explorer context-menu .reg files (DayZ Modders Discord, 2026-10-07), cited not vendored. Plus the map-conventions pointer. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "581fab897306befd50dd81976e3e588080d7a978b495f523144e0613c3091952",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "pbr-to-specular@2026-10-07",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c7e1bdcea1177865f6e7176522d5d72c85255ad3834001fa76b294e1f9932fd6",
+      "output_hash": "581fab897306befd50dd81976e3e588080d7a978b495f523144e0613c3091952",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -11962,10 +11982,20 @@
           "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "kp-update-inbc-normal-convention@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "New subsection 'From a metallic/roughness set to the G channel': Strykar's community rule (DayZ Modders Discord, 2026-10-07) to replace a metallic map's black with #383838 (4% linear). Arithmetic checked offline (0.04 linear -> sRGB 0.2209 -> 56); whether the Super shader decodes _smdi G as sRGB is recorded as not verified. The composite formula of Strykar's ImageMagick tool (out = m*m + 0.2196*(1-m)) is derived from ImageMagick's masked-composite rule and was not run (no ImageMagick on the machine). Third-party tool of unknown licence, cited not vendored. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3809d8b5fb10b661b12131666507ca7faef8d3a18cf049a45d3df322b2e8485d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
+          "source_revision": "pbr-to-specular@2026-10-07",
+          "verification_level": "unverified"
         }
       ],
       "license": "MIT",
-      "output_hash": "3463fba982f0233ea3c0e517fdb8bace7c0ee3ef72250c13bcb95178c6359588",
+      "output_hash": "3809d8b5fb10b661b12131666507ca7faef8d3a18cf049a45d3df322b2e8485d",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"

@@ -71,7 +71,7 @@ Then replace every placeholder with verified real paths.
 
 ## Reference loading guide
 
-- `references/map-conventions.md`: texture suffixes, normal map orientation, SMDI packing, export notes.
+- `references/map-conventions.md`: texture suffixes, normal map orientation, SMDI packing, metallic→specular (G) conversion, export notes.
 - `references/rvmat-cookbook.md`: Super, flat, emissive, glass, penetration, and common stage patterns.
 - `references/config-and-damage.md`: `hiddenSelectionsTextures[]`, `hiddenSelectionsMaterials[]`, `healthLevels[]`, vehicle light material swaps.
 - `references/multi-rvmat-section-texturing.md`: enriched Multi shader reference with RGB+black mask mapping and UV requirements.
@@ -416,6 +416,19 @@ converts to a 7.39 MB `.paa`. An `_smdi` written by PIL from start never failed.
 
 Skill already includes generic remedy ("re-save as a 32-bit PNG and re-import") for Workbench
 import; here cause is identified and applies equally to CLI.
+
+Same error, two more causes (offline-tested 2026-10-07, DayZ Tools ImageToPAA CLI, 256² fixtures):
+
+- **RLE-compressed TGA** (header image type 10; per Strykar, Photopea offers no uncompressed TGA): fails;
+  the same pixels as uncompressed TGA (type 2) convert. Fix: re-save uncompressed
+  (`magick in.tga -compress none out.tga`, or PIL `save()` without `compression`).
+- **16-bit-per-channel PNG** (greyscale tested; 16-bit RGB not tested): fails. Export 8-bit
+  (ImageMagick: the Q8 build, as the community advises; or `-depth 8`).
+
+The reverse direction works from the CLI: `ImageToPAA in.paa out.png` and `ImageToPAA in.paa out.tga`
+both exit 0 (the TGA comes out uncompressed, type 2). Strykar's Explorer context-menu `.reg` files
+(DayZ Modders Discord, 2026-10-07) wrap exactly these commands; the TGA one rewrites the file in
+place with no backup.
 
 **Source filename decides treatment**: ImageToPAA applies normal-map handling
 by suffix, so source must be named `*_nohq.png`. A
