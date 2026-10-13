@@ -7,6 +7,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: `ES-CAST-UNRELATED-TYPES` (FAIL) reports `X.Cast(y)` where neither X
+  nor the declared type of `y` derives from the other: `IngameHud.Cast(mission)` with `Mission
+  mission` made DayZDiag 1.29 refuse the Mission module with `Types 'IngameHud' and 'Mission' are
+  not related` (fb-20261009-122148-c852). Judged only when `y` is a plain name declared once in the
+  same function or as a member of the enclosing class, and the `extends` chains of both classes
+  resolve through non-modded declarations in the addon, the vanilla tree or an external root;
+  everything else is skipped silently. 217 unit tests pass (210 before); the vanilla control was
+  not run for this change (no vanilla tree on the machine that wrote it).
 - `dayz-script-validator`: `ES-VARIABLE-NAMED-AS-TYPE` (FAIL) reports a variable, member or
   parameter named as a class, enum or typedef that the addon, the vanilla tree or an
   `--external-scripts` root declares. `bool Debug;` in a 4_World settings class made DayZDiag 1.29

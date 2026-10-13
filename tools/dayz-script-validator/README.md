@@ -37,7 +37,7 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Four read the tree, and three of them need roots
+Most rules read a single file. Five read the tree, and four of them need roots
 outside the addon:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
@@ -120,6 +120,20 @@ were not measured again.
   code that never compiles is not judged. Without a vanilla tree the addon's
   and the external roots' types are still judged, and the vanilla part is
   listed as SKIP in `info.skipped_checks` and in `--terse`.
+- `ES-CAST-UNRELATED-TYPES` (FAIL): `X.Cast(y)` where neither X nor the
+  declared type of `y` derives from the other. `Mission mission =
+  GetGame().GetMission(); hud = IngameHud.Cast(mission);` made DayZDiag 1.29
+  refuse the Mission module with `Types 'IngameHud' and 'Mission' are not
+  related` (inbox fb-20261009-122148-c852). Judged only when everything is
+  known: `y` is a plain name declared once, with a plain type, as a local
+  still open at the cast or a parameter of the same function, or else as a
+  member of the enclosing class itself (an inherited member is not looked
+  up); both are classes, not a typedef, an enum, a template or a primitive;
+  and the `extends` chain of both resolves in the addon, the vanilla tree or
+  an `--external-scripts` root, through declarations that are not `modded`
+  and agree on one parent. `Class` is related to everything. Anything else,
+  a call's result included, is skipped without a SKIP line; without a
+  vanilla tree that means every cast whose chain reaches a vanilla class.
 
 ## Compile errors read from one file
 

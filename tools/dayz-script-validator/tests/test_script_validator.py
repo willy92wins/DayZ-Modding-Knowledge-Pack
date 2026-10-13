@@ -2759,6 +2759,176 @@ class TestVariableNamedAsType(unittest.TestCase):
         self.assertIn("declares no class Managed", skipped[0]["reason"])
 
 
+
+CAST = FIXTURES / "cast_unrelated_types"
+CAST_RULE = "ES-CAST-UNRELATED-TYPES"
+
+
+def _cast_errors(source, external=(), vanilla=CAST / "vanilla"):
+    from detectors.es_cast_unrelated_types import check_es_cast_unrelated_types
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    return check_es_cast_unrelated_types(
+        [("scripts/5_Mission/x.c", strip(source))],
+        [(path, strip(text)) for path, text in external],
+        vanilla,
+    )
+
+
+class TestCastUnrelatedTypes(unittest.TestCase):
+    """ES-CAST-UNRELATED-TYPES: `X.Cast(y)` between classes on separate branches.
+
+    Inbox fb-20261009-122148-c852, DayZDiag 1.29: `IngameHud.Cast(mission)`
+    with `Mission mission`, "Types 'IngameHud' and 'Mission' are not related".
+    """
+
+    def test_ticket_repro_fails(self):
+        exit_code, result = script_validator.run(
+            [str(CAST / "bad"), "--vanilla-root", str(CAST / "vanilla")]
+        )
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, CAST_RULE)
+        self.assertEqual([12], [e["line"] for e in errors])
+        self.assertIn("'IngameHud.Cast(mission)'", errors[0]["message"])
+        self.assertIn("IngameHud > Hud > Managed", errors[0]["message"])
+        self.assertIn("fx_hudhook.c", errors[0]["file"])
+        assert_standard_findings(self, result)
+
+    def test_without_the_vanilla_tree_nothing_is_judged(self):
+        _code, result = script_validator.run([str(CAST / "bad")])
+
+        self.assertEqual([], _errors_of(result, CAST_RULE))
+
+    def test_related_and_unknown_casts_pass(self):
+        _code, result = script_validator.run(
+            [str(CAST / "ok"), "--vanilla-root", str(CAST / "vanilla")]
+        )
+
+        # Down- and up-casts, the HUD from GetHud(), a call's result, an
+        # undeclared name, a typedef, Class, a parameter of a related type,
+        # and the ticket's cast in a comment, a string and #if 0.
+        self.assertEqual([], _errors_of(result, CAST_RULE))
+
+    def test_a_parameter_and_a_member_are_resolved(self):
+        source = (
+            "class C\n{\n    Mission m_Mission;\n\n"
+            "    void F(Mission param, int n)\n    {\n"
+            "        IngameHud.Cast(param);\n"
+            "        IngameHud.Cast(m_Mission);\n"
+            "    }\n}\n"
+        )
+
+        self.assertEqual([7, 8], [e["line"] for e in _cast_errors(source)])
+
+    def test_a_local_of_a_closed_block_is_out_of_scope(self):
+        source = (
+            "class C\n{\n    Hud m_X;\n\n    void F()\n    {\n"
+            "        if (m_X)\n        {\n            Mission m_X = null;\n"
+            "        }\n        IngameHud.Cast(m_X);\n"
+            "        Mission m_Y = null;\n        IngameHud.Cast(m_Y);\n"
+            "    }\n}\n"
+        )
+
+        self.assertEqual([13], [e["line"] for e in _cast_errors(source)])
+
+    def test_unresolvable_chains_and_declarations_are_skipped(self):
+        cases = {
+            # a parent nobody declares
+            "class FX_A : FX_Nowhere\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_A.Cast(m);\n}\n",
+            # two parents for one class
+            "class FX_B : Hud\n{\n}\n"
+            "#ifdef FX_OTHER\nclass FX_B : IngameHud\n{\n}\n#endif\n"
+            "void F(Mission m)\n{\n    FX_B.Cast(m);\n}\n",
+            # only a modded declaration
+            "modded class FX_Unseen\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_Unseen.Cast(m);\n}\n",
+            # a template class, a template-typed and an array variable
+            "class FX_T<Class T>\n{\n}\n"
+            "void F(array<Mission> a, Mission b[2])\n{\n"
+            "    FX_T.Cast(a);\n    IngameHud.Cast(a);\n    IngameHud.Cast(b);\n}\n",
+            # a later declarator makes the name unknown, even with a member
+            "class C\n{\n    Mission m;\n    void F()\n    {\n"
+            "        Hud a, m;\n        IngameHud.Cast(m);\n    }\n}\n",
+            # a template class as the target
+            "class FX_T<Class T>\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_T.Cast(m);\n}\n",
+            # a name that is a template parameter somewhere
+            "class FX_Box<Class FX_Item>\n{\n}\nclass FX_Item\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_Item.Cast(m);\n}\n",
+            # a class that is also a typedef, and a primitive declared as a class
+            "class FX_Dual\n{\n}\ntypedef Hud FX_Dual;\nclass int\n{\n}\n"
+            "void F(Mission m, int i)\n{\n    FX_Dual.Cast(m);\n"
+            "    IngameHud.Cast(i);\n}\n",
+            # Class, the implicit root of every class
+            "void F(Mission m)\n{\n    Class.Cast(m);\n}\n",
+            # a parent cycle
+            "class FX_C1 : FX_C2\n{\n}\nclass FX_C2 : FX_C1\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_C1.Cast(m);\n}\n",
+            # the cast under #if 0
+            "void F(Mission m)\n{\n#if 0\n    IngameHud.Cast(m);\n#endif\n}\n",
+            # two types in two branches, for a local and for a member
+            "void F()\n{\n#ifdef FX_A\n    Mission x;\n#else\n"
+            "    MissionGameplay x;\n#endif\n    IngameHud.Cast(x);\n}\n",
+            "class C\n{\n#ifdef FX_A\n    Mission m_X;\n#else\n"
+            "    MissionGameplay m_X;\n#endif\n"
+            "    void F()\n    {\n        IngameHud.Cast(m_X);\n    }\n}\n",
+            # a parameter of another method is no member
+            "class C\n{\n    void G(Mission m_P)\n    {\n    }\n"
+            "    void F()\n    {\n        IngameHud.Cast(m_P);\n    }\n}\n",
+            # a local of another method is no member
+            "class C\n{\n    void G()\n    {\n        Mission m_Z;\n    }\n"
+            "    void F()\n    {\n        IngameHud.Cast(m_Z);\n    }\n}\n",
+            # a local under #if 0 does not hide the member
+            "class C\n{\n    Hud m_Q;\n    void F()\n    {\n#if 0\n"
+            "        Mission m_Q;\n#endif\n        IngameHud.Cast(m_Q);\n    }\n}\n",
+            # this, and an enum
+            "enum FX_E\n{\n    A\n}\n"
+            "void F(FX_E e)\n{\n    IngameHud.Cast(this);\n    IngameHud.Cast(e);\n}\n",
+        }
+        for source in cases:
+            self.assertEqual([], _cast_errors(source), source)
+
+    def test_modded_class_keeps_the_hierarchy_and_addon_classes_resolve(self):
+        source = (
+            "modded class Mission\n{\n}\n"
+            "class FX_Own\n{\n}\n"
+            "void F(Mission m, FX_Own o)\n{\n"
+            "    MissionGameplay.Cast(m);\n    IngameHud.Cast(o);\n}\n"
+        )
+
+        self.assertEqual([10], [e["line"] for e in _cast_errors(source)])
+        modded_with_parent = (
+            "modded class IngameHud\n{\n}\n"
+            "void F(Mission m)\n{\n    IngameHud.Cast(m);\n}\n"
+        )
+        self.assertEqual(
+            [6], [e["line"] for e in _cast_errors(modded_with_parent)]
+        )
+        forward = (
+            "class IngameHud;\n"
+            "void F(Mission m)\n{\n    IngameHud.Cast(m);\n}\n"
+        )
+        self.assertEqual([4], [e["line"] for e in _cast_errors(forward)])
+        returned = (
+            "Mission F(Mission m)\n{\n    if (!m)\n        return m;\n"
+            "    return IngameHud.Cast(m);\n}\n"
+        )
+        self.assertEqual([5], [e["line"] for e in _cast_errors(returned)])
+        # Without the vanilla tree IngameHud's chain does not resolve.
+        self.assertEqual([], _cast_errors(source, vanilla=None))
+        # Classes the addon and an external root declare whole still do.
+        own = "class FX_P\n{\n}\nvoid F(FX_P p)\n{\n    FX_Q.Cast(p);\n}\n"
+        external = [("scripts/3_Game/q.c", "class FX_Q\n{\n}\n")]
+        self.assertEqual(
+            [6], [e["line"] for e in _cast_errors(own, external, vanilla=None)]
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
 

@@ -169,6 +169,7 @@ from detectors.es_unbalanced_brackets import check_es_unbalanced_brackets
 from detectors.es_modded_engine_class import check_es_modded_engine_class
 from detectors.es_undefined_class_ref import check_es_undefined_class_ref
 from detectors.es_variable_named_as_type import check_es_variable_named_as_type
+from detectors.es_cast_unrelated_types import check_es_cast_unrelated_types
 from shared.vanilla_tree import resolve_vanilla_root
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
@@ -457,6 +458,9 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     )
     errors.extend(named_as_type_errors)
     skipped_checks = list(skipped_checks) + named_as_type_skipped
+    errors.extend(
+        check_es_cast_unrelated_types(addon_sources, external_sources, vanilla_root)
+    )
 
     elapsed_ms = int((time.perf_counter() - start) * 1000)
     return build_result(

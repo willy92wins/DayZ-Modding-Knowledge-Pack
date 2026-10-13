@@ -1794,6 +1794,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+      "claim_id": "CLAIM-ENFORCE-CAST-UNRELATED-TYPES",
+      "evidence_locator": "In game, as quoted in pipeline inbox fb-20261009-122148-c852: DayZDiag 1.29, `Mission mission = GetGame().GetMission(); hud = IngameHud.Cast(mission);` refused the Mission module with `Types 'IngameHud' and 'Mission' are not related`. The log was not re-read for this change, and the vanilla hierarchy of IngameHud and Mission was not re-read either (no vanilla tree on the machine that wrote it): the engine's message is the evidence that they are unrelated. Offline: fixtures under tests/fixtures/cast_unrelated_types with a fake vanilla root that has the shape only (bad is the ticket's shape: FAIL on line 12; ok holds a down- and an up-cast, the HUD from GetHud(), a call's result, an undeclared name, a typedef, Class, a related parameter, and the ticket's cast in a comment, a string and #if 0); unit cases cover parameters, members, closed blocks, later declarators, two parents, forward and modded declarations, templates, enums, primitives and a parent cycle. Over the 20 .c files of a DayZ-MCP addon checkout (44 `X.Cast(name)` casts, every argument type resolved and spot-checked) and the fixture .c files of this tool the rule reports only the bad fixture; without a vanilla tree no chain of those casts resolves, so that run says nothing about vanilla classes. Not run on the vanilla tree.",
+      "license": "MIT",
+      "line_end": 46,
+      "line_start": 18,
+      "observed_at": "2026-10-09",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

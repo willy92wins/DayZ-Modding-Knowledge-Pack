@@ -94,17 +94,26 @@ def declared_type_names(text):
 
 
 @functools.lru_cache(maxsize=4)
-def vanilla_type_ranks(vanilla_key):
-    """{type name: lowest module rank that declares it} over the vanilla tree."""
+def vanilla_sources(vanilla_key):
+    """((relative path, text without comments), ...) of the vanilla tree."""
     root = pathlib.Path(vanilla_key)
-    ranks = {}
+    sources = []
     for path in sorted(root.rglob("*.c")):
         try:
             text = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        rank = module_rank(path.relative_to(root).as_posix())
-        for name in declared_type_names(_without_comments(text)):
+        sources.append((path.relative_to(root).as_posix(), _without_comments(text)))
+    return tuple(sources)
+
+
+@functools.lru_cache(maxsize=4)
+def vanilla_type_ranks(vanilla_key):
+    """{type name: lowest module rank that declares it} over the vanilla tree."""
+    ranks = {}
+    for rel_path, text in vanilla_sources(vanilla_key):
+        rank = module_rank(rel_path)
+        for name in declared_type_names(text):
             ranks[name] = min(rank, ranks.get(name, _UNKNOWN_MODULE))
     return ranks
 

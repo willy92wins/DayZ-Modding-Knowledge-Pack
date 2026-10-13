@@ -1071,10 +1071,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "abf9ec3a524e13e922d8d4f1d3ab7a2bc4519e4e6bd28f1aa2e2dc2e988fad6a",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0fab901ffb26210aed7d3eab32625ab4173e6f49f5fccb7d0b8afe04767e5bd7",
+      "output_hash": "abf9ec3a524e13e922d8d4f1d3ab7a2bc4519e4e6bd28f1aa2e2dc2e988fad6a",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17509,10 +17519,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0e6270d0d67007bb1cd69f4e11648960e21d150fc210da0e4a1394ba649499ae",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ff05630e2096289f4a46f3621f14361dda5d23c966d0d365f893f455bfaf70bf",
+      "output_hash": "0e6270d0d67007bb1cd69f4e11648960e21d150fc210da0e4a1394ba649499ae",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20744,10 +20764,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b8d231f0bab07e3506922c967552343c08588604ac0b89ffb2e6ac49ec999184",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5529e8a25f788a666ac8327343e4d6c8d6fbc3cb0b9d72886b2dee5472fbface",
+      "output_hash": "b8d231f0bab07e3506922c967552343c08588604ac0b89ffb2e6ac49ec999184",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21554,10 +21584,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b52189f1d6d8be7d7770eaaf4bd2dd4ccd35a1441337fa192ec2c40076135063",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8b12a1bbacd8db56ef78bb92f96f6d92aa8541fa219f4b560ccd4d34c5cfddba",
+      "output_hash": "b52189f1d6d8be7d7770eaaf4bd2dd4ccd35a1441337fa192ec2c40076135063",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25168,10 +25208,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1f51120921d216332f908fccb49dab2bc2974414fd3094821296e7b597c5bd03",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c98fbb36b246f8027671aa7655f7332f9c529c369d3d08f742a4eb8c95a1bb53",
+      "output_hash": "1f51120921d216332f908fccb49dab2bc2974414fd3094821296e7b597c5bd03",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33123,10 +33173,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c5a123c0b0f5cc890487cf8447017d5c341da784d9e257fb0b565ce3bcb3f757",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5e7285764666346f7140277de2283da5250df849bb22f1ea2babae846d90e9bc",
+      "output_hash": "c5a123c0b0f5cc890487cf8447017d5c341da784d9e257fb0b565ce3bcb3f757",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33282,6 +33342,182 @@
       "license": "MIT",
       "output_hash": "daf1c1179aab41e401adc7f595fee340793b783f19bde224245a140ccbd40328",
       "output_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/5_mission/fx_hud.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d05d8ca8bd3c8c7bc23394ba97b59b6affa58bb95119a5ed5f37558f37d740fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d05d8ca8bd3c8c7bc23394ba97b59b6affa58bb95119a5ed5f37558f37d740fd",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "adb1f41e8b19835e9014fe4733787624b02203a2cd39954f0fe5ec5f89b27117",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/bad/config.cpp",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "adb1f41e8b19835e9014fe4733787624b02203a2cd39954f0fe5ec5f89b27117",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/bad/scripts/5_Mission/fx_hudhook.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f3901948325d43a698f2eceb19e416a3f2f9c034a2559f4df5ca29c93703d44f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/bad/scripts/5_Mission/fx_hudhook.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f3901948325d43a698f2eceb19e416a3f2f9c034a2559f4df5ca29c93703d44f",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/bad/scripts/5_Mission/fx_hudhook.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "db051556379a0b7c14b710d0aebd09d4bece81c98f94f33627940cf08cad222d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/ok/config.cpp",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "db051556379a0b7c14b710d0aebd09d4bece81c98f94f33627940cf08cad222d",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/ok/scripts/5_Mission/fx_hudhook.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c87249f54b06f9750f15b136987e8a4e299c1644e134610590dcaa3905468eb6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/ok/scripts/5_Mission/fx_hudhook.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c87249f54b06f9750f15b136987e8a4e299c1644e134610590dcaa3905468eb6",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/ok/scripts/5_Mission/fx_hudhook.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/1_core/fx_core.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "93514c632eb90ff844c849f798ccf57fac8f7dea100dcee628d2469dacc02634",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/1_core/fx_core.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "93514c632eb90ff844c849f798ccf57fac8f7dea100dcee628d2469dacc02634",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/1_core/fx_core.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/3_game/fx_mission.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2796705ef1fc68a644707e695da780d1c46265d913ec4132ad5ec0964e7aa527",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/3_game/fx_mission.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2796705ef1fc68a644707e695da780d1c46265d913ec4132ad5ec0964e7aa527",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/3_game/fx_mission.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/5_mission/fx_ingamehud.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-CAST-UNRELATED-TYPES for dayz-script-validator from pipeline inbox fb-20261009-122148-c852 (DayZDiag 1.29: `IngameHud.Cast(mission)` with `Mission mission`, Types 'IngameHud' and 'Mission' are not related). `X.Cast(y)` is judged only when y is a plain name declared once with a plain type as a local still open at the cast or a parameter of the same function, or else as a member of the enclosing class itself, and the extends chains of X and that type resolve through non-modded declarations agreeing on one parent in the addon, the vanilla tree (comments dropped, read once with ES-VARIABLE-NAMED-AS-TYPE through vanilla_sources) or an --external-scripts root; typedefs, enums, templates, primitives and parent cycles are skipped, Class is related to everything, and lines that never compile are not judged; CLAIM-ENFORCE-CAST-UNRELATED-TYPES. Measured: python3 -m unittest discover tests, 217 passed (210 before); every guard of the rule was mutated and each mutant turned a test red (the parent-cycle mutant hangs the test). Over a DayZ-MCP addon checkout (44 plain-name casts, all argument types resolved) no finding, without a vanilla tree. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c7f5f5e4199cbb4b9578bf7561aac4bd2421c91931f0e649749736374836bb1e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/5_mission/fx_ingamehud.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c7f5f5e4199cbb4b9578bf7561aac4bd2421c91931f0e649749736374836bb1e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/5_mission/fx_ingamehud.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }
