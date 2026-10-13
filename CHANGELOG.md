@@ -7,6 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: `ES-PROTECTED-METHOD-CROSS-CLASS` (WARN) reports `recv.Method(` where
+  `Method` is `protected` or `private` in the addon class that `recv` is declared as (or its addon
+  ancestor) and the caller is neither that class nor derived from it, as `PlayerBase.OnRPC`
+  calling the protected `LFSK_RideCommand.LFSK_OnServerState` (fb-20261006-002741-28fa). WARN: the
+  refusal is measured for protected fields, not methods. 227 unit tests pass (222 before); the
+  vanilla control was not run for this change (no vanilla tree on the machine that wrote it).
 - `dayz-script-validator`: `ES-UNDECLARED-STATIC-MEMBER` (FAIL) reports `ClassName.Member` and
   `ClassName.Member(` when no addon declaration of the class or of its ancestors names `Member`:
   a lane deleted `ANIM_SWAP_ENABLED` from its own `LFSK_Constants` while seven call sites still

@@ -37,7 +37,7 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Six read the tree, and four of them need roots
+Most rules read a single file. Seven read the tree, and four of them need roots
 outside the addon:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
@@ -150,6 +150,19 @@ were not measured again.
   chain reaches a vanilla or another mod's class is not judged, so it runs
   without a vanilla tree; a class-like name declared as a variable in the
   addon is not judged either.
+- `ES-PROTECTED-METHOD-CROSS-CLASS` (WARN): `recv.Method(` where `Method`
+  is `protected` or `private` in the declared type of `recv` (or the addon
+  ancestor that declares it) and the calling class is neither that class nor
+  derived from it. Shape of inbox fb-20261006-002741-28fa: `PlayerBase.OnRPC`
+  called `cmd.LFSK_OnServerState(...)`, protected in `LFSK_RideCommand`, in
+  the same module. WARN because the refusal is measured for a protected
+  field (`Variable '...' is protected`, `ES-PROTECTED-CROSS-MODULE`) and not
+  for a method. The receiver's type is looked up as in
+  `ES-CAST-UNRELATED-TYPES`; every class from it up to the one that declares
+  the method must be the addon's own, and the first declaration found decides
+  (any public declaration of that name in the addon clears it). A caller whose
+  chain leaves the addon and the external roots counts as unrelated: a
+  vanilla class cannot derive from an addon class.
 
 ## Compile errors read from one file
 

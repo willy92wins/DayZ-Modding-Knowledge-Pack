@@ -3054,6 +3054,123 @@ class TestUndeclaredStaticMember(unittest.TestCase):
         )
 
 
+PROTECTED_METHOD = FIXTURES / "protected_method_cross_class"
+PROTECTED_METHOD_RULE = "ES-PROTECTED-METHOD-CROSS-CLASS"
+
+
+def _protected_method_warnings(sources, external=()):
+    from detectors.es_protected_method_cross_class import (
+        check_es_protected_method_cross_class,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    if isinstance(sources, str):
+        sources = [("scripts/4_World/x.c", sources)]
+    return check_es_protected_method_cross_class(
+        [(path, strip(text)) for path, text in sources],
+        [(path, strip(text)) for path, text in external],
+        None,
+    )
+
+
+_OWNER = (
+    "class FX_Cmd : HumanCommandScript\n{\n"
+    "    protected void FX_Hide()\n    {\n    }\n"
+    "    private int FX_Own(int a = Math.Max(1, 2))\n    {\n        return a;\n    }\n"
+    "}\n"
+)
+
+
+class TestProtectedMethodCrossClass(unittest.TestCase):
+    """ES-PROTECTED-METHOD-CROSS-CLASS: a hidden method called from outside.
+
+    Inbox fb-20261006-002741-28fa: `cmd.LFSK_OnServerState(...)` from
+    PlayerBase.OnRPC on a local LFSK_RideCommand whose method is protected.
+    WARN: the refusal is measured for fields, not for methods.
+    """
+
+    def test_ticket_repro_warns(self):
+        exit_code, result = script_validator.run([str(PROTECTED_METHOD / "bad")])
+
+        self.assertEqual(2, exit_code)
+        warnings = [
+            w for w in result["warnings"] if w["rule_id"] == PROTECTED_METHOD_RULE
+        ]
+        self.assertEqual([22], [w["line"] for w in warnings])
+        self.assertEqual("WARN", warnings[0]["severity"])
+        self.assertIn("'cmd.FX_OnServerState('", warnings[0]["message"])
+        self.assertIn("class PlayerBase", warnings[0]["message"])
+        assert_standard_findings(self, result)
+
+    def test_calls_from_the_hierarchy_and_public_calls_pass(self):
+        _code, result = script_validator.run([str(PROTECTED_METHOD / "ok")])
+
+        self.assertEqual(
+            [],
+            [w for w in result["warnings"] if w["rule_id"] == PROTECTED_METHOD_RULE],
+        )
+
+    def test_private_parameter_member_and_free_function(self):
+        source = _OWNER + (
+            "class FX_Other\n{\n    FX_Cmd m_Cmd;\n"
+            "    void F(FX_Cmd p)\n    {\n"
+            "        p.FX_Own();\n        m_Cmd.FX_Hide();\n    }\n}\n"
+            "void G(FX_Cmd c)\n{\n    c.FX_Hide();\n}\n"
+        )
+
+        found = _protected_method_warnings(source)
+        self.assertEqual([16, 17, 22], [w["line"] for w in found])
+        self.assertIn("is private in FX_Cmd", found[0]["message"])
+        self.assertIn("code outside any class", found[2]["message"])
+
+    def test_unknown_or_foreign_cases_are_skipped(self):
+        call = "class FX_U\n{\n    void F(FX_Cmd c)\n    {\n        c.FX_Hide();\n    }\n}\n"
+        cases = {
+            # a public declaration of the same name in another addon declaration
+            _OWNER + "modded class FX_Cmd\n{\n    void FX_Hide()\n    {\n    }\n}\n" + call,
+            # the receiver's class is also declared outside the addon (below)
+            # a template, a modded-only and an unreadable owner
+            "class FX_Cmd<Class T>\n{\n    protected void FX_Hide();\n}\n" + call,
+            "modded class FX_Cmd\n{\n    protected void FX_Hide();\n}\n" + call,
+            "class FX_Cmd\n{\n    protected void FX_Hide();\n}\nmodded class FX_Cmd extends\n" + call,
+            # the method only in a vanilla ancestor
+            "class FX_Cmd : HumanCommandScript\n{\n}\n" + call,
+            # a caller with two parents, and a parent cycle
+            _OWNER + "class FX_P\n{\n}\nclass FX_U : FX_P\n{\n}\n"
+            "#ifdef FX_X\nclass FX_U : FX_Cmd\n{\n}\n#endif\n" + call,
+            _OWNER + "class FX_U : FX_V\n{\n}\nclass FX_V : FX_U\n{\n}\n" + call,
+            # this, super, a field initialised by a call, and #if 0
+            _OWNER + "class FX_W : FX_Cmd\n{\n    void F()\n    {\n"
+            "        this.FX_Hide();\n        super.FX_Hide();\n    }\n}\n",
+            "class FX_Cmd\n{\n    int m_N = FX_Hide();\n    protected int FX_Peek();\n}\n"
+            "class FX_U\n{\n    void F(FX_Cmd c)\n    {\n        c.FX_Hide();\n    }\n}\n",
+            _OWNER + "void G(FX_Cmd c)\n{\n#if 0\n    c.FX_Hide();\n#endif\n}\n",
+            # an untyped or array-typed receiver
+            _OWNER + "void G(array<FX_Cmd> a, FX_Cmd b[2])\n{\n    a.FX_Hide();\n"
+            "    b.FX_Hide();\n    x.FX_Hide();\n}\n",
+        }
+        for source in cases:
+            self.assertEqual([], _protected_method_warnings(source), source)
+        outside = _protected_method_warnings(
+            _OWNER + call, [("scripts/4_World/e.c", "modded class FX_Cmd\n{\n}\n")]
+        )
+        self.assertEqual([], outside)
+        self.assertEqual([5 + 10], [w["line"] for w in _protected_method_warnings(_OWNER + call)])
+
+    def test_a_descendant_through_an_external_root_is_related(self):
+        source = _OWNER + (
+            "class FX_U : FX_Ext\n{\n    void F(FX_Cmd c)\n    {\n"
+            "        c.FX_Hide();\n    }\n}\n"
+        )
+        external = [("scripts/4_World/e.c", "class FX_Ext : FX_Cmd\n{\n}\n")]
+
+        self.assertEqual([], _protected_method_warnings(source, external))
+        self.assertEqual([15], [w["line"] for w in _protected_method_warnings(source)])
+
+
 if __name__ == "__main__":
     unittest.main()
 

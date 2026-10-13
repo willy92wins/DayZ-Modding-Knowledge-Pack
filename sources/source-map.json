@@ -1091,10 +1091,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2b114303c15ebf955e668c98e8ce4ee32558db39c59d1b07fbd9313f56885aeb",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "af907cfb5d41c02fef528260bd2917eb2ae97041bc6d84b51174fdd5b09083cf",
+      "output_hash": "2b114303c15ebf955e668c98e8ce4ee32558db39c59d1b07fbd9313f56885aeb",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17549,10 +17559,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f635494a98d17b1506d8e14371884d868b90d03d22e8ad14a254f025428e869f",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "107b84d2a6c3e85d15783891e632724794450a9754702b2986eac674d8aa149d",
+      "output_hash": "f635494a98d17b1506d8e14371884d868b90d03d22e8ad14a254f025428e869f",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20804,10 +20824,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "aa2a8d1c13cc91c8db3d6f2d08dc22a5a7aad8d64e164ad9294d99881ab7cc3b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7446b782b967c89eb544f45567cacf0265eb5800911e15da4642eca07edb27fd",
+      "output_hash": "aa2a8d1c13cc91c8db3d6f2d08dc22a5a7aad8d64e164ad9294d99881ab7cc3b",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21634,10 +21664,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "695b64c85ebd2977abb49ee8f900264480a9cd99e5a00e7a199a6bd082bb5522",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f3e5a5194fafec9e8ed07a091ccd0462c31e3ce066707a2684ae49bb2b6daa54",
+      "output_hash": "695b64c85ebd2977abb49ee8f900264480a9cd99e5a00e7a199a6bd082bb5522",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25268,10 +25308,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d4630e08e44c7e895f69bb7c79789454d35af87f6066eb98444e2d17b377e55c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a6d82e1082f1dce1f862b7a51718ee2d926caa6eeac4f9ea31e04fa97ecbac96",
+      "output_hash": "d4630e08e44c7e895f69bb7c79789454d35af87f6066eb98444e2d17b377e55c",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33722,6 +33772,116 @@
       "license": "MIT",
       "output_hash": "2c44978a29bb21d21e5dbba6d5a1b120a4847091033f0aed5adcdc18e94876db",
       "output_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/scripts/4_World/fx_ride.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3580fe5f790b6f8bf113a3fa775299d0a0ce285a5e4da3a979eeb1b4a6b65214",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3580fe5f790b6f8bf113a3fa775299d0a0ce285a5e4da3a979eeb1b4a6b65214",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c3344706ef358593c75ad1ae672a5879af536fe1d5bf2007add08480373ce814",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/bad/config.cpp",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c3344706ef358593c75ad1ae672a5879af536fe1d5bf2007add08480373ce814",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/bad/scripts/4_World/fx_ride.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "68ffb85ab07c2076bac10e36e8cda2f52bf76e9b78ec457f7e9c69e910886601",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/bad/scripts/4_World/fx_ride.c",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "68ffb85ab07c2076bac10e36e8cda2f52bf76e9b78ec457f7e9c69e910886601",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/bad/scripts/4_World/fx_ride.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1a7b9562e45eb048725a1812824445ba639aaedebf0cb97ea4f27bd568cc6506",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/ok/config.cpp",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1a7b9562e45eb048725a1812824445ba639aaedebf0cb97ea4f27bd568cc6506",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/ok/scripts/4_World/fx_ride.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-PROTECTED-METHOD-CROSS-CLASS for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: PlayerBase.OnRPC, 4_World, called `cmd.LFSK_OnServerState(...)` on a local `LFSK_RideCommand cmd` whose method is protected). `recv.Method(` is judged only when recv's one plain declared type is found as in ES-CAST-UNRELATED-TYPES, every class from it up to the first one that declares Method is the addon's own (not modded-only, not a template, readable, declared nowhere outside the addon), that class declares Method only protected or private in the addon, and the caller is neither that class nor derived from it, through the non-modded declarations of the addon and the external roots (a class declared in neither cannot derive from an addon class; two parents or a cycle skip). WARN because the refusal is measured for protected fields (enforce-script-reference SKILL.md:1141, CLAIM-ENFORCE-PROTECTED-CROSS-MODULE) and not for methods; CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS. Measured: python3 -m unittest discover tests, 227 passed (222 before); every guard of the rule was mutated and each mutant turned a test red, except a this/super guard that the receiver lookup already covers, which was removed. Over a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change), and the method case is not measured in game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "19089c1c65554423488c85db7d3e9615d66494872b1ea3e5db0c383501f1be51",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/ok/scripts/4_World/fx_ride.c",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "19089c1c65554423488c85db7d3e9615d66494872b1ea3e5db0c383501f1be51",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/ok/scripts/4_World/fx_ride.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

@@ -173,6 +173,9 @@ from detectors.es_cast_unrelated_types import check_es_cast_unrelated_types
 from detectors.es_undeclared_static_member import (
     check_es_undeclared_static_member,
 )
+from detectors.es_protected_method_cross_class import (
+    check_es_protected_method_cross_class,
+)
 from shared.vanilla_tree import resolve_vanilla_root
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
@@ -466,6 +469,11 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     )
     errors.extend(
         check_es_undeclared_static_member(
+            addon_sources, external_sources, vanilla_root
+        )
+    )
+    warnings.extend(
+        check_es_protected_method_cross_class(
             addon_sources, external_sources, vanilla_root
         )
     )

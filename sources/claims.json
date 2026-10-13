@@ -1820,6 +1820,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
+      "claim_id": "CLAIM-ENFORCE-PROTECTED-METHOD-CROSS-CLASS",
+      "evidence_locator": "Shape from pipeline inbox fb-20261006-002741-28fa (LFSkateboard): `protected void LFSK_OnServerState(...)` declared in LFSK_RideCommand and called as `cmd.LFSK_OnServerState(...)` from PlayerBase.OnRPC (same module, 4_World) on a local `LFSK_RideCommand cmd`; the ticket does not isolate a compile line for that call. Measured only for fields: enforce-script-reference SKILL.md:1141 (`Variable 'm_DeviceId' is protected` then `Can't compile \"Mission\" script module!`, LFPowerGrid, DayZDiag) and CLAIM-ENFORCE-PROTECTED-CROSS-MODULE, both a field read from another module. No compile log in this pack shows the refusal for a method called from an unrelated class, so the rule is WARN. Offline: fixtures under tests/fixtures/protected_method_cross_class (bad is the ticket's shape: WARN on line 22; ok holds a call from the same class, from a descendant, through a modded declaration's public bridge, a public method, a vanilla-typed receiver, and the bad call in a comment and #if 0); unit cases cover private, a parameter, a member, a free function, a public redeclaration, external, template, modded-only and unreadable owners, a method only in a vanilla ancestor, two parents, a parent cycle, this/super, a field initialised by a call, untyped and array receivers, and a descendant through an external root. Over the 20 .c files of a DayZ-MCP addon checkout (440 calls on addon-typed receivers, none to a hidden method) and every .c root of this pack the rule reports only the bad fixture. Not run on the vanilla tree.",
+      "license": "MIT",
+      "line_end": 47,
+      "line_start": 17,
+      "observed_at": "2026-10-06",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1
