@@ -3171,6 +3171,70 @@ class TestProtectedMethodCrossClass(unittest.TestCase):
         self.assertEqual([15], [w["line"] for w in _protected_method_warnings(source)])
 
 
+MULTILINE_CONDITION = FIXTURES / "multiline_condition_operator"
+MULTILINE_CONDITION_RULE = "ES-MULTILINE-CONDITION-OPERATOR"
+
+
+def _multiline_condition_lines(source):
+    from detectors.es_multiline_condition_operator import (
+        check_es_multiline_condition_operator,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    stripped = strip_enforce_comments_and_strings(source, "x.c")[0]
+    return [
+        w["line"]
+        for w in check_es_multiline_condition_operator(stripped, "x.c")
+    ]
+
+
+class TestMultilineConditionOperator(unittest.TestCase):
+    """ES-MULTILINE-CONDITION-OPERATOR: `if (a ||` continued on the next line.
+
+    Inbox fb-20261006-030019-e074, DayZ 1.30.164014 server: "Invalid
+    statement ')'" and "Syntax error" at the continuation. WARN: one
+    measurement, vanilla control pending.
+    """
+
+    def test_ticket_repro_warns(self):
+        exit_code, result = script_validator.run([str(MULTILINE_CONDITION / "bad")])
+
+        self.assertEqual(2, exit_code)
+        warnings = [
+            w for w in result["warnings"]
+            if w["rule_id"] == MULTILINE_CONDITION_RULE
+        ]
+        self.assertEqual([10, 18], [w["line"] for w in warnings])
+        self.assertIn("trailing '||'", warnings[0]["message"])
+        self.assertIn("trailing '&&'", warnings[1]["message"])
+        assert_standard_findings(self, result)
+
+    def test_single_line_conditions_and_other_continuations_pass(self):
+        _code, result = script_validator.run([str(MULTILINE_CONDITION / "ok")])
+
+        # bool locals, an operator in a comment and in a string, a call's
+        # argument list over two lines, and the ticket's shape under #if 0.
+        self.assertEqual(
+            [],
+            [w for w in result["warnings"] if w["rule_id"] == MULTILINE_CONDITION_RULE],
+        )
+
+    def test_one_finding_per_header_and_its_line(self):
+        source = (
+            "void F(bool a, bool b, bool c)\n{\n"
+            "    if (a &&\n        b ||\n        c)\n        return;\n"
+            "    else if (F2(a,\n                b) && c ||   \n        a)\n        return;\n"
+            "    if (a) { if (b ||\n        c) return; }\n"
+            "    int x = (a &&\n        b);\n"
+            "}\n"
+        )
+
+        self.assertEqual([3, 8, 11], _multiline_condition_lines(source))
+
+    def test_an_unclosed_header_is_not_judged(self):
+        self.assertEqual([], _multiline_condition_lines("if (a &&\n    b\n"))
+
+
 if __name__ == "__main__":
     unittest.main()
 

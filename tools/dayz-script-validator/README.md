@@ -212,6 +212,14 @@ log, or from a broken file the validator passed:
   fb-20261005-233046-89d1). Transport is the only class listed: another
   engine class goes in only after a compile refuses it. Mod the script
   bases in 4_World instead, `CarScript` or `BoatScript`.
+- `ES-MULTILINE-CONDITION-OPERATOR` (WARN): a line inside the parentheses
+  of an `if (` or `while (` that ends in `&&` or `||`, once per header.
+  DayZ 1.30.164014 server refused `if ((t >= A && t < B) ||` followed by
+  `(t >= C && t < D))` with `Invalid statement ')'` and `Syntax error` at the
+  continuation (inbox fb-20261006-030019-e074). WARN until the vanilla
+  control has run: one measurement. The operator leading the next line is
+  the same parser rule (enforce-script-reference SKILL.md, SP-386) and is not
+  reported here; neither is a call's argument list over two lines.
 
 Each finding is wrong wherever the code compiles, so code under another
 mod's `#ifdef` is judged too. A branch that never compiles is not: `#if`

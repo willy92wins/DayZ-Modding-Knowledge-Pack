@@ -1101,10 +1101,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3df708733e1c57562f9f02b62362128c64889a83b92dab5b77b8a4c5dd51256c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2b114303c15ebf955e668c98e8ce4ee32558db39c59d1b07fbd9313f56885aeb",
+      "output_hash": "3df708733e1c57562f9f02b62362128c64889a83b92dab5b77b8a4c5dd51256c",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17569,10 +17579,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a56743ad8a686108f6da30f114dfc488c28dbe944b42a7f69e5e88ce61c391f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f635494a98d17b1506d8e14371884d868b90d03d22e8ad14a254f025428e869f",
+      "output_hash": "a56743ad8a686108f6da30f114dfc488c28dbe944b42a7f69e5e88ce61c391f5",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20834,10 +20854,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c9a965d876a143722df740ee626aa40743022d48c7fe88e3e06f1853ad418823",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "aa2a8d1c13cc91c8db3d6f2d08dc22a5a7aad8d64e164ad9294d99881ab7cc3b",
+      "output_hash": "c9a965d876a143722df740ee626aa40743022d48c7fe88e3e06f1853ad418823",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21674,10 +21704,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "130d34248f7abb8c5678fd396c00e6b866ba7496eb79a67577104699b3e109eb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "695b64c85ebd2977abb49ee8f900264480a9cd99e5a00e7a199a6bd082bb5522",
+      "output_hash": "130d34248f7abb8c5678fd396c00e6b866ba7496eb79a67577104699b3e109eb",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25318,10 +25358,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c5daaaed48ae01148119281d4dec5f99f976b4e9d28277d528daded711791d7a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d4630e08e44c7e895f69bb7c79789454d35af87f6066eb98444e2d17b377e55c",
+      "output_hash": "c5daaaed48ae01148119281d4dec5f99f976b4e9d28277d528daded711791d7a",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33882,6 +33932,116 @@
       "license": "MIT",
       "output_hash": "19089c1c65554423488c85db7d3e9615d66494872b1ea3e5db0c383501f1be51",
       "output_path": "tools/dayz-script-validator/tests/fixtures/protected_method_cross_class/ok/scripts/4_World/fx_ride.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8b7e7e3fb97884b292b13189d2bc703a9ead754f51e8c3853b8359d5d3817dc8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8b7e7e3fb97884b292b13189d2bc703a9ead754f51e8c3853b8359d5d3817dc8",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "16d0b6372b7efa2e347a448efd6456347b37c7dc4c3737d371950819d4bde35d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/bad/config.cpp",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "16d0b6372b7efa2e347a448efd6456347b37c7dc4c3737d371950819d4bde35d",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/bad/scripts/4_World/fx_window.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "26751f4fb81bf7cd5ed83b3d7941b4a3e0c11fb6cb07057bf2e1b7df3867b076",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/bad/scripts/4_World/fx_window.c",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "26751f4fb81bf7cd5ed83b3d7941b4a3e0c11fb6cb07057bf2e1b7df3867b076",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/bad/scripts/4_World/fx_window.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2a020f2568e6d693681ad812089e2c225ecb943ef0b7f5fbf84493b19b0f2f1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/config.cpp",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2a020f2568e6d693681ad812089e2c225ecb943ef0b7f5fbf84493b19b0f2f1f",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/scripts/4_World/fx_window.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: WARN rule ES-MULTILINE-CONDITION-OPERATOR for dayz-script-validator from pipeline inbox fb-20261006-030019-e074 (DayZ 1.30.164014 server: `if ((t >= A && t < B) ||` continued by `(t >= C && t < D))` refused with Invalid statement ')' and Syntax error at the continuation). Reports, once per header, a line inside the parentheses of an `if (` or `while (` that ends in && or || with comments dropped; an unclosed header and lines that never compile are not judged; the operator-led form (SP-386) is not reported; CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR. Counter-example search first: no multi-line if/while header at all among 2327 in a DayZ-MCP addon checkout that compiles on 1.29 and 1.30, and no header ending in && or || in the pack's .c files, so the claim stands; WARN because it is one measurement. Measured: python3 -m unittest discover tests, 231 passed (227 before); every guard of the rule was mutated and each mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change); a vanilla header ending in && or || that compiles would contradict the rule. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "352da68c6fe7e8019a75d8e609304f86668c7b91999a2ca7b6205f50c4d07929",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/scripts/4_World/fx_window.c",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "352da68c6fe7e8019a75d8e609304f86668c7b91999a2ca7b6205f50c4d07929",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/scripts/4_World/fx_window.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

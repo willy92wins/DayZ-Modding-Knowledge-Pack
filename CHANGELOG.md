@@ -7,6 +7,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: `ES-MULTILINE-CONDITION-OPERATOR` (WARN) reports an `if`/`while`
+  condition whose line ends in `&&` or `||` and goes on to the next line: DayZ 1.30.164014 server
+  refused `if ((t >= A && t < B) ||` + `(t >= C && t < D))` with `Invalid statement ')'` and
+  `Syntax error` (fb-20261006-030019-e074). WARN: one measurement, vanilla control pending. No such
+  header exists in the DayZ-MCP addon (compiles on 1.29 and 1.30) or in the pack's `.c` files.
+  231 unit tests pass (227 before); the vanilla control was not run for this change (no vanilla
+  tree on the machine that wrote it).
 - `dayz-script-validator`: `ES-PROTECTED-METHOD-CROSS-CLASS` (WARN) reports `recv.Method(` where
   `Method` is `protected` or `private` in the addon class that `recv` is declared as (or its addon
   ancestor) and the caller is neither that class nor derived from it, as `PlayerBase.OnRPC`

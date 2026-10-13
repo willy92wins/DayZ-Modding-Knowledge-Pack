@@ -165,6 +165,9 @@ from detectors.es_reserved_word_identifier import (
     check_es_reserved_word_identifier,
 )
 from detectors.es_modulo_float_context import check_es_modulo_float_context
+from detectors.es_multiline_condition_operator import (
+    check_es_multiline_condition_operator,
+)
 from detectors.es_unbalanced_brackets import check_es_unbalanced_brackets
 from detectors.es_modded_engine_class import check_es_modded_engine_class
 from detectors.es_undefined_class_ref import check_es_undefined_class_ref
@@ -407,6 +410,9 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
                 # already reported why.
                 errors.extend(check_es_unbalanced_brackets(stripped, rel_path))
             errors.extend(check_es_modded_engine_class(stripped, rel_path))
+            warnings.extend(
+                check_es_multiline_condition_operator(stripped, rel_path)
+            )
         elif suffix == ".rvmat":
             errors.extend(check_rvmat_normalmapmacro(source, rel_path))
             warnings.extend(
