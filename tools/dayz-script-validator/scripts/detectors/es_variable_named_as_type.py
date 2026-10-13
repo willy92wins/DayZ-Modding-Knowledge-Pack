@@ -128,11 +128,34 @@ def usable_vanilla_key(vanilla_root):
     return key
 
 
+def _inside_template_args(stripped, offset):
+    """True when offset sits inside an unclosed `<` of its own statement.
+
+    A comma between template arguments (`Param3<bool, vector, int>`,
+    `typedef map<string, ref array<string>> Name;`) is not a declarator
+    separator; vanilla control 2026-10-13 found 104 (1.29) and 109 (1.30)
+    such false findings before this check.
+    """
+    start = max(stripped.rfind(c, 0, offset) for c in ";{}") + 1
+    depth = 0
+    for char in stripped[start:offset]:
+        if char == "<":
+            depth += 1
+        elif char == ">" and depth:
+            depth -= 1
+    return depth > 0
+
+
 def _declared_names(stripped):
     """(offset, name) of every name in a declared-name position."""
     for match in _DECL_RE.finditer(stripped):
-        if match.group("type") not in _NOT_A_TYPE:
-            yield match.start("name"), match.group("name")
+        if match.group("type") in _NOT_A_TYPE:
+            continue
+        if stripped[match.start()] == "," and _inside_template_args(
+            stripped, match.start()
+        ):
+            continue
+        yield match.start("name"), match.group("name")
     for match in _FIRST_DECL_RE.finditer(stripped):
         if match.group("type") in _NOT_A_TYPE:
             continue
@@ -148,7 +171,11 @@ def _declared_names(stripped):
                     break
             elif char == ";" and depth == 0:
                 break
-            elif char == "," and depth == 0:
+            elif (
+                char == ","
+                and depth == 0
+                and not _inside_template_args(stripped, cursor)
+            ):
                 later = _LATER_NAME_RE.match(stripped, cursor)
                 if later:
                     yield later.start("name"), later.group("name")

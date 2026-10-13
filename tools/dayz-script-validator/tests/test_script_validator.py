@@ -2750,6 +2750,30 @@ class TestVariableNamedAsType(unittest.TestCase):
                 source, rel_path="x.c", external=external)[0]],
         )
 
+    def test_template_arguments_and_typedef_names_are_not_declarators(self):
+        # Vanilla control 2026-10-13: commas between template arguments and a
+        # typedef's own name were read as declarators (104 findings on 1.29,
+        # 109 on 1.30), e.g. `Param3<bool, vector, int> x` and
+        # `typedef map<string,ref array<string>> DamageZoneMap;`.
+        source = (
+            "typedef map<string, ref array<Debug>> FX_OwnMap;\n"
+            "class C\n{\n"
+            "    ref Param3<int, Debug, Debug> m_Pair;\n"
+            "    void F(Param2<int, Debug> p, int Debug)\n    {\n"
+            "        float r = Param2<float, Debug>.Cast(p).param1;\n"
+            "        auto q = new Param3<int, Debug, int>(0, null, 0);\n"
+            "        ref map<int, Debug> m, map;\n"
+            "    }\n}\n"
+        )
+        errors, _skipped = _named_errors(source)
+
+        # Still reported: the parameter after a template-typed one, and the
+        # later declarator after a template-typed local.
+        self.assertEqual(
+            [(5, "Debug"), (9, "map")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+
     def test_a_folder_without_class_managed_is_no_vanilla_tree(self):
         errors, skipped = _named_errors(
             "class C\n{\n    bool Debug;\n}\n", vanilla=NAMED / "bad"

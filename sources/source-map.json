@@ -1131,10 +1131,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-docs-25af@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: ES-VARIABLE-NAMED-AS-TYPE no longer reads commas between template arguments, or a typedef's own name, as declarators. Vanilla control on Guillermo's PC (vanilla_control.py at 4987144, 1.29.0.163451 P:\\scripts digest bdbc7d5a..., 1.30.164014 digest cf383c90...) gave 104/109 findings of only these two shapes and 0 for the other six new rules; new test test_template_arguments_and_typedef_names_are_not_declarators; both guards mutated, each mutant red; 232 unit tests pass. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "50c385dc6990cfde34d6c6f236cb21851da14dcf15de00aba6cd723ec4de8cb0",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-vanilla-control@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7e5d44515b6a9b24b60ee8dd6d9d62b633e59834288cbf0c9beac60578f8bbe5",
+      "output_hash": "50c385dc6990cfde34d6c6f236cb21851da14dcf15de00aba6cd723ec4de8cb0",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -25418,10 +25428,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: ES-VARIABLE-NAMED-AS-TYPE no longer reads commas between template arguments, or a typedef's own name, as declarators. Vanilla control on Guillermo's PC (vanilla_control.py at 4987144, 1.29.0.163451 P:\\scripts digest bdbc7d5a..., 1.30.164014 digest cf383c90...) gave 104/109 findings of only these two shapes and 0 for the other six new rules; new test test_template_arguments_and_typedef_names_are_not_declarators; both guards mutated, each mutant red; 232 unit tests pass. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d45d0e12c77d7201e3bbe7ae40c02bb9999081350d83a73cc0abd7fea7271892",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-vanilla-control@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c5daaaed48ae01148119281d4dec5f99f976b4e9d28277d528daded711791d7a",
+      "output_hash": "d45d0e12c77d7201e3bbe7ae40c02bb9999081350d83a73cc0abd7fea7271892",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33393,10 +33413,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: ES-VARIABLE-NAMED-AS-TYPE no longer reads commas between template arguments, or a typedef's own name, as declarators. Vanilla control on Guillermo's PC (vanilla_control.py at 4987144, 1.29.0.163451 P:\\scripts digest bdbc7d5a..., 1.30.164014 digest cf383c90...) gave 104/109 findings of only these two shapes and 0 for the other six new rules; new test test_template_arguments_and_typedef_names_are_not_declarators; both guards mutated, each mutant red; 232 unit tests pass. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6233397d7ce9e4a30d51b511aed558a2a31e87edf5062a4ac83f21c437df9d6c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-val-vanilla-control@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c5a123c0b0f5cc890487cf8447017d5c341da784d9e257fb0b565ce3bcb3f757",
+      "output_hash": "6233397d7ce9e4a30d51b511aed558a2a31e87edf5062a4ac83f21c437df9d6c",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
