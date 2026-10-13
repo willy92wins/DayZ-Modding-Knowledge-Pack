@@ -1755,6 +1755,32 @@
       "source_id": "pack-r21-authored",
       "source_revision": "pbr-to-specular-review1@2026-10-07",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_unbalanced_brackets.py",
+      "claim_id": "CLAIM-ENFORCE-UNBALANCED-BRACKETS",
+      "evidence_locator": "Pipeline inbox fb-20261004-040148-403a (SimpleGroup): a file with `m_Objects.Clear();` sabotaged to `m_Objects.Clear(;` got PASS from dayz-script-validator. No engine log of that file is cited by the ticket; that an unclosed or crossed bracket stops the script module is the language's syntax, not a measurement made here. Offline: fixtures under tests/fixtures/unbalanced_brackets (bad is the ticket's shape: FAIL on the line of the open parenthesis); over 224 local .c files that the stripper reads clean (this pack's fixtures and a DayZ-MCP addon checkout, including a vanilla-style #ifdef DAYZ_1_29/#else that writes `override void Update` with its `{` once per branch) the rule reports only that fixture. Not run on the vanilla tree.",
+      "license": "MIT",
+      "line_end": 25,
+      "line_start": 9,
+      "observed_at": "2026-10-04",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
+      "claim_id": "CLAIM-ENFORCE-MODDED-ENGINE-CLASS",
+      "evidence_locator": "In game, as quoted in pipeline inbox fb-20261005-233046-89d1 (SimpleGroup): DayZDiag 1.29.163709, `modded class Transport` in scripts/3_Game: `Can't compile \"Game\" script module!` and `lfpg_moddedtransport.c(9): Engine class 'Transport' cannot be modded.` The log was not re-read for this change. Only Transport is listed: no other engine class has a refusal on record. The script bases named instead are cited from this pack, not re-read: CarScript extends Car (4_world/entities/vehicles/carscript.c:170) and BoatScript extends Boat (boatscript.c:41, skills/dayz-physics-engine/references/transport-netsync-vehiculos.md). Offline: fixtures under tests/fixtures/modded_engine_class (bad is the ticket's shape, FAIL on line 9; ok holds modded class CarScript, a class extending Transport, and modded class Transport in a comment, a string and #if 0). Not run on the vanilla tree.",
+      "license": "MIT",
+      "line_end": 25,
+      "line_start": 9,
+      "observed_at": "2026-10-05",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

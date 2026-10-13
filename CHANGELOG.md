@@ -7,6 +7,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: two FAIL rules from pipeline tickets of SimpleGroup.
+  `ES-UNBALANCED-BRACKETS` reports the first `(`, `[` or `{` never closed or closed by another
+  kind, and the first closer with nothing to close: `m_Objects.Clear(;` got PASS
+  (fb-20261004-040148-403a). Brackets are counted on the text without comments and strings; each
+  branch of a preprocessor block starts from the brackets open before it, and a file whose
+  branches end with different brackets open, with an unclosed `#ifdef`, or with an unterminated
+  string or comment is not judged. `ES-MODDED-ENGINE-CLASS` fails `modded class Transport`, which
+  DayZDiag 1.29.163709 refused with `Engine class 'Transport' cannot be modded.`
+  (fb-20261005-233046-89d1); Transport is the only class listed until another is measured, and
+  `CarScript`/`BoatScript` are the bases to mod. The README now says the validator is a rule
+  linter and the engine compile is the only full syntax gate. 202 unit tests pass; the vanilla
+  control was not run for this change (no vanilla tree on the machine that wrote it).
 - `dayz-texture-pipeline` `references/map-conventions.md`: converting a metallic map into the
   `_smdi` G source. Strykar's community rule replaces the metallic black with #383838 (4 % linear,
   0x38 checked offline); whether the Super shader reads G as sRGB is recorded as not verified, and

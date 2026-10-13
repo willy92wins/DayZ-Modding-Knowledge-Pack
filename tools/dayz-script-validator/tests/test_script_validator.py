@@ -2515,6 +2515,117 @@ class TestUndefinedClassRef(unittest.TestCase):
         self.assertIn("FX_GonePlanner", lines[1])
 
 
+BRACKETS = FIXTURES / "unbalanced_brackets"
+BRACKETS_RULE = "ES-UNBALANCED-BRACKETS"
+
+
+def _bracket_errors(source):
+    from detectors.es_unbalanced_brackets import check_es_unbalanced_brackets
+    from stripper import strip_enforce_comments_and_strings
+
+    stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+    return check_es_unbalanced_brackets(stripped, "x.c")
+
+
+class TestUnbalancedBrackets(unittest.TestCase):
+    """ES-UNBALANCED-BRACKETS: a bracket never closed, or closed by another kind.
+
+    Inbox fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS.
+    """
+
+    def test_ticket_repro_fails_on_the_open_parenthesis(self):
+        exit_code, result = script_validator.run([str(BRACKETS / "bad")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, BRACKETS_RULE)
+        self.assertEqual([9], [e["line"] for e in errors])
+        self.assertIn(
+            "'(' is never closed before the '}' on line 10", errors[0]["message"]
+        )
+        self.assertIn("fx_group_objects.c", errors[0]["file"])
+        assert_standard_findings(self, result)
+
+    def test_brackets_in_strings_comments_and_branches_pass(self):
+        _code, result = script_validator.run([str(BRACKETS / "ok")])
+
+        # Strings and comments are blanks; each branch of an #ifdef/#else that
+        # writes the opening line twice is counted once; the #ifndef of a
+        # macro the file defines and an #if 0 block never compile.
+        self.assertEqual([], _errors_of(result, BRACKETS_RULE))
+
+    def test_unclosed_at_end_and_stray_closer(self):
+        unclosed = _bracket_errors("class C\n{\n    void F()\n    {\n    }\n")
+        stray = _bracket_errors("class C\n{\n}\n}\n")
+
+        self.assertEqual([2], [e["line"] for e in unclosed])
+        self.assertIn("before the end of the file", unclosed[0]["message"])
+        self.assertEqual([4], [e["line"] for e in stray])
+        self.assertIn("'}' closes nothing", stray[0]["message"])
+
+    def test_a_defect_after_a_duplicated_header_is_found(self):
+        source = (
+            "class C\n{\n#ifdef FX_A\n    void F(int a)\n    {\n#else\n"
+            "    void F()\n    {\n#endif\n        Print(1;\n    }\n}\n"
+        )
+
+        self.assertEqual([10], [e["line"] for e in _bracket_errors(source)])
+
+    def test_branches_that_end_differently_are_not_judged(self):
+        # Which build the closing braces belong to is unknown, with or
+        # without an #else.
+        without_else = "class C\n{\n#ifdef FX_A\n    void F() {\n#endif\n}\n"
+        with_else = (
+            "class C\n{\n#ifdef FX_A\n#else\n    void F() {\n#endif\n    }\n}\n"
+        )
+
+        self.assertEqual([], _bracket_errors(without_else))
+        self.assertEqual([], _bracket_errors(with_else))
+        # An #ifdef never closed: ES-EMPTY-IFDEF warns about that one.
+        self.assertEqual([], _bracket_errors("class C\n{\n#ifdef FX_A\n    void F()\n"))
+
+    def test_unterminated_string_is_left_to_the_stripper(self):
+        fixture = FIXTURES / "es" / "bad_unterminated_string.c"
+        _code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual([], _errors_of(result, BRACKETS_RULE))
+
+
+ENGINE = FIXTURES / "modded_engine_class"
+ENGINE_RULE = "ES-MODDED-ENGINE-CLASS"
+
+
+class TestModdedEngineClass(unittest.TestCase):
+    """ES-MODDED-ENGINE-CLASS: `modded class` of a class the engine refuses.
+
+    Inbox fb-20261005-233046-89d1, DayZDiag 1.29.163709: "Engine class
+    'Transport' cannot be modded."
+    """
+
+    def test_modded_transport_fails(self):
+        exit_code, result = script_validator.run([str(ENGINE / "bad")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, ENGINE_RULE)
+        self.assertEqual([9], [e["line"] for e in errors])
+        self.assertIn("'modded class Transport'", errors[0]["message"])
+        self.assertEqual("FAIL", errors[0]["severity"])
+        assert_standard_findings(self, result)
+
+    def test_script_bases_subclasses_and_comments_pass(self):
+        _code, result = script_validator.run([str(ENGINE / "ok")])
+
+        # `modded class CarScript`, `class FX_MyTransport extends Transport`,
+        # and `modded class Transport` in a comment, a string or #if 0.
+        self.assertEqual([], _errors_of(result, ENGINE_RULE))
+
+    def test_only_the_whole_class_name_counts(self):
+        from detectors.es_modded_engine_class import check_es_modded_engine_class
+
+        self.assertEqual(
+            [], check_es_modded_engine_class("modded class TransportX\n{\n}\n", "x.c")
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
 

@@ -1051,10 +1051,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "smdi-packer-script@2026-10-07",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3a03b89f849abdcfed73eb1067df053e016afd6fc1b73a1a5df939ec97971b7a",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "308ee53b16191d6c8a795e446b43d18069f4cfbe5d50a6e57d5ba282a1adbb76",
+      "output_hash": "3a03b89f849abdcfed73eb1067df053e016afd6fc1b73a1a5df939ec97971b7a",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17469,10 +17479,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "pbr-to-specular-review2@2026-10-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ce9c45f1227a413b82cefd5ea7a9de41b25f9a1fd8b731d7f1223d54948d9a39",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6a0c413a59bf5f988cb7409f3c52d876fafb22c765439a18b541cd82a1c23211",
+      "output_hash": "ce9c45f1227a413b82cefd5ea7a9de41b25f9a1fd8b731d7f1223d54948d9a39",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20684,10 +20704,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f80e3bd3014921b53dcd4ed0e1f6fe50b845903e09d90cf47d278ddde6571c30",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fcd0bd3d5dfa03aa4de5e242c349e272f0369772c62a14e282b6e5c4485895fc",
+      "output_hash": "f80e3bd3014921b53dcd4ed0e1f6fe50b845903e09d90cf47d278ddde6571c30",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21474,10 +21504,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "58077d5a33269f727a686a13ee465a8b9237426f0ade2817bd690bbfe503cb6a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "da5101225292e7296117c572e224e510b9586dacccd85a8a6a71933ed36d8d2f",
+      "output_hash": "58077d5a33269f727a686a13ee465a8b9237426f0ade2817bd690bbfe503cb6a",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25068,10 +25108,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7991bea752ff22b07cff65b9ad9c0e5cfe6b8e19de35cc529690f87b780aa521",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f6e97fe9cca47fd3044204006431e4c20d3e8802ca62152ce5b4e407c09b5a3a",
+      "output_hash": "7991bea752ff22b07cff65b9ad9c0e5cfe6b8e19de35cc529690f87b780aa521",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32787,6 +32837,226 @@
       "output_hash": "728844e79148d1237b0a08c911f5f94b5df9a91e1d5dfcedfb05e411c6dbc99d",
       "output_path": "skills/dayz-animation-pipeline/tests/test_seanim_writer.py",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e572ae8d185bf3d44b6c4c90ba1fc6eccb14c2f6148ff2b48e1b3cdbe2b924ad",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e572ae8d185bf3d44b6c4c90ba1fc6eccb14c2f6148ff2b48e1b3cdbe2b924ad",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_unbalanced_brackets.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "60723c8c6da40d2854e4bbe97f9f40eafa2754e288ab0a4c6f705bbdd1d6ca74",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_unbalanced_brackets.py",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "60723c8c6da40d2854e4bbe97f9f40eafa2754e288ab0a4c6f705bbdd1d6ca74",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_unbalanced_brackets.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "11626f542555e17dff9fdca3a5d4ee4db5697393c35ea1fd31988e9cb6270cca",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad/config.cpp",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "11626f542555e17dff9fdca3a5d4ee4db5697393c35ea1fd31988e9cb6270cca",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad/scripts/3_Game/fx_moddedtransport.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "101155aced18b1db99a4b814c35f4342fad3b5487c4c4f199d8a99bcf626afc9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad/scripts/3_Game/fx_moddedtransport.c",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "101155aced18b1db99a4b814c35f4342fad3b5487c4c4f199d8a99bcf626afc9",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad/scripts/3_Game/fx_moddedtransport.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4649efbbf2d6b79c5a2de750ef6645825b590f65d4dcf58ccdb913709ba9aa9b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok/config.cpp",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4649efbbf2d6b79c5a2de750ef6645825b590f65d4dcf58ccdb913709ba9aa9b",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok/scripts/4_World/fx_vehicles.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f647356651094d1c1db0fa57b02692936591fa697c00bfe0da84dee8de1ab041",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok/scripts/4_World/fx_vehicles.c",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f647356651094d1c1db0fa57b02692936591fa697c00bfe0da84dee8de1ab041",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok/scripts/4_World/fx_vehicles.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1ff77dfd471b70a7bbba7f62326c6a2dfb2225bda5a699e8e323579b1d78d81b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/bad/config.cpp",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1ff77dfd471b70a7bbba7f62326c6a2dfb2225bda5a699e8e323579b1d78d81b",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/bad/scripts/4_World/fx_group_objects.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "53e3e87dcdf5acf7aef4f201a3a1678be9c05afd4513c5ac5e1f24cc0f1567fe",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/bad/scripts/4_World/fx_group_objects.c",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "53e3e87dcdf5acf7aef4f201a3a1678be9c05afd4513c5ac5e1f24cc0f1567fe",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/bad/scripts/4_World/fx_group_objects.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "75ab38446fba73d447d0700bbcc1d7401f8401ebd1041cb08ecb11e6eb567dd6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/ok/config.cpp",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "75ab38446fba73d447d0700bbcc1d7401f8401ebd1041cb08ecb11e6eb567dd6",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/ok/scripts/4_World/fx_balanced.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: two FAIL rules for dayz-script-validator from SimpleGroup pipeline tickets. ES-UNBALANCED-BRACKETS (fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS): the first (, [ or { never closed or closed by another kind, and the first closer with nothing to close, counted on the stripper's text; lines that never compile (shared/dead_branches.py) are skipped, each branch of a preprocessor block starts from the brackets open before it, and a file whose branches end with different brackets open, with an unclosed #ifdef, or with an unterminated string or comment is not judged; CLAIM-ENFORCE-UNBALANCED-BRACKETS. ES-MODDED-ENGINE-CLASS (fb-20261005-233046-89d1, DayZDiag 1.29.163709: Engine class 'Transport' cannot be modded.): modded class of a measured engine class, Transport only; CLAIM-ENFORCE-MODDED-ENGINE-CLASS. README: the validator is a rule linter and the engine compile is the only full syntax gate. Measured: python3 -m unittest discover tests, 202 passed (193 before); each rule's guards were mutated and every mutant turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cf0c1d4af03d006c57a0424af8e4ee7b916b32927a57ce16bd408a750d1b6775",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/ok/scripts/4_World/fx_balanced.c",
+          "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "cf0c1d4af03d006c57a0424af8e4ee7b916b32927a57ce16bd408a750d1b6775",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/ok/scripts/4_World/fx_balanced.c",
+      "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }
   ],

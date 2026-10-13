@@ -7,6 +7,9 @@ report before a PBO is packed.
 This is the pack OFFLINE layer. It does not launch DayZ. In-game verification
 belongs to DayZ-MCP.
 
+It is a rule linter, not a compiler: a PASS means no rule fired, not that the
+script compiles. The engine compile is the only full syntax gate.
+
 ## Install
 
 ```powershell
@@ -104,7 +107,8 @@ were not measured again.
 
 ## Compile errors read from one file
 
-Two rules come from script modules that did not compile, each with its log:
+These rules come from script modules that did not compile, each with its
+log, or from a broken file the validator passed:
 
 - `ES-RESERVED-WORD-IDENTIFIER` (FAIL): a variable, member or parameter named
   `sealed`, `local`, `owned` or `out`. These four failed as names in a real
@@ -132,6 +136,23 @@ Two rules come from script modules that did not compile, each with its log:
   literal under an `(int)` cast, or in a parenthesised condition (only the
   results behind a `?` count), does not reach the expression. A float
   variable is not seen: only the literal case is caught.
+- `ES-UNBALANCED-BRACKETS` (FAIL): the first `(`, `[` or `{` never closed,
+  or closed by another kind of bracket, and the first closer with nothing
+  to close. `m_Objects.Clear();` sabotaged to `m_Objects.Clear(;` got PASS
+  (inbox fb-20261004-040148-403a). Brackets are counted on the text without
+  comments and strings; this is no parser, so a file it passes can still
+  fail to compile. Each branch of an `#ifdef`/`#ifndef`/`#if` block starts
+  from the brackets open before it, so a header written once per branch
+  with one `{` after the block counts once. When the branches of a block
+  end with different brackets open, or an `#ifdef` is never closed, the
+  file is not judged. A file with an unterminated string or block comment
+  is not judged either: the stripper's warning is the finding there.
+- `ES-MODDED-ENGINE-CLASS` (FAIL): `modded class Transport`. DayZDiag
+  1.29.163709 refused it with `Engine class 'Transport' cannot be modded.`
+  and `Can't compile "Game" script module!` (inbox
+  fb-20261005-233046-89d1). Transport is the only class listed: another
+  engine class goes in only after a compile refuses it. Mod the script
+  bases in 4_World instead, `CarScript` or `BoatScript`.
 
 Each finding is wrong wherever the code compiles, so code under another
 mod's `#ifdef` is judged too. A branch that never compiles is not: `#if`
