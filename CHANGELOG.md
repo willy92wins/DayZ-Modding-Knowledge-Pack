@@ -177,6 +177,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `enforce-script-reference` `timers-performance.md`: the EnProfiler example used flags that do
+  not exist (`FUNCTION_TIMES`, `FUNCTION_COUNT`, `CLASS_TIMES`, `CLASS_COUNT`) and methods
+  `GetName`/`GetTime` that `EnProfilerTimeFuncPair` does not have. `EnProfilerFlags` is `NONE`,
+  `RESET`, `RECURSIVE` and `ALL` (`1_core/proto/enprofiler.c:8-18`), the pair is
+  `Param2<float, string>` (`:58`, read through `param1`/`param2`), the third parameter of the
+  `...Of...` queries is `immediate`, and global functions use `GetTimeOfFuncG`/`GetCountOfFuncG`
+  (`:701`, `:726`). Pipeline inbox 2783.
+- `dayz-physics-engine`: "a script cannot walk a client-controlled player" is corrected. With the
+  overrides set by the owner every tick and by the server in every `ConsumeMove` after `super`,
+  the player walked about 1.52 m/s with owner and server ending at the same position (DayZDiag
+  1.29, dayz-mcp `player_move`, #191). Pipeline inbox 5c98.
+- `enforce-script-reference` `dayz-1-30-enforce-script.md` 7.8: `ActionTargetsCursor.Update()`
+  became `Update(bool fullUpdate = true)` in 1.30, and a 1.29 override fails there with
+  `Overloaded function 'Update' not compatible` (DayZ-MCP PBO 12, DayZDiag 1.30 Exp, 2026-10-09);
+  the fix gates the override on `DAYZ_1_29`. Pipeline inbox ca47.
 - `dayz-animation-pipeline` `SKILL.md` discarded two ways to drive the vanilla player graph from a
   `HumanCommandScript` (note of 2026-06-11): `PreAnim_SetFloat/SetInt` because "vanilla graph
   variable IDs are not exposed to script", and `PreAnim_CallCommand` for "0 call-sites in vanilla

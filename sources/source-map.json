@@ -1111,10 +1111,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: Fixed entries for pipeline inbox 2783 (EnProfiler example), 5c98 (scripted player walking) and ca47 (ActionTargetsCursor.Update 1.30 signature). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f040b4a3c3ec3d2cbbbefc224aadcebc20e1a4cb411c5db03af3da969e365843",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-docs-2783-5c98-ca47@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3df708733e1c57562f9f02b62362128c64889a83b92dab5b77b8a4c5dd51256c",
+      "output_hash": "f040b4a3c3ec3d2cbbbefc224aadcebc20e1a4cb411c5db03af3da969e365843",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10704,10 +10714,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: scripted walking of a client-controlled player corrected from pipeline inbox 5c98: overrides on the owner every tick and on the server in every ConsumeMove after super and in CommandHandler walked the player about 1.52 m/s with owner and server at the same final position (DayZDiag 1.29, spike run 0db321a8; dayz-mcp player_move #191, addon/scripts/4_World/MCP_PlayerMove.c:1-16). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "782706ba9779e360888ebc767f46a721ca77953505f5dcbc7bf99b6d9c9ac0aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-docs-2783-5c98-ca47@2026-10-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "168036621c363a1f1489d1af1d8b75dd66af138e2c9eebb494f8b2f6e204bb55",
+      "output_hash": "782706ba9779e360888ebc767f46a721ca77953505f5dcbc7bf99b6d9c9ac0aa",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -15282,10 +15302,20 @@
           "source_path": "enforce-script-reference/references/timers-performance.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: EnProfiler example corrected from pipeline inbox 2783 against 1_core/proto/enprofiler.c (flags :8-18, Enable :103, pair typedefs :55-59, SortData :158-172, SetModule :333, GetTimeOfFunc/G :689/:701, GetCountOfFunc/G :714/:726; the ticket's line numbers, re-read in the public DayZ-Script-Diff tree). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f7779c9465a45ba641cc01fc63782807f3c0bea550d8eb88b51580fd77253d52",
+          "source_id": "pack-r21-authored",
+          "source_path": "enforce-script-reference/references/timers-performance.md",
+          "source_revision": "kp-update-docs-2783-5c98-ca47@2026-10-13",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "05425892871f6608ab534516d1acd52d715d67602b138282f736c119e76ad2eb",
+      "output_hash": "f7779c9465a45ba641cc01fc63782807f3c0bea550d8eb88b51580fd77253d52",
       "output_path": "skills/enforce-script-reference/references/timers-performance.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -32585,10 +32615,20 @@
           "source_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: section 7.8 and break 11 from pipeline inbox ca47: ActionTargetsCursor.Update() became Update(bool fullUpdate = true) in 1.30; DayZ-MCP PBO 12 failed on DayZDiag 1.30 Exp with mcp_actioncursor.c(60) Overloaded function 'Update' not compatible (dayz-mcp reviews/2026-10-06-ticketing/ingame-v12/RESULTS.md, 2026-10-09), fixed with #ifdef DAYZ_1_29 in dayz-mcp #229. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "414785ccdacbca41f8bbadacdc9d1e4c6a087baf2ab27a1d4fd96b5cbaccad21",
+          "source_id": "pack-r21-authored",
+          "source_path": "enforce-script-reference/references/dayz-1-30-enforce-script.md",
+          "source_revision": "kp-update-docs-2783-5c98-ca47@2026-10-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "b9a7a1c69f62a128a46225c9566025db4a6512f13897435bd6f8a86aa32db79d",
+      "output_hash": "414785ccdacbca41f8bbadacdc9d1e4c6a087baf2ab27a1d4fd96b5cbaccad21",
       "output_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "historical"

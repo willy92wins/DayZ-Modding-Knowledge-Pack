@@ -268,6 +268,24 @@ Until 1.29, `m_ResultReplacesIngredient` + `TransferItemProperties` could overwr
 
 `GetRecipeClassName(int recipe_id)` is `PluginRecipesManager.c:84` (digest E said `:54`, which is the constructor).
 
+### 7.8 `ActionTargetsCursor.Update(bool fullUpdate = true)`
+
+Until 1.29 the vanilla method is `Update()`. Since 1.30 Exp it is `Update(bool fullUpdate = true)`. A 1.29 override does not compile on 1.30: `Overloaded function 'Update' not compatible` (DayZ-MCP PBO 12, `mcp_actioncursor.c(60)`, DayZDiag 1.30 Exp, 2026-10-09). Gate the override on the version define (see dayz-mod-workflow `dayz-1-30-mod-workflow.md`):
+
+```c
+#ifdef DAYZ_1_29
+	override void Update()
+	{
+		super.Update();
+#else
+	override void Update(bool fullUpdate = true)
+	{
+		super.Update(fullUpdate);
+#endif
+		// shared body
+	}
+```
+
 ---
 
 ## 8. Engine / proto API (`1_Core`, `3_Game`)
@@ -385,6 +403,7 @@ class DoOnce
 8. Hand takes on surrendered players — `HandGuardIsNotSurrendered` rejects.
 9. `GetNoiseReductionByWeather()` — still compiles (obsolete). AI damping is native; HUD uses `GetNoiseReductionByWeatherEx(object)`.
 10. `GAME_STORAGE_VERSION` 142 → 144. Recipe replace no longer copies ingredient health. Drink/fill CCT is `CCTLiquid`, not `CCTWaterSurfaceEx`.
+11. `override void Update()` on `ActionTargetsCursor` — compile error; 1.30 takes `Update(bool fullUpdate = true)`.
 
 ## Migration checklist
 
