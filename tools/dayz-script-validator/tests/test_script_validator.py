@@ -2929,6 +2929,131 @@ class TestCastUnrelatedTypes(unittest.TestCase):
         )
 
 
+STATIC_MEMBER = FIXTURES / "undeclared_static_member"
+STATIC_MEMBER_RULE = "ES-UNDECLARED-STATIC-MEMBER"
+
+
+def _static_member_errors(sources, external=(), vanilla=None):
+    from detectors.es_undeclared_static_member import (
+        check_es_undeclared_static_member,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    if isinstance(sources, str):
+        sources = [("scripts/4_World/x.c", sources)]
+    return check_es_undeclared_static_member(
+        [(path, strip(text)) for path, text in sources],
+        [(path, strip(text)) for path, text in external],
+        vanilla,
+    )
+
+
+class TestUndeclaredStaticMember(unittest.TestCase):
+    """ES-UNDECLARED-STATIC-MEMBER: `Class.Member` the addon's class lacks.
+
+    Inbox fb-20261006-002741-28fa (LFSkateboard): ANIM_SWAP_ENABLED deleted
+    from LFSK_Constants while seven call sites still read it; DayZ refused
+    the World module on the first boot.
+    """
+
+    def test_ticket_repro_fails(self):
+        exit_code, result = script_validator.run([str(STATIC_MEMBER / "bad")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, STATIC_MEMBER_RULE)
+        self.assertEqual([9, 11], [e["line"] for e in errors])
+        self.assertIn("'FX_Constants.ANIM_SWAP_ENABLED'", errors[0]["message"])
+        self.assertIn("'FX_Constants.Reload('", errors[1]["message"])
+        self.assertIn("fx_ride.c", errors[0]["file"])
+        assert_standard_findings(self, result)
+
+    def test_declared_inherited_and_foreign_members_pass(self):
+        _code, result = script_validator.run([str(STATIC_MEMBER / "ok")])
+
+        # A const and a method of an addon ancestor, a const under #ifdef, a
+        # member of a modded declaration in another module, Cast, a class
+        # whose parent is not the addon's, and the bad reference in a
+        # comment, a string and #if 0.
+        self.assertEqual([], _errors_of(result, STATIC_MEMBER_RULE))
+
+    def test_every_addon_declaration_and_ancestor_counts(self):
+        sources = [
+            ("scripts/3_Game/a.c",
+             "class FX_Base\n{\n    static int A;\n}\n"
+             "class FX_K : FX_Base\n{\n    static int B;\n}\n"),
+            ("scripts/4_World/b.c",
+             "modded class FX_K\n{\n    static int C()\n    {\n"
+             "        return D;\n    }\n}\n"
+             "void F()\n{\n    int x = FX_K.A + FX_K.B + FX_K.C();\n"
+             "    x = FX_K.D;\n    x = FX_K.E;\n}\n"),
+        ]
+
+        # D is only read inside a method body, so it is no declaration.
+        self.assertEqual(
+            [11, 12], [e["line"] for e in _static_member_errors(sources)]
+        )
+
+    def test_classes_not_wholly_the_addons_are_skipped(self):
+        cases = {
+            # a parent nobody declares, or one outside the addon
+            "class FX_A : FX_Nowhere\n{\n}\nvoid F()\n{\n    FX_A.X;\n}\n",
+            # only a modded declaration
+            "modded class FX_M\n{\n}\nvoid F()\n{\n    FX_M.X;\n}\n",
+            # two parents for one class
+            "class FX_P1\n{\n}\nclass FX_P2\n{\n}\n"
+            "class FX_B : FX_P1\n{\n}\n#ifdef FX_O\nclass FX_B : FX_P2\n{\n}\n"
+            "#endif\nvoid F()\n{\n    FX_B.X;\n}\n",
+            # a template class
+            "class FX_T<Class T>\n{\n}\nvoid F()\n{\n    FX_T.X;\n}\n",
+            # an enum, and a class that is also a typedef
+            "enum FX_E\n{\n    A\n}\nclass FX_D\n{\n}\ntypedef FX_E FX_D;\n"
+            "void F()\n{\n    FX_E.X;\n    FX_D.X;\n}\n",
+            # a parent cycle
+            "class FX_C1 : FX_C2\n{\n}\nclass FX_C2 : FX_C1\n{\n}\n"
+            "void F()\n{\n    FX_C1.X;\n}\n",
+            # a header whose body cannot be read
+            "class FX_H\n{\n    static int A;\n}\nmodded class FX_H extends\n"
+            "void F()\n{\n    FX_H.X;\n}\n",
+            # a class-like name that is also a variable
+            "class FX_V\n{\n}\nclass G\n{\n    FX_V FX_V;\n}\n"
+            "void F()\n{\n    FX_V.X;\n}\n",
+            # a method every class inherits from Class
+            "class FX_R\n{\n}\nvoid F(Class c)\n{\n"
+            "    FX_R.Cast(c);\n    FX_R r;\n    FX_R.CastTo(r, c);\n"
+            "    typename t = FX_R.StaticType();\n}\n",
+            # the reference under #if 0, and after another dot
+            "class FX_Z\n{\n}\nvoid F()\n{\n#if 0\n    FX_Z.X;\n#endif\n"
+            "    g.FX_Z.X;\n}\n",
+            # a forward declaration only
+            "class FX_F;\nvoid F()\n{\n    FX_F.X;\n}\n",
+        }
+        for source in cases:
+            self.assertEqual([], _static_member_errors(source), source)
+
+    def test_a_declaration_outside_the_addon_skips_the_class(self):
+        source = "class FX_X\n{\n}\nvoid F()\n{\n    FX_X.Y;\n}\n"
+
+        self.assertEqual([6], [e["line"] for e in _static_member_errors(source)])
+        for external in ("modded class FX_X\n{\n}\n", "class FX_X\n{\n}\n"):
+            self.assertEqual(
+                [],
+                _static_member_errors(source, [("scripts/4_World/e.c", external)]),
+                external,
+            )
+        # The vanilla tree: Mission is declared there, and Class's own
+        # methods come from its `class Class`.
+        own_mission = (
+            "class Mission\n{\n}\nvoid F()\n{\n    Mission.Y;\n}\n"
+        )
+        self.assertEqual([6], [e["line"] for e in _static_member_errors(own_mission)])
+        self.assertEqual(
+            [], _static_member_errors(own_mission, vanilla=CAST / "vanilla")
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
 

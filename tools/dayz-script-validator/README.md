@@ -37,7 +37,7 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Five read the tree, and four of them need roots
+Most rules read a single file. Six read the tree, and four of them need roots
 outside the addon:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
@@ -134,6 +134,22 @@ were not measured again.
   and agree on one parent. `Class` is related to everything. Anything else,
   a call's result included, is skipped without a SKIP line; without a
   vanilla tree that means every cast whose chain reaches a vanilla class.
+- `ES-UNDECLARED-STATIC-MEMBER` (FAIL): `ClassName.Member` or
+  `ClassName.Member(` where no declaration of the class names `Member`. A
+  lane deleted `ANIM_SWAP_ENABLED` and its sibling consts from its own class
+  `LFSK_Constants` while seven call sites still read
+  `LFSK_Constants.ANIM_SWAP_ENABLED`, and DayZ refused the World module on
+  the first boot (inbox fb-20261006-002741-28fa). Judged only for a class
+  the addon owns end to end: declared in the addon, not modded and not a
+  template there, declared nowhere (modded or not) in the vanilla tree or an
+  `--external-scripts` root, with every ancestor the same through
+  declarations that agree on one parent. A name counts as declared when it
+  appears at the top level of the body of any addon declaration of the class
+  or an ancestor, `modded class` and `#ifdef` branches included; the methods
+  of `Class` (`Cast`, `CastTo`, `StaticType`...) always count. A class whose
+  chain reaches a vanilla or another mod's class is not judged, so it runs
+  without a vanilla tree; a class-like name declared as a variable in the
+  addon is not judged either.
 
 ## Compile errors read from one file
 

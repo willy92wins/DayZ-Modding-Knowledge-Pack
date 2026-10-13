@@ -1081,10 +1081,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "af907cfb5d41c02fef528260bd2917eb2ae97041bc6d84b51174fdd5b09083cf",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "abf9ec3a524e13e922d8d4f1d3ab7a2bc4519e4e6bd28f1aa2e2dc2e988fad6a",
+      "output_hash": "af907cfb5d41c02fef528260bd2917eb2ae97041bc6d84b51174fdd5b09083cf",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17529,10 +17539,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "107b84d2a6c3e85d15783891e632724794450a9754702b2986eac674d8aa149d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0e6270d0d67007bb1cd69f4e11648960e21d150fc210da0e4a1394ba649499ae",
+      "output_hash": "107b84d2a6c3e85d15783891e632724794450a9754702b2986eac674d8aa149d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20774,10 +20794,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7446b782b967c89eb544f45567cacf0265eb5800911e15da4642eca07edb27fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8d231f0bab07e3506922c967552343c08588604ac0b89ffb2e6ac49ec999184",
+      "output_hash": "7446b782b967c89eb544f45567cacf0265eb5800911e15da4642eca07edb27fd",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21594,10 +21624,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f3e5a5194fafec9e8ed07a091ccd0462c31e3ce066707a2684ae49bb2b6daa54",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b52189f1d6d8be7d7770eaaf4bd2dd4ccd35a1441337fa192ec2c40076135063",
+      "output_hash": "f3e5a5194fafec9e8ed07a091ccd0462c31e3ce066707a2684ae49bb2b6daa54",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25218,10 +25258,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a6d82e1082f1dce1f862b7a51718ee2d926caa6eeac4f9ea31e04fa97ecbac96",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1f51120921d216332f908fccb49dab2bc2974414fd3094821296e7b597c5bd03",
+      "output_hash": "a6d82e1082f1dce1f862b7a51718ee2d926caa6eeac4f9ea31e04fa97ecbac96",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33518,6 +33568,160 @@
       "license": "MIT",
       "output_hash": "c7f5f5e4199cbb4b9578bf7561aac4bd2421c91931f0e649749736374836bb1e",
       "output_path": "tools/dayz-script-validator/tests/fixtures/cast_unrelated_types/vanilla/5_mission/fx_ingamehud.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8dcfd6f298c9ff9932f0837a4897f4e777e9f2d4e3c0b4c99e020d7049e40949",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8dcfd6f298c9ff9932f0837a4897f4e777e9f2d4e3c0b4c99e020d7049e40949",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "575b4203a5c9fb99b29709f6738049a3441e0ac2895dcb94bc8d820f257721b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/config.cpp",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "575b4203a5c9fb99b29709f6738049a3441e0ac2895dcb94bc8d820f257721b9",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/scripts/3_Game/fx_constants.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8604152684e0c2b6338258a78a190bf7cc43e26b8dbe7088d03150d4869153b5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/scripts/3_Game/fx_constants.c",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8604152684e0c2b6338258a78a190bf7cc43e26b8dbe7088d03150d4869153b5",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/scripts/3_Game/fx_constants.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/scripts/4_World/fx_ride.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a9747b4aaa05223bb44dbb3e3bc219d8047105e5fc8ec47801666ed65cd84242",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/scripts/4_World/fx_ride.c",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a9747b4aaa05223bb44dbb3e3bc219d8047105e5fc8ec47801666ed65cd84242",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/bad/scripts/4_World/fx_ride.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0a5c86c0de344bea2b2420840b429134aff88f95f4a43f0055b99f21ec8f14aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/config.cpp",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0a5c86c0de344bea2b2420840b429134aff88f95f4a43f0055b99f21ec8f14aa",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/scripts/3_Game/fx_constants.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "dd198227803201e575a64a7f4cc1a7ce692eea6ea4900a977a9e95ea33dd284f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/scripts/3_Game/fx_constants.c",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "dd198227803201e575a64a7f4cc1a7ce692eea6ea4900a977a9e95ea33dd284f",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/scripts/3_Game/fx_constants.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/scripts/4_World/fx_ride.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-UNDECLARED-STATIC-MEMBER for dayz-script-validator from pipeline inbox fb-20261006-002741-28fa (LFSkateboard: ANIM_SWAP_ENABLED and sibling consts deleted from LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`; DayZ refused the World module on the first boot). `ClassName.Member` and `ClassName.Member(` are judged only for a class the addon owns end to end: declared in the addon, not modded and not a template there, declared nowhere (modded or not) in the vanilla tree or an --external-scripts root, every ancestor the same through non-modded declarations agreeing on one parent; a name counts as declared when it appears at the top level of any addon declaration of the class or an ancestor (modded and #ifdef branches included), and Class's methods always count (a fixed list, plus the vanilla tree's class Class when passed). A class-like name declared as a variable in the addon, an unreadable class header and lines that never compile are not judged; CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER. Measured: python3 -m unittest discover tests, 222 passed (217 before); every guard of the rule was mutated and each mutant turned a test red, except an enum/typedef guard no test could reach, which was removed (an enum or a typedef has no class declaration). Over a DayZ-MCP addon checkout (261 references to 14 addon-owned classes) and every .c root of this pack, only the bad fixture is reported. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2c44978a29bb21d21e5dbba6d5a1b120a4847091033f0aed5adcdc18e94876db",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/scripts/4_World/fx_ride.c",
+          "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2c44978a29bb21d21e5dbba6d5a1b120a4847091033f0aed5adcdc18e94876db",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undeclared_static_member/ok/scripts/4_World/fx_ride.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

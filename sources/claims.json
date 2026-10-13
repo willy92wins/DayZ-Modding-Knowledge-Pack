@@ -1807,6 +1807,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
+      "claim_id": "CLAIM-ENFORCE-UNDECLARED-STATIC-MEMBER",
+      "evidence_locator": "In game, as reported in pipeline inbox fb-20261006-002741-28fa (LFSkateboard): a lane deleted the static consts ANIM_SWAP_ENABLED and its siblings from its own class LFSK_Constants while seven call sites still read `LFSK_Constants.ANIM_SWAP_ENABLED`, and DayZ refused the World module on the first boot. The ticket gives the module refusal, not the compiler's line for the member; the log was not re-read for this change. A static call to a missing method is judged as the `Undefined function` compile failure that ES-NONEXISTENT-METHOD records for methods absent from vanilla; on an addon-owned class it was not measured on its own. Offline: fixtures under tests/fixtures/undeclared_static_member (bad is the ticket's shape: FAIL on lines 9 and 11 for a deleted const and a deleted static method; ok holds an inherited const and method, a const under #ifdef, a member of a modded declaration in another module, Cast, a class whose parent is not the addon's, and the bad reference in a comment, a string and #if 0); unit cases cover external and vanilla declarations, modded-only, template, enum, typedef, two parents, a parent cycle, an unreadable header, a variable of the class's name, Class's methods, #if 0 and forward declarations. Over the 20 .c files of a DayZ-MCP addon checkout (261 references to 14 addon-owned classes judged) and every .c root of this pack the rule reports only the bad fixture. Not run on the vanilla tree.",
+      "license": "MIT",
+      "line_end": 42,
+      "line_start": 12,
+      "observed_at": "2026-10-06",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1
