@@ -7,6 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: `ES-VARIABLE-NAMED-AS-TYPE` (FAIL) reports a variable, member or
+  parameter named as a class, enum or typedef that the addon, the vanilla tree or an
+  `--external-scripts` root declares. `bool Debug;` in a 4_World settings class made DayZDiag 1.29
+  refuse the module with `Variable name 'Debug' already used as type name`
+  (fb-20260928-025254-35c1, corrected by 7ce1); the local `Widget map` of SP-317 is the same error.
+  Exact case; a name is judged against the types of its own module and those below it. Without a
+  vanilla tree the addon's and external roots' types are still judged and the vanilla part is
+  listed as SKIP. 210 unit tests pass (202 before); the vanilla control was not run for this change
+  (no vanilla tree on the machine that wrote it).
 - `dayz-script-validator`: two FAIL rules from pipeline tickets of SimpleGroup.
   `ES-UNBALANCED-BRACKETS` reports the first `(`, `[` or `{` never closed or closed by another
   kind, and the first closer with nothing to close: `m_Objects.Clear(;` got PASS

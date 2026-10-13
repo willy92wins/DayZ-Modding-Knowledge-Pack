@@ -1061,10 +1061,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0fab901ffb26210aed7d3eab32625ab4173e6f49f5fccb7d0b8afe04767e5bd7",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3a03b89f849abdcfed73eb1067df053e016afd6fc1b73a1a5df939ec97971b7a",
+      "output_hash": "0fab901ffb26210aed7d3eab32625ab4173e6f49f5fccb7d0b8afe04767e5bd7",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17489,10 +17499,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ff05630e2096289f4a46f3621f14361dda5d23c966d0d365f893f455bfaf70bf",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ce9c45f1227a413b82cefd5ea7a9de41b25f9a1fd8b731d7f1223d54948d9a39",
+      "output_hash": "ff05630e2096289f4a46f3621f14361dda5d23c966d0d365f893f455bfaf70bf",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20714,10 +20734,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5529e8a25f788a666ac8327343e4d6c8d6fbc3cb0b9d72886b2dee5472fbface",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f80e3bd3014921b53dcd4ed0e1f6fe50b845903e09d90cf47d278ddde6571c30",
+      "output_hash": "5529e8a25f788a666ac8327343e4d6c8d6fbc3cb0b9d72886b2dee5472fbface",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -21514,10 +21544,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8b12a1bbacd8db56ef78bb92f96f6d92aa8541fa219f4b560ccd4d34c5cfddba",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "58077d5a33269f727a686a13ee465a8b9237426f0ade2817bd690bbfe503cb6a",
+      "output_hash": "8b12a1bbacd8db56ef78bb92f96f6d92aa8541fa219f4b560ccd4d34c5cfddba",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25118,10 +25158,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c98fbb36b246f8027671aa7655f7332f9c529c369d3d08f742a4eb8c95a1bb53",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7991bea752ff22b07cff65b9ad9c0e5cfe6b8e19de35cc529690f87b780aa521",
+      "output_hash": "c98fbb36b246f8027671aa7655f7332f9c529c369d3d08f742a4eb8c95a1bb53",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33056,6 +33106,182 @@
       "license": "MIT",
       "output_hash": "cf0c1d4af03d006c57a0424af8e4ee7b916b32927a57ce16bd408a750d1b6775",
       "output_path": "tools/dayz-script-validator/tests/fixtures/unbalanced_brackets/ok/scripts/4_World/fx_balanced.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5e7285764666346f7140277de2283da5250df849bb22f1ea2babae846d90e9bc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5e7285764666346f7140277de2283da5250df849bb22f1ea2babae846d90e9bc",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/variable_named_as_type/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "392601c6b78af903b81add97905b6edcec686be8738a57021c03c99b29ac888b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/bad/config.cpp",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "392601c6b78af903b81add97905b6edcec686be8738a57021c03c99b29ac888b",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/variable_named_as_type/bad/scripts/4_World/fx_settings.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a3fed7974f138a82d1a9c9df9e7c421e2a0f81b2217d2211530462663dbbf4be",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/bad/scripts/4_World/fx_settings.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a3fed7974f138a82d1a9c9df9e7c421e2a0f81b2217d2211530462663dbbf4be",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/bad/scripts/4_World/fx_settings.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/variable_named_as_type/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5946f30c004d7b38fa914a163d9e1affa4e81564390013c4ebfaeda705c0e992",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/ok/config.cpp",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5946f30c004d7b38fa914a163d9e1affa4e81564390013c4ebfaeda705c0e992",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/variable_named_as_type/ok/scripts/4_World/fx_settings.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fbe237b6035c5bdd998e38d2aecb4e82393653b5d18e40302cef545deaf05bef",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/ok/scripts/4_World/fx_settings.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fbe237b6035c5bdd998e38d2aecb4e82393653b5d18e40302cef545deaf05bef",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/ok/scripts/4_World/fx_settings.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/1_core/fx_core.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "18476a8d895b7581c2dbf8b04fa13c79c29149bff6d79b4cda8fdd64fc6a4f1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/1_core/fx_core.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "18476a8d895b7581c2dbf8b04fa13c79c29149bff6d79b4cda8fdd64fc6a4f1f",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/1_core/fx_core.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/3_game/fx_debug.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7a5a7cbc9b378146e27a73bd532f79ae46720072b6ee6bd189089af9cc1dd220",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/3_game/fx_debug.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7a5a7cbc9b378146e27a73bd532f79ae46720072b6ee6bd189089af9cc1dd220",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/3_game/fx_debug.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/5_mission/fx_hud.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-13: FAIL rule ES-VARIABLE-NAMED-AS-TYPE for dayz-script-validator from pipeline inbox fb-20260928-025254-35c1 (corrected by 7ce1): `bool Debug;` in a 4_World settings class, DayZDiag 1.29: Variable name 'Debug' already used as type name. A variable, member or parameter (positions of ES-RESERVED-WORD-IDENTIFIER) named as a class, enum or typedef declared in the addon, the vanilla tree (comments dropped) or an --external-scripts root, exact case, judged against the types of its own module and the modules below it; lines that never compile are not judged. Without a usable vanilla tree the addon and external types are still judged and the vanilla part is a SKIP in info.skipped_checks; CLAIM-ENFORCE-VARIABLE-NAMED-AS-TYPE. README drops the rule from the list of errors without a rule. Measured: python3 -m unittest discover tests, 210 passed (202 before); the rule's guards were mutated and every mutant but one (the keyword filter on later declarators) turned a test red. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "daf1c1179aab41e401adc7f595fee340793b783f19bde224245a140ccbd40328",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/5_mission/fx_hud.c",
+          "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "daf1c1179aab41e401adc7f595fee340793b783f19bde224245a140ccbd40328",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/variable_named_as_type/vanilla/5_mission/fx_hud.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

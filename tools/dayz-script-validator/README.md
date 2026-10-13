@@ -37,7 +37,7 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Three read the tree, and two of them need roots
+Most rules read a single file. Four read the tree, and three of them need roots
 outside the addon:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
@@ -105,6 +105,22 @@ invocation (2.6 s against 1.7 s on a 23-file addon, four runs each). On
 vanilla tree gave the same 33 003 references and no finding; the 161 roots
 were not measured again.
 
+- `ES-VARIABLE-NAMED-AS-TYPE` (FAIL): a variable, member or parameter whose
+  name is a class, enum or typedef declared in the addon, the vanilla tree or
+  an `--external-scripts` root. `bool Debug;` in a 4_World settings class
+  made DayZDiag 1.29 refuse the module with `Variable name 'Debug' already
+  used as type name` (inbox fb-20260928-025254-35c1); a local `Widget map`
+  failed the same way (enforce-script-reference `pitfalls-advanced.md`,
+  SP-317). Only a member and a local are on record; a parameter, an enum and
+  a typedef are judged the same way without a failure on record. The match
+  is exact case, so a member `debug` passes: identifiers are case-sensitive
+  and no case-only failure is on record. A name is judged against the types
+  of its own module and the modules below it (a 4_World local may be named
+  like a 5_Mission class). Positions are those of `ES-RESERVED-WORD-IDENTIFIER`;
+  code that never compiles is not judged. Without a vanilla tree the addon's
+  and the external roots' types are still judged, and the vanilla part is
+  listed as SKIP in `info.skipped_checks` and in `--terse`.
+
 ## Compile errors read from one file
 
 These rules come from script modules that did not compile, each with its
@@ -167,12 +183,8 @@ Measured on 2026-10-03: nothing on vanilla 1.29.0.163451 (69 `%` judged) or
 on vanilla 1.30.164014 Exp (94 `%`), and on the source that failed in game,
 `vector local;`, the reserved-word rule fires on that line.
 
-Two compile errors filed with these have no rule here yet:
+One compile error filed with these has no rule here yet:
 
-- `Variable name 'X' already used as type name` (a local or member named
-  like a vanilla class, such as `bool Debug = false;`) needs the vanilla
-  scripts tree to know the class names, and waits for the `--vanilla-root`
-  option.
 - `Formula too complex`: vanilla compiles a statement with 14 `+`, the one
   that failed had about 20 terms and its source is gone, and the limit
   between them was not measured.

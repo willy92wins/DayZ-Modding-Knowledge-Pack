@@ -2626,6 +2626,139 @@ class TestModdedEngineClass(unittest.TestCase):
         )
 
 
+
+NAMED = FIXTURES / "variable_named_as_type"
+NAMED_RULE = "ES-VARIABLE-NAMED-AS-TYPE"
+
+
+def _named_errors(source, rel_path="scripts/4_World/x.c", external=(),
+                  vanilla=NAMED / "vanilla"):
+    from detectors.es_variable_named_as_type import (
+        check_es_variable_named_as_type,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    return check_es_variable_named_as_type(
+        [(rel_path, strip(source))],
+        [(path, strip(text)) for path, text in external],
+        vanilla,
+    )
+
+
+def _named_skips(result):
+    return [
+        s for s in result["info"].get("skipped_checks", [])
+        if s["rule_id"] == NAMED_RULE
+    ]
+
+
+class TestVariableNamedAsType(unittest.TestCase):
+    """ES-VARIABLE-NAMED-AS-TYPE: a variable, member or parameter named as a type.
+
+    Inbox fb-20260928-025254-35c1 (corrected by 7ce1), DayZDiag 1.29:
+    `bool Debug;` in a 4_World settings class, "Variable name 'Debug' already
+    used as type name".
+    """
+
+    def test_ticket_member_fails_with_the_vanilla_tree(self):
+        exit_code, result = script_validator.run(
+            [str(NAMED / "bad"), "--vanilla-root", str(NAMED / "vanilla")]
+        )
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, NAMED_RULE)
+        self.assertEqual([9], [e["line"] for e in errors])
+        self.assertIn("'Debug'", errors[0]["message"])
+        self.assertIn("vanilla scripts tree", errors[0]["message"])
+        self.assertIn("fx_settings.c", errors[0]["file"])
+        self.assertEqual([], _named_skips(result))
+        assert_standard_findings(self, result)
+
+    def test_without_the_vanilla_tree_the_vanilla_part_is_skipped(self):
+        _code, result = script_validator.run([str(NAMED / "bad")])
+
+        self.assertEqual([], _errors_of(result, NAMED_RULE))
+        skips = _named_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("vanilla type", skips[0]["reason"])
+        terse = script_validator.format_terse(result)
+        self.assertIn("SKIP %s" % NAMED_RULE, terse)
+
+    def test_usage_lower_case_comments_strings_and_dead_code_pass(self):
+        _code, result = script_validator.run(
+            [str(NAMED / "ok"), "--vanilla-root", str(NAMED / "vanilla")]
+        )
+
+        # `Debug.Log(...)`, `Insert(new Debug)`, a member `debug`,
+        # `Debug m_Logger`, `bool Debug;`
+        # in a comment, a string and #if 0, a 4_World local named like a
+        # 5_Mission type, and a name only a vanilla comment declares.
+        self.assertEqual([], _errors_of(result, NAMED_RULE))
+
+    def test_local_parameter_later_declarator_and_foreach(self):
+        source = (
+            "class C\n{\n"
+            "    void F(int FX_VanillaEnum)\n    {\n"
+            "        Widget map = null;\n"
+            "        int a = 1, FX_VanillaTypedef;\n"
+            "        foreach (int Debug : m_List)\n        {\n        }\n"
+            "    }\n}\n"
+        )
+        errors, skipped = _named_errors(source)
+
+        self.assertEqual(
+            [(3, "FX_VanillaEnum"), (5, "map"), (6, "FX_VanillaTypedef"),
+             (7, "Debug")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+        self.assertEqual([], skipped)
+
+    def test_a_type_is_seen_from_its_module_and_above(self):
+        source = "class C\n{\n    int FX_MissionOnly;\n}\n"
+
+        self.assertEqual([], _named_errors(source)[0])
+        self.assertEqual(
+            [3],
+            [e["line"] for e in _named_errors(
+                source, rel_path="scripts/5_Mission/x.c")[0]],
+        )
+
+    def test_addon_and_external_types_are_judged_without_vanilla(self):
+        source = (
+            "class FX_Own\n{\n}\n"
+            "class C\n{\n    int FX_Own;\n    int FX_Dep;\n    bool Debug;\n}\n"
+        )
+        external = [("scripts/3_Game/dep.c", "class FX_Dep\n{\n}\n")]
+        errors, skipped = _named_errors(source, external=external, vanilla=None)
+
+        self.assertEqual([6, 7], [e["line"] for e in errors])
+        self.assertIn("declared in the addon", errors[0]["message"])
+        self.assertIn("--external-scripts", errors[1]["message"])
+        self.assertEqual([NAMED_RULE], [s["rule_id"] for s in skipped])
+
+    def test_a_type_outside_any_module_counts_only_outside_modules(self):
+        source = "class C\n{\n    int FX_Loose;\n}\n"
+        external = [("dep.c", "class FX_Loose\n{\n}\n")]
+
+        self.assertEqual([], _named_errors(source, external=external)[0])
+        self.assertEqual(
+            [3],
+            [e["line"] for e in _named_errors(
+                source, rel_path="x.c", external=external)[0]],
+        )
+
+    def test_a_folder_without_class_managed_is_no_vanilla_tree(self):
+        errors, skipped = _named_errors(
+            "class C\n{\n    bool Debug;\n}\n", vanilla=NAMED / "bad"
+        )
+
+        self.assertEqual([], errors)
+        self.assertIn("declares no class Managed", skipped[0]["reason"])
+
+
 if __name__ == "__main__":
     unittest.main()
 
