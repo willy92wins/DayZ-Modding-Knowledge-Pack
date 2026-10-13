@@ -621,6 +621,17 @@ The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ing
    `-packonly -prefix=<prefix>` → content gate (`config.cpp` present, no `config.bin`,
    N ODOL magics, prefix correct).
 
+4. **Binarizing, name the source folder exactly as its single-segment `$PBOPREFIX$`
+   (measured 2026-10-09, AddonBuilder 1.0.240639, DayZ-MCP 222d acceptance).** With source
+   folder `LFHeli_OH1` and `-prefix=LFHeli`, binarize wrote the ODOL to
+   `<temp>\LFHeli\` (temp + prefix) while FileBank packed `<temp>\lfheli_oh1\` (temp + the
+   lowercased folder name). The PBO had the right prefix, the textures, the rvmat files and
+   `config.bin`, but none of the 7 models, and the log still said "Build Successful". With the
+   prefix equal to the folder name (SimpleGroup) the same build packed everything. If the
+   folder cannot carry the prefix's name, build `-packonly` or use the release pattern above.
+   Either way, accept a binarized build only when the PBO has one ODOL entry per `.p3d`, never
+   by its log. Pipeline inbox fb-20261010-150630-25af.
+
 **What AddonBuilder does:**
 1. Reads $PBOPREFIX$ → creates output filename (mymod\myaddon.pbo)
 2. Binarizes config.cpp (text → binary, ~90% smaller, faster load)

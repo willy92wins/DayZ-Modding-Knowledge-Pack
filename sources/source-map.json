@@ -1121,10 +1121,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-docs-2783-5c98-ca47@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: Added entry for pipeline inbox 25af (AddonBuilder prefix/folder rule). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7e5d44515b6a9b24b60ee8dd6d9d62b633e59834288cbf0c9beac60578f8bbe5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-docs-25af@2026-10-13",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f040b4a3c3ec3d2cbbbefc224aadcebc20e1a4cb411c5db03af3da969e365843",
+      "output_hash": "7e5d44515b6a9b24b60ee8dd6d9d62b633e59834288cbf0c9beac60578f8bbe5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10272,10 +10282,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-13: SP-069 rule 4 from pipeline inbox fb-20261010-150630-25af: AddonBuilder 1.0.240639 binarize with -prefix=LFHeli on source folder LFHeli_OH1 wrote ODOL to temp+prefix while FileBank packed temp+lowercased folder name; PBO without its 7 models, log 'Build Successful'; prefix equal to folder (SimpleGroup) packed everything (measured 2026-10-09, DayZ-MCP 222d acceptance, DayZ_MCP_dev/reviews/2026-10-06-ticketing/ingame-w222d/RESULTS.md, LL-564). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3e445bac27b42abbd617a68bb2c268c94346d20d2af585e586db18328bb95e2b",
+          "source_id": "pack-r21-authored",
+          "source_path": "dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-docs-25af@2026-10-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "db3528366d3bfd21aa1bb2997a8af3fc845e4ee6a1e1b10d2f3947a7853536b2",
+      "output_hash": "3e445bac27b42abbd617a68bb2c268c94346d20d2af585e586db18328bb95e2b",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"

@@ -7,6 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-pbo-build`: binarizing with AddonBuilder, the source folder must be named exactly as its
+  single-segment `$PBOPREFIX$`. With `-prefix=LFHeli` on folder `LFHeli_OH1`, binarize wrote the
+  ODOL under the prefix while FileBank packed the folder name, so the PBO lost all 7 models and the
+  log still said "Build Successful" (AddonBuilder 1.0.240639, 2026-10-09). Accept a binarized
+  build only when the PBO has one ODOL per `.p3d`. Pipeline inbox fb-20261010-150630-25af.
 - `dayz-script-validator`: `ES-MULTILINE-CONDITION-OPERATOR` (WARN) reports an `if`/`while`
   condition whose line ends in `&&` or `||` and goes on to the next line: DayZ 1.30.164014 server
   refused `if ((t >= A && t < B) ||` + `(t >= C && t < D))` with `Invalid statement ')'` and
