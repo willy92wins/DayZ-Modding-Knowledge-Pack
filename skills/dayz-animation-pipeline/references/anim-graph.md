@@ -344,6 +344,79 @@ In DayZ 1.30 Exp, `.ast` files are formatted as `AnimSetTemplateSource` and **mu
 
 In vanilla templates, previously unnamed groups were migrated to `Name "Default"` (`infected.ast:76`, `wolf.ast:4`) or `Name ".unnamed"` (`zoW.ast:643`).
 
+## Porting a 1.29 `$AnimGraph 7` graph to 1.30 — field-by-field mapping (added 2026-10-15, DayZ 1.30.164.078 stable)
+
+A custom creature graph written for 1.29 must be regenerated for 1.30. Our 1.29-format files were never loaded on 1.30 (the server failed to compile scripts before reaching them), so whether 1.30 still loads the old format is untested.
+
+[VERIFIED-vanilla] The mapping below was read off old/new pairs of the same vanilla graph (`DZ/anims/workspaces/samples/zombie_commonsamples/zow_graph_*.agr` vs `.agf`, `samples/cow_example/locomotion.agr` vs `.agf`) and checked against the 1.30 infected graph (`infected_main/infected.agr`, `locomotion.agf`, `infected.ast`, `infected_main.asi`). Applied end to end in the survivor-zombied generator (`EOC_Mutant_root/tools/szombied/make_graph.py`, commit `ec472c8`). [TBD-verify in game] that port has not been loaded in game yet.
+
+**File set.** The master stays `.agr` (now `AnimSrcGraph`); every sub-graph becomes `.agf` (`AnimSrcGraphFile`); `.ast` → `AnimSetTemplateSource`; `.asi` → `AnimSetInstanceSource`. Delete the old sub-graph `.agr`. `config.cpp` `graphname`/`defaultinstance`/`startnode` need no change (vanilla 1.30 configs still use backslash paths here). `DefaultRunNode` and `AnimSyncTable` are optional (`wolf_graph.agr` has neither; the config `startnode` picks the entry).
+
+**Master `.agr`:**
+
+```enfusion
+AnimSrcGraph {
+ AnimSetTemplate "{GUID}Mod/anims/X_Template.ast"
+ ControlTemplate AnimSrcGCT "{GUID}" {
+  Variables {
+   AnimSrcGCTVarFloat MovementSpeed {      // was  #Var MovementSpeed float 0.0 0.0 3.0 ""
+    DefaultValue 0
+    MinValue 0
+    MaxValue 3
+   }
+   AnimSrcGCTVarInt IdleState {            // was  #Var IdleState int 0 0 2 ""
+    DefaultValue 0
+    MinValue 0
+    MaxValue 2
+   }
+   AnimSrcGCTVarBool Look {                // was  #Var Look bool 0 ""   (DefaultValue only)
+    DefaultValue 0
+   }
+  }
+  Commands {
+   AnimSrcGCTCmd CMD_ATTACK {              // was   CMD_ATTACK -1
+    Synchronized 1
+   }
+  }
+ }
+ Debug AnimSrcGD "{same GUID as ControlTemplate}" {
+ }
+ GraphFilesResourceNames {
+  "{GUID}Mod/anims/X_Graph.agf"
+ }
+}
+```
+
+Every command in every vanilla 1.30 master is `Synchronized 1` (120 of 120); none is `0`. Numbers are written bare (`0`, `-180`), not `0.0`.
+
+**Sub-graph `.agf`:** `AnimSrcGraphFile { Sheets { AnimSrcGraphSheet <Sheet> { Nodes { ...nodes... } } } }`. Node names follow the class (`AnimSrcNodeSource Idle_SRC {`); quote a name only if it has spaces or punctuation (`AnimSrcNodeGroupSelect "Swings-Short"`).
+
+| 1.29 positional fields | 1.30 named fields |
+|---|---|
+| `AnimNodeSource "N" "Tag" "Key" "loop"` | `AnimSrcNodeSource N { Tags { "Tag" } EditorPos x y Source "Key" Looptype Loop }` — `noloop` → `Looptype "No Loop"`; omit `Tags` when the tag string is empty; drop an empty `$Predictions` |
+| `AnimNodeBlend "N" "" "Weight" "C0" "C1" F` | `AnimSrcNodeBlend N { EditorPos BlendWeight "Weight" Child0 "C0" Child1 "C1" OptimizeMin F&1 OptimizeMax F>>1&1 }` |
+| `AnimNodeBlendT "N" "" "C0" "C1" "On" "Off" "Cond" T "S" F` | `AnimSrcNodeBlendT N { EditorPos BlendTime "T" BlendFn S TriggerOn "On" TriggerOff "Off" Condition "Cond" Child0 "C0" Child1 "C1" OptimizeMin F&1 OptimizeMax F>>1&1 SelectMainPath F>>2&1 }` — both triggers are kept |
+| `AnimNodeGroupSelect "N" "" "Child" "Group" "Column"` | `AnimSrcNodeGroupSelect N { EditorPos Child "Child" Group "Group" Column "Column" }` |
+| `AnimNodeStateMachine "N" "Tag"` + `$States` + `$Transitions` | `AnimSrcNodeStateMachine N { Tags { "Tag" } EditorPos states { ... } transitions { ... } }` — omit `transitions` when there are none |
+| `$State { "S" "" "Child" "Cond" "notime" X }` | `AnimSrcNodeState S { EditorPos Child "Child" StartCondition "Cond" TimeStorage Inherit IsExit X }` — `realtime` → `TimeStorage "Real Time"`; 1.30 also has `"Normalized Time"` |
+| `$Transition { "A" "B" "Cond" "D" "" P "S" }` | `AnimSrcNodeTransition "{GUID}" { FromState "A" ToState "B" Duration "D" StartTime "" Condition "Cond" BlendFn S PostEval 1 MotionVecBlend 0x33 0 }` — empty `"A"` (any state) → no `FromState` line; `P` 0 → no `PostEval` line |
+| `AnimNodeRot "N" "" "Child" "Expr"` + `$rotitems { $ri { "Bone" "ymr" k } }` | `AnimSrcNodeProcTransform N { EditorPos Child "Child" Expression "Expr" Bones { AnimSrcNodeProcTrBoneItem "{GUID}" { Bone "Bone" Axis Y Space Model Op Rotate Amount k } } }` |
+
+Empty strings are written out (`StartCondition ""`, `Condition ""`, `TriggerOn ""`, `StartTime ""`), as vanilla does. Only `Tags`, `FromState`, `PostEval 0` and empty `transitions`/`Predictions` blocks are dropped. The second string in 1.29 State, Blend, BlendT, GroupSelect and Rot lines is always `""` in these graphs and has no 1.30 field.
+
+Where each row is confirmed:
+- [VERIFIED-vanilla] State, Transition, Source and GroupSelect come from the sample pairs.
+- [VERIFIED-vanilla] The BlendT flag bits come from one node. The vanilla infected death BlendT (`locomotion.agf:1595-1606`, `TriggerOn "IsCommand(CMD_DEATH)"`) has Min 1, Max 1, SelectMainPath 1, matching the 1.29 graphs' trailing `7`. Old Blend `3` is Min 1, Max 1.
+- [INFERRED] The rot code letters are axis (`x`/`y`/`z`), space (`m` Model, `l` Local) and op (`r` Rotate, `t` Translate).
+- [INFERRED] `Amount` takes the old coefficient unchanged, and the expression is unchanged. Vanilla converted the wolf terrain tilt this way: `Expression "SlopeAngleX * 0.01745..."`, `Amount 1`.
+- [TBD-verify in game] If a procedural twist over- or under-rotates, `Amount` is the knob.
+
+**Template `.ast` and instance `.asi` — every key is three-part.** A 1.29 group type with group names becomes one `AnimSetTemplateSource_AnimationGroup { Name "G" Animations { ... } Columns { ...old groupnames... } }`; keep groups, animations and columns sorted (vanilla is). The 1.29 unnamed group (`#ngroupnames 0`, keys like `"Melee0"`) has no 1.30 equivalent: use the shipped pattern `Name "Default"` with `Columns { "Normal" }` (`wolf.ast:4`, `infected.ast:76`), instance keys `"Default.Normal.Melee0"`, and graph sources `Source "Default.Normal.Melee0"`. `.unnamed` exists only in the `zoW` sample. Two source forms both work in vanilla: `"Group.Anim"` with the column chosen by an enclosing `AnimSrcNodeGroupSelect` (infected `Source "Attack.Attack Left Heavy"`), or explicit `"Group.Column.Anim"` (wolf `Source "Default.Normal.turn_run_L144"`). Instance lines: `AnimSetInstanceSource_Line "G.C.Anim" { Resource "{GUID}path.anm" }` inside `Lines { }`, after `Template "{GUID}path.ast"` and `ParentTemplates { }`.
+
+**GUIDs.** Each `{16 hex}` prefix is a resource id. Vanilla clip GUIDs are unchanged from 1.29 (all 17 infected hit/death clips checked). For your own files and for the node-local ids (`AnimSrcNodeTransition`, `AnimSrcNodeProcTrBoneItem`, `AnimSrcGCT`), derive them from a stable seed, such as the first 16 hex characters of sha1(path or node name), so regenerating gives byte-identical files. Give each resource one GUID everywhere it appears.
+
+**Packing.** RaG PBO Builder packs `.agf` as plain text next to the `.agr`/`.ast`/`.asi`. Check this in the built PBO, not the source tree.
+
 ## DayZ 1.30 Exp: Elimination of Buffer Save / Buffer Use Nodes [EXACT]
 
 In DayZ 1.30 Exp, `Buffer Save` and `Buffer Use` nodes were completely eliminated from the animation graph compiler and engine (`changelog:41`). An audit of all `.agf` sub-graphs (`Vehicles.agf`, `Locomotion.agf`, `wolf_maingraph.agf`) confirms zero instances of Buffer nodes. Custom graphs relying on buffer nodes must migrate to variables (`AnimSrcGCTVar*`) or direct state machine transitions.
