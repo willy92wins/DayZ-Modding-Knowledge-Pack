@@ -1141,10 +1141,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-vanilla-control@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: Fixed entry for dayz-test-ingame SP-095 point 1-ter (Steam from inside an MSIX app). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "91685946c20d5ff935ae9236d2ec499dd19b87c681b3a74fd2887247e9359597",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-docs-steam-app-view@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "50c385dc6990cfde34d6c6f236cb21851da14dcf15de00aba6cd723ec4de8cb0",
+      "output_hash": "91685946c20d5ff935ae9236d2ec499dd19b87c681b3a74fd2887247e9359597",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11746,10 +11756,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-inbb-mcp-notes@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: SP-095 point 1 and the Steam client session prerequisite now say to start or restart Steam from outside any sandboxed (MSIX) app; new point 1-ter. Measured 2026-10-16 (DayZ-MCP buzon diagnosis, evidence REPORT.md under the owner's DayZ_MCP_backups/steam-20261016): a Start-Process of DayZ_x64.exe from a PowerShell inside the Claude app read the app's private copy of HKCU\\Software\\Valve\\Steam\\ActiveProcess, pid 67468 (a Steam gone since 2026-10-06 20:53 UTC), and died with 'Unable to locate a running instance of Steam' while the real key held the live steam.exe 277748; the 11 dayz_test_run launches of that day passed Steam with pid 277748 (daemon spawned through WMI, outside the app). Remedies as already measured in references/dayz-1-30-test-ingame.md point 2 (LL-510 / SP-420 / LL-516); dayz-mcp steam_app_view_stale and tools/clear-app-steam-shadow.ps1 from dayz-mcp PR #239. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "111227c743a3810bca2248d69878840e66f43c4f763ee70cece4f48825b38e02",
+          "source_id": "pack-r21-authored",
+          "source_path": "dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-docs-steam-app-view@2026-10-16",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "e9db9efa409c125d6f1fc9db21c99d77f941ce7c15e1478fecddabc8a4ec9cae",
+      "output_hash": "111227c743a3810bca2248d69878840e66f43c4f763ee70cece4f48825b38e02",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -17649,10 +17669,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: line ranges of CLAIM-R21-TEST-BUILD-POSTCONDITION, CLAIM-R21-TEST-VPP-SECRET and CLAIM-TEST-DAYZMCP-CARRIER shifted by one line, after the Steam client session prerequisite of skills/dayz-test-ingame/SKILL.md grew by one line (SP-095 point 1-ter). No claim content changed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0b8a9b8cb14849e16dea5c48dac10976bb96c016c38af30d642bf61b985aa29e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-docs-steam-app-view@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a56743ad8a686108f6da30f114dfc488c28dbe944b42a7f69e5e88ce61c391f5",
+      "output_hash": "0b8a9b8cb14849e16dea5c48dac10976bb96c016c38af30d642bf61b985aa29e",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

@@ -184,6 +184,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-test-ingame`: SP-095 point 1 told the reader to start a missing Steam with
+  `steam.exe -silent`, and the Steam prerequisite to restart it, without saying where from. From a
+  shell inside the Claude or Codex app that Steam registers only in the app's private registry
+  copy (LL-510). New point 1-ter: on 2026-10-16 a client started by hand from a Claude app shell
+  read a Steam pid gone since 2026-10-06 and died with `Unable to locate a running instance of
+  Steam` while Steam ran and the day's `dayz_test_run` launches passed; how to check the app's
+  view, launch from outside the app, and remove the copy. The by-hand discriminator of point
+  1-bis gives a false "host broken" from such a shell.
 - `enforce-script-reference` `timers-performance.md`: the EnProfiler example used flags that do
   not exist (`FUNCTION_TIMES`, `FUNCTION_COUNT`, `CLASS_TIMES`, `CLASS_COUNT`) and methods
   `GetName`/`GetTime` that `EnProfilerTimeFuncPair` does not have. `EnProfilerFlags` is `NONE`,
