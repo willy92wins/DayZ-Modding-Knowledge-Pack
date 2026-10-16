@@ -1,10 +1,12 @@
 import re
 
 from detectors.es_cast_unrelated_types import (
+    UNREAD_PARENT,
     _CLASS_RE,
     _argument_type,
     _class_regions,
     _line_offsets,
+    class_parent,
 )
 from detectors.es_undeclared_static_member import AddonClasses
 from shared.dead_branches import dead_lines
@@ -43,7 +45,9 @@ ES_PROTECTED_METHOD_CROSS_CLASS_RULE_ID = "ES-PROTECTED-METHOD-CROSS-CLASS"
 #     from the non-modded declarations of the addon and the external roots;
 #     a class declared in neither (vanilla) cannot derive from an addon
 #     class, which is what makes the ticket's `modded class PlayerBase`
-#     unrelated. Two parents for one class, or a cycle, skip the call.
+#     unrelated. Two parents for one class, a cycle, or a header that a
+#     directive splits (its parent is not read) in the caller or an
+#     ancestor, skip the call.
 # Lines that never compile (shared/dead_branches.py) are not judged.
 
 _CALL_RE = re.compile(
@@ -130,7 +134,7 @@ class _Lookup:
                 if match.group("after") or "modded" in match.group("mods").split():
                     continue
                 self.parents.setdefault(match.group("name"), set()).add(
-                    match.group("parent")
+                    class_parent(stripped, match)
                 )
 
     def owner(self, cls, method):
@@ -173,7 +177,7 @@ class _Lookup:
             parents = self.parents.get(caller)
             if not parents:
                 return True
-            if len(parents) != 1:
+            if len(parents) != 1 or UNREAD_PARENT in parents:
                 return False
             caller = next(iter(parents))
         return True
@@ -225,6 +229,10 @@ def check_es_protected_method_cross_class(
             caller = _enclosing_class(
                 lookup.classes.declarations, rel_path, match.start()
             )
+            if caller is None and any(
+                start < match.start() < end for start, end in regions
+            ):
+                continue  # inside a class whose header is not read
             if not lookup.unrelated(caller, owner):
                 continue
             warnings.append(

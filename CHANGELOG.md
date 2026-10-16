@@ -23,7 +23,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `Method` is `protected` or `private` in the addon class that `recv` is declared as (or its addon
   ancestor) and the caller is neither that class nor derived from it, as `PlayerBase.OnRPC`
   calling the protected `LFSK_RideCommand.LFSK_OnServerState` (fb-20261006-002741-28fa). WARN: the
-  refusal is measured for protected fields, not methods. 227 unit tests pass (222 before); the
+  refusal is measured for protected fields, not methods. A caller or an ancestor whose header a
+  directive splits skips the call. 227 unit tests pass (222 before); the
   vanilla control was not run for this change (no vanilla tree on the machine that wrote it).
 - `dayz-script-validator`: `ES-UNDECLARED-STATIC-MEMBER` (FAIL) reports `ClassName.Member` and
   `ClassName.Member(` when no addon declaration of the class or of its ancestors names `Member`:
@@ -31,7 +32,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   read it, and DayZ refused the World module on the first boot (fb-20261006-002741-28fa). Judged
   only for a class the addon owns end to end (no declaration, modded or not, outside the addon,
   and every ancestor the addon's own); `modded class` bodies and `#ifdef` branches count as
-  declarations, and the methods of `Class` always do. 222 unit tests pass (217 before); the
+  declarations, and the methods of `Class` always do (`StaticGetType` was missing from them
+  without a vanilla tree until the Codex review of #113). 222 unit tests pass (217 before); the
   vanilla control was not run for this change (no vanilla tree on the machine that wrote it).
 - `dayz-script-validator`: `ES-CAST-UNRELATED-TYPES` (FAIL) reports `X.Cast(y)` where neither X
   nor the declared type of `y` derives from the other: `IngameHud.Cast(mission)` with `Mission
@@ -39,8 +41,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   not related` (fb-20261009-122148-c852). Judged only when `y` is a plain name declared once in the
   same function or as a member of the enclosing class, and the `extends` chains of both classes
   resolve through non-modded declarations in the addon, the vanilla tree or an external root;
-  everything else is skipped silently. 217 unit tests pass (210 before); the vanilla control was
-  not run for this change (no vanilla tree on the machine that wrote it).
+  everything else is skipped silently, a class header that a directive splits included (Codex
+  review of #113). 217 unit tests pass (210 before); the vanilla control was not run for this
+  change (no vanilla tree on the machine that wrote it).
 - `dayz-script-validator`: `ES-VARIABLE-NAMED-AS-TYPE` (FAIL) reports a variable, member or
   parameter named as a class, enum or typedef that the addon, the vanilla tree or an
   `--external-scripts` root declares. `bool Debug;` in a 4_World settings class made DayZDiag 1.29
@@ -51,7 +54,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   listed as SKIP. Commas between template arguments (`Param3<bool, vector, int> x`) and a
   typedef's own name are not declarators: the first vanilla control (2026-10-13) found 104 such
   false findings on 1.29.0.163451 and 109 on 1.30.164014, all of this shape, and none for the
-  other six new rules. 232 unit tests pass.
+  other six new rules. After the Codex review of #113, a type declared only where it never
+  compiles, or only in another branch of the name's own `#ifdef` block, is no type for that name,
+  and the `<` of a comparison (`bool first = a < b, Debug = false;`) opens no template. 234 unit
+  tests pass.
 - `dayz-script-validator`: two FAIL rules from pipeline tickets of SimpleGroup.
   `ES-UNBALANCED-BRACKETS` reports the first `(`, `[` or `{` never closed or closed by another
   kind, and the first closer with nothing to close: `m_Objects.Clear(;` got PASS

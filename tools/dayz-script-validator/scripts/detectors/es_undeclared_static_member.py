@@ -48,10 +48,11 @@ _IDENT_RE = re.compile(r"[A-Za-z_]\w*")
 
 # Methods of Class, the implicit root (1_core/proto/enscript.c). Read from
 # memory of the 1.29/1.30 trees, not re-read for this rule: a name here only
-# makes the rule more lenient.
+# makes the rule more lenient, and a name missing here fails valid code when
+# no vanilla tree is passed (StaticGetType did, Codex review of #113).
 CLASS_ROOT_MEMBERS = frozenset({
-    "Cast", "CastTo", "StaticType", "Type", "ClassName", "IsInherited",
-    "GetDebugName", "ToString", "IsInstanceOf",
+    "Cast", "CastTo", "StaticType", "StaticGetType", "Type", "ClassName",
+    "IsInherited", "GetDebugName", "ToString", "IsInstanceOf", "SafeCastType",
 })
 
 ES_UNDECLARED_STATIC_MEMBER_MESSAGE = (

@@ -1151,10 +1151,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-docs-steam-app-view@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f58472e806e8c59a64234e7fd7f31aad6ea0954df6e0d340b7b445f2008d6ab2",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "91685946c20d5ff935ae9236d2ec499dd19b87c681b3a74fd2887247e9359597",
+      "output_hash": "f58472e806e8c59a64234e7fd7f31aad6ea0954df6e0d340b7b445f2008d6ab2",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -10764,10 +10774,20 @@
           "source_path": "dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-docs-2783-5c98-ca47@2026-10-13",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f82fb6796ac7954df69723a73e3c7c63ab7f73c21f8448526fe23fd66ab1f178",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "782706ba9779e360888ebc767f46a721ca77953505f5dcbc7bf99b6d9c9ac0aa",
+      "output_hash": "f82fb6796ac7954df69723a73e3c7c63ab7f73c21f8448526fe23fd66ab1f178",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -17679,10 +17699,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-docs-steam-app-view@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "90b4ffc3498977169fb9f3a5dbc01660e8944cae2e4e0e733d99819408f46c55",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0b8a9b8cb14849e16dea5c48dac10976bb96c016c38af30d642bf61b985aa29e",
+      "output_hash": "90b4ffc3498977169fb9f3a5dbc01660e8944cae2e4e0e733d99819408f46c55",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20954,10 +20984,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2ea0cbcbb649241449c02f8b1f96f2be350ca4d349c9a4982f0e2000dfb36be4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c9a965d876a143722df740ee626aa40743022d48c7fe88e3e06f1853ad418823",
+      "output_hash": "2ea0cbcbb649241449c02f8b1f96f2be350ca4d349c9a4982f0e2000dfb36be4",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25468,10 +25508,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-vanilla-control@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e808f76e000d98b2870a09b692d2730e923328bf462a5fdaf4c8a132f4e21c83",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d45d0e12c77d7201e3bbe7ae40c02bb9999081350d83a73cc0abd7fea7271892",
+      "output_hash": "e808f76e000d98b2870a09b692d2730e923328bf462a5fdaf4c8a132f4e21c83",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33453,10 +33503,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-val-vanilla-control@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ff82e38c6e67806cab9b1b46020cb0cadfa807f456c180e6ccf2f15a732722d2",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6233397d7ce9e4a30d51b511aed558a2a31e87edf5062a4ac83f21c437df9d6c",
+      "output_hash": "ff82e38c6e67806cab9b1b46020cb0cadfa807f456c180e6ccf2f15a732722d2",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33629,10 +33689,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
           "source_revision": "kp-update-val-tickets-35c1-c852@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cc79b6ec8661ad96f7c8bf048bbc35a6937f7899c0f8c2a9ea5671d7ea36a837",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d05d8ca8bd3c8c7bc23394ba97b59b6affa58bb95119a5ed5f37558f37d740fd",
+      "output_hash": "cc79b6ec8661ad96f7c8bf048bbc35a6937f7899c0f8c2a9ea5671d7ea36a837",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33805,10 +33875,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8470f33493a4f36dcdfa0c6874e2944dd5d4c4242d490278cadd0468d1b6a661",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8dcfd6f298c9ff9932f0837a4897f4e777e9f2d4e3c0b4c99e020d7049e40949",
+      "output_hash": "8470f33493a4f36dcdfa0c6874e2944dd5d4c4242d490278cadd0468d1b6a661",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33959,10 +34039,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-16: fixes from the Codex Sol review of PR #113 at 42db6d7 (run on the owner's PC, reviews/pr113-codex-sol.md). H1 ES-VARIABLE-NAMED-AS-TYPE: a type declared only on lines that never compile (shared/dead_branches.py), or only in another branch of the name's own block in the same file, no longer counts for that name. H2 ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS: a class header that a directive splits (`class D` / `#ifdef X` / `: B` / `#endif`) no longer reads as a class without a parent. H3 ES-UNDECLARED-STATIC-MEMBER: StaticGetType and SafeCastType added to the methods of Class used without a vanilla tree. H4: the `<` of a comparison no longer hides a later declarator (the _template_end reading of ES-UNDEFINED-CLASS-REF). dayz-physics-engine: the 1.30 lines of OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:253 and :256) as the review read them on 1.30. New unit cases for each; 234 unit tests pass; each fix reverted turns a test red, except stepping over a closed template, which only saves work. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bd6116315fa5fd331dc46982bdd608338f33233ae5ae45910915428524d45d43",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
+          "source_revision": "kp-update-val-review-113@2026-10-16",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3580fe5f790b6f8bf113a3fa775299d0a0ce285a5e4da3a979eeb1b4a6b65214",
+      "output_hash": "bd6116315fa5fd331dc46982bdd608338f33233ae5ae45910915428524d45d43",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

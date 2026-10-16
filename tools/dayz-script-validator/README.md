@@ -117,7 +117,10 @@ were not measured again.
   and no case-only failure is on record. A name is judged against the types
   of its own module and the modules below it (a 4_World local may be named
   like a 5_Mission class). Positions are those of `ES-RESERVED-WORD-IDENTIFIER`;
-  code that never compiles is not judged. Without a vanilla tree the addon's
+  code that never compiles is not judged, and a type the addon or an external
+  root declares only there is no type. Nor is a name judged against a type its
+  own file declares only in another branch of the same `#ifdef` block: the two
+  never compile together. Without a vanilla tree the addon's
   and the external roots' types are still judged, and the vanilla part is
   listed as SKIP in `info.skipped_checks` and in `--terse`.
 - `ES-CAST-UNRELATED-TYPES` (FAIL): `X.Cast(y)` where neither X nor the
@@ -131,7 +134,9 @@ were not measured again.
   up); both are classes, not a typedef, an enum, a template or a primitive;
   and the `extends` chain of both resolves in the addon, the vanilla tree or
   an `--external-scripts` root, through declarations that are not `modded`
-  and agree on one parent. `Class` is related to everything. Anything else,
+  and agree on one parent (a header that a directive splits, `class D` /
+  `#ifdef X` / `: B` / `#endif`, does not resolve). `Class` is related to
+  everything. Anything else,
   a call's result included, is skipped without a SKIP line; without a
   vanilla tree that means every cast whose chain reaches a vanilla class.
 - `ES-UNDECLARED-STATIC-MEMBER` (FAIL): `ClassName.Member` or
@@ -146,7 +151,8 @@ were not measured again.
   declarations that agree on one parent. A name counts as declared when it
   appears at the top level of the body of any addon declaration of the class
   or an ancestor, `modded class` and `#ifdef` branches included; the methods
-  of `Class` (`Cast`, `CastTo`, `StaticType`...) always count. A class whose
+  of `Class` (`Cast`, `CastTo`, `StaticType`, `StaticGetType`...) always
+  count. A class whose
   chain reaches a vanilla or another mod's class is not judged, so it runs
   without a vanilla tree; a class-like name declared as a variable in the
   addon is not judged either.
@@ -162,7 +168,8 @@ were not measured again.
   the method must be the addon's own, and the first declaration found decides
   (any public declaration of that name in the addon clears it). A caller whose
   chain leaves the addon and the external roots counts as unrelated: a
-  vanilla class cannot derive from an addon class.
+  vanilla class cannot derive from an addon class. A caller or an ancestor
+  whose header a directive splits is not read, and the call is skipped.
 
 ## Compile errors read from one file
 

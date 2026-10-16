@@ -11,9 +11,10 @@ from detectors.es_reserved_word_identifier import (
 from detectors.es_undefined_class_ref import (
     VANILLA_ANCHOR_CLASS,
     Definitions,
+    _template_end,
     vanilla_definitions,
 )
-from shared.dead_branches import dead_lines
+from shared.dead_branches import compatible, dead_lines, line_branches
 
 
 ES_VARIABLE_NAMED_AS_TYPE_RULE_ID = "ES-VARIABLE-NAMED-AS-TYPE"
@@ -47,7 +48,11 @@ ES_VARIABLE_NAMED_AS_TYPE_RULE_ID = "ES-VARIABLE-NAMED-AS-TYPE"
 # is unknown). Without a usable vanilla tree only the addon and the external
 # roots are judged, and the vanilla part is listed as skipped in the report.
 # The name fails wherever it compiles, so code under another mod's #ifdef is
-# judged too; what never compiles (shared/dead_branches.py) is not.
+# judged too; what never compiles (shared/dead_branches.py) is not. A type the
+# addon or an external root declares only where it never compiles is no type,
+# and a name is not judged against a type its own file declares only in
+# another branch of the same block (`#ifdef X` type, `#else` member): the two
+# never compile together. Blocks of different files are not related.
 
 # `Type <name>` followed by what can only follow a declared name, as in
 # ES-RESERVED-WORD-IDENTIFIER, with any name.
@@ -129,21 +134,44 @@ def usable_vanilla_key(vanilla_root):
 
 
 def _inside_template_args(stripped, offset):
-    """True when offset sits inside an unclosed `<` of its own statement.
+    """True when offset sits inside the template arguments of its statement.
 
     A comma between template arguments (`Param3<bool, vector, int>`,
     `typedef map<string, ref array<string>> Name;`) is not a declarator
     separator; vanilla control 2026-10-13 found 104 (1.29) and 109 (1.30)
-    such false findings before this check.
+    such false findings before this check. A `<` opens template arguments
+    only as ES-UNDEFINED-CLASS-REF reads them (_template_end), so the
+    comparison in `bool first = a < b, Debug = false;` hides no declarator.
     """
-    start = max(stripped.rfind(c, 0, offset) for c in ";{}") + 1
-    depth = 0
-    for char in stripped[start:offset]:
-        if char == "<":
-            depth += 1
-        elif char == ">" and depth:
-            depth -= 1
-    return depth > 0
+    index = max(stripped.rfind(c, 0, offset) for c in ";{}") + 1
+    while index < offset:
+        if stripped[index] == "<":
+            end = _template_end(stripped, index)
+            if end is not None:
+                if end > offset:
+                    return True
+                index = end
+        index += 1
+    return False
+
+
+def _compiled_type_names(stripped):
+    """{type name: [blocks around each declaration]} of the lines that compile.
+
+    The blocks are those of shared.dead_branches.line_branches(). Read line by
+    line, so a `class` or `enum` whose name stands on the next line is missed.
+    """
+    dead = dead_lines(stripped)
+    branches = line_branches(stripped)
+    declared = {}
+    for number, line in enumerate(stripped.split("\n"), start=1):
+        if number in dead or not any(
+            word in line for word in ("class", "enum", "typedef")
+        ):
+            continue
+        for name in declared_type_names(line):
+            declared.setdefault(name, []).append(branches[number])
+    return declared
 
 
 def _declared_names(stripped):
@@ -197,16 +225,19 @@ def check_es_variable_named_as_type(
     """
     if not addon_sources:
         return [], []
-    # {name: [(rank, where)]}, the addon first so it names the declaration.
+    # {name: [(rank, where, addon file, blocks)]}, the addon first so it names
+    # the declaration. File and blocks are None outside the addon.
     types = {}
-    for sources, where in (
-        (addon_sources, "declared in the addon"),
-        (external_sources or [], "declared in an --external-scripts root"),
+    for sources, where, own in (
+        (addon_sources, "declared in the addon", True),
+        (external_sources or [], "declared in an --external-scripts root", False),
     ):
         for rel_path, stripped in sources:
             rank = module_rank(rel_path)
-            for name in declared_type_names(stripped):
-                types.setdefault(name, []).append((rank, where))
+            for name, blocks in _compiled_type_names(stripped).items():
+                types.setdefault(name, []).append(
+                    (rank, where, rel_path if own else None, blocks)
+                )
     skipped = []
     vanilla_key = usable_vanilla_key(vanilla_root)
     if vanilla_key is None:
@@ -230,25 +261,36 @@ def check_es_variable_named_as_type(
     else:
         for name, rank in vanilla_type_ranks(vanilla_key).items():
             types.setdefault(name, []).append(
-                (rank, "declared in the vanilla scripts tree")
+                (rank, "declared in the vanilla scripts tree", None, None)
             )
 
     errors = []
     for rel_path, stripped in addon_sources:
         file_rank = module_rank(rel_path)
         seen = set()
-        dead = None
+        dead = branches = None
         for offset, name in sorted(_declared_names(stripped)):
-            where = next(
-                (w for rank, w in types.get(name, ()) if _visible(rank, file_rank)),
-                None,
-            )
-            if where is None:
+            candidates = [
+                entry for entry in types.get(name, ())
+                if _visible(entry[0], file_rank)
+            ]
+            if not candidates:
                 continue
             line = stripped.count("\n", 0, offset) + 1
             if dead is None:
                 dead = dead_lines(stripped)
+                branches = line_branches(stripped)
             if (line, name) in seen or line in dead:
+                continue
+            where = next(
+                (
+                    w for _rank, w, path, blocks in candidates
+                    if path != rel_path
+                    or any(compatible(b, branches[line]) for b in blocks)
+                ),
+                None,
+            )
+            if where is None:
                 continue
             seen.add((line, name))
             errors.append(

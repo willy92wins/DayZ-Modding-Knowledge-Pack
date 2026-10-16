@@ -41,6 +41,9 @@ ES_CAST_UNRELATED_TYPES_RULE_ID = "ES-CAST-UNRELATED-TYPES"
 #     declaration that is not `modded` (a modded class does not change the
 #     hierarchy) and one parent across all of them (a forward `class X;` is
 #     no declaration); a class without a parent ends the chain. Class, the implicit root, is related to everything.
+#     A header that a directive splits (`class D` / `#ifdef X` / `: B` /
+#     `#endif`) has a parent _CLASS_RE cannot read, so its chain does not
+#     resolve.
 # Without a vanilla tree a chain that reaches a vanilla class does not
 # resolve, so the cast is not judged. Lines that never compile
 # (shared/dead_branches.py) are not judged.
@@ -57,6 +60,8 @@ _CAST_RE = re.compile(
 )
 
 IMPLICIT_ROOT = "Class"
+# The parent of a class whose header a directive splits: no class has it.
+UNREAD_PARENT = "#"
 PRIMITIVES = {
     "int", "float", "bool", "string", "vector", "typename", "void", "auto",
     "func",
@@ -70,6 +75,22 @@ ES_CAST_UNRELATED_TYPES_MESSAGE = (
     "module does not compile. Get the object from an API that returns a "
     "related type (a HUD from the mission's GetHud(), not from the mission)."
 )
+
+
+def class_parent(text, match):
+    """The parent of a _CLASS_RE match, None, or UNREAD_PARENT.
+
+    The header runs from the match to the first `{` or `;`; a `#` in it is a
+    directive (comments and strings are gone), and the parent behind it is
+    not read.
+    """
+    ends = [
+        i for i in (text.find("{", match.end()), text.find(";", match.end()))
+        if i >= 0
+    ]
+    if "#" in text[match.end():min(ends, default=len(text))]:
+        return UNREAD_PARENT
+    return match.group("parent")
 
 
 class Hierarchy:
@@ -94,7 +115,7 @@ class Hierarchy:
             self.declarations.setdefault(match.group("name"), []).append(
                 (
                     "modded" in match.group("mods").split(),
-                    match.group("parent"),
+                    class_parent(text, match),
                     bool(match.group("params")),
                 )
             )

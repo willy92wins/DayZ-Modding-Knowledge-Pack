@@ -2774,6 +2774,60 @@ class TestVariableNamedAsType(unittest.TestCase):
             [(e["line"], e["message"].split("'")[1]) for e in errors],
         )
 
+    def test_a_type_that_never_compiles_with_the_name_is_no_type(self):
+        # Codex review of #113 (H1): a type declared where it never compiles,
+        # or only in the other branch of the name's block, failed valid code.
+        cases = [
+            "#if 0\nclass FX_Gone\n{\n}\n#endif\n"
+            "class C\n{\n    int FX_Gone;\n}\n",
+            "#define FX_ON\n#ifndef FX_ON\nclass FX_Gone\n{\n}\n#endif\n"
+            "class C\n{\n    int FX_Gone;\n}\n",
+            "#ifdef FX_X\nclass FX_Gone\n{\n}\n#else\n"
+            "class C\n{\n    int FX_Gone;\n}\n#endif\n",
+        ]
+        for source in cases:
+            self.assertEqual([], _named_errors(source, vanilla=None)[0], source)
+
+        # Under another mod's #ifdef the type compiles: with the name outside
+        # the block, in the same branch, or in a branch of another file's block.
+        outside = (
+            "#ifdef FX_X\nclass FX_Opt\n{\n}\n#endif\n"
+            "class C\n{\n    int FX_Opt;\n}\n"
+        )
+        same_branch = (
+            "#ifdef FX_X\nclass FX_Opt\n{\n}\n"
+            "class C\n{\n    int FX_Opt;\n}\n#endif\n"
+        )
+        other_file = "#ifdef FX_X\n#else\nclass C\n{\n    int FX_Opt;\n}\n#endif\n"
+        external = [("scripts/3_Game/dep.c", "#ifdef FX_X\nclass FX_Opt\n{\n}\n#endif\n")]
+        self.assertEqual(
+            [8], [e["line"] for e in _named_errors(outside, vanilla=None)[0]]
+        )
+        self.assertEqual(
+            [7], [e["line"] for e in _named_errors(same_branch, vanilla=None)[0]]
+        )
+        self.assertEqual(
+            [5],
+            [e["line"] for e in _named_errors(
+                other_file, external=external, vanilla=None)[0]],
+        )
+
+    def test_a_comparison_hides_no_later_declarator(self):
+        # Codex review of #113 (H4): the `<` of a comparison was read as
+        # opening template arguments, so the later declarator went unseen.
+        source = (
+            "class C\n{\n    void F(int a, int b)\n    {\n"
+            "        bool first = a < b, Debug = false;\n"
+            "        bool second = a<b, map;\n"
+            "    }\n}\n"
+        )
+        errors, _skipped = _named_errors(source)
+
+        self.assertEqual(
+            [(5, "Debug"), (6, "map")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+
     def test_a_folder_without_class_managed_is_no_vanilla_tree(self):
         errors, skipped = _named_errors(
             "class C\n{\n    bool Debug;\n}\n", vanilla=NAMED / "bad"
@@ -2893,6 +2947,12 @@ class TestCastUnrelatedTypes(unittest.TestCase):
             # a parent cycle
             "class FX_C1 : FX_C2\n{\n}\nclass FX_C2 : FX_C1\n{\n}\n"
             "void F(Mission m)\n{\n    FX_C1.Cast(m);\n}\n",
+            # a parent behind a directive in the header (Codex review of
+            # #113, H2), after `:` and after `extends`
+            "class FX_D\n#ifdef FX_X\n    : Mission\n#endif\n{\n}\n"
+            "void F(FX_D d)\n{\n    Mission.Cast(d);\n}\n",
+            "class FX_E extends\n#ifdef FX_X\n    Mission\n#else\n    Hud\n"
+            "#endif\n{\n}\nvoid F(FX_E e)\n{\n    Mission.Cast(e);\n}\n",
             # the cast under #if 0
             "void F(Mission m)\n{\n#if 0\n    IngameHud.Cast(m);\n#endif\n}\n",
             # two types in two branches, for a local and for a member
@@ -3047,7 +3107,8 @@ class TestUndeclaredStaticMember(unittest.TestCase):
             # a method every class inherits from Class
             "class FX_R\n{\n}\nvoid F(Class c)\n{\n"
             "    FX_R.Cast(c);\n    FX_R r;\n    FX_R.CastTo(r, c);\n"
-            "    typename t = FX_R.StaticType();\n}\n",
+            "    typename t = FX_R.StaticType();\n"
+            "    t = FX_R.StaticGetType();\n}\n",
             # the reference under #if 0, and after another dot
             "class FX_Z\n{\n}\nvoid F()\n{\n#if 0\n    FX_Z.X;\n#endif\n"
             "    g.FX_Z.X;\n}\n",
@@ -3166,6 +3227,13 @@ class TestProtectedMethodCrossClass(unittest.TestCase):
             _OWNER + "class FX_P\n{\n}\nclass FX_U : FX_P\n{\n}\n"
             "#ifdef FX_X\nclass FX_U : FX_Cmd\n{\n}\n#endif\n" + call,
             _OWNER + "class FX_U : FX_V\n{\n}\nclass FX_V : FX_U\n{\n}\n" + call,
+            # a parent that a directive in the header hides, in the caller
+            # and in its parent (Codex review of #113, H2)
+            _OWNER + "class FX_U\n#ifdef FX_X\n    : FX_Cmd\n#endif\n"
+            "{\n    void F(FX_Cmd c)\n    {\n        c.FX_Hide();\n    }\n}\n",
+            _OWNER + "class FX_P\n#ifdef FX_X\n    : FX_Cmd\n#endif\n{\n}\n"
+            "class FX_U : FX_P\n{\n    void F(FX_Cmd c)\n    {\n"
+            "        c.FX_Hide();\n    }\n}\n",
             # this, super, a field initialised by a call, and #if 0
             _OWNER + "class FX_W : FX_Cmd\n{\n    void F()\n    {\n"
             "        this.FX_Hide();\n        super.FX_Hide();\n    }\n}\n",
