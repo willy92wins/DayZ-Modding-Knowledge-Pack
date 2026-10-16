@@ -401,6 +401,7 @@ What breaks:
 - `modded DayZPlayerImplementFallDamage` that copies 1.29 `Math.InverseLerp` thresholds: 2.5–4 m falls now cause shock and can break legs.
 - Custom uncon wake that calls `hcu.WakeUp()` while `PhysicsIsFalling(false)` is true: vanilla now refuses; skipping the guard can still bury the body (1.29 empirical).
 - Assuming player ragdoll collision/mass is 100% native and uneditable: you can now author `.ragdoll` (bind path is a `dayz-characters` concern).
+- Assuming infected can ragdoll: `ragdoll =` in an infected's `enfanimsys` plus player death clips with the `Ragdoll` event does nothing (in-game tested, 1.30). The ragdoll API is `Human`-only. Corpse swap is the remaining route; see `references/dayz-1-30-ragdoll-and-fall.md` §1.
 
 Migration checklist:
 - [ ] If you override fall damage: port `CurveExp` + 1.30 height constants; keep `if (pValue == 1) return pValue;` in `Randomize`.

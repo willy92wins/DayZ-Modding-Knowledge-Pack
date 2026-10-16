@@ -441,6 +441,7 @@ DayZ 1.30 Exp introduces several native proto methods for script-side animation 
    `proto native void PhysicsSetSimpleDeath(bool pEnable);` (`human.c:1448`)
    `proto native void PhysicsSetRagdoll(bool pEnable);` (`human.c:1449`)
    `proto native bool PhysicsIsRagdoll();` (`human.c:1450`)
+   These are `Human`-only. An infected graph cannot get a ragdoll death: `ragdoll =` in its `enfanimsys` plus player death clips that carry the `Ragdoll` event still play the full clip and freeze (in-game tested 2026-10-16, 1.30). Detail and the corpse-swap route: `dayz-physics-engine` `references/dayz-1-30-ragdoll-and-fall.md` §1.
 6. **Client Render Optimization**:
    `proto native bool IsFirstRenderFrame();` (`exp\scripts\scripts\3_Game\dayzplayer.c:1189`)
 

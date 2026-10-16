@@ -18,6 +18,28 @@ There is **no** `LoadRagdollFile` (or similar) in extracted 1.30 scripts. [UNVER
 custom creature auto-loads a same-named `.ragdoll` via the `.xob` GUID. `dayz-characters` documents
 the `SurvivorBase` config bind.
 
+### Infected do not ragdoll (in-game tested 2026-10-16, 1.30.164078)
+
+The ragdoll API is on `Human` only: `PhysicsSetRagdoll` / `PhysicsSetSimpleDeath` are declared in
+`scripts/3_Game/DayZ/human.c:1449-1451`. Infected inherit `DayZInfected` -> `DayZCreatureAI` ->
+`DayZCreature` -> `EntityAI` (`3_Game/DayZ/Entities/DayZInfected.c:104`, `DayZAnimal.c:24,191`), so
+none of those calls exist on an infected and a script call will not compile.
+
+Config and clips do not work around it. [TESTED] An EOC custom infected (`z_hermit_m.xob`, own
+1.30 graph) was given `ragdoll = "DZ/characters/bodies/human.ragdoll";` in both `enfanimsys`
+blocks, and its death states were pointed at vanilla player death `.anm` clips that embed the
+`Ragdoll` event (`p_erc_death01_F` etc.). Both test kills ran `DayZInfectedCommandDeathModdable`,
+played the full clip and froze in the last pose. There was no limp body and no RPT error.
+
+- RPT logs no `Initializing ragdoll` line at default verbosity, not even for a player death. The
+  absence of that line proves nothing either way; only the in-game result does.
+- A custom `.ragdoll` for the infected `.xob` is untested, but it is unlikely to help: the infected
+  death command ignores the clip event, so a working definition would still never be activated.
+- [DESIGN] The remaining route is a corpse swap. On server death, delete the infected, spawn a
+  `PlayerBase` survivor at the same transform, move the clothing, gear and weapon onto it, then
+  kill it so the player death path ragdolls it. The head and hands become a vanilla survivor's.
+  Untested.
+
 ```c
 // [EXACT] exp/characters_bodies/DZ/characters/bodies/human.ragdoll:1
 RagdollDef {
