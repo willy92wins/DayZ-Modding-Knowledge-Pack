@@ -148,6 +148,40 @@ def usable_vanilla_key(vanilla_root):
     return key
 
 
+# The first character _template_end rejects after a `<`, and the brackets it
+# counts there.
+_TEMPLATE_STOP_RE = re.compile(r"[^\w, \t\r\n<>]")
+_ANGLE_BRACKET_RE = re.compile(r"[<>]")
+
+
+def _closed_template_openers(stripped):
+    """Offsets of the `<` that _template_end can close, found in one pass.
+
+    Past its name check, _template_end returns the first `>` at which the
+    depth counted from its `<` falls back to 0, and None at the first
+    character it rejects or at the end of the file; within a run of the
+    characters it accepts, that `>` is the one that pops the `<` from a
+    stack, so a `<` the stack never pops gets None (a word character of a
+    str pattern is one for which str.isalnum() holds, or `_`, the same test
+    _template_end makes). Without this pass a `<` that opened no template
+    was read up to the end of its statement, and a chain of shifts with no
+    comma grew with the square of its length (Codex review of #115, N1).
+    """
+    closed = set()
+    index = stripped.find("<")
+    while index != -1:
+        stop = _TEMPLATE_STOP_RE.search(stripped, index)
+        end = stop.start() if stop else len(stripped)
+        stack = []
+        for match in _ANGLE_BRACKET_RE.finditer(stripped, index, end):
+            if match.group() == "<":
+                stack.append(match.start())
+            elif stack:
+                closed.add(stack.pop())
+        index = stripped.find("<", end)
+    return closed
+
+
 def _template_spans(stripped):
     """(`<`, `>`) offsets of the template arguments of a file, in order.
 
@@ -165,13 +199,15 @@ def _template_spans(stripped):
     Reading from the start of the statement at each comma grew with the
     square of the names of one declaration (Codex review of #114, M2).
     """
+    closed = _closed_template_openers(stripped)
     spans = []
     index = stripped.find("<")
     while index != -1:
-        end = _template_end(stripped, index, spaced=True)
-        if end is not None:
-            spans.append((index, end))
-            index = end
+        if index in closed:
+            end = _template_end(stripped, index, spaced=True)
+            if end is not None:
+                spans.append((index, end))
+                index = end
         index = stripped.find("<", index + 1)
     return spans
 

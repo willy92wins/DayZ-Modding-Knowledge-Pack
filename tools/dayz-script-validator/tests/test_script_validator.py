@@ -2942,6 +2942,22 @@ class TestVariableNamedAsType(unittest.TestCase):
         self.assertLess(time.perf_counter() - start, 2)
         self.assertEqual([], errors)
 
+    def test_shift_chains_are_read_once_per_file(self):
+        # Codex review of #115 (N1): a `<` that opened no template was read up
+        # to the end of its statement, so a chain of shifts with no comma grew
+        # with the square of its length. These 16 000 shifts in 80 KB took 37 s.
+        source = (
+            "class A\n{\n    void F()\n    {\n        int value = 1"
+            + " << 0" * 16000
+            + ";\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        errors, _skipped = _named_errors(source, vanilla=None)
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual([], errors)
+
     def test_a_folder_without_class_managed_is_no_vanilla_tree(self):
         errors, skipped = _named_errors(
             "class C\n{\n    bool Debug;\n}\n", vanilla=NAMED / "bad"

@@ -1231,10 +1231,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-pack114-m2@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the Codex review of PR #115 at 43d7ce4 (GREEN; run on the owner's PC, reviews/pack115-codex-sol.md). N1 (P2, new in #115): _template_spans called _template_end (es_undefined_class_ref.py:189) at every `<` of the file, and a `<` that opens no template is read on to the first character a template cannot hold, so in a statement of shifts with no comma the cost grew with the square of its length; Codex measured 64.8 s for 16 000 ` << 0` (80 KB), against 0.037 s before #115. A first pass over the file, _closed_template_openers, now finds with a stack the `<` that a `>` closes within each run of the characters _template_end accepts, and _template_spans calls _template_end only for those; _template_end does not change. Measured on the owner's PC: those 16 000 shifts take 40.0 s with the detector of 9b380d5 and 0.037 s with this one. The old and new _template_spans give the same lists on the 253 fixtures, on the 3042 .c files of vanilla 1.30 and the 2805 of 1.29 (stripped and raw), on 20 000 random sources (seed 20261017), on 2000 random sources with Unicode and on the 299 593 texts of length 0 to 6 over an eight-character alphabet; the stop class of the first pass matches _template_end's test on all 1 114 112 code points, and the calls to _template_end drop from 496 638 to 143 032. The pass over the owner's 1034 mod units gives the same 125 findings in 11 units, with an aggregate identical byte for byte to the previous pass over the same mods. A new test bounds the cost (16 000 shifts, 2 s of wall time) and fails with the detector of 9b380d5. python3 -m unittest discover -s tests: 246 passed (245 before). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "c94af6be917c8a3b17a7c1d7d8e1553c34bd33f5c5e6487aa2369a80d6912a5f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-pack115-n1@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b61726b51bd0839f9cdf3159a800745bbaaef1842745e3edf8964c1136da72af",
+      "output_hash": "c94af6be917c8a3b17a7c1d7d8e1553c34bd33f5c5e6487aa2369a80d6912a5f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -25728,10 +25738,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-pack114-m2@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the Codex review of PR #115 at 43d7ce4 (GREEN; run on the owner's PC, reviews/pack115-codex-sol.md). N1 (P2, new in #115): _template_spans called _template_end (es_undefined_class_ref.py:189) at every `<` of the file, and a `<` that opens no template is read on to the first character a template cannot hold, so in a statement of shifts with no comma the cost grew with the square of its length; Codex measured 64.8 s for 16 000 ` << 0` (80 KB), against 0.037 s before #115. A first pass over the file, _closed_template_openers, now finds with a stack the `<` that a `>` closes within each run of the characters _template_end accepts, and _template_spans calls _template_end only for those; _template_end does not change. Measured on the owner's PC: those 16 000 shifts take 40.0 s with the detector of 9b380d5 and 0.037 s with this one. The old and new _template_spans give the same lists on the 253 fixtures, on the 3042 .c files of vanilla 1.30 and the 2805 of 1.29 (stripped and raw), on 20 000 random sources (seed 20261017), on 2000 random sources with Unicode and on the 299 593 texts of length 0 to 6 over an eight-character alphabet; the stop class of the first pass matches _template_end's test on all 1 114 112 code points, and the calls to _template_end drop from 496 638 to 143 032. The pass over the owner's 1034 mod units gives the same 125 findings in 11 units, with an aggregate identical byte for byte to the previous pass over the same mods. A new test bounds the cost (16 000 shifts, 2 s of wall time) and fails with the detector of 9b380d5. python3 -m unittest discover -s tests: 246 passed (245 before). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "42feced64e100a78ae838e5529d94f6299fa0560e0afce1757e5cdc7d6712af5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-pack115-n1@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "44cd80aac236dcd8e997a933060b90e36579407649b5892114d50b51e8a61897",
+      "output_hash": "42feced64e100a78ae838e5529d94f6299fa0560e0afce1757e5cdc7d6712af5",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33793,10 +33813,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-pack114-m2@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the Codex review of PR #115 at 43d7ce4 (GREEN; run on the owner's PC, reviews/pack115-codex-sol.md). N1 (P2, new in #115): _template_spans called _template_end (es_undefined_class_ref.py:189) at every `<` of the file, and a `<` that opens no template is read on to the first character a template cannot hold, so in a statement of shifts with no comma the cost grew with the square of its length; Codex measured 64.8 s for 16 000 ` << 0` (80 KB), against 0.037 s before #115. A first pass over the file, _closed_template_openers, now finds with a stack the `<` that a `>` closes within each run of the characters _template_end accepts, and _template_spans calls _template_end only for those; _template_end does not change. Measured on the owner's PC: those 16 000 shifts take 40.0 s with the detector of 9b380d5 and 0.037 s with this one. The old and new _template_spans give the same lists on the 253 fixtures, on the 3042 .c files of vanilla 1.30 and the 2805 of 1.29 (stripped and raw), on 20 000 random sources (seed 20261017), on 2000 random sources with Unicode and on the 299 593 texts of length 0 to 6 over an eight-character alphabet; the stop class of the first pass matches _template_end's test on all 1 114 112 code points, and the calls to _template_end drop from 496 638 to 143 032. The pass over the owner's 1034 mod units gives the same 125 findings in 11 units, with an aggregate identical byte for byte to the previous pass over the same mods. A new test bounds the cost (16 000 shifts, 2 s of wall time) and fails with the detector of 9b380d5. python3 -m unittest discover -s tests: 246 passed (245 before). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "e742b44a7f162393acb6f78ac1ce8e1679fb5db4f0961d5246589db66d0a5a98",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-pack115-n1@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "88976fccf212b92cb1a09ca88147970e5ecd4ccf8d364de5db62e7770bcc0249",
+      "output_hash": "e742b44a7f162393acb6f78ac1ce8e1679fb5db4f0961d5246589db66d0a5a98",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
