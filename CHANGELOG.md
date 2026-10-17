@@ -207,13 +207,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   is a cp1252 0x99 (™) in a block comment at line 127, and `ES-EMPTY-IFDEF` on
   `4_world/classes/environment/environment.c:1-3` and
   `4_world/classes/bunkerbroadcasthandler.c:338-340`, an `#ifdef DIAG_DEVELOPER` and an
-  `#ifdef ENABLE_LOGGING` that hold only a comment. DayZDiag defines `DIAG_DEVELOPER` on server
-  and client, and the dayz-mcp v1.4 release game (DayZDiag 1.30.164078) ran `environment.c` on
-  both without a crash, against the segfault that `pitfalls-advanced.md:66` describes; the rule
-  stays live until a mod measures that claim (pipeline inbox dada). `ENABLE_LOGGING` is set by
-  `-doScriptLogs=1` (`1_core/defines.c:36-39`), which that game did not pass, so the second block
-  is not measured. The `input.c` note cited line 266, the `#ifdef PLATFORM_PS4`, for the
-  declaration at 272. The new baseline has 15 errors and 424 warnings over 3043 files (12 and 416
+  `#ifdef ENABLE_LOGGING` that hold only a comment, the first at file level and the second inside a
+  method. DayZDiag defines both macros on server and client: in the dayz-mcp v1.4 release game
+  (DayZDiag 1.30.164078), the script logs of both list `DIAG_DEVELOPER` and `ENABLE_LOGGING` among
+  the defines of every script module, so World compiled both blocks with their macro set, and both
+  processes ended normally, against the segfault that `pitfalls-advanced.md:66` describes. The rule
+  stays live until a mod measures that claim (pipeline inbox dada). The `input.c`
+  note cited line 266, the `#ifdef PLATFORM_PS4`, for the declaration at 272. The
+  new baseline has 15 errors and 424 warnings over 3043 files (12 and 416
   over 2806), with the same findings and digest in two runs: `ES-CTX-READ-UNCHECKED` goes from 77
   to 82, `ES-CTX-READ-UNSUPPORTED-PATTERN` from 22 to 23, `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN` from
   254 to 260 and `ES-GETTYPE-EXACT-MATCH` from 40 to 36. `tree.dayz_build` now names the measured
