@@ -247,6 +247,11 @@ def method_is_syncvar_registration_target(method, class_name):
         "Init",
         "InitItemSounds",
         "InitItemVariables",
+        # DayZ 1.30: EntityAI() calls ConstructionInit()
+        # (3_game/entities/entityai.c:249), which calls this hook (:3469);
+        # BuildingBase registers its construction parts in its override
+        # (4_world/entities/game/super/building.c:29-44).
+        "RegisterConstructionSyncVariables",
     )
 
 

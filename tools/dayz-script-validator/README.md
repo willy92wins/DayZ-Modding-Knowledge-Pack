@@ -270,8 +270,8 @@ over that tree and fails if the findings differ from a measured baseline.
 The vanilla tree is Bohemia's and is not redistributed. Without a local
 copy the control SKIPs (exit 2) instead of pretending the tree was clean.
 
-A full run takes about 85 seconds. It is a gate, not a unit test — do not
-put it in `unittest discover`.
+A full run on DayZ 1.30 takes 130 to 150 seconds. It is a gate, not a unit
+test — do not put it in `unittest discover`.
 
 ```powershell
 python scripts/vanilla_control.py

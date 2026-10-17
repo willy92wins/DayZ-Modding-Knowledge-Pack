@@ -812,6 +812,9 @@ class TestEsSyncvarContract(unittest.TestCase):
     def test_syncvar_init_item_variables_passes(self):
         self.assert_syncvar_passes("ok_syncvar_init_item_variables.c")
 
+    def test_syncvar_register_construction_sync_variables_passes(self):
+        self.assert_syncvar_passes("ok_syncvar_register_construction_sync_variables.c")
+
     def test_syncvar_other_prefix_does_not_trigger_write_rule(self):
         self.assert_syncvar_passes("ok_syncvar_other_prefix.c")
 
@@ -1325,7 +1328,7 @@ class TestFullCorpus(unittest.TestCase):
 
         self.assertEqual(1, exit_code)
         self.assertEqual("FAIL", result["status"])
-        self.assertEqual(103, result["info"]["files_scanned"])
+        self.assertEqual(104, result["info"]["files_scanned"])
         assert_standard_findings(self, result)
 
         observed_errors = {

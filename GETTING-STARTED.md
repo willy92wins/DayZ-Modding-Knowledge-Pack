@@ -167,7 +167,8 @@ check and can print clean while the wheels never simulate.
 
 Do **not** run `tools/dayz-script-validator/scripts/vanilla_control.py` as
 part of making a mod. That control is a gate for people changing the
-linter; it walks Bohemia's tree and takes on the order of 85 seconds.
+linter; it walks Bohemia's tree and takes on the order of two and a half
+minutes on DayZ 1.30.
 
 ### Pack
 

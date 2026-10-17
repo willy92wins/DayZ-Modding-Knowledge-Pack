@@ -199,6 +199,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164078 stable. Its
+  baseline came from 1.29.0.163451, and on 1.30 the control failed on the tree's digest and on 13
+  errors in four files that the game compiles, none of them present in 1.29. Ten are
+  `ES-SYNCVAR-CONTRACT` on `building.c` (see Fixed). The other three are allowed by name, each with
+  its reason: `INPUT-ENCODING-ERROR` on `3_game/global/world.c`, whose only byte that is not UTF-8
+  is a cp1252 0x99 (™) in a block comment at line 127, and `ES-EMPTY-IFDEF` on
+  `4_world/classes/environment/environment.c:1-3` and
+  `4_world/classes/bunkerbroadcasthandler.c:338-340`, an `#ifdef DIAG_DEVELOPER` and an
+  `#ifdef ENABLE_LOGGING` that hold only a comment. DayZDiag defines `DIAG_DEVELOPER` on server
+  and client, and the dayz-mcp v1.4 release game (DayZDiag 1.30.164078) ran `environment.c` on
+  both without a crash, against the segfault that `pitfalls-advanced.md:66` describes; the rule
+  stays live until a mod measures that claim (pipeline inbox dada). `ENABLE_LOGGING` is set by
+  `-doScriptLogs=1` (`1_core/defines.c:36-39`), which that game did not pass, so the second block
+  is not measured. The `input.c` note cited line 266, the `#ifdef PLATFORM_PS4`, for the
+  declaration at 272. The new baseline has 15 errors and 424 warnings over 3043 files (12 and 416
+  over 2806), with the same findings and digest in two runs: `ES-CTX-READ-UNCHECKED` goes from 77
+  to 82, `ES-CTX-READ-UNSUPPORTED-PATTERN` from 22 to 23, `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN` from
+  254 to 260 and `ES-GETTYPE-EXACT-MATCH` from 40 to 36. `tree.dayz_build` now names the measured
+  build; `sources/source-map.json` keeps 1.29.0.163451, the build the pack is anchored on. The
+  seven validator rules added above report nothing on the 1.30 tree. A full run there takes 130
+  to 150 seconds; the 1.29 baseline recorded 86, with fewer rules. Pipeline inbox 818e.
 - `dayz-animation-pipeline` `SKILL.md`: the section heading now reads "Locomotion in scripted commands:
   driving the vanilla graph (added 2026-06-11, measured on 1.30 Exp 2026-10-06)". The 2026-06-11
   paragraph (LFSlidingFloor, `GetCurrentMovement()` override) ends with a dated qualification: on 1.30
@@ -215,6 +236,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-script-validator`: `ES-SYNCVAR-CONTRACT` accepts SyncVars registered in
+  `RegisterConstructionSyncVariables()`. In DayZ 1.30 the `EntityAI` constructor calls
+  `ConstructionInit()` (`3_game/entities/entityai.c:249`), which calls that hook (`:3469`), and
+  `BuildingBase` registers its ten construction parts in its override
+  (`4_world/entities/game/super/building.c:29-44`): the vanilla control on 1.30.164078 got ten
+  false FAILs there, "called outside constructor". 247 unit tests pass (246 before).
 - `dayz-test-ingame`: SP-095 point 1 told the reader to start a missing Steam with
   `steam.exe -silent`, and the Steam prerequisite to restart it, without saying where from. From a
   shell inside the Claude or Codex app that Steam registers only in the app's private registry
