@@ -1254,9 +1254,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-17: correction to kp-update-818e (Codex review of dayz-mcp PR #245, W3, P1; run on the owner's PC, reviews/pr245-codex-sol.md). The 818e entry and the ES-EMPTY-IFDEF note on bunkerbroadcasthandler.c said that ENABLE_LOGGING is set by -doScriptLogs=1 (1_core/defines.c:36-39), that the dayz-mcp v1.4 release game did not pass it, and so that the block at bunkerbroadcasthandler.c:338-340 was not measured. That game's script logs say otherwise: on the server and on the client, GameLib, Game, World and Mission list DIAG_DEVELOPER and ENABLE_LOGGING among their defines (the release evidence folder on the owner's PC, server/script_2026-10-17_17-03-17.log and client/script_2026-10-17_17-03-31.log, whose sha256 match its evidence.sha256). So World compiled both empty blocks, environment.c:1-3 at file level and bunkerbroadcasthandler.c:338-340 inside a method, with their macro set, and both processes ended normally. The CHANGELOG entry and the note now say so, and the eight 818e evidences name the macro as defined; the rule stays live until a test mod measures the segfault that pitfalls-advanced.md:66 describes (pipeline inbox dada). Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-17: correction to kp-update-818e (Codex review of dayz-mcp PR #245, W3, P1; run on the owner's PC, reviews/pr245-codex-sol.md). The 818e entry and the ES-EMPTY-IFDEF note on bunkerbroadcasthandler.c said that ENABLE_LOGGING is set by -doScriptLogs=1 (1_core/defines.c:36-39), that the dayz-mcp v1.4 release game did not pass it, and so that the block at bunkerbroadcasthandler.c:338-340 was not measured. That game's script logs say otherwise: on the server and on the client, GameLib, Game, World and Mission list DIAG_DEVELOPER and ENABLE_LOGGING among their defines (the release evidence folder on the owner's PC, server/script_2026-10-17_17-03-17.log and client/script_2026-10-17_17-03-31.log, whose sha256 match its evidence.sha256). So World compiled both empty blocks, environment.c:1-3 at file level and bunkerbroadcasthandler.c:338-340 inside a method, with their macro set, and both processes ended normally. The CHANGELOG entry and the note now say so, and the eight 818e evidences name the macro as defined; the rule stays live until a test mod measures the segfault that pitfalls-advanced.md:66 describes (pipeline inbox dada). The Pack #118 review (Codex, X1, P3; reviews/pack118-codex-sol.md) found a 137-character line in the rewritten CHANGELOG sentence; it is rewrapped to the width of its block, with no word changed. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "45ff7cf36d5afe2307e14482feeff56e8bf27293e451b7b054204caab682391d",
+          "source_hash": "2c00b68b24ae414adb271ece155dc043d161ff030da6d4a8756ee019133cda35",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-818e-w3@2026-10-17",
@@ -1264,7 +1264,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "45ff7cf36d5afe2307e14482feeff56e8bf27293e451b7b054204caab682391d",
+      "output_hash": "2c00b68b24ae414adb271ece155dc043d161ff030da6d4a8756ee019133cda35",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"

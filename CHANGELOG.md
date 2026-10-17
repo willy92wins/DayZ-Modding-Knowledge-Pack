@@ -212,8 +212,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (DayZDiag 1.30.164078), the script logs of both list `DIAG_DEVELOPER` and `ENABLE_LOGGING` among
   the defines of every script module, so World compiled both blocks with their macro set, and both
   processes ended normally, against the segfault that `pitfalls-advanced.md:66` describes. The rule
-  stays live until a mod measures that claim (pipeline inbox dada). The `input.c` note cited line 266, the `#ifdef PLATFORM_PS4`, for the
-  declaration at 272. The new baseline has 15 errors and 424 warnings over 3043 files (12 and 416
+  stays live until a mod measures that claim (pipeline inbox dada). The `input.c`
+  note cited line 266, the `#ifdef PLATFORM_PS4`, for the declaration at 272. The
+  new baseline has 15 errors and 424 warnings over 3043 files (12 and 416
   over 2806), with the same findings and digest in two runs: `ES-CTX-READ-UNCHECKED` goes from 77
   to 82, `ES-CTX-READ-UNSUPPORTED-PATTERN` from 22 to 23, `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN` from
   254 to 260 and `ES-GETTYPE-EXACT-MATCH` from 40 to 36. `tree.dayz_build` now names the measured
