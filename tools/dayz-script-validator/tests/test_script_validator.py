@@ -2777,6 +2777,8 @@ class TestVariableNamedAsType(unittest.TestCase):
         # 109 on 1.30), e.g. `Param3<bool, vector, int> x` and
         # `typedef map<string,ref array<string>> DamageZoneMap;`. Second Codex
         # review of #113 (J1): again with a space or a tab before the `<`.
+        # A nested template is stepped over whole, so the arguments after it
+        # are still inside the outer one (Codex review of #114, M2).
         source = (
             "typedef map<string, ref array<Debug>> FX_OwnMap;\n"
             "class C\n{\n"
@@ -2786,6 +2788,7 @@ class TestVariableNamedAsType(unittest.TestCase):
             "        auto q = new Param3<int, Debug, int>(0, null, 0);\n"
             "        auto s = new Param3 <int, Debug, int>(0, null, 0);\n"
             "        auto t = new Param3\t<int, Debug, int>(0, null, 0);\n"
+            "        auto u = new Param3<array<int>, Debug, int>(null, null, 0);\n"
             "        ref map<int, Debug> m, map;\n"
             "    }\n}\n"
         )
@@ -2794,7 +2797,7 @@ class TestVariableNamedAsType(unittest.TestCase):
         # Still reported: the parameter after a template-typed one, and the
         # later declarator after a template-typed local.
         self.assertEqual(
-            [(5, "Debug"), (11, "map")],
+            [(5, "Debug"), (12, "map")],
             [(e["line"], e["message"].split("'")[1]) for e in errors],
         )
 
@@ -2920,6 +2923,23 @@ class TestVariableNamedAsType(unittest.TestCase):
         errors, _skipped = _named_errors(source, vanilla=None)
 
         self.assertLess(time.perf_counter() - start, 10)
+        self.assertEqual([], errors)
+
+    def test_template_arguments_are_read_once_per_file(self):
+        # Codex review of #114 (M2): at each comma of a declaration the rule
+        # read the statement again from its start, looking for template
+        # arguments. These 16 000 names in 117 KB took 46 s and 48 s on two
+        # machines, and take 0.05 s.
+        source = (
+            "class A\n{\n    int "
+            + ", ".join(f"m{i}" for i in range(16000))
+            + ";\n}\n"
+        )
+
+        start = time.perf_counter()
+        errors, _skipped = _named_errors(source, vanilla=None)
+
+        self.assertLess(time.perf_counter() - start, 2)
         self.assertEqual([], errors)
 
     def test_a_folder_without_class_managed_is_no_vanilla_tree(self):

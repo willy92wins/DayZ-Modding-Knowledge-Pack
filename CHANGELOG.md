@@ -76,8 +76,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   template, and a space before a template's `<` (`new Param3 <int, Object, int>(...)`) does not
   make its commas separate declarators. After the fourth Codex review of #113, lines are counted
   once per file: counting from the start of the file for each name that is a type took 42 s for
-  64 000 such members on one machine, and takes 1.5 s. 244 unit tests pass (242 before), two of
-  them on the cost of this rule and of `line_tests`.
+  64 000 such members on one machine, and takes 1.5 s. After the Codex review of #114, template
+  arguments are read once per file: reading the statement again from its start at each comma of a
+  declaration took 46 s for 16 000 names in one declaration, and takes 0.05 s. 245 unit tests
+  pass (242 before), three of them on the cost of this rule and of `line_tests`.
 - `dayz-script-validator`: two FAIL rules from pipeline tickets of SimpleGroup.
   `ES-UNBALANCED-BRACKETS` reports the first `(`, `[` or `{` never closed or closed by another
   kind, and the first closer with nothing to close: `m_Objects.Clear(;` got PASS

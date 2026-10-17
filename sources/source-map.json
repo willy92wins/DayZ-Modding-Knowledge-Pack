@@ -1221,10 +1221,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-codex-r4-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the Codex review of PR #114 at b619942 (GREEN; run on the owner's PC, reviews/pack114-codex-sol.md). M2 (P2, older than #114): in a declaration with commas, ES-VARIABLE-NAMED-AS-TYPE read the statement again from its start at each comma, looking for template arguments (_inside_template_args, es_variable_named_as_type.py:162-163 and :225 at b619942), so its cost grew with the square of the names of one declaration; Codex measured 47.6 s for 16 000 names in 117 KB. Template arguments never hold a `;`, `{` or `}`, so the rule now finds them in one pass over the file and looks each comma up in that list. Measured here: 16 000 names in one declaration took 46.2 s before and take 0.04 s. The old and new lookups agree on every offset of 20 000 random sources (5.5 million offsets, 5019 sources with template arguments, 387 of them nested), and the declared names and findings agree on those sources and on the pack's 174 Enforce files. A new test bounds the cost (16 000 names, 2 s of wall time), and the template test gains a nested template followed by more arguments. python3 -m unittest discover tests: 245 passed (244 before). Reverting the fix turns the cost test red, and six mutants of the lookup (no jump over a template, the next template instead of the last, the first template never counted, no space before `<`, either call skipping the check) turn the template test red. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b61726b51bd0839f9cdf3159a800745bbaaef1842745e3edf8964c1136da72af",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-pack114-m2@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8b3150957e31e75ee68078d4454eff5235be1d74733107442468f88428b1701c",
+      "output_hash": "b61726b51bd0839f9cdf3159a800745bbaaef1842745e3edf8964c1136da72af",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -25708,10 +25718,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-pack114-walltime@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the Codex review of PR #114 at b619942 (GREEN; run on the owner's PC, reviews/pack114-codex-sol.md). M2 (P2, older than #114): in a declaration with commas, ES-VARIABLE-NAMED-AS-TYPE read the statement again from its start at each comma, looking for template arguments (_inside_template_args, es_variable_named_as_type.py:162-163 and :225 at b619942), so its cost grew with the square of the names of one declaration; Codex measured 47.6 s for 16 000 names in 117 KB. Template arguments never hold a `;`, `{` or `}`, so the rule now finds them in one pass over the file and looks each comma up in that list. Measured here: 16 000 names in one declaration took 46.2 s before and take 0.04 s. The old and new lookups agree on every offset of 20 000 random sources (5.5 million offsets, 5019 sources with template arguments, 387 of them nested), and the declared names and findings agree on those sources and on the pack's 174 Enforce files. A new test bounds the cost (16 000 names, 2 s of wall time), and the template test gains a nested template followed by more arguments. python3 -m unittest discover tests: 245 passed (244 before). Reverting the fix turns the cost test red, and six mutants of the lookup (no jump over a template, the next template instead of the last, the first template never counted, no space before `<`, either call skipping the check) turn the template test red. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "44cd80aac236dcd8e997a933060b90e36579407649b5892114d50b51e8a61897",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-pack114-m2@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ea2349544f5e45f67c99d808eb3f2dfc69abd6ec894275fa7283a6aa41091f9e",
+      "output_hash": "44cd80aac236dcd8e997a933060b90e36579407649b5892114d50b51e8a61897",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33763,10 +33783,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-codex-r4-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the Codex review of PR #114 at b619942 (GREEN; run on the owner's PC, reviews/pack114-codex-sol.md). M2 (P2, older than #114): in a declaration with commas, ES-VARIABLE-NAMED-AS-TYPE read the statement again from its start at each comma, looking for template arguments (_inside_template_args, es_variable_named_as_type.py:162-163 and :225 at b619942), so its cost grew with the square of the names of one declaration; Codex measured 47.6 s for 16 000 names in 117 KB. Template arguments never hold a `;`, `{` or `}`, so the rule now finds them in one pass over the file and looks each comma up in that list. Measured here: 16 000 names in one declaration took 46.2 s before and take 0.04 s. The old and new lookups agree on every offset of 20 000 random sources (5.5 million offsets, 5019 sources with template arguments, 387 of them nested), and the declared names and findings agree on those sources and on the pack's 174 Enforce files. A new test bounds the cost (16 000 names, 2 s of wall time), and the template test gains a nested template followed by more arguments. python3 -m unittest discover tests: 245 passed (244 before). Reverting the fix turns the cost test red, and six mutants of the lookup (no jump over a template, the next template instead of the last, the first template never counted, no space before `<`, either call skipping the check) turn the template test red. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "88976fccf212b92cb1a09ca88147970e5ecd4ccf8d364de5db62e7770bcc0249",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-pack114-m2@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c9ccb9fa9dd893436d7946b375b548ee0b268ecf3249722f94c9f5eea2a58865",
+      "output_hash": "88976fccf212b92cb1a09ca88147970e5ecd4ccf8d364de5db62e7770bcc0249",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

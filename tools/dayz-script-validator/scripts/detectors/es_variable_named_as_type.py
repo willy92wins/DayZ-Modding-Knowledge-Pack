@@ -1,3 +1,4 @@
+import bisect
 import functools
 import pathlib
 import re
@@ -147,8 +148,8 @@ def usable_vanilla_key(vanilla_root):
     return key
 
 
-def _inside_template_args(stripped, offset):
-    """True when offset sits inside the template arguments of its statement.
+def _template_spans(stripped):
+    """(`<`, `>`) offsets of the template arguments of a file, in order.
 
     A comma between template arguments (`Param3<bool, vector, int>`,
     `typedef map<string, ref array<string>> Name;`) is not a declarator
@@ -158,17 +159,27 @@ def _inside_template_args(stripped, offset):
     comparison in `bool first = a < b, Debug = false;` hides no declarator,
     with spaces allowed before it: `new Param3 <int, Object, int>(...)`
     (second Codex review of #113, J1).
+
+    Template arguments never hold a `;`, `{` or `}`, so one pass over the
+    file finds the ones a pass from the start of each statement finds.
+    Reading from the start of the statement at each comma grew with the
+    square of the names of one declaration (Codex review of #114, M2).
     """
-    index = max(stripped.rfind(c, 0, offset) for c in ";{}") + 1
-    while index < offset:
-        if stripped[index] == "<":
-            end = _template_end(stripped, index, spaced=True)
-            if end is not None:
-                if end > offset:
-                    return True
-                index = end
-        index += 1
-    return False
+    spans = []
+    index = stripped.find("<")
+    while index != -1:
+        end = _template_end(stripped, index, spaced=True)
+        if end is not None:
+            spans.append((index, end))
+            index = end
+        index = stripped.find("<", index + 1)
+    return spans
+
+
+def _inside_template_args(spans, offset):
+    """True when offset sits inside one of the template arguments in spans."""
+    position = bisect.bisect_left(spans, (offset,)) - 1
+    return position >= 0 and offset < spans[position][1]
 
 
 def _compiled_type_names(stripped):
@@ -196,11 +207,12 @@ def _compiled_type_names(stripped):
 
 def _declared_names(stripped):
     """(offset, name) of every name in a declared-name position."""
+    spans = _template_spans(stripped)
     for match in _DECL_RE.finditer(stripped):
         if match.group("type") in _NOT_A_TYPE:
             continue
         if stripped[match.start()] == "," and _inside_template_args(
-            stripped, match.start()
+            spans, match.start()
         ):
             continue
         yield match.start("name"), match.group("name")
@@ -222,7 +234,7 @@ def _declared_names(stripped):
             elif (
                 char == ","
                 and depth == 0
-                and not _inside_template_args(stripped, cursor)
+                and not _inside_template_args(spans, cursor)
             ):
                 later = _LATER_NAME_RE.match(stripped, cursor)
                 if later:
