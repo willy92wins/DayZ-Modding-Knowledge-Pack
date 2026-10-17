@@ -28,7 +28,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   vanilla control was not run for this change (no vanilla tree on the machine that wrote it).
   It and `ES-CAST-UNRELATED-TYPES` read the lines, methods and class bodies of a file once:
   counting lines from the start of the file at every call kept this rule running past 20 minutes
-  on a 10 MB file of a recovered mod (pass over the owner's mods, 2026-10-17).
+  on a 10 MB file of a recovered mod (pass over the owner's mods, 2026-10-17). The method regions
+  that they and nine older rules read (`shared/method_recognition.py`) no longer collect a
+  signature at a line that cannot start one, and join it once: from a `(` that never closes,
+  every line ran to the end of the file, and two recovered volumes of binary data (files up to
+  20 MB) still passed 20 minutes (second pass, same day). The regions are the same as before on
+  200 000 random files compared.
 - `dayz-script-validator`: `ES-UNDECLARED-STATIC-MEMBER` (FAIL) reports `ClassName.Member` and
   `ClassName.Member(` when no addon declaration of the class or of its ancestors names `Member`:
   a lane deleted `ANIM_SWAP_ENABLED` from its own `LFSK_Constants` while seven call sites still
@@ -64,7 +69,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   false findings on 1.29.0.163451 and 109 on 1.30.164014, all of this shape, and none for the
   other six new rules. After the Codex review of #113, a type declared only where it never
   compiles, or only in another branch of the name's own `#ifdef` block, is no type for that name,
-  and the `<` of a comparison (`bool first = a < b, Debug = false;`) opens no template. 238 unit
+  and the `<` of a comparison (`bool first = a < b, Debug = false;`) opens no template. 239 unit
   tests pass.
 - `dayz-script-validator`: two FAIL rules from pipeline tickets of SimpleGroup.
   `ES-UNBALANCED-BRACKETS` reports the first `(`, `[` or `{` never closed or closed by another

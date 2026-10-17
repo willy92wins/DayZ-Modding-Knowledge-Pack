@@ -1191,10 +1191,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mods-pass-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: second pass over the owner's mods for PR #113 at 894e58b (run on the owner's PC, reviews/pr113-real-mods-r2.md). Two recovered volumes of binary data (Utopia legacy_generic_attempt, 265 .c and 276 MB, the largest file 20.4 MB; FC_Uaz_Pickup_Rest, 154 .c and 269 MB) still passed the 1200 s watchdog, with every stack in find_method_regions (read by FileScopes of ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS, and by nine older rules): it collected a signature at every line, and from a \"(\" that never closes each collection ran to the end of the file, rebuilding the string at every line. find_method_regions now skips a line from which METHOD_SIGNATURE_RE cannot match whatever follows: one without \"(\", or with anything but the head of that pattern before its first \"(\" (METHOD_SIGNATURE_HEAD, shared by both patterns; METHOD_SIGNATURE_RE's pattern text is unchanged). collect_method_signature joins its lines once. Measured: python3 -m unittest discover tests, 239 passed (238 before); the new test fails on the old helper and on two mutants of the check (no check; any line with a \"(\"). Old and new helpers gave the same regions, the same signatures at every line, and no line the check skips matched, on 200 000 random files (4 seeds of 50 000). find_method_regions on 300 KB of random bytes read with errors=\"replace\": 1.07 s before, 0.00 s now; on 20 MB, 0.20 s now. A file in which every declaration lost its \")\" still costs one collection per declaration: 3000 of them (9001 lines) take 3.08 s. Pending: those two volumes and the vanilla control at this head on the owner's PC. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ed3e2c28a4ec6658bcec21059a88b3362a0ff24cb087ca5bd5a9d3efabd4473c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-mods-pass2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f214d67488d9eca84c2775ca07f77a52309d3550189c339402fa1edfc1db0cfa",
+      "output_hash": "ed3e2c28a4ec6658bcec21059a88b3362a0ff24cb087ca5bd5a9d3efabd4473c",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -21992,10 +22002,20 @@
           "source_path": "scripts/shared/method_recognition.py",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: second pass over the owner's mods for PR #113 at 894e58b (run on the owner's PC, reviews/pr113-real-mods-r2.md). Two recovered volumes of binary data (Utopia legacy_generic_attempt, 265 .c and 276 MB, the largest file 20.4 MB; FC_Uaz_Pickup_Rest, 154 .c and 269 MB) still passed the 1200 s watchdog, with every stack in find_method_regions (read by FileScopes of ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS, and by nine older rules): it collected a signature at every line, and from a \"(\" that never closes each collection ran to the end of the file, rebuilding the string at every line. find_method_regions now skips a line from which METHOD_SIGNATURE_RE cannot match whatever follows: one without \"(\", or with anything but the head of that pattern before its first \"(\" (METHOD_SIGNATURE_HEAD, shared by both patterns; METHOD_SIGNATURE_RE's pattern text is unchanged). collect_method_signature joins its lines once. Measured: python3 -m unittest discover tests, 239 passed (238 before); the new test fails on the old helper and on two mutants of the check (no check; any line with a \"(\"). Old and new helpers gave the same regions, the same signatures at every line, and no line the check skips matched, on 200 000 random files (4 seeds of 50 000). find_method_regions on 300 KB of random bytes read with errors=\"replace\": 1.07 s before, 0.00 s now; on 20 MB, 0.20 s now. A file in which every declaration lost its \")\" still costs one collection per declaration: 3000 of them (9001 lines) take 3.08 s. Pending: those two volumes and the vanilla control at this head on the owner's PC. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7c7e1fa39aba48b4425351d8edcf62c577dccd5dc516c637602aabb84370153e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/method_recognition.py",
+          "source_revision": "kp-update-mods-pass2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "bd53a041737bd1fdcf9d5db87926280b53d46812795234897ad17f25aae231a9",
+      "output_hash": "7c7e1fa39aba48b4425351d8edcf62c577dccd5dc516c637602aabb84370153e",
       "output_path": "tools/dayz-script-validator/scripts/shared/method_recognition.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25598,10 +25618,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-mods-pass-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: second pass over the owner's mods for PR #113 at 894e58b (run on the owner's PC, reviews/pr113-real-mods-r2.md). Two recovered volumes of binary data (Utopia legacy_generic_attempt, 265 .c and 276 MB, the largest file 20.4 MB; FC_Uaz_Pickup_Rest, 154 .c and 269 MB) still passed the 1200 s watchdog, with every stack in find_method_regions (read by FileScopes of ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS, and by nine older rules): it collected a signature at every line, and from a \"(\" that never closes each collection ran to the end of the file, rebuilding the string at every line. find_method_regions now skips a line from which METHOD_SIGNATURE_RE cannot match whatever follows: one without \"(\", or with anything but the head of that pattern before its first \"(\" (METHOD_SIGNATURE_HEAD, shared by both patterns; METHOD_SIGNATURE_RE's pattern text is unchanged). collect_method_signature joins its lines once. Measured: python3 -m unittest discover tests, 239 passed (238 before); the new test fails on the old helper and on two mutants of the check (no check; any line with a \"(\"). Old and new helpers gave the same regions, the same signatures at every line, and no line the check skips matched, on 200 000 random files (4 seeds of 50 000). find_method_regions on 300 KB of random bytes read with errors=\"replace\": 1.07 s before, 0.00 s now; on 20 MB, 0.20 s now. A file in which every declaration lost its \")\" still costs one collection per declaration: 3000 of them (9001 lines) take 3.08 s. Pending: those two volumes and the vanilla control at this head on the owner's PC. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d5ebbedc10b1b6bf623135334769c4bc73df82af1560af29731cf305aa6e8f5c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-mods-pass2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "caf68d6f8e63ad7ee9b184b60fa562efd9bb857629a2aa1b94d7930c932a8c3d",
+      "output_hash": "d5ebbedc10b1b6bf623135334769c4bc73df82af1560af29731cf305aa6e8f5c",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

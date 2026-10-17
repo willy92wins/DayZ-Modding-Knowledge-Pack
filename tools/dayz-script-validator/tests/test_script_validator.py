@@ -3089,6 +3089,49 @@ class TestFileScopes(unittest.TestCase):
         )
 
 
+class TestMethodSignatureCollection(unittest.TestCase):
+    """find_method_regions, which FileScopes and nine other rules read.
+
+    Second mods pass of #113, 2026-10-17: it collected a signature at every
+    line, and from a "(" that never closes each one ran to the end of the
+    file, rebuilding the string at every line. Two recovered volumes (files
+    of up to 20 MB of binary data) still passed 20 minutes. Only a line that
+    can start a signature is collected now, and the string is joined once.
+    """
+
+    def test_only_a_line_that_can_start_a_signature_is_collected(self):
+        from shared import method_recognition
+
+        source = "\n".join(
+            [
+                "x = Foo(a,",  # "=" before the "("
+                "Print(a,",  # one word before it
+                "\ufffd(",  # binary data read with errors="replace"
+                "void F(int a,",
+                "    int b)",
+                "{",
+                "}",
+            ]
+        )
+        collected = []
+        collect = method_recognition.collect_method_signature
+
+        def counted(lines, start_index):
+            collected.append(start_index)
+            return collect(lines, start_index)
+
+        with mock.patch.object(
+            method_recognition, "collect_method_signature", counted
+        ):
+            methods = method_recognition.find_method_regions(source)
+
+        self.assertEqual([3], collected)
+        self.assertEqual(
+            [("F", "int a, int b", 6)],
+            [(m["name"], m["params"], m["brace_line"]) for m in methods],
+        )
+
+
 STATIC_MEMBER = FIXTURES / "undeclared_static_member"
 STATIC_MEMBER_RULE = "ES-UNDECLARED-STATIC-MEMBER"
 

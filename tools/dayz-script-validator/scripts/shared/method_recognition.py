@@ -4,14 +4,24 @@ import re
 PARAMS_READ_CONTEXT_PARAM_RE = re.compile(r"^\s*ParamsReadContext\s+(?P<name>\w+)\b")
 
 
-METHOD_SIGNATURE_RE = re.compile(
-    r"^(?P<indent>\s*)"
+# What METHOD_SIGNATURE_RE matches before the "(" that opens the parameters.
+# It holds no "(", so that "(" is the first one of the line the signature
+# starts on.
+METHOD_SIGNATURE_HEAD = (
+    r"(?P<indent>\s*)"
     r"(?:override\s+|static\s+|protected\s+|private\s+)*"
     r"(?P<return_type>\w[\w\s]*?)\s+"
     r"(?P<name>\w+)"
-    r"\s*\((?P<params>[^)]*)\)"
+    r"\s*"
+)
+
+METHOD_SIGNATURE_RE = re.compile(
+    r"^" + METHOD_SIGNATURE_HEAD
+    + r"\((?P<params>[^)]*)\)"
     r"\s*(?P<brace>\{)?.*$"
 )
+
+METHOD_SIGNATURE_HEAD_RE = re.compile(METHOD_SIGNATURE_HEAD)
 
 
 def count_braces(line):
@@ -19,19 +29,26 @@ def count_braces(line):
 
 
 def collect_method_signature(lines, start_index):
-    signature = lines[start_index]
+    # Joined once at the end: a "(" that never closes reaches the end of the file.
+    parts = [lines[start_index]]
     end_index = start_index
-    open_parens = signature.count("(")
-    close_parens = signature.count(")")
+    open_parens = parts[0].count("(")
+    close_parens = parts[0].count(")")
 
     while open_parens > close_parens and end_index + 1 < len(lines):
         end_index += 1
         next_line = lines[end_index].strip()
-        signature = signature + " " + next_line
+        parts.append(next_line)
         open_parens += next_line.count("(")
         close_parens += next_line.count(")")
 
-    return signature, end_index
+    return " ".join(parts), end_index
+
+
+def may_start_method_signature(line):
+    """False when no signature collected from `line` can match METHOD_SIGNATURE_RE."""
+    open_at = line.find("(")
+    return open_at >= 0 and METHOD_SIGNATURE_HEAD_RE.fullmatch(line[:open_at]) is not None
 
 
 def find_block_end_line(lines, brace_line_index, max_line_index=None):
@@ -75,6 +92,9 @@ def find_method_regions(stripped_source):
     index = 0
 
     while index < len(lines):
+        if not may_start_method_signature(lines[index]):
+            index += 1
+            continue
         signature, signature_end_index = collect_method_signature(lines, index)
         match = METHOD_SIGNATURE_RE.match(signature)
         if not match:
