@@ -32,7 +32,7 @@
     },
     {
       "file": "4_world/classes/environment/environment.c",
-      "note": "Accepted: the '#ifdef DIAG_DEVELOPER' block at environment.c:1-3 holds only a comment. DayZDiag defines DIAG_DEVELOPER on server and client (the dayz-mcp v1.4 release game, DayZDiag 1.30.164078, 2026-10-17, logged its DIAG_DEVELOPER-only plugin on both), and that game ran this file without a crash, so the segfault that pitfalls-advanced.md:66 describes did not happen here. The rule stays live for mods until that claim is measured again (A2).",
+      "note": "Accepted: the '#ifdef DIAG_DEVELOPER' block at environment.c:1-3 holds only a comment. DayZDiag defines DIAG_DEVELOPER on server and client (the dayz-mcp v1.4 release game, DayZDiag 1.30.164078, 2026-10-17, logged its DIAG_DEVELOPER-only plugin on both), and that game ran this file without a crash, so the segfault that pitfalls-advanced.md:66 describes did not happen here. The rule stays live for mods until that claim is measured again (pipeline inbox dada).",
       "rule_id": "ES-EMPTY-IFDEF"
     },
     {

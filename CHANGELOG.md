@@ -201,7 +201,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164078 stable. Its
   baseline came from 1.29.0.163451, and on 1.30 the control failed on the tree's digest and on 13
-  errors in four files that the game compiles, none of them present in 1.29. Ten are
+  errors in four files that the game compiles, all of them at code that 1.29 does not have. Ten are
   `ES-SYNCVAR-CONTRACT` on `building.c` (see Fixed). The other three are allowed by name, each with
   its reason: `INPUT-ENCODING-ERROR` on `3_game/global/world.c`, whose only byte that is not UTF-8
   is a cp1252 0x99 (™) in a block comment at line 127, and `ES-EMPTY-IFDEF` on
@@ -236,12 +236,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-- `dayz-script-validator`: `ES-SYNCVAR-CONTRACT` accepts SyncVars registered in
+- `dayz-script-validator`: `ES-SYNCVAR-CONTRACT` accepts SyncVars registered in an override of
   `RegisterConstructionSyncVariables()`. In DayZ 1.30 the `EntityAI` constructor calls
-  `ConstructionInit()` (`3_game/entities/entityai.c:249`), which calls that hook (`:3469`), and
-  `BuildingBase` registers its ten construction parts in its override
+  `ConstructionInit()` when the type's `CfgVehicles` entry has a `Construction` class
+  (`3_game/entities/entityai.c:248-249`), which calls that hook (`:3469`), and `BuildingBase`
+  registers the ten `m_SyncParts` ints of its construction component in its override
   (`4_world/entities/game/super/building.c:29-44`): the vanilla control on 1.30.164078 got ten
-  false FAILs there, "called outside constructor". 247 unit tests pass (246 before).
+  false FAILs there, "called outside constructor". A method of that name declared without
+  `override` still fails: 1.29 has no such hook, so there it is a helper that runs when the mod
+  calls it, as from `EEInit()` in the case the Codex review of #117 built. 248 unit tests pass
+  (246 before).
 - `dayz-test-ingame`: SP-095 point 1 told the reader to start a missing Steam with
   `steam.exe -silent`, and the Steam prerequisite to restart it, without saying where from. From a
   shell inside the Claude or Codex app that Steam registers only in the app's private registry

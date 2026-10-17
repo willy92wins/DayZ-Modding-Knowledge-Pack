@@ -832,6 +832,17 @@ class TestEsSyncvarContract(unittest.TestCase):
             "bad_syncvar_register_outside_ctor.c", 6, expected_message
         )
 
+    def test_syncvar_register_construction_helper_fails(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_helper.c line 12: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_helper.c", 12, expected_message
+        )
+
     def test_syncvar_write_without_dirty_fails(self):
         expected_message = (
             "[FAIL] bad_syncvar_write_no_dirty.c line 12: SyncVar 'm_X' "
@@ -1328,7 +1339,7 @@ class TestFullCorpus(unittest.TestCase):
 
         self.assertEqual(1, exit_code)
         self.assertEqual("FAIL", result["status"])
-        self.assertEqual(104, result["info"]["files_scanned"])
+        self.assertEqual(105, result["info"]["files_scanned"])
         assert_standard_findings(self, result)
 
         observed_errors = {
@@ -1359,6 +1370,10 @@ class TestFullCorpus(unittest.TestCase):
             ),
             ("ES-SYNCVAR-CONTRACT", "bad_syncvar_dirty_in_other_method.c"),
             ("ES-SYNCVAR-CONTRACT", "bad_syncvar_register_outside_ctor.c"),
+            (
+                "ES-SYNCVAR-CONTRACT",
+                "bad_syncvar_register_construction_helper.c",
+            ),
             ("ES-SYNCVAR-CONTRACT", "bad_syncvar_write_no_dirty.c"),
             ("ES-LOCAL-VAR-REDECLARE", "bad_local_var_redeclare_sibling.c"),
             ("ES-LOCAL-VAR-REDECLARE", "bad_local_var_redeclare_nested_for.c"),

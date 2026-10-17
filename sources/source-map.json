@@ -1244,9 +1244,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files that are new in 1.30. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its construction parts in RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit (3_game/entities/entityai.c:249, :3469); the rule now accepts that method. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS. python3 -m unittest discover -s tests: 247 passed (246 before). CHANGELOG: entries under Changed (the re-baseline) and Fixed (ES-SYNCVAR-CONTRACT). Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
+          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files, all at code that 1.29 does not have. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its m_SyncParts ints in its override of RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit for a type whose CfgVehicles entry has a Construction class (3_game/entities/entityai.c:248-249, :3469); the rule now accepts that method when it is declared with override. A method of that name without override still fails: the Codex review of PR #117 at 325ba70 (RED, reviews/pack117-codex-sol.md) built a 1.29 mod whose own helper of that name, called from EEInit, passed with the first version of this change, which accepted the name alone. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash; pipeline inbox dada) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS, and PASS again with the final rule. python3 -m unittest discover -s tests: 248 passed (246 before). CHANGELOG: entries under Changed (the re-baseline) and Fixed (ES-SYNCVAR-CONTRACT). Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
           "license": "MIT",
-          "source_hash": "7ce312b53cde113fef62997d5273aecbdb5b80789eabeaf8e657a87aab94a80c",
+          "source_hash": "97f7d2eafcb197ed2a2139cc9162f4ce94ad863bbd0ad4a39ac5d1366abae4f1",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-818e@2026-10-17",
@@ -1254,7 +1254,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7ce312b53cde113fef62997d5273aecbdb5b80789eabeaf8e657a87aab94a80c",
+      "output_hash": "97f7d2eafcb197ed2a2139cc9162f4ce94ad863bbd0ad4a39ac5d1366abae4f1",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -1432,7 +1432,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files that are new in 1.30. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its construction parts in RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit (3_game/entities/entityai.c:249, :3469); the rule now accepts that method. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS. python3 -m unittest discover -s tests: 247 passed (246 before). GETTING-STARTED.md: the control's run time, 85 s on 1.29, is now about two and a half minutes (130 to 149 s measured on the owner's PC). Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
+          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files, all at code that 1.29 does not have. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its m_SyncParts ints in its override of RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit for a type whose CfgVehicles entry has a Construction class (3_game/entities/entityai.c:248-249, :3469); the rule now accepts that method when it is declared with override. A method of that name without override still fails: the Codex review of PR #117 at 325ba70 (RED, reviews/pack117-codex-sol.md) built a 1.29 mod whose own helper of that name, called from EEInit, passed with the first version of this change, which accepted the name alone. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash; pipeline inbox dada) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS, and PASS again with the final rule. python3 -m unittest discover -s tests: 248 passed (246 before). GETTING-STARTED.md: the control's run time, 85 s on 1.29, is now about two and a half minutes (130 to 149 s measured on the owner's PC). Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
           "license": "MIT",
           "source_hash": "e1dcdee92623efe87a590636f5b933ba455e666807898a90586f52efdc46d126",
           "source_id": "pack-r21-authored",
@@ -21147,7 +21147,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files that are new in 1.30. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its construction parts in RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit (3_game/entities/entityai.c:249, :3469); the rule now accepts that method. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS. python3 -m unittest discover -s tests: 247 passed (246 before). README: the control's run time, 85 s on 1.29, is now 130 to 150 s (130 to 149 s measured on the owner's PC). Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
+          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files, all at code that 1.29 does not have. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its m_SyncParts ints in its override of RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit for a type whose CfgVehicles entry has a Construction class (3_game/entities/entityai.c:248-249, :3469); the rule now accepts that method when it is declared with override. A method of that name without override still fails: the Codex review of PR #117 at 325ba70 (RED, reviews/pack117-codex-sol.md) built a 1.29 mod whose own helper of that name, called from EEInit, passed with the first version of this change, which accepted the name alone. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash; pipeline inbox dada) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS, and PASS again with the final rule. python3 -m unittest discover -s tests: 248 passed (246 before). README: the control's run time, 85 s on 1.29, is now 130 to 150 s (130 to 149 s measured on the owner's PC). Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
           "license": "MIT",
           "source_hash": "6f345f384f1250b41b17ac41d3bf36467f040504fcaf0ea53e2c65cbff724308",
           "source_id": "pack-r21-authored",
@@ -21817,9 +21817,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files that are new in 1.30. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its construction parts in RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit (3_game/entities/entityai.c:249, :3469); the rule now accepts that method. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS. python3 -m unittest discover -s tests: 247 passed (246 before). es_syncvar.py: method_is_syncvar_registration_target accepts RegisterConstructionSyncVariables, with the 1.30 call chain in a comment. Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
+          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files, all at code that 1.29 does not have. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its m_SyncParts ints in its override of RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit for a type whose CfgVehicles entry has a Construction class (3_game/entities/entityai.c:248-249, :3469); the rule now accepts that method when it is declared with override. A method of that name without override still fails: the Codex review of PR #117 at 325ba70 (RED, reviews/pack117-codex-sol.md) built a 1.29 mod whose own helper of that name, called from EEInit, passed with the first version of this change, which accepted the name alone. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash; pipeline inbox dada) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS, and PASS again with the final rule. python3 -m unittest discover -s tests: 248 passed (246 before). es_syncvar.py: method_is_syncvar_registration_target takes the file's lines and accepts RegisterConstructionSyncVariables only on a declaration that carries override, with the 1.30 call chain in a comment. Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
           "license": "MIT",
-          "source_hash": "3ee883c79ec8d3a63cd1c106453a5d2fbda0b503ffb48628455d71b2157f7cbb",
+          "source_hash": "d3b41fc8f8f36fb21d1494dfb71643320b71411490c078f2e44b00f276ba2fd9",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_syncvar.py",
           "source_revision": "kp-update-818e@2026-10-17",
@@ -21827,7 +21827,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3ee883c79ec8d3a63cd1c106453a5d2fbda0b503ffb48628455d71b2157f7cbb",
+      "output_hash": "d3b41fc8f8f36fb21d1494dfb71643320b71411490c078f2e44b00f276ba2fd9",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_syncvar.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22245,9 +22245,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files that are new in 1.30. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its construction parts in RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit (3_game/entities/entityai.c:249, :3469); the rule now accepts that method. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS. python3 -m unittest discover -s tests: 247 passed (246 before). Baseline: tree.dayz_build names the measured build (1.30.0.164078); the source map keeps 1.29.0.163451. Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
+          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files, all at code that 1.29 does not have. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its m_SyncParts ints in its override of RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit for a type whose CfgVehicles entry has a Construction class (3_game/entities/entityai.c:248-249, :3469); the rule now accepts that method when it is declared with override. A method of that name without override still fails: the Codex review of PR #117 at 325ba70 (RED, reviews/pack117-codex-sol.md) built a 1.29 mod whose own helper of that name, called from EEInit, passed with the first version of this change, which accepted the name alone. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash; pipeline inbox dada) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS, and PASS again with the final rule. python3 -m unittest discover -s tests: 248 passed (246 before). Baseline: tree.dayz_build names the measured build (1.30.0.164078); the source map keeps 1.29.0.163451. Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
           "license": "MIT",
-          "source_hash": "3f1c9ac7e44d3a944ec2f12640b26d85f9d98188b4d6194fc8a3d263ef6f84cb",
+          "source_hash": "def2f33e0f81db67867720107359ace189e1b4d360a411314e458f256172d2be",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
           "source_revision": "kp-update-818e@2026-10-17",
@@ -22255,7 +22255,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3f1c9ac7e44d3a944ec2f12640b26d85f9d98188b4d6194fc8a3d263ef6f84cb",
+      "output_hash": "def2f33e0f81db67867720107359ace189e1b4d360a411314e458f256172d2be",
       "output_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25801,9 +25801,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files that are new in 1.30. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its construction parts in RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit (3_game/entities/entityai.c:249, :3469); the rule now accepts that method. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS. python3 -m unittest discover -s tests: 247 passed (246 before). Tests: a new pass fixture for RegisterConstructionSyncVariables, and the consolidated corpus test counts 104 files (103 before). Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
+          "decision_evidence": "kp-update 2026-10-17: vanilla control re-baselined on DayZ 1.30.164078 stable (pipeline inbox 818e). On 1.30 the control failed on the tree's digest and on 13 errors in four files, all at code that 1.29 does not have. ES-SYNCVAR-CONTRACT x10 on 4_world/entities/game/super/building.c:35-44: BuildingBase registers its m_SyncParts ints in its override of RegisterConstructionSyncVariables, which the EntityAI constructor reaches through ConstructionInit for a type whose CfgVehicles entry has a Construction class (3_game/entities/entityai.c:248-249, :3469); the rule now accepts that method when it is declared with override. A method of that name without override still fails: the Codex review of PR #117 at 325ba70 (RED, reviews/pack117-codex-sol.md) built a 1.29 mod whose own helper of that name, called from EEInit, passed with the first version of this change, which accepted the name alone. INPUT-ENCODING-ERROR on 3_game/global/world.c (one cp1252 byte, 0x99, in a block comment at line 127) and ES-EMPTY-IFDEF on 4_world/classes/environment/environment.c:1-3 (DIAG_DEVELOPER, which the dayz-mcp v1.4 release game defined on both peers without a crash; pipeline inbox dada) and 4_world/classes/bunkerbroadcasthandler.c:338-340 (ENABLE_LOGGING, not measured) are allowed by name with their reasons; the input.c note cited line 266 for the declaration at 272. vanilla_control.py --update and the check after it on P:\\scripts: 15 errors and 424 warnings over 3043 files, digest 43ef5a13, the same in both runs, PASS, and PASS again with the final rule. python3 -m unittest discover -s tests: 248 passed (246 before). Tests: a pass fixture for an override of RegisterConstructionSyncVariables and a fail fixture for a helper of that name called from EEInit; the consolidated corpus test counts 105 files (103 before). Planned by Claude (Anthropic) and applied by Grok CLI; the baseline notes are Claude's triage.",
           "license": "MIT",
-          "source_hash": "d9b6ad8d97b9d66c292368fecccf48fb1480a50ac2a3ab40b64840f43d1b5428",
+          "source_hash": "00f0c563c874fc2b75b9255cea08f0b8ce7a5a6b573393d186004f032f987f3f",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-818e@2026-10-17",
@@ -25811,7 +25811,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d9b6ad8d97b9d66c292368fecccf48fb1480a50ac2a3ab40b64840f43d1b5428",
+      "output_hash": "00f0c563c874fc2b75b9255cea08f0b8ce7a5a6b573393d186004f032f987f3f",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34674,6 +34674,28 @@
       "license": "MIT",
       "output_hash": "715ae3b9dd5e2e155e51571a07ed616dc7dc54ee9979ff822f180f9850e63fa6",
       "output_path": "tools/dayz-script-validator/tests/fixtures/es/ok_syncvar_register_construction_sync_variables.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/es/bad_syncvar_register_construction_helper.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-17 (pipeline inbox 818e, Codex review of PR #117). Fail fixture for ES-SYNCVAR-CONTRACT: a method named RegisterConstructionSyncVariables declared without override, a helper called from EEInit, the 1.29 case that the review built; written for the pack, no vanilla code copied. It passes with the detector of 325ba70, which accepted the name alone, and fails with this change. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "4508e5a820bffc440a2c11e557366448c9588c7a2e704cc1b2fcad79c8c53b61",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/es/bad_syncvar_register_construction_helper.c",
+          "source_revision": "kp-update-818e@2026-10-17",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4508e5a820bffc440a2c11e557366448c9588c7a2e704cc1b2fcad79c8c53b61",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/es/bad_syncvar_register_construction_helper.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

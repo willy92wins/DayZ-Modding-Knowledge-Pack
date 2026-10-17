@@ -239,19 +239,23 @@ def find_es_syncvar_classes(stripped_source, registers, rel_path):
     return classes, warnings
 
 
-def method_is_syncvar_registration_target(method, class_name):
+def method_is_syncvar_registration_target(method, class_name, lines):
     if method is None:
         return False
+    if method["name"] == "RegisterConstructionSyncVariables":
+        # DayZ 1.30: EntityAI() calls ConstructionInit() when the type's
+        # CfgVehicles entry has a Construction class
+        # (3_game/entities/entityai.c:248-249), which calls this hook (:3469);
+        # BuildingBase registers its m_SyncParts ints in its override
+        # (4_world/entities/game/super/building.c:29-44). Only an override is
+        # that hook: 1.29 has none, so there a method of this name is a helper
+        # that runs whenever the mod calls it.
+        return "override" in lines[method["start_line"] - 1].split("(")[0].split()
     return method["name"] in (
         class_name,
         "Init",
         "InitItemSounds",
         "InitItemVariables",
-        # DayZ 1.30: EntityAI() calls ConstructionInit()
-        # (3_game/entities/entityai.c:249), which calls this hook (:3469);
-        # BuildingBase registers its construction parts in its override
-        # (4_world/entities/game/super/building.c:29-44).
-        "RegisterConstructionSyncVariables",
     )
 
 
@@ -330,7 +334,9 @@ def check_es_syncvar_contract(source, stripped_source, rel_path):
 
         for register in class_registers:
             method = find_method_for_line(class_methods, register["line"])
-            if method_is_syncvar_registration_target(method, class_info["class"]):
+            if method_is_syncvar_registration_target(
+                method, class_info["class"], lines
+            ):
                 continue
             errors.append(
                 build_es_syncvar_error(
