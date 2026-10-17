@@ -123,8 +123,10 @@ were not measured again.
   Positions are those of `ES-RESERVED-WORD-IDENTIFIER`;
   code that never compiles is not judged, and a type the addon or an external
   root declares only there is no type. Nor is a name judged against a type its
-  own file declares only in another branch of the same `#ifdef` block: the two
-  never compile together. Without a vanilla tree the addon's
+  own file declares only in another branch of the same `#ifdef` block, or only
+  under the opposite test of a macro the file never `#define`s or `#undef`s
+  (`#ifdef X` type, a later `#ifndef X` name): the two never compile together.
+  Without a vanilla tree the addon's
   and the external roots' types are still judged, and the vanilla part is
   listed as SKIP in `info.skipped_checks` and in `--terse`.
 - `ES-CAST-UNRELATED-TYPES` (FAIL): `X.Cast(y)` where neither X nor the

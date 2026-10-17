@@ -2774,7 +2774,8 @@ class TestVariableNamedAsType(unittest.TestCase):
         # Vanilla control 2026-10-13: commas between template arguments and a
         # typedef's own name were read as declarators (104 findings on 1.29,
         # 109 on 1.30), e.g. `Param3<bool, vector, int> x` and
-        # `typedef map<string,ref array<string>> DamageZoneMap;`.
+        # `typedef map<string,ref array<string>> DamageZoneMap;`. Second Codex
+        # review of #113 (J1): again with a space or a tab before the `<`.
         source = (
             "typedef map<string, ref array<Debug>> FX_OwnMap;\n"
             "class C\n{\n"
@@ -2782,6 +2783,8 @@ class TestVariableNamedAsType(unittest.TestCase):
             "    void F(Param2<int, Debug> p, int Debug)\n    {\n"
             "        float r = Param2<float, Debug>.Cast(p).param1;\n"
             "        auto q = new Param3<int, Debug, int>(0, null, 0);\n"
+            "        auto s = new Param3 <int, Debug, int>(0, null, 0);\n"
+            "        auto t = new Param3\t<int, Debug, int>(0, null, 0);\n"
             "        ref map<int, Debug> m, map;\n"
             "    }\n}\n"
         )
@@ -2790,7 +2793,7 @@ class TestVariableNamedAsType(unittest.TestCase):
         # Still reported: the parameter after a template-typed one, and the
         # later declarator after a template-typed local.
         self.assertEqual(
-            [(5, "Debug"), (9, "map")],
+            [(5, "Debug"), (11, "map")],
             [(e["line"], e["message"].split("'")[1]) for e in errors],
         )
 
@@ -2831,6 +2834,47 @@ class TestVariableNamedAsType(unittest.TestCase):
             [e["line"] for e in _named_errors(
                 other_file, external=external, vanilla=None)[0]],
         )
+
+    def test_opposite_tests_of_one_macro_never_compile_together(self):
+        # Second Codex review of #113 (H1, partial): the type under
+        # `#ifdef FX_ON` and the name under a later `#ifndef FX_ON`, or under
+        # an `#ifndef FX_ON` inside the type's block, failed valid code. An
+        # `#if 0` block inside the type's block does not end it.
+        cases = [
+            "#ifdef FX_ON\nclass FX_Gone\n{\n}\n#endif\n"
+            "#ifndef FX_ON\nclass C\n{\n    int FX_Gone;\n}\n#endif\n",
+            "#ifdef FX_ON\n#if 0\n#endif\nclass FX_Gone\n{\n}\n#endif\n"
+            "#ifndef FX_ON\nclass C\n{\n    int FX_Gone;\n}\n#endif\n",
+            "#ifdef FX_ON\n#else\nclass FX_Gone\n{\n}\n#endif\n"
+            "#ifdef FX_ON\nclass C\n{\n    int FX_Gone;\n}\n#endif\n",
+            "#ifdef FX_ON\nclass FX_Gone\n{\n}\n"
+            "class C\n{\n#ifndef FX_ON\n    int FX_Gone;\n#endif\n}\n#endif\n",
+            "#ifdef FX_ON\n#ifndef FX_ON\nclass FX_Gone\n{\n}\n#endif\n#endif\n"
+            "class C\n{\n    int FX_Gone;\n}\n",
+        ]
+        for source in cases:
+            self.assertEqual([], _named_errors(source, vanilla=None)[0], source)
+        nested = "class C\n{\n#ifdef FX_ON\n#ifndef FX_ON\n    bool Debug;\n#endif\n#endif\n}\n"
+        self.assertEqual([], _named_errors(nested)[0])
+
+        # Still reported: the same test twice, tests of two macros, and a
+        # macro the file #defines or #undefs between the two blocks.
+        reported = [
+            ("#ifdef FX_ON\nclass FX_Opt\n{\n}\n#endif\n"
+             "#ifdef FX_ON\nclass C\n{\n    int FX_Opt;\n}\n#endif\n", [9]),
+            ("#ifdef FX_ON\nclass FX_Opt\n{\n}\n#endif\n"
+             "#ifndef FX_OFF\nclass C\n{\n    int FX_Opt;\n}\n#endif\n", [9]),
+            ("#ifndef FX_ON\nclass FX_Opt\n{\n}\n#endif\n#define FX_ON\n"
+             "#ifdef FX_ON\nclass C\n{\n    int FX_Opt;\n}\n#endif\n", [10]),
+            ("#ifdef FX_ON\nclass FX_Opt\n{\n}\n#endif\n#undef FX_ON\n"
+             "#ifndef FX_ON\nclass C\n{\n    int FX_Opt;\n}\n#endif\n", [10]),
+        ]
+        for source, lines in reported:
+            self.assertEqual(
+                lines,
+                [e["line"] for e in _named_errors(source, vanilla=None)[0]],
+                source,
+            )
 
     def test_a_comparison_hides_no_later_declarator(self):
         # Codex review of #113 (H4): the `<` of a comparison was read as
@@ -3095,11 +3139,18 @@ class TestMethodSignatureCollection(unittest.TestCase):
     Second mods pass of #113, 2026-10-17: it collected a signature at every
     line, and from a "(" that never closes each one ran to the end of the
     file, rebuilding the string at every line. Two recovered volumes (files
-    of up to 20 MB of binary data) still passed 20 minutes. Only a line that
-    can start a signature is collected now, and the string is joined once.
+    of up to 20 MB of binary data) still passed 20 minutes, and method headers
+    split by #ifdef branches took 21 s for 135 KB (second Codex review, J2).
+    Only a line that can start a signature is read now, and each is read up
+    to what METHOD_SIGNATURE_RE needs, from tables built once per file.
     """
 
-    def test_only_a_line_that_can_start_a_signature_is_collected(self):
+    SPLIT = (
+        "class C\n{\n#ifdef X\n    void F(int a,\n#else\n    void F(int a, int b,\n"
+        "#endif\n        int c)\n    {\n    }\n}\n"
+    )
+
+    def test_only_a_line_that_can_start_a_signature_is_read(self):
         from shared import method_recognition
 
         source = "\n".join(
@@ -3113,22 +3164,59 @@ class TestMethodSignatureCollection(unittest.TestCase):
                 "}",
             ]
         )
-        collected = []
-        collect = method_recognition.collect_method_signature
+        read = []
+        collect = method_recognition._Signatures.collect
 
-        def counted(lines, start_index):
-            collected.append(start_index)
-            return collect(lines, start_index)
+        def counted(signatures, start):
+            read.append(start)
+            return collect(signatures, start)
 
-        with mock.patch.object(
-            method_recognition, "collect_method_signature", counted
-        ):
+        with mock.patch.object(method_recognition._Signatures, "collect", counted):
             methods = method_recognition.find_method_regions(source)
 
-        self.assertEqual([3], collected)
+        self.assertEqual([3], read)
         self.assertEqual(
             [("F", "int a, int b", 6)],
             [(m["name"], m["params"], m["brace_line"]) for m in methods],
+        )
+
+    def test_the_reader_gives_what_collect_method_signature_gives(self):
+        from shared import method_recognition as recognition
+
+        sources = (
+            self.SPLIT,
+            "void T((int a)\n{\n}\n",  # the "{" after ")" is on the next line
+            "void K(int a\n{\n}\n",  # no ")" at all
+            "void Q(int a,\n\n int b)\n\n{\n}\n",
+            "void F(int a) { }\n",
+        )
+        groups = ("indent", "return_type", "name", "params", "brace")
+        for source in sources:
+            lines = source.split("\n")
+            signatures = recognition._Signatures(lines)
+            for start, line in enumerate(lines):
+                if not recognition.may_start_method_signature(line):
+                    continue
+                with self.subTest(source=source, start=start):
+                    full, end = recognition.collect_method_signature(lines, start)
+                    read, read_end = signatures.collect(start)
+                    self.assertEqual(end, read_end)
+                    whole = recognition.METHOD_SIGNATURE_RE.match(full)
+                    cut = recognition.METHOD_SIGNATURE_RE.match(read)
+                    self.assertEqual(
+                        whole and [whole.group(g) for g in groups],
+                        cut and [cut.group(g) for g in groups],
+                    )
+
+    def test_a_header_that_never_closes_is_not_read_to_the_end(self):
+        from shared import method_recognition
+
+        lines = (self.SPLIT * 200).split("\n")
+        signature, end = method_recognition._Signatures(lines).collect(3)
+
+        self.assertEqual(len(lines) - 1, end)
+        self.assertEqual(
+            "    void F(int a, #else void F(int a, int b, #endif int c) {", signature
         )
 
 

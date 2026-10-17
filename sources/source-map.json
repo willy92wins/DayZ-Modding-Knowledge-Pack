@@ -1201,10 +1201,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-mods-pass2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fixes for the second Codex review of PR #113 at 894e58b (RED; run on the owner's PC, reviews/pr113-codex-sol-r2.md). H1, partial (P1): ES-VARIABLE-NAMED-AS-TYPE failed a name under `#ifndef X` against a type its own file declares under another block's `#ifdef X`, and a name under an `#ifndef X` nested in the type's `#ifdef X`. shared/dead_branches.py gains line_tests() and tests_agree(): the (macro, defined) states each line compiles under, for the macros the file never #defines or #undefs. A type and a name of one file whose states disagree never compile together, and a type or name line whose own states disagree never compiles. J1 (P1, a regression of the H4 fix): `new Param3 <int, Object, int>(...)` failed on Object, because _template_end needed a name right before the `<`; the rule now allows spaces and tabs there (_template_end(spaced=True)); ES-UNDEFINED-CLASS-REF calls it as before. J2 (P2, preexisting): find_method_regions read a signature again from each line, and method headers that a directive splits took about 21 s for 135 KB on the owner's PC. A _Signatures reader builds the parenthesis depth before each line and the next lines with a \")\" and with text once per file, and joins a signature only up to the line of the first non-space character after its first \")\", which fixes every group of METHOD_SIGNATURE_RE. Measured: python3 -m unittest discover tests, 242 passed (239 before); 12 mutants of the H1 and J1 fixes and 7 of the reader, each turned a test red. main's helper against the new one on 200 000 random files (4 seeds of 50 000): the same regions, and at each of 1.42 million lines that pass the pre-check the reader gave the same end index and the same match groups as the whole signature. On one machine, main's helper and the new one: 135 KB of split headers 14.98 s and 0.02 s; 3000 declarations without their \")\" 15.85 s and 0.02 s; 20 MB of random bytes 0.40 s now. The validator's report on the DayZ-MCP addon and on the 44 fixture addons is the same as at 2fb02bf, elapsed time aside. Pending: the two recovered volumes, the mods pass and the vanilla control at this head on the owner's PC, and a third Codex review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a7710cefcefaaddcb9881f355abac028698c0ccdf115f389c3064f4001bac75b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-codex-r2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ed3e2c28a4ec6658bcec21059a88b3362a0ff24cb087ca5bd5a9d3efabd4473c",
+      "output_hash": "a7710cefcefaaddcb9881f355abac028698c0ccdf115f389c3064f4001bac75b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17769,10 +17779,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-mods-pass-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fixes for the second Codex review of PR #113 at 894e58b (RED; run on the owner's PC, reviews/pr113-codex-sol-r2.md). H1, partial (P1): ES-VARIABLE-NAMED-AS-TYPE failed a name under `#ifndef X` against a type its own file declares under another block's `#ifdef X`, and a name under an `#ifndef X` nested in the type's `#ifdef X`. shared/dead_branches.py gains line_tests() and tests_agree(): the (macro, defined) states each line compiles under, for the macros the file never #defines or #undefs. A type and a name of one file whose states disagree never compile together, and a type or name line whose own states disagree never compiles. J1 (P1, a regression of the H4 fix): `new Param3 <int, Object, int>(...)` failed on Object, because _template_end needed a name right before the `<`; the rule now allows spaces and tabs there (_template_end(spaced=True)); ES-UNDEFINED-CLASS-REF calls it as before. J2 (P2, preexisting): find_method_regions read a signature again from each line, and method headers that a directive splits took about 21 s for 135 KB on the owner's PC. A _Signatures reader builds the parenthesis depth before each line and the next lines with a \")\" and with text once per file, and joins a signature only up to the line of the first non-space character after its first \")\", which fixes every group of METHOD_SIGNATURE_RE. Measured: python3 -m unittest discover tests, 242 passed (239 before); 12 mutants of the H1 and J1 fixes and 7 of the reader, each turned a test red. main's helper against the new one on 200 000 random files (4 seeds of 50 000): the same regions, and at each of 1.42 million lines that pass the pre-check the reader gave the same end index and the same match groups as the whole signature. On one machine, main's helper and the new one: 135 KB of split headers 14.98 s and 0.02 s; 3000 declarations without their \")\" 15.85 s and 0.02 s; 20 MB of random bytes 0.40 s now. The validator's report on the DayZ-MCP addon and on the 44 fixture addons is the same as at 2fb02bf, elapsed time aside. Pending: the two recovered volumes, the mods pass and the vanilla control at this head on the owner's PC, and a third Codex review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c9c96e0c2c10b37f6b62d6c8caf8ce36576a571cd499d41743254677381f8153",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-codex-r2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7ed5af5a9f81e43f9cd2b9a49d3c653b46ebe5b51e9afcda248460674f4d4519",
+      "output_hash": "c9c96e0c2c10b37f6b62d6c8caf8ce36576a571cd499d41743254677381f8153",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -21064,10 +21084,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-mods-pass-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fixes for the second Codex review of PR #113 at 894e58b (RED; run on the owner's PC, reviews/pr113-codex-sol-r2.md). H1, partial (P1): ES-VARIABLE-NAMED-AS-TYPE failed a name under `#ifndef X` against a type its own file declares under another block's `#ifdef X`, and a name under an `#ifndef X` nested in the type's `#ifdef X`. shared/dead_branches.py gains line_tests() and tests_agree(): the (macro, defined) states each line compiles under, for the macros the file never #defines or #undefs. A type and a name of one file whose states disagree never compile together, and a type or name line whose own states disagree never compiles. J1 (P1, a regression of the H4 fix): `new Param3 <int, Object, int>(...)` failed on Object, because _template_end needed a name right before the `<`; the rule now allows spaces and tabs there (_template_end(spaced=True)); ES-UNDEFINED-CLASS-REF calls it as before. J2 (P2, preexisting): find_method_regions read a signature again from each line, and method headers that a directive splits took about 21 s for 135 KB on the owner's PC. A _Signatures reader builds the parenthesis depth before each line and the next lines with a \")\" and with text once per file, and joins a signature only up to the line of the first non-space character after its first \")\", which fixes every group of METHOD_SIGNATURE_RE. Measured: python3 -m unittest discover tests, 242 passed (239 before); 12 mutants of the H1 and J1 fixes and 7 of the reader, each turned a test red. main's helper against the new one on 200 000 random files (4 seeds of 50 000): the same regions, and at each of 1.42 million lines that pass the pre-check the reader gave the same end index and the same match groups as the whole signature. On one machine, main's helper and the new one: 135 KB of split headers 14.98 s and 0.02 s; 3000 declarations without their \")\" 15.85 s and 0.02 s; 20 MB of random bytes 0.40 s now. The validator's report on the DayZ-MCP addon and on the 44 fixture addons is the same as at 2fb02bf, elapsed time aside. Pending: the two recovered volumes, the mods pass and the vanilla control at this head on the owner's PC, and a third Codex review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ebb77b45711f08494090f399711500b3802100b444f7a81f02f5dcabba741c2c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-codex-r2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "87e858800fb4d16dd941a9d0ee980b6a22265e0b834e1b34d19cfc638870fc48",
+      "output_hash": "ebb77b45711f08494090f399711500b3802100b444f7a81f02f5dcabba741c2c",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22012,10 +22042,20 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/method_recognition.py",
           "source_revision": "kp-update-mods-pass2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fixes for the second Codex review of PR #113 at 894e58b (RED; run on the owner's PC, reviews/pr113-codex-sol-r2.md). H1, partial (P1): ES-VARIABLE-NAMED-AS-TYPE failed a name under `#ifndef X` against a type its own file declares under another block's `#ifdef X`, and a name under an `#ifndef X` nested in the type's `#ifdef X`. shared/dead_branches.py gains line_tests() and tests_agree(): the (macro, defined) states each line compiles under, for the macros the file never #defines or #undefs. A type and a name of one file whose states disagree never compile together, and a type or name line whose own states disagree never compiles. J1 (P1, a regression of the H4 fix): `new Param3 <int, Object, int>(...)` failed on Object, because _template_end needed a name right before the `<`; the rule now allows spaces and tabs there (_template_end(spaced=True)); ES-UNDEFINED-CLASS-REF calls it as before. J2 (P2, preexisting): find_method_regions read a signature again from each line, and method headers that a directive splits took about 21 s for 135 KB on the owner's PC. A _Signatures reader builds the parenthesis depth before each line and the next lines with a \")\" and with text once per file, and joins a signature only up to the line of the first non-space character after its first \")\", which fixes every group of METHOD_SIGNATURE_RE. Measured: python3 -m unittest discover tests, 242 passed (239 before); 12 mutants of the H1 and J1 fixes and 7 of the reader, each turned a test red. main's helper against the new one on 200 000 random files (4 seeds of 50 000): the same regions, and at each of 1.42 million lines that pass the pre-check the reader gave the same end index and the same match groups as the whole signature. On one machine, main's helper and the new one: 135 KB of split headers 14.98 s and 0.02 s; 3000 declarations without their \")\" 15.85 s and 0.02 s; 20 MB of random bytes 0.40 s now. The validator's report on the DayZ-MCP addon and on the 44 fixture addons is the same as at 2fb02bf, elapsed time aside. Pending: the two recovered volumes, the mods pass and the vanilla control at this head on the owner's PC, and a third Codex review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c571970b331466e36fadf79fb490f5bbdbde85edcf5b5bd8fc4a7b26da9b9af3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/method_recognition.py",
+          "source_revision": "kp-update-codex-r2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7c7e1fa39aba48b4425351d8edcf62c577dccd5dc516c637602aabb84370153e",
+      "output_hash": "c571970b331466e36fadf79fb490f5bbdbde85edcf5b5bd8fc4a7b26da9b9af3",
       "output_path": "tools/dayz-script-validator/scripts/shared/method_recognition.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25628,10 +25668,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-mods-pass2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fixes for the second Codex review of PR #113 at 894e58b (RED; run on the owner's PC, reviews/pr113-codex-sol-r2.md). H1, partial (P1): ES-VARIABLE-NAMED-AS-TYPE failed a name under `#ifndef X` against a type its own file declares under another block's `#ifdef X`, and a name under an `#ifndef X` nested in the type's `#ifdef X`. shared/dead_branches.py gains line_tests() and tests_agree(): the (macro, defined) states each line compiles under, for the macros the file never #defines or #undefs. A type and a name of one file whose states disagree never compile together, and a type or name line whose own states disagree never compiles. J1 (P1, a regression of the H4 fix): `new Param3 <int, Object, int>(...)` failed on Object, because _template_end needed a name right before the `<`; the rule now allows spaces and tabs there (_template_end(spaced=True)); ES-UNDEFINED-CLASS-REF calls it as before. J2 (P2, preexisting): find_method_regions read a signature again from each line, and method headers that a directive splits took about 21 s for 135 KB on the owner's PC. A _Signatures reader builds the parenthesis depth before each line and the next lines with a \")\" and with text once per file, and joins a signature only up to the line of the first non-space character after its first \")\", which fixes every group of METHOD_SIGNATURE_RE. Measured: python3 -m unittest discover tests, 242 passed (239 before); 12 mutants of the H1 and J1 fixes and 7 of the reader, each turned a test red. main's helper against the new one on 200 000 random files (4 seeds of 50 000): the same regions, and at each of 1.42 million lines that pass the pre-check the reader gave the same end index and the same match groups as the whole signature. On one machine, main's helper and the new one: 135 KB of split headers 14.98 s and 0.02 s; 3000 declarations without their \")\" 15.85 s and 0.02 s; 20 MB of random bytes 0.40 s now. The validator's report on the DayZ-MCP addon and on the 44 fixture addons is the same as at 2fb02bf, elapsed time aside. Pending: the two recovered volumes, the mods pass and the vanilla control at this head on the owner's PC, and a third Codex review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a56e915445ae1c16229c45ca0267ba0533636796ceddba62ef6bb9e20e351cd1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-codex-r2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d5ebbedc10b1b6bf623135334769c4bc73df82af1560af29731cf305aa6e8f5c",
+      "output_hash": "a56e915445ae1c16229c45ca0267ba0533636796ceddba62ef6bb9e20e351cd1",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -30605,10 +30655,20 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/dead_branches.py",
           "source_revision": "kp-update-val-compile-errors@2026-10-04",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fixes for the second Codex review of PR #113 at 894e58b (RED; run on the owner's PC, reviews/pr113-codex-sol-r2.md). H1, partial (P1): ES-VARIABLE-NAMED-AS-TYPE failed a name under `#ifndef X` against a type its own file declares under another block's `#ifdef X`, and a name under an `#ifndef X` nested in the type's `#ifdef X`. shared/dead_branches.py gains line_tests() and tests_agree(): the (macro, defined) states each line compiles under, for the macros the file never #defines or #undefs. A type and a name of one file whose states disagree never compile together, and a type or name line whose own states disagree never compiles. J1 (P1, a regression of the H4 fix): `new Param3 <int, Object, int>(...)` failed on Object, because _template_end needed a name right before the `<`; the rule now allows spaces and tabs there (_template_end(spaced=True)); ES-UNDEFINED-CLASS-REF calls it as before. J2 (P2, preexisting): find_method_regions read a signature again from each line, and method headers that a directive splits took about 21 s for 135 KB on the owner's PC. A _Signatures reader builds the parenthesis depth before each line and the next lines with a \")\" and with text once per file, and joins a signature only up to the line of the first non-space character after its first \")\", which fixes every group of METHOD_SIGNATURE_RE. Measured: python3 -m unittest discover tests, 242 passed (239 before); 12 mutants of the H1 and J1 fixes and 7 of the reader, each turned a test red. main's helper against the new one on 200 000 random files (4 seeds of 50 000): the same regions, and at each of 1.42 million lines that pass the pre-check the reader gave the same end index and the same match groups as the whole signature. On one machine, main's helper and the new one: 135 KB of split headers 14.98 s and 0.02 s; 3000 declarations without their \")\" 15.85 s and 0.02 s; 20 MB of random bytes 0.40 s now. The validator's report on the DayZ-MCP addon and on the 44 fixture addons is the same as at 2fb02bf, elapsed time aside. Pending: the two recovered volumes, the mods pass and the vanilla control at this head on the owner's PC, and a third Codex review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4d3944b3bf237578cfcb38fee677785ff14ea382ab0f6486304caf3649d70d77",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/dead_branches.py",
+          "source_revision": "kp-update-codex-r2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "eb60b78c7e9f396723fe2f146757e4aa02a679d1559e7298386b5d4470566514",
+      "output_hash": "4d3944b3bf237578cfcb38fee677785ff14ea382ab0f6486304caf3649d70d77",
       "output_path": "tools/dayz-script-validator/scripts/shared/dead_branches.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -31023,10 +31083,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fixes for the second Codex review of PR #113 at 894e58b (RED; run on the owner's PC, reviews/pr113-codex-sol-r2.md). H1, partial (P1): ES-VARIABLE-NAMED-AS-TYPE failed a name under `#ifndef X` against a type its own file declares under another block's `#ifdef X`, and a name under an `#ifndef X` nested in the type's `#ifdef X`. shared/dead_branches.py gains line_tests() and tests_agree(): the (macro, defined) states each line compiles under, for the macros the file never #defines or #undefs. A type and a name of one file whose states disagree never compile together, and a type or name line whose own states disagree never compiles. J1 (P1, a regression of the H4 fix): `new Param3 <int, Object, int>(...)` failed on Object, because _template_end needed a name right before the `<`; the rule now allows spaces and tabs there (_template_end(spaced=True)); ES-UNDEFINED-CLASS-REF calls it as before. J2 (P2, preexisting): find_method_regions read a signature again from each line, and method headers that a directive splits took about 21 s for 135 KB on the owner's PC. A _Signatures reader builds the parenthesis depth before each line and the next lines with a \")\" and with text once per file, and joins a signature only up to the line of the first non-space character after its first \")\", which fixes every group of METHOD_SIGNATURE_RE. Measured: python3 -m unittest discover tests, 242 passed (239 before); 12 mutants of the H1 and J1 fixes and 7 of the reader, each turned a test red. main's helper against the new one on 200 000 random files (4 seeds of 50 000): the same regions, and at each of 1.42 million lines that pass the pre-check the reader gave the same end index and the same match groups as the whole signature. On one machine, main's helper and the new one: 135 KB of split headers 14.98 s and 0.02 s; 3000 declarations without their \")\" 15.85 s and 0.02 s; 20 MB of random bytes 0.40 s now. The validator's report on the DayZ-MCP addon and on the 44 fixture addons is the same as at 2fb02bf, elapsed time aside. Pending: the two recovered volumes, the mods pass and the vanilla control at this head on the owner's PC, and a third Codex review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "36dbf4fffa300a253ec5e5cc9d2f49e854645c77106115d3afa92e9f23cccb4c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
+          "source_revision": "kp-update-codex-r2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "65856d80b4c3fa3cbc05e062327493ded6ca09fa6f1d212a276c024f1365d562",
+      "output_hash": "36dbf4fffa300a253ec5e5cc9d2f49e854645c77106115d3afa92e9f23cccb4c",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33633,10 +33703,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-mods-pass-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fixes for the second Codex review of PR #113 at 894e58b (RED; run on the owner's PC, reviews/pr113-codex-sol-r2.md). H1, partial (P1): ES-VARIABLE-NAMED-AS-TYPE failed a name under `#ifndef X` against a type its own file declares under another block's `#ifdef X`, and a name under an `#ifndef X` nested in the type's `#ifdef X`. shared/dead_branches.py gains line_tests() and tests_agree(): the (macro, defined) states each line compiles under, for the macros the file never #defines or #undefs. A type and a name of one file whose states disagree never compile together, and a type or name line whose own states disagree never compiles. J1 (P1, a regression of the H4 fix): `new Param3 <int, Object, int>(...)` failed on Object, because _template_end needed a name right before the `<`; the rule now allows spaces and tabs there (_template_end(spaced=True)); ES-UNDEFINED-CLASS-REF calls it as before. J2 (P2, preexisting): find_method_regions read a signature again from each line, and method headers that a directive splits took about 21 s for 135 KB on the owner's PC. A _Signatures reader builds the parenthesis depth before each line and the next lines with a \")\" and with text once per file, and joins a signature only up to the line of the first non-space character after its first \")\", which fixes every group of METHOD_SIGNATURE_RE. Measured: python3 -m unittest discover tests, 242 passed (239 before); 12 mutants of the H1 and J1 fixes and 7 of the reader, each turned a test red. main's helper against the new one on 200 000 random files (4 seeds of 50 000): the same regions, and at each of 1.42 million lines that pass the pre-check the reader gave the same end index and the same match groups as the whole signature. On one machine, main's helper and the new one: 135 KB of split headers 14.98 s and 0.02 s; 3000 declarations without their \")\" 15.85 s and 0.02 s; 20 MB of random bytes 0.40 s now. The validator's report on the DayZ-MCP addon and on the 44 fixture addons is the same as at 2fb02bf, elapsed time aside. Pending: the two recovered volumes, the mods pass and the vanilla control at this head on the owner's PC, and a third Codex review. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9f7a284c8d4e2fe1346a78ba60431bfdb341db68488cec0c712b6e5c930785d0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-codex-r2-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7594e62ded6b2d9b47ada8da02c2cebdb89487a199ff1a81dd480bea45932f5c",
+      "output_hash": "9f7a284c8d4e2fe1346a78ba60431bfdb341db68488cec0c712b6e5c930785d0",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

@@ -32,8 +32,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   that they and nine older rules read (`shared/method_recognition.py`) no longer collect a
   signature at a line that cannot start one, and join it once: from a `(` that never closes,
   every line ran to the end of the file, and two recovered volumes of binary data (files up to
-  20 MB) still passed 20 minutes (second pass, same day). The regions are the same as before on
-  200 000 random files compared.
+  20 MB) still passed 20 minutes (second pass, same day). A signature is now read with tables
+  built once per file: 135 KB of method headers that a directive splits (`void F(int a,` /
+  `#else` / ...), the case of the second Codex review of #113, took 15 s and take 0.02 s. The
+  regions are the same as before on 200 000 random files compared.
 - `dayz-script-validator`: `ES-UNDECLARED-STATIC-MEMBER` (FAIL) reports `ClassName.Member` and
   `ClassName.Member(` when no addon declaration of the class or of its ancestors names `Member`:
   a lane deleted `ANIM_SWAP_ENABLED` from its own `LFSK_Constants` while seven call sites still
@@ -67,10 +69,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   listed as SKIP. Commas between template arguments (`Param3<bool, vector, int> x`) and a
   typedef's own name are not declarators: the first vanilla control (2026-10-13) found 104 such
   false findings on 1.29.0.163451 and 109 on 1.30.164014, all of this shape, and none for the
-  other six new rules. After the Codex review of #113, a type declared only where it never
-  compiles, or only in another branch of the name's own `#ifdef` block, is no type for that name,
-  and the `<` of a comparison (`bool first = a < b, Debug = false;`) opens no template. 239 unit
-  tests pass.
+  other six new rules. After the two Codex reviews of #113, a type declared only where it never
+  compiles, or only where the name never compiles with it (in another branch of the name's own
+  `#ifdef` block, or under the opposite test of a macro the file never `#define`s or `#undef`s), is
+  no type for that name; the `<` of a comparison (`bool first = a < b, Debug = false;`) opens no
+  template, and a space before a template's `<` (`new Param3 <int, Object, int>(...)`) does not
+  make its commas separate declarators. 242 unit tests pass.
 - `dayz-script-validator`: two FAIL rules from pipeline tickets of SimpleGroup.
   `ES-UNBALANCED-BRACKETS` reports the first `(`, `[` or `{` never closed or closed by another
   kind, and the first closer with nothing to close: `m_Objects.Clear(;` got PASS

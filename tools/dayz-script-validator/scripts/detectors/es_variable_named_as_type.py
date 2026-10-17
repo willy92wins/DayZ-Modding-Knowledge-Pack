@@ -14,7 +14,13 @@ from detectors.es_undefined_class_ref import (
     _template_end,
     vanilla_definitions,
 )
-from shared.dead_branches import compatible, dead_lines, line_branches
+from shared.dead_branches import (
+    compatible,
+    dead_lines,
+    line_branches,
+    line_tests,
+    tests_agree,
+)
 
 
 ES_VARIABLE_NAMED_AS_TYPE_RULE_ID = "ES-VARIABLE-NAMED-AS-TYPE"
@@ -55,9 +61,11 @@ ES_VARIABLE_NAMED_AS_TYPE_RULE_ID = "ES-VARIABLE-NAMED-AS-TYPE"
 # The name fails wherever it compiles, so code under another mod's #ifdef is
 # judged too; what never compiles (shared/dead_branches.py) is not. A type the
 # addon or an external root declares only where it never compiles is no type,
-# and a name is not judged against a type its own file declares only in
-# another branch of the same block (`#ifdef X` type, `#else` member): the two
-# never compile together. Blocks of different files are not related.
+# and a name is not judged against a type its own file declares only where the
+# name never compiles with it: in another branch of the same block (`#ifdef X`
+# type, `#else` member), or under the opposite test of a macro the file never
+# #defines or #undefs (`#ifdef X` type, a later `#ifndef X` member). Blocks of
+# different files are not related.
 
 # `Type <name>` followed by what can only follow a declared name, as in
 # ES-RESERVED-WORD-IDENTIFIER, with any name.
@@ -147,12 +155,14 @@ def _inside_template_args(stripped, offset):
     separator; vanilla control 2026-10-13 found 104 (1.29) and 109 (1.30)
     such false findings before this check. A `<` opens template arguments
     only as ES-UNDEFINED-CLASS-REF reads them (_template_end), so the
-    comparison in `bool first = a < b, Debug = false;` hides no declarator.
+    comparison in `bool first = a < b, Debug = false;` hides no declarator,
+    with spaces allowed before it: `new Param3 <int, Object, int>(...)`
+    (second Codex review of #113, J1).
     """
     index = max(stripped.rfind(c, 0, offset) for c in ";{}") + 1
     while index < offset:
         if stripped[index] == "<":
-            end = _template_end(stripped, index)
+            end = _template_end(stripped, index, spaced=True)
             if end is not None:
                 if end > offset:
                     return True
@@ -162,21 +172,25 @@ def _inside_template_args(stripped, offset):
 
 
 def _compiled_type_names(stripped):
-    """{type name: [blocks around each declaration]} of the lines that compile.
+    """{type name: [(blocks, tests) of each declaration]} of the lines that compile.
 
-    The blocks are those of shared.dead_branches.line_branches(). Read line by
-    line, so a `class` or `enum` whose name stands on the next line is missed.
+    Blocks and tests are those of shared.dead_branches.line_branches() and
+    line_tests(). Read line by line, so a `class` or `enum` whose name stands
+    on the next line is missed.
     """
     dead = dead_lines(stripped)
     branches = line_branches(stripped)
+    tests = line_tests(stripped)
     declared = {}
     for number, line in enumerate(stripped.split("\n"), start=1):
-        if number in dead or not any(
-            word in line for word in ("class", "enum", "typedef")
+        if (
+            number in dead
+            or not tests_agree(tests[number], tests[number])
+            or not any(word in line for word in ("class", "enum", "typedef"))
         ):
             continue
         for name in declared_type_names(line):
-            declared.setdefault(name, []).append(branches[number])
+            declared.setdefault(name, []).append((branches[number], tests[number]))
     return declared
 
 
@@ -239,8 +253,8 @@ def check_es_variable_named_as_type(
     """
     if not addon_sources:
         return [], []
-    # {name: [(rank, where, addon file, blocks)]}, the addon first so it names
-    # the declaration. File and blocks are None outside the addon.
+    # {name: [(rank, where, addon file, declarations)]}, the addon first so it
+    # names the declaration. File and declarations are None outside the addon.
     types = {}
     for sources, where, own in (
         (addon_sources, "declared in the addon", True),
@@ -248,9 +262,9 @@ def check_es_variable_named_as_type(
     ):
         for rel_path, stripped in sources:
             rank = module_rank(rel_path)
-            for name, blocks in _compiled_type_names(stripped).items():
+            for name, declarations in _compiled_type_names(stripped).items():
                 types.setdefault(name, []).append(
-                    (rank, where, rel_path if own else None, blocks)
+                    (rank, where, rel_path if own else None, declarations)
                 )
     skipped = []
     vanilla_key = usable_vanilla_key(vanilla_root)
@@ -282,7 +296,7 @@ def check_es_variable_named_as_type(
     for rel_path, stripped in addon_sources:
         file_rank = module_rank(rel_path)
         seen = set()
-        dead = branches = None
+        dead = branches = tests = None
         for offset, name in sorted(_declared_names(stripped)):
             candidates = [
                 entry for entry in types.get(name, ())
@@ -294,13 +308,21 @@ def check_es_variable_named_as_type(
             if dead is None:
                 dead = dead_lines(stripped)
                 branches = line_branches(stripped)
-            if (line, name) in seen or line in dead:
+                tests = line_tests(stripped)
+            if (
+                (line, name) in seen
+                or line in dead
+                or not tests_agree(tests[line], tests[line])
+            ):
                 continue
             where = next(
                 (
-                    w for _rank, w, path, blocks in candidates
+                    w for _rank, w, path, declarations in candidates
                     if path != rel_path
-                    or any(compatible(b, branches[line]) for b in blocks)
+                    or any(
+                        compatible(b, branches[line]) and tests_agree(t, tests[line])
+                        for b, t in declarations
+                    )
                 ),
                 None,
             )
