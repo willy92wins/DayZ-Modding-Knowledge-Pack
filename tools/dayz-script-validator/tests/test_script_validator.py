@@ -2896,28 +2896,30 @@ class TestVariableNamedAsType(unittest.TestCase):
     def test_line_tests_cost_grows_with_the_lines(self):
         # Fourth Codex review of #113 (L1): line_tests ran its #define/#undef
         # pattern over the whole text, and its \s* ran on across blank lines.
-        # On one machine these 64 000 lines took 30 s, and take 0.08 s.
+        # On two machines these 64 000 lines took 30 s and 31 s, and take 0.1 s.
+        # Wall time: on the owner's PC process_time() reads a fraction of the
+        # time the CPU spends.
         from shared.dead_branches import line_tests
 
-        start = time.process_time()
+        start = time.perf_counter()
         line_tests("    \n" * 64000)
 
-        self.assertLess(time.process_time() - start, 2)
+        self.assertLess(time.perf_counter() - start, 2)
 
     def test_lines_are_counted_once_per_file(self):
         # Fourth Codex review of #113 (L2): the rule counted lines from the
-        # start of the file for each name that is a type. On one machine
-        # these 64 000 members took 42 s, and take 1.5 s.
+        # start of the file for each name that is a type. On two machines
+        # these 64 000 members took 42 s and 62 s, and take 1.5 s.
         source = (
             "#ifdef X\nclass Debug\n{\n}\n#else\nclass A\n{\n"
             + "    int Debug; // the member is named like the type\n" * 64000
             + "}\n#endif\n"
         )
 
-        start = time.process_time()
+        start = time.perf_counter()
         errors, _skipped = _named_errors(source, vanilla=None)
 
-        self.assertLess(time.process_time() - start, 10)
+        self.assertLess(time.perf_counter() - start, 10)
         self.assertEqual([], errors)
 
     def test_a_folder_without_class_managed_is_no_vanilla_tree(self):

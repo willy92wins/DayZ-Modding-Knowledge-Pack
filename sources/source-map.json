@@ -25698,10 +25698,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-codex-r4-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: the two cost tests of PR #114 measure wall time (time.perf_counter) instead of process time. On the owner's PC time.process_time() reads a fraction of the CPU time a process spends (a 2 s busy loop at full speed read 0.08 s), so with the L2 fix reverted the test passed at 8.1 s of process time after 62.4 s of wall time, and the L1 test failed only at 2.44 s after 31.1 s. Measured on the owner's PC at 3c31cc9, wall time: L1 0.10 s as is and 31.1 s reverted; L2 1.36 s as is and 62.4 s reverted. Here, with perf_counter: python3 -m unittest discover tests, 244 passed; reverting either fix, or restarting the count at each name, turns its test red. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ea2349544f5e45f67c99d808eb3f2dfc69abd6ec894275fa7283a6aa41091f9e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-pack114-walltime@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2e96702b471ead4dac625af3a64f3a50a579e031dee24e30d23f0ea28f3911a0",
+      "output_hash": "ea2349544f5e45f67c99d808eb3f2dfc69abd6ec894275fa7283a6aa41091f9e",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
