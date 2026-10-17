@@ -204,7 +204,7 @@ Bohemia's vanilla tree against the pinned baseline:
 python tools/dayz-script-validator/scripts/vanilla_control.py
 ```
 
-A full run on DayZ 1.30 takes 130 to 150 seconds on an idle machine
+A full run on DayZ 1.30 takes two to four minutes
 (`tools/dayz-script-validator/README.md`; not re-timed here). Without a
 local vanilla tree the control SKIPs with exit 2. A green control only
 proves the linter is silent on that tree; it does not prove the new rule

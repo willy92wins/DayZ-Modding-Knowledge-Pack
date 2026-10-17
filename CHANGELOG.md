@@ -218,9 +218,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   to 82, `ES-CTX-READ-UNSUPPORTED-PATTERN` from 22 to 23, `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN` from
   254 to 260 and `ES-GETTYPE-EXACT-MATCH` from 40 to 36. `tree.dayz_build` now names the measured
   build; `sources/source-map.json` keeps 1.29.0.163451, the build the pack is anchored on. The
-  seven validator rules added above report nothing on the 1.30 tree. A full run there takes 130
-  to 150 seconds on an idle machine; the 1.29 baseline recorded 86, with fewer rules. Pipeline
-  inbox 818e.
+  seven validator rules added above report nothing on the 1.30 tree. Full runs there took 132 to
+  217 seconds on the owner's PC on 2026-10-17, and the 1.29 tree took 124 and 167 seconds there
+  the same day; the 1.29 baseline recorded 86 on 2026-08-18. Pipeline inbox 818e.
 - `dayz-animation-pipeline` `SKILL.md`: the section heading now reads "Locomotion in scripted commands:
   driving the vanilla graph (added 2026-06-11, measured on 1.30 Exp 2026-10-06)". The 2026-06-11
   paragraph (LFSlidingFloor, `GetCurrentMovement()` override) ends with a dated qualification: on 1.30
