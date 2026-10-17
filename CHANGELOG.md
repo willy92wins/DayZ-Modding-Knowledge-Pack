@@ -32,9 +32,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   read it, and DayZ refused the World module on the first boot (fb-20261006-002741-28fa). Judged
   only for a class the addon owns end to end (no declaration, modded or not, outside the addon,
   and every ancestor the addon's own); `modded class` bodies and `#ifdef` branches count as
-  declarations, and the methods of `Class` always do (`StaticGetType` was missing from them
-  without a vanilla tree until the Codex review of #113). 222 unit tests pass (217 before); the
-  vanilla control was not run for this change (no vanilla tree on the machine that wrote it).
+  declarations, and the methods of `Class` always do: the ten that `1_core/proto/enscript.c`
+  declares, the same in 1.29 and 1.30 (until the Codex review of #113 the list was from memory,
+  without `StaticGetType` and with an `IsInstanceOf` that `Class` does not declare). 222 unit
+  tests pass (217 before); the vanilla control was not run for this change (no vanilla tree on
+  the machine that wrote it).
 - `dayz-script-validator`: `ES-CAST-UNRELATED-TYPES` (FAIL) reports `X.Cast(y)` where neither X
   nor the declared type of `y` derives from the other: `IngameHud.Cast(mission)` with `Mission
   mission` made DayZDiag 1.29 refuse the Mission module with `Types 'IngameHud' and 'Mission' are

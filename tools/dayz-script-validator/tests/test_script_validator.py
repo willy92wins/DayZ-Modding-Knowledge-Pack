@@ -3118,6 +3118,18 @@ class TestUndeclaredStaticMember(unittest.TestCase):
         for source in cases:
             self.assertEqual([], _static_member_errors(source), source)
 
+    def test_the_methods_of_class_are_the_ten_of_enscript_c(self):
+        # 1_core/proto/enscript.c:10-114, the same in 1.29 and 1.30.
+        for member in (
+            "IsInherited", "ClassName", "GetDebugName", "Type", "StaticType",
+            "StaticGetType", "ToString", "Cast", "CastTo", "SafeCastType",
+        ):
+            source = "class FX_R\n{\n}\nvoid F()\n{\n    FX_R.%s();\n}\n" % member
+            self.assertEqual([], _static_member_errors(source), member)
+        # On the list from memory before; Class does not declare it.
+        source = "class FX_R\n{\n}\nvoid F()\n{\n    FX_R.IsInstanceOf();\n}\n"
+        self.assertEqual([6], [e["line"] for e in _static_member_errors(source)])
+
     def test_a_declaration_outside_the_addon_skips_the_class(self):
         source = "class FX_X\n{\n}\nvoid F()\n{\n    FX_X.Y;\n}\n"
 

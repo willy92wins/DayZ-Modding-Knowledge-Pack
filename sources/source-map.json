@@ -1161,10 +1161,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: ES-UNDECLARED-STATIC-MEMBER's list of the methods of Class, used when no vanilla tree is passed, read from the vanilla trees on the owner's PC instead of memory: `class Class` at 1_core/proto/enscript.c:10-114 is identical in 1.29.0.163451 (P:\\scripts_1.29_backup_20261016) and 1.30.164078 (P:\\scripts) and declares ten methods and no field: IsInherited :23, ClassName :37, GetDebugName :39, Type :52, StaticType :64, StaticGetType :73, ToString :78, Cast :94, CastTo :110, SafeCastType :113 (private). IsInstanceOf, which Class does not declare, was dropped, so `FX.IsInstanceOf(` on a class the addon owns end to end is now judged. Measured: python3 -m unittest discover tests, 235 passed (234 before); re-adding IsInstanceOf or dropping SafeCastType, ToString or IsInherited each turns the new test red. The 1.29 and 1.30 lines that dayz-physics-engine gives for OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:234 and :237 in 1.29, :253 and :256 in 1.30) were read on the same trees and stand. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6d26eaf0aae8dcfa5acd66b6c553a1c989e74f661b6e432767d3e7f746ca95de",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-class-members-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f58472e806e8c59a64234e7fd7f31aad6ea0954df6e0d340b7b445f2008d6ab2",
+      "output_hash": "6d26eaf0aae8dcfa5acd66b6c553a1c989e74f661b6e432767d3e7f746ca95de",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -25518,10 +25528,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: ES-UNDECLARED-STATIC-MEMBER's list of the methods of Class, used when no vanilla tree is passed, read from the vanilla trees on the owner's PC instead of memory: `class Class` at 1_core/proto/enscript.c:10-114 is identical in 1.29.0.163451 (P:\\scripts_1.29_backup_20261016) and 1.30.164078 (P:\\scripts) and declares ten methods and no field: IsInherited :23, ClassName :37, GetDebugName :39, Type :52, StaticType :64, StaticGetType :73, ToString :78, Cast :94, CastTo :110, SafeCastType :113 (private). IsInstanceOf, which Class does not declare, was dropped, so `FX.IsInstanceOf(` on a class the addon owns end to end is now judged. Measured: python3 -m unittest discover tests, 235 passed (234 before); re-adding IsInstanceOf or dropping SafeCastType, ToString or IsInherited each turns the new test red. The 1.29 and 1.30 lines that dayz-physics-engine gives for OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:234 and :237 in 1.29, :253 and :256 in 1.30) were read on the same trees and stand. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "93f20786ef30c2b234aefcfcb2b71591eb90cacedc394dafa9bb184a5b8c7240",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-class-members-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e808f76e000d98b2870a09b692d2730e923328bf462a5fdaf4c8a132f4e21c83",
+      "output_hash": "93f20786ef30c2b234aefcfcb2b71591eb90cacedc394dafa9bb184a5b8c7240",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33885,10 +33905,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: ES-UNDECLARED-STATIC-MEMBER's list of the methods of Class, used when no vanilla tree is passed, read from the vanilla trees on the owner's PC instead of memory: `class Class` at 1_core/proto/enscript.c:10-114 is identical in 1.29.0.163451 (P:\\scripts_1.29_backup_20261016) and 1.30.164078 (P:\\scripts) and declares ten methods and no field: IsInherited :23, ClassName :37, GetDebugName :39, Type :52, StaticType :64, StaticGetType :73, ToString :78, Cast :94, CastTo :110, SafeCastType :113 (private). IsInstanceOf, which Class does not declare, was dropped, so `FX.IsInstanceOf(` on a class the addon owns end to end is now judged. Measured: python3 -m unittest discover tests, 235 passed (234 before); re-adding IsInstanceOf or dropping SafeCastType, ToString or IsInherited each turns the new test red. The 1.29 and 1.30 lines that dayz-physics-engine gives for OverrideMovementSpeed/OverrideMovementAngle (3_game/human.c:234 and :237 in 1.29, :253 and :256 in 1.30) were read on the same trees and stand. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "10557b8ec7ee72946cf3a5e72a8c5029610f9a46f145144008c9cd593a65118a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
+          "source_revision": "kp-update-class-members-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8470f33493a4f36dcdfa0c6874e2944dd5d4c4242d490278cadd0468d1b6a661",
+      "output_hash": "10557b8ec7ee72946cf3a5e72a8c5029610f9a46f145144008c9cd593a65118a",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_undeclared_static_member.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
