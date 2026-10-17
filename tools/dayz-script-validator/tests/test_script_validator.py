@@ -750,13 +750,18 @@ class TestEsCtxReadUnchecked(unittest.TestCase):
         self.assertEqual(expected_message, result["warnings"][0]["message"])
 
 
-class TestEsSyncvarContract(unittest.TestCase):
-    def run_fixture(self, name):
-        fixture = FIXTURES / "es" / name
-        return script_validator.run([str(fixture)])
+CONSTRUCTION = FIXTURES / "syncvar_construction"
 
-    def assert_syncvar_passes(self, name):
-        exit_code, result = self.run_fixture(name)
+
+class TestEsSyncvarContract(unittest.TestCase):
+    def run_fixture(self, name, folder=FIXTURES / "es", vanilla=None):
+        argv = [str(folder / name)]
+        if vanilla is not None:
+            argv += ["--vanilla-root", str(folder / vanilla)]
+        return script_validator.run(argv)
+
+    def assert_syncvar_passes(self, name, folder=FIXTURES / "es", vanilla=None):
+        exit_code, result = self.run_fixture(name, folder, vanilla)
 
         self.assertEqual(0, exit_code)
         self.assertEqual("PASS", result["status"])
@@ -764,8 +769,15 @@ class TestEsSyncvarContract(unittest.TestCase):
         self.assertEqual([], result["warnings"])
         self.assertEqual(1, result["info"]["files_scanned"])
 
-    def assert_syncvar_error(self, name, line_number, expected_message):
-        exit_code, result = self.run_fixture(name)
+    def assert_syncvar_error(
+        self,
+        name,
+        line_number,
+        expected_message,
+        folder=FIXTURES / "es",
+        vanilla=None,
+    ):
+        exit_code, result = self.run_fixture(name, folder, vanilla)
 
         self.assertEqual(1, exit_code)
         self.assertEqual("FAIL", result["status"])
@@ -812,6 +824,27 @@ class TestEsSyncvarContract(unittest.TestCase):
     def test_syncvar_init_item_variables_passes(self):
         self.assert_syncvar_passes("ok_syncvar_init_item_variables.c")
 
+    def test_syncvar_register_construction_sync_variables_passes(self):
+        self.assert_syncvar_passes(
+            "ok_syncvar_register_construction_sync_variables.c",
+            CONSTRUCTION,
+            "vanilla_130",
+        )
+
+    def test_syncvar_class_named_like_the_construction_hook_passes(self):
+        self.assert_syncvar_passes(
+            "ok_syncvar_register_construction_class_ctor.c",
+            CONSTRUCTION,
+            "vanilla_130",
+        )
+
+    def test_syncvar_construction_hook_after_a_brace_in_a_string_passes(self):
+        self.assert_syncvar_passes(
+            "ok_syncvar_register_construction_sync_variables.c",
+            CONSTRUCTION,
+            "vanilla_hook_after_brace_string",
+        )
+
     def test_syncvar_other_prefix_does_not_trigger_write_rule(self):
         self.assert_syncvar_passes("ok_syncvar_other_prefix.c")
 
@@ -827,6 +860,95 @@ class TestEsSyncvarContract(unittest.TestCase):
 
         self.assert_syncvar_error(
             "bad_syncvar_register_outside_ctor.c", 6, expected_message
+        )
+
+    def test_syncvar_register_construction_helper_fails(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_helper.c line 12: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_helper.c",
+            12,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_130",
+        )
+
+    def test_syncvar_own_register_construction_override_fails_on_1_29(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_own_hook.c line 19: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_own_hook.c",
+            19,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_129",
+        )
+
+    def test_syncvar_register_construction_override_fails_without_vanilla(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_own_hook.c line 19: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_own_hook.c",
+            19,
+            expected_message,
+            CONSTRUCTION,
+        )
+
+    def test_syncvar_own_register_construction_override_fails_on_a_string(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_own_hook.c line 19: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_own_hook.c",
+            19,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_hook_string",
+        )
+
+    def test_syncvar_own_register_construction_override_fails_on_a_field(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_own_hook.c line 19: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_own_hook.c",
+            19,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_hook_field",
+        )
+
+    def test_syncvar_register_construction_override_with_parameters_fails(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_with_parameters.c line 12: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_with_parameters.c",
+            12,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_130",
         )
 
     def test_syncvar_write_without_dirty_fails(self):

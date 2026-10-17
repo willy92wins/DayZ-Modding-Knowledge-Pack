@@ -1,5 +1,7 @@
 import re
 
+from detectors.es_undeclared_static_member import class_bodies
+from detectors.es_variable_named_as_type import usable_vanilla_key, vanilla_sources
 from shared.control_flow import (
     compute_ifdef_stack_at,
     find_server_ifdef_block_for_line,
@@ -11,6 +13,7 @@ from shared.method_recognition import (
     find_method_for_line,
     find_method_regions,
 )
+from stripper import strip_enforce_comments_and_strings
 
 
 ES_SYNCVAR_RULE_ID = "ES-SYNCVAR-CONTRACT"
@@ -20,6 +23,9 @@ ES_SYNCVAR_UNSUPPORTED_RULE_ID = "ES-SYNCVAR-UNSUPPORTED-PATTERN"
 
 
 ES_SYNCVAR_CLASS_UNKNOWN_RULE_ID = "ES-SYNCVAR-CLASS-UNKNOWN"
+
+
+ES_SYNCVAR_CONSTRUCTION_HOOK = "RegisterConstructionSyncVariables"
 
 
 ES_SYNCVAR_REGISTER_RE = re.compile(
@@ -239,14 +245,61 @@ def find_es_syncvar_classes(stripped_source, registers, rel_path):
     return classes, warnings
 
 
-def method_is_syncvar_registration_target(method, class_name):
+def vanilla_declares_construction_hook(vanilla_root):
+    """Whether the vanilla tree's EntityAI declares the construction hook.
+
+    DayZ 1.30 does (3_game/entities/entityai.c:3481); 1.29 does not. Only a
+    method of EntityAI counts, read with strings stripped as well as comments:
+    a field or a string of that name does not, and a brace in a string does
+    not hide the method. Without a usable vanilla tree the answer is False, so
+    the rule keeps the behaviour it has on 1.29, the build the pack is
+    anchored on.
+    """
+    vanilla_key = usable_vanilla_key(vanilla_root)
+    if vanilla_key is None:
+        return False
+    for _rel_path, text in vanilla_sources(vanilla_key):
+        if ES_SYNCVAR_CONSTRUCTION_HOOK not in text:
+            continue
+        stripped, _warnings = strip_enforce_comments_and_strings(text)
+        for match, span in class_bodies(stripped):
+            if match.group("name") != "EntityAI" or span is None:
+                continue
+            body = stripped[span[0] + 1:span[1]]
+            if any(
+                method["name"] == ES_SYNCVAR_CONSTRUCTION_HOOK
+                for method in find_method_regions(body)
+            ):
+                return True
+    return False
+
+
+def method_is_syncvar_registration_target(
+    method, class_name, lines, construction_hook
+):
     if method is None:
         return False
-    return method["name"] in (
+    if method["name"] in (
         class_name,
         "Init",
         "InitItemSounds",
         "InitItemVariables",
+    ):
+        return True
+    # DayZ 1.30: EntityAI() calls ConstructionInit() when the type's
+    # CfgVehicles entry has a Construction class
+    # (3_game/entities/entityai.c:248-249), which calls this hook (:3469);
+    # BuildingBase registers its m_SyncParts ints in its override
+    # (4_world/entities/game/super/building.c:29-44). Only an override is that
+    # hook, with no parameters as EntityAI declares it (:3481), and only when
+    # the vanilla tree declares it (construction_hook): 1.29 has none, so
+    # there a method of this name, override or not, is the mod's own and runs
+    # whenever the mod calls it.
+    return (
+        construction_hook
+        and method["name"] == ES_SYNCVAR_CONSTRUCTION_HOOK
+        and not method["params"].strip()
+        and "override" in lines[method["start_line"] - 1].split("(")[0].split()
     )
 
 
@@ -294,7 +347,9 @@ def unique_in_order(values):
     return unique
 
 
-def check_es_syncvar_contract(source, stripped_source, rel_path):
+def check_es_syncvar_contract(
+    source, stripped_source, rel_path, construction_hook=False
+):
     errors = []
     warnings = []
     lines = stripped_source.split("\n")
@@ -325,7 +380,9 @@ def check_es_syncvar_contract(source, stripped_source, rel_path):
 
         for register in class_registers:
             method = find_method_for_line(class_methods, register["line"])
-            if method_is_syncvar_registration_target(method, class_info["class"]):
+            if method_is_syncvar_registration_target(
+                method, class_info["class"], lines, construction_hook
+            ):
                 continue
             errors.append(
                 build_es_syncvar_error(
