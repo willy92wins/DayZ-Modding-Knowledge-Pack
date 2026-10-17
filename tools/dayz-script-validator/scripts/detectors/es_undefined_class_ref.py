@@ -186,15 +186,22 @@ class Definitions:
         return name in self.types or name in self.template_params
 
 
-def _template_end(text, index):
+def _template_end(text, index, spaced=False):
     """Index of the `>` that closes template arguments opened at `index`.
 
     Only a `<` right after a name, followed by nothing but names, spaces,
     commas and nested `<...>` up to its match, is a template
     (`Param3<int, X, int>`, `map<string, array<int>>`). Anything else, such
-    as `a<b, C = false` or `a<=b`, is a comparison: None.
+    as `a<b, C = false` or `a<=b`, is a comparison: None. With `spaced`,
+    spaces and tabs may stand between the name and the `<`.
     """
-    if index == 0 or not (text[index - 1].isalnum() or text[index - 1] == "_"):
+    name_end = index
+    if spaced:
+        while name_end > 0 and text[name_end - 1] in " \t":
+            name_end -= 1
+    if name_end == 0 or not (
+        text[name_end - 1].isalnum() or text[name_end - 1] == "_"
+    ):
         return None
     depth = 0
     for position in range(index, len(text)):

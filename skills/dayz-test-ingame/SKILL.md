@@ -157,7 +157,8 @@ The orchestrator checks these every run and fixes what it safely can. Verified o
 - **Steam client session** — for CLIENT-launching modes only (`offline`, `client`, `all`),
   `HKCU\Software\Valve\Steam\ActiveProcess` must have both `pid != 0` and
   `ActiveUser != 0`. The script warns without aborting; run `steam.exe -shutdown`, then relaunch
-  Steam (the login is preserved). [DESIGN] Restart is NOT the reliable remedy: measured 2026-09-08/09, a restart can leave the key pointing at the old pid with the client still dead — the deterministic fix is to copy the live `steam.exe` pid into `ActiveProcess` from a shell OUTSIDE any sandboxed (MSIX) app — a write from inside one only reaches that app's private registry copy, see `references/dayz-1-30-test-ingame.md` — (guards and verification in the "El `pid` de Steam en el registro puede estar MUERTO" section below), and restart only as a fallback when there is no live Steam or `ActiveUser == 0`.
+  Steam (the login is preserved), both from outside any sandboxed (MSIX) app (SP-095 point 1-ter
+  below). [DESIGN] Restart is NOT the reliable remedy: measured 2026-09-08/09, a restart can leave the key pointing at the old pid with the client still dead — the deterministic fix is to copy the live `steam.exe` pid into `ActiveProcess` from a shell OUTSIDE any sandboxed (MSIX) app — a write from inside one only reaches that app's private registry copy, see `references/dayz-1-30-test-ingame.md` — (guards and verification in the "El `pid` de Steam en el registro puede estar MUERTO" section below), and restart only as a fallback when there is no live Steam or `ActiveUser == 0`.
 
 - **Mod set is SEALED, and changing it WIPES test world** (since 2026-09-06,
   measured in game). Each server startup seals its effective mod list in
@@ -633,7 +634,7 @@ Why it costs a session: the wrong format passes EVERY unit test (they only pin s
 Two more gates in the same flow, both of which have already burned a session:
 
 - `tests\test_secure_launcher.py` HARDCODES the launcher PE sha256. Every rebuild changes it (adding a mod changes the PE), so update it after `build_native_launcher.py --offline --verify-reproducible` or the suite stays red for a reason unrelated to the change.
-- `launcher_registry_update install-dayz-test-v1 --expected-sha256 <X>` is a compare-and-swap on the BYTES of `approved-launchers.json` (NOT the PE hash), and it REFUSES to install while a `dayz-test-v1` entry exists -> run `rollback-last` first; it prints the restored registry sha, which is the CAS token the install needs.
+- `launcher_registry_update install-dayz-test-v1 --expected-sha256 <X>` is a compare-and-swap on the BYTES of `approved-launchers.json` (NOT the PE hash), and it REFUSES to install while a `dayz-test-v1` entry exists. Renew an installed entry with `replace-dayz-test-v1 --expected-sha256 <sha256 of the current approved-launchers.json>`, which swaps it in one write. Do not run `rollback-last` and then install: after an earlier replace, the rollback restores an older `dayz-test-v1` entry and install refuses it with `launcher_registry_version_already_installed` (dayz-mcp `tools/dayz_mcp/launcher_registry_update.py:229` and `:329` at 90da56e; pipeline inbox fb-20261016-155416-c9aa).
 
 Origin: LFHeli OH-1 (2026-07-25), authorizing the 6th mod, after the 2026-07-22 session was lost to this same flow.
 
@@ -754,7 +755,8 @@ immediately, writes a 793-byte RPT with only the header and an `ErrorMessage_*.m
 logs NOTHING useful. The real message is only inside the minidump: extract strings and look for
 `Unable to locate a running instance of Steam`. There is no Windows "Application Error" event
 because the engine handles it itself. Check `Get-Process steam` BEFORE launching a client, and start
-it with `steam.exe -silent` if missing.
+it with `steam.exe -silent` if missing, from a shell outside any sandboxed (MSIX) app, never from a
+shell inside the Claude or Codex app (point 1-ter).
 
 **1-bis. If that message appears while Steam IS running, stop reading the message and run the
 discriminator.** Measured 2026-09-08 on SUB_BRZ: the client died on 5 consecutive launches with
@@ -794,6 +796,26 @@ requested. The only thing that had changed was `session_status.daemon_generation
 daemon STATE, not the host, and a daemon restart cleared it. So record `daemon_generation` when you
 file the finding, compare it when you retry, and give a freshly restarted daemon one clean launch
 before spending a session on the workaround.
+
+**1-ter. A client YOU start from a shell inside the Claude or Codex app can read a Steam that is
+gone.** Those apps keep a private copy of `HKCU` for every process they start (MSIX registry
+virtualization), and once anything inside the app has written Steam's keys the copy stays on that
+Steam's pid after it exits. Measured 2026-10-16: an agent's `Start-Process` of the retail client from
+a Claude app shell read `pid = 67468`, a Steam gone since 2026-10-06, and died with point 1's message
+while `steam.exe` ran; the 11 `dayz_test_run` launches of that day passed Steam, because the daemon
+runs outside the app and reads the real key. It also fools point 1-bis: a by-hand launch from such a
+shell dies for this reason, not because the host is broken.
+
+- Before a by-hand launch from an app shell, compare `(Get-ItemProperty
+  HKCU:\Software\Valve\Steam\ActiveProcess).pid` read there with `(Get-Process steam).Id`.
+  dayz-mcp's `session_status` names a mismatch as the warning `steam_app_view_stale`.
+- Launch from outside the app instead: from Steam, from Explorer, or through WMI
+  (`Win32_Process.Create`, as the daemon does).
+- Never start Steam, or write or delete its registry keys, from the app's shells: that is what
+  creates or freezes the copy, and only an offline edit of the app's hive with the app closed removes
+  it (dayz-mcp's `tools/clear-app-steam-shadow.ps1`). Background in
+  `references/dayz-1-30-test-ingame.md`, "Launching the 1.30 Exp DayZDiag directly", point 2.
+  [EXACT] (measured, LL-510 / SP-420 / LL-516)
 
 **2. The request JSON must not carry a UTF-8 BOM.** `Out-File -Encoding utf8` in Windows PowerShell
 5.1 writes a BOM and the parser rejects the whole request with `invalid_dayz_test_request`. Write it

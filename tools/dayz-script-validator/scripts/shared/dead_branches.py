@@ -13,8 +13,10 @@ never compiled is not judged:
 
 line_branches() and compatible() tell apart lines in different branches of
 one block, which never compile in the same build. Blocks are not related
-through their macros: `#ifdef X` and a later `#ifndef X` are two unrelated
-blocks, so lines of both can be read together.
+through their macros there: `#ifdef X` and a later `#ifndef X` are two
+unrelated blocks, so lines of both can be read together. line_tests() and
+tests_agree() relate them, for a macro the file never #defines or #undefs:
+lines under `#ifdef X` and under `#ifndef X` never compile together.
 """
 
 import re
@@ -25,6 +27,7 @@ _ELIF_RE = re.compile(r"^\s*#\s*elif\b")
 _ELSE_RE = re.compile(r"^\s*#\s*else\b")
 _ENDIF_RE = re.compile(r"^\s*#\s*endif\b")
 _DEFINE_RE = re.compile(r"^\s*#\s*define\s+(?P<name>\w+)")
+_SET_RE = re.compile(r"^\s*#\s*(?:define|undef)\s+(?P<name>\w+)")
 
 
 def dead_lines(stripped):
@@ -106,3 +109,50 @@ def compatible(branches_a, branches_b):
     """False when two lines sit in different branches of the same block."""
     taken = dict(branches_a)
     return all(taken.get(block, branch) == branch for block, branch in branches_b)
+
+
+def line_tests(stripped):
+    """{1-based line: frozenset of the (macro, defined) states it compiles under}.
+
+    An #ifdef X branch needs X defined and its #else needs X undefined; the
+    reverse for #ifndef. Branches after an #elif, and a macro the file
+    #defines or #undefs anywhere (its state can change inside the file), give
+    no state. Blocks open and close exactly as in dead_lines().
+    """
+    lines = stripped.split("\n")
+    # Line by line, as dead_lines() reads directives: over the whole text, \s*
+    # ran on across blank lines and the scan grew with the square of a run.
+    changing = {match.group("name") for match in map(_SET_RE.match, lines) if match}
+    tests = {}
+    # Each entry: (macro, defined), or None when the branch tests no macro.
+    stack = []
+    for number, line in enumerate(lines, start=1):
+        opened = _OPEN_RE.match(line)
+        if opened:
+            macro = opened.group("macro")
+            stack.append(
+                None if macro in changing
+                else (macro, opened.group("kind") == "ifdef")
+            )
+        elif _IF_RE.match(line):
+            stack.append(None)
+        elif _ELIF_RE.match(line):
+            if stack:
+                stack[-1] = None
+        elif _ELSE_RE.match(line):
+            if stack and stack[-1] is not None:
+                macro, defined = stack[-1]
+                stack[-1] = (macro, not defined)
+        elif _ENDIF_RE.match(line):
+            if stack:
+                stack.pop()
+        tests[number] = frozenset(test for test in stack if test is not None)
+    return tests
+
+
+def tests_agree(tests_a, tests_b):
+    """False when one set needs a macro defined and the other needs it undefined.
+
+    A line whose own set disagrees with itself never compiles.
+    """
+    return not any((macro, not defined) in tests_b for macro, defined in tests_a)

@@ -7,6 +7,9 @@ report before a PBO is packed.
 This is the pack OFFLINE layer. It does not launch DayZ. In-game verification
 belongs to DayZ-MCP.
 
+It is a rule linter, not a compiler: a PASS means no rule fired, not that the
+script compiles. The engine compile is the only full syntax gate.
+
 ## Install
 
 ```powershell
@@ -34,7 +37,7 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Three read the tree, and two of them need roots
+Most rules read a single file. Seven read the tree, and four of them need roots
 outside the addon:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
@@ -102,9 +105,82 @@ invocation (2.6 s against 1.7 s on a 23-file addon, four runs each). On
 vanilla tree gave the same 33 003 references and no finding; the 161 roots
 were not measured again.
 
+- `ES-VARIABLE-NAMED-AS-TYPE` (FAIL): a variable, member or parameter whose
+  name is a class, enum or typedef declared in the addon, the vanilla tree or
+  an `--external-scripts` root. `bool Debug;` in a 4_World settings class
+  made DayZDiag 1.29 refuse the module with `Variable name 'Debug' already
+  used as type name` (inbox fb-20260928-025254-35c1); a local `Widget map`
+  failed the same way (enforce-script-reference `pitfalls-advanced.md`,
+  SP-317). Only a member and a local are on record; a parameter, an enum and
+  a typedef are judged the same way without a failure on record. The match
+  is exact case, so a member `debug` passes: identifiers are case-sensitive
+  and no case-only failure is on record. A name is judged against the types
+  of its own module and the modules below it (a 4_World local may be named
+  like a 5_Mission class). A file outside any `N_Module` folder may compile
+  in any module, so it is judged only against the types of 1_Core and those
+  of its own file; in a mod recovered without its module folders the rule
+  had reported a member against a 5_Mission class (mods pass of 2026-10-17).
+  Positions are those of `ES-RESERVED-WORD-IDENTIFIER`;
+  code that never compiles is not judged, and a type the addon or an external
+  root declares only there is no type. Nor is a name judged against a type its
+  own file declares only in another branch of the same `#ifdef` block, or only
+  under the opposite test of a macro the file never `#define`s or `#undef`s
+  (`#ifdef X` type, a later `#ifndef X` name): the two never compile together.
+  Without a vanilla tree the addon's
+  and the external roots' types are still judged, and the vanilla part is
+  listed as SKIP in `info.skipped_checks` and in `--terse`.
+- `ES-CAST-UNRELATED-TYPES` (FAIL): `X.Cast(y)` where neither X nor the
+  declared type of `y` derives from the other. `Mission mission =
+  GetGame().GetMission(); hud = IngameHud.Cast(mission);` made DayZDiag 1.29
+  refuse the Mission module with `Types 'IngameHud' and 'Mission' are not
+  related` (inbox fb-20261009-122148-c852). Judged only when everything is
+  known: `y` is a plain name declared once, with a plain type, as a local
+  still open at the cast or a parameter of the same function, or else as a
+  member of the enclosing class itself (an inherited member is not looked
+  up); both are classes, not a typedef, an enum, a template or a primitive;
+  and the `extends` chain of both resolves in the addon, the vanilla tree or
+  an `--external-scripts` root, through declarations that are not `modded`
+  and agree on one parent (a header that a directive splits, `class D` /
+  `#ifdef X` / `: B` / `#endif`, does not resolve). `Class` is related to
+  everything. Anything else,
+  a call's result included, is skipped without a SKIP line; without a
+  vanilla tree that means every cast whose chain reaches a vanilla class.
+- `ES-UNDECLARED-STATIC-MEMBER` (FAIL): `ClassName.Member` or
+  `ClassName.Member(` where no declaration of the class names `Member`. A
+  lane deleted `ANIM_SWAP_ENABLED` and its sibling consts from its own class
+  `LFSK_Constants` while seven call sites still read
+  `LFSK_Constants.ANIM_SWAP_ENABLED`, and DayZ refused the World module on
+  the first boot (inbox fb-20261006-002741-28fa). Judged only for a class
+  the addon owns end to end: declared in the addon, not modded and not a
+  template there, declared nowhere (modded or not) in the vanilla tree or an
+  `--external-scripts` root, with every ancestor the same through
+  declarations that agree on one parent. A name counts as declared when it
+  appears at the top level of the body of any addon declaration of the class
+  or an ancestor, `modded class` and `#ifdef` branches included; the methods
+  of `Class` (`Cast`, `CastTo`, `StaticType`, `StaticGetType`...) always
+  count. A class whose
+  chain reaches a vanilla or another mod's class is not judged, so it runs
+  without a vanilla tree; a class-like name declared as a variable in the
+  addon is not judged either.
+- `ES-PROTECTED-METHOD-CROSS-CLASS` (WARN): `recv.Method(` where `Method`
+  is `protected` or `private` in the declared type of `recv` (or the addon
+  ancestor that declares it) and the calling class is neither that class nor
+  derived from it. Shape of inbox fb-20261006-002741-28fa: `PlayerBase.OnRPC`
+  called `cmd.LFSK_OnServerState(...)`, protected in `LFSK_RideCommand`, in
+  the same module. WARN because the refusal is measured for a protected
+  field (`Variable '...' is protected`, `ES-PROTECTED-CROSS-MODULE`) and not
+  for a method. The receiver's type is looked up as in
+  `ES-CAST-UNRELATED-TYPES`; every class from it up to the one that declares
+  the method must be the addon's own, and the first declaration found decides
+  (any public declaration of that name in the addon clears it). A caller whose
+  chain leaves the addon and the external roots counts as unrelated: a
+  vanilla class cannot derive from an addon class. A caller or an ancestor
+  whose header a directive splits is not read, and the call is skipped.
+
 ## Compile errors read from one file
 
-Two rules come from script modules that did not compile, each with its log:
+These rules come from script modules that did not compile, each with its
+log, or from a broken file the validator passed:
 
 - `ES-RESERVED-WORD-IDENTIFIER` (FAIL): a variable, member or parameter named
   `sealed`, `local`, `owned` or `out`. These four failed as names in a real
@@ -132,6 +208,31 @@ Two rules come from script modules that did not compile, each with its log:
   literal under an `(int)` cast, or in a parenthesised condition (only the
   results behind a `?` count), does not reach the expression. A float
   variable is not seen: only the literal case is caught.
+- `ES-UNBALANCED-BRACKETS` (FAIL): the first `(`, `[` or `{` never closed,
+  or closed by another kind of bracket, and the first closer with nothing
+  to close. `m_Objects.Clear();` sabotaged to `m_Objects.Clear(;` got PASS
+  (inbox fb-20261004-040148-403a). Brackets are counted on the text without
+  comments and strings; this is no parser, so a file it passes can still
+  fail to compile. Each branch of an `#ifdef`/`#ifndef`/`#if` block starts
+  from the brackets open before it, so a header written once per branch
+  with one `{` after the block counts once. When the branches of a block
+  end with different brackets open, or an `#ifdef` is never closed, the
+  file is not judged. A file with an unterminated string or block comment
+  is not judged either: the stripper's warning is the finding there.
+- `ES-MODDED-ENGINE-CLASS` (FAIL): `modded class Transport`. DayZDiag
+  1.29.163709 refused it with `Engine class 'Transport' cannot be modded.`
+  and `Can't compile "Game" script module!` (inbox
+  fb-20261005-233046-89d1). Transport is the only class listed: another
+  engine class goes in only after a compile refuses it. Mod the script
+  bases in 4_World instead, `CarScript` or `BoatScript`.
+- `ES-MULTILINE-CONDITION-OPERATOR` (WARN): a line inside the parentheses
+  of an `if (` or `while (` that ends in `&&` or `||`, once per header.
+  DayZ 1.30.164014 server refused `if ((t >= A && t < B) ||` followed by
+  `(t >= C && t < D))` with `Invalid statement ')'` and `Syntax error` at the
+  continuation (inbox fb-20261006-030019-e074). WARN until the vanilla
+  control has run: one measurement. The operator leading the next line is
+  the same parser rule (enforce-script-reference SKILL.md, SP-386) and is not
+  reported here; neither is a call's argument list over two lines.
 
 Each finding is wrong wherever the code compiles, so code under another
 mod's `#ifdef` is judged too. A branch that never compiles is not: `#if`
@@ -146,12 +247,8 @@ Measured on 2026-10-03: nothing on vanilla 1.29.0.163451 (69 `%` judged) or
 on vanilla 1.30.164014 Exp (94 `%`), and on the source that failed in game,
 `vector local;`, the reserved-word rule fires on that line.
 
-Two compile errors filed with these have no rule here yet:
+One compile error filed with these has no rule here yet:
 
-- `Variable name 'X' already used as type name` (a local or member named
-  like a vanilla class, such as `bool Debug = false;`) needs the vanilla
-  scripts tree to know the class names, and waits for the `--vanilla-root`
-  option.
 - `Formula too complex`: vanilla compiles a statement with 14 `+`, the one
   that failed had about 20 terms and its source is gone, and the limit
   between them was not measured.

@@ -165,7 +165,20 @@ from detectors.es_reserved_word_identifier import (
     check_es_reserved_word_identifier,
 )
 from detectors.es_modulo_float_context import check_es_modulo_float_context
+from detectors.es_multiline_condition_operator import (
+    check_es_multiline_condition_operator,
+)
+from detectors.es_unbalanced_brackets import check_es_unbalanced_brackets
+from detectors.es_modded_engine_class import check_es_modded_engine_class
 from detectors.es_undefined_class_ref import check_es_undefined_class_ref
+from detectors.es_variable_named_as_type import check_es_variable_named_as_type
+from detectors.es_cast_unrelated_types import check_es_cast_unrelated_types
+from detectors.es_undeclared_static_member import (
+    check_es_undeclared_static_member,
+)
+from detectors.es_protected_method_cross_class import (
+    check_es_protected_method_cross_class,
+)
 from shared.vanilla_tree import resolve_vanilla_root
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
@@ -391,6 +404,15 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
             errors.extend(
                 check_es_modulo_float_context(source, stripped, rel_path)
             )
+            if not stripper_warnings:
+                # An unterminated string or comment blanks the rest of the
+                # file: its brackets cannot be counted, and the stripper
+                # already reported why.
+                errors.extend(check_es_unbalanced_brackets(stripped, rel_path))
+            errors.extend(check_es_modded_engine_class(stripped, rel_path))
+            warnings.extend(
+                check_es_multiline_condition_operator(stripped, rel_path)
+            )
         elif suffix == ".rvmat":
             errors.extend(check_rvmat_normalmapmacro(source, rel_path))
             warnings.extend(
@@ -440,6 +462,27 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
         ),
     )
     errors.extend(undefined_errors)
+    named_as_type_errors, named_as_type_skipped = check_es_variable_named_as_type(
+        addon_sources,
+        external_sources,
+        vanilla_root,
+        vanilla_skip_reason or "vanilla tree not passed (vanilla_root=None)",
+    )
+    errors.extend(named_as_type_errors)
+    skipped_checks = list(skipped_checks) + named_as_type_skipped
+    errors.extend(
+        check_es_cast_unrelated_types(addon_sources, external_sources, vanilla_root)
+    )
+    errors.extend(
+        check_es_undeclared_static_member(
+            addon_sources, external_sources, vanilla_root
+        )
+    )
+    warnings.extend(
+        check_es_protected_method_cross_class(
+            addon_sources, external_sources, vanilla_root
+        )
+    )
 
     elapsed_ms = int((time.perf_counter() - start) * 1000)
     return build_result(
@@ -477,7 +520,9 @@ def build_parser():
         help=(
             "Vanilla scripts tree (default: DAYZ_VANILLA_ROOT, then P:\\scripts "
             "if present). Needed by ES-UNDEFINED-CLASS-REF; without it that "
-            "rule is reported as skipped in info, never as a finding."
+            "rule is reported as skipped in info, never as a finding, and "
+            "ES-VARIABLE-NAMED-AS-TYPE judges only the addon's and external "
+            "roots' type names."
         ),
     )
     return parser

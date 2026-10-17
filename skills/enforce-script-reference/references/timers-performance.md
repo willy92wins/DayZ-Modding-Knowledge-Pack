@@ -157,16 +157,19 @@ Enforce Script has a built-in profiler for measuring script performance.
 ### Basic Usage
 
 ```
-// Enable profiling
-EnProfiler.Enable(true, true);  // (enable, immediate)
+// Enable profiling (1_core/proto/enprofiler.c:103)
+EnProfiler.Enable(true, true);  // (enable, immediate = false, sessionReset = true)
 
-// Set what to track
-int flags = EnProfilerFlags.FUNCTION_TIMES | EnProfilerFlags.FUNCTION_COUNT;
-EnProfiler.SetFlags(flags);
+// Set the flags (enprofiler.c:8-18, :223). The only values are
+// NONE, RESET, RECURSIVE and ALL; there are no per-metric flags.
+EnProfiler.SetFlags(EnProfilerFlags.RESET);
 
 // ... run code to profile ...
 
-// Get results
+// Get results. The sorted data is filled at the end of each frame;
+// call EnProfiler.SortData() to fill it now (enprofiler.c:158-172).
+// EnProfilerTimeFuncPair is a typedef of Param2<float, string> (enprofiler.c:58),
+// so the fields are param1 (time) and param2 (function name).
 array<ref EnProfilerTimeFuncPair> timePerFunc = new array<ref EnProfilerTimeFuncPair>;
 EnProfiler.GetTimePerFunc(timePerFunc, 20);  // top 20
 
@@ -174,8 +177,8 @@ int i;
 for (i = 0; i < timePerFunc.Count(); i = i + 1)
 {
     EnProfilerTimeFuncPair pair = timePerFunc[i];
-    string funcName = pair.GetName();
-    float timeMs = pair.GetTime();
+    string funcName = pair.param2;
+    float timeMs = pair.param1;
     string msg = funcName;
     msg = msg + ": ";
     msg = msg + timeMs.ToString();
@@ -191,23 +194,32 @@ EnProfiler.Enable(false);
 
 | Method | Returns |
 |---|---|
-| `GetTimePerFunc(out, count)` | Top N functions by time consumed |
-| `GetTimePerClass(out, count)` | Top N classes by time consumed |
-| `GetCountPerFunc(out, count)` | Top N functions by call count |
-| `GetInstancesPerClass(out, count)` | Top N classes by instance count |
-| `GetAllocationsPerClass(out, count)` | Top N classes by allocation count |
-| `GetCountOfFunc(name, type, global)` | Call count of specific function |
-| `GetTimeOfFunc(name, type, global)` | Time consumed by specific function |
+| `GetTimePerFunc(out, count)` | Top N functions by time consumed (`Param2<float, string>`) |
+| `GetCountPerFunc(out, count)` | Top N functions by call count (`Param2<int, string>`) |
+| `GetTimePerClass(out, count)` | Top N classes by time consumed (`Param2<float, typename>`) |
+| `GetInstancesPerClass(out, count)` | Top N classes by instance count (`Param2<int, typename>`) |
+| `GetAllocationsPerClass(out, count)` | Top N classes by allocation count (`Param2<int, typename>`) |
+| `GetTimeOfFunc(name, clss, immediate)` | Time consumed by a method of class `clss` (:689) |
+| `GetTimeOfFuncG(name, immediate)` | Time consumed by a global function (:701) |
+| `GetCountOfFunc(name, clss, immediate)` | Call count of a method of class `clss` (:714) |
+| `GetCountOfFuncG(name, immediate)` | Call count of a global function (:726) |
+
+The pair typedefs are at enprofiler.c:55-59. For the `...Of...` queries, the third
+parameter is `immediate`, not a "global" switch: global functions use the `G` variants.
 
 ### Profiling Flags
 
+`EnProfilerFlags` has only four values (enprofiler.c:8-18):
+
 ```
-EnProfilerFlags.FUNCTION_TIMES    // Track time per function
-EnProfilerFlags.FUNCTION_COUNT    // Track call count per function
-EnProfilerFlags.CLASS_TIMES       // Track time per class
-EnProfilerFlags.CLASS_COUNT       // Track instance count per class
-EnProfilerFlags.ALL               // Track everything (expensive)
+EnProfilerFlags.NONE        // Data accumulates across frames; only the current module is sorted
+EnProfilerFlags.RESET       // Data is reset after each sort
+EnProfilerFlags.RECURSIVE   // All modules are sorted, not only the current one
+EnProfilerFlags.ALL         // RESET | RECURSIVE (the default)
 ```
+
+What gets profiled is chosen with `EnProfiler.SetModule(EnProfilerModule.X)` (:333), not
+with flags. Native `proto` methods are not tracked on their own (:70).
 
 ### Practical Profiling Workflow
 

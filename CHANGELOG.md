@@ -7,6 +7,86 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-pbo-build`: binarizing with AddonBuilder, the source folder must be named exactly as its
+  single-segment `$PBOPREFIX$`. With `-prefix=LFHeli` on folder `LFHeli_OH1`, binarize wrote the
+  ODOL under the prefix while FileBank packed the folder name, so the PBO lost all 7 models and the
+  log still said "Build Successful" (AddonBuilder 1.0.240639, 2026-10-09). Accept a binarized
+  build only when the PBO has one ODOL per `.p3d`. Pipeline inbox fb-20261010-150630-25af.
+- `dayz-script-validator`: `ES-MULTILINE-CONDITION-OPERATOR` (WARN) reports an `if`/`while`
+  condition whose line ends in `&&` or `||` and goes on to the next line: DayZ 1.30.164014 server
+  refused `if ((t >= A && t < B) ||` + `(t >= C && t < D))` with `Invalid statement ')'` and
+  `Syntax error` (fb-20261006-030019-e074). WARN: one measurement, vanilla control pending. No such
+  header exists in the DayZ-MCP addon (compiles on 1.29 and 1.30) or in the pack's `.c` files.
+  231 unit tests pass (227 before); the vanilla control was not run for this change (no vanilla
+  tree on the machine that wrote it).
+- `dayz-script-validator`: `ES-PROTECTED-METHOD-CROSS-CLASS` (WARN) reports `recv.Method(` where
+  `Method` is `protected` or `private` in the addon class that `recv` is declared as (or its addon
+  ancestor) and the caller is neither that class nor derived from it, as `PlayerBase.OnRPC`
+  calling the protected `LFSK_RideCommand.LFSK_OnServerState` (fb-20261006-002741-28fa). WARN: the
+  refusal is measured for protected fields, not methods. A caller or an ancestor whose header a
+  directive splits skips the call. 227 unit tests pass (222 before); the
+  vanilla control was not run for this change (no vanilla tree on the machine that wrote it).
+  It and `ES-CAST-UNRELATED-TYPES` read the lines, methods and class bodies of a file once:
+  counting lines from the start of the file at every call kept this rule running past 20 minutes
+  on a 10 MB file of a recovered mod (pass over the owner's mods, 2026-10-17). The method regions
+  that they and nine older rules read (`shared/method_recognition.py`) no longer collect a
+  signature at a line that cannot start one, and join it once: from a `(` that never closes,
+  every line ran to the end of the file, and two recovered volumes of binary data (files up to
+  20 MB) still passed 20 minutes (second pass, same day). A signature is now read with tables
+  built once per file: 135 KB of method headers that a directive splits (`void F(int a,` /
+  `#else` / ...), the case of the second Codex review of #113, took 15 s and take 0.02 s. The
+  regions are the same as before on 200 000 random files compared.
+- `dayz-script-validator`: `ES-UNDECLARED-STATIC-MEMBER` (FAIL) reports `ClassName.Member` and
+  `ClassName.Member(` when no addon declaration of the class or of its ancestors names `Member`:
+  a lane deleted `ANIM_SWAP_ENABLED` from its own `LFSK_Constants` while seven call sites still
+  read it, and DayZ refused the World module on the first boot (fb-20261006-002741-28fa). Judged
+  only for a class the addon owns end to end (no declaration, modded or not, outside the addon,
+  and every ancestor the addon's own); `modded class` bodies and `#ifdef` branches count as
+  declarations, and the methods of `Class` always do: the ten that `1_core/proto/enscript.c`
+  declares, the same in 1.29 and 1.30 (until the Codex review of #113 the list was from memory,
+  without `StaticGetType` and with an `IsInstanceOf` that `Class` does not declare). 222 unit
+  tests pass (217 before); the vanilla control was not run for this change (no vanilla tree on
+  the machine that wrote it).
+- `dayz-script-validator`: `ES-CAST-UNRELATED-TYPES` (FAIL) reports `X.Cast(y)` where neither X
+  nor the declared type of `y` derives from the other: `IngameHud.Cast(mission)` with `Mission
+  mission` made DayZDiag 1.29 refuse the Mission module with `Types 'IngameHud' and 'Mission' are
+  not related` (fb-20261009-122148-c852). Judged only when `y` is a plain name declared once in the
+  same function or as a member of the enclosing class, and the `extends` chains of both classes
+  resolve through non-modded declarations in the addon, the vanilla tree or an external root;
+  everything else is skipped silently, a class header that a directive splits included (Codex
+  review of #113). 217 unit tests pass (210 before); the vanilla control was not run for this
+  change (no vanilla tree on the machine that wrote it).
+- `dayz-script-validator`: `ES-VARIABLE-NAMED-AS-TYPE` (FAIL) reports a variable, member or
+  parameter named as a class, enum or typedef that the addon, the vanilla tree or an
+  `--external-scripts` root declares. `bool Debug;` in a 4_World settings class made DayZDiag 1.29
+  refuse the module with `Variable name 'Debug' already used as type name`
+  (fb-20260928-025254-35c1, corrected by 7ce1); the local `Widget map` of SP-317 is the same error.
+  Exact case; a name is judged against the types of its own module and those below it. A file
+  outside any `N_Module` folder is judged only against the types of 1_Core and of its own file:
+  in a mod recovered without its module folders, the pass over the owner's mods (2026-10-17) got a
+  false FAIL for a member `Attachments` against the 5_Mission class. Without a
+  vanilla tree the addon's and external roots' types are still judged and the vanilla part is
+  listed as SKIP. Commas between template arguments (`Param3<bool, vector, int> x`) and a
+  typedef's own name are not declarators: the first vanilla control (2026-10-13) found 104 such
+  false findings on 1.29.0.163451 and 109 on 1.30.164014, all of this shape, and none for the
+  other six new rules. After the two Codex reviews of #113, a type declared only where it never
+  compiles, or only where the name never compiles with it (in another branch of the name's own
+  `#ifdef` block, or under the opposite test of a macro the file never `#define`s or `#undef`s), is
+  no type for that name; the `<` of a comparison (`bool first = a < b, Debug = false;`) opens no
+  template, and a space before a template's `<` (`new Param3 <int, Object, int>(...)`) does not
+  make its commas separate declarators. 242 unit tests pass.
+- `dayz-script-validator`: two FAIL rules from pipeline tickets of SimpleGroup.
+  `ES-UNBALANCED-BRACKETS` reports the first `(`, `[` or `{` never closed or closed by another
+  kind, and the first closer with nothing to close: `m_Objects.Clear(;` got PASS
+  (fb-20261004-040148-403a). Brackets are counted on the text without comments and strings; each
+  branch of a preprocessor block starts from the brackets open before it, and a file whose
+  branches end with different brackets open, with an unclosed `#ifdef`, or with an unterminated
+  string or comment is not judged. `ES-MODDED-ENGINE-CLASS` fails `modded class Transport`, which
+  DayZDiag 1.29.163709 refused with `Engine class 'Transport' cannot be modded.`
+  (fb-20261005-233046-89d1); Transport is the only class listed until another is measured, and
+  `CarScript`/`BoatScript` are the bases to mod. The README now says the validator is a rule
+  linter and the engine compile is the only full syntax gate. 202 unit tests pass; the vanilla
+  control was not run for this change (no vanilla tree on the machine that wrote it).
 - `dayz-texture-pipeline` `references/map-conventions.md`: converting a metallic map into the
   `_smdi` G source. Strykar's community rule replaces the metallic black with #383838 (4 % linear,
   0x38 checked offline); whether the Super shader reads G as sRGB is recorded as not verified, and
@@ -127,6 +207,34 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-test-ingame`: SP-095 point 1 told the reader to start a missing Steam with
+  `steam.exe -silent`, and the Steam prerequisite to restart it, without saying where from. From a
+  shell inside the Claude or Codex app that Steam registers only in the app's private registry
+  copy (LL-510). New point 1-ter: on 2026-10-16 a client started by hand from a Claude app shell
+  read a Steam pid gone since 2026-10-06 and died with `Unable to locate a running instance of
+  Steam` while Steam ran and the day's `dayz_test_run` launches passed; how to check the app's
+  view, launch from outside the app, and remove the copy. The by-hand discriminator of point
+  1-bis gives a false "host broken" from such a shell.
+- `dayz-test-ingame`: renewing an installed launcher entry said to run `rollback-last` and then
+  `install-dayz-test-v1`. After an earlier `replace-dayz-test-v1`, the rollback restores an older
+  `dayz-test-v1` entry and install refuses it with `launcher_registry_version_already_installed`,
+  as the 2026-10-16 renewal of the owner's launcher found. It now says `replace-dayz-test-v1`
+  with the sha256 of the current registry. Pipeline inbox c9aa.
+- `enforce-script-reference` `timers-performance.md`: the EnProfiler example used flags that do
+  not exist (`FUNCTION_TIMES`, `FUNCTION_COUNT`, `CLASS_TIMES`, `CLASS_COUNT`) and methods
+  `GetName`/`GetTime` that `EnProfilerTimeFuncPair` does not have. `EnProfilerFlags` is `NONE`,
+  `RESET`, `RECURSIVE` and `ALL` (`1_core/proto/enprofiler.c:8-18`), the pair is
+  `Param2<float, string>` (`:58`, read through `param1`/`param2`), the third parameter of the
+  `...Of...` queries is `immediate`, and global functions use `GetTimeOfFuncG`/`GetCountOfFuncG`
+  (`:701`, `:726`). Pipeline inbox 2783.
+- `dayz-physics-engine`: "a script cannot walk a client-controlled player" is corrected. With the
+  overrides set by the owner every tick and by the server in every `ConsumeMove` after `super`,
+  the player walked about 1.52 m/s with owner and server ending at the same position (DayZDiag
+  1.29, dayz-mcp `player_move`, #191). Pipeline inbox 5c98.
+- `enforce-script-reference` `dayz-1-30-enforce-script.md` 7.8: `ActionTargetsCursor.Update()`
+  became `Update(bool fullUpdate = true)` in 1.30, and a 1.29 override fails there with
+  `Overloaded function 'Update' not compatible` (DayZ-MCP PBO 12, DayZDiag 1.30 Exp, 2026-10-09);
+  the fix gates the override on `DAYZ_1_29`. Pipeline inbox ca47.
 - `dayz-animation-pipeline` `SKILL.md` discarded two ways to drive the vanilla player graph from a
   `HumanCommandScript` (note of 2026-06-11): `PreAnim_SetFloat/SetInt` because "vanilla graph
   variable IDs are not exposed to script", and `PreAnim_CallCommand` for "0 call-sites in vanilla

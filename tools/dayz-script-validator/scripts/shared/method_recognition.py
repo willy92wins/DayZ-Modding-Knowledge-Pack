@@ -4,14 +4,24 @@ import re
 PARAMS_READ_CONTEXT_PARAM_RE = re.compile(r"^\s*ParamsReadContext\s+(?P<name>\w+)\b")
 
 
-METHOD_SIGNATURE_RE = re.compile(
-    r"^(?P<indent>\s*)"
+# What METHOD_SIGNATURE_RE matches before the "(" that opens the parameters.
+# It holds no "(", so that "(" is the first one of the line the signature
+# starts on.
+METHOD_SIGNATURE_HEAD = (
+    r"(?P<indent>\s*)"
     r"(?:override\s+|static\s+|protected\s+|private\s+)*"
     r"(?P<return_type>\w[\w\s]*?)\s+"
     r"(?P<name>\w+)"
-    r"\s*\((?P<params>[^)]*)\)"
+    r"\s*"
+)
+
+METHOD_SIGNATURE_RE = re.compile(
+    r"^" + METHOD_SIGNATURE_HEAD
+    + r"\((?P<params>[^)]*)\)"
     r"\s*(?P<brace>\{)?.*$"
 )
+
+METHOD_SIGNATURE_HEAD_RE = re.compile(METHOD_SIGNATURE_HEAD)
 
 
 def count_braces(line):
@@ -19,19 +29,26 @@ def count_braces(line):
 
 
 def collect_method_signature(lines, start_index):
-    signature = lines[start_index]
+    # Joined once at the end: a "(" that never closes reaches the end of the file.
+    parts = [lines[start_index]]
     end_index = start_index
-    open_parens = signature.count("(")
-    close_parens = signature.count(")")
+    open_parens = parts[0].count("(")
+    close_parens = parts[0].count(")")
 
     while open_parens > close_parens and end_index + 1 < len(lines):
         end_index += 1
         next_line = lines[end_index].strip()
-        signature = signature + " " + next_line
+        parts.append(next_line)
         open_parens += next_line.count("(")
         close_parens += next_line.count(")")
 
-    return signature, end_index
+    return " ".join(parts), end_index
+
+
+def may_start_method_signature(line):
+    """False when no signature collected from `line` can match METHOD_SIGNATURE_RE."""
+    open_at = line.find("(")
+    return open_at >= 0 and METHOD_SIGNATURE_HEAD_RE.fullmatch(line[:open_at]) is not None
 
 
 def find_block_end_line(lines, brace_line_index, max_line_index=None):
@@ -69,13 +86,78 @@ def find_signature_brace_line(lines, signature_index, signature_end_index, match
     return None
 
 
+class _Signatures:
+    """collect_method_signature at any line of one text, read once.
+
+    From a "(" that never closes, each collection ran to the end of the file:
+    method headers split by #ifdef branches took 21 s for 135 KB (second Codex
+    review of #113, J2). The end index comes from the parenthesis depth before
+    each line, and the signature stops with the line that holds the first
+    character after its first ")" that is not a space: what follows changes no
+    group of METHOD_SIGNATURE_RE.
+    """
+
+    def __init__(self, lines):
+        self.lines = lines
+        self.stripped = [line.strip() for line in lines]
+        count = len(lines)
+        depth = [0]
+        for line in lines:
+            depth.append(depth[-1] + line.count("(") - line.count(")"))
+        # Each start ends on the line before the first later depth at or below
+        # its own, or on the last line.
+        self.ends = [count - 1] * count
+        later = [count]
+        for start in range(count - 1, -1, -1):
+            while later and depth[later[-1]] > depth[start]:
+                later.pop()
+            if later:
+                self.ends[start] = later[-1] - 1
+            later.append(start)
+        # From each line, the first one with a ")" and the first one not blank.
+        self.next_close = [count] * (count + 1)
+        self.next_text = [count] * (count + 1)
+        for index in range(count - 1, -1, -1):
+            self.next_close[index] = (
+                index if ")" in lines[index] else self.next_close[index + 1]
+            )
+            self.next_text[index] = (
+                index if self.stripped[index] else self.next_text[index + 1]
+            )
+
+    def collect(self, start):
+        """What METHOD_SIGNATURE_RE reads of collect_method_signature(lines, start),
+        and its end index. `start` holds a "(" (may_start_method_signature)."""
+        end = self.ends[start]
+        first = self.lines[start]
+        close_at = first.find(")", first.find("("))
+        if close_at >= 0:
+            closing, after = start, first[close_at + 1:]
+        else:
+            closing = self.next_close[start + 1]
+            if closing > end:
+                return first, end  # no ")": no match, as on the whole signature
+            text = self.stripped[closing]
+            after = text[text.find(")") + 1:]
+        last = closing
+        if not after.strip() and self.next_text[closing + 1] <= end:
+            last = self.next_text[closing + 1]
+        return " ".join([first] + self.stripped[start + 1:last + 1]), end
+
+
 def find_method_regions(stripped_source):
     lines = stripped_source.split("\n")
+    signatures = None
     methods = []
     index = 0
 
     while index < len(lines):
-        signature, signature_end_index = collect_method_signature(lines, index)
+        if not may_start_method_signature(lines[index]):
+            index += 1
+            continue
+        if signatures is None:
+            signatures = _Signatures(lines)
+        signature, signature_end_index = signatures.collect(index)
         match = METHOD_SIGNATURE_RE.match(signature)
         if not match:
             index += 1

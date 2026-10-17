@@ -2515,6 +2515,1037 @@ class TestUndefinedClassRef(unittest.TestCase):
         self.assertIn("FX_GonePlanner", lines[1])
 
 
+BRACKETS = FIXTURES / "unbalanced_brackets"
+BRACKETS_RULE = "ES-UNBALANCED-BRACKETS"
+
+
+def _bracket_errors(source):
+    from detectors.es_unbalanced_brackets import check_es_unbalanced_brackets
+    from stripper import strip_enforce_comments_and_strings
+
+    stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+    return check_es_unbalanced_brackets(stripped, "x.c")
+
+
+class TestUnbalancedBrackets(unittest.TestCase):
+    """ES-UNBALANCED-BRACKETS: a bracket never closed, or closed by another kind.
+
+    Inbox fb-20261004-040148-403a: `m_Objects.Clear(;` got PASS.
+    """
+
+    def test_ticket_repro_fails_on_the_open_parenthesis(self):
+        exit_code, result = script_validator.run([str(BRACKETS / "bad")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, BRACKETS_RULE)
+        self.assertEqual([9], [e["line"] for e in errors])
+        self.assertIn(
+            "'(' is never closed before the '}' on line 10", errors[0]["message"]
+        )
+        self.assertIn("fx_group_objects.c", errors[0]["file"])
+        assert_standard_findings(self, result)
+
+    def test_brackets_in_strings_comments_and_branches_pass(self):
+        _code, result = script_validator.run([str(BRACKETS / "ok")])
+
+        # Strings and comments are blanks; each branch of an #ifdef/#else that
+        # writes the opening line twice is counted once; the #ifndef of a
+        # macro the file defines and an #if 0 block never compile.
+        self.assertEqual([], _errors_of(result, BRACKETS_RULE))
+
+    def test_unclosed_at_end_and_stray_closer(self):
+        unclosed = _bracket_errors("class C\n{\n    void F()\n    {\n    }\n")
+        stray = _bracket_errors("class C\n{\n}\n}\n")
+
+        self.assertEqual([2], [e["line"] for e in unclosed])
+        self.assertIn("before the end of the file", unclosed[0]["message"])
+        self.assertEqual([4], [e["line"] for e in stray])
+        self.assertIn("'}' closes nothing", stray[0]["message"])
+
+    def test_a_defect_after_a_duplicated_header_is_found(self):
+        source = (
+            "class C\n{\n#ifdef FX_A\n    void F(int a)\n    {\n#else\n"
+            "    void F()\n    {\n#endif\n        Print(1;\n    }\n}\n"
+        )
+
+        self.assertEqual([10], [e["line"] for e in _bracket_errors(source)])
+
+    def test_branches_that_end_differently_are_not_judged(self):
+        # Which build the closing braces belong to is unknown, with or
+        # without an #else.
+        without_else = "class C\n{\n#ifdef FX_A\n    void F() {\n#endif\n}\n"
+        with_else = (
+            "class C\n{\n#ifdef FX_A\n#else\n    void F() {\n#endif\n    }\n}\n"
+        )
+
+        self.assertEqual([], _bracket_errors(without_else))
+        self.assertEqual([], _bracket_errors(with_else))
+        # An #ifdef never closed: ES-EMPTY-IFDEF warns about that one.
+        self.assertEqual([], _bracket_errors("class C\n{\n#ifdef FX_A\n    void F()\n"))
+
+    def test_unterminated_string_is_left_to_the_stripper(self):
+        fixture = FIXTURES / "es" / "bad_unterminated_string.c"
+        _code, result = script_validator.run([str(fixture)])
+
+        self.assertEqual([], _errors_of(result, BRACKETS_RULE))
+
+
+ENGINE = FIXTURES / "modded_engine_class"
+ENGINE_RULE = "ES-MODDED-ENGINE-CLASS"
+
+
+class TestModdedEngineClass(unittest.TestCase):
+    """ES-MODDED-ENGINE-CLASS: `modded class` of a class the engine refuses.
+
+    Inbox fb-20261005-233046-89d1, DayZDiag 1.29.163709: "Engine class
+    'Transport' cannot be modded."
+    """
+
+    def test_modded_transport_fails(self):
+        exit_code, result = script_validator.run([str(ENGINE / "bad")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, ENGINE_RULE)
+        self.assertEqual([9], [e["line"] for e in errors])
+        self.assertIn("'modded class Transport'", errors[0]["message"])
+        self.assertEqual("FAIL", errors[0]["severity"])
+        assert_standard_findings(self, result)
+
+    def test_script_bases_subclasses_and_comments_pass(self):
+        _code, result = script_validator.run([str(ENGINE / "ok")])
+
+        # `modded class CarScript`, `class FX_MyTransport extends Transport`,
+        # and `modded class Transport` in a comment, a string or #if 0.
+        self.assertEqual([], _errors_of(result, ENGINE_RULE))
+
+    def test_only_the_whole_class_name_counts(self):
+        from detectors.es_modded_engine_class import check_es_modded_engine_class
+
+        self.assertEqual(
+            [], check_es_modded_engine_class("modded class TransportX\n{\n}\n", "x.c")
+        )
+
+
+
+NAMED = FIXTURES / "variable_named_as_type"
+NAMED_RULE = "ES-VARIABLE-NAMED-AS-TYPE"
+
+
+def _named_errors(source, rel_path="scripts/4_World/x.c", external=(),
+                  vanilla=NAMED / "vanilla"):
+    from detectors.es_variable_named_as_type import (
+        check_es_variable_named_as_type,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    return check_es_variable_named_as_type(
+        [(rel_path, strip(source))],
+        [(path, strip(text)) for path, text in external],
+        vanilla,
+    )
+
+
+def _named_skips(result):
+    return [
+        s for s in result["info"].get("skipped_checks", [])
+        if s["rule_id"] == NAMED_RULE
+    ]
+
+
+class TestVariableNamedAsType(unittest.TestCase):
+    """ES-VARIABLE-NAMED-AS-TYPE: a variable, member or parameter named as a type.
+
+    Inbox fb-20260928-025254-35c1 (corrected by 7ce1), DayZDiag 1.29:
+    `bool Debug;` in a 4_World settings class, "Variable name 'Debug' already
+    used as type name".
+    """
+
+    def test_ticket_member_fails_with_the_vanilla_tree(self):
+        exit_code, result = script_validator.run(
+            [str(NAMED / "bad"), "--vanilla-root", str(NAMED / "vanilla")]
+        )
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, NAMED_RULE)
+        self.assertEqual([9], [e["line"] for e in errors])
+        self.assertIn("'Debug'", errors[0]["message"])
+        self.assertIn("vanilla scripts tree", errors[0]["message"])
+        self.assertIn("fx_settings.c", errors[0]["file"])
+        self.assertEqual([], _named_skips(result))
+        assert_standard_findings(self, result)
+
+    def test_without_the_vanilla_tree_the_vanilla_part_is_skipped(self):
+        _code, result = script_validator.run([str(NAMED / "bad")])
+
+        self.assertEqual([], _errors_of(result, NAMED_RULE))
+        skips = _named_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("vanilla type", skips[0]["reason"])
+        terse = script_validator.format_terse(result)
+        self.assertIn("SKIP %s" % NAMED_RULE, terse)
+
+    def test_usage_lower_case_comments_strings_and_dead_code_pass(self):
+        _code, result = script_validator.run(
+            [str(NAMED / "ok"), "--vanilla-root", str(NAMED / "vanilla")]
+        )
+
+        # `Debug.Log(...)`, `Insert(new Debug)`, a member `debug`,
+        # `Debug m_Logger`, `bool Debug;`
+        # in a comment, a string and #if 0, a 4_World local named like a
+        # 5_Mission type, and a name only a vanilla comment declares.
+        self.assertEqual([], _errors_of(result, NAMED_RULE))
+
+    def test_local_parameter_later_declarator_and_foreach(self):
+        source = (
+            "class C\n{\n"
+            "    void F(int FX_VanillaEnum)\n    {\n"
+            "        Widget map = null;\n"
+            "        int a = 1, FX_VanillaTypedef;\n"
+            "        foreach (int Debug : m_List)\n        {\n        }\n"
+            "    }\n}\n"
+        )
+        errors, skipped = _named_errors(source)
+
+        self.assertEqual(
+            [(3, "FX_VanillaEnum"), (5, "map"), (6, "FX_VanillaTypedef"),
+             (7, "Debug")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+        self.assertEqual([], skipped)
+
+    def test_a_type_is_seen_from_its_module_and_above(self):
+        source = "class C\n{\n    int FX_MissionOnly;\n}\n"
+
+        self.assertEqual([], _named_errors(source)[0])
+        self.assertEqual(
+            [3],
+            [e["line"] for e in _named_errors(
+                source, rel_path="scripts/5_Mission/x.c")[0]],
+        )
+
+    def test_addon_and_external_types_are_judged_without_vanilla(self):
+        source = (
+            "class FX_Own\n{\n}\n"
+            "class C\n{\n    int FX_Own;\n    int FX_Dep;\n    bool Debug;\n}\n"
+        )
+        external = [("scripts/3_Game/dep.c", "class FX_Dep\n{\n}\n")]
+        errors, skipped = _named_errors(source, external=external, vanilla=None)
+
+        self.assertEqual([6, 7], [e["line"] for e in errors])
+        self.assertIn("declared in the addon", errors[0]["message"])
+        self.assertIn("--external-scripts", errors[1]["message"])
+        self.assertEqual([NAMED_RULE], [s["rule_id"] for s in skipped])
+
+    def test_a_type_outside_any_module_counts_only_in_its_own_file(self):
+        source = "class C\n{\n    int FX_Loose;\n}\n"
+        external = [("dep.c", "class FX_Loose\n{\n}\n")]
+
+        self.assertEqual([], _named_errors(source, external=external)[0])
+        # Two files outside any module may compile in different modules.
+        self.assertEqual(
+            [], _named_errors(source, rel_path="x.c", external=external)[0]
+        )
+        own = "class FX_Loose\n{\n}\n" + source
+        self.assertEqual(
+            [6], [e["line"] for e in _named_errors(own, rel_path="x.c")[0]]
+        )
+
+    def test_a_file_outside_any_module_is_judged_against_1_core_only(self):
+        # Mods pass of #113, 2026-10-17: a member `Attachments` in a mod
+        # recovered without its module folders was reported against the
+        # 5_Mission class Attachments; the classes that use it are 4_World.
+        source = (
+            "class C\n{\n    int FX_MissionOnly;\n    int Debug;\n"
+            "    int Managed;\n}\n"
+        )
+        errors, _skipped = _named_errors(
+            source, rel_path="Scripts/HM_Virtual_Garage/x.c"
+        )
+
+        self.assertEqual(
+            [(5, "Managed")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+
+    def test_template_arguments_and_typedef_names_are_not_declarators(self):
+        # Vanilla control 2026-10-13: commas between template arguments and a
+        # typedef's own name were read as declarators (104 findings on 1.29,
+        # 109 on 1.30), e.g. `Param3<bool, vector, int> x` and
+        # `typedef map<string,ref array<string>> DamageZoneMap;`. Second Codex
+        # review of #113 (J1): again with a space or a tab before the `<`.
+        source = (
+            "typedef map<string, ref array<Debug>> FX_OwnMap;\n"
+            "class C\n{\n"
+            "    ref Param3<int, Debug, Debug> m_Pair;\n"
+            "    void F(Param2<int, Debug> p, int Debug)\n    {\n"
+            "        float r = Param2<float, Debug>.Cast(p).param1;\n"
+            "        auto q = new Param3<int, Debug, int>(0, null, 0);\n"
+            "        auto s = new Param3 <int, Debug, int>(0, null, 0);\n"
+            "        auto t = new Param3\t<int, Debug, int>(0, null, 0);\n"
+            "        ref map<int, Debug> m, map;\n"
+            "    }\n}\n"
+        )
+        errors, _skipped = _named_errors(source)
+
+        # Still reported: the parameter after a template-typed one, and the
+        # later declarator after a template-typed local.
+        self.assertEqual(
+            [(5, "Debug"), (11, "map")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+
+    def test_a_type_that_never_compiles_with_the_name_is_no_type(self):
+        # Codex review of #113 (H1): a type declared where it never compiles,
+        # or only in the other branch of the name's block, failed valid code.
+        cases = [
+            "#if 0\nclass FX_Gone\n{\n}\n#endif\n"
+            "class C\n{\n    int FX_Gone;\n}\n",
+            "#define FX_ON\n#ifndef FX_ON\nclass FX_Gone\n{\n}\n#endif\n"
+            "class C\n{\n    int FX_Gone;\n}\n",
+            "#ifdef FX_X\nclass FX_Gone\n{\n}\n#else\n"
+            "class C\n{\n    int FX_Gone;\n}\n#endif\n",
+        ]
+        for source in cases:
+            self.assertEqual([], _named_errors(source, vanilla=None)[0], source)
+
+        # Under another mod's #ifdef the type compiles: with the name outside
+        # the block, in the same branch, or in a branch of another file's block.
+        outside = (
+            "#ifdef FX_X\nclass FX_Opt\n{\n}\n#endif\n"
+            "class C\n{\n    int FX_Opt;\n}\n"
+        )
+        same_branch = (
+            "#ifdef FX_X\nclass FX_Opt\n{\n}\n"
+            "class C\n{\n    int FX_Opt;\n}\n#endif\n"
+        )
+        other_file = "#ifdef FX_X\n#else\nclass C\n{\n    int FX_Opt;\n}\n#endif\n"
+        external = [("scripts/3_Game/dep.c", "#ifdef FX_X\nclass FX_Opt\n{\n}\n#endif\n")]
+        self.assertEqual(
+            [8], [e["line"] for e in _named_errors(outside, vanilla=None)[0]]
+        )
+        self.assertEqual(
+            [7], [e["line"] for e in _named_errors(same_branch, vanilla=None)[0]]
+        )
+        self.assertEqual(
+            [5],
+            [e["line"] for e in _named_errors(
+                other_file, external=external, vanilla=None)[0]],
+        )
+
+    def test_opposite_tests_of_one_macro_never_compile_together(self):
+        # Second Codex review of #113 (H1, partial): the type under
+        # `#ifdef FX_ON` and the name under a later `#ifndef FX_ON`, or under
+        # an `#ifndef FX_ON` inside the type's block, failed valid code. An
+        # `#if 0` block inside the type's block does not end it.
+        cases = [
+            "#ifdef FX_ON\nclass FX_Gone\n{\n}\n#endif\n"
+            "#ifndef FX_ON\nclass C\n{\n    int FX_Gone;\n}\n#endif\n",
+            "#ifdef FX_ON\n#if 0\n#endif\nclass FX_Gone\n{\n}\n#endif\n"
+            "#ifndef FX_ON\nclass C\n{\n    int FX_Gone;\n}\n#endif\n",
+            "#ifdef FX_ON\n#else\nclass FX_Gone\n{\n}\n#endif\n"
+            "#ifdef FX_ON\nclass C\n{\n    int FX_Gone;\n}\n#endif\n",
+            "#ifdef FX_ON\nclass FX_Gone\n{\n}\n"
+            "class C\n{\n#ifndef FX_ON\n    int FX_Gone;\n#endif\n}\n#endif\n",
+            "#ifdef FX_ON\n#ifndef FX_ON\nclass FX_Gone\n{\n}\n#endif\n#endif\n"
+            "class C\n{\n    int FX_Gone;\n}\n",
+        ]
+        for source in cases:
+            self.assertEqual([], _named_errors(source, vanilla=None)[0], source)
+        nested = "class C\n{\n#ifdef FX_ON\n#ifndef FX_ON\n    bool Debug;\n#endif\n#endif\n}\n"
+        self.assertEqual([], _named_errors(nested)[0])
+
+        # Still reported: the same test twice, tests of two macros, and a
+        # macro the file #defines or #undefs between the two blocks.
+        reported = [
+            ("#ifdef FX_ON\nclass FX_Opt\n{\n}\n#endif\n"
+             "#ifdef FX_ON\nclass C\n{\n    int FX_Opt;\n}\n#endif\n", [9]),
+            ("#ifdef FX_ON\nclass FX_Opt\n{\n}\n#endif\n"
+             "#ifndef FX_OFF\nclass C\n{\n    int FX_Opt;\n}\n#endif\n", [9]),
+            ("#ifndef FX_ON\nclass FX_Opt\n{\n}\n#endif\n#define FX_ON\n"
+             "#ifdef FX_ON\nclass C\n{\n    int FX_Opt;\n}\n#endif\n", [10]),
+            ("#ifdef FX_ON\nclass FX_Opt\n{\n}\n#endif\n#undef FX_ON\n"
+             "#ifndef FX_ON\nclass C\n{\n    int FX_Opt;\n}\n#endif\n", [10]),
+        ]
+        for source, lines in reported:
+            self.assertEqual(
+                lines,
+                [e["line"] for e in _named_errors(source, vanilla=None)[0]],
+                source,
+            )
+
+    def test_a_comparison_hides_no_later_declarator(self):
+        # Codex review of #113 (H4): the `<` of a comparison was read as
+        # opening template arguments, so the later declarator went unseen.
+        source = (
+            "class C\n{\n    void F(int a, int b)\n    {\n"
+            "        bool first = a < b, Debug = false;\n"
+            "        bool second = a<b, map;\n"
+            "    }\n}\n"
+        )
+        errors, _skipped = _named_errors(source)
+
+        self.assertEqual(
+            [(5, "Debug"), (6, "map")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+
+    def test_a_folder_without_class_managed_is_no_vanilla_tree(self):
+        errors, skipped = _named_errors(
+            "class C\n{\n    bool Debug;\n}\n", vanilla=NAMED / "bad"
+        )
+
+        self.assertEqual([], errors)
+        self.assertIn("declares no class Managed", skipped[0]["reason"])
+
+
+
+CAST = FIXTURES / "cast_unrelated_types"
+CAST_RULE = "ES-CAST-UNRELATED-TYPES"
+
+
+def _cast_errors(source, external=(), vanilla=CAST / "vanilla"):
+    from detectors.es_cast_unrelated_types import check_es_cast_unrelated_types
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    return check_es_cast_unrelated_types(
+        [("scripts/5_Mission/x.c", strip(source))],
+        [(path, strip(text)) for path, text in external],
+        vanilla,
+    )
+
+
+class TestCastUnrelatedTypes(unittest.TestCase):
+    """ES-CAST-UNRELATED-TYPES: `X.Cast(y)` between classes on separate branches.
+
+    Inbox fb-20261009-122148-c852, DayZDiag 1.29: `IngameHud.Cast(mission)`
+    with `Mission mission`, "Types 'IngameHud' and 'Mission' are not related".
+    """
+
+    def test_ticket_repro_fails(self):
+        exit_code, result = script_validator.run(
+            [str(CAST / "bad"), "--vanilla-root", str(CAST / "vanilla")]
+        )
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, CAST_RULE)
+        self.assertEqual([12], [e["line"] for e in errors])
+        self.assertIn("'IngameHud.Cast(mission)'", errors[0]["message"])
+        self.assertIn("IngameHud > Hud > Managed", errors[0]["message"])
+        self.assertIn("fx_hudhook.c", errors[0]["file"])
+        assert_standard_findings(self, result)
+
+    def test_without_the_vanilla_tree_nothing_is_judged(self):
+        _code, result = script_validator.run([str(CAST / "bad")])
+
+        self.assertEqual([], _errors_of(result, CAST_RULE))
+
+    def test_related_and_unknown_casts_pass(self):
+        _code, result = script_validator.run(
+            [str(CAST / "ok"), "--vanilla-root", str(CAST / "vanilla")]
+        )
+
+        # Down- and up-casts, the HUD from GetHud(), a call's result, an
+        # undeclared name, a typedef, Class, a parameter of a related type,
+        # and the ticket's cast in a comment, a string and #if 0.
+        self.assertEqual([], _errors_of(result, CAST_RULE))
+
+    def test_a_parameter_and_a_member_are_resolved(self):
+        source = (
+            "class C\n{\n    Mission m_Mission;\n\n"
+            "    void F(Mission param, int n)\n    {\n"
+            "        IngameHud.Cast(param);\n"
+            "        IngameHud.Cast(m_Mission);\n"
+            "    }\n}\n"
+        )
+
+        self.assertEqual([7, 8], [e["line"] for e in _cast_errors(source)])
+
+    def test_a_local_of_a_closed_block_is_out_of_scope(self):
+        source = (
+            "class C\n{\n    Hud m_X;\n\n    void F()\n    {\n"
+            "        if (m_X)\n        {\n            Mission m_X = null;\n"
+            "        }\n        IngameHud.Cast(m_X);\n"
+            "        Mission m_Y = null;\n        IngameHud.Cast(m_Y);\n"
+            "    }\n}\n"
+        )
+
+        self.assertEqual([13], [e["line"] for e in _cast_errors(source)])
+
+    def test_unresolvable_chains_and_declarations_are_skipped(self):
+        cases = {
+            # a parent nobody declares
+            "class FX_A : FX_Nowhere\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_A.Cast(m);\n}\n",
+            # two parents for one class
+            "class FX_B : Hud\n{\n}\n"
+            "#ifdef FX_OTHER\nclass FX_B : IngameHud\n{\n}\n#endif\n"
+            "void F(Mission m)\n{\n    FX_B.Cast(m);\n}\n",
+            # only a modded declaration
+            "modded class FX_Unseen\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_Unseen.Cast(m);\n}\n",
+            # a template class, a template-typed and an array variable
+            "class FX_T<Class T>\n{\n}\n"
+            "void F(array<Mission> a, Mission b[2])\n{\n"
+            "    FX_T.Cast(a);\n    IngameHud.Cast(a);\n    IngameHud.Cast(b);\n}\n",
+            # a later declarator makes the name unknown, even with a member
+            "class C\n{\n    Mission m;\n    void F()\n    {\n"
+            "        Hud a, m;\n        IngameHud.Cast(m);\n    }\n}\n",
+            # a template class as the target
+            "class FX_T<Class T>\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_T.Cast(m);\n}\n",
+            # a name that is a template parameter somewhere
+            "class FX_Box<Class FX_Item>\n{\n}\nclass FX_Item\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_Item.Cast(m);\n}\n",
+            # a class that is also a typedef, and a primitive declared as a class
+            "class FX_Dual\n{\n}\ntypedef Hud FX_Dual;\nclass int\n{\n}\n"
+            "void F(Mission m, int i)\n{\n    FX_Dual.Cast(m);\n"
+            "    IngameHud.Cast(i);\n}\n",
+            # Class, the implicit root of every class
+            "void F(Mission m)\n{\n    Class.Cast(m);\n}\n",
+            # a parent cycle
+            "class FX_C1 : FX_C2\n{\n}\nclass FX_C2 : FX_C1\n{\n}\n"
+            "void F(Mission m)\n{\n    FX_C1.Cast(m);\n}\n",
+            # a parent behind a directive in the header (Codex review of
+            # #113, H2), after `:` and after `extends`
+            "class FX_D\n#ifdef FX_X\n    : Mission\n#endif\n{\n}\n"
+            "void F(FX_D d)\n{\n    Mission.Cast(d);\n}\n",
+            "class FX_E extends\n#ifdef FX_X\n    Mission\n#else\n    Hud\n"
+            "#endif\n{\n}\nvoid F(FX_E e)\n{\n    Mission.Cast(e);\n}\n",
+            # the cast under #if 0
+            "void F(Mission m)\n{\n#if 0\n    IngameHud.Cast(m);\n#endif\n}\n",
+            # two types in two branches, for a local and for a member
+            "void F()\n{\n#ifdef FX_A\n    Mission x;\n#else\n"
+            "    MissionGameplay x;\n#endif\n    IngameHud.Cast(x);\n}\n",
+            "class C\n{\n#ifdef FX_A\n    Mission m_X;\n#else\n"
+            "    MissionGameplay m_X;\n#endif\n"
+            "    void F()\n    {\n        IngameHud.Cast(m_X);\n    }\n}\n",
+            # a parameter of another method is no member
+            "class C\n{\n    void G(Mission m_P)\n    {\n    }\n"
+            "    void F()\n    {\n        IngameHud.Cast(m_P);\n    }\n}\n",
+            # a local of another method is no member
+            "class C\n{\n    void G()\n    {\n        Mission m_Z;\n    }\n"
+            "    void F()\n    {\n        IngameHud.Cast(m_Z);\n    }\n}\n",
+            # a local under #if 0 does not hide the member
+            "class C\n{\n    Hud m_Q;\n    void F()\n    {\n#if 0\n"
+            "        Mission m_Q;\n#endif\n        IngameHud.Cast(m_Q);\n    }\n}\n",
+            # this, and an enum
+            "enum FX_E\n{\n    A\n}\n"
+            "void F(FX_E e)\n{\n    IngameHud.Cast(this);\n    IngameHud.Cast(e);\n}\n",
+        }
+        for source in cases:
+            self.assertEqual([], _cast_errors(source), source)
+
+    def test_modded_class_keeps_the_hierarchy_and_addon_classes_resolve(self):
+        source = (
+            "modded class Mission\n{\n}\n"
+            "class FX_Own\n{\n}\n"
+            "void F(Mission m, FX_Own o)\n{\n"
+            "    MissionGameplay.Cast(m);\n    IngameHud.Cast(o);\n}\n"
+        )
+
+        self.assertEqual([10], [e["line"] for e in _cast_errors(source)])
+        modded_with_parent = (
+            "modded class IngameHud\n{\n}\n"
+            "void F(Mission m)\n{\n    IngameHud.Cast(m);\n}\n"
+        )
+        self.assertEqual(
+            [6], [e["line"] for e in _cast_errors(modded_with_parent)]
+        )
+        forward = (
+            "class IngameHud;\n"
+            "void F(Mission m)\n{\n    IngameHud.Cast(m);\n}\n"
+        )
+        self.assertEqual([4], [e["line"] for e in _cast_errors(forward)])
+        returned = (
+            "Mission F(Mission m)\n{\n    if (!m)\n        return m;\n"
+            "    return IngameHud.Cast(m);\n}\n"
+        )
+        self.assertEqual([5], [e["line"] for e in _cast_errors(returned)])
+        # Without the vanilla tree IngameHud's chain does not resolve.
+        self.assertEqual([], _cast_errors(source, vanilla=None))
+        # Classes the addon and an external root declare whole still do.
+        own = "class FX_P\n{\n}\nvoid F(FX_P p)\n{\n    FX_Q.Cast(p);\n}\n"
+        external = [("scripts/3_Game/q.c", "class FX_Q\n{\n}\n")]
+        self.assertEqual(
+            [6], [e["line"] for e in _cast_errors(own, external, vanilla=None)]
+        )
+
+
+class TestFileScopes(unittest.TestCase):
+    """The lookups of ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS.
+
+    Mods pass of #113, 2026-10-17: counting lines from the start of the file
+    and scanning every method and class body at each call kept the protected
+    method rule running for more than 20 minutes on a 10 MB file. FileScopes
+    reads them once; it must give what the scans gave.
+    """
+
+    SOURCE = (
+        "class FX_A\n{\n    FX_A m_X;\n    void F()\n    {\n        m_X.G();\n"
+        "    }\n"
+        # A class header inside a body: its braces nest in FX_A's.
+        "class FX_In\n{\n    void H()\n    {\n    }\n}\n"
+        "    void G()\n    {\n        m_X.G();\n    }\n}\n"
+        "void Loose()\n{\n}\n"
+        "class FX_B\n{\n    Managed m_X;\n    void K()\n    {\n        m_X.G();\n"
+        "    }\n}\n"
+    )
+
+    def _scopes(self):
+        from detectors.es_cast_unrelated_types import FileScopes
+        from stripper import strip_enforce_comments_and_strings
+
+        stripped = strip_enforce_comments_and_strings(self.SOURCE, "x.c")[0]
+        return stripped, FileScopes(stripped)
+
+    def test_lookups_give_what_the_scans_gave(self):
+        from detectors.es_cast_unrelated_types import _class_regions
+        from shared.method_recognition import find_method_for_line, find_method_regions
+
+        stripped, scopes = self._scopes()
+        methods = find_method_regions(stripped)
+        regions = _class_regions(stripped)
+
+        self.assertEqual(3, len(regions))
+        for line in range(stripped.count("\n") + 3):
+            self.assertEqual(find_method_for_line(methods, line), scopes.method(line))
+        for at in range(len(stripped) + 1):
+            self.assertEqual(stripped.count("\n", 0, at) + 1, scopes.line(at))
+            around = [r for r in regions if r[0] < at < r[1]]
+            self.assertEqual(max(around) if around else None, scopes.class_body(at))
+
+    def test_a_member_is_read_in_its_own_class_body(self):
+        from detectors.es_cast_unrelated_types import _argument_type
+
+        stripped, scopes = self._scopes()
+        calls = [i for i in range(len(stripped)) if stripped.startswith("m_X.G(", i)]
+
+        # F and G of FX_A (G after the nested body), then K of FX_B.
+        self.assertEqual(
+            ["FX_A", "FX_A", "Managed"],
+            [_argument_type(stripped, scopes, "m_X", at) for at in calls],
+        )
+
+
+class TestMethodSignatureCollection(unittest.TestCase):
+    """find_method_regions, which FileScopes and nine other rules read.
+
+    Second mods pass of #113, 2026-10-17: it collected a signature at every
+    line, and from a "(" that never closes each one ran to the end of the
+    file, rebuilding the string at every line. Two recovered volumes (files
+    of up to 20 MB of binary data) still passed 20 minutes, and method headers
+    split by #ifdef branches took 21 s for 135 KB (second Codex review, J2).
+    Only a line that can start a signature is read now, and each is read up
+    to what METHOD_SIGNATURE_RE needs, from tables built once per file.
+    """
+
+    SPLIT = (
+        "class C\n{\n#ifdef X\n    void F(int a,\n#else\n    void F(int a, int b,\n"
+        "#endif\n        int c)\n    {\n    }\n}\n"
+    )
+
+    def test_only_a_line_that_can_start_a_signature_is_read(self):
+        from shared import method_recognition
+
+        source = "\n".join(
+            [
+                "x = Foo(a,",  # "=" before the "("
+                "Print(a,",  # one word before it
+                "\ufffd(",  # binary data read with errors="replace"
+                "void F(int a,",
+                "    int b)",
+                "{",
+                "}",
+            ]
+        )
+        read = []
+        collect = method_recognition._Signatures.collect
+
+        def counted(signatures, start):
+            read.append(start)
+            return collect(signatures, start)
+
+        with mock.patch.object(method_recognition._Signatures, "collect", counted):
+            methods = method_recognition.find_method_regions(source)
+
+        self.assertEqual([3], read)
+        self.assertEqual(
+            [("F", "int a, int b", 6)],
+            [(m["name"], m["params"], m["brace_line"]) for m in methods],
+        )
+
+    def test_the_reader_gives_what_collect_method_signature_gives(self):
+        from shared import method_recognition as recognition
+
+        sources = (
+            self.SPLIT,
+            "void T((int a)\n{\n}\n",  # the "{" after ")" is on the next line
+            "void K(int a\n{\n}\n",  # no ")" at all
+            "void Q(int a,\n\n int b)\n\n{\n}\n",
+            "void F(int a) { }\n",
+        )
+        groups = ("indent", "return_type", "name", "params", "brace")
+        for source in sources:
+            lines = source.split("\n")
+            signatures = recognition._Signatures(lines)
+            for start, line in enumerate(lines):
+                if not recognition.may_start_method_signature(line):
+                    continue
+                with self.subTest(source=source, start=start):
+                    full, end = recognition.collect_method_signature(lines, start)
+                    read, read_end = signatures.collect(start)
+                    self.assertEqual(end, read_end)
+                    whole = recognition.METHOD_SIGNATURE_RE.match(full)
+                    cut = recognition.METHOD_SIGNATURE_RE.match(read)
+                    self.assertEqual(
+                        whole and [whole.group(g) for g in groups],
+                        cut and [cut.group(g) for g in groups],
+                    )
+
+    def test_a_header_that_never_closes_is_not_read_to_the_end(self):
+        from shared import method_recognition
+
+        lines = (self.SPLIT * 200).split("\n")
+        signature, end = method_recognition._Signatures(lines).collect(3)
+
+        self.assertEqual(len(lines) - 1, end)
+        self.assertEqual(
+            "    void F(int a, #else void F(int a, int b, #endif int c) {", signature
+        )
+
+
+STATIC_MEMBER = FIXTURES / "undeclared_static_member"
+STATIC_MEMBER_RULE = "ES-UNDECLARED-STATIC-MEMBER"
+
+
+def _static_member_errors(sources, external=(), vanilla=None):
+    from detectors.es_undeclared_static_member import (
+        check_es_undeclared_static_member,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    if isinstance(sources, str):
+        sources = [("scripts/4_World/x.c", sources)]
+    return check_es_undeclared_static_member(
+        [(path, strip(text)) for path, text in sources],
+        [(path, strip(text)) for path, text in external],
+        vanilla,
+    )
+
+
+class TestUndeclaredStaticMember(unittest.TestCase):
+    """ES-UNDECLARED-STATIC-MEMBER: `Class.Member` the addon's class lacks.
+
+    Inbox fb-20261006-002741-28fa (LFSkateboard): ANIM_SWAP_ENABLED deleted
+    from LFSK_Constants while seven call sites still read it; DayZ refused
+    the World module on the first boot.
+    """
+
+    def test_ticket_repro_fails(self):
+        exit_code, result = script_validator.run([str(STATIC_MEMBER / "bad")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, STATIC_MEMBER_RULE)
+        self.assertEqual([9, 11], [e["line"] for e in errors])
+        self.assertIn("'FX_Constants.ANIM_SWAP_ENABLED'", errors[0]["message"])
+        self.assertIn("'FX_Constants.Reload('", errors[1]["message"])
+        self.assertIn("fx_ride.c", errors[0]["file"])
+        assert_standard_findings(self, result)
+
+    def test_declared_inherited_and_foreign_members_pass(self):
+        _code, result = script_validator.run([str(STATIC_MEMBER / "ok")])
+
+        # A const and a method of an addon ancestor, a const under #ifdef, a
+        # member of a modded declaration in another module, Cast, a class
+        # whose parent is not the addon's, and the bad reference in a
+        # comment, a string and #if 0.
+        self.assertEqual([], _errors_of(result, STATIC_MEMBER_RULE))
+
+    def test_every_addon_declaration_and_ancestor_counts(self):
+        sources = [
+            ("scripts/3_Game/a.c",
+             "class FX_Base\n{\n    static int A;\n}\n"
+             "class FX_K : FX_Base\n{\n    static int B;\n}\n"),
+            ("scripts/4_World/b.c",
+             "modded class FX_K\n{\n    static int C()\n    {\n"
+             "        return D;\n    }\n}\n"
+             "void F()\n{\n    int x = FX_K.A + FX_K.B + FX_K.C();\n"
+             "    x = FX_K.D;\n    x = FX_K.E;\n}\n"),
+        ]
+
+        # D is only read inside a method body, so it is no declaration.
+        self.assertEqual(
+            [11, 12], [e["line"] for e in _static_member_errors(sources)]
+        )
+
+    def test_classes_not_wholly_the_addons_are_skipped(self):
+        cases = {
+            # a parent nobody declares, or one outside the addon
+            "class FX_A : FX_Nowhere\n{\n}\nvoid F()\n{\n    FX_A.X;\n}\n",
+            # only a modded declaration
+            "modded class FX_M\n{\n}\nvoid F()\n{\n    FX_M.X;\n}\n",
+            # two parents for one class
+            "class FX_P1\n{\n}\nclass FX_P2\n{\n}\n"
+            "class FX_B : FX_P1\n{\n}\n#ifdef FX_O\nclass FX_B : FX_P2\n{\n}\n"
+            "#endif\nvoid F()\n{\n    FX_B.X;\n}\n",
+            # a template class
+            "class FX_T<Class T>\n{\n}\nvoid F()\n{\n    FX_T.X;\n}\n",
+            # an enum, and a class that is also a typedef
+            "enum FX_E\n{\n    A\n}\nclass FX_D\n{\n}\ntypedef FX_E FX_D;\n"
+            "void F()\n{\n    FX_E.X;\n    FX_D.X;\n}\n",
+            # a parent cycle
+            "class FX_C1 : FX_C2\n{\n}\nclass FX_C2 : FX_C1\n{\n}\n"
+            "void F()\n{\n    FX_C1.X;\n}\n",
+            # a header whose body cannot be read
+            "class FX_H\n{\n    static int A;\n}\nmodded class FX_H extends\n"
+            "void F()\n{\n    FX_H.X;\n}\n",
+            # a class-like name that is also a variable
+            "class FX_V\n{\n}\nclass G\n{\n    FX_V FX_V;\n}\n"
+            "void F()\n{\n    FX_V.X;\n}\n",
+            # a method every class inherits from Class
+            "class FX_R\n{\n}\nvoid F(Class c)\n{\n"
+            "    FX_R.Cast(c);\n    FX_R r;\n    FX_R.CastTo(r, c);\n"
+            "    typename t = FX_R.StaticType();\n"
+            "    t = FX_R.StaticGetType();\n}\n",
+            # the reference under #if 0, and after another dot
+            "class FX_Z\n{\n}\nvoid F()\n{\n#if 0\n    FX_Z.X;\n#endif\n"
+            "    g.FX_Z.X;\n}\n",
+            # a forward declaration only
+            "class FX_F;\nvoid F()\n{\n    FX_F.X;\n}\n",
+        }
+        for source in cases:
+            self.assertEqual([], _static_member_errors(source), source)
+
+    def test_the_methods_of_class_are_the_ten_of_enscript_c(self):
+        # 1_core/proto/enscript.c:10-114, the same in 1.29 and 1.30.
+        for member in (
+            "IsInherited", "ClassName", "GetDebugName", "Type", "StaticType",
+            "StaticGetType", "ToString", "Cast", "CastTo", "SafeCastType",
+        ):
+            source = "class FX_R\n{\n}\nvoid F()\n{\n    FX_R.%s();\n}\n" % member
+            self.assertEqual([], _static_member_errors(source), member)
+        # On the list from memory before; Class does not declare it.
+        source = "class FX_R\n{\n}\nvoid F()\n{\n    FX_R.IsInstanceOf();\n}\n"
+        self.assertEqual([6], [e["line"] for e in _static_member_errors(source)])
+
+    def test_a_declaration_outside_the_addon_skips_the_class(self):
+        source = "class FX_X\n{\n}\nvoid F()\n{\n    FX_X.Y;\n}\n"
+
+        self.assertEqual([6], [e["line"] for e in _static_member_errors(source)])
+        for external in ("modded class FX_X\n{\n}\n", "class FX_X\n{\n}\n"):
+            self.assertEqual(
+                [],
+                _static_member_errors(source, [("scripts/4_World/e.c", external)]),
+                external,
+            )
+        # The vanilla tree: Mission is declared there, and Class's own
+        # methods come from its `class Class`.
+        own_mission = (
+            "class Mission\n{\n}\nvoid F()\n{\n    Mission.Y;\n}\n"
+        )
+        self.assertEqual([6], [e["line"] for e in _static_member_errors(own_mission)])
+        self.assertEqual(
+            [], _static_member_errors(own_mission, vanilla=CAST / "vanilla")
+        )
+
+
+PROTECTED_METHOD = FIXTURES / "protected_method_cross_class"
+PROTECTED_METHOD_RULE = "ES-PROTECTED-METHOD-CROSS-CLASS"
+
+
+def _protected_method_warnings(sources, external=()):
+    from detectors.es_protected_method_cross_class import (
+        check_es_protected_method_cross_class,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    if isinstance(sources, str):
+        sources = [("scripts/4_World/x.c", sources)]
+    return check_es_protected_method_cross_class(
+        [(path, strip(text)) for path, text in sources],
+        [(path, strip(text)) for path, text in external],
+        None,
+    )
+
+
+_OWNER = (
+    "class FX_Cmd : HumanCommandScript\n{\n"
+    "    protected void FX_Hide()\n    {\n    }\n"
+    "    private int FX_Own(int a = Math.Max(1, 2))\n    {\n        return a;\n    }\n"
+    "}\n"
+)
+
+
+class TestProtectedMethodCrossClass(unittest.TestCase):
+    """ES-PROTECTED-METHOD-CROSS-CLASS: a hidden method called from outside.
+
+    Inbox fb-20261006-002741-28fa: `cmd.LFSK_OnServerState(...)` from
+    PlayerBase.OnRPC on a local LFSK_RideCommand whose method is protected.
+    WARN: the refusal is measured for fields, not for methods.
+    """
+
+    def test_ticket_repro_warns(self):
+        exit_code, result = script_validator.run([str(PROTECTED_METHOD / "bad")])
+
+        self.assertEqual(2, exit_code)
+        warnings = [
+            w for w in result["warnings"] if w["rule_id"] == PROTECTED_METHOD_RULE
+        ]
+        self.assertEqual([22], [w["line"] for w in warnings])
+        self.assertEqual("WARN", warnings[0]["severity"])
+        self.assertIn("'cmd.FX_OnServerState('", warnings[0]["message"])
+        self.assertIn("class PlayerBase", warnings[0]["message"])
+        assert_standard_findings(self, result)
+
+    def test_calls_from_the_hierarchy_and_public_calls_pass(self):
+        _code, result = script_validator.run([str(PROTECTED_METHOD / "ok")])
+
+        self.assertEqual(
+            [],
+            [w for w in result["warnings"] if w["rule_id"] == PROTECTED_METHOD_RULE],
+        )
+
+    def test_private_parameter_member_and_free_function(self):
+        source = _OWNER + (
+            "class FX_Other\n{\n    FX_Cmd m_Cmd;\n"
+            "    void F(FX_Cmd p)\n    {\n"
+            "        p.FX_Own();\n        m_Cmd.FX_Hide();\n    }\n}\n"
+            "void G(FX_Cmd c)\n{\n    c.FX_Hide();\n}\n"
+        )
+
+        found = _protected_method_warnings(source)
+        self.assertEqual([16, 17, 22], [w["line"] for w in found])
+        self.assertIn("is private in FX_Cmd", found[0]["message"])
+        self.assertIn("code outside any class", found[2]["message"])
+
+    def test_unknown_or_foreign_cases_are_skipped(self):
+        call = "class FX_U\n{\n    void F(FX_Cmd c)\n    {\n        c.FX_Hide();\n    }\n}\n"
+        cases = {
+            # a public declaration of the same name in another addon declaration
+            _OWNER + "modded class FX_Cmd\n{\n    void FX_Hide()\n    {\n    }\n}\n" + call,
+            # the receiver's class is also declared outside the addon (below)
+            # a template, a modded-only and an unreadable owner
+            "class FX_Cmd<Class T>\n{\n    protected void FX_Hide();\n}\n" + call,
+            "modded class FX_Cmd\n{\n    protected void FX_Hide();\n}\n" + call,
+            "class FX_Cmd\n{\n    protected void FX_Hide();\n}\nmodded class FX_Cmd extends\n" + call,
+            # the method only in a vanilla ancestor
+            "class FX_Cmd : HumanCommandScript\n{\n}\n" + call,
+            # a caller with two parents, and a parent cycle
+            _OWNER + "class FX_P\n{\n}\nclass FX_U : FX_P\n{\n}\n"
+            "#ifdef FX_X\nclass FX_U : FX_Cmd\n{\n}\n#endif\n" + call,
+            _OWNER + "class FX_U : FX_V\n{\n}\nclass FX_V : FX_U\n{\n}\n" + call,
+            # a parent that a directive in the header hides, in the caller
+            # and in its parent (Codex review of #113, H2)
+            _OWNER + "class FX_U\n#ifdef FX_X\n    : FX_Cmd\n#endif\n"
+            "{\n    void F(FX_Cmd c)\n    {\n        c.FX_Hide();\n    }\n}\n",
+            _OWNER + "class FX_P\n#ifdef FX_X\n    : FX_Cmd\n#endif\n{\n}\n"
+            "class FX_U : FX_P\n{\n    void F(FX_Cmd c)\n    {\n"
+            "        c.FX_Hide();\n    }\n}\n",
+            # this, super, a field initialised by a call, and #if 0
+            _OWNER + "class FX_W : FX_Cmd\n{\n    void F()\n    {\n"
+            "        this.FX_Hide();\n        super.FX_Hide();\n    }\n}\n",
+            "class FX_Cmd\n{\n    int m_N = FX_Hide();\n    protected int FX_Peek();\n}\n"
+            "class FX_U\n{\n    void F(FX_Cmd c)\n    {\n        c.FX_Hide();\n    }\n}\n",
+            _OWNER + "void G(FX_Cmd c)\n{\n#if 0\n    c.FX_Hide();\n#endif\n}\n",
+            # an untyped or array-typed receiver
+            _OWNER + "void G(array<FX_Cmd> a, FX_Cmd b[2])\n{\n    a.FX_Hide();\n"
+            "    b.FX_Hide();\n    x.FX_Hide();\n}\n",
+        }
+        for source in cases:
+            self.assertEqual([], _protected_method_warnings(source), source)
+        outside = _protected_method_warnings(
+            _OWNER + call, [("scripts/4_World/e.c", "modded class FX_Cmd\n{\n}\n")]
+        )
+        self.assertEqual([], outside)
+        self.assertEqual([5 + 10], [w["line"] for w in _protected_method_warnings(_OWNER + call)])
+
+    def test_a_descendant_through_an_external_root_is_related(self):
+        source = _OWNER + (
+            "class FX_U : FX_Ext\n{\n    void F(FX_Cmd c)\n    {\n"
+            "        c.FX_Hide();\n    }\n}\n"
+        )
+        external = [("scripts/4_World/e.c", "class FX_Ext : FX_Cmd\n{\n}\n")]
+
+        self.assertEqual([], _protected_method_warnings(source, external))
+        self.assertEqual([15], [w["line"] for w in _protected_method_warnings(source)])
+
+
+MULTILINE_CONDITION = FIXTURES / "multiline_condition_operator"
+MULTILINE_CONDITION_RULE = "ES-MULTILINE-CONDITION-OPERATOR"
+
+
+def _multiline_condition_lines(source):
+    from detectors.es_multiline_condition_operator import (
+        check_es_multiline_condition_operator,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    stripped = strip_enforce_comments_and_strings(source, "x.c")[0]
+    return [
+        w["line"]
+        for w in check_es_multiline_condition_operator(stripped, "x.c")
+    ]
+
+
+class TestMultilineConditionOperator(unittest.TestCase):
+    """ES-MULTILINE-CONDITION-OPERATOR: `if (a ||` continued on the next line.
+
+    Inbox fb-20261006-030019-e074, DayZ 1.30.164014 server: "Invalid
+    statement ')'" and "Syntax error" at the continuation. WARN: one
+    measurement, vanilla control pending.
+    """
+
+    def test_ticket_repro_warns(self):
+        exit_code, result = script_validator.run([str(MULTILINE_CONDITION / "bad")])
+
+        self.assertEqual(2, exit_code)
+        warnings = [
+            w for w in result["warnings"]
+            if w["rule_id"] == MULTILINE_CONDITION_RULE
+        ]
+        self.assertEqual([10, 18], [w["line"] for w in warnings])
+        self.assertIn("trailing '||'", warnings[0]["message"])
+        self.assertIn("trailing '&&'", warnings[1]["message"])
+        assert_standard_findings(self, result)
+
+    def test_single_line_conditions_and_other_continuations_pass(self):
+        _code, result = script_validator.run([str(MULTILINE_CONDITION / "ok")])
+
+        # bool locals, an operator in a comment and in a string, a call's
+        # argument list over two lines, and the ticket's shape under #if 0.
+        self.assertEqual(
+            [],
+            [w for w in result["warnings"] if w["rule_id"] == MULTILINE_CONDITION_RULE],
+        )
+
+    def test_one_finding_per_header_and_its_line(self):
+        source = (
+            "void F(bool a, bool b, bool c)\n{\n"
+            "    if (a &&\n        b ||\n        c)\n        return;\n"
+            "    else if (F2(a,\n                b) && c ||   \n        a)\n        return;\n"
+            "    if (a) { if (b ||\n        c) return; }\n"
+            "    int x = (a &&\n        b);\n"
+            "}\n"
+        )
+
+        self.assertEqual([3, 8, 11], _multiline_condition_lines(source))
+
+    def test_an_unclosed_header_is_not_judged(self):
+        self.assertEqual([], _multiline_condition_lines("if (a &&\n    b\n"))
+
+
 if __name__ == "__main__":
     unittest.main()
 
