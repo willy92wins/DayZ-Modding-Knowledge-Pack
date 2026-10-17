@@ -838,6 +838,13 @@ class TestEsSyncvarContract(unittest.TestCase):
             "vanilla_130",
         )
 
+    def test_syncvar_construction_hook_after_a_brace_in_a_string_passes(self):
+        self.assert_syncvar_passes(
+            "ok_syncvar_register_construction_sync_variables.c",
+            CONSTRUCTION,
+            "vanilla_hook_after_brace_string",
+        )
+
     def test_syncvar_other_prefix_does_not_trigger_write_rule(self):
         self.assert_syncvar_passes("ok_syncvar_other_prefix.c")
 
@@ -897,6 +904,51 @@ class TestEsSyncvarContract(unittest.TestCase):
             19,
             expected_message,
             CONSTRUCTION,
+        )
+
+    def test_syncvar_own_register_construction_override_fails_on_a_string(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_own_hook.c line 19: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_own_hook.c",
+            19,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_hook_string",
+        )
+
+    def test_syncvar_own_register_construction_override_fails_on_a_field(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_own_hook.c line 19: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_own_hook.c",
+            19,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_hook_field",
+        )
+
+    def test_syncvar_register_construction_override_with_parameters_fails(self):
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_with_parameters.c line 12: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_with_parameters.c",
+            12,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_130",
         )
 
     def test_syncvar_write_without_dirty_fails(self):

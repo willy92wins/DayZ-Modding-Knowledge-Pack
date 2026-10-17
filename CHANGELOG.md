@@ -219,8 +219,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   254 to 260 and `ES-GETTYPE-EXACT-MATCH` from 40 to 36. `tree.dayz_build` now names the measured
   build; `sources/source-map.json` keeps 1.29.0.163451, the build the pack is anchored on. The
   seven validator rules added above report nothing on the 1.30 tree. Full runs there took 132 to
-  217 seconds on the owner's PC on 2026-10-17, and the 1.29 tree took 124 and 167 seconds there
-  the same day; the 1.29 baseline recorded 86 on 2026-08-18. Pipeline inbox 818e.
+  217 seconds on the owner's PC on 2026-10-17, and a run of the control on the 1.29 tree took 167
+  seconds there the same day; the 1.29 baseline recorded 86 on 2026-08-18. Pipeline inbox 818e.
 - `dayz-animation-pipeline` `SKILL.md`: the section heading now reads "Locomotion in scripted commands:
   driving the vanilla graph (added 2026-06-11, measured on 1.30 Exp 2026-10-06)". The 2026-06-11
   paragraph (LFSlidingFloor, `GetCurrentMovement()` override) ends with a dated qualification: on 1.30
@@ -239,16 +239,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `dayz-script-validator`: `ES-SYNCVAR-CONTRACT` accepts SyncVars registered in an override of
   `RegisterConstructionSyncVariables()` when the vanilla tree (`--vanilla-root`,
-  `DAYZ_VANILLA_ROOT` or `P:\scripts`) declares that hook in `EntityAI`, as DayZ 1.30 does
-  (`3_game/entities/entityai.c:3481`). In 1.30 the `EntityAI` constructor calls
+  `DAYZ_VANILLA_ROOT` or `P:\scripts`) declares that hook as a method of `EntityAI`, as DayZ 1.30
+  does (`3_game/entities/entityai.c:3481`). In 1.30 the `EntityAI` constructor calls
   `ConstructionInit()` when the type's `CfgVehicles` entry has a `Construction` class (`:248-249`),
   which calls the hook (`:3469`), and `BuildingBase` registers the ten `m_SyncParts` ints of its
   construction component in its override (`4_world/entities/game/super/building.c:29-44`): the
-  vanilla control on 1.30.164078 got ten false FAILs there, "called outside constructor". 1.29 has
-  no such hook, so there a method of that name is the mod's own and still fails, override or not,
-  as in the two cases the Codex reviews of #117 built: a helper called from `EEInit()`, and the
-  override of a method the mod declares in its own base class. Without a vanilla tree the rule
-  keeps that 1.29 behaviour, the build the pack is anchored on. 251 unit tests pass (246 before).
+  vanilla control on 1.30.164078 got ten false FAILs there, "called outside constructor". Only an
+  override without parameters counts, as the hook has none. The hook counts only as a method of
+  `EntityAI`, read with comments and strings stripped: a field or a string of that name does not
+  turn it on, and a brace in a string does not hide it. 1.29 has no such hook, so there a method
+  of that name is the mod's own and still fails, override or not. The Codex reviews of #117 built
+  four cases that passed with earlier versions and fail now: a helper of that name without
+  `override` called from `EEInit()`; on 1.29, the override of a method the mod declares in its own
+  base class; on 1.30, an override that takes a parameter and registers on another entity; and an
+  override checked against an `EntityAI` that names the hook only in a string or a field. Without
+  a vanilla tree the rule keeps that 1.29 behaviour, the build the pack is anchored on. One case
+  still passes with the 1.30 tree: an override without parameters in a class that does not derive
+  from `EntityAI`, because the rule reads one file at a time and does not resolve base classes. 255
+  unit tests pass (246 before).
 - `dayz-test-ingame`: SP-095 point 1 told the reader to start a missing Steam with
   `steam.exe -silent`, and the Steam prerequisite to restart it, without saying where from. From a
   shell inside the Claude or Codex app that Steam registers only in the app's private registry
