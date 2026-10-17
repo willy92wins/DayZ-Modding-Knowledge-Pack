@@ -1211,10 +1211,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-codex-r2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the fourth Codex review of PR #113 at 0a06f7a (GREEN; run on the owner's PC, reviews/pr113-codex-sol-r4.md). L2 (P2): ES-VARIABLE-NAMED-AS-TYPE counted lines from the start of the file for each name that matches a type (es_variable_named_as_type.py:307 at 0a06f7a), so its cost grew with the square of those names; Codex measured 34.7 s for 64 000 of them in 2 MB. Since the offsets come in order, the rule now counts on from the previous name. L1 (P2): no test pinned the cost of line_tests in shared/dead_branches.py; with the scan of c892ef1 back, the 242 tests passed. Two tests now bound the cost: line_tests on 64 000 lines of four spaces (30.5 s with the scan of c892ef1 and 0.08 s now on one machine; bound 2 s of process time), and the rule on 64 000 members named like a type that their own file declares in another branch of the same block (42 s before and 1.5 s now; bound 10 s). Measured: python3 -m unittest discover tests, 244 passed (242 before). Reverting either fix turns its test red, and so do four mutants of the count: the last offset never moved, a count that does not add up, line 0 at the start, and a count restarted at each name. The rule before and after gives the same findings on 20 000 random sources. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8b3150957e31e75ee68078d4454eff5235be1d74733107442468f88428b1701c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-codex-r4-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a7710cefcefaaddcb9881f355abac028698c0ccdf115f389c3064f4001bac75b",
+      "output_hash": "8b3150957e31e75ee68078d4454eff5235be1d74733107442468f88428b1701c",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -25678,10 +25688,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-codex-r2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the fourth Codex review of PR #113 at 0a06f7a (GREEN; run on the owner's PC, reviews/pr113-codex-sol-r4.md). L2 (P2): ES-VARIABLE-NAMED-AS-TYPE counted lines from the start of the file for each name that matches a type (es_variable_named_as_type.py:307 at 0a06f7a), so its cost grew with the square of those names; Codex measured 34.7 s for 64 000 of them in 2 MB. Since the offsets come in order, the rule now counts on from the previous name. L1 (P2): no test pinned the cost of line_tests in shared/dead_branches.py; with the scan of c892ef1 back, the 242 tests passed. Two tests now bound the cost: line_tests on 64 000 lines of four spaces (30.5 s with the scan of c892ef1 and 0.08 s now on one machine; bound 2 s of process time), and the rule on 64 000 members named like a type that their own file declares in another branch of the same block (42 s before and 1.5 s now; bound 10 s). Measured: python3 -m unittest discover tests, 244 passed (242 before). Reverting either fix turns its test red, and so do four mutants of the count: the last offset never moved, a count that does not add up, line 0 at the start, and a count restarted at each name. The rule before and after gives the same findings on 20 000 random sources. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2e96702b471ead4dac625af3a64f3a50a579e031dee24e30d23f0ea28f3911a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-codex-r4-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a56e915445ae1c16229c45ca0267ba0533636796ceddba62ef6bb9e20e351cd1",
+      "output_hash": "2e96702b471ead4dac625af3a64f3a50a579e031dee24e30d23f0ea28f3911a0",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33723,10 +33743,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-codex-r2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: follow-up to the fourth Codex review of PR #113 at 0a06f7a (GREEN; run on the owner's PC, reviews/pr113-codex-sol-r4.md). L2 (P2): ES-VARIABLE-NAMED-AS-TYPE counted lines from the start of the file for each name that matches a type (es_variable_named_as_type.py:307 at 0a06f7a), so its cost grew with the square of those names; Codex measured 34.7 s for 64 000 of them in 2 MB. Since the offsets come in order, the rule now counts on from the previous name. L1 (P2): no test pinned the cost of line_tests in shared/dead_branches.py; with the scan of c892ef1 back, the 242 tests passed. Two tests now bound the cost: line_tests on 64 000 lines of four spaces (30.5 s with the scan of c892ef1 and 0.08 s now on one machine; bound 2 s of process time), and the rule on 64 000 members named like a type that their own file declares in another branch of the same block (42 s before and 1.5 s now; bound 10 s). Measured: python3 -m unittest discover tests, 244 passed (242 before). Reverting either fix turns its test red, and so do four mutants of the count: the last offset never moved, a count that does not add up, line 0 at the start, and a count restarted at each name. The rule before and after gives the same findings on 20 000 random sources. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c9ccb9fa9dd893436d7946b375b548ee0b268ecf3249722f94c9f5eea2a58865",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-codex-r4-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9f7a284c8d4e2fe1346a78ba60431bfdb341db68488cec0c712b6e5c930785d0",
+      "output_hash": "c9ccb9fa9dd893436d7946b375b548ee0b268ecf3249722f94c9f5eea2a58865",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
