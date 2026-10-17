@@ -116,7 +116,11 @@ were not measured again.
   is exact case, so a member `debug` passes: identifiers are case-sensitive
   and no case-only failure is on record. A name is judged against the types
   of its own module and the modules below it (a 4_World local may be named
-  like a 5_Mission class). Positions are those of `ES-RESERVED-WORD-IDENTIFIER`;
+  like a 5_Mission class). A file outside any `N_Module` folder may compile
+  in any module, so it is judged only against the types of 1_Core and those
+  of its own file; in a mod recovered without its module folders the rule
+  had reported a member against a 5_Mission class (mods pass of 2026-10-17).
+  Positions are those of `ES-RESERVED-WORD-IDENTIFIER`;
   code that never compiles is not judged, and a type the addon or an external
   root declares only there is no type. Nor is a name judged against a type its
   own file declares only in another branch of the same `#ifdef` block: the two

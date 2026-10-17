@@ -26,6 +26,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   refusal is measured for protected fields, not methods. A caller or an ancestor whose header a
   directive splits skips the call. 227 unit tests pass (222 before); the
   vanilla control was not run for this change (no vanilla tree on the machine that wrote it).
+  It and `ES-CAST-UNRELATED-TYPES` read the lines, methods and class bodies of a file once:
+  counting lines from the start of the file at every call kept this rule running past 20 minutes
+  on a 10 MB file of a recovered mod (pass over the owner's mods, 2026-10-17).
 - `dayz-script-validator`: `ES-UNDECLARED-STATIC-MEMBER` (FAIL) reports `ClassName.Member` and
   `ClassName.Member(` when no addon declaration of the class or of its ancestors names `Member`:
   a lane deleted `ANIM_SWAP_ENABLED` from its own `LFSK_Constants` while seven call sites still
@@ -51,14 +54,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `--external-scripts` root declares. `bool Debug;` in a 4_World settings class made DayZDiag 1.29
   refuse the module with `Variable name 'Debug' already used as type name`
   (fb-20260928-025254-35c1, corrected by 7ce1); the local `Widget map` of SP-317 is the same error.
-  Exact case; a name is judged against the types of its own module and those below it. Without a
+  Exact case; a name is judged against the types of its own module and those below it. A file
+  outside any `N_Module` folder is judged only against the types of 1_Core and of its own file:
+  in a mod recovered without its module folders, the pass over the owner's mods (2026-10-17) got a
+  false FAIL for a member `Attachments` against the 5_Mission class. Without a
   vanilla tree the addon's and external roots' types are still judged and the vanilla part is
   listed as SKIP. Commas between template arguments (`Param3<bool, vector, int> x`) and a
   typedef's own name are not declarators: the first vanilla control (2026-10-13) found 104 such
   false findings on 1.29.0.163451 and 109 on 1.30.164014, all of this shape, and none for the
   other six new rules. After the Codex review of #113, a type declared only where it never
   compiles, or only in another branch of the name's own `#ifdef` block, is no type for that name,
-  and the `<` of a comparison (`bool first = a < b, Debug = false;`) opens no template. 234 unit
+  and the `<` of a comparison (`bool first = a < b, Debug = false;`) opens no template. 238 unit
   tests pass.
 - `dayz-script-validator`: two FAIL rules from pipeline tickets of SimpleGroup.
   `ES-UNBALANCED-BRACKETS` reports the first `(`, `[` or `{` never closed or closed by another

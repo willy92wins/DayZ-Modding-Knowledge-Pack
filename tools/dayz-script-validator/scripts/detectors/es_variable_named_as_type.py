@@ -44,9 +44,14 @@ ES_VARIABLE_NAMED_AS_TYPE_RULE_ID = "ES-VARIABLE-NAMED-AS-TYPE"
 # Type names come from the addon, every --external-scripts root and the
 # vanilla tree. A module sees only the types of its own and lower modules, so
 # a name is judged against the types declared in a module at or below the
-# file's (a type whose module is unknown counts only for a file whose module
-# is unknown). Without a usable vanilla tree only the addon and the external
-# roots are judged, and the vanilla part is listed as skipped in the report.
+# file's. A file outside any N_Module folder may compile in any module, so
+# it is judged only against the types of 1_Core, which every module sees, and
+# those of its own file; a type outside any N_Module folder counts only in
+# its own file. (Mods pass of #113, 2026-10-17: in a mod recovered without
+# its module folders, the rule reported a member `Attachments`, against the
+# 5_Mission class Attachments, in a class that 4_World code uses.) Without a
+# usable vanilla tree only the addon and the external roots are judged, and
+# the vanilla part is listed as skipped in the report.
 # The name fails wherever it compiles, so code under another mod's #ifdef is
 # judged too; what never compiles (shared/dead_branches.py) is not. A type the
 # addon or an external root declares only where it never compiles is no type,
@@ -65,6 +70,7 @@ _LATER_NAME_RE = re.compile(r",\s*(?P<name>[A-Za-z_]\w*)\s*(?=;|=(?!=)|\[|,)")
 
 _MODULE_RE = re.compile(r"(?:^|[\\/])(?P<rank>[1-5])_[A-Za-z]+[\\/]")
 _UNKNOWN_MODULE = 99
+_CORE_MODULE = 1
 
 # Vanilla is read raw: comments are dropped (a block comment line that starts
 # with `class X` would declare X), strings are kept so a `//` or `/*` inside
@@ -210,9 +216,17 @@ def _declared_names(stripped):
             cursor += 1
 
 
-def _visible(rank, file_rank):
+def _visible(rank, path, file_rank, rel_path):
+    """True when rel_path, of module file_rank, sees a type of module rank.
+
+    `path` is the addon file that declares the type, None outside the addon.
+    """
+    if path == rel_path:
+        return True
     if rank == _UNKNOWN_MODULE:
-        return file_rank == _UNKNOWN_MODULE
+        return False
+    if file_rank == _UNKNOWN_MODULE:
+        return rank == _CORE_MODULE
     return rank <= file_rank
 
 
@@ -272,7 +286,7 @@ def check_es_variable_named_as_type(
         for offset, name in sorted(_declared_names(stripped)):
             candidates = [
                 entry for entry in types.get(name, ())
-                if _visible(entry[0], file_rank)
+                if _visible(entry[0], entry[2], file_rank, rel_path)
             ]
             if not candidates:
                 continue

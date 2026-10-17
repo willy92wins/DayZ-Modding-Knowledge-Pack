@@ -1181,10 +1181,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-c9aa@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: two findings of the pass of the dayz-script-validator head of #113 (4b0c3f5) over the 1034 script units of the owner's mods. (1) ES-VARIABLE-NAMED-AS-TYPE gave one false FAIL: in HM_Core_Module, recovered from its PBO with its scripts grouped by feature and no N_Module folder, the member `ref array<ref VehicleAttachmentData> Attachments;` of class VehicleData (HM_Settings_CarsManager.c:71) was judged against the 5_Mission class Attachments (5_mission/gui/inventorynew/attachments.c:3, 1.29 and 1.30), because a path without a module folder got rank 99 and saw every module; VehicleData is used by modded CarScript and BoatScript, which are 4_World. A file outside any N_Module folder is now judged only against the types of 1_Core and of its own file, and a type outside any N_Module folder counts only in its own file; for a file with a module folder nothing changes. (2) Two units did not finish within 1200 s: recovered PBO dumps with unknown_*.c files of 9.3 and 11.5 MB, where ES-PROTECTED-METHOD-CROSS-CLASS ran past 23 minutes. It and ES-CAST-UNRELATED-TYPES counted lines from the start of the file and scanned every method and class body at each call or cast; they now read them once per file (FileScopes) and read a member's type once per class body. Measured: python3 -m unittest discover tests, 238 passed (235 before); the protected rule on one synthetic file takes 4.3 s at 71 500 lines, 12.9 s at 214 500 and 34.2 s at 572 000 (245 s at 214 500 under the profiler before), and 0.9 s on one class of 25 606 lines (28 s at 6 406 before the member cache); on 1600 random units and on the 209 .c files of the DayZ-MCP and Knowledge-Pack checkouts the old and new rules give the same findings and the same _argument_type results (22 700 calls), and the new lookups agree with the linear scans at 1.9 million points; reverting each guard of the module fix and each of the lookups turns a test red, except a cache read without the class body, which only re-reads. The pass over the mods and the vanilla control are to be repeated on this head. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f214d67488d9eca84c2775ca07f77a52309d3550189c339402fa1edfc1db0cfa",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-mods-pass-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fd0fb9bbd1e82503b8d97156653de02c65c762f0010d11439bc7f307cb3a375e",
+      "output_hash": "f214d67488d9eca84c2775ca07f77a52309d3550189c339402fa1edfc1db0cfa",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17739,10 +17749,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: two findings of the pass of the dayz-script-validator head of #113 (4b0c3f5) over the 1034 script units of the owner's mods. (1) ES-VARIABLE-NAMED-AS-TYPE gave one false FAIL: in HM_Core_Module, recovered from its PBO with its scripts grouped by feature and no N_Module folder, the member `ref array<ref VehicleAttachmentData> Attachments;` of class VehicleData (HM_Settings_CarsManager.c:71) was judged against the 5_Mission class Attachments (5_mission/gui/inventorynew/attachments.c:3, 1.29 and 1.30), because a path without a module folder got rank 99 and saw every module; VehicleData is used by modded CarScript and BoatScript, which are 4_World. A file outside any N_Module folder is now judged only against the types of 1_Core and of its own file, and a type outside any N_Module folder counts only in its own file; for a file with a module folder nothing changes. (2) Two units did not finish within 1200 s: recovered PBO dumps with unknown_*.c files of 9.3 and 11.5 MB, where ES-PROTECTED-METHOD-CROSS-CLASS ran past 23 minutes. It and ES-CAST-UNRELATED-TYPES counted lines from the start of the file and scanned every method and class body at each call or cast; they now read them once per file (FileScopes) and read a member's type once per class body. Measured: python3 -m unittest discover tests, 238 passed (235 before); the protected rule on one synthetic file takes 4.3 s at 71 500 lines, 12.9 s at 214 500 and 34.2 s at 572 000 (245 s at 214 500 under the profiler before), and 0.9 s on one class of 25 606 lines (28 s at 6 406 before the member cache); on 1600 random units and on the 209 .c files of the DayZ-MCP and Knowledge-Pack checkouts the old and new rules give the same findings and the same _argument_type results (22 700 calls), and the new lookups agree with the linear scans at 1.9 million points; reverting each guard of the module fix and each of the lookups turns a test red, except a cache read without the class body, which only re-reads. The pass over the mods and the vanilla control are to be repeated on this head. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7ed5af5a9f81e43f9cd2b9a49d3c653b46ebe5b51e9afcda248460674f4d4519",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-mods-pass-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "90b4ffc3498977169fb9f3a5dbc01660e8944cae2e4e0e733d99819408f46c55",
+      "output_hash": "7ed5af5a9f81e43f9cd2b9a49d3c653b46ebe5b51e9afcda248460674f4d4519",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -21024,10 +21044,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: two findings of the pass of the dayz-script-validator head of #113 (4b0c3f5) over the 1034 script units of the owner's mods. (1) ES-VARIABLE-NAMED-AS-TYPE gave one false FAIL: in HM_Core_Module, recovered from its PBO with its scripts grouped by feature and no N_Module folder, the member `ref array<ref VehicleAttachmentData> Attachments;` of class VehicleData (HM_Settings_CarsManager.c:71) was judged against the 5_Mission class Attachments (5_mission/gui/inventorynew/attachments.c:3, 1.29 and 1.30), because a path without a module folder got rank 99 and saw every module; VehicleData is used by modded CarScript and BoatScript, which are 4_World. A file outside any N_Module folder is now judged only against the types of 1_Core and of its own file, and a type outside any N_Module folder counts only in its own file; for a file with a module folder nothing changes. (2) Two units did not finish within 1200 s: recovered PBO dumps with unknown_*.c files of 9.3 and 11.5 MB, where ES-PROTECTED-METHOD-CROSS-CLASS ran past 23 minutes. It and ES-CAST-UNRELATED-TYPES counted lines from the start of the file and scanned every method and class body at each call or cast; they now read them once per file (FileScopes) and read a member's type once per class body. Measured: python3 -m unittest discover tests, 238 passed (235 before); the protected rule on one synthetic file takes 4.3 s at 71 500 lines, 12.9 s at 214 500 and 34.2 s at 572 000 (245 s at 214 500 under the profiler before), and 0.9 s on one class of 25 606 lines (28 s at 6 406 before the member cache); on 1600 random units and on the 209 .c files of the DayZ-MCP and Knowledge-Pack checkouts the old and new rules give the same findings and the same _argument_type results (22 700 calls), and the new lookups agree with the linear scans at 1.9 million points; reverting each guard of the module fix and each of the lookups turns a test red, except a cache read without the class body, which only re-reads. The pass over the mods and the vanilla control are to be repeated on this head. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "87e858800fb4d16dd941a9d0ee980b6a22265e0b834e1b34d19cfc638870fc48",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-mods-pass-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2ea0cbcbb649241449c02f8b1f96f2be350ca4d349c9a4982f0e2000dfb36be4",
+      "output_hash": "87e858800fb4d16dd941a9d0ee980b6a22265e0b834e1b34d19cfc638870fc48",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25558,10 +25588,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-class-members-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: two findings of the pass of the dayz-script-validator head of #113 (4b0c3f5) over the 1034 script units of the owner's mods. (1) ES-VARIABLE-NAMED-AS-TYPE gave one false FAIL: in HM_Core_Module, recovered from its PBO with its scripts grouped by feature and no N_Module folder, the member `ref array<ref VehicleAttachmentData> Attachments;` of class VehicleData (HM_Settings_CarsManager.c:71) was judged against the 5_Mission class Attachments (5_mission/gui/inventorynew/attachments.c:3, 1.29 and 1.30), because a path without a module folder got rank 99 and saw every module; VehicleData is used by modded CarScript and BoatScript, which are 4_World. A file outside any N_Module folder is now judged only against the types of 1_Core and of its own file, and a type outside any N_Module folder counts only in its own file; for a file with a module folder nothing changes. (2) Two units did not finish within 1200 s: recovered PBO dumps with unknown_*.c files of 9.3 and 11.5 MB, where ES-PROTECTED-METHOD-CROSS-CLASS ran past 23 minutes. It and ES-CAST-UNRELATED-TYPES counted lines from the start of the file and scanned every method and class body at each call or cast; they now read them once per file (FileScopes) and read a member's type once per class body. Measured: python3 -m unittest discover tests, 238 passed (235 before); the protected rule on one synthetic file takes 4.3 s at 71 500 lines, 12.9 s at 214 500 and 34.2 s at 572 000 (245 s at 214 500 under the profiler before), and 0.9 s on one class of 25 606 lines (28 s at 6 406 before the member cache); on 1600 random units and on the 209 .c files of the DayZ-MCP and Knowledge-Pack checkouts the old and new rules give the same findings and the same _argument_type results (22 700 calls), and the new lookups agree with the linear scans at 1.9 million points; reverting each guard of the module fix and each of the lookups turns a test red, except a cache read without the class body, which only re-reads. The pass over the mods and the vanilla control are to be repeated on this head. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "caf68d6f8e63ad7ee9b184b60fa562efd9bb857629a2aa1b94d7930c932a8c3d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-mods-pass-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "93f20786ef30c2b234aefcfcb2b71591eb90cacedc394dafa9bb184a5b8c7240",
+      "output_hash": "caf68d6f8e63ad7ee9b184b60fa562efd9bb857629a2aa1b94d7930c932a8c3d",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33553,10 +33593,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: two findings of the pass of the dayz-script-validator head of #113 (4b0c3f5) over the 1034 script units of the owner's mods. (1) ES-VARIABLE-NAMED-AS-TYPE gave one false FAIL: in HM_Core_Module, recovered from its PBO with its scripts grouped by feature and no N_Module folder, the member `ref array<ref VehicleAttachmentData> Attachments;` of class VehicleData (HM_Settings_CarsManager.c:71) was judged against the 5_Mission class Attachments (5_mission/gui/inventorynew/attachments.c:3, 1.29 and 1.30), because a path without a module folder got rank 99 and saw every module; VehicleData is used by modded CarScript and BoatScript, which are 4_World. A file outside any N_Module folder is now judged only against the types of 1_Core and of its own file, and a type outside any N_Module folder counts only in its own file; for a file with a module folder nothing changes. (2) Two units did not finish within 1200 s: recovered PBO dumps with unknown_*.c files of 9.3 and 11.5 MB, where ES-PROTECTED-METHOD-CROSS-CLASS ran past 23 minutes. It and ES-CAST-UNRELATED-TYPES counted lines from the start of the file and scanned every method and class body at each call or cast; they now read them once per file (FileScopes) and read a member's type once per class body. Measured: python3 -m unittest discover tests, 238 passed (235 before); the protected rule on one synthetic file takes 4.3 s at 71 500 lines, 12.9 s at 214 500 and 34.2 s at 572 000 (245 s at 214 500 under the profiler before), and 0.9 s on one class of 25 606 lines (28 s at 6 406 before the member cache); on 1600 random units and on the 209 .c files of the DayZ-MCP and Knowledge-Pack checkouts the old and new rules give the same findings and the same _argument_type results (22 700 calls), and the new lookups agree with the linear scans at 1.9 million points; reverting each guard of the module fix and each of the lookups turns a test red, except a cache read without the class body, which only re-reads. The pass over the mods and the vanilla control are to be repeated on this head. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7594e62ded6b2d9b47ada8da02c2cebdb89487a199ff1a81dd480bea45932f5c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-mods-pass-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ff82e38c6e67806cab9b1b46020cb0cadfa807f456c180e6ccf2f15a732722d2",
+      "output_hash": "7594e62ded6b2d9b47ada8da02c2cebdb89487a199ff1a81dd480bea45932f5c",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33739,10 +33789,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: two findings of the pass of the dayz-script-validator head of #113 (4b0c3f5) over the 1034 script units of the owner's mods. (1) ES-VARIABLE-NAMED-AS-TYPE gave one false FAIL: in HM_Core_Module, recovered from its PBO with its scripts grouped by feature and no N_Module folder, the member `ref array<ref VehicleAttachmentData> Attachments;` of class VehicleData (HM_Settings_CarsManager.c:71) was judged against the 5_Mission class Attachments (5_mission/gui/inventorynew/attachments.c:3, 1.29 and 1.30), because a path without a module folder got rank 99 and saw every module; VehicleData is used by modded CarScript and BoatScript, which are 4_World. A file outside any N_Module folder is now judged only against the types of 1_Core and of its own file, and a type outside any N_Module folder counts only in its own file; for a file with a module folder nothing changes. (2) Two units did not finish within 1200 s: recovered PBO dumps with unknown_*.c files of 9.3 and 11.5 MB, where ES-PROTECTED-METHOD-CROSS-CLASS ran past 23 minutes. It and ES-CAST-UNRELATED-TYPES counted lines from the start of the file and scanned every method and class body at each call or cast; they now read them once per file (FileScopes) and read a member's type once per class body. Measured: python3 -m unittest discover tests, 238 passed (235 before); the protected rule on one synthetic file takes 4.3 s at 71 500 lines, 12.9 s at 214 500 and 34.2 s at 572 000 (245 s at 214 500 under the profiler before), and 0.9 s on one class of 25 606 lines (28 s at 6 406 before the member cache); on 1600 random units and on the 209 .c files of the DayZ-MCP and Knowledge-Pack checkouts the old and new rules give the same findings and the same _argument_type results (22 700 calls), and the new lookups agree with the linear scans at 1.9 million points; reverting each guard of the module fix and each of the lookups turns a test red, except a cache read without the class body, which only re-reads. The pass over the mods and the vanilla control are to be repeated on this head. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "65580ea65f5aec6931683bad520776495f01c92116f9d924e2825539ca7dbe02",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+          "source_revision": "kp-update-mods-pass-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cc79b6ec8661ad96f7c8bf048bbc35a6937f7899c0f8c2a9ea5671d7ea36a837",
+      "output_hash": "65580ea65f5aec6931683bad520776495f01c92116f9d924e2825539ca7dbe02",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34099,10 +34159,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: two findings of the pass of the dayz-script-validator head of #113 (4b0c3f5) over the 1034 script units of the owner's mods. (1) ES-VARIABLE-NAMED-AS-TYPE gave one false FAIL: in HM_Core_Module, recovered from its PBO with its scripts grouped by feature and no N_Module folder, the member `ref array<ref VehicleAttachmentData> Attachments;` of class VehicleData (HM_Settings_CarsManager.c:71) was judged against the 5_Mission class Attachments (5_mission/gui/inventorynew/attachments.c:3, 1.29 and 1.30), because a path without a module folder got rank 99 and saw every module; VehicleData is used by modded CarScript and BoatScript, which are 4_World. A file outside any N_Module folder is now judged only against the types of 1_Core and of its own file, and a type outside any N_Module folder counts only in its own file; for a file with a module folder nothing changes. (2) Two units did not finish within 1200 s: recovered PBO dumps with unknown_*.c files of 9.3 and 11.5 MB, where ES-PROTECTED-METHOD-CROSS-CLASS ran past 23 minutes. It and ES-CAST-UNRELATED-TYPES counted lines from the start of the file and scanned every method and class body at each call or cast; they now read them once per file (FileScopes) and read a member's type once per class body. Measured: python3 -m unittest discover tests, 238 passed (235 before); the protected rule on one synthetic file takes 4.3 s at 71 500 lines, 12.9 s at 214 500 and 34.2 s at 572 000 (245 s at 214 500 under the profiler before), and 0.9 s on one class of 25 606 lines (28 s at 6 406 before the member cache); on 1600 random units and on the 209 .c files of the DayZ-MCP and Knowledge-Pack checkouts the old and new rules give the same findings and the same _argument_type results (22 700 calls), and the new lookups agree with the linear scans at 1.9 million points; reverting each guard of the module fix and each of the lookups turns a test red, except a cache read without the class body, which only re-reads. The pass over the mods and the vanilla control are to be repeated on this head. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fbf8f45dc8ac317d9ba2c31eb9d8cb756cc073b71686fbbb1eeace0c686eb328",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
+          "source_revision": "kp-update-mods-pass-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "bd6116315fa5fd331dc46982bdd608338f33233ae5ae45910915428524d45d43",
+      "output_hash": "fbf8f45dc8ac317d9ba2c31eb9d8cb756cc073b71686fbbb1eeace0c686eb328",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_protected_method_cross_class.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

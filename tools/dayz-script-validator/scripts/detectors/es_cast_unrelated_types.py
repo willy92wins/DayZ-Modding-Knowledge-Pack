@@ -1,3 +1,4 @@
+import bisect
 import re
 
 from detectors.es_reserved_word_identifier import _MODIFIERS, _NOT_A_TYPE
@@ -9,7 +10,7 @@ from detectors.es_undefined_class_ref import (
 )
 from detectors.es_variable_named_as_type import usable_vanilla_key, vanilla_sources
 from shared.dead_branches import dead_lines
-from shared.method_recognition import find_method_for_line, find_method_regions
+from shared.method_recognition import find_method_regions
 
 
 ES_CAST_UNRELATED_TYPES_RULE_ID = "ES-CAST-UNRELATED-TYPES"
@@ -211,21 +212,75 @@ def _class_regions(stripped):
     return regions
 
 
-def _argument_type(stripped, offsets, dead, methods, regions, arg, cast_at):
-    """The one plain declared type of `arg` at `cast_at`, or None."""
-    line = stripped.count("\n", 0, cast_at) + 1
+class FileScopes:
+    """The lines, methods and class bodies of one file, read once.
+
+    _argument_type() asks for them at every cast or call. Counting the lines
+    from the start of the file and going through every method and class body
+    each time kept ES-PROTECTED-METHOD-CROSS-CLASS running for more than 20
+    minutes on a 10 MB file (mods pass of #113, 2026-10-17).
+    """
+
+    def __init__(self, stripped):
+        self.dead = dead_lines(stripped)
+        self.offsets = _line_offsets(stripped)
+        # In file order, and none inside another: each search starts after
+        # the end of the method before.
+        self.methods = find_method_regions(stripped)
+        self._method_starts = [method["start_line"] for method in self.methods]
+        # In file order. Matched braces nest or are apart, so each body has
+        # one innermost body around it (its index here, -1 for none).
+        self.regions = _class_regions(stripped)
+        self._region_starts = [start for start, _end in self.regions]
+        self._region_parents = []
+        around = []
+        for index, (start, _end) in enumerate(self.regions):
+            while around and self.regions[around[-1]][1] < start:
+                around.pop()
+            self._region_parents.append(around[-1] if around else -1)
+            around.append(index)
+        # {(class body open, name): its type as a member of that body}
+        self.members = {}
+
+    def line(self, at):
+        """The 1-based line of offset `at`."""
+        return bisect.bisect_right(self.offsets, at)
+
+    def method(self, line):
+        """The method around `line`, the one find_method_for_line() gives."""
+        index = bisect.bisect_right(self._method_starts, line) - 1
+        if index >= 0 and line <= self.methods[index]["end_line"]:
+            return self.methods[index]
+        return None
+
+    def class_body(self, at):
+        """(open, close) of the innermost class body around `at`, or None."""
+        index = bisect.bisect_left(self._region_starts, at) - 1
+        while index >= 0:
+            if at < self.regions[index][1]:
+                return self.regions[index]
+            index = self._region_parents[index]
+        return None
+
+
+def _argument_type(stripped, scopes, arg, cast_at):
+    """The one plain declared type of `arg` at `cast_at`, or None.
+
+    scopes: the FileScopes of `stripped`.
+    """
+    line = scopes.line(cast_at)
     declaration_re = _declaration_re(arg)
-    method = find_method_for_line(methods, line)
+    method = scopes.method(line)
     if method is not None:
-        start = offsets[method["start_line"] - 1]
-        body = stripped.find("{", offsets[method["brace_line"] - 1])
+        start = scopes.offsets[method["start_line"] - 1]
+        body = stripped.find("{", scopes.offsets[method["brace_line"] - 1])
         scope = stripped[start:cast_at]
         if re.search(r",\s*" + re.escape(arg) + r"\s*(?=;|=(?!=)|\[)", scope):
             return None
         found = set()
         for match in declaration_re.finditer(stripped, start, cast_at):
             at = match.start("type")
-            if stripped.count("\n", 0, at) + 1 in dead:
+            if scopes.line(at) in scopes.dead:
                 continue
             declared = _declared_type(match)
             if declared is None:
@@ -234,14 +289,17 @@ def _argument_type(stripped, offsets, dead, methods, regions, arg, cast_at):
                 found.add(declared)
         if found:
             return found.pop() if len(found) == 1 and "" not in found else None
-    enclosing = [r for r in regions if r[0] < cast_at < r[1]]
-    if not enclosing:
+    enclosing = scopes.class_body(cast_at)
+    if enclosing is None:
         return None
-    open_brace, close_brace = max(enclosing)
+    open_brace, close_brace = enclosing
+    # The same for every cast or call in the body: read once per name.
+    if (open_brace, arg) in scopes.members:
+        return scopes.members[(open_brace, arg)]
     found = set()
     for match in declaration_re.finditer(stripped, open_brace, close_brace):
         at = match.start("type")
-        if stripped.count("\n", 0, at) + 1 in dead:
+        if scopes.line(at) in scopes.dead:
             continue
         inner = stripped[open_brace:at]
         if inner.count("{") - inner.count("}") != 1 or inner.count(
@@ -251,9 +309,9 @@ def _argument_type(stripped, offsets, dead, methods, regions, arg, cast_at):
         declared = _declared_type(match)
         if declared is not None:
             found.add(declared)
-    if len(found) == 1 and "" not in found:
-        return found.pop()
-    return None
+    member = found.pop() if len(found) == 1 and "" not in found else None
+    scopes.members[(open_brace, arg)] = member
+    return member
 
 
 def check_es_cast_unrelated_types(addon_sources, external_sources, vanilla_root):
@@ -268,8 +326,7 @@ def check_es_cast_unrelated_types(addon_sources, external_sources, vanilla_root)
 
     errors = []
     for rel_path, stripped in addon_sources:
-        dead = None
-        methods = regions = offsets = None
+        scopes = None
         for match in _CAST_RE.finditer(stripped):
             target, arg = match.group("target"), match.group("arg")
             if target == IMPLICIT_ROOT:
@@ -277,17 +334,12 @@ def check_es_cast_unrelated_types(addon_sources, external_sources, vanilla_root)
             target_chain = hierarchy.chain(target)
             if target_chain is None:
                 continue
-            line = stripped.count("\n", 0, match.start()) + 1
-            if dead is None:
-                dead = dead_lines(stripped)
-                methods = find_method_regions(stripped)
-                regions = _class_regions(stripped)
-                offsets = _line_offsets(stripped)
-            if line in dead:
+            if scopes is None:
+                scopes = FileScopes(stripped)
+            line = scopes.line(match.start())
+            if line in scopes.dead:
                 continue
-            arg_type = _argument_type(
-                stripped, offsets, dead, methods, regions, arg, match.start()
-            )
+            arg_type = _argument_type(stripped, scopes, arg, match.start())
             if arg_type is None or arg_type == IMPLICIT_ROOT:
                 continue
             arg_chain = hierarchy.chain(arg_type)

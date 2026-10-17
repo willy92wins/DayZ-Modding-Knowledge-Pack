@@ -3,14 +3,11 @@ import re
 from detectors.es_cast_unrelated_types import (
     UNREAD_PARENT,
     _CLASS_RE,
+    FileScopes,
     _argument_type,
-    _class_regions,
-    _line_offsets,
     class_parent,
 )
 from detectors.es_undeclared_static_member import AddonClasses
-from shared.dead_branches import dead_lines
-from shared.method_recognition import find_method_regions
 
 
 ES_PROTECTED_METHOD_CROSS_CLASS_RULE_ID = "ES-PROTECTED-METHOD-CROSS-CLASS"
@@ -204,22 +201,17 @@ def check_es_protected_method_cross_class(
     lookup = None
     warnings = []
     for rel_path, stripped in addon_sources:
-        dead = methods = regions = offsets = None
+        scopes = None
         for match in _CALL_RE.finditer(stripped):
             recv, method = match.group("recv"), match.group("method")
             if lookup is None:
                 lookup = _Lookup(addon_sources, external_sources, vanilla_root)
-            if dead is None:
-                dead = dead_lines(stripped)
-                methods = find_method_regions(stripped)
-                regions = _class_regions(stripped)
-                offsets = _line_offsets(stripped)
-            line = stripped.count("\n", 0, match.start()) + 1
-            if line in dead:
+            if scopes is None:
+                scopes = FileScopes(stripped)
+            line = scopes.line(match.start())
+            if line in scopes.dead:
                 continue
-            recv_type = _argument_type(
-                stripped, offsets, dead, methods, regions, recv, match.start()
-            )
+            recv_type = _argument_type(stripped, scopes, recv, match.start())
             if not recv_type:
                 continue
             found = lookup.owner(recv_type, method)
@@ -229,9 +221,7 @@ def check_es_protected_method_cross_class(
             caller = _enclosing_class(
                 lookup.classes.declarations, rel_path, match.start()
             )
-            if caller is None and any(
-                start < match.start() < end for start, end in regions
-            ):
+            if caller is None and scopes.class_body(match.start()) is not None:
                 continue  # inside a class whose header is not read
             if not lookup.unrelated(caller, owner):
                 continue

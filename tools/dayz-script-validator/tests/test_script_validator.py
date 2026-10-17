@@ -2739,15 +2739,35 @@ class TestVariableNamedAsType(unittest.TestCase):
         self.assertIn("--external-scripts", errors[1]["message"])
         self.assertEqual([NAMED_RULE], [s["rule_id"] for s in skipped])
 
-    def test_a_type_outside_any_module_counts_only_outside_modules(self):
+    def test_a_type_outside_any_module_counts_only_in_its_own_file(self):
         source = "class C\n{\n    int FX_Loose;\n}\n"
         external = [("dep.c", "class FX_Loose\n{\n}\n")]
 
         self.assertEqual([], _named_errors(source, external=external)[0])
+        # Two files outside any module may compile in different modules.
         self.assertEqual(
-            [3],
-            [e["line"] for e in _named_errors(
-                source, rel_path="x.c", external=external)[0]],
+            [], _named_errors(source, rel_path="x.c", external=external)[0]
+        )
+        own = "class FX_Loose\n{\n}\n" + source
+        self.assertEqual(
+            [6], [e["line"] for e in _named_errors(own, rel_path="x.c")[0]]
+        )
+
+    def test_a_file_outside_any_module_is_judged_against_1_core_only(self):
+        # Mods pass of #113, 2026-10-17: a member `Attachments` in a mod
+        # recovered without its module folders was reported against the
+        # 5_Mission class Attachments; the classes that use it are 4_World.
+        source = (
+            "class C\n{\n    int FX_MissionOnly;\n    int Debug;\n"
+            "    int Managed;\n}\n"
+        )
+        errors, _skipped = _named_errors(
+            source, rel_path="Scripts/HM_Virtual_Garage/x.c"
+        )
+
+        self.assertEqual(
+            [(5, "Managed")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
         )
 
     def test_template_arguments_and_typedef_names_are_not_declarators(self):
@@ -3010,6 +3030,62 @@ class TestCastUnrelatedTypes(unittest.TestCase):
         external = [("scripts/3_Game/q.c", "class FX_Q\n{\n}\n")]
         self.assertEqual(
             [6], [e["line"] for e in _cast_errors(own, external, vanilla=None)]
+        )
+
+
+class TestFileScopes(unittest.TestCase):
+    """The lookups of ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS.
+
+    Mods pass of #113, 2026-10-17: counting lines from the start of the file
+    and scanning every method and class body at each call kept the protected
+    method rule running for more than 20 minutes on a 10 MB file. FileScopes
+    reads them once; it must give what the scans gave.
+    """
+
+    SOURCE = (
+        "class FX_A\n{\n    FX_A m_X;\n    void F()\n    {\n        m_X.G();\n"
+        "    }\n"
+        # A class header inside a body: its braces nest in FX_A's.
+        "class FX_In\n{\n    void H()\n    {\n    }\n}\n"
+        "    void G()\n    {\n        m_X.G();\n    }\n}\n"
+        "void Loose()\n{\n}\n"
+        "class FX_B\n{\n    Managed m_X;\n    void K()\n    {\n        m_X.G();\n"
+        "    }\n}\n"
+    )
+
+    def _scopes(self):
+        from detectors.es_cast_unrelated_types import FileScopes
+        from stripper import strip_enforce_comments_and_strings
+
+        stripped = strip_enforce_comments_and_strings(self.SOURCE, "x.c")[0]
+        return stripped, FileScopes(stripped)
+
+    def test_lookups_give_what_the_scans_gave(self):
+        from detectors.es_cast_unrelated_types import _class_regions
+        from shared.method_recognition import find_method_for_line, find_method_regions
+
+        stripped, scopes = self._scopes()
+        methods = find_method_regions(stripped)
+        regions = _class_regions(stripped)
+
+        self.assertEqual(3, len(regions))
+        for line in range(stripped.count("\n") + 3):
+            self.assertEqual(find_method_for_line(methods, line), scopes.method(line))
+        for at in range(len(stripped) + 1):
+            self.assertEqual(stripped.count("\n", 0, at) + 1, scopes.line(at))
+            around = [r for r in regions if r[0] < at < r[1]]
+            self.assertEqual(max(around) if around else None, scopes.class_body(at))
+
+    def test_a_member_is_read_in_its_own_class_body(self):
+        from detectors.es_cast_unrelated_types import _argument_type
+
+        stripped, scopes = self._scopes()
+        calls = [i for i in range(len(stripped)) if stripped.startswith("m_X.G(", i)]
+
+        # F and G of FX_A (G after the nested body), then K of FX_B.
+        self.assertEqual(
+            ["FX_A", "FX_A", "Managed"],
+            [_argument_type(stripped, scopes, "m_X", at) for at in calls],
         )
 
 
