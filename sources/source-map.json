@@ -1171,10 +1171,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-class-members-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: dayz-test-ingame's note on the launcher registry CAS said to renew an installed dayz-test-v1 entry with rollback-last and then install-dayz-test-v1. Pipeline inbox fb-20261016-155416-c9aa (renewal of the owner's LIVE launcher after the 1.30 Steam update, 2026-10-16): rollback-last restored an older dayz-test-v1 entry (sha CA9E262F...), not the empty baseline, install-dayz-test-v1 then refused with launcher_registry_version_already_installed, and replace-dayz-test-v1 with the current registry sha committed. The code agrees: install refuses a registry that holds dayz-test-v1 and replace requires one (dayz-mcp tools/dayz_mcp/launcher_registry_update.py:229 and :329 at 90da56e). The note now says replace-dayz-test-v1 with the sha256 of the current approved-launchers.json, as the pack's procedure further down already did. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fd0fb9bbd1e82503b8d97156653de02c65c762f0010d11439bc7f307cb3a375e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-c9aa@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6d26eaf0aae8dcfa5acd66b6c553a1c989e74f661b6e432767d3e7f746ca95de",
+      "output_hash": "fd0fb9bbd1e82503b8d97156653de02c65c762f0010d11439bc7f307cb3a375e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11796,10 +11806,20 @@
           "source_path": "dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-docs-steam-app-view@2026-10-16",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: dayz-test-ingame's note on the launcher registry CAS said to renew an installed dayz-test-v1 entry with rollback-last and then install-dayz-test-v1. Pipeline inbox fb-20261016-155416-c9aa (renewal of the owner's LIVE launcher after the 1.30 Steam update, 2026-10-16): rollback-last restored an older dayz-test-v1 entry (sha CA9E262F...), not the empty baseline, install-dayz-test-v1 then refused with launcher_registry_version_already_installed, and replace-dayz-test-v1 with the current registry sha committed. The code agrees: install refuses a registry that holds dayz-test-v1 and replace requires one (dayz-mcp tools/dayz_mcp/launcher_registry_update.py:229 and :329 at 90da56e). The note now says replace-dayz-test-v1 with the sha256 of the current approved-launchers.json, as the pack's procedure further down already did. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9cee04e15359d184c0e324e322111be412d426537be26ea637ef825babf250af",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-c9aa@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "111227c743a3810bca2248d69878840e66f43c4f763ee70cece4f48825b38e02",
+      "output_hash": "9cee04e15359d184c0e324e322111be412d426537be26ea637ef825babf250af",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"

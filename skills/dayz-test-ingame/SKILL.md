@@ -634,7 +634,7 @@ Why it costs a session: the wrong format passes EVERY unit test (they only pin s
 Two more gates in the same flow, both of which have already burned a session:
 
 - `tests\test_secure_launcher.py` HARDCODES the launcher PE sha256. Every rebuild changes it (adding a mod changes the PE), so update it after `build_native_launcher.py --offline --verify-reproducible` or the suite stays red for a reason unrelated to the change.
-- `launcher_registry_update install-dayz-test-v1 --expected-sha256 <X>` is a compare-and-swap on the BYTES of `approved-launchers.json` (NOT the PE hash), and it REFUSES to install while a `dayz-test-v1` entry exists -> run `rollback-last` first; it prints the restored registry sha, which is the CAS token the install needs.
+- `launcher_registry_update install-dayz-test-v1 --expected-sha256 <X>` is a compare-and-swap on the BYTES of `approved-launchers.json` (NOT the PE hash), and it REFUSES to install while a `dayz-test-v1` entry exists. Renew an installed entry with `replace-dayz-test-v1 --expected-sha256 <sha256 of the current approved-launchers.json>`, which swaps it in one write. Do not run `rollback-last` and then install: after an earlier replace, the rollback restores an older `dayz-test-v1` entry and install refuses it with `launcher_registry_version_already_installed` (dayz-mcp `tools/dayz_mcp/launcher_registry_update.py:229` and `:329` at 90da56e; pipeline inbox fb-20261016-155416-c9aa).
 
 Origin: LFHeli OH-1 (2026-07-25), authorizing the 6th mod, after the 2026-07-22 session was lost to this same flow.
 
