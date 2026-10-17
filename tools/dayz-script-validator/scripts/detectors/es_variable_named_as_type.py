@@ -297,6 +297,10 @@ def check_es_variable_named_as_type(
         file_rank = module_rank(rel_path)
         seen = set()
         dead = branches = tests = None
+        # Offsets come in order, so lines are counted on from the last one:
+        # counting from the start for each name grew with the square of the
+        # names (fourth Codex review of #113, L2).
+        line, counted = 1, 0
         for offset, name in sorted(_declared_names(stripped)):
             candidates = [
                 entry for entry in types.get(name, ())
@@ -304,7 +308,8 @@ def check_es_variable_named_as_type(
             ]
             if not candidates:
                 continue
-            line = stripped.count("\n", 0, offset) + 1
+            line += stripped.count("\n", counted, offset)
+            counted = offset
             if dead is None:
                 dead = dead_lines(stripped)
                 branches = line_branches(stripped)
