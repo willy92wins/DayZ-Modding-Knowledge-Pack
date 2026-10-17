@@ -30665,10 +30665,20 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/dead_branches.py",
           "source_revision": "kp-update-codex-r2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-17: fix after the third Codex review of PR #113 at c892ef1 (GREEN; run on the owner's PC, reviews/pr113-codex-sol-r3.md and pr113-real-mods-r3.md). The pass over the owner's mods found ES-VARIABLE-NAMED-AS-TYPE much slower than at 894e58b (P2): 35.8 s instead of 3.46 s on a 20 MB dump, and 19.4 s instead of 0.15 s on a file with a 16 000-line commented block. line_tests in shared/dead_branches.py ran _SET_RE with re.M over the whole text, and its leading \\s* ran on across blank lines. _SET_RE now matches each line, as dead_lines() reads its directives. Measured: python3 -m unittest discover tests, 242 passed; 16 000 blank lines 0.38 s before and 0.02 s now (1.48 s and 0.02 s with spaces on each line); on 200 000 random files of directives and code, line_tests gives the same result as before, except where a directive's name stands on the next line, which is no directive. Not changed here: K1 (P2, older than this PR), dead_lines keeps a macro defined after its #undef; and the surviving mutant that reads #elif as #else in line_tests changes nothing either caller reads, because both skip the lines after an #elif as dead. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "95c32532ad9b5add3b29c45c1611657e1cb550df24356e39a92bca63a1c1e312",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/dead_branches.py",
+          "source_revision": "kp-update-codex-r3-113@2026-10-17",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4d3944b3bf237578cfcb38fee677785ff14ea382ab0f6486304caf3649d70d77",
+      "output_hash": "95c32532ad9b5add3b29c45c1611657e1cb550df24356e39a92bca63a1c1e312",
       "output_path": "tools/dayz-script-validator/scripts/shared/dead_branches.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

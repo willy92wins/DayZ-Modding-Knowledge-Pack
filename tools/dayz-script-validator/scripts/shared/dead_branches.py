@@ -27,7 +27,7 @@ _ELIF_RE = re.compile(r"^\s*#\s*elif\b")
 _ELSE_RE = re.compile(r"^\s*#\s*else\b")
 _ENDIF_RE = re.compile(r"^\s*#\s*endif\b")
 _DEFINE_RE = re.compile(r"^\s*#\s*define\s+(?P<name>\w+)")
-_SET_RE = re.compile(r"^\s*#\s*(?:define|undef)\s+(?P<name>\w+)", re.M)
+_SET_RE = re.compile(r"^\s*#\s*(?:define|undef)\s+(?P<name>\w+)")
 
 
 def dead_lines(stripped):
@@ -119,11 +119,14 @@ def line_tests(stripped):
     #defines or #undefs anywhere (its state can change inside the file), give
     no state. Blocks open and close exactly as in dead_lines().
     """
-    changing = {match.group("name") for match in _SET_RE.finditer(stripped)}
+    lines = stripped.split("\n")
+    # Line by line, as dead_lines() reads directives: over the whole text, \s*
+    # ran on across blank lines and the scan grew with the square of a run.
+    changing = {match.group("name") for match in map(_SET_RE.match, lines) if match}
     tests = {}
     # Each entry: (macro, defined), or None when the branch tests no macro.
     stack = []
-    for number, line in enumerate(stripped.split("\n"), start=1):
+    for number, line in enumerate(lines, start=1):
         opened = _OPEN_RE.match(line)
         if opened:
             macro = opened.group("macro")
