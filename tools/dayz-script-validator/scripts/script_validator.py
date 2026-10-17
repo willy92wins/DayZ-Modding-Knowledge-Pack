@@ -130,6 +130,7 @@ from detectors.es_syncvar import (
     syncvar_assignment_has_set_dirty,
     syncvar_register_match_is_code,
     unique_in_order,
+    vanilla_declares_construction_hook,
 )
 from detectors.es_int_min_compare import (
     ES_INT_MIN_COMPARE_MESSAGE,
@@ -331,6 +332,7 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
         return build_result(addon_root, errors, warnings, 0, elapsed_ms)
 
     files = discover_files(addon_root)
+    construction_hook = vanilla_declares_construction_hook(vanilla_root)
     module_files = []
     addon_sources = []
     addon_configs = []
@@ -364,7 +366,7 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
             errors.extend(ctx_read_errors)
             warnings.extend(ctx_read_warnings)
             syncvar_errors, syncvar_warnings = check_es_syncvar_contract(
-                source, stripped, rel_path
+                source, stripped, rel_path, construction_hook
             )
             errors.extend(syncvar_errors)
             warnings.extend(syncvar_warnings)
@@ -520,9 +522,10 @@ def build_parser():
         help=(
             "Vanilla scripts tree (default: DAYZ_VANILLA_ROOT, then P:\\scripts "
             "if present). Needed by ES-UNDEFINED-CLASS-REF; without it that "
-            "rule is reported as skipped in info, never as a finding, and "
+            "rule is reported as skipped in info, never as a finding, "
             "ES-VARIABLE-NAMED-AS-TYPE judges only the addon's and external "
-            "roots' type names."
+            "roots' type names, and ES-SYNCVAR-CONTRACT does not accept the "
+            "DayZ 1.30 RegisterConstructionSyncVariables hook."
         ),
     )
     return parser

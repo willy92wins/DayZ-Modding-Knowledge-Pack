@@ -219,7 +219,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   254 to 260 and `ES-GETTYPE-EXACT-MATCH` from 40 to 36. `tree.dayz_build` now names the measured
   build; `sources/source-map.json` keeps 1.29.0.163451, the build the pack is anchored on. The
   seven validator rules added above report nothing on the 1.30 tree. A full run there takes 130
-  to 150 seconds; the 1.29 baseline recorded 86, with fewer rules. Pipeline inbox 818e.
+  to 150 seconds on an idle machine; the 1.29 baseline recorded 86, with fewer rules. Pipeline
+  inbox 818e.
 - `dayz-animation-pipeline` `SKILL.md`: the section heading now reads "Locomotion in scripted commands:
   driving the vanilla graph (added 2026-06-11, measured on 1.30 Exp 2026-10-06)". The 2026-06-11
   paragraph (LFSlidingFloor, `GetCurrentMovement()` override) ends with a dated qualification: on 1.30
@@ -237,15 +238,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - `dayz-script-validator`: `ES-SYNCVAR-CONTRACT` accepts SyncVars registered in an override of
-  `RegisterConstructionSyncVariables()`. In DayZ 1.30 the `EntityAI` constructor calls
-  `ConstructionInit()` when the type's `CfgVehicles` entry has a `Construction` class
-  (`3_game/entities/entityai.c:248-249`), which calls that hook (`:3469`), and `BuildingBase`
-  registers the ten `m_SyncParts` ints of its construction component in its override
-  (`4_world/entities/game/super/building.c:29-44`): the vanilla control on 1.30.164078 got ten
-  false FAILs there, "called outside constructor". A method of that name declared without
-  `override` still fails: 1.29 has no such hook, so there it is a helper that runs when the mod
-  calls it, as from `EEInit()` in the case the Codex review of #117 built. 248 unit tests pass
-  (246 before).
+  `RegisterConstructionSyncVariables()` when the vanilla tree (`--vanilla-root`,
+  `DAYZ_VANILLA_ROOT` or `P:\scripts`) declares that hook in `EntityAI`, as DayZ 1.30 does
+  (`3_game/entities/entityai.c:3481`). In 1.30 the `EntityAI` constructor calls
+  `ConstructionInit()` when the type's `CfgVehicles` entry has a `Construction` class (`:248-249`),
+  which calls the hook (`:3469`), and `BuildingBase` registers the ten `m_SyncParts` ints of its
+  construction component in its override (`4_world/entities/game/super/building.c:29-44`): the
+  vanilla control on 1.30.164078 got ten false FAILs there, "called outside constructor". 1.29 has
+  no such hook, so there a method of that name is the mod's own and still fails, override or not,
+  as in the two cases the Codex reviews of #117 built: a helper called from `EEInit()`, and the
+  override of a method the mod declares in its own base class. Without a vanilla tree the rule
+  keeps that 1.29 behaviour, the build the pack is anchored on. 251 unit tests pass (246 before).
 - `dayz-test-ingame`: SP-095 point 1 told the reader to start a missing Steam with
   `steam.exe -silent`, and the Steam prerequisite to restart it, without saying where from. From a
   shell inside the Claude or Codex app that Steam registers only in the app's private registry

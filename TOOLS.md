@@ -204,11 +204,12 @@ Bohemia's vanilla tree against the pinned baseline:
 python tools/dayz-script-validator/scripts/vanilla_control.py
 ```
 
-A full run takes about 85 seconds (`tools/dayz-script-validator/README.md`;
-not re-timed here). Without a local vanilla tree the control SKIPs with
-exit 2. A green control only proves the linter is silent on that tree; it
-does not prove the new rule catches anything. Optional flags from
-`--help`: `--vanilla-root`, `--baseline`, `--update`, `--json`.
+A full run on DayZ 1.30 takes 130 to 150 seconds on an idle machine
+(`tools/dayz-script-validator/README.md`; not re-timed here). Without a
+local vanilla tree the control SKIPs with exit 2. A green control only
+proves the linter is silent on that tree; it does not prove the new rule
+catches anything. Optional flags from `--help`: `--vanilla-root`,
+`--baseline`, `--update`, `--json`.
 
 ## `tools/dayz-vehicle-proxy-contract`
 
