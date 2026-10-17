@@ -27,7 +27,7 @@
     },
     {
       "file": "4_world/classes/bunkerbroadcasthandler.c",
-      "note": "Accepted: the '#ifdef ENABLE_LOGGING' block at bunkerbroadcasthandler.c:338-340, inside a method, holds only a comment. Bohemia documents ENABLE_LOGGING as set by -doScriptLogs=1 (1_core/defines.c:36-39); the dayz-mcp v1.4 release game ran without it and without a crash. With the macro set, the block is not measured.",
+      "note": "Accepted: the '#ifdef ENABLE_LOGGING' block at bunkerbroadcasthandler.c:338-340, inside a method, holds only a comment. DayZDiag defines ENABLE_LOGGING on server and client: the script logs of the dayz-mcp v1.4 release game (DayZDiag 1.30.164078, 2026-10-17) list it, with DIAG_DEVELOPER, among the defines of every script module on both, so World compiled this block with the macro set, and both processes ended normally. The rule stays live for mods until the segfault that pitfalls-advanced.md:66 describes is measured again (pipeline inbox dada).",
       "rule_id": "ES-EMPTY-IFDEF"
     },
     {
