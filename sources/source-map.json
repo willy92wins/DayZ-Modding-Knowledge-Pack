@@ -1261,10 +1261,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-818e-w3@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 6bdf (fb-20261018-002910-6bdf). Fixed entry for dayz-preflight: the promoted preflight.py did not parse, because promotion writes the configured Windows path in place of <dayz-projects> in the plain Python string of the subst P: hint, where its \\U began a \\UXXXXXXXX escape. The hint is now a raw string, and the census test of the promotion map compiles every Python payload with Windows paths in place of its placeholders.",
+          "license": "MIT",
+          "source_hash": "c33fbeaab96f8e96a1e5a4a22bdff790e532be1d5ed726d827fc6de22cbbd52f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-6bdf@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2c00b68b24ae414adb271ece155dc043d161ff030da6d4a8756ee019133cda35",
+      "output_hash": "c33fbeaab96f8e96a1e5a4a22bdff790e532be1d5ed726d827fc6de22cbbd52f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11044,10 +11054,20 @@
           "source_path": "dayz-preflight/preflight.py",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 6bdf (fb-20261018-002910-6bdf). The subst P: hint at line 213 is a raw string. Promotion writes the configured Windows path in place of <dayz-projects> (packctl/promotion.py, _localized_payload_bytes), and in the plain string the path's \\U began a \\UXXXXXXXX escape, so the installed preflight.py failed to parse (SyntaxError, truncated \\UXXXXXXXX escape, line 213). Read on the owner's PC on 2026-10-18: the installed copy (sha256 9f8786a5...) is the previous version of this file (37d7cea) with its placeholders localized, and it fails at line 213. This file localized the same way (sha256 812e68aa...) compiles, and line 213 prints the path with single backslashes. The printed text and the placeholder are unchanged; every other Python payload that carries a placeholder already used a raw string.",
+          "license": "MIT",
+          "source_hash": "b844659881416cc373947a815ff7fef341e38587d42bbc8edd8099ec8670a69b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-preflight/preflight.py",
+          "source_revision": "kp-update-6bdf@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fca8504baad5447af789c676d8a829b8da3ce0f78ee79d02d8d9f11b0289fa75",
+      "output_hash": "b844659881416cc373947a815ff7fef341e38587d42bbc8edd8099ec8670a69b",
       "output_path": "skills/dayz-preflight/preflight.py",
       "routing_artifact_id": "skill/dayz-preflight",
       "verification_level": "cross_checked"
@@ -18428,10 +18448,20 @@
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "kp-chips-packctl@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 6bdf (fb-20261018-002910-6bdf). The census test of the real promotion map also compiles each Python payload that carries a placeholder after _localized_payload_bytes puts Windows paths in place of <dayz-projects>, <you>, <claude-appdata> and <tmp>. Measured on Linux, Python 3.13.16, pytest 9.1.1: on main 37d7cea it fails at skills/dayz-preflight/preflight.py:213 with the SyntaxError of the ticket, and it passes with the raw-string fix. tests/packctl gives 352 passed, 2 failed and 7 skipped both with and without the change: the same two tests, a drive-letter alias case and a WinError case, fail on Linux either way.",
+          "license": "MIT",
+          "source_hash": "cad09a84dbdc53be4f6b36ebc69435cec97eb9d36ab0d2f08cd76729cd785793",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "kp-update-6bdf@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "01bd3b5359a834cd2ef70fb6ecc504d8f29ecd128380177c7d249c4fb0467724",
+      "output_hash": "cad09a84dbdc53be4f6b36ebc69435cec97eb9d36ab0d2f08cd76729cd785793",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

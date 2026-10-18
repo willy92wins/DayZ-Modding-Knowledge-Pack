@@ -210,7 +210,7 @@ def check_p_drive() -> bool:
         "        Open DayZ Tools and mount the P drive "
         "(Tools menu > Mount P drive),\n"
         "        or map it directly: "
-        'subst P: "<dayz-projects>"',
+        r'subst P: "<dayz-projects>"',
         file=sys.stderr,
     )
     return False

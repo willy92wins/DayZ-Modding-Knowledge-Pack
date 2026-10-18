@@ -238,6 +238,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-preflight`: the promoted `preflight.py` did not parse. Promotion writes the configured
+  path in place of `<dayz-projects>`, and in the plain string of the `subst P:` hint the Windows
+  path's `C:\Users` reads as a `\U` escape, so Python refused the file at line 213 with
+  `truncated \UXXXXXXXX escape` (fb-20261018-002910-6bdf). The hint is now a raw string, as the
+  other Python payloads that carry a placeholder already were. The census test of the promotion
+  map now compiles every Python payload with Windows paths in place of its placeholders, and
+  fails on the old line.
 - `dayz-script-validator`: `ES-SYNCVAR-CONTRACT` accepts SyncVars registered in an override of
   `RegisterConstructionSyncVariables()` when the vanilla tree (`--vanilla-root`,
   `DAYZ_VANILLA_ROOT` or `P:\scripts`) declares that hook as a method of `EntityAI`, as DayZ 1.30
