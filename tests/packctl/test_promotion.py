@@ -1521,6 +1521,33 @@ def test_real_promotion_map_placeholder_scan_excludes_detector_corpus_and_keeps_
 
     assert findings == []
 
+    # fb-20261018-002910-6bdf: localization writes the configured path as
+    # is, so `<dayz-projects>` in a plain Python string became
+    # "C:\Users\...", which Python reads as a \U escape, and the installed
+    # preflight.py stopped parsing. Every Python payload must still compile
+    # with Windows paths in place of its placeholders.
+    windows_aliases = {
+        "<dayz-projects>": {
+            "kind": "path",
+            "value": "C:\\Users\\fixture\\DayZ Projects",
+        },
+        "<you>": {"kind": "fragment", "value": "fixture-user"},
+        "<claude-appdata>": {
+            "kind": "path",
+            "value": "C:\\Users\\fixture\\AppData\\Roaming\\Claude",
+        },
+        "<tmp>": {
+            "kind": "path",
+            "value": "C:\\Users\\fixture\\AppData\\Local\\Temp",
+        },
+    }
+    for repo_path in sorted(set(observed_paths)):
+        if repo_path.endswith(".py"):
+            localized = promotion._localized_payload_bytes(
+                root / repo_path, windows_aliases, root
+            )
+            compile(localized, repo_path, "exec")
+
 
 def test_legacy_v1_without_path_aliases_passes_without_placeholders(
     repo_factory,
