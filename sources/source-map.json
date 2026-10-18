@@ -11057,7 +11057,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 6bdf (fb-20261018-002910-6bdf). The subst P: hint at line 213 is a raw string. Promotion writes the configured Windows path in place of <dayz-projects> (packctl/promotion.py, _localized_payload_bytes), and in the plain string the path's \\U began a \\UXXXXXXXX escape, so the installed preflight.py failed to parse (SyntaxError, truncated \\UXXXXXXXX escape, line 213). Read on the owner's PC on 2026-10-18: the installed copy is this file with only that line localized. The printed text and the placeholder are unchanged; every other Python payload that carries a placeholder already used a raw string.",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 6bdf (fb-20261018-002910-6bdf). The subst P: hint at line 213 is a raw string. Promotion writes the configured Windows path in place of <dayz-projects> (packctl/promotion.py, _localized_payload_bytes), and in the plain string the path's \\U began a \\UXXXXXXXX escape, so the installed preflight.py failed to parse (SyntaxError, truncated \\UXXXXXXXX escape, line 213). Read on the owner's PC on 2026-10-18: the installed copy (sha256 9f8786a5...) is the previous version of this file (37d7cea) with its placeholders localized, and it fails at line 213. This file localized the same way (sha256 812e68aa...) compiles, and line 213 prints the path with single backslashes. The printed text and the placeholder are unchanged; every other Python payload that carries a placeholder already used a raw string.",
           "license": "MIT",
           "source_hash": "b844659881416cc373947a815ff7fef341e38587d42bbc8edd8099ec8670a69b",
           "source_id": "pack-r21-authored",
