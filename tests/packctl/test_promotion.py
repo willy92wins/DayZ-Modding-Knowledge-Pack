@@ -4981,3 +4981,29 @@ def test_ensure_known_residue_rejects_root_junction_with_allowed_digest(
             residue.unlink()
         elif promotion._is_junction(residue):
             os.rmdir(residue)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")
+def test_is_junction_reads_the_reparse_tag_without_path_is_junction(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # fb-20261018-012600-cdc5: Path.is_junction is new in Python 3.12, and
+    # without it every link check of the promotion took a junction for a
+    # plain directory.
+    real = tmp_path / "real"
+    real.mkdir()
+    junction = tmp_path / "junction"
+    result = subprocess.run(
+        ["cmd", "/c", "mklink", "/J", str(junction), str(real)],
+        capture_output=True,
+    )
+    assert result.returncode == 0
+    monkeypatch.setattr(Path, "is_junction", None, raising=False)
+    try:
+        assert promotion._is_junction(junction) is True
+        assert promotion._path_is_link(junction) is True
+        assert promotion._is_junction(real) is False
+        assert promotion._is_junction(tmp_path / "missing") is False
+    finally:
+        os.rmdir(junction)

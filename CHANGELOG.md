@@ -238,6 +238,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `packctl` promotion: on Python 3.10 and 3.11 its link checks took a directory junction for a
+  plain directory. `_is_junction` asked `Path.is_junction`, which is new in Python 3.12, and
+  answered no without it, while `pyproject.toml` allows Python 3.10 (fb-20261018-012600-cdc5).
+  Without that method it now reads the reparse tag from `os.lstat`, as `ntpath.isjunction` does.
+  A Windows test hides `Path.is_junction` and checks a real junction.
 - `dayz-preflight`: the promoted `preflight.py` did not parse. Promotion writes the configured
   path in place of `<dayz-projects>`, and in the plain string of the `subst P:` hint the Windows
   path's `C:\Users` reads as a `\U` escape, so Python refused the file at line 213 with

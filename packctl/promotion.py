@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import uuid
 from datetime import datetime, timezone
@@ -2589,7 +2590,16 @@ def _terminate(
 
 def _is_junction(path: Path) -> bool:
     checker = getattr(path, "is_junction", None)
-    return bool(checker()) if checker is not None else False
+    if checker is not None:
+        return bool(checker())
+    # Path.is_junction is new in Python 3.12. Before it, read the reparse tag
+    # of the link itself, as ntpath.isjunction does.
+    if os.name != "nt":
+        return False
+    try:
+        return os.lstat(path).st_reparse_tag == stat.IO_REPARSE_TAG_MOUNT_POINT
+    except (OSError, ValueError):
+        return False
 
 
 def _contains_links(path: Path) -> bool:
