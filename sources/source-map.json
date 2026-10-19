@@ -1321,10 +1321,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-96e0@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox ce25, b967 and db6f. Added entries for the item proxy rule (dayz-model-pipeline), the collision Too many vertices (dayz-model-pipeline, dayz-vehicles) and PhysicsIsFalling(true) (dayz-physics-engine); a Fixed entry for the two proxy examples. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "33c86e22dbf22ec21b92dfe093efce5c2c6fb22ce24f80d341a7fba06d560dac",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3066ba1ab2eae2d7fa6b88bda10f491fdb212244ac79f2ad1503ace66e8202b5",
+      "output_hash": "33c86e22dbf22ec21b92dfe093efce5c2c6fb22ce24f80d341a7fba06d560dac",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9136,10 +9146,20 @@
           "source_path": "skills/dayz-model-pipeline/references/config-and-packing.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox ce25 (fb-20261004-211658-ce25). Both CfgNonAIVehicles examples now name the proxy class Proxy plus the basename of its model (MySlot.p3d, LFPG_BatterySlot.p3d); a key rule says so, citing rip-vehicle-import cookbooks/family-b/attach-invisible.md rule (d); and a new paragraph, 'On an item, a slot added to the vanilla ProxyBattery_Car drew nothing', with the ticket's three layouts that did not draw and the class of the item's own that did, CLAIM-ITEM-PROXY-OWN-ATTACHMENT-CLASS at lines 221-238. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "6e0e816ce4bf99846ec32175192b4d465a37dd1e6087a99564e994a2e78533fc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/config-and-packing.md",
+          "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1f1313ba13f9dfee8b9c89de3b4ee5ac324817a2b4c8b2244c2bde7617a125e6",
+      "output_hash": "6e0e816ce4bf99846ec32175192b4d465a37dd1e6087a99564e994a2e78533fc",
       "output_path": "skills/dayz-model-pipeline/references/config-and-packing.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -9220,10 +9240,20 @@
           "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox b967 (fb-20261003-214733-b967). New subsection 'Binarize: Too many vertices from the collision LODs (R7.4)' at the end of 'Collision of a large building with an interior': the ticket's five builds, the bounds they set and the rule to compare every LOD with the last build that passed, CLAIM-BINARIZE-COLLISION-TOO-MANY-VERTICES at lines 374-393. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "5c208d2a36c0e42f6fda7930a4619cb65bf6539920bfa5670adc009ff9d430fe",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "10c8d8ab736043953c9b4dddd59c3e8013c34b59ab87f8e4c1a5c9b3e25cb3b4",
+      "output_hash": "5c208d2a36c0e42f6fda7930a4619cb65bf6539920bfa5670adc009ff9d430fe",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -9252,10 +9282,20 @@
           "source_path": "skills/dayz-model-pipeline/references/memory-and-selections.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox ce25 (fb-20261004-211658-ce25). Naming Convention: the .NNN index does not pick an entry of inventorySlot[] (territory_flag.p3d, as the ticket reads it), and the example proxy is LFPG_BatterySlot.p3d, the proxy of ProxyLFPG_BatterySlot in config-and-packing.md. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "3aca15c367253f7c6db2b56c5b987ed8e3691fb5eee28a015331096446adfab0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/memory-and-selections.md",
+          "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3fbf85b7f14223ecfd9701e54b2aa978d0e9cbb34575b55466f8c0d6ba8d94a2",
+      "output_hash": "3aca15c367253f7c6db2b56c5b987ed8e3691fb5eee28a015331096446adfab0",
       "output_path": "skills/dayz-model-pipeline/references/memory-and-selections.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -9448,10 +9488,20 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-py3d-wheel-1.10.1@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox ce25 (fb-20261004-211658-ce25). The py3d proxy example names its proxy MySlot.p3d, the model of ProxyMySlot in config-and-packing.md, in the selection name and in the file it writes. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "d4e0e2ac3052e4aefe928a9991bfbec63b032b6bffc96d116b49bf6d7d1dfce4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "30bec855f81bb5777c2fd4fbdd93159b8ccab41450df61a7990f336e584c5895",
+      "output_hash": "d4e0e2ac3052e4aefe928a9991bfbec63b032b6bffc96d116b49bf6d7d1dfce4",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -10994,10 +11044,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox db6f (fb-20261006-165724-db6f). Player CCT: 'PhysicsIsFalling(true) is not a pure read', after the R1c gravity write-up, CLAIM-PHYS-ISFALLING-VALIDATE-130 at line 215. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "8446c0e52099e5b06f426cdfb9bd08d835e6182f8079ba72d93abeaf221220ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f82fb6796ac7954df69723a73e3c7c63ab7f73c21f8448526fe23fd66ab1f178",
+      "output_hash": "8446c0e52099e5b06f426cdfb9bd08d835e6182f8079ba72d93abeaf221220ca",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -13954,10 +14014,20 @@
           "source_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox b967 (fb-20261003-214733-b967). Item 3, CAPACITY_FAIL: the line names the MLOD, not the LOD; it points to the R7.4 subsection of dayz-model-pipeline references/lods-and-geometry.md and says to compare every LOD with the last build that passed. Its opening line now excepts the two building cases of item 3, binarize runs with no in-game verdict, from what it says is measured on the HH-60G. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "f9290cf88a38e44e99daa56d2a0934fce0d5dd6560abd8915966ba5d42123e29",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
+          "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d5a57c4338f11bca316f338b739c31c9693374b25b7103920793519d28d9501a",
+      "output_hash": "f9290cf88a38e44e99daa56d2a0934fce0d5dd6560abd8915966ba5d42123e29",
       "output_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -17969,10 +18039,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-96e0@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox ce25, b967 and db6f. Registers CLAIM-ITEM-PROXY-OWN-ATTACHMENT-CLASS (config-and-packing.md, lines 221-238), CLAIM-BINARIZE-COLLISION-TOO-MANY-VERTICES (lods-and-geometry.md, lines 374-393) and CLAIM-PHYS-ISFALLING-VALIDATE-130 (dayz-physics-engine SKILL.md, line 215). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "e94778a7503789bde3ed7aeb3bdaeae6549ab6a7164d1377c59fcb1595e37c39",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a56a3831d490471a1e3e687f3f6dc8ccbd77ba06cfd3437da6fac23e477cece2",
+      "output_hash": "e94778a7503789bde3ed7aeb3bdaeae6549ab6a7164d1377c59fcb1595e37c39",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
