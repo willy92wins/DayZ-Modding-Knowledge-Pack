@@ -754,14 +754,18 @@ CONSTRUCTION = FIXTURES / "syncvar_construction"
 
 
 class TestEsSyncvarContract(unittest.TestCase):
-    def run_fixture(self, name, folder=FIXTURES / "es", vanilla=None):
+    def run_fixture(self, name, folder=FIXTURES / "es", vanilla=None, external=None):
         argv = [str(folder / name)]
         if vanilla is not None:
             argv += ["--vanilla-root", str(folder / vanilla)]
+        if external is not None:
+            argv += ["--external-scripts", str(folder / external)]
         return script_validator.run(argv)
 
-    def assert_syncvar_passes(self, name, folder=FIXTURES / "es", vanilla=None):
-        exit_code, result = self.run_fixture(name, folder, vanilla)
+    def assert_syncvar_passes(
+        self, name, folder=FIXTURES / "es", vanilla=None, external=None
+    ):
+        exit_code, result = self.run_fixture(name, folder, vanilla, external)
 
         self.assertEqual(0, exit_code)
         self.assertEqual("PASS", result["status"])
@@ -776,8 +780,9 @@ class TestEsSyncvarContract(unittest.TestCase):
         expected_message,
         folder=FIXTURES / "es",
         vanilla=None,
+        external=None,
     ):
-        exit_code, result = self.run_fixture(name, folder, vanilla)
+        exit_code, result = self.run_fixture(name, folder, vanilla, external)
 
         self.assertEqual(1, exit_code)
         self.assertEqual("FAIL", result["status"])
@@ -859,6 +864,14 @@ class TestEsSyncvarContract(unittest.TestCase):
             "vanilla_130",
         )
 
+    def test_syncvar_construction_hook_with_an_external_entityai_base_passes(self):
+        self.assert_syncvar_passes(
+            "ok_syncvar_register_construction_external_base.c",
+            CONSTRUCTION,
+            "vanilla_130",
+            "external_entityai",
+        )
+
     def test_syncvar_other_prefix_does_not_trigger_write_rule(self):
         self.assert_syncvar_passes("ok_syncvar_other_prefix.c")
 
@@ -921,6 +934,24 @@ class TestEsSyncvarContract(unittest.TestCase):
             expected_message,
             CONSTRUCTION,
             "vanilla_130",
+        )
+
+    def test_syncvar_construction_hook_with_an_external_foreign_base_fails_on_1_30(self):
+        # Codex review of #121 (Y1): the base class is only in an
+        # --external-scripts root, and does not derive from EntityAI.
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_external_base.c line 7: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_external_base.c",
+            7,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_130",
+            "external_own_hook",
         )
 
     def test_syncvar_register_construction_override_fails_without_vanilla(self):

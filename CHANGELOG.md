@@ -266,7 +266,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   rule follows its base classes across the addon, the `--external-scripts` roots and the vanilla
   tree, and fails the override when they all resolve and none is `EntityAI`; a class whose chain
   does not resolve there (a parent from a mod that was not passed, or a header that a directive
-  splits) keeps the hook. 258 unit tests pass (246 before).
+  splits) keeps the hook. 260 unit tests pass (246 before).
 - `dayz-test-ingame`: SP-095 point 1 told the reader to start a missing Steam with
   `steam.exe -silent`, and the Steam prerequisite to restart it, without saying where from. From a
   shell inside the Claude or Codex app that Steam registers only in the app's private registry
