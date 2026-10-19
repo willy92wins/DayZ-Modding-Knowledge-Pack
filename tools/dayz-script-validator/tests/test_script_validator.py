@@ -4212,21 +4212,20 @@ class TestMultilineConditionOperator(unittest.TestCase):
     """ES-MULTILINE-CONDITION-OPERATOR: `if (a ||` continued on the next line.
 
     Inbox fb-20261006-030019-e074, DayZ 1.30.164014 server: "Invalid
-    statement ')'" and "Syntax error" at the continuation. WARN: one
-    measurement, vanilla control pending.
+    statement ')'" and "Syntax error" at the continuation. FAIL since the
+    vanilla control found nothing for it on 1.29.0.163451 and 1.30.164078.
     """
 
-    def test_ticket_repro_warns(self):
+    def test_ticket_repro_fails(self):
         exit_code, result = script_validator.run([str(MULTILINE_CONDITION / "bad")])
 
-        self.assertEqual(2, exit_code)
-        warnings = [
-            w for w in result["warnings"]
-            if w["rule_id"] == MULTILINE_CONDITION_RULE
-        ]
-        self.assertEqual([10, 18], [w["line"] for w in warnings])
-        self.assertIn("trailing '||'", warnings[0]["message"])
-        self.assertIn("trailing '&&'", warnings[1]["message"])
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, MULTILINE_CONDITION_RULE)
+        self.assertEqual([10, 18], [e["line"] for e in errors])
+        self.assertIn("trailing '||'", errors[0]["message"])
+        self.assertIn("trailing '&&'", errors[1]["message"])
+        self.assertEqual(["FAIL", "FAIL"], [e["severity"] for e in errors])
+        self.assertTrue(errors[0]["message"].startswith("[FAIL] "))
         assert_standard_findings(self, result)
 
     def test_single_line_conditions_and_other_continuations_pass(self):
@@ -4234,10 +4233,7 @@ class TestMultilineConditionOperator(unittest.TestCase):
 
         # bool locals, an operator in a comment and in a string, a call's
         # argument list over two lines, and the ticket's shape under #if 0.
-        self.assertEqual(
-            [],
-            [w for w in result["warnings"] if w["rule_id"] == MULTILINE_CONDITION_RULE],
-        )
+        self.assertEqual([], _errors_of(result, MULTILINE_CONDITION_RULE))
 
     def test_one_finding_per_header_and_its_line(self):
         source = (
@@ -4253,6 +4249,235 @@ class TestMultilineConditionOperator(unittest.TestCase):
 
     def test_an_unclosed_header_is_not_judged(self):
         self.assertEqual([], _multiline_condition_lines("if (a &&\n    b\n"))
+
+
+PROTO = FIXTURES / "proto_argument_downcast"
+PROTO_RULE = "ES-PROTO-ARGUMENT-DOWNCAST"
+
+
+def _proto_lines(source, external=(), vanilla=PROTO / "vanilla"):
+    from detectors.es_proto_argument_downcast import (
+        check_es_proto_argument_downcast,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    return [
+        e["line"]
+        for e in check_es_proto_argument_downcast(
+            [("scripts/4_World/x.c", strip(source))],
+            [(path, strip(text)) for path, text in external],
+            vanilla,
+        )
+    ]
+
+
+class TestProtoArgumentDowncast(unittest.TestCase):
+    """ES-PROTO-ARGUMENT-DOWNCAST: a base-class name passed where a proto takes a derived class.
+
+    Inbox fb-20261006-030019-e074, DayZ 1.30.164014 server: an IEntity at the
+    Object argument 6 of DayZPhysics.RaycastRV, "Cannot convert 'IEntity' to
+    'Object' for argument '6' to method 'RaycastRV'".
+    """
+
+    def test_ticket_repro_fails(self):
+        exit_code, result = script_validator.run(
+            [str(PROTO / "bad"), "--vanilla-root", str(PROTO / "vanilla")]
+        )
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, PROTO_RULE)
+        self.assertEqual([19, 21], [e["line"] for e in errors])
+        self.assertIn(
+            "argument 6 (counted from 0), 'hitEntity', is declared as IEntity",
+            errors[0]["message"],
+        )
+        self.assertIn(
+            "\"Cannot convert 'IEntity' to 'Object' for argument '6' to method "
+            "'FX_Raycast'\"",
+            errors[0]["message"],
+        )
+        self.assertIn("(Object > IEntity > Managed)", errors[0]["message"])
+        self.assertIn("Pass Object.Cast(hitEntity)", errors[0]["message"])
+        self.assertIn("the proto Object.FX_SetOwner", errors[1]["message"])
+        self.assertIn("fx_rider.c", errors[0]["file"])
+        assert_standard_findings(self, result)
+
+    def test_without_the_vanilla_tree_nothing_is_judged(self):
+        _code, result = script_validator.run([str(PROTO / "bad")])
+
+        self.assertEqual([], _errors_of(result, PROTO_RULE))
+
+    def test_casts_upcasts_and_out_arguments_pass(self):
+        _code, result = script_validator.run(
+            [str(PROTO / "ok"), "--vanilla-root", str(PROTO / "vanilla")]
+        )
+
+        # An out argument, the entity cast first, an EntityAI and null where
+        # an Object is taken, and the bad call in a comment, a string and
+        # #if 0.
+        self.assertEqual([], _errors_of(result, PROTO_RULE))
+
+    def test_a_parameter_a_member_and_a_local_are_resolved(self):
+        source = (
+            "class FX_C\n{\n    IEntity m_Hit;\n    EntityAI m_Self;\n\n"
+            "    void F(IEntity param, Managed any)\n    {\n"
+            "        m_Self.FX_SetOwner(param);\n"
+            "        m_Self.FX_SetOwner(m_Hit);\n"
+            # two classes up
+            "        m_Self.FX_SetOwner(any);\n"
+            "        EntityAI own = m_Self;\n"
+            "        own.FX_SetOwner(m_Hit);\n"
+            "    }\n}\n"
+        )
+
+        self.assertEqual([8, 9, 10, 12], _proto_lines(source))
+
+    def test_the_parameter_list_is_read_whole(self):
+        # Template arguments, a default value with a call, an array, a
+        # string and notnull keep the index of the Object after them, and
+        # its own default is no part of its type.
+        external = [(
+            "scripts/3_Game/p.c",
+            "class FX_P\n{\n    proto static void F(map<string, int> a, "
+            "vector v = Vector(0, 1, 2), int b[2], string s = \"x, y\", "
+            "notnull Object o = null);\n}\n",
+        )]
+        source = (
+            "void G(IEntity e)\n{\n"
+            "    FX_P.F(null, \"0 0 0\", null, \"a, b\", e);\n"
+            "    FX_P.F(null, \"0 0 0\", null, e);\n"
+            "}\n"
+        )
+
+        self.assertEqual([3], _proto_lines(source, external))
+
+    def test_a_default_string_of_the_vanilla_tree_keeps_the_index(self):
+        # FX_Tag takes `string tag = "a, b"`: the vanilla tree is read with
+        # its strings blanked, so the comma in it splits nothing.
+        source = (
+            "void F(Object o, IEntity e)\n{\n"
+            "    FX_Physics.FX_Tag(o, \"x\", e);\n}\n"
+        )
+
+        self.assertEqual([3], _proto_lines(source))
+
+    def test_the_first_class_that_declares_the_method_decides(self):
+        external = [(
+            "scripts/3_Game/p.c",
+            "class FX_Base\n{\n    proto native void H(Object o);\n}\n"
+            "class FX_Derived : FX_Base\n{\n"
+            "    proto native void H(IEntity o);\n}\n"
+            "class FX_Script : FX_Base\n{\n"
+            "    void H(Object o)\n    {\n    }\n}\n"
+            # a field set by a call to H, and a statement that declares
+            # nothing: neither class declares H, so FX_Base decides
+            "class FX_Field : FX_Base\n{\n    int m_N = H(null);\n}\n"
+            "class FX_Paren : FX_Base\n{\n    (1);\n}\n",
+        )]
+        source = (
+            "void F(FX_Base b, FX_Derived d, FX_Script s, FX_Field f, "
+            "FX_Paren p, IEntity e)\n{\n"
+            "    b.H(e);\n    d.H(e);\n    s.H(e);\n    f.H(e);\n    p.H(e);\n}\n"
+        )
+
+        self.assertEqual([3, 6, 7], _proto_lines(source, external))
+        # Without the vanilla tree Object and IEntity are unknown.
+        self.assertEqual([], _proto_lines(source, external, vanilla=None))
+
+    def test_unjudged_shapes_are_skipped(self):
+        cases = [
+            # a script method: only a proto's refusal is measured
+            "void F(EntityAI s, IEntity e)\n{\n    s.FX_Attach(e);\n}\n",
+            # an unrelated class, an up-cast, Class, a typedef and an enum
+            "class FX_U\n{\n}\ntypedef IEntity FX_Alias;\nenum FX_E\n{\n    A\n}\n"
+            "void F(EntityAI s, FX_U u, Class c, FX_Alias a, FX_E n)\n{\n"
+            "    s.FX_SetOwner(u);\n    s.FX_SetOwner(s);\n"
+            "    s.FX_SetOwner(c);\n    s.FX_SetOwner(a);\n"
+            "    s.FX_SetOwner(n);\n}\n",
+            # an out argument, and an out, an inout and an array parameter
+            # of a class above the argument's
+            "void F(IEntity e)\n{\n    FX_Physics.FX_Probe(e);\n"
+            "    FX_Physics.FX_Find(e, e);\n    FX_Physics.FX_Many(e);\n}\n",
+            # a template argument, or a comparison, among the arguments
+            "void F(vector a, int c, IEntity e)\n{\n"
+            "    FX_Physics.FX_Raycast(a, a, a, a, c, new set<Object>, e, null, "
+            "true, false, 0);\n"
+            "    FX_Physics.FX_Raycast(a, a, a, a, c, null, e, null, c < 2, "
+            "false, 0);\n}\n",
+            # a directive among the arguments, which would put e at the
+            # Object 6 when both branches count, and more arguments than
+            # parameters
+            "void F(EntityAI s, vector a, int c, IEntity e)\n{\n"
+            "    FX_Physics.FX_Raycast(a, a, a,\n#ifdef FX_X\n        a,\n"
+            "#else\n        a,\n#endif\n        c, e);\n"
+            "    s.FX_SetOwner(e, e);\n}\n",
+            # this, super, no receiver, a call's result and an unknown name
+            "class FX_S : EntityAI\n{\n    void F(IEntity e)\n    {\n"
+            "        this.FX_SetOwner(e);\n        super.FX_SetOwner(e);\n"
+            "        FX_SetOwner(e);\n        GetSelf().FX_SetOwner(e);\n"
+            "        g_Unknown.FX_SetOwner(e);\n    }\n}\n",
+            # an argument that is not a plain name, one declared twice, a
+            # template and an array, and a foreach variable
+            "class FX_C\n{\n    IEntity m_E;\n    void F(EntityAI s, "
+            "array<IEntity> list, IEntity many[2])\n    {\n"
+            "        s.FX_SetOwner(this.m_E);\n        IEntity a, b;\n"
+            "        s.FX_SetOwner(b);\n        s.FX_SetOwner(list);\n"
+            "        s.FX_SetOwner(many);\n"
+            "        foreach (IEntity e : list)\n"
+            "            s.FX_SetOwner(e);\n    }\n}\n",
+            # an addon redeclaration of the method, in a derived class or a
+            # modded one, that is no proto
+            "class FX_Own : EntityAI\n{\n    void FX_SetOwner(Object o)\n    {\n"
+            "    }\n}\nvoid F(FX_Own o, IEntity e)\n{\n    o.FX_SetOwner(e);\n}\n",
+            "modded class EntityAI\n{\n    void FX_SetOwner(Object o)\n    {\n"
+            "    }\n}\nvoid F(EntityAI s, IEntity e)\n{\n    s.FX_SetOwner(e);\n}\n",
+            "class FX_Attr : EntityAI\n{\n#ifdef FX_X\n    [FX_Note(\"x\")]\n"
+            "    void FX_SetOwner(Object o)\n    {\n    }\n#endif\n}\n"
+            "void F(FX_Attr a, IEntity e)\n{\n    a.FX_SetOwner(e);\n}\n",
+            # Class, the implicit root, also where a chain names it
+            "class FX_Rooted : Class\n{\n    proto static void R(FX_Rooted r);\n}\n"
+            "void F(Class c)\n{\n    FX_Rooted.R(c);\n}\n",
+            # a receiver whose chain does not resolve
+            "class FX_A : FX_Nowhere\n{\n}\n"
+            "void F(FX_A a, IEntity e)\n{\n    a.FX_SetOwner(e);\n}\n",
+            # the call under #if 0
+            "void F(EntityAI s, IEntity e)\n{\n#if 0\n    s.FX_SetOwner(e);\n"
+            "#endif\n}\n",
+        ]
+        for source in cases:
+            self.assertEqual([], _proto_lines(source), source)
+
+    def test_unread_declarations_are_skipped(self):
+        external = [(
+            "scripts/3_Game/p.c",
+            # two parameter lists for one proto, even where they agree
+            "class FX_Two\n{\n#ifdef FX_A\n    proto static void G(Object o);\n"
+            "#else\n    proto static void G(Object o, int i);\n#endif\n}\n"
+            # a parameter list that a directive splits
+            "class FX_Split\n{\n    proto static void G(\n#ifdef FX_A\n"
+            "        Object o\n#else\n        int i\n#endif\n    );\n}\n"
+            # a parameter of an unknown modifier, one without a name, and
+            # one of a class whose chain does not resolve
+            "class FX_Orphan : FX_Nowhere\n{\n}\n"
+            "class FX_Odd\n{\n    proto static void G(event Object o);\n"
+            "    proto static void U(Object);\n"
+            "    proto static void K(FX_Orphan o);\n}\n",
+        ), (
+            # a class body whose brackets do not close: what it declares is
+            # unknown, so the proto of Object it may hide is not judged
+            "scripts/3_Game/q.c",
+            "class FX_Broken : EntityAI\n{\n    int m_X = (1;\n}\n",
+        )]
+        source = (
+            "void F(IEntity e, Managed m, FX_Broken b)\n{\n    FX_Two.G(e);\n"
+            "    FX_Split.G(e);\n    FX_Odd.G(e);\n    FX_Odd.U(e);\n"
+            "    FX_Odd.K(m);\n    b.FX_SetOwner(e);\n}\n"
+        )
+
+        self.assertEqual([], _proto_lines(source, external))
 
 
 if __name__ == "__main__":

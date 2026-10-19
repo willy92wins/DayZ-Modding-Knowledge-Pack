@@ -37,7 +37,7 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Seven read the tree, and four of them need roots
+Most rules read a single file. Eight read the tree, and five of them need roots
 outside the addon:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
@@ -176,6 +176,26 @@ were not measured again.
   chain leaves the addon and the external roots counts as unrelated: a
   vanilla class cannot derive from an addon class. A caller or an ancestor
   whose header a directive splits is not read, and the call is skipped.
+- `ES-PROTO-ARGUMENT-DOWNCAST` (FAIL): a name passed to a parameter of a
+  `proto` method where the parameter's class derives from the class the
+  name is declared as. `DayZPhysics.RaycastRV(from, to, pos, dir, comp,
+  hits, hitEntity, m_Human, true, false, ObjIntersectGeom)`, with
+  `hitEntity` an `IEntity` at the `Object` parameter 6, made DayZ
+  1.30.164014 server refuse the World module with `Cannot convert 'IEntity'
+  to 'Object' for argument '6' to method 'RaycastRV'` (inbox
+  fb-20261006-030019-e074; the compiler counts arguments from 0). Judged
+  only when everything is known: the receiver is a class, or a name looked
+  up as in `ES-CAST-UNRELATED-TYPES`; the first class up its chain that
+  declares the method (a `modded class` included) declares it `proto` every
+  time, with one parameter list; the argument is a plain name looked up the
+  same way; and the parameter is not `out` or `inout` and has a plain class
+  type whose chain holds the argument's class above its own. `Class` is not
+  judged as the argument's class. A call whose arguments hold `<`, `>` or a
+  directive is skipped, and so is one with more arguments than parameters.
+  Protos are read from the addon, the `--external-scripts` roots and the
+  vanilla tree, so without a vanilla tree no vanilla proto is judged, with
+  no SKIP line. Only a proto's refusal is measured: an argument of a script
+  method and a down-cast in an assignment are not judged.
 
 ## Compile errors read from one file
 
@@ -225,12 +245,13 @@ log, or from a broken file the validator passed:
   fb-20261005-233046-89d1). Transport is the only class listed: another
   engine class goes in only after a compile refuses it. Mod the script
   bases in 4_World instead, `CarScript` or `BoatScript`.
-- `ES-MULTILINE-CONDITION-OPERATOR` (WARN): a line inside the parentheses
+- `ES-MULTILINE-CONDITION-OPERATOR` (FAIL): a line inside the parentheses
   of an `if (` or `while (` that ends in `&&` or `||`, once per header.
   DayZ 1.30.164014 server refused `if ((t >= A && t < B) ||` followed by
   `(t >= C && t < D))` with `Invalid statement ')'` and `Syntax error` at the
-  continuation (inbox fb-20261006-030019-e074). WARN until the vanilla
-  control has run: one measurement. The operator leading the next line is
+  continuation (inbox fb-20261006-030019-e074). One measurement; FAIL since
+  the vanilla control found nothing for it on 1.29.0.163451 and on
+  1.30.164078 stable. The operator leading the next line is
   the same parser rule (enforce-script-reference SKILL.md, SP-386) and is not
   reported here; neither is a call's argument list over two lines.
 

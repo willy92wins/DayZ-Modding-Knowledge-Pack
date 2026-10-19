@@ -1321,10 +1321,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-96e0@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "e166541f911e07e5193011d8316e2018456323c5d52a3069204a8103205a7df5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3066ba1ab2eae2d7fa6b88bda10f491fdb212244ac79f2ad1503ace66e8202b5",
+      "output_hash": "e166541f911e07e5193011d8316e2018456323c5d52a3069204a8103205a7df5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -17969,10 +17979,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-96e0@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Registers CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST at lines 17-53 of es_proto_argument_downcast.py, and moves CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR to lines 9-31 of its detector, FAIL after the vanilla controls. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "167e749c8764422641aef23283f46486b2f108f4989e0222813264b48b87e0a7",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a56a3831d490471a1e3e687f3f6dc8ccbd77ba06cfd3437da6fac23e477cece2",
+      "output_hash": "167e749c8764422641aef23283f46486b2f108f4989e0222813264b48b87e0a7",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -21314,10 +21334,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). ES-PROTO-ARGUMENT-DOWNCAST (FAIL) among the checks that read the tree, now eight, five of them with roots outside the addon; ES-MULTILINE-CONDITION-OPERATOR is FAIL, with the controls that found nothing for it. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "61a98003ae9be1e968abba78223c331a2570ee226d06ce24b05e8772f7905be0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "616500e7c01ea883303b2b0a3d71e754f54b1117b830067b8abcc34012304d21",
+      "output_hash": "61a98003ae9be1e968abba78223c331a2570ee226d06ce24b05e8772f7905be0",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22214,10 +22244,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-6b76@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Runs ES-PROTO-ARGUMENT-DOWNCAST after ES-CAST-UNRELATED-TYPES, over the addon with the --external-scripts sources and the vanilla root, and counts ES-MULTILINE-CONDITION-OPERATOR among the errors. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "ed3e995ceb22adf16559e08051d0c86eea10b9f5d465af8b5272a1b0f08ec8f1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b35a89932a37922a85e146a5b463b4aed9b9390e07fa60fa0c70f135cf2b7844",
+      "output_hash": "ed3e995ceb22adf16559e08051d0c86eea10b9f5d465af8b5272a1b0f08ec8f1",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26114,10 +26154,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-e6d6@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). TestMultilineConditionOperator asks for FAIL. TestProtoArgumentDowncast (9 tests) runs the bad and ok fixtures with the vanilla stand-in and without it, and unit cases of the shapes judged and skipped. In Linux: python3 -m unittest discover tests, 291 passed (282 before). Of 35 mutants of the rule, its registration and the multiline change, 33 turn a test red; the 2 left answer the same: one drops the plain-name check of an argument, whose declaration lookup finds nothing for anything else, and one drops the filter of the methods some tree declares proto, which only spares the lookup. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "cb9112017187779a4442260ab438bc72aa687220626f8ade03895b94fa5a8551",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "62366a577255e413e798870b6349383013c98b2b4515729fafcc36314313f966",
+      "output_hash": "cb9112017187779a4442260ab438bc72aa687220626f8ade03895b94fa5a8551",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34905,10 +34955,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). ES-MULTILINE-CONDITION-OPERATOR is FAIL, no longer WARN, as its ticket asked: the vanilla control found nothing for it on 1.29.0.163451 and 1.30.164014 Exp (2026-10-13) or on 1.29.0.163451 and 1.30.164078 stable in the review of #113, and the baseline measured on 1.30.164078 stable (#117) holds no finding of it. The claim comment says so, the message reads [FAIL] and the findings are errors. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "a746ee37f74d7451d2b9f7470a74b5d35421ba454fec247b1eef766d3890ab55",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8b7e7e3fb97884b292b13189d2bc703a9ead754f51e8c3853b8359d5d3817dc8",
+      "output_hash": "a746ee37f74d7451d2b9f7470a74b5d35421ba454fec247b1eef766d3890ab55",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34998,6 +35058,160 @@
       "license": "MIT",
       "output_hash": "352da68c6fe7e8019a75d8e609304f86668c7b91999a2ca7b6205f50c4d07929",
       "output_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/scripts/4_World/fx_window.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074, part 2). FAIL rule ES-PROTO-ARGUMENT-DOWNCAST for dayz-script-validator from fb-20261006-030019-e074 (DayZ 1.30.164014 server: an IEntity at the Object argument 6 of DayZPhysics.RaycastRV, `Cannot convert 'IEntity' to 'Object' for argument '6' to method 'RaycastRV'`, and the World module did not compile). A plain name passed to a parameter of a proto method whose class derives from the name's declared class, judged only when everything is known: the receiver a class or a plain name with one plain declared type, the first class up its chain that declares the method declaring it proto with one parameter list, and the parameter neither out nor inout, with a plain class type. Calls whose arguments hold <, > or a directive, or more arguments than parameters, are skipped, Class is not judged as the argument's class, and lines that never compile are not judged; CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "d54008c366253ac6e415ee44d5aff0303e7b6702ab313b160ddaea9853ca40ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d54008c366253ac6e415ee44d5aff0303e7b6702ab313b160ddaea9853ca40ee",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. CfgPatches of the bad addon; written for the pack. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "b94b5cf0ded8309fda78d117b10624acbf567902d68781843cd40be5ef5ac7c6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b94b5cf0ded8309fda78d117b10624acbf567902d68781843cd40be5ef5ac7c6",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Fail fixture: the ticket's call with fixture names, an IEntity at the Object argument 6 of a stand-in proto (line 19), and the same down-cast to a proto that EntityAI has from Object (line 21); written for the pack, no mod or vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "623dbec4e6972b6e020ad7ad79918d9ddcf799c465cfb617efab7400a5f140ef",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "623dbec4e6972b6e020ad7ad79918d9ddcf799c465cfb617efab7400a5f140ef",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. CfgPatches of the ok addon; written for the pack. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "87fc2c116c42a302ac62b41599a47de1232363eb1d0ed1481c87701d52fd3160",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "87fc2c116c42a302ac62b41599a47de1232363eb1d0ed1481c87701d52fd3160",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Pass fixture: an out argument, the entity cast first, an EntityAI and null where an Object is taken, and the bad call in a comment, a string and #if 0; written for the pack, no mod or vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "6318b4b1fcdd8681ebe59742d3a0eb0a7bc9fc285e2524e7c09b495cf17faa18",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6318b4b1fcdd8681ebe59742d3a0eb0a7bc9fc285e2524e7c09b495cf17faa18",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Stand-in for the vanilla tree, shape only: Class, Managed, and IEntity deriving from Managed; no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "ee9a883204404c002e065d6ba76df9efbdcac175acf25e5c3817f94b48092f6e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee9a883204404c002e065d6ba76df9efbdcac175acf25e5c3817f94b48092f6e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Stand-in for the vanilla tree, shape only: Object deriving from IEntity, with a proto that takes an Object and a script method, EntityAI deriving from Object, and FX_Physics with the protos the tests need (the ticket's 11 parameters with an Object at 6, out, inout, an array and a default string); no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "85d8c0b85942f59527bcb8128d1d9934c42d87e48bd42abd8d831e2dd187e1c5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "85d8c0b85942f59527bcb8128d1d9934c42d87e48bd42abd8d831e2dd187e1c5",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },

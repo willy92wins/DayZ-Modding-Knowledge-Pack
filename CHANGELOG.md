@@ -7,6 +7,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: `ES-PROTO-ARGUMENT-DOWNCAST` (FAIL) reports a name passed to a
+  parameter of a `proto` method whose class derives from the class the name is declared as. DayZ
+  1.30.164014 server refused `DayZPhysics.RaycastRV(..., hitEntity, m_Human, ...)`, with
+  `hitEntity` an `IEntity` at the `Object` parameter 6, with `Cannot convert 'IEntity' to 'Object'
+  for argument '6' to method 'RaycastRV'`, and the World module did not compile
+  (fb-20261006-030019-e074). Judged only when the receiver's class, the proto's one parameter list
+  and the argument's declared class are all known; protos are read from the addon, the
+  `--external-scripts` roots and the vanilla tree, so without a vanilla tree no vanilla proto is
+  judged. 291 unit tests pass (282 before); the vanilla control was not run for this change (no
+  vanilla tree on the machine that wrote it).
 - `dayz-model-pipeline`: since the DayZ Tools update of 2026-10-15 (Steam build 25460346,
   `binarize.exe` 1.30.164.078) the models you binarize are ODOL v56, like the 1.30 vanilla models;
   before it they were v55 (fb-20261017-234641-96e0). The same MLOD binarized before and after: the
@@ -209,6 +219,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-script-validator`: `ES-MULTILINE-CONDITION-OPERATOR` is FAIL, no longer WARN. It was
+  WARN on one measurement with the vanilla control still to run; the control has since found
+  nothing for it on 1.29.0.163451 (review of #113) or on 1.30.164078 stable (#117), and its ticket,
+  fb-20261006-030019-e074, asked for an error.
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164078 stable. Its
   baseline came from 1.29.0.163451, and on 1.30 the control failed on the tree's digest and on 13
   errors in four files that the game compiles, all of them at code that 1.29 does not have. Ten are

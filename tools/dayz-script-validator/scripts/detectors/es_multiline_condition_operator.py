@@ -7,7 +7,9 @@ ES_MULTILINE_CONDITION_OPERATOR_RULE_ID = "ES-MULTILINE-CONDITION-OPERATOR"
 
 
 # claim: CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR
-# WARN, not FAIL: one measurement, and the vanilla control has not run yet.
+# FAIL on one measurement: the rule was WARN until the vanilla control ran
+# with it and found nothing, on DayZ 1.29.0.163451 in the review of #113 and
+# on 1.30.164078 stable, where the control was measured on 2026-10-17 (#117).
 # Pipeline inbox fb-20261006-030019-e074, DayZ 1.30.164014 server: the
 # condition
 #
@@ -32,7 +34,7 @@ _HEADER_RE = re.compile(r"\b(?:if|while)\s*\(")
 _TRAILING_RE = re.compile(r"(?:&&|\|\|)[ \t\r]*$")
 
 ES_MULTILINE_CONDITION_OPERATOR_MESSAGE = (
-    "[WARN] {rel_path} line {line}: this condition goes on to the next line "
+    "[FAIL] {rel_path} line {line}: this condition goes on to the next line "
     "after a trailing '{operator}'. DayZ 1.30.164014 refused such a condition "
     "with \"Invalid statement ')'\" and \"Syntax error\" at the continuation, "
     "and the script module did not compile. Keep the condition on one line, "
@@ -41,7 +43,7 @@ ES_MULTILINE_CONDITION_OPERATOR_MESSAGE = (
 
 
 def check_es_multiline_condition_operator(stripped_source, rel_path):
-    warnings = []
+    errors = []
     dead = None
     for match in _HEADER_RE.finditer(stripped_source):
         depth = 1
@@ -65,7 +67,7 @@ def check_es_multiline_condition_operator(stripped_source, rel_path):
                 dead = dead_lines(stripped_source)
             if line + offset in dead:
                 continue
-            warnings.append(
+            errors.append(
                 {
                     "check": ES_MULTILINE_CONDITION_OPERATOR_RULE_ID,
                     "file": rel_path,
@@ -74,9 +76,9 @@ def check_es_multiline_condition_operator(stripped_source, rel_path):
                         rel_path=rel_path, line=line + offset,
                         operator=trailing.group(0).strip(),
                     ),
-                    "severity": "WARN",
+                    "severity": "FAIL",
                     "rule_id": ES_MULTILINE_CONDITION_OPERATOR_RULE_ID,
                 }
             )
             break
-    return warnings
+    return errors
