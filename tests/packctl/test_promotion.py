@@ -4996,8 +4996,8 @@ def test_ensure_known_residue_rejects_a_broken_junction(tmp_path: Path) -> None:
         capture_output=True,
     )
     assert result.returncode == 0
-    real.rmdir()
     try:
+        real.rmdir()
         assert residue.exists() is False
         assert residue.is_symlink() is False
         with pytest.raises(promotion._PromotionIntegrityError) as caught:
@@ -5018,8 +5018,8 @@ def test_remove_artifact_removes_a_broken_junction(tmp_path: Path) -> None:
         capture_output=True,
     )
     assert result.returncode == 0
-    real.rmdir()
     try:
+        real.rmdir()
         promotion._remove_artifact(junction)
         assert os.path.lexists(junction) is False
     finally:
@@ -5047,6 +5047,158 @@ def test_remove_artifact_removes_a_junction_and_keeps_its_target(
     finally:
         if os.path.lexists(junction):
             os.rmdir(junction)
+
+
+def test_apply_keeps_a_link_planted_in_its_own_partial_stage(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    # Codex review of #120, J4: the rollback removed the stages this apply
+    # had made without looking inside, so a link planted in one went too.
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    real = tmp_path / "real"
+    real.mkdir()
+    (real / "payload.txt").write_text("payload\n", encoding="utf-8")
+    created_stage: Path | None = None
+
+    def plant_a_link_and_fail(
+        source,
+        destination,
+        kind,
+        source_files=None,
+        **_kwargs,
+    ):
+        nonlocal created_stage
+        created_stage = Path(destination)
+        created_stage.mkdir(parents=True)
+        assert try_dir_link(real, created_stage / "linked") is True
+        raise OSError("copy fault")
+
+    monkeypatch.setattr("packctl.promotion._copy_artifact", plant_a_link_and_fail)
+    try:
+        report = apply_promotion(plan_path)
+
+        assert created_stage is not None
+        assert [
+            item["evidence"]
+            for item in report["findings"]
+            if item["code"] == "PROMOTION-ROLLBACK-FAILED"
+        ] == [f"{plan['operations'][0]['physical_alias']}:{created_stage.name}"]
+        assert promotion._path_is_link(created_stage / "linked") is True
+        assert (real / "payload.txt").read_text(encoding="utf-8") == "payload\n"
+        assert journal_events(transaction_root(plan))[-1]["event_type"] != "ABORT"
+    finally:
+        if created_stage is not None:
+            link = created_stage / "linked"
+            if link.is_symlink():
+                link.unlink()
+            elif promotion._is_junction(link):
+                os.rmdir(link)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")
+def test_apply_refuses_a_broken_junction_at_a_stage_and_keeps_it(
+    repo_factory,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Codex review of #120, J4: a junction whose target was gone passed the
+    # residue check, so its stage counted as one this apply made; once the
+    # target was back, the rollback unlinked the junction and wrote ABORT.
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    operation = plan["operations"][0]
+    stage = promotion._operation_paths(operation, str(plan["transaction_id"]))[0]
+    stage.parent.mkdir(parents=True, exist_ok=True)
+    real = tmp_path / "real"
+    real.mkdir()
+    result = subprocess.run(
+        ["cmd", "/c", "mklink", "/J", str(stage), str(real)],
+        capture_output=True,
+    )
+    assert result.returncode == 0
+    rollback = promotion._rollback_to_pre
+
+    def rollback_once_the_target_is_back(*args, **kwargs):
+        real.mkdir()
+        return rollback(*args, **kwargs)
+
+    monkeypatch.setattr(
+        promotion, "_rollback_to_pre", rollback_once_the_target_is_back
+    )
+    try:
+        real.rmdir()
+
+        report = apply_promotion(plan_path)
+
+        assert [
+            (item["code"], item["evidence"]) for item in report["findings"]
+        ] == [
+            ("PROMOTION-APPLY-FAILED", "RuntimeError"),
+            (
+                "PROMOTION-ROLLBACK-FAILED",
+                f"{operation['physical_alias']}:{stage.name}",
+            ),
+        ]
+        assert promotion._is_junction(stage) is True
+        assert journal_events(transaction_root(plan))[-1]["event_type"] != "ABORT"
+    finally:
+        if os.path.lexists(stage):
+            os.rmdir(stage)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")
+def test_recovery_refuses_a_broken_junction_at_a_ready_stage(
+    repo_factory,
+    tmp_path: Path,
+) -> None:
+    # Codex review of #120, J3: after STAGE_READY, a stage swapped for a
+    # junction whose target is gone read as absent, and the recovery wrote
+    # ABORT and kept it.
+    root, map_path, config_path, plan_path, _ = promotion_fixture(
+        repo_factory, tmp_path
+    )
+    check_promotion(root, map_path, config_path, plan_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    killed = run_promote_process(
+        root,
+        "--apply",
+        "--plan",
+        str(plan_path),
+        environment={"PACKCTL_TERMINATE_AT": "after_stage:0"},
+    )
+    assert killed.returncode == 97
+    stage = promotion._operation_paths(
+        plan["operations"][0], str(plan["transaction_id"])
+    )[0]
+    shutil.rmtree(stage)
+    real = tmp_path / "real"
+    real.mkdir()
+    result = subprocess.run(
+        ["cmd", "/c", "mklink", "/J", str(stage), str(real)],
+        capture_output=True,
+    )
+    assert result.returncode == 0
+    try:
+        real.rmdir()
+        transaction = transaction_root(plan)
+
+        report = promotion.recover_promotion(transaction)
+
+        assert codes(report) == ["PROMOTION-FOREIGN-TARGET"]
+        assert promotion._is_junction(stage) is True
+        assert journal_events(transaction)[-1]["event_type"] != "ABORT"
+    finally:
+        if os.path.lexists(stage):
+            os.rmdir(stage)
 
 
 @pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")

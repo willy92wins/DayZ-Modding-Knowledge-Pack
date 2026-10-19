@@ -3709,7 +3709,12 @@ def _rollback_to_pre(
                 {"physical_alias": alias},
             )
             restored.add(alias)
-        if stage.exists() or stage.is_symlink():
+        if stage.exists() or _path_is_link(stage):
+            if _contains_links(stage):
+                raise _PromotionIntegrityError(
+                    "PROMOTION-FOREIGN-TARGET",
+                    f"{alias}:{stage.name}",
+                )
             if stage in discardable_stages:
                 _remove_artifact(stage)
             elif alias in staged:
@@ -4125,7 +4130,7 @@ def apply_promotion(
                     transaction_id,
                 )
                 for residue in (stage, old, recovery_stage, recovery_post):
-                    if residue.exists() or residue.is_symlink():
+                    if residue.exists() or _path_is_link(residue):
                         raise RuntimeError(
                             f"preexisting transaction residue for {alias}"
                         )
