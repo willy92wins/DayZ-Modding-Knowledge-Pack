@@ -7,12 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- `dayz-model-pipeline` `references/config-and-packing.md`: on an item, a vanilla vehicle-part
-  proxy draws nothing. On an `ItemBase` flag, a slot added to `ProxyBattery_Car`, the class of the
-  vanilla `battery_car.001` proxy, never drew the `CarBattery` it held, in three layouts; a
-  `ProxyAttachment` class of the item's own with its own proxy model drew it (in game 2026-10-04,
-  fb-20261004-211658-ce25). `references/memory-and-selections.md`: a proxy's `.NNN` index does not
-  pick an entry of `inventorySlot[]`.
+- `dayz-model-pipeline` `references/config-and-packing.md`: on an `ItemBase` flag, a slot added to
+  `ProxyBattery_Car`, the class of the vanilla `battery_car.001` proxy, never drew the `CarBattery`
+  it held, in three layouts; a `ProxyAttachment` class of the item's own with its own proxy model
+  drew it (in game 2026-10-04, one item, slot and battery, fb-20261004-211658-ce25).
+  `references/memory-and-selections.md`: a proxy's `.NNN` index does not pick an entry of
+  `inventorySlot[]`.
 - `dayz-model-pipeline` `references/lods-and-geometry.md`: binarize's `Too many vertices` can come
   from the collision LODs. A building read `CAPACITY_FAIL` with its visual LOD as it had passed,
   once its collision grew from 1,240 to 1,263 pieces per LOD (binarize rev. 163709, 2026-10-03,

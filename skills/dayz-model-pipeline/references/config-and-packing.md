@@ -218,12 +218,13 @@ class CfgNonAIVehicles
 };
 ```
 
-**On an item, a vanilla vehicle-part proxy draws nothing** (measured in game 2026-10-04, pipeline
-inbox fb-20261004-211658-ce25). On an `ItemBase`-derived flag whose slot `LFPG_FlagBattery` held a
-`CarBattery`, the slot was added with `inventorySlot[] +=` to `ProxyBattery_Car`, the class of the
-vanilla proxy `\dz\vehicles\parts\battery_car.001`. That class derives from `ProxyPart`, a
-vehicle-part class (`simulation = "ProxyInventory"`, `reversed = 1`;
-`DZ\vehicles\parts\config.cpp:1094-1122` as the ticket reads it), and it never drew the battery,
+**On an item, a slot added to the vanilla `ProxyBattery_Car` drew nothing** (measured in game
+2026-10-04 on one item, slot and battery, pipeline inbox fb-20261004-211658-ce25). On an
+`ItemBase`-derived flag whose slot `LFPG_FlagBattery` held a `CarBattery`, the slot was added with
+`inventorySlot[] +=` to `ProxyBattery_Car`, the class of the vanilla proxy
+`\dz\vehicles\parts\battery_car.001`. That class derives from `ProxyPart`, a vehicle-part class
+(`DZ\vehicles\parts\config.cpp:1114`; `ProxyPart`, with `simulation = "ProxyInventory"` and
+`reversed = 1`, at `:1094-1104`), and it never drew the battery,
 in three layouts, each adding to the one before: the proxy in LOD 0; the proxy inside a named
 selection called like the slot, which the slot's `CfgSlots` `selection` names, as `civiliansedan`
 holds `battery_car.001` inside its `battery` selection; and copies of the proxy in the Geometry,
