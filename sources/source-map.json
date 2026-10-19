@@ -1344,9 +1344,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. After the Codex (Sol) review of #125 the proto entry says that only an IEntity where an Object is taken is FAIL and any other pair WARN, that a call is judged only in a method the validator reads, and what the first version found on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and over 1037 mod folders. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "24e27ecbc25deabbd948e63f9ce50de9cc15ee7c3643a961de20c59d2a68e422",
+          "source_hash": "708ce8f3c7e35022fbfe8abdf763b88d2b77d905acbb9c2104da94bdf2dd4e38",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -1354,7 +1354,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "24e27ecbc25deabbd948e63f9ce50de9cc15ee7c3643a961de20c59d2a68e422",
+      "output_hash": "708ce8f3c7e35022fbfe8abdf763b88d2b77d905acbb9c2104da94bdf2dd4e38",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -18144,9 +18144,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Registers CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST at lines 17-53 of es_proto_argument_downcast.py, and moves CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR to lines 9-31 of its detector, FAIL after the vanilla controls. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Registers CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST at lines 23-65 of es_proto_argument_downcast.py, and moves CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR to lines 9-31 of its detector, FAIL after the vanilla controls. The proto claim's evidence gives the declarations the Codex (Sol) review of #125 read on the owner's PC (RaycastRV at dayzphysics.c:199 in 1.30 and 1.29, Object and IEntity), the FAIL and WARN split, what the first version found on the vanilla scripts and over 1037 mod folders, and the unit cases added after that review. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "d837894dbb7e915d9defd0bb02f7384123060535746c01fc85b9df0a2c0ae6b2",
+          "source_hash": "e59978bff5f3f94ac1a9f3c0f63267849304e6e3960bf86dc611ee8a61d5f1d7",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -18154,7 +18154,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d837894dbb7e915d9defd0bb02f7384123060535746c01fc85b9df0a2c0ae6b2",
+      "output_hash": "e59978bff5f3f94ac1a9f3c0f63267849304e6e3960bf86dc611ee8a61d5f1d7",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -21499,9 +21499,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). ES-PROTO-ARGUMENT-DOWNCAST (FAIL) among the checks that read the tree, now eight, five of them with roots outside the addon; ES-MULTILINE-CONDITION-OPERATOR is FAIL, with the controls that found nothing for it. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). ES-PROTO-ARGUMENT-DOWNCAST (FAIL or WARN) among the checks that read the tree, FAIL only for an IEntity where an Object is taken, with the calls it judges, as the Codex (Sol) review of #125 asked; the section says which roots each of those checks reads instead of counting them. ES-MULTILINE-CONDITION-OPERATOR is FAIL, with the controls that found nothing for it. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "61a98003ae9be1e968abba78223c331a2570ee226d06ce24b05e8772f7905be0",
+          "source_hash": "3f6f6311cc20f7ab9f2cafd68f5c3636669a8a77e942770fdf21b2f5604cd055",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -21509,7 +21509,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "61a98003ae9be1e968abba78223c331a2570ee226d06ce24b05e8772f7905be0",
+      "output_hash": "3f6f6311cc20f7ab9f2cafd68f5c3636669a8a77e942770fdf21b2f5604cd055",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22409,9 +22409,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Runs ES-PROTO-ARGUMENT-DOWNCAST after ES-CAST-UNRELATED-TYPES, over the addon with the --external-scripts sources and the vanilla root, and counts ES-MULTILINE-CONDITION-OPERATOR among the errors. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Runs ES-PROTO-ARGUMENT-DOWNCAST after ES-CAST-UNRELATED-TYPES, over the addon with the --external-scripts sources and the vanilla root, its FAIL findings among the errors and its WARN findings among the warnings, and counts ES-MULTILINE-CONDITION-OPERATOR among the errors. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "ed3e995ceb22adf16559e08051d0c86eea10b9f5d465af8b5272a1b0f08ec8f1",
+          "source_hash": "c2aebb81dc20b8d66c9d49d9d68a8cd40b21e17ca3eddce6596b7e457ca9e15f",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -22419,7 +22419,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ed3e995ceb22adf16559e08051d0c86eea10b9f5d465af8b5272a1b0f08ec8f1",
+      "output_hash": "c2aebb81dc20b8d66c9d49d9d68a8cd40b21e17ca3eddce6596b7e457ca9e15f",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26319,9 +26319,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). TestMultilineConditionOperator asks for FAIL. TestProtoArgumentDowncast (9 tests) runs the bad and ok fixtures with the vanilla stand-in and without it, and unit cases of the shapes judged and skipped. In Linux: python3 -m unittest discover tests, 291 passed (282 before). Of 35 mutants of the rule, its registration and the multiline change, 33 turn a test red; the 2 left answer the same: one drops the plain-name check of an argument, whose declaration lookup finds nothing for anything else, and one drops the filter of the methods some tree declares proto, which only spares the lookup. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). TestMultilineConditionOperator asks for FAIL, and for each finding's message to name its own line. TestProtoArgumentDowncast (14 tests) runs the bad and ok fixtures with the vanilla stand-in and without it, and unit cases of the shapes judged and skipped; after the Codex (Sol) review of #125 it adds an IEntity where an Object is taken (FAIL) beside three pairs that are WARN, through the command line too, a member of another body of the class or of a class up its chain, a call outside every method the validator reads, an argument that holds a call, declarations that never compile or sit under #ifdef or #ifndef, and more shapes skipped. In Linux: python3 -m unittest discover tests, 296 passed (282 before). Of 43 mutants of the rule, its registration and the multiline change, 40 turn a test red. Read in the code, the 3 left change no finding, only the work done: one drops the filter of the methods some tree declares proto, one keeps the text of an argument that holds a bracket, which the plain-name check then skips as it skips the empty text, and one drops the early return when no file of the addon holds a call. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "cb9112017187779a4442260ab438bc72aa687220626f8ade03895b94fa5a8551",
+          "source_hash": "624607e80aa6ac4ced2607f651bdd33e437c2cf812eb4b9846922ac7866ec8db",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -26329,7 +26329,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cb9112017187779a4442260ab438bc72aa687220626f8ade03895b94fa5a8551",
+      "output_hash": "624607e80aa6ac4ced2607f651bdd33e437c2cf812eb4b9846922ac7866ec8db",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34637,10 +34637,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
           "source_revision": "kp-update-mods-pass-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). _argument_type takes an optional inherited(open, name), asked for a member that the enclosing class body does not declare; ES-PROTO-ARGUMENT-DOWNCAST passes it to look the member up in the other bodies of the class and up its chain (Codex (Sol) review of #125, D3). ES-CAST-UNRELATED-TYPES passes none, so its findings do not change, and its tests pass unchanged. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "825c1ff35e93885617fb4da3aa1ef4ad95cf2f5e2b4cea8ce2285dbc4777d999",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "65580ea65f5aec6931683bad520776495f01c92116f9d924e2825539ca7dbe02",
+      "output_hash": "825c1ff35e93885617fb4da3aa1ef4ad95cf2f5e2b4cea8ce2285dbc4777d999",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -35230,9 +35240,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074, part 2). FAIL rule ES-PROTO-ARGUMENT-DOWNCAST for dayz-script-validator from fb-20261006-030019-e074 (DayZ 1.30.164014 server: an IEntity at the Object argument 6 of DayZPhysics.RaycastRV, `Cannot convert 'IEntity' to 'Object' for argument '6' to method 'RaycastRV'`, and the World module did not compile). A plain name passed to a parameter of a proto method whose class derives from the name's declared class, judged only when everything is known: the receiver a class or a plain name with one plain declared type, the first class up its chain that declares the method declaring it proto with one parameter list, and the parameter neither out nor inout, with a plain class type. Calls whose arguments hold <, > or a directive, or more arguments than parameters, are skipped, Class is not judged as the argument's class, and lines that never compile are not judged; CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST. Pending: scripts/vanilla_control.py was not run (no vanilla tree on the machine that wrote the change). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074, part 2). Rule ES-PROTO-ARGUMENT-DOWNCAST for dayz-script-validator from fb-20261006-030019-e074 (DayZ 1.30.164014 server: an IEntity at the Object argument 6 of DayZPhysics.RaycastRV, `Cannot convert 'IEntity' to 'Object' for argument '6' to method 'RaycastRV'`, and the World module did not compile). A plain name passed to a parameter of a proto method whose class derives from the name's declared class: FAIL for an IEntity where an Object is taken, the one pair measured, WARN for any other. Judged only when everything is known: the call in a method that shared/method_recognition.py reads, the receiver a class or a plain name with one plain declared type (a member of another body of the class or of the nearest class up its chain that declares it included), the first class up its chain that declares the method declaring it proto with one parameter list, where a declaration on a line that never compiles does not count and one under #if, #ifdef or #ifndef leaves the method unknown, and the parameter neither out nor inout, with a plain class type. Calls whose arguments hold <, > or a directive, or more arguments than parameters, are skipped, Class is not judged as the argument's class, and lines that never compile are not judged; CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST. After the Codex (Sol) review of #125 (D1 to D11) the vanilla tree is read once per tree, the arguments of a call in one pass (2048 nested calls in 0.02 s in Linux, 1.57 s before), and an addon with no call reads no tree. Pending: scripts/vanilla_control.py and the pass over the mods at this head, on the owner's PC; the first version found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "d54008c366253ac6e415ee44d5aff0303e7b6702ab313b160ddaea9853ca40ee",
+          "source_hash": "803eac87de2ab1fa9eae48038232347c70e427ccd9560b8b879ab89d900da51f",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -35240,7 +35250,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d54008c366253ac6e415ee44d5aff0303e7b6702ab313b160ddaea9853ca40ee",
+      "output_hash": "803eac87de2ab1fa9eae48038232347c70e427ccd9560b8b879ab89d900da51f",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -35362,9 +35372,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Stand-in for the vanilla tree, shape only: Object deriving from IEntity, with a proto that takes an Object and a script method, EntityAI deriving from Object, and FX_Physics with the protos the tests need (the ticket's 11 parameters with an Object at 6, out, inout, an array and a default string); no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Stand-in for the vanilla tree, shape only: Object deriving from IEntity, with a proto that takes an Object and a script method, EntityAI deriving from Object, and FX_Physics with the protos the tests need (13 parameters with an Object at 6, as the Codex (Sol) review of #125 read RaycastRV in 1.30 and 1.29, where the ticket's call passes 11; out, inout, an array, a default string and an EntityAI); no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "85d8c0b85942f59527bcb8128d1d9934c42d87e48bd42abd8d831e2dd187e1c5",
+          "source_hash": "b2a80d70c3dd3540a9b110bc92d0db477e7857c9a9e45521d5e4bb87677e1b09",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -35372,7 +35382,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "85d8c0b85942f59527bcb8128d1d9934c42d87e48bd42abd8d831e2dd187e1c5",
+      "output_hash": "b2a80d70c3dd3540a9b110bc92d0db477e7857c9a9e45521d5e4bb87677e1b09",
       "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

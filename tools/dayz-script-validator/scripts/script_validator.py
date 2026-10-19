@@ -485,11 +485,11 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     errors.extend(
         check_es_cast_unrelated_types(addon_sources, external_sources, vanilla_root)
     )
-    errors.extend(
-        check_es_proto_argument_downcast(
-            addon_sources, external_sources, vanilla_root
-        )
+    downcast_errors, downcast_warnings = check_es_proto_argument_downcast(
+        addon_sources, external_sources, vanilla_root
     )
+    errors.extend(downcast_errors)
+    warnings.extend(downcast_warnings)
     errors.extend(
         check_es_undeclared_static_member(
             addon_sources, external_sources, vanilla_root

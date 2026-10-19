@@ -4195,17 +4195,18 @@ MULTILINE_CONDITION = FIXTURES / "multiline_condition_operator"
 MULTILINE_CONDITION_RULE = "ES-MULTILINE-CONDITION-OPERATOR"
 
 
-def _multiline_condition_lines(source):
+def _multiline_condition_findings(source):
     from detectors.es_multiline_condition_operator import (
         check_es_multiline_condition_operator,
     )
     from stripper import strip_enforce_comments_and_strings
 
     stripped = strip_enforce_comments_and_strings(source, "x.c")[0]
-    return [
-        w["line"]
-        for w in check_es_multiline_condition_operator(stripped, "x.c")
-    ]
+    return check_es_multiline_condition_operator(stripped, "x.c")
+
+
+def _multiline_condition_lines(source):
+    return [w["line"] for w in _multiline_condition_findings(source)]
 
 
 class TestMultilineConditionOperator(unittest.TestCase):
@@ -4245,7 +4246,11 @@ class TestMultilineConditionOperator(unittest.TestCase):
             "}\n"
         )
 
-        self.assertEqual([3, 8, 11], _multiline_condition_lines(source))
+        findings = _multiline_condition_findings(source)
+        self.assertEqual([3, 8, 11], [w["line"] for w in findings])
+        # The message names the same line.
+        for finding in findings:
+            self.assertIn("x.c line %d: " % finding["line"], finding["message"])
 
     def test_an_unclosed_header_is_not_judged(self):
         self.assertEqual([], _multiline_condition_lines("if (a &&\n    b\n"))
@@ -4255,7 +4260,7 @@ PROTO = FIXTURES / "proto_argument_downcast"
 PROTO_RULE = "ES-PROTO-ARGUMENT-DOWNCAST"
 
 
-def _proto_lines(source, external=(), vanilla=PROTO / "vanilla"):
+def _proto_findings(source, external=(), vanilla=PROTO / "vanilla"):
     from detectors.es_proto_argument_downcast import (
         check_es_proto_argument_downcast,
     )
@@ -4264,14 +4269,17 @@ def _proto_lines(source, external=(), vanilla=PROTO / "vanilla"):
     def strip(text):
         return strip_enforce_comments_and_strings(text, "x.c")[0]
 
-    return [
-        e["line"]
-        for e in check_es_proto_argument_downcast(
-            [("scripts/4_World/x.c", strip(source))],
-            [(path, strip(text)) for path, text in external],
-            vanilla,
-        )
-    ]
+    return check_es_proto_argument_downcast(
+        [("scripts/4_World/x.c", strip(source))],
+        [(path, strip(text)) for path, text in external],
+        vanilla,
+    )
+
+
+def _proto_lines(source, external=(), vanilla=PROTO / "vanilla"):
+    """The lines of the FAILs and WARNs, in order."""
+    errors, warnings = _proto_findings(source, external, vanilla)
+    return sorted(finding["line"] for finding in errors + warnings)
 
 
 class TestProtoArgumentDowncast(unittest.TestCase):
@@ -4305,6 +4313,46 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         self.assertIn("fx_rider.c", errors[0]["file"])
         assert_standard_findings(self, result)
 
+    def test_only_an_ientity_where_an_object_is_taken_fails(self):
+        # The ticket's pair is FAIL. A Managed where an Object is taken, and
+        # an Object or an IEntity where an EntityAI is, are not measured.
+        source = (
+            "void F(EntityAI s, IEntity e, Managed m, Object o)\n{\n"
+            "    s.FX_SetOwner(e);\n    s.FX_SetOwner(m);\n"
+            "    FX_Physics.FX_Hold(o);\n    FX_Physics.FX_Hold(e);\n}\n"
+        )
+
+        errors, warnings = _proto_findings(source)
+        self.assertEqual([(3, "FAIL")], [(e["line"], e["severity"]) for e in errors])
+        self.assertEqual(
+            [(4, "WARN"), (5, "WARN"), (6, "WARN")],
+            [(w["line"], w["severity"]) for w in warnings],
+        )
+        message = warnings[1]["message"]
+        self.assertTrue(message.startswith("[WARN] scripts/4_World/x.c line 5: "))
+        self.assertIn(
+            "'o', is declared as Object, and the proto FX_Physics.FX_Hold takes "
+            "EntityAI there",
+            message,
+        )
+        self.assertIn(
+            "whether it refuses Object where EntityAI is taken is not measured",
+            message,
+        )
+        self.assertIn("Pass EntityAI.Cast(o)", message)
+        # The validator counts them as warnings.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "x.c"
+            path.write_text(source, encoding="utf-8")
+            _code, result = script_validator.run(
+                [str(path), "--vanilla-root", str(PROTO / "vanilla")]
+            )
+        self.assertEqual([3], [e["line"] for e in _errors_of(result, PROTO_RULE)])
+        self.assertEqual(
+            [4, 5, 6],
+            [w["line"] for w in result["warnings"] if w["rule_id"] == PROTO_RULE],
+        )
+
     def test_without_the_vanilla_tree_nothing_is_judged(self):
         _code, result = script_validator.run([str(PROTO / "bad")])
 
@@ -4335,6 +4383,49 @@ class TestProtoArgumentDowncast(unittest.TestCase):
 
         self.assertEqual([8, 9, 10, 12], _proto_lines(source))
 
+    def test_an_inherited_member_is_resolved(self):
+        external = [(
+            "scripts/3_Game/p.c",
+            # m_Held once more on a line that never compiles; m_Two declared
+            # twice across the class's bodies; m_Deep an array in the class
+            # nearest to the user, which decides
+            "class FX_Holder\n{\n    IEntity m_Held;\n    Object m_Kept;\n"
+            "#if 0\n    Object m_Held;\n#endif\n"
+            "    IEntity m_Two;\n    IEntity m_Deep;\n}\n"
+            "modded class FX_Holder\n{\n    Managed m_Two;\n}\n"
+            "class FX_Middle : FX_Holder\n{\n    IEntity m_Deep[2];\n}\n",
+        )]
+        source = (
+            "class FX_Heir : FX_Middle\n{\n    void F(EntityAI s)\n    {\n"
+            "        s.FX_SetOwner(m_Held);\n        s.FX_SetOwner(m_Kept);\n"
+            "        s.FX_SetOwner(m_Two);\n        s.FX_SetOwner(m_Deep);\n"
+            "    }\n}\n"
+            # another body of the same class
+            "modded class FX_Holder\n{\n    void G(EntityAI s)\n    {\n"
+            "        s.FX_SetOwner(m_Held);\n    }\n}\n"
+            # a chain that does not resolve
+            "class FX_Lost : FX_Nowhere\n{\n    void K(EntityAI s)\n    {\n"
+            "        s.FX_SetOwner(m_Held);\n    }\n}\n"
+        )
+
+        self.assertEqual([5, 15], _proto_lines(source, external))
+
+    def test_a_call_outside_every_method_read_is_skipped(self):
+        # shared/method_recognition.py reads no method whose return type has
+        # template arguments, nor one whose `{` follows a default that calls
+        # on the header's line: their parameters are unknown, so the member
+        # of the same name must not be taken for them. H is read.
+        source = (
+            "class FX_T\n{\n    IEntity hit;\n"
+            "    array<Object> F(Object hit)\n    {\n"
+            "        FX_Physics.FX_Tag(hit);\n        return null;\n    }\n"
+            "    void G(Object hit = FX_Make()) {\n"
+            "        FX_Physics.FX_Tag(hit);\n    }\n"
+            "    void H(Object e)\n    {\n        FX_Physics.FX_Tag(hit);\n    }\n}\n"
+        )
+
+        self.assertEqual([14], _proto_lines(source))
+
     def test_the_parameter_list_is_read_whole(self):
         # Template arguments, a default value with a call, an array, a
         # string and notnull keep the index of the Object after them, and
@@ -4364,6 +4455,15 @@ class TestProtoArgumentDowncast(unittest.TestCase):
 
         self.assertEqual([3], _proto_lines(source))
 
+    def test_an_argument_that_holds_a_call_keeps_the_index(self):
+        source = (
+            "void F(Object o, IEntity e)\n{\n"
+            "    FX_Physics.FX_Tag(FX_Pick(o, e), \"x\", e);\n"
+            "    FX_Physics.FX_Tag(o, FX_Name(e)[0], FX_Pick(e, FX_Pick(o, e)));\n}\n"
+        )
+
+        self.assertEqual([3], _proto_lines(source))
+
     def test_the_first_class_that_declares_the_method_decides(self):
         external = [(
             "scripts/3_Game/p.c",
@@ -4386,6 +4486,29 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         self.assertEqual([3, 6, 7], _proto_lines(source, external))
         # Without the vanilla tree Object and IEntity are unknown.
         self.assertEqual([], _proto_lines(source, external, vanilla=None))
+
+    def test_a_declaration_that_never_compiles_is_dropped(self):
+        # FX_NO_PROTO is defined, so the #ifndef branches never compile: the
+        # base decides, a proto for FX_Child and a script method for
+        # FX_Hidden. Under #ifdef FX_OTHER a declaration may compile, so H is
+        # unknown for FX_Maybe and FX_Perhaps.
+        source = (
+            "#define FX_NO_PROTO\n"
+            "class FX_Base : EntityAI\n{\n    proto native void H(Object e);\n}\n"
+            "class FX_Script : EntityAI\n{\n    void H(IEntity e)\n    {\n    }\n}\n"
+            "class FX_Child : FX_Base\n{\n#ifndef FX_NO_PROTO\n"
+            "    void H(IEntity e)\n    {\n    }\n#endif\n}\n"
+            "class FX_Hidden : FX_Script\n{\n#ifndef FX_NO_PROTO\n"
+            "    proto native void H(Object e);\n#endif\n}\n"
+            "class FX_Maybe : FX_Base\n{\n#ifdef FX_OTHER\n"
+            "    void H(IEntity e)\n    {\n    }\n#endif\n}\n"
+            "class FX_Perhaps : FX_Script\n{\n#ifdef FX_OTHER\n"
+            "    proto native void H(Object e);\n#endif\n}\n"
+            "void F(FX_Child c, FX_Hidden h, FX_Maybe m, FX_Perhaps p, IEntity e)\n{\n"
+            "    c.H(e);\n    h.H(e);\n    m.H(e);\n    p.H(e);\n}\n"
+        )
+
+        self.assertEqual([42], _proto_lines(source))
 
     def test_unjudged_shapes_are_skipped(self):
         cases = [
@@ -4419,11 +4542,16 @@ class TestProtoArgumentDowncast(unittest.TestCase):
             "        this.FX_SetOwner(e);\n        super.FX_SetOwner(e);\n"
             "        FX_SetOwner(e);\n        GetSelf().FX_SetOwner(e);\n"
             "        g_Unknown.FX_SetOwner(e);\n    }\n}\n",
-            # an argument that is not a plain name, one declared twice, a
-            # template and an array, and a foreach variable
+            # arguments that are no plain name (a member through this, an
+            # element written as the array's declarator, `many[2]`, and the
+            # text of a declarator, `x = m_E`), a later declarator
+            # (`IEntity a, b;`), a template and an array, and a foreach
+            # variable
             "class FX_C\n{\n    IEntity m_E;\n    void F(EntityAI s, "
             "array<IEntity> list, IEntity many[2])\n    {\n"
-            "        s.FX_SetOwner(this.m_E);\n        IEntity a, b;\n"
+            "        s.FX_SetOwner(this.m_E);\n        s.FX_SetOwner(many[2]);\n"
+            "        IEntity x = m_E;\n        s.FX_SetOwner(x = m_E);\n"
+            "        IEntity a, b;\n"
             "        s.FX_SetOwner(b);\n        s.FX_SetOwner(list);\n"
             "        s.FX_SetOwner(many);\n"
             "        foreach (IEntity e : list)\n"
@@ -4453,9 +4581,13 @@ class TestProtoArgumentDowncast(unittest.TestCase):
     def test_unread_declarations_are_skipped(self):
         external = [(
             "scripts/3_Game/p.c",
-            # two parameter lists for one proto, even where they agree
+            # two parameter lists for one proto, even where they agree on
+            # the first: under #ifdef and #else (a declaration under a block
+            # leaves the method unknown), and in a class and a modded class
             "class FX_Two\n{\n#ifdef FX_A\n    proto static void G(Object o);\n"
             "#else\n    proto static void G(Object o, int i);\n#endif\n}\n"
+            "class FX_Three\n{\n    proto static void G(Object o);\n}\n"
+            "modded class FX_Three\n{\n    proto static void G(Object o, int i);\n}\n"
             # a parameter list that a directive splits
             "class FX_Split\n{\n    proto static void G(\n#ifdef FX_A\n"
             "        Object o\n#else\n        int i\n#endif\n    );\n}\n"
@@ -4473,6 +4605,7 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         )]
         source = (
             "void F(IEntity e, Managed m, FX_Broken b)\n{\n    FX_Two.G(e);\n"
+            "    FX_Three.G(e);\n"
             "    FX_Split.G(e);\n    FX_Odd.G(e);\n    FX_Odd.U(e);\n"
             "    FX_Odd.K(m);\n    b.FX_SetOwner(e);\n}\n"
         )

@@ -37,8 +37,10 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Eight read the tree, and five of them need roots
-outside the addon:
+Most rules read a single file. The ones below read the tree:
+`ES-PROTECTED-CROSS-MODULE` the addon's modules, `ES-EXTERNAL-CONSUMER-MISSING`
+the addon and the `--external-scripts` roots, and the others the addon, those
+roots and the vanilla tree:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
   enforces `protected` across script modules, so a `5_Mission` class reading a
@@ -176,20 +178,27 @@ were not measured again.
   chain leaves the addon and the external roots counts as unrelated: a
   vanilla class cannot derive from an addon class. A caller or an ancestor
   whose header a directive splits is not read, and the call is skipped.
-- `ES-PROTO-ARGUMENT-DOWNCAST` (FAIL): a name passed to a parameter of a
-  `proto` method where the parameter's class derives from the class the
-  name is declared as. `DayZPhysics.RaycastRV(from, to, pos, dir, comp,
+- `ES-PROTO-ARGUMENT-DOWNCAST` (FAIL or WARN): a name passed to a parameter
+  of a `proto` method where the parameter's class derives from the class
+  the name is declared as. `DayZPhysics.RaycastRV(from, to, pos, dir, comp,
   hits, hitEntity, m_Human, true, false, ObjIntersectGeom)`, with
   `hitEntity` an `IEntity` at the `Object` parameter 6, made DayZ
   1.30.164014 server refuse the World module with `Cannot convert 'IEntity'
   to 'Object' for argument '6' to method 'RaycastRV'` (inbox
-  fb-20261006-030019-e074; the compiler counts arguments from 0). Judged
-  only when everything is known: the receiver is a class, or a name looked
-  up as in `ES-CAST-UNRELATED-TYPES`; the first class up its chain that
-  declares the method (a `modded class` included) declares it `proto` every
-  time, with one parameter list; the argument is a plain name looked up the
-  same way; and the parameter is not `out` or `inout` and has a plain class
-  type whose chain holds the argument's class above its own. `Class` is not
+  fb-20261006-030019-e074; the compiler counts arguments from 0). That
+  pair, an `IEntity` where an `Object` is taken, is FAIL; any other is WARN,
+  because no refusal of it is measured. Judged only when everything is
+  known: the call is in a method the validator reads (not one whose return
+  type has template arguments, `array<T> F(`); the receiver is a class, or a
+  name looked up as in `ES-CAST-UNRELATED-TYPES` or else as a member of
+  another body of the enclosing class or of the nearest class up its chain
+  that declares it; the first class up the receiver's chain that declares
+  the method (a `modded class` included) declares it `proto` every time,
+  with one parameter list, where a declaration on a line that never
+  compiles does not count and one under `#if`, `#ifdef` or `#ifndef` leaves
+  the method unknown; the argument is a plain name looked up the same way;
+  and the parameter is not `out` or `inout` and has a plain class type
+  whose chain holds the argument's class above its own. `Class` is not
   judged as the argument's class. A call whose arguments hold `<`, `>` or a
   directive is skipped, and so is one with more arguments than parameters.
   Protos are read from the addon, the `--external-scripts` roots and the

@@ -263,10 +263,12 @@ class FileScopes:
         return None
 
 
-def _argument_type(stripped, scopes, arg, cast_at):
+def _argument_type(stripped, scopes, arg, cast_at, inherited=None):
     """The one plain declared type of `arg` at `cast_at`, or None.
 
-    scopes: the FileScopes of `stripped`.
+    scopes: the FileScopes of `stripped`. inherited(open, arg), when given,
+    is asked for a member that the enclosing class body (open: the offset
+    of its `{`) does not declare, and gives its type or None.
     """
     line = scopes.line(cast_at)
     declaration_re = _declaration_re(arg)
@@ -310,6 +312,8 @@ def _argument_type(stripped, scopes, arg, cast_at):
         if declared is not None:
             found.add(declared)
     member = found.pop() if len(found) == 1 and "" not in found else None
+    if not found and inherited is not None:
+        member = inherited(open_brace, arg)
     scopes.members[(open_brace, arg)] = member
     return member
 
