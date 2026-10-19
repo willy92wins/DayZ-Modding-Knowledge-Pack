@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import uuid
 from datetime import datetime, timezone
@@ -2547,9 +2548,9 @@ def _projection_has_path_placeholders(
 
 
 def _remove_artifact(path: Path) -> None:
-    if not path.exists() and not path.is_symlink():
+    if not _path_is_link(path) and not path.exists():
         return
-    if path.is_dir() and not path.is_symlink():
+    if path.is_dir() and not _path_is_link(path):
         shutil.rmtree(path, onerror=_retry_readonly_removal)
     else:
         _unlink_readonly_artifact(path)
@@ -2589,7 +2590,16 @@ def _terminate(
 
 def _is_junction(path: Path) -> bool:
     checker = getattr(path, "is_junction", None)
-    return bool(checker()) if checker is not None else False
+    if checker is not None:
+        return bool(checker())
+    # Path.is_junction is new in Python 3.12. Before it, read the reparse tag
+    # of the link itself, as ntpath.isjunction does.
+    if os.name != "nt":
+        return False
+    try:
+        return os.lstat(path).st_reparse_tag == stat.IO_REPARSE_TAG_MOUNT_POINT
+    except (OSError, ValueError):
+        return False
 
 
 def _contains_links(path: Path) -> bool:
@@ -3564,7 +3574,7 @@ def _ensure_known_residue(
     allowed_digests: set[object],
     alias: str,
 ) -> None:
-    if not path.exists() and not path.is_symlink():
+    if not _path_is_link(path) and not path.exists():
         return
     if _contains_links(path) or tree_digest(path) not in allowed_digests:
         raise _PromotionIntegrityError(
@@ -3699,7 +3709,12 @@ def _rollback_to_pre(
                 {"physical_alias": alias},
             )
             restored.add(alias)
-        if stage.exists() or stage.is_symlink():
+        if stage.exists() or _path_is_link(stage):
+            if _contains_links(stage):
+                raise _PromotionIntegrityError(
+                    "PROMOTION-FOREIGN-TARGET",
+                    f"{alias}:{stage.name}",
+                )
             if stage in discardable_stages:
                 _remove_artifact(stage)
             elif alias in staged:
@@ -4115,7 +4130,7 @@ def apply_promotion(
                     transaction_id,
                 )
                 for residue in (stage, old, recovery_stage, recovery_post):
-                    if residue.exists() or residue.is_symlink():
+                    if residue.exists() or _path_is_link(residue):
                         raise RuntimeError(
                             f"preexisting transaction residue for {alias}"
                         )
