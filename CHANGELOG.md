@@ -238,6 +238,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `packctl` promotion: on Python 3.10 and 3.11 its link checks took a directory junction for a
+  plain directory. `_is_junction` asked `Path.is_junction`, which is new in Python 3.12, and
+  answered no without it, while `pyproject.toml` allows Python 3.10 (fb-20261018-012600-cdc5).
+  Without that method it now reads the reparse tag from `os.lstat`, as `ntpath.isjunction` does.
+  A Windows test hides `Path.is_junction` and checks a real junction. A junction left where a
+  promotion looks for its `.packctl-old-` and `.packctl-recover-post-` residues read as absent
+  once its target was gone, because `exists()` follows it and `is_symlink()` does not see a
+  junction: residue checks now refuse it with `PROMOTION-FOREIGN-TARGET`, and artifact removal
+  unlinks a junction where it handed it to `shutil.rmtree`, which refuses one (Codex review of
+  #120, J1 and J5). A junction at a `.packctl-stage-` path was missed the same way: an apply that
+  finds one stops before staging, and the rollback and the recovery refuse a stage that is or
+  holds a link with `PROMOTION-FOREIGN-TARGET` and leave it, even a stage the apply made itself.
+  The transaction is then left without `ABORT`, for a person to look at (J3 and J4).
 - `dayz-preflight`: the promoted `preflight.py` did not parse. Promotion writes the configured
   path in place of `<dayz-projects>`, and in the plain string of the `subst P:` hint the Windows
   path's `C:\Users` reads as a `\U` escape, so Python refused the file at line 213 with

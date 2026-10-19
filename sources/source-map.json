@@ -1274,9 +1274,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox cdc5 (fb-20261018-012600-cdc5). Fixed entry for packctl promotion: on Python 3.10 and 3.11 its link checks took a directory junction for a plain directory, because _is_junction asked Path.is_junction, which is new in Python 3.12, and answered no without it, while pyproject.toml allows 3.10. It now reads the reparse tag from os.lstat when that method is missing. The entry also says that a junction left where a promotion looks for its residues read as absent once its target was gone, and that residue checks now refuse it with PROMOTION-FOREIGN-TARGET while artifact removal unlinks a junction where it handed it to shutil.rmtree, which refuses one (Codex review of pack #120, J1 and J5). It adds that a junction at a .packctl-stage- path was missed the same way: an apply that finds one stops before staging, and the rollback and the recovery refuse a stage that is or holds a link with PROMOTION-FOREIGN-TARGET and leave it, even a stage the apply made itself, without ABORT (J3 and J4).",
+          "license": "MIT",
+          "source_hash": "1071e9542c08fc826c42f090a7e49336c07ca25f4c197f4f97939b450a7cbe0c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-cdc5@2026-10-18",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-19: pipeline inbox 6b76 (fb-20261017-210745-6b76). Fixed entry for ES-SYNCVAR-CONTRACT: on 1.30 the class of a construction hook override must also derive from EntityAI; the rule follows its base classes across the addon, the external roots and the vanilla tree, and a class whose chain does not resolve keeps the hook. 260 unit tests pass. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "3dcf17a0e700fa9154eb07a2132e7e3e18b11f2abbaa4fa7e6b32b84dee3be4c",
+          "source_hash": "4882e98ac2972a066d924215175386c50591723a1d0b242b792f44190c8e10d5",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-6b76@2026-10-19",
@@ -1284,7 +1294,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3dcf17a0e700fa9154eb07a2132e7e3e18b11f2abbaa4fa7e6b32b84dee3be4c",
+      "output_hash": "4882e98ac2972a066d924215175386c50591723a1d0b242b792f44190c8e10d5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3658,10 +3668,20 @@
           "source_path": "packctl/promotion.py",
           "source_revision": "kp-update-promotion-receipts@2026-10-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox cdc5 (fb-20261018-012600-cdc5), from the Codex (Sol) review of pack #119. _is_junction returned Path.is_junction() when the method exists and False otherwise; Path.is_junction is new in Python 3.12 and pyproject.toml declares requires-python >=3.10, so on 3.10 and 3.11 every link check of the promotion (_path_is_link and the direct calls) treated a junction as a directory. On the owner's PC, Windows with Python 3.11.16, tests/packctl gave 7 failures in the link and junction tests on 37d7cea, which pass with Python 3.14.3. Without the method, _is_junction now compares os.lstat(path).st_reparse_tag with stat.IO_REPARSE_TAG_MOUNT_POINT on Windows, as ntpath.isjunction does, and answers False on other systems and when the path cannot be read. With Path.is_junction present, nothing changes. Codex (Sol) review of pack #120, J1: _ensure_known_residue and _remove_artifact asked path.exists() and path.is_symlink(); exists() follows a junction, so one whose target is gone read as absent, and is_symlink() does not see a junction, so _remove_artifact handed one to shutil.rmtree, which refuses it (J5). Both now ask _path_is_link first: a residue that is a junction, broken or not, reaches _contains_links and gives PROMOTION-FOREIGN-TARGET, and artifact removal unlinks a junction. Round 3 of that review, J3 and J4: _rollback_to_pre asked stage.exists() or stage.is_symlink(), so a broken junction at a stage read as absent, and it removed a stage that held a link, even one the apply had made; the residue check of apply_promotion before it creates a stage asked the same. Both now ask _path_is_link, and _rollback_to_pre refuses a stage that is or holds a link with PROMOTION-FOREIGN-TARGET, with the evidence {alias}:{stage name}, and leaves it; the transaction then has no ABORT. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "537d087063c3bcc5f1917bd14cdb20ef69fcd8142051d8a17f25f3292776644f",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/promotion.py",
+          "source_revision": "kp-update-cdc5@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7496bbaa24f67d734ab148462da5e525c0932ac8b97a09e678015d9481cea8bb",
+      "output_hash": "537d087063c3bcc5f1917bd14cdb20ef69fcd8142051d8a17f25f3292776644f",
       "output_path": "packctl/promotion.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -18468,10 +18488,20 @@
           "source_path": "tests/packctl/test_promotion.py",
           "source_revision": "kp-update-6bdf@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox cdc5 (fb-20261018-012600-cdc5). test_is_junction_reads_the_reparse_tag_without_path_is_junction makes a real junction with mklink /J, sets Path.is_junction to None as on Python 3.10 and 3.11, and checks that _is_junction and _path_is_link see the junction, and that a directory and a missing path are not junctions. It runs on Windows only. Measured on Linux, Python 3.13.16, pytest 9.1.1: tests/packctl gives 352 passed, 2 failed and 8 skipped, the new test among the skipped; the two failures are the same as on main. Round 2, from the Codex (Sol) review of pack #120: three Windows tests make real junctions with mklink /J and check that a broken junction residue is refused with PROMOTION-FOREIGN-TARGET (J1), that _remove_artifact removes a broken junction, and that it removes a junction and keeps its target's file; a fourth hides Path.is_junction and checks that only the mount point reparse tag is a junction (J2). On the owner's PC, Windows with Python 3.11.16 and 3.14.3: 364 passed and 2 skipped, and each of four mutants of the fix fails its own test only. Round 3 (J3, J4 and J6): test_apply_keeps_a_link_planted_in_its_own_partial_stage, on every system, has a fake _copy_artifact leave a link in the partial stage and fail, and checks that the rollback refuses that stage and keeps the link and its target; test_apply_refuses_a_broken_junction_at_a_stage_and_keeps_it and test_recovery_refuses_a_broken_junction_at_a_ready_stage, on Windows, put a broken junction where the stage goes and at a ready stage, and check the refusal, the kept junction and no ABORT; in two junction tests the target is now removed inside the try (J6). On the owner's PC, Windows with Python 3.11.16 and 3.14.3: 367 passed and 2 skipped, and each of three mutants of the fix fails its own test only. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "c85a60feac71e4ccc0003a95f84fbf4988209949f657c5d725da52f3f9608f87",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_promotion.py",
+          "source_revision": "kp-update-cdc5@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cad09a84dbdc53be4f6b36ebc69435cec97eb9d36ab0d2f08cd76729cd785793",
+      "output_hash": "c85a60feac71e4ccc0003a95f84fbf4988209949f657c5d725da52f3f9608f87",
       "output_path": "tests/packctl/test_promotion.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
