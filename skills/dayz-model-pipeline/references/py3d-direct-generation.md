@@ -316,7 +316,7 @@ in the parent p3d's visual LODs.
 
 ```python
 # Selection name follows strict convention
-proxy_sel_name = "proxy:MyAddon\\data\\proxy_slot.p3d.001"
+proxy_sel_name = "proxy:MyAddon\\data\\MySlot.p3d.001"
 
 # Position where the attachment should render
 proxy_center = (0.0, 0.05, 0.0)  # center of cradle/slot
@@ -410,7 +410,7 @@ ce_sel.points[ce] = 1
 mem.selections["ce_center"] = ce_sel
 proxy.lods.append(mem)
 
-with open("proxy_slot.p3d", "wb") as f:
+with open("MySlot.p3d", "wb") as f:
     proxy.write(f)
 ```
 

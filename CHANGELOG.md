@@ -17,6 +17,34 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `--external-scripts` roots and the vanilla tree, so without a vanilla tree no vanilla proto is
   judged. 291 unit tests pass (282 before); the vanilla control was not run for this change (no
   vanilla tree on the machine that wrote it).
+- Vault note `dayz-engine-water`: what the engine's water queries read over water objects,
+  measured on the DayZDiag server (pipeline inbox fb-20261014-123911-3f33,
+  fb-20261003-203108-0303, fb-20261003-231327-2466). With no player connected they read no water
+  over the streambed kit or the `stream_14` pieces until `GetObjectsAtPosition` loads the objects
+  in the same frame (then 371 of 417 kit points read water). On vanilla Chernarus 562 of 660
+  `river_24_*` and 388 of 460 `stream_14_*` pieces are pitched, the water follows their slope, and
+  at the centres of the pieces above 50 m `SurfaceIsPond` is true for 75 of 375 river and 30 of
+  384 stream pieces, while the depth is positive for 365 and 312. Over a roadway water face the
+  query point goes to model space with its own height and the level is the model y of the face's
+  first vertex, so on a pitched piece a query from high above is off by about dy·pitch²: query at
+  gameplay heights. `enforce-script-reference` `references/pitfalls-advanced.md` and
+  `dayz-physics-engine` point to it, and the README counts 18 vault notes (it said 16, with 17 in
+  the folder).
+- `dayz-model-pipeline` `references/config-and-packing.md`: on an `ItemBase` flag, a slot added to
+  `ProxyBattery_Car`, the class of the vanilla `battery_car.001` proxy, never drew the `CarBattery`
+  it held, in three layouts; a `ProxyAttachment` class of the item's own with its own proxy model
+  drew it (in game 2026-10-04, one item, slot and battery, fb-20261004-211658-ce25).
+  `references/memory-and-selections.md`: a proxy's `.NNN` index does not pick an entry of
+  `inventorySlot[]`.
+- `dayz-model-pipeline` `references/lods-and-geometry.md`: binarize's `Too many vertices` can come
+  from the collision LODs. A building read `CAPACITY_FAIL` with its visual LOD as it had passed,
+  once its collision grew from 1,240 to 1,263 pieces per LOD (binarize rev. 163709, 2026-10-03,
+  fb-20261003-214733-b967): compare every LOD with the last build that passed before blaming the
+  change just made. `dayz-vehicles` `references/binarize-vertex-budget.md`, item 3, points to it.
+- `dayz-physics-engine` `SKILL.md`: `PhysicsIsFalling(true)` is not a pure read. A ride command that
+  skipped it on the ticks before lifting the body with the gravity off lost the first air tick of
+  every take-off (apex 0.44 to 0.61 of vy²/2g); calling it again brought the apex to 1.00 (DayZDiag
+  1.30.164014 Exp, 2026-10-06, fb-20261006-165724-db6f).
 - `dayz-model-pipeline`: since the DayZ Tools update of 2026-10-15 (Steam build 25460346,
   `binarize.exe` 1.30.164.078) the models you binarize are ODOL v56, like the 1.30 vanilla models;
   before it they were v55 (fb-20261017-234641-96e0). The same MLOD binarized before and after: the
@@ -262,6 +290,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `enforce-script-reference` `references/pitfalls-advanced.md`: the performance trap on
+  `SurfaceIsPond`, `SurfaceIsSea` and `SurfaceRoadY` cited them at `game.c:1181-1183`, where 1.29
+  declares `SurfaceIsSea`, `SurfaceIsPond` and `GetWaterDepth`, and `SurfaceRoadY` is at `:1163`. It
+  now gives their lines in 1.30 (`:1197`, `:1196`, `:1177`) and in 1.29 (`:1182`, `:1181`,
+  `:1163`), read on the vanilla scripts of both on 2026-10-19 while checking the citations of
+  pipeline inbox fb-20261003-231327-2466.
+- `_shared/enscript-style.md`: its in-water check, `g_Game.GetWaterDepth(vectorpos) <= 0`, holds
+  where there is no water, the opposite of what it describes and of the `> 0` in
+  `enforce-script-reference` `references/pitfalls-advanced.md`. It now reads `> 0`. Found while
+  checking the water note of pipeline inbox fb-20261014-123911-3f33, fb-20261003-203108-0303 and
+  fb-20261003-231327-2466.
+- `dayz-model-pipeline` `references/config-and-packing.md`: both `CfgNonAIVehicles` examples named
+  a proxy class that is not `Proxy` plus the basename of its `model`, a class that draws nothing
+  (`rip-vehicle-import` `cookbooks/family-b/attach-invisible.md`, rule (d)). Their models are now
+  `MySlot.p3d` and `LFPG_BatterySlot.p3d`, as in `memory-and-selections.md` and
+  `py3d-direct-generation.md`, and the key rules say it (fb-20261004-211658-ce25).
 - `dayz-script-validator`: `ES-RESERVED-WORD-IDENTIFIER`, `ES-VARIABLE-NAMED-AS-TYPE` and
   `ES-UNDEFINED-CLASS-REF` took time quadratic in the length of a long statement
   (fb-20261017-175254-e6d6): the 8000 `array<int>` arguments of one `new Param<...>(1)` took 9, 9
