@@ -69,6 +69,10 @@ Findings use deterministic JSON-pointer-like paths.
 ## Strict boundary
 
 - Accepted direct or embedded payload versions: v53, v54 and v55 only.
+  The 1.30 vanilla models and the models binarized by DayZ Tools
+  1.30.164.078 (2026-10-15) are v56, so the adapter refuses them with
+  `ODOL_VERSION_UNSUPPORTED`. What later DayZ Tools builds write was not
+  measured.
 - LOD count must be `1..64` before the external backend runs.
 - A local census of 13,108 direct-signature v53-v55 files observed at most 15
   LODs; 64 is a conservative hostile-count guard, not a claim about the format

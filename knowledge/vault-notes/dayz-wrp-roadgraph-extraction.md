@@ -57,6 +57,16 @@ cp <worldname>_roads_final.json  RoadGraph_Core/data/<worldname>_roads.json
   `model_idx` indexes into `Models[]`. Translation is in matrix[9..11].
   Contains EVERYTHING: vegetation, buildings, rocks, and **road instances** (roads
   placed as loose objects) that Roadnet misses.
+- **OPRW v32** (the version of `chernarusplus.wrp` and `enoch.wrp` in 1.30.164.014
+  Exp, `skills/dayz-underground/references/terrain-holes-evidence.md:76-79`; DayZ
+  Tools 1.30.164.078 of 2026-10-15 binarizes mod maps to it too): in a mod map the
+  object records are **64 bytes**, the 60 above plus a `uint32` at +60. It was 0
+  in all 58,708 records of the one map read, and what it holds is not known; that
+  build's verifier read every object at this stride, and the maximum absolute
+  coordinate difference between its 44,957 forest objects and their float64
+  placement records was below 0.49 mm (0.488 mm, which is float32 rounding at x
+  above 8,192 m). The object records of those two maps and the v32 Roadnet
+  section were not measured.
 
 ## The connectivity passes (apply_connectivity_passes.py)
 

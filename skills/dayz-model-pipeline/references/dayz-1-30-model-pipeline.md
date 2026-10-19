@@ -163,6 +163,17 @@ longer always requires AddonBuilder. Unbinarized `.p3d` still benefit from
 `-cacheP3D`. Shipping / Workshop still packs a PBO. Operational launch:
 `dayz-test-ingame`.
 
+## Models you binarize are ODOL v56 (DayZ Tools 1.30.164.078)
+
+(until the DayZ Tools update of 2026-10-15: `binarize.exe` wrote mod models as
+ODOL v55.) (since DayZ Tools Steam build 25460346, installed 2026-10-15 21:47
+UTC, `binarize.exe` 1.30.164.078: they come out as ODOL v56, the version of the
+1.30 vanilla models.)
+
+[EXACT][CLAIM-ODOL-V56-BINARIZE-130] One MLOD binarized by AddonBuilder before and after that update: the first 205 bytes are equal except the version (bytes 4-7); the v56 file has 4 more zero bytes inside a run of zeros in the model info (30 bytes in v55, 34 in v56); the 8 LOD start and end offsets after it are 4 higher; nothing else differs. A reader written for v55 fails on the v56 file.
+
+[EXACT][CLAIM-ODOL-V56-MODEL-INFO-FIELD] Where the 4 bytes sit, which that pair cannot tell: in 488 vanilla 1.30 models, each compared byte by byte with the v54 file of the same model from an earlier game build, the v56 file has 4 zero bytes right after the float the debinarizer's `odol_reader` reads as `ht_min`, before the one it reads as `ht_max`; with them removed, 471 match their v54 file past the skeleton, until the v56 file has one byte more where `odol_reader` ends the v54 model info (in 102 the difference shows one byte before that end, in 5 one byte after it), and the other 17 already differ before `ht_min`. In the pair above that float is the 1.0 at bytes 201-204, so the new bytes are 205-208. Five of the 488 have non-zero floats there and fix the place; in the others a run of zeros would let it slide. What the field holds is not known. LOD ends that come out exact do not prove the place: read after `shadow_buffer_source` instead, the 4 bytes still end every LOD exactly in the same 489 of 500 vanilla models, but give different model-info values for 92 of them. The other 11, all animated (tents, locks, a spotlight, garden plots, `pepper_plant`), fail wherever the 4 bytes are read while their v54 files parse, so v56 changes something more in them; what, is not identified.
+
 ## Migration checklist (model / config)
 
 1. Inventory attachments: proxy triangle in visual LODs **and** ViewGeometry.
@@ -173,3 +184,6 @@ longer always requires AddonBuilder. Unbinarized `.p3d` still benefit from
 5. Duplicate **members** inside one config class now fail binarize — see
    `dayz-pbo-build`.
 6. Custom character/infected **graphs**: `.agf` via Workbench, not this skill.
+7. Your own ODOL tooling (debinarizers, parity gates) must read v56 before it
+   reads a model binarized by DayZ Tools 1.30.164.078. Later builds were not
+   measured: read the version in bytes 4-7 of each model before choosing a reader.

@@ -7,6 +7,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-model-pipeline`: since the DayZ Tools update of 2026-10-15 (Steam build 25460346,
+  `binarize.exe` 1.30.164.078) the models you binarize are ODOL v56, like the 1.30 vanilla models;
+  before it they were v55 (fb-20261017-234641-96e0). The same MLOD binarized before and after: the
+  v56 file has 4 more zero bytes in the model info, and the 8 LOD offsets after them are 4 higher.
+  488 vanilla 1.30 models compared with their v54 files put those bytes right after the float
+  `odol_reader` reads as `ht_min`; 11 animated vanilla models still fail with them read. A v55
+  reader fails on v56, and `tools/dayz-odol-strict` refuses it with `ODOL_VERSION_UNSUPPORTED`.
+- Vault note `dayz-wrp-roadgraph-extraction`: in a mod map binarized by the same DayZ Tools (OPRW
+  v32) the object records are 64 bytes, the 60 of v29 plus a `uint32` at +60, which was 0 in all
+  58,708 records of the one map read (fb-20261017-234641-96e0).
 - `dayz-pbo-build`: binarizing with AddonBuilder, the source folder must be named exactly as its
   single-segment `$PBOPREFIX$`. With `-prefix=LFHeli` on folder `LFHeli_OH1`, binarize wrote the
   ODOL under the prefix while FileBank packed the folder name, so the PBO lost all 7 models and the
