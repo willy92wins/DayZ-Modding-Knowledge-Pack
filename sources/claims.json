@@ -1911,6 +1911,45 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/vault-notes/dayz-engine-water.md",
+      "claim_id": "CLAIM-WATER-SERVER-PROBE-LOADS-OBJECTS",
+      "evidence_locator": "In game, DayZDiag server with no player connected (dayz_test_run mode=server and a probe mission), as pipeline inbox fb-20261014-123911-3f33 reports it: GetGame().GetWaterDepth, GetWaterSurfaceHeightNoFakeWave and SurfaceRoadY3D at points over objects that carry their own water (the vanilla dz\\water\\streambed\\ kit, stream_14 pieces on Chernarus) returned sea level or depth 0, while the pond pieces of the Baltic v31 layer read fine. With GetGame().GetObjectsAtPosition(Vector(x,0,z), 30, objs, proxies) in the same frame and the arrays kept alive until the water queries, 371 of 417 kit axis points read water. On the kit, 61 % of the points read wet with the terrain less than 0.05 m under the roadway water_ext face and 100 % with it 0.15 m or more under (the ticket's summary, that kit water reads only with about 0.10-0.15 m or more of clearance, contradicts its own 61 % and is left out); the visible kit water is a separate 14 x 24 m CalmWater proxy sheet that no server query sees. Reference missions of the project DayZ_Baltic_12km_dev (worktree handoff-astra-map-review-6d301c): missions/BalticKitProbeV1.BalticTrial/init.c and missions/BalticBridgeProbeV2.BalticTrial/init.c. Not re-read for this change: the missions and their readings are the ticket's.",
+      "license": "MIT",
+      "line_end": 30,
+      "line_start": 20,
+      "observed_at": "2026-10-14",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/vault-notes/dayz-engine-water.md",
+      "claim_id": "CLAIM-WATER-VANILLA-BEDS-PITCHED",
+      "evidence_locator": "In game, DayZDiag server on vanilla Chernarus, run af204798, 2026-10-03, as pipeline inbox fb-20261003-203108-0303 reports it: probe mission BalticVanillaWaterSurveyV1.chernarusplus (103 x 103 cells of 150 m with GetObjectsAtPosition; per water piece its pose, GetDirectionUp and water queries along its axes) and the reader tools/playtest/read_vanilla_water_survey.py at commit 84e2bb8 of the project DayZ_Baltic_12km_dev; data evidence/v30-shore-wave-2026-10-03/vanilla-water-survey.json. Ponds and lakes: 670 pieces, 3 pitched. river_24_*: 660, 562 pitched, median 1.5, p95 4.7, max 8.4 degrees. stream_14_*: 460, 388 pitched, 2.2, 9.0, 39.3 degrees. Median ratio of water slope to piece slope 0.95 on rivers (n=172) and 0.94 on streams (n=188). At the centres of the pieces above 50 m, SurfaceIsPond true for 75/375 river and 30/384 stream pieces, depth positive for 365/375 and 312/384. On the Baltic map, stepped flat planes left visible steps and dry strips on the sloped stretches (BALTIC-015). Limits the ticket states: native reads on the server; no boat, drinking or appearance; the streambed rows mix other surfaces and are not used for the slope ratio. Not re-read for this change: the run and its data are the ticket's.",
+      "license": "MIT",
+      "line_end": 52,
+      "line_start": 34,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/vault-notes/dayz-engine-water.md",
+      "claim_id": "CLAIM-WATER-ROADWAY-FACE-LEVEL",
+      "evidence_locator": "In game, DayZDiag server, run 8392533a of the Baltic vanilla-channel pilot, as pipeline inbox fb-20261003-231327-2466 reports it: the four-step rule (world xz bounding box; the query point to model space with its own height through rotation and uniform scale; inside the face in model xz; the model y of the face's first vertex, highest over several objects) reproduces 1,940 of 1,941 readback rows within 2 mm, and a second query height agrees with a mean residual of 1 cm or less. Error about dy*pitch^2 (+6.0 cm at 2 degrees and +1.5 cm at 1 degree from ground + 50 m), independent of scale, and water lost near face edges. Vanilla straights river_24_* and stream_14_*: the -z skirt reads its bottom (first vertex at -0.07 m), the +z skirt the flat level (first vertex v3 at +0.07 m); the Roadway LOD (3e15) is vertex-identical to LOD 0, every roadway normal (0,1,0). Flat part within 1 cm in 84-97 % of the samples at gameplay heights, no holes; skirts +/-0.07 x scale, some joints up to 13 cm; straights edge to edge around bends leave gaps, overlap one skirt pair (6 m x scale). Refuted: roadway differing from the visual LOD, exact projected-polygon selection (137 cases), model-space-only selection (21 pad rows), face-boundary proximity, nearest in model units (241 disagreements). One unexplained row: R1 s=228.02 offset 30.5, the lower of two overlapping levels. Vanilla, read on the owner's PC on 2026-10-19: GetWaterDepth and GetWaterSurfaceHeightNoFakeWave are declared at scripts/3_game/global/game.c:1198 and :1200 in 1.30 and at :1183 and :1185 in 1.29, the numbering the ticket cites (1183-1185). Artifacts of the project DayZ_Baltic_12km_dev (branch v29-base): tools/water/engine_water_model.py, evidence/v30-vanilla-channel-pilot-2026-10-04/README.md (section 'Diagnóstico del agua del motor') and diagnosis/engine-rule-vs-run-8392533a.json. Not re-read for this change: the run, the model and the checker are the ticket's.",
+      "license": "MIT",
+      "line_end": 88,
+      "line_start": 56,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

@@ -448,8 +448,8 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
   - `GetScene()` API for scene-graph queries
   *(Vanilla call, performance claim is community guidance.)*
 
-- **`SurfaceIsPond` / `SurfaceIsSea` / `SurfaceRoadY` are slow** — all `proto native`
-  at `game.c:1181-1183`. For "is this point in water?" prefer:
+- **`SurfaceIsPond` / `SurfaceIsSea` / `SurfaceRoadY` are slow** — `proto native` at `game.c:1197`,
+  `:1196`, `:1177` in 1.30 (`:1182`, `:1181`, `:1163` in 1.29). For "is this point in water?" prefer:
 
   ```c
   if (g_Game.GetWaterDepth(pos) > 0)  // pos is vector
@@ -458,6 +458,10 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
   Vanilla itself uses both patterns (`hologram.c:1128` uses `SurfaceIsSea/Pond`,
   `transport.c:357` and `playerbase.c:6817` use `GetWaterDepth`). When you control
   the call site, prefer `GetWaterDepth`.
+
+  Over water objects (the vanilla river and stream pieces, the streambed kit, a roadway
+  `water_ext` face of your own), see `knowledge/vault-notes/dayz-engine-water.md`: on vanilla
+  Chernarus, `SurfaceIsPond` read false at the centre of most river and stream pieces above 50 m.
 
 - **Surface Y position fast pattern**:
 

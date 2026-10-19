@@ -120,7 +120,7 @@ DayZ-Modding-Knowledge-Pack/
     ├── DAYZ_TECHNICAL_NOTES.md   ← py3d MLOD facts, LODs, winding, config, runtime
     ├── DAYZ_INFRA.md             ← drives, AddonBuilder, serverDZ.cfg, RPT triage, terrain
     ├── dayz-mcp-bridge-protocol.md  ← driving DayZDiag from an agent (see §8)
-    └── vault-notes/              ← 16 topic notes (see §6)
+    └── vault-notes/              ← 18 topic notes (see §6)
 ```
 
 ---
@@ -416,7 +416,7 @@ against the vanilla source for your game version (the engine moves).
   deadman-held controls), and the engine facts it cost in-game cycles to learn — client vs
   server vehicle ownership, why `SetThrottle` alone never moves a car, `DIAG_DEVELOPER` vs
   `DEVELOPER`, and why freecam freezes the thing you are trying to measure.
-- **`vault-notes/`** — 16 topic notes, including: `dayz-animations-creatures-weapons`,
+- **`vault-notes/`** — 18 topic notes, including: `dayz-animations-creatures-weapons`,
   `dayz-custom-infected`, `dayz-enforce-script-reference`, `dayz-mod-implementation-checklists`,
   `dayz-modded-class-server-stub-pattern`, `dayz-objectbuilder-lod-conventions`,
   `dayz-wiki-systems-reference`, `dayz-wrp-roadgraph-extraction`, `uv-mapping-dayz`, and

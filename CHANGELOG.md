@@ -7,6 +7,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Vault note `dayz-engine-water`: what the engine's water queries read over water objects,
+  measured on the DayZDiag server (pipeline inbox fb-20261014-123911-3f33,
+  fb-20261003-203108-0303, fb-20261003-231327-2466). With no player connected they read no water
+  over the streambed kit or the `stream_14` pieces until `GetObjectsAtPosition` loads the objects
+  in the same frame (then 371 of 417 kit points read water). On vanilla Chernarus 562 of 660
+  `river_24_*` and 388 of 460 `stream_14_*` pieces are pitched, the water follows their slope, and
+  at the centres of the pieces above 50 m `SurfaceIsPond` is true for 75 of 375 river and 30 of
+  384 stream pieces, while the depth is positive for 365 and 312. Over a roadway water face the
+  query point goes to model space with its own height and the level is the model y of the face's
+  first vertex, so on a pitched piece a query from high above is off by about dy·pitch²: query at
+  gameplay heights. `enforce-script-reference` `references/pitfalls-advanced.md` and
+  `dayz-physics-engine` point to it, and the README counts 18 vault notes (it said 16, with 17 in
+  the folder).
 - `dayz-model-pipeline` `references/config-and-packing.md`: on an `ItemBase` flag, a slot added to
   `ProxyBattery_Car`, the class of the vanilla `battery_car.001` proxy, never drew the `CarBattery`
   it held, in three layouts; a `ProxyAttachment` class of the item's own with its own proxy model
@@ -263,6 +276,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `enforce-script-reference` `references/pitfalls-advanced.md`: the performance trap on
+  `SurfaceIsPond`, `SurfaceIsSea` and `SurfaceRoadY` cited them at `game.c:1181-1183`, where 1.29
+  declares `SurfaceIsSea`, `SurfaceIsPond` and `GetWaterDepth`, and `SurfaceRoadY` is at `:1163`. It
+  now gives their lines in 1.30 (`:1197`, `:1196`, `:1177`) and in 1.29 (`:1182`, `:1181`,
+  `:1163`), read on the vanilla scripts of both on 2026-10-19 while checking the citations of
+  pipeline inbox fb-20261003-231327-2466.
+- `_shared/enscript-style.md`: its in-water check, `g_Game.GetWaterDepth(vectorpos) <= 0`, holds
+  where there is no water, the opposite of what it describes and of the `> 0` in
+  `enforce-script-reference` `references/pitfalls-advanced.md`. It now reads `> 0`. Found while
+  checking the water note of pipeline inbox fb-20261014-123911-3f33, fb-20261003-203108-0303 and
+  fb-20261003-231327-2466.
 - `dayz-model-pipeline` `references/config-and-packing.md`: both `CfgNonAIVehicles` examples named
   a proxy class that is not `Proxy` plus the basename of its `model`, a class that draws nothing
   (`rip-vehicle-import` `cookbooks/family-b/attach-invisible.md`, rule (d)). Their models are now

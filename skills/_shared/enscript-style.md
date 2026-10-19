@@ -151,7 +151,7 @@ vector GetCustomPosition()
 
 **Specific use note 2:** If at all possible, avoid `g_Game.SurfaceIsPond()`, `SurfaceIsSea()` or `SurfaceRoadY` as much as possible. They're remarkably slow for their intended purpose.
 
-Recommend using `if (g_Game.GetWaterDepth(vectorpos) <= 0)` for checking if vector is in water, and something similar to the following for surface y calculating.
+Recommend using `if (g_Game.GetWaterDepth(vectorpos) > 0)` for checking if vector is in water, and something similar to the following for surface y calculating.
 
 ```
 vector GetSurfacePosition(float x, float z)
