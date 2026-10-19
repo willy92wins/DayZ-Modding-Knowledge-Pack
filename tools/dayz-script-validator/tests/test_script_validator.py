@@ -2284,6 +2284,135 @@ class TestReservedWordIdentifier(unittest.TestCase):
              for e in _errors_of(result, RESERVED_RULE)],
         )
 
+    def test_template_arguments_end_at_their_own_bracket(self):
+        # Inbox fb-20261017-175254-e6d6: the type's template arguments could
+        # run on to any later `>` of the statement, so each place a
+        # declaration can start read to its end. These 8 000 template
+        # arguments in 96 KB took 9 s, and take 0.02 s.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        source = (
+            "class A\n{\n    void F()\n    {\n        auto x = new Param<"
+            + "array<int>, " * 7999
+            + "array<int>>(1);\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        errors = check_es_reserved_word_identifier(source, "scripts/4_World/x.c")
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual([], errors)
+
+    def test_a_type_with_templates_five_deep_is_read(self):
+        # Codex review of e6d6, E1: four levels were read, and a mod's fifth
+        # hid the name.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        errors = check_es_reserved_word_identifier(
+            "class A\n{\n"
+            "    map<string, ref map<string, ref map<string, ref map<string,"
+            " ref array<int>>>>> local;\n"
+            "}\n",
+            "scripts/4_World/x.c",
+        )
+
+        self.assertEqual([3], [e["line"] for e in errors])
+
+    def test_two_comparisons_hide_no_later_declarator(self):
+        # The declaration patterns read `< b, out = c >` blanked, as template
+        # arguments; the walk to the later declarators reads the source.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        errors = check_es_reserved_word_identifier(
+            "class A\n{\n    void F()\n    {\n"
+            "        bool first = a < b, out = c > d;\n"
+            "    }\n}\n",
+            "scripts/4_World/x.c",
+        )
+
+        self.assertEqual([5], [e["line"] for e in errors])
+
+    def test_vanilla_closers_and_one_line_ifs_hide_no_word(self):
+        # Codex review of e6d6: E4, vanilla closes a template with one `>` too
+        # many (`map<string, int>> name;`, 3_game/global/ammotypes.c:80 on
+        # 1.30); E7, in `if (a < b) ... if (c > d)` no template runs from the
+        # `<` to the `>`.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        errors = check_es_reserved_word_identifier(
+            "class A\n{\n"
+            "    static ref map<string, int>> local;\n"
+            "    void F(array<int> values, int a, int b, int c, int d)\n    {\n"
+            "        if (a < b) foreach (int local : values) if (c > d) Print(local);\n"
+            "    }\n}\n",
+            "scripts/4_World/x.c",
+        )
+
+        self.assertEqual([3, 6], [e["line"] for e in errors])
+
+    def test_each_declaration_is_read_once(self):
+        # Codex review of e6d6, E5: each parameter on a line of its own read on
+        # to the `)`. These 2 400 took 6.6 s, and take 0.01 s.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        source = (
+            "class A\n{\n    void F(\n"
+            + ",\n".join("        int a%d" % i for i in range(2400))
+            + ")\n    {\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        errors = check_es_reserved_word_identifier(source, "scripts/4_World/x.c")
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual([], errors)
+
+    def test_lines_are_counted_once_per_file(self):
+        # Codex review of e6d6, E9: each word found counted the lines from the
+        # start of the file again. These 64 000 members took 12 s, and take
+        # 0.4 s.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        source = "class A\n{\n" + "    int local;\n" * 64000 + "}\n"
+
+        start = time.perf_counter()
+        errors = check_es_reserved_word_identifier(source, "scripts/4_World/x.c")
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual(64000, len(errors))
+        self.assertEqual(64002, errors[-1]["line"])
+
+    def test_a_word_that_starts_its_line_is_on_that_line(self):
+        # Codex review of e6d6, E10: the members above all follow a space, so
+        # counting the lines up to one character before each word passed them.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        for newline in ("\n", "\r\n"):
+            with self.subTest(newline=repr(newline)):
+                source = newline.join(
+                    ["class A", "{", "int", "local;", "int", "local;", "}", ""]
+                )
+
+                errors = check_es_reserved_word_identifier(
+                    source, "scripts/4_World/x.c"
+                )
+
+                self.assertEqual([4, 6], [e["line"] for e in errors])
+
 
 MODULO = FIXTURES / "modulo_float_context"
 MODULO_RULE = "ES-MODULO-FLOAT-CONTEXT"
@@ -2715,6 +2844,231 @@ class TestUndefinedClassRef(unittest.TestCase):
         self.assertEqual("PASS", lines[0])
         self.assertTrue(lines[1].startswith("  SKIP ES-UNDEFINED-CLASS-REF"))
         self.assertIn("FX_GonePlanner", lines[1])
+
+    def test_template_arguments_end_at_their_own_bracket(self):
+        # Inbox fb-20261017-175254-e6d6: in declared_variables, the same
+        # statement as in TestReservedWordIdentifier took 15 s, and takes
+        # 0.02 s.
+        from detectors.es_undefined_class_ref import declared_variables
+
+        source = (
+            "class A\n{\n    void F()\n    {\n        auto x = new Param<"
+            + "array<int>, " * 7999
+            + "array<int>>(1);\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        names = declared_variables(source)
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual(set(), names)
+
+    def test_template_arguments_declare_no_variable(self):
+        # Codex review of e6d6, E2: each `ref AuditEntry,` read like a
+        # declaration of AuditEntry, and each was read to the end of the
+        # statement. These 2 400 took 7.8 s, and take 0.01 s.
+        from detectors.es_undefined_class_ref import declared_variables
+
+        source = (
+            "class A\n{\n    void F()\n    {\n        auto x = new Param<"
+            + "ref AuditEntry, " * 2399
+            + "ref AuditEntry>(1);\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        names = declared_variables(source)
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual(set(), names)
+
+    def test_a_variable_with_nested_templates_is_no_class(self):
+        # Codex review of e6d6, E1 and E3: a variable is collected however
+        # deep its type nests, and a later declarator after two comparisons
+        # too, so a call on it is no static call on an undefined class.
+        from detectors.es_undefined_class_ref import (
+            check_es_undefined_class_ref,
+            declared_variables,
+        )
+
+        source = (
+            "class A\n{\n"
+            "    array<ref array<int>> AuditMatrix;\n"
+            "    map<string, ref map<string, ref map<string, ref map<string,"
+            " ref array<ref EntityAI>>>>> AuditFoodProperties;\n"
+            "    void F()\n    {\n"
+            "        bool first = a < b, AuditLater = c > d;\n"
+            "        AuditMatrix.Count();\n"
+            "        AuditFoodProperties.Count();\n"
+            "        AuditLater.Count();\n"
+            "    }\n}\n"
+        )
+        config = (
+            "class CfgPatches\n{\n    class FX_Audit\n    {\n"
+            "        requiredAddons[] = {\"DZ_Data\", \"DZ_Scripts\"};\n"
+            "    };\n};\n"
+        )
+
+        names = declared_variables(source)
+        result = check_es_undefined_class_ref(
+            [("scripts/4_World/x.c", source)],
+            [("config.cpp", config)],
+            [],
+            [],
+            UNDEFINED / "vanilla",
+        )
+
+        self.assertLessEqual(
+            {"AuditMatrix", "AuditFoodProperties", "AuditLater"}, names
+        )
+        self.assertEqual(([], []), result)
+
+    def test_vanilla_closers_and_one_line_ifs_hide_no_variable(self):
+        # Codex review of e6d6: E4, vanilla closes a template with one `>` too
+        # many (`map<string, int>> name;`, 3_game/global/ammotypes.c:80 on
+        # 1.30); E7, in `if (a < b) ... if (c > d)` no template runs from the
+        # `<` to the `>`. A call on either variable is no static call on an
+        # undefined class.
+        from detectors.es_undefined_class_ref import (
+            check_es_undefined_class_ref,
+            declared_variables,
+        )
+
+        source = (
+            "class A\n{\n"
+            "    static ref map<string, int>> AuditSurfaceEffects;\n"
+            "    void F(array<int> values, int a, int b, int c, int d)\n    {\n"
+            "        AuditSurfaceEffects.Count();\n"
+            "        if (a < b) foreach (int AuditValue : values)"
+            " if (c > d) AuditValue.ToString();\n"
+            "    }\n}\n"
+        )
+        config = (
+            "class CfgPatches\n{\n    class FX_Audit\n    {\n"
+            "        requiredAddons[] = {\"DZ_Data\", \"DZ_Scripts\"};\n"
+            "    };\n};\n"
+        )
+
+        names = declared_variables(source)
+        result = check_es_undefined_class_ref(
+            [("scripts/4_World/x.c", source)],
+            [("config.cpp", config)],
+            [],
+            [],
+            UNDEFINED / "vanilla",
+        )
+
+        self.assertLessEqual({"AuditSurfaceEffects", "AuditValue"}, names)
+        self.assertEqual(([], []), result)
+
+    def test_template_arguments_over_lines_declare_no_variable(self):
+        # Codex review of e6d6, E5: with a newline after `Param<` the
+        # arguments were not blanked, so `ref AuditEntry,` declared AuditEntry,
+        # and so did the declarator after its comma, read on to the end of the
+        # statement. These 4 800 took 15 s, and take 0.01 s.
+        from detectors.es_undefined_class_ref import declared_variables
+
+        source = (
+            "class A\n{\n    void F()\n    {\n        auto x = new Param<\n"
+            + "ref AuditEntry, AuditEntry, " * 2399
+            + "ref AuditEntry, AuditEntry>(1);\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        names = declared_variables(source)
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual(set(), names)
+
+    def test_template_arguments_after_a_space_declare_no_variable(self):
+        # Codex review of e6d6, E8: with a space or a tab before the `<`, the
+        # template arguments over lines were read as code, so `ref AuditEntry,`
+        # declared AuditEntry and the static call on that undefined class went
+        # unreported. On one line, so did the type after a comma.
+        from detectors.es_undefined_class_ref import (
+            check_es_undefined_class_ref,
+            declared_variables,
+        )
+
+        config = (
+            "class CfgPatches\n{\n    class FX_Audit\n    {\n"
+            "        requiredAddons[] = {\"DZ_Data\", \"DZ_Scripts\"};\n"
+            "    };\n};\n"
+        )
+        for gap in (" ", "\t"):
+            with self.subTest(gap=repr(gap)):
+                source = (
+                    "class A\n{\n    void F()\n    {\n"
+                    "        auto p = new map" + gap + "<\n"
+                    "            ref AuditEntry, bool>();\n"
+                    "        AuditEntry.Method();\n"
+                    "    }\n}\n"
+                )
+
+                errors, _skipped = check_es_undefined_class_ref(
+                    [("scripts/4_World/x.c", source)],
+                    [("config.cpp", config)],
+                    [],
+                    [],
+                    UNDEFINED / "vanilla",
+                )
+
+                self.assertEqual([7], [e["line"] for e in errors])
+                self.assertEqual(
+                    set(),
+                    declared_variables(
+                        "auto q = new Param3" + gap + "<int, AuditTarget, int>(1, x, 2);"
+                    ),
+                )
+
+    def test_a_declaration_among_template_arguments_begins_nothing_after_them(self):
+        # Codex review of e6d6, E5: `ref AuditEntry,` among template arguments
+        # over lines starts no declaration, so the comma after the template
+        # separates the arguments of the call, and AuditTarget is no variable.
+        from detectors.es_undefined_class_ref import declared_variables
+
+        source = (
+            "class A\n{\n    void F()\n    {\n        Send(new Param2<\n"
+            "            ref AuditEntry, ref AuditEntry>(a, b), AuditTarget);\n"
+            "    }\n}\n"
+        )
+
+        self.assertEqual(set(), declared_variables(source))
+
+    def test_a_declaration_ends_at_a_bracket_it_did_not_open(self):
+        # Codex review of e6d6, E5: like the walks from each start that it
+        # replaced, the pass ends a declaration at a bracket that closes
+        # around it, even one this text never opened: `, C` is no declarator.
+        from detectors.es_undefined_class_ref import declarator_commas
+
+        self.assertEqual([5], declarator_commas("int a, B), C;", [5]))
+
+    def test_each_declaration_is_read_once(self):
+        # Codex review of e6d6, E5 and E6: each parameter on a line of its own
+        # read on to the `)`, and each `1<` of a chain of shifts on to the `;`.
+        # These 2 400 parameters took 9 s and these 8 000 shifts 4.7 s; each
+        # takes 0.01 s.
+        from detectors.es_undefined_class_ref import declared_variables
+
+        sources = {
+            "parameters": (
+                "class A\n{\n    void F(\n"
+                + ",\n".join("        int a%d" % i for i in range(2400))
+                + ")\n    {\n    }\n}\n"
+            ),
+            "shifts": (
+                "class A\n{\n    void F()\n    {\n        int x = 1"
+                + "<<1" * 8000
+                + ";\n    }\n}\n"
+            ),
+        }
+
+        for label, source in sources.items():
+            with self.subTest(label):
+                start = time.perf_counter()
+                names = declared_variables(source)
+
+                self.assertLess(time.perf_counter() - start, 2)
+                self.assertEqual(set(), names)
 
 
 BRACKETS = FIXTURES / "unbalanced_brackets"
@@ -3159,6 +3513,75 @@ class TestVariableNamedAsType(unittest.TestCase):
         self.assertLess(time.perf_counter() - start, 2)
         self.assertEqual([], errors)
 
+    def test_template_arguments_end_at_their_own_bracket(self):
+        # Inbox fb-20261017-175254-e6d6: the same statement as in
+        # TestReservedWordIdentifier took 9 s, and takes 0.04 s.
+        source = (
+            "class A\n{\n    void F()\n    {\n        auto x = new Param<"
+            + "array<int>, " * 7999
+            + "array<int>>(1);\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        errors, _skipped = _named_errors(source, vanilla=None)
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual([], errors)
+
+    def test_a_type_with_templates_five_deep_is_read(self):
+        # Codex review of e6d6, E1 and E3, with a later declarator after two
+        # comparisons: the walk reads the source, not the blanked text.
+        source = (
+            "class C\n{\n"
+            "    map<string, ref map<string, ref map<string, ref map<string,"
+            " ref array<int>>>>> Debug;\n"
+            "    void F()\n    {\n"
+            "        bool first = a < b, Debug = c > d;\n"
+            "    }\n}\n"
+        )
+        errors, skipped = _named_errors(source)
+
+        self.assertEqual(
+            [(3, "Debug"), (6, "Debug")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+        self.assertEqual([], skipped)
+
+    def test_vanilla_closers_and_one_line_ifs_hide_no_name(self):
+        # Codex review of e6d6: E4, vanilla closes a template with one `>` too
+        # many (`map<string, int>> name;`, 3_game/global/ammotypes.c:80 on
+        # 1.30); E7, in `if (a < b) ... if (c > d)` no template runs from the
+        # `<` to the `>`.
+        source = (
+            "class C\n{\n"
+            "    static ref map<string, int>> Debug;\n"
+            "    void F(array<int> values, int a, int b, int c, int d)\n    {\n"
+            "        if (a < b) foreach (int Debug : values) if (c > d) Print(Debug);\n"
+            "    }\n}\n"
+        )
+        errors, skipped = _named_errors(source)
+
+        self.assertEqual(
+            [(3, "Debug"), (6, "Debug")],
+            [(e["line"], e["message"].split("'")[1]) for e in errors],
+        )
+        self.assertEqual([], skipped)
+
+    def test_each_declaration_is_read_once(self):
+        # Codex review of e6d6, E5: each parameter on a line of its own read on
+        # to the `)`. These 2 400 took 7.6 s, and take 0.02 s.
+        source = (
+            "class A\n{\n    void F(\n"
+            + ",\n".join("        int a%d" % i for i in range(2400))
+            + ")\n    {\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        errors, _skipped = _named_errors(source, vanilla=None)
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual([], errors)
+
     def test_a_folder_without_class_managed_is_no_vanilla_tree(self):
         errors, skipped = _named_errors(
             "class C\n{\n    bool Debug;\n}\n", vanilla=NAMED / "bad"
@@ -3553,6 +3976,25 @@ class TestUndeclaredStaticMember(unittest.TestCase):
         self.assertEqual(
             [11, 12], [e["line"] for e in _static_member_errors(sources)]
         )
+
+    def test_template_arguments_after_a_space_declare_no_variable(self):
+        # Codex review of e6d6, E8: with a space or a tab before the `<`,
+        # `ref AuditEntry,` among template arguments over lines declared
+        # AuditEntry, so a member its class lacks went unreported.
+        for gap in (" ", "\t"):
+            with self.subTest(gap=repr(gap)):
+                source = (
+                    "class AuditEntry\n{\n    static int AUDIT_FOUND;\n}\n"
+                    "class FX_A\n{\n    void F()\n    {\n"
+                    "        auto p = new map" + gap + "<\n"
+                    "            ref AuditEntry, bool>();\n"
+                    "        int x = AuditEntry.AUDIT_MISSING;\n"
+                    "    }\n}\n"
+                )
+
+                self.assertEqual(
+                    [11], [e["line"] for e in _static_member_errors(source)]
+                )
 
     def test_classes_not_wholly_the_addons_are_skipped(self):
         cases = {

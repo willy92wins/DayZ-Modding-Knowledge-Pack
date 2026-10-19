@@ -1301,10 +1301,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-22f2@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e6d6 (fb-20261017-175254-e6d6). Fixed entry for ES-RESERVED-WORD-IDENTIFIER, ES-VARIABLE-NAMED-AS-TYPE and ES-UNDEFINED-CLASS-REF: quadratic time in the length of a long statement; template arguments are blanked in one pass and the later declarators of every declaration are read in one pass; a name among template arguments after a space or a tab before the `<` is no declared variable, and ES-RESERVED-WORD-IDENTIFIER counts the lines of a file once. 282 unit tests pass (261 before). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "b6ae9739609d7aaf7736b554781d0809abb3a2893eaff0096058fc520a1e7933",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-e6d6@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5a66bc2bc54d9c363a0ea69b4e0a2d21f17566d62abdb1a95b395adcddc07b30",
+      "output_hash": "b6ae9739609d7aaf7736b554781d0809abb3a2893eaff0096058fc520a1e7933",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -26044,10 +26054,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-22f2@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e6d6 (fb-20261017-175254-e6d6). 21 tests for the three rules: template arguments that end at their own bracket (the inbox statement), templates nested five deep and two comparisons (E1 to E3 of the Codex (Sol) review), vanilla's closers and one-line ifs (E4, E7), template arguments over lines, a declaration among them and a bracket it did not open (E5), and each declaration read once: 2400 parameters one per line, 8000 shifts (E5, E6); a space or a tab before the `<` of template arguments over lines, for ES-UNDEFINED-CLASS-REF and ES-UNDECLARED-STATIC-MEMBER (E8), 64 000 members named local (E9), and a word that starts its line, with LF and with CRLF (E10). In Linux: 282 tests pass (261 before); of 12 mutants of the change 11 fail a test, and so do the 5 of round 4. The one left restarts one character after a template span's `>`, where no rule's declaration start can sit, which the third review found equivalent for the present callers. Of the 3 of round 5, the two that count one character short fail; the third starts the next count one character into a word, which holds no line break. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "62366a577255e413e798870b6349383013c98b2b4515729fafcc36314313f966",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-e6d6@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "53e48c7d280aafe76728747a0361d38717e846417237af4d44ae6894ee74ae13",
+      "output_hash": "62366a577255e413e798870b6349383013c98b2b4515729fafcc36314313f966",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -30999,10 +31019,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_reserved_word_identifier.py",
           "source_revision": "kp-update-val-compile-errors@2026-10-04",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e6d6 (fb-20261017-175254-e6d6). _TYPE reads blanked template arguments, and the later declarators of each declaration come from declarator_commas in one pass, where each was read from its own start to the end of its statement: 8000 template arguments of one new Param<...> took 9 s. Lines are counted on from the last word found, where each word counted them from the start of the file: 64 000 members named local took 12 s, and take 0.4 s (E9). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "cac502d90e860fbcf19965770eb32b695cdffcf05c3adf0c910b00ebe7b6056a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_reserved_word_identifier.py",
+          "source_revision": "kp-update-e6d6@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "51c59dcf4b2c79161714e3cea0c6bc73b5132ec976193e54127d97e279aaf585",
+      "output_hash": "cac502d90e860fbcf19965770eb32b695cdffcf05c3adf0c910b00ebe7b6056a",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_reserved_word_identifier.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -31469,10 +31499,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
           "source_revision": "kp-update-codex-r2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e6d6 (fb-20261017-175254-e6d6). The declaration patterns read a lazy template, so each place a declaration could start read on to the end of its statement: 8000 template arguments of one new Param<...> took 15 s in declared_variables. They now read the text through the new blank_template_arguments, which blanks in one pass, at any depth, each `<` closed by its own `>` with no ;, {, }, (, ) or newline between; _TEMPLATE closes on a run of `>`, as vanilla writes (3_game/global/ammotypes.c:80 and :100 on 1.30, :47 and :60 on 1.29). The new declarator_commas reads the later declarators of every declaration in one pass, keeping per open bracket whether a declaration runs, and steps over the template spans that _template_spans finds, over lines too, where a start begins nothing. _closed_template_openers, _template_spans and _inside_template_args move here from es_variable_named_as_type.py. declared_variables reads the template spans with spaces or tabs allowed before the `<`, as ES-VARIABLE-NAMED-AS-TYPE does, and keeps no name among the template arguments that _template_end reads (Codex (Sol) reviews of the change, E1 to E8); a newline between a type's name and its `<` still opens no template there, as on main. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "bf2b36da398affd600efb0360b426d154bad78d9059f44f0a626d06617b68afa",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
+          "source_revision": "kp-update-e6d6@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "36dbf4fffa300a253ec5e5cc9d2f49e854645c77106115d3afa92e9f23cccb4c",
+      "output_hash": "bf2b36da398affd600efb0360b426d154bad78d9059f44f0a626d06617b68afa",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34119,10 +34159,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
           "source_revision": "kp-update-pack115-n1@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e6d6 (fb-20261017-175254-e6d6). The first declarators are read from blanked template arguments, and the later ones from declarator_commas in one pass over the spaced template spans, where each declaration was read from its own start: 8000 template arguments of one new Param<...> took 9 s. The template helpers now live in es_undefined_class_ref.py. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "856f656d67b6e18171279267492bcae87af24b7f4e43fe7f9a96029a40efb510",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
+          "source_revision": "kp-update-e6d6@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e742b44a7f162393acb6f78ac1ce8e1679fb5db4f0961d5246589db66d0a5a98",
+      "output_hash": "856f656d67b6e18171279267492bcae87af24b7f4e43fe7f9a96029a40efb510",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_variable_named_as_type.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

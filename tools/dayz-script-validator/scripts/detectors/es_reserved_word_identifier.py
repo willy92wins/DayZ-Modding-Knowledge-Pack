@@ -1,5 +1,10 @@
 import re
 
+from detectors.es_undefined_class_ref import (
+    _TEMPLATE,
+    blank_template_arguments,
+    declarator_commas,
+)
 from shared.dead_branches import dead_lines
 
 
@@ -48,7 +53,9 @@ _MODIFIERS = (
     r"(?:(?:ref|autoptr|const|static|private|protected|owned|notnull|out|"
     r"inout|local|reference)[ \t]+)*"
 )
-_TYPE = r"(?P<type>[A-Za-z_]\w*)(?:[ \t]*<[^;{}()\n]*?>)?(?:[ \t]*\[[^\]\n]*\])?"
+_TYPE = (
+    r"(?P<type>[A-Za-z_]\w*)(?:[ \t]*" + _TEMPLATE + r")?(?:[ \t]*\[[^\]\n]*\])?"
+)
 _WORD = r"(?P<name>" + "|".join(RESERVED_WORDS) + r")\b"
 
 # `Type <word>` followed by what can only follow a declared name: `;`, `=`
@@ -72,28 +79,21 @@ _FIRST_DECL_RE = re.compile(
 _LATER_NAME_RE = re.compile(r",\s*" + _WORD + r"\s*(?=;|=(?!=)|\[|,)")
 
 
-def _later_declarators(stripped):
-    """(offset, word) of each reserved word named after a comma of a declaration."""
-    for match in _FIRST_DECL_RE.finditer(stripped):
-        if match.group("type") in _NOT_A_TYPE:
-            continue
-        depth = 0
-        cursor = match.end()
-        while cursor < len(stripped):
-            char = stripped[cursor]
-            if char in "([{":
-                depth += 1
-            elif char in ")]}":
-                depth -= 1
-                if depth < 0:
-                    break
-            elif char == ";" and depth == 0:
-                break
-            elif char == "," and depth == 0:
-                later = _LATER_NAME_RE.match(stripped, cursor)
-                if later:
-                    yield later.start("name"), later.group("name")
-            cursor += 1
+def _later_declarators(stripped, blanked):
+    """(offset, word) of each reserved word named after a comma of a declaration.
+
+    blanked: stripped through blank_template_arguments(), which _FIRST_DECL_RE
+    reads.
+    """
+    starts = [
+        match.end()
+        for match in _FIRST_DECL_RE.finditer(blanked)
+        if match.group("type") not in _NOT_A_TYPE
+    ]
+    for comma in declarator_commas(stripped, starts):
+        later = _LATER_NAME_RE.match(stripped, comma)
+        if later:
+            yield later.start("name"), later.group("name")
 
 ES_RESERVED_WORD_IDENTIFIER_MESSAGE = (
     "[FAIL] {rel_path} line {line}: '{name}' is an Enforce keyword and cannot "
@@ -106,18 +106,24 @@ ES_RESERVED_WORD_IDENTIFIER_MESSAGE = (
 
 def _declared_words(stripped_source):
     """(offset, word) of every reserved word in a declared-name position."""
-    for match in _DECL_RE.finditer(stripped_source):
+    blanked = blank_template_arguments(stripped_source)
+    for match in _DECL_RE.finditer(blanked):
         if match.group("type") not in _NOT_A_TYPE:
             yield match.start("name"), match.group("name")
-    yield from _later_declarators(stripped_source)
+    yield from _later_declarators(stripped_source, blanked)
 
 
 def check_es_reserved_word_identifier(stripped_source, rel_path):
     errors = []
     seen = set()
     dead = None
+    # Offsets come in order, so lines are counted on from the last one:
+    # counting from the start for each word grew with the square of the
+    # words (Codex review of e6d6, E9).
+    line, counted = 1, 0
     for offset, name in sorted(_declared_words(stripped_source)):
-        line = stripped_source.count("\n", 0, offset) + 1
+        line += stripped_source.count("\n", counted, offset)
+        counted = offset
         if dead is None:
             dead = dead_lines(stripped_source)
         if (line, name) in seen or line in dead:
