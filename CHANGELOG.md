@@ -255,7 +255,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   map <`), is no longer taken for a declared variable, which hid `AuditEntry.Method(` from
   `ES-UNDEFINED-CLASS-REF` and `ES-UNDECLARED-STATIC-MEMBER`. `ES-RESERVED-WORD-IDENTIFIER` counts
   the lines of a file once, not once for each word it finds: 64 000 such members took 12 s, and
-  take 0.4 s. 281 unit tests pass (261 before).
+  take 0.4 s. 282 unit tests pass (261 before).
 - `dayz-script-validator`: `ES-LAYOUT-PATH-PBOPREFIX-MISMATCH` failed on a message that names a
   layout, such as `Print(LOG_TAG + " HUD mod: CreateWidgets failed for route_mode_button.layout")`
   after a CreateWidgets call whose path matches the prefix (fb-20261018-231841-22f2). A string

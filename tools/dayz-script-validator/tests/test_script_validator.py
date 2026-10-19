@@ -2394,6 +2394,25 @@ class TestReservedWordIdentifier(unittest.TestCase):
         self.assertEqual(64000, len(errors))
         self.assertEqual(64002, errors[-1]["line"])
 
+    def test_a_word_that_starts_its_line_is_on_that_line(self):
+        # Codex review of e6d6, E10: the members above all follow a space, so
+        # counting the lines up to one character before each word passed them.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        for newline in ("\n", "\r\n"):
+            with self.subTest(newline=repr(newline)):
+                source = newline.join(
+                    ["class A", "{", "int", "local;", "int", "local;", "}", ""]
+                )
+
+                errors = check_es_reserved_word_identifier(
+                    source, "scripts/4_World/x.c"
+                )
+
+                self.assertEqual([4, 6], [e["line"] for e in errors])
+
 
 MODULO = FIXTURES / "modulo_float_context"
 MODULO_RULE = "ES-MODULO-FLOAT-CONTEXT"
