@@ -238,6 +238,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-script-validator`: `ES-RESERVED-WORD-IDENTIFIER`, `ES-VARIABLE-NAMED-AS-TYPE` and
+  `ES-UNDEFINED-CLASS-REF` took time quadratic in the length of a long statement
+  (fb-20261017-175254-e6d6): the 8000 `array<int>` arguments of one `new Param<...>(1)` took 9, 9
+  and 15 s. A lazy template in their declaration patterns let each place a declaration could
+  start read on to the end of the statement, and the later declarators of each declaration were
+  read from its own start. The patterns now read the file with its template arguments blanked in
+  one pass, at any depth: a `<` closed by its own `>` with no `;`, `{`, `}`, `(`, `)` or newline
+  between, where a run of `>` closes one, as vanilla writes `map<string, int>> name;`
+  (`3_game/global/ammotypes.c:80` on 1.30). One pass then reads the later declarators of every
+  declaration, and steps over the template arguments that `_template_end` finds, over lines too.
+  Each rule now reads that statement, and each case built by the two Codex reviews of the change
+  (templates nested five deep, 4800 template arguments over lines, 2400 parameters one per line, a
+  chain of 8000 shifts), in 0.04 s or less. A name among template arguments split by a newline
+  (`new Param<` / `ref AuditEntry, ...>`) is no longer taken for a declared variable, which hid
+  `AuditEntry.Method(` from `ES-UNDEFINED-CLASS-REF` and `ES-UNDECLARED-STATIC-MEMBER`. 277 unit
+  tests pass (260 before).
 - `packctl` promotion: on Python 3.10 and 3.11 its link checks took a directory junction for a
   plain directory. `_is_junction` asked `Path.is_junction`, which is new in Python 3.12, and
   answered no without it, while `pyproject.toml` allows Python 3.10 (fb-20261018-012600-cdc5).

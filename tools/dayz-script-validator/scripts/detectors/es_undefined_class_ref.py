@@ -1,3 +1,4 @@
+import bisect
 import functools
 import pathlib
 import re
@@ -81,18 +82,27 @@ _MACRO_TEST_RE = re.compile(r"^[ \t]*#[ \t]*(?:ifdef|ifndef)[ \t]+(?P<name>\w+)"
 _MACRO_DEFINE_RE = re.compile(r"^[ \t]*#[ \t]*define[ \t]+(?P<name>\w+)", re.M)
 # `Type Name` followed by what can only follow a declared name. Collected for
 # class-like names only: those are the ones a static-call receiver could be.
-# Template spans are lazy here and below: a greedy `<...>` swallowed
+# These patterns read a text whose template arguments are blanked
+# (blank_template_arguments), where a template span is its `<`, spaces and
+# its own `>` however deep it nested. A greedy `<...>` swallowed
 # `Symptoms_primary` in `array<ref Param> Symptoms_primary, array<ref Param>
-# Symptoms_secondary` (4_world/classes/playersymptoms/statemanager.c:827).
+# Symptoms_secondary` (4_world/classes/playersymptoms/statemanager.c:827),
+# and a lazy one could still run on to any later `>` of the statement, so
+# every place a declaration can start read to its end: time quadratic in the
+# length of a long statement (inbox fb-20261017-175254-e6d6). Vanilla closes
+# some with one `>` too many (`map<string, int>> name;`, 3_game/global/
+# ammotypes.c:80 and :100 on 1.30, :47 and :60 on 1.29), so a run of `>`
+# closes one (Codex review of e6d6, E4).
+_TEMPLATE = r"<[^<>;{}()\n]*>+"
 _DECLARED_NAME_RE = re.compile(
-    r"\b[A-Za-z_]\w*(?:[ \t]*<[^;{}()\n]*?>)?(?:[ \t]*\[[^\]\n]*\])?"
+    r"\b[A-Za-z_]\w*(?:[ \t]*" + _TEMPLATE + r")?(?:[ \t]*\[[^\]\n]*\])?"
     r"[ \t]+(?P<name>[A-Z]\w*)[ \t]*(?=[=;,)\[:])"
 )
 # The first declarator of `Type a, B;` (any case), so the names after its
 # top-level commas can be collected too: `string errorMessage, path;` is
 # vanilla (3_game/cfgplayerrestrictedareahandler.c:33).
 _DECLARATION_START_RE = re.compile(
-    r"\b[A-Za-z_]\w*(?:[ \t]*<[^;{}()\n]*?>)?(?:[ \t]*\[[^\]\n]*\])?"
+    r"\b[A-Za-z_]\w*(?:[ \t]*" + _TEMPLATE + r")?(?:[ \t]*\[[^\]\n]*\])?"
     r"[ \t]+[A-Za-z_]\w*[ \t]*(?=[=,\[])"
 )
 _NEXT_DECLARATOR_RE = re.compile(r"\s*(?P<name>[A-Za-z_]\w*)[ \t]*(?=[=;,)\[:])")
@@ -217,35 +227,186 @@ def _template_end(text, index, spaced=False):
     return None
 
 
+# The first character _template_end rejects after a `<`, and the brackets it
+# counts there.
+_TEMPLATE_STOP_RE = re.compile(r"[^\w, \t\r\n<>]")
+_TEMPLATE_BREAK_RE = re.compile(r"[;{}()\n]")
+_ANGLE_BRACKET_RE = re.compile(r"[<>]")
+
+
+def _closed_template_openers(stripped):
+    """Offsets of the `<` that _template_end can close, found in one pass.
+
+    Past its name check, _template_end returns the first `>` at which the
+    depth counted from its `<` falls back to 0, and None at the first
+    character it rejects or at the end of the file; within a run of the
+    characters it accepts, that `>` is the one that pops the `<` from a
+    stack, so a `<` the stack never pops gets None (a word character of a
+    str pattern is one for which str.isalnum() holds, or `_`, the same test
+    _template_end makes). Without this pass a `<` that opened no template
+    was read up to the end of its statement, and a chain of shifts with no
+    comma grew with the square of its length (Codex review of #115, N1).
+    """
+    closed = set()
+    index = stripped.find("<")
+    while index != -1:
+        stop = _TEMPLATE_STOP_RE.search(stripped, index)
+        end = stop.start() if stop else len(stripped)
+        stack = []
+        for match in _ANGLE_BRACKET_RE.finditer(stripped, index, end):
+            if match.group() == "<":
+                stack.append(match.start())
+            elif stack:
+                closed.add(stack.pop())
+        index = stripped.find("<", end)
+    return closed
+
+
+def _template_spans(stripped, spaced=False):
+    """(`<`, `>`) offsets of the template arguments of a file, in order.
+
+    A comma between template arguments (`Param3<bool, vector, int>`,
+    `typedef map<string, ref array<string>> Name;`) is not a declarator
+    separator; vanilla control 2026-10-13 found 104 (1.29) and 109 (1.30)
+    such false findings of ES-VARIABLE-NAMED-AS-TYPE before this check. A
+    `<` opens template arguments only as _template_end reads them, so the
+    comparison in `bool first = a < b, Debug = false;` hides no declarator.
+    With `spaced`, spaces are allowed before it: `new Param3 <int, Object,
+    int>(...)` (second Codex review of #113, J1).
+
+    Template arguments never hold a `;`, `{` or `}`, so one pass over the
+    file finds the ones a pass from the start of each statement finds.
+    Reading from the start of the statement at each comma grew with the
+    square of the names of one declaration (Codex review of #114, M2).
+    """
+    closed = _closed_template_openers(stripped)
+    spans = []
+    index = stripped.find("<")
+    while index != -1:
+        if index in closed:
+            end = _template_end(stripped, index, spaced=spaced)
+            if end is not None:
+                spans.append((index, end))
+                index = end
+        index = stripped.find("<", index + 1)
+    return spans
+
+
+def _inside_template_args(spans, offset):
+    """True when offset sits inside one of the template arguments in spans."""
+    position = bisect.bisect_left(spans, (offset,)) - 1
+    return position >= 0 and offset < spans[position][1]
+
+
+_DECLARATOR_EVENT_RE = re.compile(r"[()\[\]{};,<]")
+
+
+def declarator_commas(text, starts, spans=()):
+    """Offsets of the commas before the later declarators of declarations.
+
+    starts: offsets, in order, from which a declaration's later declarators
+    are read: just past its first one. The declaration then runs to the `;`
+    that ends its statement or to the bracket that closes around it, and a
+    later declarator follows each of its commas outside every bracket.
+    spans: (`<`, `>`) offsets of template arguments, in order, read as one
+    token: their commas separate types, and a start inside them is none.
+
+    One pass reads them all, keeping for each open bracket whether a
+    declaration runs at its level. Reading each declaration from its own
+    start read a statement once for each start it held: time quadratic in
+    the length of `void F(int a0, int a1, ...)`, or of template arguments
+    that a newline keeps from being blanked (Codex review of e6d6, E5).
+    """
+    ends = dict(spans)
+    running = [False]
+    commas = []
+    next_start = 0
+    index = 0
+    while True:
+        event = _DECLARATOR_EVENT_RE.search(text, index)
+        at = event.start() if event else len(text)
+        while next_start < len(starts) and starts[next_start] <= at:
+            # A start a template span stepped over begins nothing.
+            if starts[next_start] >= index:
+                running[-1] = True
+            next_start += 1
+        if event is None:
+            return commas
+        char = event.group()
+        index = at + 1
+        if char == "<":
+            if at in ends:
+                index = ends[at]
+        elif char in "([{":
+            running.append(False)
+        elif char in ")]}":
+            if len(running) > 1:
+                running.pop()
+            else:
+                running[0] = False
+        elif char == ";":
+            running[-1] = False
+        elif running[-1]:
+            commas.append(at)
+
+
+def blank_template_arguments(text):
+    """text with spaces inside each outermost `<...>`, at the same offsets.
+
+    A `<...>` is a `<` closed by its own `>` with no `;`, `{`, `}`, `(`, `)`
+    or newline between them, nested to any depth: what _TEMPLATE read, up to
+    four deep, before it read blanked text (Codex review of e6d6, E1). No
+    declaration is left to find among template arguments either: each `ref
+    X,` of `new Param<ref X, ref X, ...>(1)` read like another declaration,
+    and each was read to the end of the statement (E2). Each run of text
+    between two of those breaks is read once, and only where it holds a `<`.
+    """
+    spans = []
+    index = text.find("<")
+    while index != -1:
+        stop = _TEMPLATE_BREAK_RE.search(text, index)
+        end = stop.start() if stop else len(text)
+        openers = []
+        for match in _ANGLE_BRACKET_RE.finditer(text, index, end):
+            if match.group() == "<":
+                openers.append(match.start())
+            elif openers:
+                opener = openers.pop()
+                # The spans it closes over are blanked with it.
+                while spans and spans[-1][0] > opener:
+                    spans.pop()
+                spans.append((opener, match.start()))
+        index = text.find("<", end)
+    if not spans:
+        return text
+    parts = []
+    last = 0
+    for opener, closer in spans:
+        parts.append(text[last:opener + 1])
+        parts.append(" " * (closer - opener - 1))
+        last = closer
+    parts.append(text[last:])
+    return "".join(parts)
+
+
 def declared_variables(text):
-    names = {match.group("name") for match in _DECLARED_NAME_RE.finditer(text)}
-    for start in _DECLARATION_START_RE.finditer(text):
-        # The later declarators of the same statement: what follows a comma
-        # outside every bracket, up to the `;` that ends it. The commas of
-        # template arguments (`new Param3<int, X, int>(...)`) separate types,
-        # not declarators, so a template is stepped over whole.
-        depth = 0
-        index = start.end()
-        while index < len(text):
-            char = text[index]
-            if char in "([{":
-                depth += 1
-            elif char in ")]}":
-                if depth == 0:
-                    break
-                depth -= 1
-            elif char == "<":
-                end = _template_end(text, index)
-                if end is not None:
-                    index = end + 1
-                    continue
-            elif depth == 0 and char == ";":
-                break
-            elif depth == 0 and char == ",":
-                declarator = _NEXT_DECLARATOR_RE.match(text, index + 1)
-                if declarator and _CLASS_LIKE_RE.match(declarator.group("name")):
-                    names.add(declarator.group("name"))
-            index += 1
+    # The patterns read the blanked text, the declarators the text itself:
+    # template arguments are told from comparisons there by _template_end,
+    # over lines too, and no name is declared among them (Codex review of
+    # e6d6, E5). The commas of template arguments (`new Param3<int, X,
+    # int>(...)`) separate types, not declarators.
+    blanked = blank_template_arguments(text)
+    spans = _template_spans(text)
+    names = {
+        match.group("name")
+        for match in _DECLARED_NAME_RE.finditer(blanked)
+        if not _inside_template_args(spans, match.start("name"))
+    }
+    starts = [match.end() for match in _DECLARATION_START_RE.finditer(blanked)]
+    for comma in declarator_commas(text, starts, spans):
+        declarator = _NEXT_DECLARATOR_RE.match(text, comma + 1)
+        if declarator and _CLASS_LIKE_RE.match(declarator.group("name")):
+            names.add(declarator.group("name"))
     return names
 
 
