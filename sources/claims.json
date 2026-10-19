@@ -1874,6 +1874,45 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/config-and-packing.md",
+      "claim_id": "CLAIM-ITEM-PROXY-OWN-ATTACHMENT-CLASS",
+      "evidence_locator": "In game, 2026-10-04, as pipeline inbox fb-20261004-211658-ce25 (SimpleGroup) reports it: the SimpleGroup T3 flag, an ItemBase-derived entity, with slot LFPG_FlagBattery holding a CarBattery (cables driven by script did appear). Did not draw the battery: the slot added with inventorySlot[] += to ProxyBattery_Car, the class of the vanilla proxy \\dz\\vehicles\\parts\\battery_car.001, a ProxyPart (simulation=\"ProxyInventory\", reversed=1), with 1. the proxy in LOD 0 only; 2. also a model selection named like the slot and the CfgSlots selection= (civiliansedan holds battery_car.001 inside selection battery, the selection of Slot_CarBattery); 3. also identical copies of the proxy in the Geometry, View and Fire LODs (battery_charger.p3d carries battery_car.001 only in 1e13, 6e15 and 7e15, inside selection battery). Drew it, in an A/B build with the two proxies 0.35 m apart, the battery at B: class ProxyLFPG_FlagBattery: ProxyAttachment { scope=2; inventorySlot[]={\"LFPG_FlagBattery\"}; model=\"\\SimpleGroup\\data\\T3\\LFPG_FlagBattery.p3d\"; }, a minimal proxy p3d of its own at that path and a proxy face in LOD 0, the mechanism of the vanilla flag (ProxyDZ_Flag: ProxyAttachment) on that T3. The ticket also reads territory_flag.p3d using stone.001 for the second slot of Proxystone. Evidence of the project: sgwork/jobs/rc3-20261004/STATE.md, assets-work/E-t3-rocks/proxy_membership.out, assets-work/F-battery-diag/diag_ab.py, builds/build-72dae86-diagab. Vanilla config, read on 2026-10-19 (the ticket cites DZ\\vehicles\\parts\\config.cpp:1094-1122): class ProxyBattery_Car: ProxyPart at DZ\\vehicles\\parts\\config.cpp:1114, ProxyPart at :1094-1104 with simulation=\"ProxyInventory\" at :1097 and reversed=1 at :1103, and ProxyDZ_Flag: ProxyAttachment at DZ\\gear\\camping\\config.cpp:13480. Not re-read for this change: the builds and the logs are the ticket's. Not measured: the orientation of a ProxyAttachment proxy against a vehicle part's reversed=1, nor another item, slot or vanilla vehicle-part class.",
+      "license": "MIT",
+      "line_end": 238,
+      "line_start": 221,
+      "observed_at": "2026-10-04",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/lods-and-geometry.md",
+      "claim_id": "CLAIM-BINARIZE-COLLISION-TOO-MANY-VERTICES",
+      "evidence_locator": "binarize.exe (DayZ Tools, rev. 163709) through the three-state bench p3d_vertex_gate.py binarize (P3D_VERTEX_GATE_TIMEOUT=1500), 2026-10-03, SecretRock RocaHeli R7.4, as pipeline inbox fb-20261003-214733-b967 reports it (the owner's project; review folder 2026-10-03-roca-r74, binarize/lod_budget.txt, g2_r1..r4.json and g2_r3_sin33.json, README section 6). lf_rocaheli.p3d, a static House MLOD of 14 LODs (visual 0-4, two shadow volumes, Geometry, View and Fire with convex pieces, memory, land contact, roadway, hitpoints): the log said 'Too many vertices' and 'Loading of model ... failed' for it, the bench read CAPACITY_FAIL and no ODOL was written. Figures read with the project's mlod_selpts.py scan(): PASS at 1,240 pieces (1,260 named selections), 16,325 points per collision LOD, 94,091 over all LODs and 25,230 in visual LOD 0 (about 78.7k render vertices); the deployed R7.3 rock passed with 1,261 selections, 16,370 and 93,935; FAIL at 1,263 pieces (1,283 selections), 16,582 and 96,409 with 26,891 in visual LOD 0, and at 1,263, 16,582 and 94,750 with visual LOD 0 back to 25,232 points (78.3k render vertices); PASS without the last 33 exterior pieces, 1,230 pieces (1,250 selections), 16,094 and 93,286. The interior model passes with about 1,800 selections of 17,641 points in its one collision LOD. Shipped: the generator's ROCK_COMP_MAX = 1230 moves the last exterior pieces to the collision-only shell placed with the same transform; binarize 6/6. Not re-read for this change: the verdicts and the reader's output are the ticket's.",
+      "license": "MIT",
+      "line_end": 393,
+      "line_start": 374,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-physics-engine/skill.md",
+      "claim_id": "CLAIM-PHYS-ISFALLING-VALIDATE-130",
+      "evidence_locator": "In game, DayZDiag 1.30.164014 Exp, 2026-10-06, LFSkateboard test R1d (HumanCommandScript ride command), as pipeline inbox fb-20261006-165724-db6f reports it: the command turns the controller gravity off at the ollie pop, 0.1 s before the take-off, and lifts the body with PrePhys_SetTranslation(Vector(0, dy, z)). Up to R1c an airborne guard called PhysicsIsFalling(true) every tick of the pop; R1d skipped it during the pop, and every take-off lost its first air tick (PostPhys y error = -dy exactly, logged 'yfix err=-0.11..-0.15'), the body barely rose for about 0.1 s, apex 0.44-0.61 of vy^2/2g, on a climb and on a downhill alike. Evidence LFSkateboard_build/evidence/R1d-run1 (regression) against R1d-run2 and R1d-run3 (fixed): the only take-off change between them was evaluating PhysicsIsFalling(true) again during the pop, its result ignored; the other candidate, an extra PostPhys_GetPosition read every tick, stayed in both builds. Fixed: ratio 1.00 (0.70 m apex for 0.698 expected), no yfix. Reports LFSkateboard_dev/reviews/2026-10-06-prueba-R1d-resultados.md and 2026-10-06-R1d/ARBITRAJE_R5.md; fix LFSkateboard_dev/tools/r1c/fix_r1d_r2.py. Vanilla, read on 2026-10-19 (the ticket cites exp/scripts/scripts/3_Game/human.c:1428): Human.PhysicsIsFalling(bool pValidate) at 3_game/human.c:1428 in 1.30 and :1397 in 1.29 (pValidate undocumented), Human.PhysicsEnableGravity(bool pEnable) at :1443 and :1412, and HumanCommandScript.PrePhys_SetTranslation(vector pInTransl) at :1313 in 1.30. Not re-read for this change: the logs and reports are the ticket's.",
+      "license": "MIT",
+      "line_end": 215,
+      "line_start": 215,
+      "observed_at": "2026-10-06",
+      "promotion_artifact_id": "skill/dayz-physics-engine",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
+      "verification_level": "runtime_verified"
+    },
+    {
       "artifact_id": "file/knowledge/vault-notes/dayz-engine-water.md",
       "claim_id": "CLAIM-WATER-SERVER-PROBE-LOADS-OBJECTS",
       "evidence_locator": "In game, DayZDiag server with no player connected (dayz_test_run mode=server and a probe mission), as pipeline inbox fb-20261014-123911-3f33 reports it: GetGame().GetWaterDepth, GetWaterSurfaceHeightNoFakeWave and SurfaceRoadY3D at points over objects that carry their own water (the vanilla dz\\water\\streambed\\ kit, stream_14 pieces on Chernarus) returned sea level or depth 0, while the pond pieces of the Baltic v31 layer read fine. With GetGame().GetObjectsAtPosition(Vector(x,0,z), 30, objs, proxies) in the same frame and the arrays kept alive until the water queries, 371 of 417 kit axis points read water. On the kit, 61 % of the points read wet with the terrain less than 0.05 m under the roadway water_ext face and 100 % with it 0.15 m or more under (the ticket's summary, that kit water reads only with about 0.10-0.15 m or more of clearance, contradicts its own 61 % and is left out); the visible kit water is a separate 14 x 24 m CalmWater proxy sheet that no server query sees. Reference missions of the project DayZ_Baltic_12km_dev (worktree handoff-astra-map-review-6d301c): missions/BalticKitProbeV1.BalticTrial/init.c and missions/BalticBridgeProbeV2.BalticTrial/init.c. Not re-read for this change: the missions and their readings are the ticket's.",

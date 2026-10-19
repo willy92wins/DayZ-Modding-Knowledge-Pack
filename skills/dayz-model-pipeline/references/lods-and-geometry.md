@@ -368,3 +368,30 @@ normals and 17,392 with smooth ones (a triple counter run in Blender, a lower bo
    30 m out toward the rock stopped on one of its pieces, and the project's battery of 1,188 rays
    per LOD from outside found 0 holes in Geometry, Fire and View. No Fire or View ray was checked
    against that model's pieces on their own (claim: CLAIM-COLLISION-ONLY-MODEL-INGAME).
+
+### Binarize: `Too many vertices` from the collision LODs (R7.4)
+
+[OFFLINE MEASURED] In R7.4 (2026-10-03, `binarize.exe` rev. 163709 through the three-state bench)
+the rock read `CAPACITY_FAIL`, a `Too many vertices` line attributed to its MLOD, also with its
+visual LOD put back as it had passed: its collision had grown. Read from the MLOD (14 LODs, three
+of them collision LODs) with the project's reader:
+
+| Build | Pieces per collision LOD | Points per collision LOD | Points, all LODs | Points, visual LOD 0 | Verdict |
+|---|---|---|---|---|---|
+| R7.3, deployed | 1,241 | 16,370 | 93,935 | | PASS |
+| A build that passed | 1,240 | 16,325 | 94,091 | 25,230 | PASS |
+| The failing build | 1,263 | 16,582 | 96,409 | 26,891 | `CAPACITY_FAIL` |
+| The failing build, visual LOD 0 put back | 1,263 | 16,582 | 94,750 | 25,232 | `CAPACITY_FAIL` |
+| The failing build without its last 33 exterior pieces | 1,230 | 16,094 | 93,286 | | PASS |
+
+So, for this model, the limit lies between 1,240 and 1,263 pieces per collision LOD, or between
+94,091 and 94,750 points over all LODs; these builds cannot tell which. Named selections × points
+in one collision LOD do not explain it alone: the interior model of the same addon passes with
+about 1,800 selections of 17,641 points in its one collision LOD. Nor is it the silent limit
+above, since binarize printed `Too many vertices` for this MLOD. The project caps the rock at
+1,230 pieces and moves the rest to its collision-only model (item 6 above), and binarize passed
+6 of 6 (claim: CLAIM-BINARIZE-COLLISION-TOO-MANY-VERTICES).
+
+Rule: on a `CAPACITY_FAIL`, compare every LOD of the last build that passed with the failing one
+before blaming the change just made. Here the visual LOD had changed in the same round and took
+the blame for one round; put back as it passed, the model still failed.
