@@ -1321,10 +1321,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-96e0@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 3f33 (fb-20261014-123911-3f33), 0303 (fb-20261003-203108-0303) and 2466 (fb-20261003-231327-2466). Added entry for the vault note dayz-engine-water, its two pointers and the README count. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "ad25213a42f26b0c39d292dc394b990cacfc0c509f04ab16a2e07c08c47ae0f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3066ba1ab2eae2d7fa6b88bda10f491fdb212244ac79f2ad1503ace66e8202b5",
+      "output_hash": "ad25213a42f26b0c39d292dc394b990cacfc0c509f04ab16a2e07c08c47ae0f5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -1655,10 +1665,20 @@
           "source_path": "README.md",
           "source_revision": "kp-update-py3d-wheel-1.10.1@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 3f33 (fb-20261014-123911-3f33), 0303 (fb-20261003-203108-0303) and 2466 (fb-20261003-231327-2466). knowledge/vault-notes/ holds 18 topic notes with the new dayz-engine-water.md; the tree and section 6 said 16, with 17 in the folder. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "493f20ea81a62e7218733571a2d34446ea175fbf0c9cdf5c58c5adb64f8d5b16",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "671342eea26524a1f926abfb2849be6808045761cbd21f26126c6ee477ce6397",
+      "output_hash": "493f20ea81a62e7218733571a2d34446ea175fbf0c9cdf5c58c5adb64f8d5b16",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -2808,6 +2828,28 @@
       "license": "MIT",
       "output_hash": "286a4d69218318d2fdfcbb39f275da1bcea8c4491a4b9b2aa4b27ab5ed181591",
       "output_path": "knowledge/vault-notes/dayz-enforce-script-reference.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/knowledge/vault-notes/dayz-engine-water.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 3f33 (fb-20261014-123911-3f33), 0303 (fb-20261003-203108-0303) and 2466 (fb-20261003-231327-2466). New vault note on what the engine's water queries read over water objects, written from the three tickets with each figure checked against their text: a server with no player reads no object water until the objects are loaded (3f33), vanilla rivers and streams are pitched pieces and SurfaceIsPond is false on most of them (0303), and how the level is read over a roadway water face (2466); CLAIM-WATER-SERVER-PROBE-LOADS-OBJECTS (lines 19-30), CLAIM-WATER-VANILLA-BEDS-PITCHED (lines 34-52) and CLAIM-WATER-ROADWAY-FACE-LEVEL (lines 56-88). Nothing was measured again. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "e12434b4a52316cba3a2071a904c138bbba9f5fd43321bef4aed47437512ae89",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-engine-water.md",
+          "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e12434b4a52316cba3a2071a904c138bbba9f5fd43321bef4aed47437512ae89",
+      "output_path": "knowledge/vault-notes/dayz-engine-water.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
     },
@@ -10994,10 +11036,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-val-review-113@2026-10-16",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 3f33 (fb-20261014-123911-3f33), 0303 (fb-20261003-203108-0303) and 2466 (fb-20261003-231327-2466). Surfaces points to knowledge/vault-notes/dayz-engine-water.md for water over water objects. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "6f12fc08a656228d1301d93f172f885f1f2581d2d7501a9543dd4cf1a8daec52",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f82fb6796ac7954df69723a73e3c7c63ab7f73c21f8448526fe23fd66ab1f178",
+      "output_hash": "6f12fc08a656228d1301d93f172f885f1f2581d2d7501a9543dd4cf1a8daec52",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -15536,10 +15588,20 @@
           "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 3f33 (fb-20261014-123911-3f33), 0303 (fb-20261003-203108-0303) and 2466 (fb-20261003-231327-2466). The SurfaceIsPond / SurfaceIsSea / SurfaceRoadY bullet points to knowledge/vault-notes/dayz-engine-water.md for water objects, and says that on vanilla Chernarus most river and stream pieces read SurfaceIsPond false over water. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "62057069c1d94901c883b5623afda98d7821851ab3db2117ed1f5e4841063ddc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
+          "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "35776c7e7c5449419b82cfe64fc097f592de1ec54191e71e0355ae90c9d15a2a",
+      "output_hash": "62057069c1d94901c883b5623afda98d7821851ab3db2117ed1f5e4841063ddc",
       "output_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -17969,10 +18031,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-96e0@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 3f33 (fb-20261014-123911-3f33), 0303 (fb-20261003-203108-0303) and 2466 (fb-20261003-231327-2466). Registers CLAIM-WATER-SERVER-PROBE-LOADS-OBJECTS (lines 19-30), CLAIM-WATER-VANILLA-BEDS-PITCHED (lines 34-52) and CLAIM-WATER-ROADWAY-FACE-LEVEL (lines 56-88) in knowledge/vault-notes/dayz-engine-water.md. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "8c5b86eece1b619f788a3570a27fd65a86ff7607f2b3f07bca890ac7187af62e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a56a3831d490471a1e3e687f3f6dc8ccbd77ba06cfd3437da6fac23e477cece2",
+      "output_hash": "8c5b86eece1b619f788a3570a27fd65a86ff7607f2b3f07bca890ac7187af62e",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

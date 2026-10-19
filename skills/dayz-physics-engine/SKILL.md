@@ -223,7 +223,8 @@ Vanilla calls `PhysicsEnableGravity` once, with `true`, when a vehicle death's s
 IsLiquid/IsSolid, step/wheel particle ids. Detection: `CGame.GetSurface/SurfaceY/SurfaceGetType/
 SurfaceUnderObject/SurfaceGetNormal` (`3_game/global/game.c:1160-1187`). Impact surface:
 `DayZPhysics.GetHitSurfaceAndLiquid` (`dayzphysics.c:206`; used `inventoryitem.c:168-176`). No
-friction getters — see truth #4.
+friction getters — see truth #4. Water over water objects (river and stream pieces, a roadway
+`water_ext` face): `knowledge/vault-notes/dayz-engine-water.md`.
 
 ## Recipes
 

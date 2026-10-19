@@ -459,6 +459,10 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
   `transport.c:357` and `playerbase.c:6817` use `GetWaterDepth`). When you control
   the call site, prefer `GetWaterDepth`.
 
+  Over water objects (the vanilla river and stream pieces, the streambed kit, a roadway
+  `water_ext` face of your own), see `knowledge/vault-notes/dayz-engine-water.md`: on
+  vanilla Chernarus most river and stream pieces read `SurfaceIsPond` false over water.
+
 - **Surface Y position fast pattern**:
 
   ```c

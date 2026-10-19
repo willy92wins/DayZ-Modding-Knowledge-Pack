@@ -7,6 +7,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Vault note `dayz-engine-water`: what the engine's water queries read over water objects,
+  measured on the DayZDiag server (pipeline inbox fb-20261014-123911-3f33,
+  fb-20261003-203108-0303, fb-20261003-231327-2466). With no player connected they read no water
+  over the streambed kit or the `stream_14` pieces until `GetObjectsAtPosition` loads the objects
+  in the same frame (then 371 of 417 kit points read water). On vanilla Chernarus 562 of 660
+  `river_24_*` and 388 of 460 `stream_14_*` pieces are pitched, the water follows their slope, and
+  at the centres of the pieces above 50 m `SurfaceIsPond` is true for 75 of 375 river and 30 of
+  384 stream pieces, while the depth is positive for 365 and 312. Over a roadway water face the
+  query point goes to model space with its own height and the level is the model y of the face's
+  first vertex, so on a pitched piece a query from high above is off by about dy·pitch²: query at
+  gameplay heights. `enforce-script-reference` `references/pitfalls-advanced.md` and
+  `dayz-physics-engine` point to it, and the README counts 18 vault notes (it said 16, with 17 in
+  the folder).
 - `dayz-model-pipeline`: since the DayZ Tools update of 2026-10-15 (Steam build 25460346,
   `binarize.exe` 1.30.164.078) the models you binarize are ODOL v56, like the 1.30 vanilla models;
   before it they were v55 (fb-20261017-234641-96e0). The same MLOD binarized before and after: the
