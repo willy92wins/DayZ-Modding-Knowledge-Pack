@@ -1271,10 +1271,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-6bdf@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 6b76 (fb-20261017-210745-6b76). Fixed entry for ES-SYNCVAR-CONTRACT: on 1.30 the class of a construction hook override must also derive from EntityAI; the rule follows its base classes across the addon, the external roots and the vanilla tree, and a class whose chain does not resolve keeps the hook. 258 unit tests pass. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "c4411be0fa1fdf5ff2666f79739ffe30670c30a6bbde33a601058022baffa783",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-6b76@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c33fbeaab96f8e96a1e5a4a22bdff790e532be1d5ed726d827fc6de22cbbd52f",
+      "output_hash": "c4411be0fa1fdf5ff2666f79739ffe30670c30a6bbde33a601058022baffa783",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -21874,10 +21884,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_syncvar.py",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 6b76 (fb-20261017-210745-6b76). With the 1.30 tree, ES-SYNCVAR-CONTRACT accepted a SyncVar registered in an override without parameters of RegisterConstructionSyncVariables in a class that does not derive from EntityAI, because the rule reads one file at a time; only EntityAI calls that hook (3_game/entities/entityai.c:3469). check_es_syncvar_contract now hands each registration it accepts only as the hook's to the new check_es_syncvar_construction_hook_classes, which runs once every file is read: it builds the class hierarchy (Hierarchy, as ES-CAST-UNRELATED-TYPES does) from the addon, the --external-scripts roots and the vanilla tree, and keeps the FAIL of a class whose base classes all resolve there with none of them EntityAI. A class whose chain does not resolve keeps the hook. On the owner's PC the vanilla control gives PASS and the same output with and without the change on the 1.30 and 1.29 trees; the new check takes 3.02 s on the 1.30 tree, whose 10 registrations in the hook are all BuildingBase's. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "f990cb030aa754bc2617a5191dfa6674732fdeb62bf0968e65a595088ead10c7",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_syncvar.py",
+          "source_revision": "kp-update-6b76@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "883f4ad55747e434de117569ba1517709afc55c457d926f6f84ce0cee6dfa9fd",
+      "output_hash": "f990cb030aa754bc2617a5191dfa6674732fdeb62bf0968e65a595088ead10c7",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_syncvar.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22074,10 +22094,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 6b76 (fb-20261017-210745-6b76). validate_addon passes one hook_registrations list to check_es_syncvar_contract for every file and, once the external scripts are collected, adds the FAILs of check_es_syncvar_construction_hook_classes for the classes that do not derive from EntityAI. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "b35a89932a37922a85e146a5b463b4aed9b9390e07fa60fa0c70f135cf2b7844",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-6b76@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9eeb4ac88fdc33512b7651fc81adc98d6aab9f30852124c80d5a277b1cca9a8c",
+      "output_hash": "b35a89932a37922a85e146a5b463b4aed9b9390e07fa60fa0c70f135cf2b7844",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25878,10 +25908,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 6b76 (fb-20261017-210745-6b76). Three tests in TestEsSyncvarContract against the 1.30 stand-in: test_syncvar_own_register_construction_override_fails_on_1_30, the inbox case, which fails with the detector of 3aa973c, and the pass fixtures of a class derived from EntityAI through the addon and of a class with an unknown base. On the owner's PC, Windows with Python 3.11.16 and 3.14.3: 258 tests OK (255 before), and each of five mutants of the change fails its own test only. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "e88e819074e4605ef8b4093288f6d409a3fbe363746e304987573f603311b1be",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-6b76@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5792229ed5231cd843a4bf088987f29c2ef9506c3c04b3dfe78293f6206d866b",
+      "output_hash": "e88e819074e4605ef8b4093288f6d409a3fbe363746e304987573f603311b1be",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34739,10 +34779,20 @@
           "source_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_sync_variables.c",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 6b76 (fb-20261017-210745-6b76). The fixture's class now derives from EntityAI, as a class whose construction hook EntityAI calls must, and still passes against the 1.30 stand-in. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "80746aa635886dcd2ee1bc42a1784663c4f6fd9ba128e37ef8ef8d4c857b274e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_sync_variables.c",
+          "source_revision": "kp-update-6b76@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "715ae3b9dd5e2e155e51571a07ed616dc7dc54ee9979ff822f180f9850e63fa6",
+      "output_hash": "80746aa635886dcd2ee1bc42a1784663c4f6fd9ba128e37ef8ef8d4c857b274e",
       "output_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_sync_variables.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34942,6 +34992,50 @@
       "license": "MIT",
       "output_hash": "bff31f3860e8447e98c63568ec5cdff35d5a844eab395727774c39f27a0dcc81",
       "output_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/vanilla_hook_after_brace_string/3_game/fx_entityai.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_addon_base.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox 6b76). Pass fixture for ES-SYNCVAR-CONTRACT: the override of RegisterConstructionSyncVariables in a class that derives from EntityAI through a base class of the same addon; written for the pack, no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "dc8eeef9ef6e23e3525fa6f1bd989a3b242daa2cd3a9d599adf6b5b0224997d9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_addon_base.c",
+          "source_revision": "kp-update-6b76@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "dc8eeef9ef6e23e3525fa6f1bd989a3b242daa2cd3a9d599adf6b5b0224997d9",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_addon_base.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_unknown_base.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox 6b76). Pass fixture for ES-SYNCVAR-CONTRACT: the override in a class whose base class is in neither the addon, the external roots nor the vanilla tree, so the rule cannot tell whether it derives from EntityAI and keeps the hook; written for the pack, no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "8ed54622e665e6c293af5fc6d1d1cd3bfa7f87f22c72aa19592ad8d86ec99535",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_unknown_base.c",
+          "source_revision": "kp-update-6b76@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8ed54622e665e6c293af5fc6d1d1cd3bfa7f87f22c72aa19592ad8d86ec99535",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/ok_syncvar_register_construction_unknown_base.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

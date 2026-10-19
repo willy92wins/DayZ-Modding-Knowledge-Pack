@@ -845,6 +845,20 @@ class TestEsSyncvarContract(unittest.TestCase):
             "vanilla_hook_after_brace_string",
         )
 
+    def test_syncvar_construction_hook_of_a_class_derived_through_the_addon_passes(self):
+        self.assert_syncvar_passes(
+            "ok_syncvar_register_construction_addon_base.c",
+            CONSTRUCTION,
+            "vanilla_130",
+        )
+
+    def test_syncvar_construction_hook_of_a_class_with_an_unknown_base_passes(self):
+        self.assert_syncvar_passes(
+            "ok_syncvar_register_construction_unknown_base.c",
+            CONSTRUCTION,
+            "vanilla_130",
+        )
+
     def test_syncvar_other_prefix_does_not_trigger_write_rule(self):
         self.assert_syncvar_passes("ok_syncvar_other_prefix.c")
 
@@ -890,6 +904,23 @@ class TestEsSyncvarContract(unittest.TestCase):
             expected_message,
             CONSTRUCTION,
             "vanilla_129",
+        )
+
+    def test_syncvar_own_register_construction_override_fails_on_1_30(self):
+        # Inbox fb-20261017-210745-6b76: on 1.30 the override passed, though
+        # SyncVarOwnHookFixture does not derive from EntityAI.
+        expected_message = (
+            "[FAIL] bad_syncvar_register_construction_own_hook.c line 19: "
+            "RegisterNetSyncVariable*('m_X') called outside constructor. "
+            "SyncVars must register in constructor (networking.md:42)."
+        )
+
+        self.assert_syncvar_error(
+            "bad_syncvar_register_construction_own_hook.c",
+            19,
+            expected_message,
+            CONSTRUCTION,
+            "vanilla_130",
         )
 
     def test_syncvar_register_construction_override_fails_without_vanilla(self):
