@@ -392,11 +392,12 @@ def blank_template_arguments(text):
 def declared_variables(text):
     # The patterns read the blanked text, the declarators the text itself:
     # template arguments are told from comparisons there by _template_end,
-    # over lines too, and no name is declared among them (Codex review of
-    # e6d6, E5). The commas of template arguments (`new Param3<int, X,
-    # int>(...)`) separate types, not declarators.
+    # over lines too and after spaces or tabs (`new map <`), and no name is
+    # declared among them (Codex review of e6d6, E5 and E8). The commas of
+    # template arguments (`new Param3<int, X, int>(...)`) separate types, not
+    # declarators.
     blanked = blank_template_arguments(text)
-    spans = _template_spans(text)
+    spans = _template_spans(text, spaced=True)
     names = {
         match.group("name")
         for match in _DECLARED_NAME_RE.finditer(blanked)

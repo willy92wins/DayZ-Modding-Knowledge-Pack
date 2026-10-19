@@ -248,12 +248,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   between, where a run of `>` closes one, as vanilla writes `map<string, int>> name;`
   (`3_game/global/ammotypes.c:80` on 1.30). One pass then reads the later declarators of every
   declaration, and steps over the template arguments that `_template_end` finds, over lines too.
-  Each rule now reads that statement, and each case built by the two Codex reviews of the change
-  (templates nested five deep, 4800 template arguments over lines, 2400 parameters one per line, a
-  chain of 8000 shifts), in 0.04 s or less. A name among template arguments split by a newline
-  (`new Param<` / `ref AuditEntry, ...>`) is no longer taken for a declared variable, which hid
-  `AuditEntry.Method(` from `ES-UNDEFINED-CLASS-REF` and `ES-UNDECLARED-STATIC-MEMBER`. 277 unit
-  tests pass (260 before).
+  Each rule now reads that statement, and each case built by the first two Codex reviews of the
+  change (templates nested five deep, 4800 template arguments over lines, 2400 parameters one per
+  line, a chain of 8000 shifts), in 0.04 s or less. A name among template arguments split by a
+  newline (`new Param<` / `ref AuditEntry, ...>`), or after a space or a tab before the `<` (`new
+  map <`), is no longer taken for a declared variable, which hid `AuditEntry.Method(` from
+  `ES-UNDEFINED-CLASS-REF` and `ES-UNDECLARED-STATIC-MEMBER`. `ES-RESERVED-WORD-IDENTIFIER` counts
+  the lines of a file once, not once for each word it finds: 64 000 such members took 12 s, and
+  take 0.4 s. 280 unit tests pass (260 before).
 - `packctl` promotion: on Python 3.10 and 3.11 its link checks took a directory junction for a
   plain directory. `_is_junction` asked `Path.is_junction`, which is new in Python 3.12, and
   answered no without it, while `pyproject.toml` allows Python 3.10 (fb-20261018-012600-cdc5).

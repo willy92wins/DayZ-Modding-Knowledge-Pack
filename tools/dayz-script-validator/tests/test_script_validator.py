@@ -2360,6 +2360,23 @@ class TestReservedWordIdentifier(unittest.TestCase):
         self.assertLess(time.perf_counter() - start, 2)
         self.assertEqual([], errors)
 
+    def test_lines_are_counted_once_per_file(self):
+        # Codex review of e6d6, E9: each word found counted the lines from the
+        # start of the file again. These 64 000 members took 12 s, and take
+        # 0.4 s.
+        from detectors.es_reserved_word_identifier import (
+            check_es_reserved_word_identifier,
+        )
+
+        source = "class A\n{\n" + "    int local;\n" * 64000 + "}\n"
+
+        start = time.perf_counter()
+        errors = check_es_reserved_word_identifier(source, "scripts/4_World/x.c")
+
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual(64000, len(errors))
+        self.assertEqual(64002, errors[-1]["line"])
+
 
 MODULO = FIXTURES / "modulo_float_context"
 MODULO_RULE = "ES-MODULO-FLOAT-CONTEXT"
@@ -2925,6 +2942,47 @@ class TestUndefinedClassRef(unittest.TestCase):
 
         self.assertLess(time.perf_counter() - start, 2)
         self.assertEqual(set(), names)
+
+    def test_template_arguments_after_a_space_declare_no_variable(self):
+        # Codex review of e6d6, E8: with a space or a tab before the `<`, the
+        # template arguments over lines were read as code, so `ref AuditEntry,`
+        # declared AuditEntry and the static call on that undefined class went
+        # unreported. On one line, so did the type after a comma.
+        from detectors.es_undefined_class_ref import (
+            check_es_undefined_class_ref,
+            declared_variables,
+        )
+
+        config = (
+            "class CfgPatches\n{\n    class FX_Audit\n    {\n"
+            "        requiredAddons[] = {\"DZ_Data\", \"DZ_Scripts\"};\n"
+            "    };\n};\n"
+        )
+        for gap in (" ", "\t"):
+            with self.subTest(gap=repr(gap)):
+                source = (
+                    "class A\n{\n    void F()\n    {\n"
+                    "        auto p = new map" + gap + "<\n"
+                    "            ref AuditEntry, bool>();\n"
+                    "        AuditEntry.Method();\n"
+                    "    }\n}\n"
+                )
+
+                errors, _skipped = check_es_undefined_class_ref(
+                    [("scripts/4_World/x.c", source)],
+                    [("config.cpp", config)],
+                    [],
+                    [],
+                    UNDEFINED / "vanilla",
+                )
+
+                self.assertEqual([7], [e["line"] for e in errors])
+                self.assertEqual(
+                    set(),
+                    declared_variables(
+                        "auto q = new Param3" + gap + "<int, AuditTarget, int>(1, x, 2);"
+                    ),
+                )
 
     def test_a_declaration_among_template_arguments_begins_nothing_after_them(self):
         # Codex review of e6d6, E5: `ref AuditEntry,` among template arguments
@@ -3882,6 +3940,25 @@ class TestUndeclaredStaticMember(unittest.TestCase):
         self.assertEqual(
             [11, 12], [e["line"] for e in _static_member_errors(sources)]
         )
+
+    def test_template_arguments_after_a_space_declare_no_variable(self):
+        # Codex review of e6d6, E8: with a space or a tab before the `<`,
+        # `ref AuditEntry,` among template arguments over lines declared
+        # AuditEntry, so a member its class lacks went unreported.
+        for gap in (" ", "\t"):
+            with self.subTest(gap=repr(gap)):
+                source = (
+                    "class AuditEntry\n{\n    static int AUDIT_FOUND;\n}\n"
+                    "class FX_A\n{\n    void F()\n    {\n"
+                    "        auto p = new map" + gap + "<\n"
+                    "            ref AuditEntry, bool>();\n"
+                    "        int x = AuditEntry.AUDIT_MISSING;\n"
+                    "    }\n}\n"
+                )
+
+                self.assertEqual(
+                    [11], [e["line"] for e in _static_member_errors(source)]
+                )
 
     def test_classes_not_wholly_the_addons_are_skipped(self):
         cases = {

@@ -117,8 +117,13 @@ def check_es_reserved_word_identifier(stripped_source, rel_path):
     errors = []
     seen = set()
     dead = None
+    # Offsets come in order, so lines are counted on from the last one:
+    # counting from the start for each word grew with the square of the
+    # words (Codex review of e6d6, E9).
+    line, counted = 1, 0
     for offset, name in sorted(_declared_words(stripped_source)):
-        line = stripped_source.count("\n", 0, offset) + 1
+        line += stripped_source.count("\n", counted, offset)
+        counted = offset
         if dead is None:
             dead = dead_lines(stripped_source)
         if (line, name) in seen or line in dead:
