@@ -1258,6 +1258,23 @@ class TestEsLayoutPathPboprefix(unittest.TestCase):
         self.assertEqual([], result["warnings"])
         self.assertEqual(1, result["info"]["files_scanned"])
 
+    def test_message_that_names_a_layout_is_not_a_path(self):
+        # A Print after a failed CreateWidgets names the layout in a message
+        # (inbox 22f2). The message is not judged, the path beside it is.
+        from detectors.es_layout_path_pboprefix import check_es_layout_path_pboprefix
+
+        addon_root = FIXTURES / "layout_pboprefix" / "ok_message_names_layout"
+        exit_code, result = script_validator.run([str(addon_root)])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual([], result["warnings"])
+
+        source = (addon_root / "dialog.c").read_text(encoding="utf-8")
+        errors = check_es_layout_path_pboprefix(source, "dialog.c", "OtherGroup")
+        self.assertEqual([9], [error["line"] for error in errors])
+
 class TestLayoutLeafMissingBraces(unittest.TestCase):
     # LAYOUT-LEAF-MISSING-BRACES is quarantined (BUG-029): a leaf widget
     # without a child { } block is valid Enfusion layout syntax. The detector

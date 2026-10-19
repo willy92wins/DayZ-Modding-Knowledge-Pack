@@ -1294,9 +1294,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 22f2 (fb-20261018-231841-22f2). Fixed entry for ES-LAYOUT-PATH-PBOPREFIX-MISMATCH: a string literal is a layout path only when it has no whitespace, so a message that names a layout is not judged; ES-LAYOUT-FILE-MISSING shares the test. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "5a66bc2bc54d9c363a0ea69b4e0a2d21f17566d62abdb1a95b395adcddc07b30",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-22f2@2026-10-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-18: pipeline inbox 96e0 (fb-20261017-234641-96e0). Added entries for dayz-model-pipeline (models binarized by DayZ Tools 1.30.164.078 are ODOL v56, and where its 4 new model-info bytes sit) and the WRP vault note (OPRW v32 object records of 64 bytes). Measured read-only on the owner's PC on 2026-10-18 (the DayZ Tools app manifest and binarize.exe version; the v55 and v56 binarizations of one MLOD compared byte by byte; the build verifier of one binarized mod map and its output; 488 vanilla 1.30 v56 models compared byte by byte with the v54 file of the same model, and 500 read with a reader patched three ways). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "28b11e4485613ee9544e85ff11f27c2025f7d498087f1441889d0db209c4f7ba",
+          "source_hash": "67f6b24bbe2dacc683a14546eac667b149c6ce10584249c95cdc5268b2a975b6",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-96e0@2026-10-18",
@@ -1304,7 +1314,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "28b11e4485613ee9544e85ff11f27c2025f7d498087f1441889d0db209c4f7ba",
+      "output_hash": "67f6b24bbe2dacc683a14546eac667b149c6ce10584249c95cdc5268b2a975b6",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -21624,10 +21634,20 @@
           "source_path": "scripts/detectors/es_layout_path_pboprefix.py",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 22f2 (fb-20261018-231841-22f2). ES-LAYOUT-PATH-PBOPREFIX-MISMATCH failed on a message that names a layout, Print(LOG_TAG + \" HUD mod: CreateWidgets failed for route_mode_button.layout\") beside a CreateWidgets call whose path matches the prefix (LBGroups_GPS, two such lines). _LAYOUT_PATH_RE now takes a literal for a layout path only when it has no whitespace; ES-LAYOUT-FILE-MISSING shares it. A path with a space in it is a known false negative of both rules, stated in the comment. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "72b2362937223087a1d2cacbbceb298b48b546967f86746613b9991c2cb1569c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_layout_path_pboprefix.py",
+          "source_revision": "kp-update-22f2@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d5a53e206b52c96147f569c4c696b17f7e4b7bcdf1e616d3eb99577072ede7fa",
+      "output_hash": "72b2362937223087a1d2cacbbceb298b48b546967f86746613b9991c2cb1569c",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_layout_path_pboprefix.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -25411,6 +25431,72 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/$PBOPREFIX$",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox 22f2), fixture of test_message_that_names_a_layout_is_not_a_path. The prefix SimpleGroup, as the other layout_pboprefix fixtures. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "506155461c99060d9adfc034c934a7bc9cb14ffd62ed217febd183ff2084977c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/$PBOPREFIX$",
+          "source_revision": "kp-update-22f2@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "506155461c99060d9adfc034c934a7bc9cb14ffd62ed217febd183ff2084977c",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/$PBOPREFIX$",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/dialog.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox 22f2), fixture of test_message_that_names_a_layout_is_not_a_path. A CreateWidgets call on SimpleGroup/gui/layouts/my_dialog.layout and, after it, the Print of a message that names my_dialog.layout, the shape of the inbox's lines; written for the pack, no mod or vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "a5919b0ccde087e3c86e60867676008ed6bfaee5fc0825ac83a52545b398bd27",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/dialog.c",
+          "source_revision": "kp-update-22f2@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a5919b0ccde087e3c86e60867676008ed6bfaee5fc0825ac83a52545b398bd27",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/dialog.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/gui/layouts/my_dialog.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox 22f2), fixture of test_message_that_names_a_layout_is_not_a_path. A copy of ok_match's layout, so ES-LAYOUT-FILE-MISSING finds the file the CreateWidgets call names. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "54c047d40d3415e8501af6c19f27e61b5de9a12288ed64b8288fbd9155eb0437",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/gui/layouts/my_dialog.layout",
+          "source_revision": "kp-update-22f2@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "54c047d40d3415e8501af6c19f27e61b5de9a12288ed64b8288fbd9155eb0437",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_message_names_layout/gui/layouts/my_dialog.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/layout_pboprefix/ok_no_prefix/dialog.c",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -25998,10 +26084,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-6b76@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox 22f2 (fb-20261018-231841-22f2). test_message_that_names_a_layout_is_not_a_path: the new fixture passes, and its source checked against another prefix fails on the CreateWidgets line alone. In Linux: 261 tests pass (260 before); the old pattern fails this test only, and a pattern that matches nothing fails it and two older tests. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "53e48c7d280aafe76728747a0361d38717e846417237af4d44ae6894ee74ae13",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-22f2@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "800816ae2241a1cd6772eeb0b75c886920e4e3e391a8e14129719e842bf9a682",
+      "output_hash": "53e48c7d280aafe76728747a0361d38717e846417237af4d44ae6894ee74ae13",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

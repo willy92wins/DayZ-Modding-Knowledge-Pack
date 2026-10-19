@@ -248,6 +248,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-script-validator`: `ES-LAYOUT-PATH-PBOPREFIX-MISMATCH` failed on a message that names a
+  layout, such as `Print(LOG_TAG + " HUD mod: CreateWidgets failed for route_mode_button.layout")`
+  after a CreateWidgets call whose path matches the prefix (fb-20261018-231841-22f2). A string
+  literal is now taken for a layout path only when it has no whitespace, so the message is not
+  judged and the path beside it still is. `ES-LAYOUT-FILE-MISSING` shares that test. A path with
+  a space in it is a known false negative of both rules. A new fixture holds both lines, and the
+  test also checks that the path is still judged against another prefix.
 - `packctl` promotion: on Python 3.10 and 3.11 its link checks took a directory junction for a
   plain directory. `_is_junction` asked `Path.is_junction`, which is new in Python 3.12, and
   answered no without it, while `pyproject.toml` allows Python 3.10 (fb-20261018-012600-cdc5).
