@@ -267,6 +267,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   now gives their lines in 1.30 (`:1197`, `:1196`, `:1177`) and in 1.29 (`:1182`, `:1181`,
   `:1163`), read on the vanilla scripts of both on 2026-10-19 while checking the citations of
   pipeline inbox fb-20261003-231327-2466.
+- `_shared/enscript-style.md`: its in-water check, `g_Game.GetWaterDepth(vectorpos) <= 0`, holds
+  where there is no water, the opposite of what it describes and of the `> 0` in
+  `enforce-script-reference` `references/pitfalls-advanced.md`. It now reads `> 0`. Found while
+  checking the water note of pipeline inbox fb-20261014-123911-3f33, fb-20261003-203108-0303 and
+  fb-20261003-231327-2466.
 - `dayz-script-validator`: `ES-RESERVED-WORD-IDENTIFIER`, `ES-VARIABLE-NAMED-AS-TYPE` and
   `ES-UNDEFINED-CLASS-REF` took time quadratic in the length of a long statement
   (fb-20261017-175254-e6d6): the 8000 `array<int>` arguments of one `new Param<...>(1)` took 9, 9

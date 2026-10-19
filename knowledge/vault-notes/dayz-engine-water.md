@@ -24,13 +24,12 @@ depth of 0, while the pond pieces of the project's own map layer read fine. Call
 both arrays alive until the water queries have run, made 371 of 417 points on the kit's axes read
 water.
 
-- The kit's water reads only where the terrain lies about 0.10–0.15 m or more below its roadway
-  `water_ext` face: 61 % of the points read wet with less than 0.05 m of clearance, 100 % with
-  0.15 m or more.
+- On the kit, 61 % of the points read wet where the terrain lay less than 0.05 m below its
+  roadway `water_ext` face, and 100 % where it lay 0.15 m or more below.
 - The water you see on the kit is a separate 14 × 24 m `CalmWater` proxy sheet, which no server
   query sees (claim: CLAIM-WATER-SERVER-PROBE-LOADS-OBJECTS).
 
-## Vanilla rivers and streams are pitched pieces, and `SurfaceIsPond` is false on most of them
+## Vanilla rivers and streams are pitched pieces, and `SurfaceIsPond` is false at most of their centres above 50 m
 
 A server read of the whole of vanilla Chernarus, 2026-10-03:
 
