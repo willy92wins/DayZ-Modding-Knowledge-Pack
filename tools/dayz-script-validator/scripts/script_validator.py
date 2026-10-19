@@ -120,6 +120,7 @@ from detectors.es_syncvar import (
     build_es_syncvar_class_unknown_warning,
     build_es_syncvar_error,
     build_es_syncvar_unsupported_warning,
+    check_es_syncvar_construction_hook_classes,
     check_es_syncvar_contract,
     compile_syncvar_assignment_re,
     find_es_syncvar_classes,
@@ -333,6 +334,7 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
 
     files = discover_files(addon_root)
     construction_hook = vanilla_declares_construction_hook(vanilla_root)
+    hook_registrations = []
     module_files = []
     addon_sources = []
     addon_configs = []
@@ -366,7 +368,7 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
             errors.extend(ctx_read_errors)
             warnings.extend(ctx_read_warnings)
             syncvar_errors, syncvar_warnings = check_es_syncvar_contract(
-                source, stripped, rel_path, construction_hook
+                source, stripped, rel_path, construction_hook, hook_registrations
             )
             errors.extend(syncvar_errors)
             warnings.extend(syncvar_warnings)
@@ -447,6 +449,11 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     # otro, el addon frente a un consumidor externo, o el addon frente a todo
     # lo que declara tipos (vanilla y dependencias).
     external_sources = collect_external_scripts(external_roots)
+    errors.extend(
+        check_es_syncvar_construction_hook_classes(
+            hook_registrations, addon_sources, external_sources, vanilla_root
+        )
+    )
     errors.extend(check_es_protected_cross_module(module_files))
     errors.extend(
         check_es_external_consumer_missing(addon_sources, external_sources)

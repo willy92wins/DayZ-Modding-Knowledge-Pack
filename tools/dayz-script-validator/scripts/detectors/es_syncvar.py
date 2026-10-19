@@ -1,5 +1,6 @@
 import re
 
+from detectors.es_cast_unrelated_types import Hierarchy
 from detectors.es_undeclared_static_member import class_bodies
 from detectors.es_variable_named_as_type import usable_vanilla_key, vanilla_sources
 from shared.control_flow import (
@@ -294,7 +295,9 @@ def method_is_syncvar_registration_target(
     # hook, with no parameters as EntityAI declares it (:3481), and only when
     # the vanilla tree declares it (construction_hook): 1.29 has none, so
     # there a method of this name, override or not, is the mod's own and runs
-    # whenever the mod calls it.
+    # whenever the mod calls it. The class must also derive from EntityAI,
+    # which one file cannot tell: check_es_syncvar_construction_hook_classes
+    # judges that once every file is read.
     return (
         construction_hook
         and method["name"] == ES_SYNCVAR_CONSTRUCTION_HOOK
@@ -348,7 +351,8 @@ def unique_in_order(values):
 
 
 def check_es_syncvar_contract(
-    source, stripped_source, rel_path, construction_hook=False
+    source, stripped_source, rel_path, construction_hook=False,
+    hook_registrations=None,
 ):
     errors = []
     warnings = []
@@ -380,18 +384,23 @@ def check_es_syncvar_contract(
 
         for register in class_registers:
             method = find_method_for_line(class_methods, register["line"])
+            error = build_es_syncvar_error(
+                rel_path,
+                register["line"],
+                register["var"],
+                ES_SYNCVAR_REGISTER_OUTSIDE_CTOR_MESSAGE,
+            )
             if method_is_syncvar_registration_target(
                 method, class_info["class"], lines, construction_hook
             ):
+                if (
+                    hook_registrations is not None
+                    and method["name"] == ES_SYNCVAR_CONSTRUCTION_HOOK
+                    and method["name"] != class_info["class"]
+                ):
+                    hook_registrations.append((class_info["class"], error))
                 continue
-            errors.append(
-                build_es_syncvar_error(
-                    rel_path,
-                    register["line"],
-                    register["var"],
-                    ES_SYNCVAR_REGISTER_OUTSIDE_CTOR_MESSAGE,
-                )
-            )
+            errors.append(error)
 
         for var_name in unique_in_order(
             [register["var"] for register in class_registers]
@@ -483,3 +492,33 @@ def check_es_syncvar_contract(
                     )
 
     return errors, warnings
+
+
+def check_es_syncvar_construction_hook_classes(
+    hook_registrations, addon_sources, external_sources, vanilla_root
+):
+    """FAILs for the hook registrations of classes not derived from EntityAI.
+
+    hook_registrations: (class name, FAIL) of every SyncVar that
+    check_es_syncvar_contract accepted only as registered in the construction
+    hook. Only EntityAI calls that hook (3_game/entities/entityai.c:3469), so a
+    class whose base classes all resolve across the addon, the external roots
+    and the vanilla tree, none of them EntityAI, registers whenever the mod
+    calls the method. A class whose chain does not resolve (a parent from a mod
+    that was not passed, a header a directive splits) keeps the hook.
+    """
+    if not hook_registrations:
+        return []
+    hierarchy = Hierarchy()
+    for _rel_path, stripped in list(addon_sources) + list(external_sources or []):
+        hierarchy.add_source(stripped)
+    vanilla_key = usable_vanilla_key(vanilla_root)
+    if vanilla_key is not None:
+        for _rel_path, text in vanilla_sources(vanilla_key):
+            hierarchy.add_source(text)
+    errors = []
+    for class_name, error in hook_registrations:
+        chain = hierarchy.chain(class_name)
+        if chain is not None and "EntityAI" not in chain:
+            errors.append(error)
+    return errors

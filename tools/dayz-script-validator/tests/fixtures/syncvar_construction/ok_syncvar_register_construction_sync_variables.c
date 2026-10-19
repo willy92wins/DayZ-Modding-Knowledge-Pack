@@ -1,4 +1,4 @@
-class SyncVarConstructionFixture
+class SyncVarConstructionFixture : EntityAI
 {
     int m_X;
 
