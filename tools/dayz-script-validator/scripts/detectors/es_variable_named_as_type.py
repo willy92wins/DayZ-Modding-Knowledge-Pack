@@ -1,4 +1,3 @@
-import bisect
 import functools
 import pathlib
 import re
@@ -12,7 +11,10 @@ from detectors.es_reserved_word_identifier import (
 from detectors.es_undefined_class_ref import (
     VANILLA_ANCHOR_CLASS,
     Definitions,
-    _template_end,
+    _inside_template_args,
+    _template_spans,
+    blank_template_arguments,
+    declarator_commas,
     vanilla_definitions,
 )
 from shared.dead_branches import (
@@ -148,76 +150,6 @@ def usable_vanilla_key(vanilla_root):
     return key
 
 
-# The first character _template_end rejects after a `<`, and the brackets it
-# counts there.
-_TEMPLATE_STOP_RE = re.compile(r"[^\w, \t\r\n<>]")
-_ANGLE_BRACKET_RE = re.compile(r"[<>]")
-
-
-def _closed_template_openers(stripped):
-    """Offsets of the `<` that _template_end can close, found in one pass.
-
-    Past its name check, _template_end returns the first `>` at which the
-    depth counted from its `<` falls back to 0, and None at the first
-    character it rejects or at the end of the file; within a run of the
-    characters it accepts, that `>` is the one that pops the `<` from a
-    stack, so a `<` the stack never pops gets None (a word character of a
-    str pattern is one for which str.isalnum() holds, or `_`, the same test
-    _template_end makes). Without this pass a `<` that opened no template
-    was read up to the end of its statement, and a chain of shifts with no
-    comma grew with the square of its length (Codex review of #115, N1).
-    """
-    closed = set()
-    index = stripped.find("<")
-    while index != -1:
-        stop = _TEMPLATE_STOP_RE.search(stripped, index)
-        end = stop.start() if stop else len(stripped)
-        stack = []
-        for match in _ANGLE_BRACKET_RE.finditer(stripped, index, end):
-            if match.group() == "<":
-                stack.append(match.start())
-            elif stack:
-                closed.add(stack.pop())
-        index = stripped.find("<", end)
-    return closed
-
-
-def _template_spans(stripped):
-    """(`<`, `>`) offsets of the template arguments of a file, in order.
-
-    A comma between template arguments (`Param3<bool, vector, int>`,
-    `typedef map<string, ref array<string>> Name;`) is not a declarator
-    separator; vanilla control 2026-10-13 found 104 (1.29) and 109 (1.30)
-    such false findings before this check. A `<` opens template arguments
-    only as ES-UNDEFINED-CLASS-REF reads them (_template_end), so the
-    comparison in `bool first = a < b, Debug = false;` hides no declarator,
-    with spaces allowed before it: `new Param3 <int, Object, int>(...)`
-    (second Codex review of #113, J1).
-
-    Template arguments never hold a `;`, `{` or `}`, so one pass over the
-    file finds the ones a pass from the start of each statement finds.
-    Reading from the start of the statement at each comma grew with the
-    square of the names of one declaration (Codex review of #114, M2).
-    """
-    closed = _closed_template_openers(stripped)
-    spans = []
-    index = stripped.find("<")
-    while index != -1:
-        if index in closed:
-            end = _template_end(stripped, index, spaced=True)
-            if end is not None:
-                spans.append((index, end))
-                index = end
-        index = stripped.find("<", index + 1)
-    return spans
-
-
-def _inside_template_args(spans, offset):
-    """True when offset sits inside one of the template arguments in spans."""
-    position = bisect.bisect_left(spans, (offset,)) - 1
-    return position >= 0 and offset < spans[position][1]
-
-
 def _compiled_type_names(stripped):
     """{type name: [(blocks, tests) of each declaration]} of the lines that compile.
 
@@ -243,8 +175,11 @@ def _compiled_type_names(stripped):
 
 def _declared_names(stripped):
     """(offset, name) of every name in a declared-name position."""
-    spans = _template_spans(stripped)
-    for match in _DECL_RE.finditer(stripped):
+    spans = _template_spans(stripped, spaced=True)
+    # _TYPE reads blanked template arguments (blank_template_arguments); the
+    # walk below reads stripped.
+    blanked = blank_template_arguments(stripped)
+    for match in _DECL_RE.finditer(blanked):
         if match.group("type") in _NOT_A_TYPE:
             continue
         if stripped[match.start()] == "," and _inside_template_args(
@@ -252,30 +187,15 @@ def _declared_names(stripped):
         ):
             continue
         yield match.start("name"), match.group("name")
-    for match in _FIRST_DECL_RE.finditer(stripped):
-        if match.group("type") in _NOT_A_TYPE:
-            continue
-        depth = 0
-        cursor = match.end()
-        while cursor < len(stripped):
-            char = stripped[cursor]
-            if char in "([{":
-                depth += 1
-            elif char in ")]}":
-                depth -= 1
-                if depth < 0:
-                    break
-            elif char == ";" and depth == 0:
-                break
-            elif (
-                char == ","
-                and depth == 0
-                and not _inside_template_args(spans, cursor)
-            ):
-                later = _LATER_NAME_RE.match(stripped, cursor)
-                if later:
-                    yield later.start("name"), later.group("name")
-            cursor += 1
+    starts = [
+        match.end()
+        for match in _FIRST_DECL_RE.finditer(blanked)
+        if match.group("type") not in _NOT_A_TYPE
+    ]
+    for comma in declarator_commas(stripped, starts, spans):
+        later = _LATER_NAME_RE.match(stripped, comma)
+        if later:
+            yield later.start("name"), later.group("name")
 
 
 def _visible(rank, path, file_rank, rel_path):

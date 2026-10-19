@@ -248,6 +248,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-script-validator`: `ES-RESERVED-WORD-IDENTIFIER`, `ES-VARIABLE-NAMED-AS-TYPE` and
+  `ES-UNDEFINED-CLASS-REF` took time quadratic in the length of a long statement
+  (fb-20261017-175254-e6d6): the 8000 `array<int>` arguments of one `new Param<...>(1)` took 9, 9
+  and 15 s. A lazy template in their declaration patterns let each place a declaration could
+  start read on to the end of the statement, and the later declarators of each declaration were
+  read from its own start. The patterns now read the file with its template arguments blanked in
+  one pass, at any depth: a `<` closed by its own `>` with no `;`, `{`, `}`, `(`, `)` or newline
+  between, where a run of `>` closes one, as vanilla writes `map<string, int>> name;`
+  (`3_game/global/ammotypes.c:80` on 1.30). One pass then reads the later declarators of every
+  declaration, and steps over the template arguments that `_template_end` finds, over lines too.
+  Each rule now reads that statement, and each case built by the first two Codex reviews of the
+  change (templates nested five deep, 4800 template arguments over lines, 2400 parameters one per
+  line, a chain of 8000 shifts), in 0.04 s or less. A name among template arguments split by a
+  newline (`new Param<` / `ref AuditEntry, ...>`), or after a space or a tab before the `<` (`new
+  map <`), is no longer taken for a declared variable, which hid `AuditEntry.Method(` from
+  `ES-UNDEFINED-CLASS-REF` and `ES-UNDECLARED-STATIC-MEMBER`. `ES-RESERVED-WORD-IDENTIFIER` counts
+  the lines of a file once, not once for each word it finds: 64 000 such members took 12 s, and
+  take 0.4 s. 282 unit tests pass (261 before).
 - `dayz-script-validator`: `ES-LAYOUT-PATH-PBOPREFIX-MISMATCH` failed on a message that names a
   layout, such as `Print(LOG_TAG + " HUD mod: CreateWidgets failed for route_mode_button.layout")`
   after a CreateWidgets call whose path matches the prefix (fb-20261018-231841-22f2). A string
