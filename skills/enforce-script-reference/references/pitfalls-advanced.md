@@ -448,8 +448,8 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
   - `GetScene()` API for scene-graph queries
   *(Vanilla call, performance claim is community guidance.)*
 
-- **`SurfaceIsPond` / `SurfaceIsSea` / `SurfaceRoadY` are slow** — all `proto native`
-  at `game.c:1181-1183`. For "is this point in water?" prefer:
+- **`SurfaceIsPond` / `SurfaceIsSea` / `SurfaceRoadY` are slow** — `proto native` at `game.c:1197`,
+  `:1196`, `:1177` in 1.30 (`:1182`, `:1181`, `:1163` in 1.29). For "is this point in water?" prefer:
 
   ```c
   if (g_Game.GetWaterDepth(pos) > 0)  // pos is vector

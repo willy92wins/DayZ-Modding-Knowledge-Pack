@@ -1,10 +1,11 @@
 # DayZ — Engine water over water objects (rivers, streams, the streambed kit)
 
 > What the engine's water queries read over objects that carry their own water: the vanilla
-> `river_24_*` and `stream_14_*` pieces, the `dz\water\streambed\` kit, and a roadway `water_ext`
-> face of your own. Measured from the DayZDiag server with probe missions of the DayZ_Baltic_12km
-> project, 2026-10-03 to 2026-10-14 (pipeline inbox 0303, 2466 and 3f33). They read native queries
-> on the server, and do not test a boat, a player drinking or how the water looks.
+> `river_24_*` and `stream_14_*` pieces of `dz\water\streams\`, the `dz\water\streambed\` kit, and
+> a roadway `water_ext` face of your own. Measured from the DayZDiag server with probe missions of
+> the DayZ_Baltic_12km project, 2026-10-03 to 2026-10-14 (pipeline inbox 0303, 2466 and 3f33).
+> They read native queries on the server, and do not test a boat, a player drinking or how the
+> water looks.
 
 ## Measure the vanilla map first
 
@@ -56,8 +57,8 @@ survey's streambed rows mix other surfaces and do not serve for the slope ratio
 Measured in game on the DayZDiag server, run 8392533a of a vanilla-channel pilot on the Baltic map:
 the rule below reproduces 1,940 of 1,941 readback rows within 2 mm, and a second query height
 agrees with a mean residual of 1 cm or less. Over a roadway water face,
-`GetWaterSurfaceHeightNoFakeWave` and `GetWaterDepth` (`3_game/global/game.c:1183-1185`, as the
-ticket cites them) read:
+`GetWaterSurfaceHeightNoFakeWave` and `GetWaterDepth` (`3_game/global/game.c:1200` and `:1198`
+in 1.30, `:1185` and `:1183` in 1.29) read:
 
 1. The candidate faces are those whose bounding box in world xz contains the query point.
 2. The query point goes to the object's model space with its own height, through the object's whole

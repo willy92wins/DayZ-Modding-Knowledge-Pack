@@ -261,6 +261,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `enforce-script-reference` `references/pitfalls-advanced.md`: the performance trap on
+  `SurfaceIsPond`, `SurfaceIsSea` and `SurfaceRoadY` cited them at `game.c:1181-1183`, where 1.29
+  declares `SurfaceIsSea`, `SurfaceIsPond` and `GetWaterDepth`, and `SurfaceRoadY` is at `:1163`. It
+  now gives their lines in 1.30 (`:1197`, `:1196`, `:1177`) and in 1.29 (`:1182`, `:1181`,
+  `:1163`), read on the vanilla scripts of both on 2026-10-19 while checking the citations of
+  pipeline inbox fb-20261003-231327-2466.
 - `dayz-script-validator`: `ES-RESERVED-WORD-IDENTIFIER`, `ES-VARIABLE-NAMED-AS-TYPE` and
   `ES-UNDEFINED-CLASS-REF` took time quadratic in the length of a long statement
   (fb-20261017-175254-e6d6): the 8000 `array<int>` arguments of one `new Param<...>(1)` took 9, 9
