@@ -1846,6 +1846,32 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
+      "claim_id": "CLAIM-ODOL-V56-BINARIZE-130",
+      "evidence_locator": "Offline, read-only, 2026-10-18, on the owner's PC. DayZ Tools: Steam app manifest 830640, buildid 25460346, LastUpdated 2026-10-15T21:47:13Z; Bin/Binarize/binarize.exe FileVersion 1.30.164.078, ProductVersion 1.30.164078.38, 24,736,824 B, sha256 f1594bce29a6d3ca..., written 2026-10-15T21:47:11Z. One pond piece of the owner's Baltic map project (p31_0008cbb73748437c.p3d, MLOD 2,216 B) binarized by AddonBuilder in the builds of 2026-10-13 to 15 (ODOL v55, 1,938 B, sha256 7bf6e636...) and in the build of 2026-10-17 (ODOL v56, 1,942 B, sha256 134e3e07444cc838...), compared byte by byte: bytes 0-204 equal except the version (uint32 at bytes 4-7, 55 and 56); the run of zeros at 205-234 (30 B) in v55 is 205-238 (34 B) in v56, after the bytes 01 00 00 01 01 00 00 80 3f; the 8 uint32 at v55 offsets 295-323 (1140, 941, 703, 331, 1938, 1140, 941, 703: LOD start and end offsets, 1938 the file size) are each 4 higher in v56; no other byte differs. Any insertion point from 205 to 235 gives the same file, so this pair alone does not place the 4 bytes (CLAIM-ODOL-V56-MODEL-INFO-FIELD does). Reported by pipeline feedback fb-20261017-234641-96e0 (Baltic EV112), with the failure of the external odol_reader.py on v56 (an LZO decompression error) and a workaround that skips 4 bytes in the model info. Not measured: whether the game loads these v56 models.",
+      "license": "MIT",
+      "line_end": 173,
+      "line_start": 173,
+      "observed_at": "2026-10-18",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-96e0@2026-10-18",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
+      "claim_id": "CLAIM-ODOL-V56-MODEL-INFO-FIELD",
+      "evidence_locator": "Offline, read-only, 2026-10-18, on the owner's PC. 500 ODOL v56 models extracted read-only from 13 gear_*.pbo of the installed DayZ 1.30.164.078; 488 of them also have a v54 file of the same model in game data extracted earlier with DayZ Tools onto the work drive (its build was not checked). Each pair compared byte by byte: every v56 file has 4 zero bytes, which its v54 file lacks, right after the float that the external BisDLL-derived odol_reader (the copy installed with the owner's dayz-p3d-debinarizer skill, sha256 688aaa90..., not the one pinned by tools/dayz-odol-strict) reads as ht_min; the next 2 bytes are zero in all 488, so an insertion 5 or 6 bytes after its start gives the same file, and a 4-byte field sits right after it. Five models have non-zero floats in that span and fix the place: large_tent_backpack, improvised_fixture_f, improvised_fixture_m, Base_radio_station_f and Base_radio_station_m (the 7 floats from ht_min, without the 4 bytes: 1, 60, 1800, 30, 0, 1, 37). In the others the run of zeros would accept the insertion up to 28 to 34 bytes after it, which is why the pond pair of CLAIM-ODOL-V56-BINARIZE-130 cannot place it (its ht_min is the 1.0 at bytes 201-204). With the 4 bytes removed, v56 and v54 are equal to the end of the model info in 471 pairs; the other 17 already differ before ht_min. The installed reader patched in memory three ways, over all 500: the 4 bytes read after ht_min or after shadow_buffer_source end every LOD exactly in the same 489; read after force_not_alpha by a patch that refuses them when they are not zero, in 484 (it refuses the five). The read after shadow_buffer_source gives model-info values different from the read after ht_min in 92 models: in 87 it reads as the new field the value the others read as shadow_buffer_source (768, 512 or 1); in the five it reads 1.0 as force_not_alpha and 37.0 as shadow_buffer_source. The other 11 models (tents, locks, a spotlight, garden plots, pepper_plant), all animated, fail with every patch while their v54 files parse exactly; the difference is not identified. Not measured: the LOD data after the LOD address table, what the field means, and whether the game reads it.",
+      "license": "MIT",
+      "line_end": 175,
+      "line_start": 175,
+      "observed_at": "2026-10-18",
+      "promotion_artifact_id": "skill/dayz-model-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-96e0@2026-10-18",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1

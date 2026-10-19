@@ -1291,10 +1291,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-6b76@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 96e0 (fb-20261017-234641-96e0). Added entries for dayz-model-pipeline (models binarized by DayZ Tools 1.30.164.078 are ODOL v56, and where its 4 new model-info bytes sit) and the WRP vault note (OPRW v32 object records of 64 bytes). Measured read-only on the owner's PC on 2026-10-18 (the DayZ Tools app manifest and binarize.exe version; the v55 and v56 binarizations of one MLOD compared byte by byte; the build verifier of one binarized mod map and its output; 488 vanilla 1.30 v56 models compared byte by byte with the v54 file of the same model, and 500 read with a reader patched three ways). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "28b11e4485613ee9544e85ff11f27c2025f7d498087f1441889d0db209c4f7ba",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-96e0@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4882e98ac2972a066d924215175386c50591723a1d0b242b792f44190c8e10d5",
+      "output_hash": "28b11e4485613ee9544e85ff11f27c2025f7d498087f1441889d0db209c4f7ba",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -3273,10 +3283,20 @@
           "source_path": "knowledge/vault-notes/dayz-wrp-roadgraph-extraction.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 96e0 (fb-20261017-234641-96e0). OPRW v32 bullet: in a mod map binarized by DayZ Tools 1.30.164.078 the object records are 64 bytes, the 60 of v29 plus a uint32 at +60 that was 0 in all 58,708 records; vanilla v32 maps and the v32 Roadnet section not measured. Measured read-only on the owner's PC on 2026-10-18 (the DayZ Tools app manifest and binarize.exe version; the v55 and v56 binarizations of one MLOD compared byte by byte; the build verifier of one binarized mod map and its output; 488 vanilla 1.30 v56 models compared byte by byte with the v54 file of the same model, and 500 read with a reader patched three ways). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7ad6ed4e9aa7faf91d9f2c5b065bb403c019e0c6476ae57b4ab0536626ff9eac",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-wrp-roadgraph-extraction.md",
+          "source_revision": "kp-update-96e0@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ea1daefd01fb339cefb29c90e3d31c764fc44aa88d826a19856510cefae81140",
+      "output_hash": "7ad6ed4e9aa7faf91d9f2c5b065bb403c019e0c6476ae57b4ab0536626ff9eac",
       "output_path": "knowledge/vault-notes/dayz-wrp-roadgraph-extraction.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -8926,10 +8946,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 96e0 (fb-20261017-234641-96e0). The Quick Reference line on ODOL v56 adds that the models binarized since the DayZ Tools update of 2026-10-15 (binarize.exe 1.30.164.078) are v56 (before it, v55), that a v55 reader fails on them, and points to references/dayz-1-30-model-pipeline.md. Same line, so no registered claim range moves. Measured read-only on the owner's PC on 2026-10-18 (the DayZ Tools app manifest and binarize.exe version; the v55 and v56 binarizations of one MLOD compared byte by byte; the build verifier of one binarized mod map and its output; 488 vanilla 1.30 v56 models compared byte by byte with the v54 file of the same model, and 500 read with a reader patched three ways). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e01730d725eb757c77685af13bd71c3c359a12377fae798f50eba290a760f8db",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-96e0@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "579ac750c907244b05c1acafd5fbc8763cfc2cc2455a347934391e808b11d800",
+      "output_hash": "e01730d725eb757c77685af13bd71c3c359a12377fae798f50eba290a760f8db",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -17909,10 +17939,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-codex-r2-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 96e0 (fb-20261017-234641-96e0). Registers CLAIM-ODOL-V56-BINARIZE-130 and CLAIM-ODOL-V56-MODEL-INFO-FIELD at their lines of skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md. Measured read-only on the owner's PC on 2026-10-18 (the DayZ Tools app manifest and binarize.exe version; the v55 and v56 binarizations of one MLOD compared byte by byte; the build verifier of one binarized mod map and its output; 488 vanilla 1.30 v56 models compared byte by byte with the v54 file of the same model, and 500 read with a reader patched three ways). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f99d43952c1648d6a2ba7f90d304a07a31cb3dc97ae2eb4c2d5cb67aaff5dbdb",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-96e0@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c9c96e0c2c10b37f6b62d6c8caf8ce36576a571cd499d41743254677381f8153",
+      "output_hash": "f99d43952c1648d6a2ba7f90d304a07a31cb3dc97ae2eb4c2d5cb67aaff5dbdb",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -20564,10 +20604,20 @@
           "source_path": "tools/dayz-odol-strict/README.md",
           "source_revision": "r21-phase04@2026-07-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 96e0 (fb-20261017-234641-96e0). The strict boundary says that the 1.30 vanilla models and the models binarized by DayZ Tools 1.30.164.078 or later are v56, which the adapter refuses with ODOL_VERSION_UNSUPPORTED; checked offline by setting the v55 fixture's version bytes to 56 (exit 2, ODOL_VERSION_UNSUPPORTED at offset 4, before any backend is needed). Measured read-only on the owner's PC on 2026-10-18 (the DayZ Tools app manifest and binarize.exe version; the v55 and v56 binarizations of one MLOD compared byte by byte; the build verifier of one binarized mod map and its output; 488 vanilla 1.30 v56 models compared byte by byte with the v54 file of the same model, and 500 read with a reader patched three ways). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "049a1dff87570e261c40aabf664cea32ec21d7657094131f1b61afc58d3a39e3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/README.md",
+          "source_revision": "kp-update-96e0@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f653570fcf7024ce6aa604ea2b9ef9b0e82c4fda4a0fb9359da13c23e1a341fd",
+      "output_hash": "049a1dff87570e261c40aabf664cea32ec21d7657094131f1b61afc58d3a39e3",
       "output_path": "tools/dayz-odol-strict/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32657,10 +32707,20 @@
           "source_path": "skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-18: pipeline inbox 96e0 (fb-20261017-234641-96e0). New section 'Models you binarize are ODOL v56 (DayZ Tools 1.30.164.078)' with claims CLAIM-ODOL-V56-BINARIZE-130 (the v55 and v56 binarizations of one MLOD) and CLAIM-ODOL-V56-MODEL-INFO-FIELD (the 4 bytes sit right after the float odol_reader reads as ht_min; exact LOD ends do not prove the place; 11 animated vanilla models still fail), and migration checklist item 7 (own ODOL tooling must read v56). Measured read-only on the owner's PC on 2026-10-18 (the DayZ Tools app manifest and binarize.exe version; the v55 and v56 binarizations of one MLOD compared byte by byte; the build verifier of one binarized mod map and its output; 488 vanilla 1.30 v56 models compared byte by byte with the v54 file of the same model, and 500 read with a reader patched three ways). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a5261569b0358e0b091c71430553b784f1a102522ac7ea7b9751e3162b2a9805",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
+          "source_revision": "kp-update-96e0@2026-10-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f2a1291740e48782017eed63edcacea4f503a9c8b34595dbe706781290cc57e6",
+      "output_hash": "a5261569b0358e0b091c71430553b784f1a102522ac7ea7b9751e3162b2a9805",
       "output_path": "skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "historical"
