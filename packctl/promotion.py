@@ -2548,9 +2548,9 @@ def _projection_has_path_placeholders(
 
 
 def _remove_artifact(path: Path) -> None:
-    if not path.exists() and not path.is_symlink():
+    if not _path_is_link(path) and not path.exists():
         return
-    if path.is_dir() and not path.is_symlink():
+    if path.is_dir() and not _path_is_link(path):
         shutil.rmtree(path, onerror=_retry_readonly_removal)
     else:
         _unlink_readonly_artifact(path)
@@ -3574,7 +3574,7 @@ def _ensure_known_residue(
     allowed_digests: set[object],
     alias: str,
 ) -> None:
-    if not path.exists() and not path.is_symlink():
+    if not _path_is_link(path) and not path.exists():
         return
     if _contains_links(path) or tree_digest(path) not in allowed_digests:
         raise _PromotionIntegrityError(

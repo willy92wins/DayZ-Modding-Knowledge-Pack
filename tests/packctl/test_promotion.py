@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+import types
 import uuid
 from pathlib import Path
 
@@ -4984,6 +4985,71 @@ def test_ensure_known_residue_rejects_root_junction_with_allowed_digest(
 
 
 @pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")
+def test_ensure_known_residue_rejects_a_broken_junction(tmp_path: Path) -> None:
+    # Codex review of #120, J1: once its target is gone, exists() follows the
+    # junction and is_symlink() does not see it, so the residue read as absent.
+    real = tmp_path / "real"
+    real.mkdir()
+    residue = tmp_path / "residue-root"
+    result = subprocess.run(
+        ["cmd", "/c", "mklink", "/J", str(residue), str(real)],
+        capture_output=True,
+    )
+    assert result.returncode == 0
+    real.rmdir()
+    try:
+        assert residue.exists() is False
+        assert residue.is_symlink() is False
+        with pytest.raises(promotion._PromotionIntegrityError) as caught:
+            promotion._ensure_known_residue(residue, {"absent"}, "old")
+        assert caught.value.code == "PROMOTION-FOREIGN-TARGET"
+    finally:
+        if os.path.lexists(residue):
+            os.rmdir(residue)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")
+def test_remove_artifact_removes_a_broken_junction(tmp_path: Path) -> None:
+    real = tmp_path / "real"
+    real.mkdir()
+    junction = tmp_path / "junction"
+    result = subprocess.run(
+        ["cmd", "/c", "mklink", "/J", str(junction), str(real)],
+        capture_output=True,
+    )
+    assert result.returncode == 0
+    real.rmdir()
+    try:
+        promotion._remove_artifact(junction)
+        assert os.path.lexists(junction) is False
+    finally:
+        if os.path.lexists(junction):
+            os.rmdir(junction)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")
+def test_remove_artifact_removes_a_junction_and_keeps_its_target(
+    tmp_path: Path,
+) -> None:
+    real = tmp_path / "real"
+    real.mkdir()
+    (real / "payload.txt").write_text("payload\n", encoding="utf-8")
+    junction = tmp_path / "junction"
+    result = subprocess.run(
+        ["cmd", "/c", "mklink", "/J", str(junction), str(real)],
+        capture_output=True,
+    )
+    assert result.returncode == 0
+    try:
+        promotion._remove_artifact(junction)
+        assert os.path.lexists(junction) is False
+        assert (real / "payload.txt").read_text(encoding="utf-8") == "payload\n"
+    finally:
+        if os.path.lexists(junction):
+            os.rmdir(junction)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")
 def test_is_junction_reads_the_reparse_tag_without_path_is_junction(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -5007,3 +5073,27 @@ def test_is_junction_reads_the_reparse_tag_without_path_is_junction(
         assert promotion._is_junction(tmp_path / "missing") is False
     finally:
         os.rmdir(junction)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="directory junctions are a Windows feature")
+def test_is_junction_without_path_is_junction_reads_only_the_mount_point_tag(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Codex review of #120, J2: cloud placeholders, symlinks and app execution
+    # aliases carry reparse tags too, and only the mount point tag is a
+    # junction.
+    monkeypatch.setattr(Path, "is_junction", None, raising=False)
+    for tag, expected in (
+        (0xA0000003, True),
+        (0x9000A01A, False),
+        (0xA000000C, False),
+        (0x8000001B, False),
+        (0, False),
+    ):
+        fake_os = types.SimpleNamespace(
+            name="nt",
+            lstat=lambda path, tag=tag: types.SimpleNamespace(st_reparse_tag=tag),
+        )
+        monkeypatch.setattr(promotion, "os", fake_os)
+        assert promotion._is_junction(tmp_path) is expected, hex(tag)
