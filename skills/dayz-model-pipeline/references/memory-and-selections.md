@@ -164,8 +164,12 @@ proxy:addon_path\proxy_model.p3d.NNN
 ```
 
 - `addon_path\proxy_model.p3d` — path to a minimal proxy .p3d file
-- `.NNN` — 3-digit index starting at `001` (e.g., `.001`, `.002`)
-- Example: `proxy:LFPowerGrid\data\battery_adapter\proxy_battery.p3d.001`
+- `.NNN` — 3-digit index starting at `001` (e.g., `.001`, `.002`). It does not pick an entry of
+  the class's `inventorySlot[]`: vanilla `territory_flag.p3d` uses `stone.001` for the second slot
+  of `Proxystone`, and vanilla ties the proxies of a class with several slots to their slots
+  through the selection each slot's `CfgSlots` entry names (pipeline inbox fb-20261004-211658-ce25)
+- Example: `proxy:LFPowerGrid\data\battery_adapter\LFPG_BatterySlot.p3d.001`, the proxy of
+  `ProxyLFPG_BatterySlot` (`config-and-packing.md`: the class name is `Proxy` plus the basename)
 
 ### Where Proxy Selections Must Exist
 

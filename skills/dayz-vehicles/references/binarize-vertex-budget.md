@@ -24,6 +24,10 @@ bisection from ~6 min per variant into ~90 s per batch.
 - `PASS` - a **new**, non-empty ODOL for the basename under test, in an output dir that did
   not already contain it. Skip the "new" requirement and a residual ODOL gives you a false green.
 - `CAPACITY_FAIL` - no new ODOL **and** a `Too many vertices` line attributed to that MLOD.
+  The line names the MLOD, not the LOD: on a building it came from collision LODs that had grown,
+  with the visual LOD as it passed (`dayz-model-pipeline` `references/lods-and-geometry.md`,
+  "Binarize: `Too many vertices` from the collision LODs"). Before blaming the change just made,
+  compare every LOD with the last build that passed.
 - `OTHER_FAIL` - any other absence: bad `model.cfg`, undeclared basename, malformed MLOD, I/O,
   aborted tool. **It blocks and does NOT authorize touching geometry.** Without this state you
   decimate a mesh because your bench was misconfigured.

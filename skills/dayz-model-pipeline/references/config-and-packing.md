@@ -186,7 +186,7 @@ class CfgNonAIVehicles
     {
         scope = 2;
         inventorySlot[] = {"CarBattery", "TruckBattery"};   // Vanilla slot names
-        model = "\MyAddon\data\proxy_slot.p3d";              // Path to proxy p3d
+        model = "\MyAddon\data\MySlot.p3d";                  // Proxy p3d: "Proxy" + this basename = the class name
     };
 };
 ```
@@ -195,7 +195,12 @@ class CfgNonAIVehicles
 - `class ProxyAttachment;` forward declaration is MANDATORY — without it AddonBuilder fails
 - `inventorySlot[]` must match the slot names used in `attachments[]` of the parent CfgVehicles class
 - `model` path must point to the proxy .p3d file that exists in the addon
-- Class name (`ProxyMySlot`) must be unique across all loaded addons
+- Class name must be `Proxy` followed by the basename of `model`, compared case-insensitively
+  (`MySlot.p3d` -> `ProxyMySlot`). A class named otherwise draws nothing and logs nothing, also
+  for an inventory slot: `rip-vehicle-import` `cookbooks/family-b/attach-invisible.md`, rule (d),
+  measured in game on LFQuad3, whose three inventory slots drew nothing until its proxy classes
+  were renamed. Check it in `config.cpp` before measuring any proxy frame
+- Class name (`ProxyMySlot`) must be unique across all loaded addons, so the proxy basename must be too
 - Multiple slots can point to the same proxy .p3d
 - For vanilla slots (CarBattery, TruckBattery, SparkPlug, etc.), no CfgSlots entry needed
 
@@ -208,10 +213,28 @@ class CfgNonAIVehicles
     {
         scope = 2;
         inventorySlot[] = {"CarBattery", "TruckBattery"};
-        model = "\LFPowerGrid\data\battery_adapter\proxy_battery.p3d";
+        model = "\LFPowerGrid\data\battery_adapter\LFPG_BatterySlot.p3d";
     };
 };
 ```
+
+**On an item, a vanilla vehicle-part proxy draws nothing** (measured in game 2026-10-04, pipeline
+inbox fb-20261004-211658-ce25). On an `ItemBase`-derived flag whose slot `LFPG_FlagBattery` held a
+`CarBattery`, the slot was added with `inventorySlot[] +=` to `ProxyBattery_Car`, the class of the
+vanilla proxy `\dz\vehicles\parts\battery_car.001`. That class derives from `ProxyPart`, a
+vehicle-part class (`simulation = "ProxyInventory"`, `reversed = 1`;
+`DZ\vehicles\parts\config.cpp:1094-1122` as the ticket reads it), and it never drew the battery,
+in three layouts, each adding to the one before: the proxy in LOD 0; the proxy inside a named
+selection called like the slot, which the slot's `CfgSlots` `selection` names, as `civiliansedan`
+holds `battery_car.001` inside its `battery` selection; and copies of the proxy in the Geometry,
+View and Fire LODs, the only LODs where `battery_charger.p3d` carries it. A class of the item's own
+drew it: `class ProxyLFPG_FlagBattery : ProxyAttachment` with `inventorySlot[] = {"LFPG_FlagBattery"}`,
+its own minimal proxy p3d `LFPG_FlagBattery.p3d` at `model`, and the proxy face in LOD 0, the
+mechanism of the vanilla flag's `ProxyDZ_Flag : ProxyAttachment` on that item. In one build with
+both proxies 0.35 m apart, the battery appeared at the item's own. For an item, write a
+`ProxyAttachment` class of your own, as above, rather than adding the slot to a vanilla vehicle
+part's. Not measured: whether a `ProxyAttachment` proxy orients the item as a vehicle part's
+`reversed = 1` does (claim: CLAIM-ITEM-PROXY-OWN-ATTACHMENT-CLASS).
 
 ## Texture & Material Configuration
 

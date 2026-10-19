@@ -7,6 +7,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-model-pipeline` `references/config-and-packing.md`: on an item, a vanilla vehicle-part
+  proxy draws nothing. On an `ItemBase` flag, a slot added to `ProxyBattery_Car`, the class of the
+  vanilla `battery_car.001` proxy, never drew the `CarBattery` it held, in three layouts; a
+  `ProxyAttachment` class of the item's own with its own proxy model drew it (in game 2026-10-04,
+  fb-20261004-211658-ce25). `references/memory-and-selections.md`: a proxy's `.NNN` index does not
+  pick an entry of `inventorySlot[]`.
+- `dayz-model-pipeline` `references/lods-and-geometry.md`: binarize's `Too many vertices` can come
+  from the collision LODs. A building read `CAPACITY_FAIL` with its visual LOD as it had passed,
+  once its collision grew from 1,240 to 1,263 pieces per LOD (binarize rev. 163709, 2026-10-03,
+  fb-20261003-214733-b967): compare every LOD with the last build that passed before blaming the
+  change just made. `dayz-vehicles` `references/binarize-vertex-budget.md`, item 3, points to it.
+- `dayz-physics-engine` `SKILL.md`: `PhysicsIsFalling(true)` is not a pure read. A ride command that
+  skipped it on the ticks before lifting the body with the gravity off lost the first air tick of
+  every take-off (apex 0.44 to 0.61 of vy²/2g); calling it again brought the apex to 1.00 (DayZDiag
+  1.30.164014 Exp, 2026-10-06, fb-20261006-165724-db6f).
 - `dayz-model-pipeline`: since the DayZ Tools update of 2026-10-15 (Steam build 25460346,
   `binarize.exe` 1.30.164.078) the models you binarize are ODOL v56, like the 1.30 vanilla models;
   before it they were v55 (fb-20261017-234641-96e0). The same MLOD binarized before and after: the
@@ -248,6 +263,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-model-pipeline` `references/config-and-packing.md`: both `CfgNonAIVehicles` examples named
+  a proxy class that is not `Proxy` plus the basename of its `model`, a class that draws nothing
+  (`rip-vehicle-import` `cookbooks/family-b/attach-invisible.md`, rule (d)). Their models are now
+  `MySlot.p3d` and `LFPG_BatterySlot.p3d`, as in `memory-and-selections.md` and
+  `py3d-direct-generation.md`, and the key rules say it (fb-20261004-211658-ce25).
 - `dayz-script-validator`: `ES-RESERVED-WORD-IDENTIFIER`, `ES-VARIABLE-NAMED-AS-TYPE` and
   `ES-UNDEFINED-CLASS-REF` took time quadratic in the length of a long statement
   (fb-20261017-175254-e6d6): the 8000 `array<int>` arguments of one `new Param<...>(1)` took 9, 9
