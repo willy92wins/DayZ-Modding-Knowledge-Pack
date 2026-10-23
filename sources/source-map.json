@@ -1341,10 +1341,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. After the Codex (Sol) review of #125 the proto entry says that only an IEntity where an Object is taken is FAIL and any other pair WARN, that a call is judged only in a method the validator reads, and what the first version found on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and over 1037 mod folders. After its second round it says that a declaration under an #ifdef that may not compile with the call, or a member of a later script module, is not taken, and what the second version and this one found on both trees and over 1040 mod folders; after its third round, that a member named as a for or foreach variable or as a local of a block closed before the call is not taken either, and that 306 unit tests pass; after its fourth round, that 310 do, and after its fifth, that 312 do. After its sixth it says that 314 do, and it names the versions, after the fourth and fifth rounds, that found on both trees and over the 1040 folders what the second found, where it said 'and so did this version' (H5). Planned by Claude (Anthropic) and applied by Grok CLI, except the changes after Codex's fifth round (G1 to G4), which Claude wrote and applied.",
+          "license": "MIT",
+          "source_hash": "19f7b626121c267f3666dd59809f2df9b7a4a1badeac5a84714ca88794a6d37d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6df11310d19838023e5eb622b3c113759ff655d6e35c2a88f04f1939ee13bc72",
+      "output_hash": "19f7b626121c267f3666dd59809f2df9b7a4a1badeac5a84714ca88794a6d37d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -18131,10 +18141,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Registers CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST at lines 28-82 of es_proto_argument_downcast.py, and moves CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR to lines 9-31 of its detector, FAIL after the vanilla controls. The proto claim's evidence gives the declarations the Codex (Sol) review of #125 read on the owner's PC (RaycastRV at dayzphysics.c:199 in 1.30 and 1.29, Object and IEntity), the FAIL and WARN split, what the first and second versions found on the vanilla scripts and over 1037 and 1040 mod folders, that the versions after the fourth and fifth rounds of that review found what the second did (after its sixth round, where it said 'and so did this version', H5), and the unit cases added after its first four rounds. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "ca7c017b2f71255ce3ed736152b52bfe5b82d8f08db8519b390096a170e1a6c7",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "22626cfa02475c2747181501ce996153ebc7bce7e88562b9491a4058f81f15a1",
+      "output_hash": "ca7c017b2f71255ce3ed736152b52bfe5b82d8f08db8519b390096a170e1a6c7",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -21476,10 +21496,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). ES-PROTO-ARGUMENT-DOWNCAST (FAIL or WARN) among the checks that read the tree, FAIL only for an IEntity where an Object is taken, with the calls it judges, as the Codex (Sol) review of #125 asked; the section says which roots each of those checks reads instead of counting them. After the second round of that review it says when a member of another file counts (its script module not later than the call's, both files under N_Module folders), that a declaration under #if, #ifdef or #ifndef leaves a name unknown unless it is in the call's file under blocks all around the call, and that a method whose declaration has a line up to its ( under such a block is unknown; after the third round, that a name the method declares before the call only as a for or foreach variable or in a block closed before it is unknown too, also where a member has that name, and after the fourth, that this holds where that declaration is no longer open at the call (a for or foreach variable, for a call in the loop's body or after it, or a local of a block closed before the call), while a call in that for's own header, as in its condition, takes the variable's type. ES-MULTILINE-CONDITION-OPERATOR is FAIL, with the controls that found nothing for it. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "7f615479f9fc77fc55618e6613494186002668aa85990492bc9a79f2acd5248c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "616500e7c01ea883303b2b0a3d71e754f54b1117b830067b8abcc34012304d21",
+      "output_hash": "7f615479f9fc77fc55618e6613494186002668aa85990492bc9a79f2acd5248c",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22376,10 +22406,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-6b76@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Runs ES-PROTO-ARGUMENT-DOWNCAST after ES-CAST-UNRELATED-TYPES, over the addon with the --external-scripts sources and the vanilla root, its FAIL findings among the errors and its WARN findings among the warnings, and counts ES-MULTILINE-CONDITION-OPERATOR among the errors. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "c2aebb81dc20b8d66c9d49d9d68a8cd40b21e17ca3eddce6596b7e457ca9e15f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b35a89932a37922a85e146a5b463b4aed9b9390e07fa60fa0c70f135cf2b7844",
+      "output_hash": "c2aebb81dc20b8d66c9d49d9d68a8cd40b21e17ca3eddce6596b7e457ca9e15f",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26276,10 +26316,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-e6d6@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). TestMultilineConditionOperator asks for FAIL, and for each finding's message to name its own line. TestProtoArgumentDowncast (30 tests) runs the bad and ok fixtures with the vanilla stand-in and without it, and unit cases of the shapes judged and skipped; after the Codex (Sol) review of #125 it adds an IEntity where an Object is taken (FAIL) beside three pairs that are WARN, through the command line too, a member of another body of the class or of a class up its chain, a call outside every method the validator reads, an argument that holds a call, declarations that never compile or sit under #ifdef or #ifndef, and more shapes skipped. After the second round (N1 to N4) seven tests more, each red at the second version: a member of a class up the chain, of the enclosing body and a local under a block apart from the call's (unknown), and each without that block; a file under one #ifdef with calls under one more, a member under the inner block for a call outside it (unknown) and a member under a block of another file (unknown); a member of a later script module, of the same or an earlier one, and of a file under no N_Module folder or for a call in one; a member of a 3_game file of a temporary vanilla tree, seen from World and not from GameLib; a proto word under #if 0 and a word under #ifdef before the declaration; a member of a template class; and the member lookup asked only for a member the body does not declare. After the pass over the mods of the third round, a class of 20,000 members with 400 calls, each under a block of its own, read in under 2 s (12.4 s at the third version). After the third round (E1, E3) two tests more: a foreach variable, also as the receiver, a for variable and a local of a block closed before the call, each with the name of a member declared as another class, leave the name unknown, and with the local named otherwise the member is read (red at the third version, which took the member); and an IEntity member beside an Object one under #if 0 is FAIL (green at the third version, red without the filter of lines that never compile in the class body). After the fourth round (F1 to F3) four tests more: a declaration on the line of its case or default label, an Object local beside an IEntity member (no finding) and an IEntity local beside an Object member (FAIL), at the stand-in of RaycastRV and against the same declaration on a line of its own, and for the cast rule a Mission local on the line of its case label beside a Hud member (FAIL), where the fourth version took the member, the two red at the fourth version; an IEntity for variable at a call in that for's own condition beside an Object member (FAIL); and an IEntity local open at the call beside an Object one of a block closed in the other branch of an #ifdef (FAIL on 13), and an IEntity member beside an Object foreach variable under #if 0 (FAIL on 11), which Codex's mutants M10 (the closed check before the open declarations) and M15 (a closed declaration marked before the filter of lines that never compile) left green. The fourth version passes the last two tests, which hold what it does: they turn red with a for variable left unknown in its own header, and with M10 and M15. After the fifth round (G1 to G4), the label test of the new rule also takes a case of an enum's value and a second label on the line, case 0: case 1:, which Codex's mutants M05 (a number alone after case) and M06 (one label alone) left green, and two tests more: for ES-PROTECTED-METHOD-CROSS-CLASS a receiver declared on the line of its case label, of a class whose method is public (no finding, and with the local named otherwise the member's WARN), which Codex's M12 (that rule without the label check) left green; and a line of 20,000 words case x before ; not_a_label: Object hit; read in under 2 s, with the member's FAIL, which the fifth version took 14.9 s to read in Linux (G4). Of these, the fifth version fails only the last. After the sixth round (H2, H4), two tests more: a declaration after a label that follows a statement, a switch head or a closed block on its line, case 0: break; case 1: Object hit;, switch (n) { case 0: Object hit; and case 0: if (n) {} case 1: Object hit;, an Object local beside an IEntity member (no finding) and an IEntity local beside an Object member (FAIL), which Codex's mutants M14, M15 and M16 (the ;, the { or the } no longer a boundary of the label) left green; and a line of 20,000 : Object< and one of 20,000 : Object[ before ; Object hit;, each read in under 2 s with no finding, which the sixth version took 27.7 s and 10.8 s to read in Linux (H2). In Linux: python3 -m unittest discover tests, 314 passed (282 before). Of 66 mutants of the rule, its registration, the multiline change and _argument_type, 63 turn a test red. Read in the code, the 3 left change no finding, only the work done: one drops the filter of the methods some tree declares proto, one keeps the text of an argument that holds a bracket, which the plain-name check then skips as it skips the empty text, and one drops the early return when no file of the addon holds a call. Of 6 mutants of the class-body lookup added after the pass over the mods of the third round, 5 turn a test red, and the sixth, which reads the declarations on lines that never compile in the class body, turns the E3 test red. Of 5 mutants of the E1 change, 3 turn a test red; of the two left, one marks every declaration of the name, which changes no answer (a declaration open at the call answers first), and one drops the around gate, which changes only ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS, whose tests hold no such name. Of 8 mutants of the fourth round's changes, 7 turn a test red at the fifth version: no : before a type, the case or the default half of the label check, the : for the new rule alone, M10, M15, and a for variable left unknown in its own header; the one left drops the label check, taking any : before a type as Codex's M14 did, and no test of that version tells the two apart. Of 12 mutants of the sixth version, the same 8, Codex's M05, M06 and M12, and the label searched for as the fifth version did, all 12 turn a test red: the : taken anywhere turns the G4 test red, whose not_a_label: is no label. Of 18 mutants of this version, those 12, Codex's M14, M15, M16 and M18 (no space before the label), and the template part or the array part of the declaration pattern let past a : again, all 18 turn a test red. Planned by Claude (Anthropic) and applied by Grok CLI, except the changes after Codex's fifth round (G1 to G4), which Claude wrote and applied.",
+          "license": "MIT",
+          "source_hash": "4a7854238b7f6ca9c6ddbace3f39f0892a20c979aca40bc9e1562d7fdb356f88",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "62366a577255e413e798870b6349383013c98b2b4515729fafcc36314313f966",
+      "output_hash": "4a7854238b7f6ca9c6ddbace3f39f0892a20c979aca40bc9e1562d7fdb356f88",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34587,10 +34637,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
           "source_revision": "kp-update-mods-pass-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). _argument_type takes an optional inherited(open, name, blocks), asked only for a member that the enclosing class body does not declare (in the second round of the Codex (Sol) review of #125 it was also asked when the body declared one type, and replaced it: N4), and an optional around, the line_branches() of the file, with which a declaration under an #if, #ifdef or #ifndef block that is not also around the cast or call leaves the type unknown (N1). ES-PROTO-ARGUMENT-DOWNCAST passes both, to look the member up in the other bodies of the class and up its chain (D3). ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS pass neither, so their findings do not change, and their tests pass unchanged. After the pass over the mods of the third round of that review (the rule 21 % slower than the second version, 1366 s against 1129 s over 1040 folders), the declarations at the top level of a class body are read once per body and name, and the blocks around each cast or call are decided at each lookup: keyed with the blocks too, the lookups of one copy of LFPowerGrid read class bodies 488 times, 86.1 million characters, where the second version read them 277 times, 41.1 million (counted on the owner's PC). In Linux 400 calls, each under a block of its own, in a class of 20,000 members take 0.3 s, 12.4 s before. On the owner's PC the rule then took 970 s of the 14,591 s spent in rules over the same folders, with the same findings. After the third round (E1), with around given, a name that the method declares before the cast or call only where it is not open there, a for or foreach variable or a local of a block closed before it, is unknown, where the type of a member of that name was taken: foreach (Object hit : list) beside a member IEntity hit made the new rule FAIL. The other two rules, which pass no around, still take the member there. After the fourth round (F1), a declaration on the line of its case or default label, case 0: Object hit;, is read: the lookup passed over it and took the member of that name, so an Object local beside a member IEntity hit made the new rule FAIL, and an IEntity local beside an Object member passed. The pattern takes a : before the type, and a match there counts only when the text before the : on its line ends in a case or default label: with the label in the pattern, a scan of the 535 KB of the dayz-mcp addon took 0.042 to 0.046 s against 0.032 s before (in Linux, best of nine), and with the check after the match it takes 0.030 to 0.033 s. That is the lookup of all three rules, so the other two read such a local too, where they took the member or left the name unknown. Its docstring says that a for or foreach variable is not open after the loop's header (F2). After the fifth round (G4), a : before a type counts when the text between it and the last ;, {, }, : or line start before it is a case or default label, read once: the fifth version searched the line for a label from each word, so 20,000 words case x before ; not_a_label: took 14.9 s (0.041, 0.144 and 0.576 s for 1000, 2000 and 4000 words), and the sixth version took 0.002 s (in Linux). A second label on the line, case 0: case 1:, counts as before, and not_a_label default:, which Codex found taken as a label, is none now. The scan of the dayz-mcp addon took 0.029 to 0.032 s, as at the fifth version. After the sixth round (H2), the template part and the array part of the pattern stop at a :, which neither holds: from each : before a type they ran on to the end of the line, so 1000, 2000 and 4000 : Object< on a line took 0.071, 0.264 and 1.053 s at the sixth version and take 0.001, 0.002 and 0.003 s, and as many : Object[ took 0.026, 0.100 and 0.398 s and take 0.001, 0.002 and 0.004 s (in Linux). The scan of the dayz-mcp addon takes 0.030 to 0.033 s. Planned by Claude (Anthropic) and applied by Grok CLI, except the changes after Codex's fifth round (G1 to G4), which Claude wrote and applied.",
+          "license": "MIT",
+          "source_hash": "5ec3a06d9bee0e1d4093afb3c3ae1cb0e33471e6f54b4094cc951340aed8160b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "65580ea65f5aec6931683bad520776495f01c92116f9d924e2825539ca7dbe02",
+      "output_hash": "5ec3a06d9bee0e1d4093afb3c3ae1cb0e33471e6f54b4094cc951340aed8160b",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -35067,10 +35127,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). ES-MULTILINE-CONDITION-OPERATOR is FAIL, no longer WARN, as its ticket asked: the vanilla control found nothing for it on 1.29.0.163451 and 1.30.164014 Exp (2026-10-13) or on 1.29.0.163451 and 1.30.164078 stable in the review of #113, and the baseline measured on 1.30.164078 stable (#117) holds no finding of it. The claim comment says so, the message reads [FAIL] and the findings are errors. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "a746ee37f74d7451d2b9f7470a74b5d35421ba454fec247b1eef766d3890ab55",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8b7e7e3fb97884b292b13189d2bc703a9ead754f51e8c3853b8359d5d3817dc8",
+      "output_hash": "a746ee37f74d7451d2b9f7470a74b5d35421ba454fec247b1eef766d3890ab55",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -35160,6 +35230,160 @@
       "license": "MIT",
       "output_hash": "352da68c6fe7e8019a75d8e609304f86668c7b91999a2ca7b6205f50c4d07929",
       "output_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/scripts/4_World/fx_window.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074, part 2). Rule ES-PROTO-ARGUMENT-DOWNCAST for dayz-script-validator from fb-20261006-030019-e074 (DayZ 1.30.164014 server: an IEntity at the Object argument 6 of DayZPhysics.RaycastRV, `Cannot convert 'IEntity' to 'Object' for argument '6' to method 'RaycastRV'`, and the World module did not compile). A plain name passed to a parameter of a proto method whose class derives from the name's declared class: FAIL for an IEntity where an Object is taken, the one pair measured, WARN for any other. Judged only when everything is known: the call in a method that shared/method_recognition.py reads, the receiver a class or a plain name with one plain declared type (a member of another body of the class or of the nearest class up its chain that declares it included, from a body of the call's file or of a file of the same or an earlier script module, a declaration under #if, #ifdef or #ifndef counting only in the call's file under blocks all around the call), the first class up its chain that declares the method declaring it proto with one parameter list, where a declaration whose ( is on a line that never compiles does not count and one with a line up to its ( under #if, #ifdef or #ifndef leaves the method unknown, and the parameter neither out nor inout, with a plain class type. Calls whose arguments hold <, > or a directive, or more arguments than parameters, are skipped, Class is not judged as the argument's class, and lines that never compile are not judged; CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST. After the Codex (Sol) review of #125 (D1 to D11) the vanilla tree is read once per tree, the arguments of a call in one pass (2048 nested calls in 0.02 s in Linux, 1.57 s before), and an addon with no call reads no tree. After its second round (N1 to N5) the member lookup keeps the blocks and the script module of each declaration and reads each class and name once, and the lines before a method's head are dropped by index; N6, the copy of the vanilla index for each run (about 3 ms on 1.30 by Codex's count), stays. The second version and this one found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and, over 1040 mod folders, one call, WARN. On the owner's PC the third version took 34.2 s of the 176.7 s spent in rules on 1.30 (43.1 s for the second) and 29.6 s of 151.7 s on 1.29 (38.0 s), and 1366 s of 15,911 s over the mods (1129 s of 15,786 s); with the class body read once per name, the fix of its third round, it took 32.5 s of 168.7 s, 27.8 s of 146.8 s and 970 s of 14,591 s. With either tree the probes of N1 to N4 give what the unit cases expect; the second version gets 7 of those 11 wrong. After its third round (E1 to E3) a name that the method declares before the call only as a for or foreach variable or in a block closed before it is unknown, also where a member has that name. After its fourth round (F1 to F3) the claim says that this holds where that declaration is no longer open at the call (a for or foreach variable, for a call in the loop's body or after it, or a local of a block closed before the call), and that a call in that for's own header, as in its condition, takes the variable's type (F2); a declaration on the line of its case or default label is read, in the lookup the rule shares with ES-CAST-UNRELATED-TYPES (F1). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "7240b61e8365ff9a1f0fb401d9c31be73a064a88cf5d1922b68e1bb93c0e7272",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7240b61e8365ff9a1f0fb401d9c31be73a064a88cf5d1922b68e1bb93c0e7272",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. CfgPatches of the bad addon; written for the pack. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "b94b5cf0ded8309fda78d117b10624acbf567902d68781843cd40be5ef5ac7c6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b94b5cf0ded8309fda78d117b10624acbf567902d68781843cd40be5ef5ac7c6",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Fail fixture: the ticket's call with fixture names, an IEntity at the Object argument 6 of a stand-in proto (line 19), and the same down-cast to a proto that EntityAI has from Object (line 21); written for the pack, no mod or vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "623dbec4e6972b6e020ad7ad79918d9ddcf799c465cfb617efab7400a5f140ef",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "623dbec4e6972b6e020ad7ad79918d9ddcf799c465cfb617efab7400a5f140ef",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. CfgPatches of the ok addon; written for the pack. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "87fc2c116c42a302ac62b41599a47de1232363eb1d0ed1481c87701d52fd3160",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "87fc2c116c42a302ac62b41599a47de1232363eb1d0ed1481c87701d52fd3160",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Pass fixture: an out argument, the entity cast first, an EntityAI and null where an Object is taken, and the bad call in a comment, a string and #if 0; written for the pack, no mod or vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "6318b4b1fcdd8681ebe59742d3a0eb0a7bc9fc285e2524e7c09b495cf17faa18",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6318b4b1fcdd8681ebe59742d3a0eb0a7bc9fc285e2524e7c09b495cf17faa18",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Stand-in for the vanilla tree, shape only: Class, Managed, and IEntity deriving from Managed; no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "ee9a883204404c002e065d6ba76df9efbdcac175acf25e5c3817f94b48092f6e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee9a883204404c002e065d6ba76df9efbdcac175acf25e5c3817f94b48092f6e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Stand-in for the vanilla tree, shape only: Object deriving from IEntity, with a proto that takes an Object and a script method, EntityAI deriving from Object, and FX_Physics with the protos the tests need (13 parameters with an Object at 6, as the Codex (Sol) review of #125 read RaycastRV in 1.30 and 1.29, where the ticket's call passes 11; out, inout, an array, a default string and an EntityAI); no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "b2a80d70c3dd3540a9b110bc92d0db477e7857c9a9e45521d5e4bb87677e1b09",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b2a80d70c3dd3540a9b110bc92d0db477e7857c9a9e45521d5e4bb87677e1b09",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },

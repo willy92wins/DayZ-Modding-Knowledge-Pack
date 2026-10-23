@@ -7,6 +7,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: `ES-PROTO-ARGUMENT-DOWNCAST` reports a name passed to a parameter of a
+  `proto` method whose class derives from the class the name is declared as. DayZ 1.30.164014
+  server refused `DayZPhysics.RaycastRV(..., hitEntity, m_Human, ...)`, with `hitEntity` an
+  `IEntity` at the `Object` parameter 6, with `Cannot convert 'IEntity' to 'Object' for argument
+  '6' to method 'RaycastRV'`, and the World module did not compile (fb-20261006-030019-e074). That
+  pair, an `IEntity` where an `Object` is taken, is FAIL; any other is WARN, since no refusal of it
+  is measured. Judged only when the call is in a method the validator reads and the receiver's
+  class, the proto's one parameter list and the argument's declared class are all known: a
+  declaration under an `#ifdef` that may not compile with the call, a member of a later script
+  module, or a member named as a `for` or `foreach` variable or a local of a block closed before
+  the call, is not taken. Protos are read from the addon, the `--external-scripts` roots and the
+  vanilla tree, so without a vanilla tree no vanilla proto is judged. A first version, FAIL for
+  every pair, found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and one call
+  over 1037 mod folders, an `Object` passed where `ItemPreviewWidget.SetItem` takes an `EntityAI`;
+  a second, with that pair WARN, found nothing on either tree and that call alone over 1040 folders
+  (review of #125), and so did the versions after the fourth and fifth rounds of that review. 314
+  unit tests pass (282 before).
 - Vault note `dayz-engine-water`: what the engine's water queries read over water objects,
   measured on the DayZDiag server (pipeline inbox fb-20261014-123911-3f33,
   fb-20261003-203108-0303, fb-20261003-231327-2466). With no player connected they read no water
@@ -237,6 +254,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-script-validator`: `ES-MULTILINE-CONDITION-OPERATOR` is FAIL, no longer WARN. It was
+  WARN on one measurement with the vanilla control still to run; the control has since found
+  nothing for it on 1.29.0.163451 (review of #113) or on 1.30.164078 stable (#117), and its ticket,
+  fb-20261006-030019-e074, asked for an error.
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164078 stable. Its
   baseline came from 1.29.0.163451, and on 1.30 the control failed on the tree's digest and on 13
   errors in four files that the game compiles, all of them at code that 1.29 does not have. Ten are
