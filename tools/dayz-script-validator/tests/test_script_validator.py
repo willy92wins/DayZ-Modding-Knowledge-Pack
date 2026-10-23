@@ -4937,6 +4937,50 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         self.assertLess(time.perf_counter() - start, 2)
         self.assertEqual([7], lines)
 
+    def test_a_label_after_a_statement_on_its_line_is_read(self):
+        # Codex review of #125, H4: the label is read from the last `;`, `{`
+        # or `}` before it on its line, so a statement, a `switch` head or a
+        # closed block before the label leaves its declaration read; without
+        # that boundary the lookup took the member of that name.
+        for local, member, fails in (
+            ("Object", "IEntity", False), ("IEntity", "Object", True)
+        ):
+            for switch in (
+                "        switch (n)\n        {\n"
+                "            case 0: break; case 1: %s hit;\n",
+                "        switch (n) { case 0: %s hit;\n",
+                "        switch (n)\n        {\n"
+                "            case 0: if (n) {} case 1: %s hit;\n",
+            ):
+                source = (
+                    "class FX_L\n{\n    %s hit;\n" % member
+                    + "    void F(int n)\n    {\n"
+                    + switch % local
+                    + "                FX_Physics.FX_Tag(hit);\n"
+                    "                break;\n        }\n    }\n}\n"
+                )
+                line = source.count("\n", 0, source.index("FX_Physics")) + 1
+                self.assertEqual(
+                    [line] if fails else [], _proto_lines(source), source
+                )
+
+    def test_a_long_line_of_template_or_array_parts_is_read_once(self):
+        # Codex review of #125, H2: from each `:` before a type the template
+        # part of the declaration pattern, and its array part, ran on to the
+        # end of the line, so a line of `: Object<` or `: Object[` took a time
+        # that grew with its square.
+        for part in ("<", "["):
+            source = (
+                "class FX_H\n{\n    IEntity hit;\n    void F()\n    {\n"
+                "        " + (": Object" + part) * 20000 + "; Object hit;\n"
+                "        FX_Physics.FX_Tag(hit);\n    }\n}\n"
+            )
+
+            start = time.perf_counter()
+            lines = _proto_lines(source)
+            self.assertLess(time.perf_counter() - start, 2, part)
+            self.assertEqual([], lines, part)
+
     def test_a_closed_declaration_leaves_the_open_and_the_compiled_ones(self):
         # Codex review of #125, F3: an IEntity local open at the call beside
         # an Object one of a block closed in the other branch of an #ifdef,

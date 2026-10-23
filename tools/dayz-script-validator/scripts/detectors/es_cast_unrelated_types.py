@@ -167,11 +167,15 @@ def _after_a_label(text, colon):
     return _LABEL_RE.fullmatch(text, start, colon) is not None
 
 
+# Neither a template's arguments nor an array's size hold a `:`, so neither
+# part runs past one: from each `:` before a type they ran on to the end of
+# the line, and a line of `: Object<` took a time that grew with its square
+# (Codex review of #125, H2).
 def _declaration_re(name):
     return re.compile(
         r"(?:^|[;{}(,:])[ \t]*" + _MODIFIERS
-        + r"(?P<type>[A-Za-z_]\w*)(?P<targs>[ \t]*<[^;{}()\n]*?>)?"
-        r"(?P<arr>[ \t]*\[[^\]\n]*\])?\s+" + re.escape(name)
+        + r"(?P<type>[A-Za-z_]\w*)(?P<targs>[ \t]*<[^;{}()\n:]*?>)?"
+        r"(?P<arr>[ \t]*\[[^\]\n:]*\])?\s+" + re.escape(name)
         + r"\s*(?P<next>;|=(?!=)|\[|,|\)|:(?!:))",
         re.M,
     )
