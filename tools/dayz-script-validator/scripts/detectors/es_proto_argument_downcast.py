@@ -57,7 +57,9 @@ ES_PROTO_ARGUMENT_DOWNCAST_RULE_ID = "ES-PROTO-ARGUMENT-DOWNCAST"
 #     after it); when either is under no such folder, a declaration there
 #     leaves the name unknown. A declaration under an #if, #ifdef or #ifndef
 #     leaves the name unknown, unless it is in the call's file under blocks
-#     that are all around the call;
+#     that are all around the call. A name that the method declares before
+#     the call only as a for or foreach variable or in a block closed before
+#     it is unknown, also where a member has that name;
 #   - up the `extends` chain of that class, resolved as in
 #     ES-CAST-UNRELATED-TYPES, the first class with a declaration (modded
 #     included) whose body names Method before a `(` at its top level

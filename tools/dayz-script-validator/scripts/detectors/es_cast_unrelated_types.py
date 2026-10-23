@@ -278,7 +278,10 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
 
     scopes: the FileScopes of `stripped`. around, when given, is the
     line_branches() of stripped: a declaration under an #if, #ifdef or
-    #ifndef block that is not also around cast_at leaves the type unknown.
+    #ifndef block that is not also around cast_at leaves the type unknown,
+    and so does one in the method before cast_at that is not open there (a
+    for or foreach variable, a local of a block closed before cast_at),
+    where a member of that name would be taken.
     inherited(open, arg, blocks), when given, is asked for a member that the
     enclosing class body (open: the offset of its `{`) does not declare,
     with the blocks around cast_at, and gives its type or None.
@@ -294,6 +297,7 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
         if re.search(r",\s*" + re.escape(arg) + r"\s*(?=;|=(?!=)|\[)", scope):
             return None
         found = set()
+        closed = False
         for match in declaration_re.finditer(stripped, start, cast_at):
             at = match.start("type")
             if scopes.line(at) in scopes.dead:
@@ -303,8 +307,15 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
                 continue
             if at < body or _still_open(stripped, match.end(), cast_at):
                 found.add("" if _apart(around, scopes.line(at), blocks) else declared)
+            else:
+                closed = True
         if found:
             return found.pop() if len(found) == 1 and "" not in found else None
+        # `foreach (Object hit : list)` closes its `(` before a call in the
+        # loop, which then took the type of a member `IEntity hit` (Codex
+        # review of #125, E1).
+        if closed and around is not None:
+            return None
     enclosing = scopes.class_body(cast_at)
     if enclosing is None:
         return None

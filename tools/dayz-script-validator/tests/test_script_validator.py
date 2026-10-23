@@ -4808,6 +4808,50 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         self.assertLess(time.perf_counter() - start, 2)
         self.assertEqual(400, len(lines))
 
+    def test_a_loop_variable_named_as_a_member_leaves_the_name_unknown(self):
+        # Codex review of #125, E1: the `(` of a foreach closes before a call
+        # in the loop, so the lookup passed over the loop's Object and took
+        # the member IEntity of that name, a false FAIL. A foreach variable,
+        # also as the receiver, a for variable and a local of a block closed
+        # before the call leave the name unknown where a member has it.
+        cases = [
+            ("class FX_L\n{\n    IEntity hit;\n    void F(array<Object> list)\n"
+             "    {\n        foreach (Object hit : list)\n        {\n"
+             "            FX_Physics.FX_Tag(hit);\n        }\n    }\n}\n",
+             "Object hit :", [8]),
+            ("class FX_L\n{\n    IEntity hit;\n    void F(Object o)\n    {\n"
+             "        for (Object hit = o; hit != null; hit = null)\n"
+             "            FX_Physics.FX_Tag(hit);\n    }\n}\n",
+             "Object hit =", [7]),
+            ("class FX_L\n{\n    Object item;\n    void F(array<EntityAI> list)\n"
+             "    {\n        foreach (EntityAI item : list)\n"
+             "            FX_Physics.FX_Hold(item);\n    }\n}\n",
+             "EntityAI item :", [7]),
+            ("class FX_L\n{\n    Object s;\n    void F(array<FX_L> list, IEntity e)\n"
+             "    {\n        foreach (FX_L s : list)\n            s.FX_SetOwner(e);\n"
+             "    }\n}\n",
+             "FX_L s :", [7]),
+            ("class FX_L\n{\n    IEntity hit;\n    void F(bool b, Object o)\n    {\n"
+             "        if (b)\n        {\n            Object hit = o;\n        }\n"
+             "        FX_Physics.FX_Tag(hit);\n    }\n}\n",
+             "Object hit =", [10]),
+        ]
+        for source, local, member_lines in cases:
+            self.assertEqual([], _proto_lines(source), source)
+            # With the local named otherwise, the member is read.
+            renamed = source.replace(local, local.split()[0] + " other " + local[-1])
+            self.assertEqual(member_lines, _proto_lines(renamed), renamed)
+
+    def test_a_member_on_a_line_that_never_compiles_is_no_second_type(self):
+        # Codex review of #125, E3: an Object member under #if 0 beside the
+        # IEntity one leaves the IEntity the name's one type.
+        source = (
+            "class FX_D\n{\n    IEntity hit;\n#if 0\n    Object hit;\n#endif\n"
+            "    void F()\n    {\n        FX_Physics.FX_Tag(hit);\n    }\n}\n"
+        )
+
+        self.assertEqual([9], _proto_lines(source))
+
 
 if __name__ == "__main__":
     unittest.main()

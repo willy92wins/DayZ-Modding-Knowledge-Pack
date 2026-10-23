@@ -204,12 +204,15 @@ were not measured again.
   under no `N_Module` folder. A declaration under `#if`, `#ifdef` or
   `#ifndef` leaves a name unknown unless it is in the call's file under
   blocks that are all around the call, and a method whose declaration has a
-  line up to its `(` under such a block is unknown. A call whose arguments
-  hold `<`, `>` or a directive is skipped, and so is one with more arguments
-  than parameters. Protos are read from the addon, the `--external-scripts`
-  roots and the vanilla tree, so without a vanilla tree no vanilla proto is
-  judged, with no SKIP line. Only a proto's refusal is measured: an argument
-  of a script method and a down-cast in an assignment are not judged.
+  line up to its `(` under such a block is unknown. A name that the method
+  declares before the call only as a `for` or `foreach` variable or in a
+  block closed before it is unknown too, also where a member has that name.
+  A call whose arguments hold `<`, `>` or a directive is skipped, and so is
+  one with more arguments than parameters. Protos are read from the addon,
+  the `--external-scripts` roots and the vanilla tree, so without a vanilla
+  tree no vanilla proto is judged, with no SKIP line. Only a proto's refusal
+  is measured: an argument of a script method and a down-cast in an
+  assignment are not judged.
 
 ## Compile errors read from one file
 
