@@ -1344,9 +1344,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. After the Codex (Sol) review of #125 the proto entry says that only an IEntity where an Object is taken is FAIL and any other pair WARN, that a call is judged only in a method the validator reads, and what the first version found on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and over 1037 mod folders. After its second round it says that a declaration under an #ifdef that may not compile with the call, or a member of a later script module, is not taken, what the second version and this one found on both trees and over 1040 mod folders, and that 303 unit tests pass. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. After the Codex (Sol) review of #125 the proto entry says that only an IEntity where an Object is taken is FAIL and any other pair WARN, that a call is judged only in a method the validator reads, and what the first version found on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and over 1037 mod folders. After its second round it says that a declaration under an #ifdef that may not compile with the call, or a member of a later script module, is not taken, what the second version and this one found on both trees and over 1040 mod folders, and that 304 unit tests pass. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "1a718580be98d7441dd47e4c9e7dca0682a362d7c10f4eb04e98c7c4ec140eeb",
+          "source_hash": "582345aefd50c645091c6d9575d49e49d484ea1f47de35e45ac949626894872f",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -1354,7 +1354,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1a718580be98d7441dd47e4c9e7dca0682a362d7c10f4eb04e98c7c4ec140eeb",
+      "output_hash": "582345aefd50c645091c6d9575d49e49d484ea1f47de35e45ac949626894872f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -26319,9 +26319,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). TestMultilineConditionOperator asks for FAIL, and for each finding's message to name its own line. TestProtoArgumentDowncast (21 tests) runs the bad and ok fixtures with the vanilla stand-in and without it, and unit cases of the shapes judged and skipped; after the Codex (Sol) review of #125 it adds an IEntity where an Object is taken (FAIL) beside three pairs that are WARN, through the command line too, a member of another body of the class or of a class up its chain, a call outside every method the validator reads, an argument that holds a call, declarations that never compile or sit under #ifdef or #ifndef, and more shapes skipped. After the second round (N1 to N4) seven tests more, each red at the second version: a member of a class up the chain, of the enclosing body and a local under a block apart from the call's (unknown), and each without that block; a file under one #ifdef with calls under one more, a member under the inner block for a call outside it (unknown) and a member under a block of another file (unknown); a member of a later script module, of the same or an earlier one, and of a file under no N_Module folder or for a call in one; a member of a 3_game file of a temporary vanilla tree, seen from World and not from GameLib; a proto word under #if 0 and a word under #ifdef before the declaration; a member of a template class; and the member lookup asked only for a member the body does not declare. In Linux: python3 -m unittest discover tests, 303 passed (282 before). Of 66 mutants of the rule, its registration, the multiline change and _argument_type, 63 turn a test red. Read in the code, the 3 left change no finding, only the work done: one drops the filter of the methods some tree declares proto, one keeps the text of an argument that holds a bracket, which the plain-name check then skips as it skips the empty text, and one drops the early return when no file of the addon holds a call. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). TestMultilineConditionOperator asks for FAIL, and for each finding's message to name its own line. TestProtoArgumentDowncast (22 tests) runs the bad and ok fixtures with the vanilla stand-in and without it, and unit cases of the shapes judged and skipped; after the Codex (Sol) review of #125 it adds an IEntity where an Object is taken (FAIL) beside three pairs that are WARN, through the command line too, a member of another body of the class or of a class up its chain, a call outside every method the validator reads, an argument that holds a call, declarations that never compile or sit under #ifdef or #ifndef, and more shapes skipped. After the second round (N1 to N4) seven tests more, each red at the second version: a member of a class up the chain, of the enclosing body and a local under a block apart from the call's (unknown), and each without that block; a file under one #ifdef with calls under one more, a member under the inner block for a call outside it (unknown) and a member under a block of another file (unknown); a member of a later script module, of the same or an earlier one, and of a file under no N_Module folder or for a call in one; a member of a 3_game file of a temporary vanilla tree, seen from World and not from GameLib; a proto word under #if 0 and a word under #ifdef before the declaration; a member of a template class; and the member lookup asked only for a member the body does not declare. After the pass over the mods of the third round, a class of 20,000 members with 400 calls, each under a block of its own, read in under 2 s (12.4 s at the third version). In Linux: python3 -m unittest discover tests, 304 passed (282 before). Of 66 mutants of the rule, its registration, the multiline change and _argument_type, 63 turn a test red. Read in the code, the 3 left change no finding, only the work done: one drops the filter of the methods some tree declares proto, one keeps the text of an argument that holds a bracket, which the plain-name check then skips as it skips the empty text, and one drops the early return when no file of the addon holds a call. Of 6 mutants of the class-body lookup added after the third round, 5 turn a test red; the sixth reads the declarations on lines that never compile in the class body, which this rule leaves unknown anyway (such a line is under a block apart from the call), and no test of the other two rules reaches it, as at the third version. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "18b077239fdc3b8efdc3aca869fa8ac4dd12410be0379553f30f5d3f1f4eb95e",
+          "source_hash": "9a1cb5d2b2f1177dbca64ac07455e41e287c928472d4bc917e3a3aadaa5313de",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -26329,7 +26329,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "18b077239fdc3b8efdc3aca869fa8ac4dd12410be0379553f30f5d3f1f4eb95e",
+      "output_hash": "9a1cb5d2b2f1177dbca64ac07455e41e287c928472d4bc917e3a3aadaa5313de",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34640,9 +34640,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). _argument_type takes an optional inherited(open, name, blocks), asked only for a member that the enclosing class body does not declare (in the second round of the Codex (Sol) review of #125 it was also asked when the body declared one type, and replaced it: N4), and an optional around, the line_branches() of the file, with which a declaration under an #if, #ifdef or #ifndef block that is not also around the cast or call leaves the type unknown (N1). ES-PROTO-ARGUMENT-DOWNCAST passes both, to look the member up in the other bodies of the class and up its chain (D3). ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS pass neither, so their findings do not change, and their tests pass unchanged. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). _argument_type takes an optional inherited(open, name, blocks), asked only for a member that the enclosing class body does not declare (in the second round of the Codex (Sol) review of #125 it was also asked when the body declared one type, and replaced it: N4), and an optional around, the line_branches() of the file, with which a declaration under an #if, #ifdef or #ifndef block that is not also around the cast or call leaves the type unknown (N1). ES-PROTO-ARGUMENT-DOWNCAST passes both, to look the member up in the other bodies of the class and up its chain (D3). ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS pass neither, so their findings do not change, and their tests pass unchanged. After the pass over the mods of the third round of that review (the rule 21 % slower than the second version, 1366 s against 1129 s over 1040 folders), the declarations at the top level of a class body are read once per body and name, and the blocks around each cast or call are decided at each lookup: keyed with the blocks too, the lookups of one copy of LFPowerGrid read class bodies 488 times, 86.1 million characters, where the second version read them 277 times, 41.1 million (counted on the owner's PC). In Linux 400 calls, each under a block of its own, in a class of 20,000 members take 0.3 s, 12.4 s before. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "c876955092d33fda4e50292b0d95e2df58fa18e5296b69f409e1898ab0342bd6",
+          "source_hash": "794d5e55ceabc998ca7920c8d68a6c3ee1dac4e409dcaebe33922e235ff4c319",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -34650,7 +34650,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c876955092d33fda4e50292b0d95e2df58fa18e5296b69f409e1898ab0342bd6",
+      "output_hash": "794d5e55ceabc998ca7920c8d68a6c3ee1dac4e409dcaebe33922e235ff4c319",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

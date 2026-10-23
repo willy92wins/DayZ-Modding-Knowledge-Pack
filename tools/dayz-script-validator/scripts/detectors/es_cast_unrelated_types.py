@@ -242,6 +242,9 @@ class FileScopes:
         # {(class body open, name, blocks around the cast or call): its type
         #  as a member of that body}
         self.members = {}
+        # {(class body open, name): [(type, line), ...] of its declarations
+        #  at the top level of that body}
+        self.declarations = {}
 
     def line(self, at):
         """The 1-based line of offset `at`."""
@@ -311,19 +314,28 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
     key = (open_brace, arg, blocks)
     if key in scopes.members:
         return scopes.members[key]
-    found = set()
-    for match in declaration_re.finditer(stripped, open_brace, close_brace):
-        at = match.start("type")
-        if scopes.line(at) in scopes.dead:
-            continue
-        inner = stripped[open_brace:at]
-        if inner.count("{") - inner.count("}") != 1 or inner.count(
-            "("
-        ) != inner.count(")"):
-            continue  # inside a method, or a parameter
-        declared = _declared_type(match)
-        if declared is not None:
-            found.add("" if _apart(around, scopes.line(at), blocks) else declared)
+    # The body is scanned once per name, whatever the blocks: scanning it
+    # for each set of blocks around the calls made the rule 21 % slower than
+    # the second version over the mods (third round of the review of #125).
+    if (open_brace, arg) not in scopes.declarations:
+        declarations = []
+        for match in declaration_re.finditer(stripped, open_brace, close_brace):
+            at = match.start("type")
+            if scopes.line(at) in scopes.dead:
+                continue
+            inner = stripped[open_brace:at]
+            if inner.count("{") - inner.count("}") != 1 or inner.count(
+                "("
+            ) != inner.count(")"):
+                continue  # inside a method, or a parameter
+            declared = _declared_type(match)
+            if declared is not None:
+                declarations.append((declared, scopes.line(at)))
+        scopes.declarations[(open_brace, arg)] = declarations
+    found = {
+        "" if _apart(around, declared_line, blocks) else declared
+        for declared, declared_line in scopes.declarations[(open_brace, arg)]
+    }
     if found:
         member = found.pop() if len(found) == 1 and "" not in found else None
     elif inherited is not None:
