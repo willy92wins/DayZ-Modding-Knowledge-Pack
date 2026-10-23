@@ -1344,9 +1344,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. After the Codex (Sol) review of #125 the proto entry says that only an IEntity where an Object is taken is FAIL and any other pair WARN, that a call is judged only in a method the validator reads, and what the first version found on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and over 1037 mod folders. After its second round it says that a declaration under an #ifdef that may not compile with the call, or a member of a later script module, is not taken, what the second version found on both trees and over 1040 mod folders, and that 303 unit tests pass. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. After the Codex (Sol) review of #125 the proto entry says that only an IEntity where an Object is taken is FAIL and any other pair WARN, that a call is judged only in a method the validator reads, and what the first version found on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and over 1037 mod folders. After its second round it says that a declaration under an #ifdef that may not compile with the call, or a member of a later script module, is not taken, what the second version and this one found on both trees and over 1040 mod folders, and that 303 unit tests pass. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "e669571e3e93b90d29364c35d83d3c6d9bba6f3a583cf88b693b7529cb9473a1",
+          "source_hash": "1a718580be98d7441dd47e4c9e7dca0682a362d7c10f4eb04e98c7c4ec140eeb",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -1354,7 +1354,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e669571e3e93b90d29364c35d83d3c6d9bba6f3a583cf88b693b7529cb9473a1",
+      "output_hash": "1a718580be98d7441dd47e4c9e7dca0682a362d7c10f4eb04e98c7c4ec140eeb",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -18144,9 +18144,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Registers CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST at lines 28-77 of es_proto_argument_downcast.py, and moves CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR to lines 9-31 of its detector, FAIL after the vanilla controls. The proto claim's evidence gives the declarations the Codex (Sol) review of #125 read on the owner's PC (RaycastRV at dayzphysics.c:199 in 1.30 and 1.29, Object and IEntity), the FAIL and WARN split, what the first and second versions found on the vanilla scripts and over 1037 and 1040 mod folders, and the unit cases added after the first and second rounds of that review. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Registers CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST at lines 28-77 of es_proto_argument_downcast.py, and moves CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR to lines 9-31 of its detector, FAIL after the vanilla controls. The proto claim's evidence gives the declarations the Codex (Sol) review of #125 read on the owner's PC (RaycastRV at dayzphysics.c:199 in 1.30 and 1.29, Object and IEntity), the FAIL and WARN split, what the three versions found on the vanilla scripts and over 1037 and 1040 mod folders, and the unit cases added after the first and second rounds of that review. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
-          "source_hash": "1c22e2a8ddda071c784a78ceec21c63c901546c8fac2d61c1e4d3d91a434cb85",
+          "source_hash": "6e958a4da90b00476ca1d540c99ecfcbed3536ff27e8a377637a3eb3d25b1b83",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-e074@2026-10-19",
@@ -18154,7 +18154,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1c22e2a8ddda071c784a78ceec21c63c901546c8fac2d61c1e4d3d91a434cb85",
+      "output_hash": "6e958a4da90b00476ca1d540c99ecfcbed3536ff27e8a377637a3eb3d25b1b83",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -35240,7 +35240,7 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074, part 2). Rule ES-PROTO-ARGUMENT-DOWNCAST for dayz-script-validator from fb-20261006-030019-e074 (DayZ 1.30.164014 server: an IEntity at the Object argument 6 of DayZPhysics.RaycastRV, `Cannot convert 'IEntity' to 'Object' for argument '6' to method 'RaycastRV'`, and the World module did not compile). A plain name passed to a parameter of a proto method whose class derives from the name's declared class: FAIL for an IEntity where an Object is taken, the one pair measured, WARN for any other. Judged only when everything is known: the call in a method that shared/method_recognition.py reads, the receiver a class or a plain name with one plain declared type (a member of another body of the class or of the nearest class up its chain that declares it included, from a body of the call's file or of a file of the same or an earlier script module, a declaration under #if, #ifdef or #ifndef counting only in the call's file under blocks all around the call), the first class up its chain that declares the method declaring it proto with one parameter list, where a declaration whose ( is on a line that never compiles does not count and one with a line up to its ( under #if, #ifdef or #ifndef leaves the method unknown, and the parameter neither out nor inout, with a plain class type. Calls whose arguments hold <, > or a directive, or more arguments than parameters, are skipped, Class is not judged as the argument's class, and lines that never compile are not judged; CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST. After the Codex (Sol) review of #125 (D1 to D11) the vanilla tree is read once per tree, the arguments of a call in one pass (2048 nested calls in 0.02 s in Linux, 1.57 s before), and an addon with no call reads no tree. After its second round (N1 to N5) the member lookup keeps the blocks and the script module of each declaration and reads each class and name once, and the lines before a method's head are dropped by index; N6, the copy of the vanilla index for each run (about 3 ms on 1.30 by Codex's count), stays. The second version found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and, over 1040 mod folders, one call, WARN; this version was not run on them. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074, part 2). Rule ES-PROTO-ARGUMENT-DOWNCAST for dayz-script-validator from fb-20261006-030019-e074 (DayZ 1.30.164014 server: an IEntity at the Object argument 6 of DayZPhysics.RaycastRV, `Cannot convert 'IEntity' to 'Object' for argument '6' to method 'RaycastRV'`, and the World module did not compile). A plain name passed to a parameter of a proto method whose class derives from the name's declared class: FAIL for an IEntity where an Object is taken, the one pair measured, WARN for any other. Judged only when everything is known: the call in a method that shared/method_recognition.py reads, the receiver a class or a plain name with one plain declared type (a member of another body of the class or of the nearest class up its chain that declares it included, from a body of the call's file or of a file of the same or an earlier script module, a declaration under #if, #ifdef or #ifndef counting only in the call's file under blocks all around the call), the first class up its chain that declares the method declaring it proto with one parameter list, where a declaration whose ( is on a line that never compiles does not count and one with a line up to its ( under #if, #ifdef or #ifndef leaves the method unknown, and the parameter neither out nor inout, with a plain class type. Calls whose arguments hold <, > or a directive, or more arguments than parameters, are skipped, Class is not judged as the argument's class, and lines that never compile are not judged; CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST. After the Codex (Sol) review of #125 (D1 to D11) the vanilla tree is read once per tree, the arguments of a call in one pass (2048 nested calls in 0.02 s in Linux, 1.57 s before), and an addon with no call reads no tree. After its second round (N1 to N5) the member lookup keeps the blocks and the script module of each declaration and reads each class and name once, and the lines before a method's head are dropped by index; N6, the copy of the vanilla index for each run (about 3 ms on 1.30 by Codex's count), stays. The second version and this one found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and, over 1040 mod folders, one call, WARN. On the owner's PC this one took 34.2 s of the 176.7 s spent in rules on 1.30 (43.1 s for the second) and 29.6 s of 151.7 s on 1.29 (38.0 s), and 1366 s of 15,911 s over the mods (1129 s of 15,786 s). With either tree the probes of N1 to N4 give what the unit cases expect; the second version gets 7 of those 11 wrong. Planned by Claude (Anthropic) and applied by Grok CLI.",
           "license": "MIT",
           "source_hash": "7f25c1ce8a01cc590d52e56cc88c4ee3cb945ee47970a80b60d3cb6983ef4fee",
           "source_id": "pack-r21-authored",
