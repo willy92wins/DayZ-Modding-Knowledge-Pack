@@ -239,7 +239,8 @@ class FileScopes:
                 around.pop()
             self._region_parents.append(around[-1] if around else -1)
             around.append(index)
-        # {(class body open, name): its type as a member of that body}
+        # {(class body open, name, blocks around the cast or call): its type
+        #  as a member of that body}
         self.members = {}
 
     def line(self, at):
@@ -263,14 +264,24 @@ class FileScopes:
         return None
 
 
-def _argument_type(stripped, scopes, arg, cast_at, inherited=None):
+def _apart(around, line, blocks):
+    """True when around, a line_branches(), puts `line` under a conditional
+    block that is not one of `blocks`."""
+    return around is not None and around[line] != blocks[:len(around[line])]
+
+
+def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
     """The one plain declared type of `arg` at `cast_at`, or None.
 
-    scopes: the FileScopes of `stripped`. inherited(open, arg), when given,
-    is asked for a member that the enclosing class body (open: the offset
-    of its `{`) does not declare, and gives its type or None.
+    scopes: the FileScopes of `stripped`. around, when given, is the
+    line_branches() of stripped: a declaration under an #if, #ifdef or
+    #ifndef block that is not also around cast_at leaves the type unknown.
+    inherited(open, arg, blocks), when given, is asked for a member that the
+    enclosing class body (open: the offset of its `{`) does not declare,
+    with the blocks around cast_at, and gives its type or None.
     """
     line = scopes.line(cast_at)
+    blocks = () if around is None else around[line]
     declaration_re = _declaration_re(arg)
     method = scopes.method(line)
     if method is not None:
@@ -288,16 +299,18 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None):
             if declared is None:
                 continue
             if at < body or _still_open(stripped, match.end(), cast_at):
-                found.add(declared)
+                found.add("" if _apart(around, scopes.line(at), blocks) else declared)
         if found:
             return found.pop() if len(found) == 1 and "" not in found else None
     enclosing = scopes.class_body(cast_at)
     if enclosing is None:
         return None
     open_brace, close_brace = enclosing
-    # The same for every cast or call in the body: read once per name.
-    if (open_brace, arg) in scopes.members:
-        return scopes.members[(open_brace, arg)]
+    # The same for every cast or call in the body under the same blocks:
+    # read once per name.
+    key = (open_brace, arg, blocks)
+    if key in scopes.members:
+        return scopes.members[key]
     found = set()
     for match in declaration_re.finditer(stripped, open_brace, close_brace):
         at = match.start("type")
@@ -310,11 +323,14 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None):
             continue  # inside a method, or a parameter
         declared = _declared_type(match)
         if declared is not None:
-            found.add(declared)
-    member = found.pop() if len(found) == 1 and "" not in found else None
-    if not found and inherited is not None:
-        member = inherited(open_brace, arg)
-    scopes.members[(open_brace, arg)] = member
+            found.add("" if _apart(around, scopes.line(at), blocks) else declared)
+    if found:
+        member = found.pop() if len(found) == 1 and "" not in found else None
+    elif inherited is not None:
+        member = inherited(open_brace, arg, blocks)
+    else:
+        member = None
+    scopes.members[key] = member
     return member
 
 

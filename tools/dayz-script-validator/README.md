@@ -194,17 +194,22 @@ were not measured again.
   another body of the enclosing class or of the nearest class up its chain
   that declares it; the first class up the receiver's chain that declares
   the method (a `modded class` included) declares it `proto` every time,
-  with one parameter list, where a declaration on a line that never
-  compiles does not count and one under `#if`, `#ifdef` or `#ifndef` leaves
-  the method unknown; the argument is a plain name looked up the same way;
-  and the parameter is not `out` or `inout` and has a plain class type
-  whose chain holds the argument's class above its own. `Class` is not
-  judged as the argument's class. A call whose arguments hold `<`, `>` or a
-  directive is skipped, and so is one with more arguments than parameters.
-  Protos are read from the addon, the `--external-scripts` roots and the
-  vanilla tree, so without a vanilla tree no vanilla proto is judged, with
-  no SKIP line. Only a proto's refusal is measured: an argument of a script
-  method and a down-cast in an assignment are not judged.
+  with one parameter list, where a declaration whose `(` is on a line that
+  never compiles does not count; the argument is a plain name looked up the
+  same way; and the parameter is not `out` or `inout` and has a plain class
+  type whose chain holds the argument's class above its own. `Class` is not
+  judged as the argument's class. A member in a body of another file counts
+  when that file's script module is not later than the call's (a later one
+  is compiled after it), and leaves the name unknown when either file is
+  under no `N_Module` folder. A declaration under `#if`, `#ifdef` or
+  `#ifndef` leaves a name unknown unless it is in the call's file under
+  blocks that are all around the call, and a method whose declaration has a
+  line up to its `(` under such a block is unknown. A call whose arguments
+  hold `<`, `>` or a directive is skipped, and so is one with more arguments
+  than parameters. Protos are read from the addon, the `--external-scripts`
+  roots and the vanilla tree, so without a vanilla tree no vanilla proto is
+  judged, with no SKIP line. Only a proto's refusal is measured: an argument
+  of a script method and a down-cast in an assignment are not judged.
 
 ## Compile errors read from one file
 

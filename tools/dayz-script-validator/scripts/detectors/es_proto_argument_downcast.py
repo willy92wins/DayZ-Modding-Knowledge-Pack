@@ -13,7 +13,12 @@ from detectors.es_cast_unrelated_types import (
 )
 from detectors.es_protected_method_cross_class import _CALL_RE
 from detectors.es_undeclared_static_member import class_bodies
-from detectors.es_variable_named_as_type import usable_vanilla_key, vanilla_sources
+from detectors.es_variable_named_as_type import (
+    _UNKNOWN_MODULE,
+    module_rank,
+    usable_vanilla_key,
+    vanilla_sources,
+)
 from shared.dead_branches import dead_lines, line_branches
 
 
@@ -46,13 +51,20 @@ ES_PROTO_ARGUMENT_DOWNCAST_RULE_ID = "ES-PROTO-ARGUMENT-DOWNCAST"
 #     plain declared type, as a local still open at the call, a parameter or
 #     a member of the enclosing class (the lookup of ES-CAST-UNRELATED-TYPES),
 #     or else as a member of another body of that class or of the nearest
-#     class up its chain that declares it;
+#     class up its chain that declares it. Of another file, a body counts
+#     when both files are under N_Module folders (1_Core to 5_Mission) and
+#     its module is not later than the call's (a later one is compiled
+#     after it); when either is under no such folder, a declaration there
+#     leaves the name unknown. A declaration under an #if, #ifdef or #ifndef
+#     leaves the name unknown, unless it is in the call's file under blocks
+#     that are all around the call;
 #   - up the `extends` chain of that class, resolved as in
 #     ES-CAST-UNRELATED-TYPES, the first class with a declaration (modded
 #     included) whose body names Method before a `(` at its top level
 #     declares it `proto` in every one of them, with one parameter list. A
-#     declaration on a line that never compiles does not count, and one
-#     under an #if, #ifdef or #ifndef leaves the method unknown;
+#     declaration whose `(` is on a line that never compiles does not
+#     count, and one with a line from its start to its `(` under an #if,
+#     #ifdef or #ifndef leaves the method unknown;
 #   - the argument is a plain name with one plain declared type, looked up
 #     as the receiver is, and the parameter at its index is neither `out`
 #     nor `inout` and has a plain class type whose chain resolves;
@@ -180,16 +192,23 @@ def _parameters(text):
 
 
 def _method(head):
-    """(name, is proto, parameters, offset of its `(` in head) of a method
-    head, or None.
+    """(name, is proto, parameters, offset of its start, offset of its `(`)
+    of a method head, or None. Offsets are in head.
 
-    Directives before the declaration are dropped. A parameter whose text
-    holds one does not read as modifiers, a type and a name.
+    Blank lines and directives before the declaration are dropped; it starts
+    at its attributes. A parameter whose text holds a directive does not
+    read as modifiers, a type and a name.
     """
     lines = head.split("\n")
-    while lines and (not lines[0].strip() or lines[0].lstrip().startswith("#")):
-        lines.pop(0)
-    rest = "\n".join(lines).lstrip()
+    # By index: dropping each line from the front of the list cost the
+    # square of their number (Codex review of #125, N5).
+    first = 0
+    while first < len(lines) and (
+        not lines[first].strip() or lines[first].lstrip().startswith("#")
+    ):
+        first += 1
+    rest = "\n".join(lines[first:]).lstrip()
+    start = len(head) - len(rest)
     rest = rest[_ATTRIBUTES_RE.match(rest).end():]
     open_at = rest.find("(")
     if open_at < 0:
@@ -205,44 +224,65 @@ def _method(head):
         words[-1],
         "proto" in words,
         _parameters(rest[open_at + 1:close_at]),
+        start,
         len(head) - len(rest) + open_at,
     )
 
 
 class _Lines:
-    """Whether the line of an offset of one text compiles, read when first asked."""
+    """Whether the lines of one text compile, read when first asked
+    (shared/dead_branches.py)."""
 
     def __init__(self, text):
         self.text = text
         self._read = None
 
-    def state(self, at):
-        """"dead" on a line that never compiles, "branch" on one under an #if,
-        #ifdef or #ifndef, "" otherwise (shared/dead_branches.py)."""
+    def _branches(self):
+        """(dead_lines(), line_branches()) of the text, () without a directive."""
         if self._read is None:
             self._read = (
                 (dead_lines(self.text), line_branches(self.text))
                 if "#" in self.text else ()
             )
-        if not self._read:
-            return ""
-        dead, branches = self._read
+        return self._read
+
+    def blocks(self, at):
+        """None when the line of `at` never compiles, otherwise the #if,
+        #ifdef and #ifndef blocks around it, () for none."""
+        read = self._branches()
+        if not read:
+            return ()
+        dead, branches = read
         line = self.text.count("\n", 0, at) + 1
-        if line in dead:
-            return "dead"
-        return "branch" if branches[line] else ""
+        return None if line in dead else branches[line]
+
+    def plain(self, start, end):
+        """True when no line from that of `start` to that of `end` is under
+        a block (a line that never compiles and is under none is a
+        directive)."""
+        read = self._branches()
+        if not read:
+            return True
+        branches = read[1]
+        first = self.text.count("\n", 0, start) + 1
+        last = first + self.text.count("\n", start, end)
+        return not any(branches[line] for line in range(first, last + 1))
 
 
 class ClassBodies:
     """Every class body of the scanned trees, with the methods at its top level."""
 
     def __init__(self):
-        # {class: [(lines, (open, close) or None, None for a body that cannot
-        #  be read, or {method: [(is proto, parameters, offset), ...]}), ...]}
+        # {class: [(module rank, lines, (open, close) or None, None for a body
+        #  that cannot be read, or {method: [(is proto, parameters, offset of
+        #  its start, offset of its `(`), ...]}), ...]}
         self.bodies = {}
         self.names = set()
+        # {(class, name): what _declarations() read}
+        self._members = {}
 
-    def add_source(self, text):
+    def add_source(self, text, rank):
+        """rank: the module_rank() of the file of text."""
         lines = _Lines(text)
         for match, span in class_bodies(text):
             heads = None if span is None else _heads(text[span[0] + 1:span[1]])
@@ -253,14 +293,15 @@ class ClassBodies:
                     found = _method(head)
                     if found is None:
                         continue
-                    name, proto, parameters, at = found
+                    name, proto, parameters, begin, at = found
+                    offset = span[0] + 1 + start
                     methods.setdefault(name, []).append(
-                        (proto, parameters, span[0] + 1 + start + at)
+                        (proto, parameters, offset + begin, offset + at)
                     )
                     if proto:
                         self.names.add(name)
             self.bodies.setdefault(match.group("name"), []).append(
-                (lines, span, methods)
+                (rank, lines, span, methods)
             )
 
     def extend(self, other):
@@ -272,16 +313,18 @@ class ClassBodies:
         """(class, parameters) of the proto `method` that chain[0] reaches, or None."""
         for cls in chain:
             bodies = self.bodies.get(cls)
-            if not bodies or any(methods is None for _l, _s, methods in bodies):
+            if not bodies or any(methods is None for _r, _l, _s, methods in bodies):
                 return None
             found = []
-            for lines, _span, methods in bodies:
-                for proto, parameters, at in methods.get(method, ()):
-                    state = lines.state(at)
-                    if state == "branch":
+            for _rank, lines, _span, methods in bodies:
+                for proto, parameters, start, at in methods.get(method, ()):
+                    if lines.blocks(at) is None:
+                        continue  # its `(` never compiles
+                    # A word before the `(` may not compile, as `proto` under
+                    # #if 0 (Codex review of #125, N2).
+                    if not lines.plain(start, at):
                         return None
-                    if state != "dead":
-                        found.append((proto, parameters))
+                    found.append((proto, parameters))
             if not found:
                 continue
             signatures = {parameters for _proto, parameters in found}
@@ -290,22 +333,29 @@ class ClassBodies:
             return cls, signatures.pop()
         return None
 
-    def member(self, cls, name):
-        """The type of the member `name` at the top level of the bodies of cls.
+    def _declarations(self, cls, name):
+        """[(module rank, lines, None for a body that cannot be read, or
+        [(type, its blocks), ...] of the declarations of `name` at its top
+        level on lines that compile), ...], one per body of cls.
 
-        None when none declares it; "" when it is not one plain type, or a
-        body cannot be read.
+        Read once per class and name: every call of every file asks again.
         """
+        key = (cls, name)
+        if key in self._members:
+            return self._members[key]
         declaration_re = _declaration_re(name)
-        found = set()
-        for lines, span, methods in self.bodies.get(cls, ()):
+        read = []
+        for rank, lines, span, methods in self.bodies.get(cls, ()):
             if methods is None:
-                return ""
+                read.append((rank, lines, None))
+                continue
             open_brace, close_brace = span
             text = lines.text
+            declarations = []
             for match in declaration_re.finditer(text, open_brace, close_brace):
                 at = match.start("type")
-                if lines.state(at) == "dead":
+                blocks = lines.blocks(at)
+                if blocks is None:
                     continue
                 inner = text[open_brace:at]
                 if inner.count("{") - inner.count("}") != 1 or inner.count(
@@ -314,7 +364,37 @@ class ClassBodies:
                     continue  # inside a method, or a parameter
                 declared = _declared_type(match)
                 if declared is not None:
-                    found.add(declared)
+                    declarations.append((declared, blocks))
+            read.append((rank, lines, declarations))
+        self._members[key] = read
+        return read
+
+    def member(self, cls, name, rank, text, blocks):
+        """The type of the member `name` at the top level of the bodies of
+        cls, as a call in `text`, a file of module `rank`, sees it from a
+        line under `blocks` (line_branches()).
+
+        A body in a later module than the call's is not seen (Codex review
+        of #125, N3). None when no body seen declares it; "" when it is not
+        one plain type or may not be: a body cannot be read, a body of
+        another file or the call is of no known module, or a declaration is
+        under a block that is not around the call (in another file, under
+        any block: Codex review of #125, N1).
+        """
+        found = set()
+        for body_rank, lines, declarations in self._declarations(cls, name):
+            here = lines.text is text
+            ranked = _UNKNOWN_MODULE not in (body_rank, rank)
+            if not here and ranked and body_rank > rank:
+                continue
+            if declarations is None:
+                return ""
+            for declared, around in declarations:
+                if here:
+                    sure = around == blocks[:len(around)]
+                else:
+                    sure = ranked and not around
+                found.add(declared if sure else "")
         if not found:
             return None
         return found.pop() if len(found) == 1 and "" not in found else ""
@@ -329,10 +409,10 @@ def _vanilla_index(vanilla_key):
     """
     hierarchy = Hierarchy()
     bodies = ClassBodies()
-    for _rel_path, text in vanilla_sources(vanilla_key):
+    for rel_path, text in vanilla_sources(vanilla_key):
         text = _STRING_RE.sub(lambda m: " " * len(m.group(0)), text)
         hierarchy.add_source(text)
-        bodies.add_source(text)
+        bodies.add_source(text, module_rank(rel_path))
     return hierarchy, bodies
 
 
@@ -348,13 +428,17 @@ def _body_classes(stripped):
     return classes
 
 
-def _inherited_member(hierarchy, bodies, classes, open_brace, name):
+def _inherited_member(
+    hierarchy, bodies, classes, rank, text, open_brace, name, blocks
+):
     """The type of the member `name` that the class whose body opens at
     open_brace (classes: _body_classes()) declares in another body, or
-    else the nearest class up its chain that declares it; or None."""
+    else the nearest class up its chain that declares it, as a call under
+    `blocks` in text, a file of module rank, sees it (ClassBodies.member());
+    or None."""
     cls = classes.get(open_brace)
     for owner in (hierarchy.chain(cls) if cls else None) or ():
-        declared = bodies.member(owner, name)
+        declared = bodies.member(owner, name, rank, text, blocks)
         if declared is not None:
             return declared or None
     return None
@@ -424,9 +508,9 @@ def check_es_proto_argument_downcast(addon_sources, external_sources, vanilla_ro
         hierarchy.definitions.merge(vanilla_hierarchy.definitions)
         hierarchy.not_classes |= vanilla_hierarchy.not_classes
         bodies.extend(vanilla_bodies)
-    for _rel_path, stripped in list(addon_sources) + list(external_sources or []):
+    for rel_path, stripped in list(addon_sources) + list(external_sources or []):
         hierarchy.add_source(stripped)
-        bodies.add_source(stripped)
+        bodies.add_source(stripped, module_rank(rel_path))
 
     errors = []
     warnings = []
@@ -439,15 +523,19 @@ def check_es_proto_argument_downcast(addon_sources, external_sources, vanilla_ro
             if scopes is None:
                 scopes = FileScopes(stripped)
                 closes, marks = _brackets(stripped)
+                around = line_branches(stripped)
                 inherited = functools.partial(
-                    _inherited_member, hierarchy, bodies, _body_classes(stripped)
+                    _inherited_member, hierarchy, bodies, _body_classes(stripped),
+                    module_rank(rel_path), stripped,
                 )
             line = scopes.line(match.start())
             if line in scopes.dead or scopes.method(line) is None:
                 continue
             recv_type = (
                 recv if hierarchy.is_plain_class(recv)
-                else _argument_type(stripped, scopes, recv, match.start(), inherited)
+                else _argument_type(
+                    stripped, scopes, recv, match.start(), inherited, around
+                )
             )
             chain = hierarchy.chain(recv_type) if recv_type else None
             found = bodies.proto(chain, method) if chain else None
@@ -467,7 +555,7 @@ def check_es_proto_argument_downcast(addon_sources, external_sources, vanilla_ro
                 if param_chain is None:
                     continue
                 arg_type = _argument_type(
-                    stripped, scopes, arg, match.start(), inherited
+                    stripped, scopes, arg, match.start(), inherited, around
                 )
                 if arg_type == IMPLICIT_ROOT or arg_type not in param_chain[1:]:
                     continue

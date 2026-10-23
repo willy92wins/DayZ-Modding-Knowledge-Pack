@@ -4260,7 +4260,9 @@ PROTO = FIXTURES / "proto_argument_downcast"
 PROTO_RULE = "ES-PROTO-ARGUMENT-DOWNCAST"
 
 
-def _proto_findings(source, external=(), vanilla=PROTO / "vanilla"):
+def _proto_findings(
+    source, external=(), vanilla=PROTO / "vanilla", path="scripts/4_World/x.c"
+):
     from detectors.es_proto_argument_downcast import (
         check_es_proto_argument_downcast,
     )
@@ -4270,15 +4272,17 @@ def _proto_findings(source, external=(), vanilla=PROTO / "vanilla"):
         return strip_enforce_comments_and_strings(text, "x.c")[0]
 
     return check_es_proto_argument_downcast(
-        [("scripts/4_World/x.c", strip(source))],
-        [(path, strip(text)) for path, text in external],
+        [(path, strip(source))],
+        [(rel_path, strip(text)) for rel_path, text in external],
         vanilla,
     )
 
 
-def _proto_lines(source, external=(), vanilla=PROTO / "vanilla"):
+def _proto_lines(
+    source, external=(), vanilla=PROTO / "vanilla", path="scripts/4_World/x.c"
+):
     """The lines of the FAILs and WARNs, in order."""
-    errors, warnings = _proto_findings(source, external, vanilla)
+    errors, warnings = _proto_findings(source, external, vanilla, path)
     return sorted(finding["line"] for finding in errors + warnings)
 
 
@@ -4611,6 +4615,176 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         )
 
         self.assertEqual([], _proto_lines(source, external))
+
+    def test_a_declaration_under_another_block_leaves_the_name_unknown(self):
+        # Codex review of #125, N1: under #ifndef FX_MAYBE the call reaches
+        # the Object of FX_B, so the IEntity under #ifdef FX_MAYBE is no type
+        # of it, as a member of a class up the chain, of the enclosing body
+        # or as a local; nor the Object where FX_Hold takes an EntityAI.
+        base = "class FX_B\n{\n    Object hit;\n}\n"
+        maybe = "#ifdef FX_MAYBE\n    IEntity hit;\n#endif\n"
+        call = "#ifndef FX_MAYBE\n        FX_Physics.FX_Tag(hit);\n#endif\n"
+        cases = [
+            base + "class FX_C : FX_B\n{\n" + maybe + "}\n"
+            "class FX_D : FX_C\n{\n    void F()\n    {\n" + call + "    }\n}\n",
+            base + "class FX_D : FX_B\n{\n" + maybe
+            + "    void F()\n    {\n" + call + "    }\n}\n",
+            base + "class FX_D : FX_B\n{\n    void F()\n    {\n"
+            + maybe.replace("    IEntity", "        IEntity") + call + "    }\n}\n",
+            "class FX_B\n{\n    EntityAI hit;\n}\n"
+            "class FX_C : FX_B\n{\n#ifdef FX_MAYBE\n    Object hit;\n#endif\n}\n"
+            "class FX_D : FX_C\n{\n    void F()\n    {\n#ifndef FX_MAYBE\n"
+            "        FX_Physics.FX_Hold(hit);\n#endif\n    }\n}\n",
+        ]
+        for source in cases:
+            self.assertEqual([], _proto_lines(source), source)
+        # Each without the block around its declaration.
+        for source in cases:
+            self.assertEqual(
+                1,
+                len(_proto_lines(source.replace("#ifdef FX_MAYBE\n", "", 1)
+                                 .replace("#endif\n", "", 1))),
+                source,
+            )
+
+    def test_a_declaration_under_the_blocks_around_the_call_is_read(self):
+        # A file under one #ifdef, and calls under one more: a declaration
+        # under blocks that are all around the call is read, also when the
+        # call is under more of them. m_In, under the inner block, is
+        # unknown for H, outside it.
+        source = (
+            "#ifdef FX_MOD\nclass FX_B\n{\n    IEntity m_Up;\n}\n"
+            "class FX_D : FX_B\n{\n    IEntity m_Own;\n"
+            "    void F(IEntity param)\n    {\n        IEntity local;\n"
+            "        FX_Physics.FX_Tag(m_Up);\n        FX_Physics.FX_Tag(m_Own);\n"
+            "        FX_Physics.FX_Tag(param);\n        FX_Physics.FX_Tag(local);\n"
+            "    }\n}\n"
+            "class FX_E : FX_B\n{\n    IEntity m_Out;\n    void H()\n    {\n"
+            "        FX_Physics.FX_Tag(m_In);\n    }\n"
+            "#ifdef FX_MORE\n    IEntity m_In;\n    void G()\n    {\n"
+            "        FX_Physics.FX_Tag(m_In);\n        FX_Physics.FX_Tag(m_Out);\n"
+            "        FX_Physics.FX_Tag(m_Up);\n    }\n#endif\n}\n#endif\n"
+        )
+
+        self.assertEqual([12, 13, 14, 15, 29, 30, 31], _proto_lines(source))
+        # Block numbers are those of one file: a member under a block of
+        # another file is unknown, even under a block of the same macro.
+        external = [(
+            "scripts/3_Game/p.c",
+            "class FX_B\n{\n#ifdef FX_MOD\n    IEntity m_Up;\n#endif\n}\n",
+        )]
+        source = (
+            "class FX_D : FX_B\n{\n    void F()\n    {\n#ifdef FX_MOD\n"
+            "        FX_Physics.FX_Tag(m_Up);\n#endif\n    }\n}\n"
+        )
+        self.assertEqual([], _proto_lines(source, external))
+
+    def test_a_member_of_a_later_module_is_not_seen(self):
+        # Codex review of #125, N3: World is compiled before the Mission
+        # body that adds the member, so g_Hit is the global Object.
+        base = ("scripts/3_Game/base.c", "Object g_Hit;\n\nclass FX_C\n{\n}\n")
+        later = "modded class FX_C\n{\n    IEntity g_Hit;\n}\n"
+        source = (
+            "modded class FX_C\n{\n    void F()\n    {\n"
+            "        FX_Physics.FX_Tag(g_Hit);\n    }\n}\n"
+        )
+
+        self.assertEqual(
+            [], _proto_lines(source, [base, ("scripts/5_Mission/later.c", later)])
+        )
+        # One of the same module or of an earlier one is seen.
+        for path in ("scripts/4_World/later.c", "scripts/3_Game/later.c"):
+            self.assertEqual([5], _proto_lines(source, [base, (path, later)]), path)
+        # A body or a call in a file under no N_Module folder may be seen or
+        # not, so the name is unknown, even with a class up the chain that
+        # declares it.
+        up = (
+            "scripts/3_Game/up.c",
+            "class FX_Up\n{\n    IEntity g_Hit;\n}\nclass FX_C : FX_Up\n{\n}\n",
+        )
+        self.assertEqual([5], _proto_lines(source, [up]))
+        self.assertEqual([], _proto_lines(source, [up], path="scripts/x.c"))
+        self.assertEqual(
+            [],
+            _proto_lines(source, [up, ("later.c", later.replace("IEntity", "Object"))]),
+        )
+        self.assertEqual([], _proto_lines(source, [base, ("later.c", later)]))
+
+    def test_a_member_of_the_vanilla_tree_is_read_with_its_module(self):
+        # The vanilla files are under 1_core to 5_mission as the addon's are
+        # under 1_Core to 5_Mission: a member of 3_game is seen from World
+        # and not from GameLib.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            vanilla = pathlib.Path(temp_dir)
+            for path in (PROTO / "vanilla").rglob("*.c"):
+                target = vanilla / path.relative_to(PROTO / "vanilla")
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+            (vanilla / "3_game" / "fx_holder.c").write_text(
+                "class FX_VHolder\n{\n    IEntity m_V;\n}\n", encoding="utf-8"
+            )
+            source = (
+                "class FX_VUser : FX_VHolder\n{\n    void F()\n    {\n"
+                "        FX_Physics.FX_Tag(m_V);\n    }\n}\n"
+            )
+
+            self.assertEqual([5], _proto_lines(source, vanilla=vanilla))
+            self.assertEqual(
+                [], _proto_lines(source, vanilla=vanilla, path="scripts/2_GameLib/x.c")
+            )
+
+    def test_a_proto_word_that_never_compiles_makes_no_proto(self):
+        # Codex review of #125, N2: with `proto native` under #if 0 Take is
+        # a script method. A word under #ifdef may compile, so the method is
+        # unknown.
+        source = (
+            "class FX_API\n{\n#if 0\n    proto native\n#endif\n"
+            "    void Take(Object value)\n    {\n    }\n}\n"
+            "void F(FX_API a, IEntity e)\n{\n    a.Take(e);\n}\n"
+        )
+        maybe = (
+            "class FX_API\n{\n    proto native\n#ifdef FX_X\n    static\n#endif\n"
+            "    void Take(Object value);\n}\n"
+            "void F(FX_API a, IEntity e)\n{\n    a.Take(e);\n}\n"
+        )
+
+        self.assertEqual([], _proto_lines(source))
+        self.assertEqual([], _proto_lines(maybe))
+        live = maybe.replace("#ifdef FX_X\n", "").replace("#endif\n", "")
+        self.assertEqual([9], _proto_lines(live))
+
+    def test_a_member_of_a_template_class_is_read(self):
+        # Codex review of #125, N4: the member read in the class's own body
+        # was dropped for the lookup up a chain a template class has not.
+        source = (
+            "class FX_G<Class T>\n{\n    IEntity hit;\n    void F()\n    {\n"
+            "        FX_Physics.FX_Tag(hit);\n    }\n}\n"
+        )
+
+        self.assertEqual([6], _proto_lines(source))
+
+    def test_the_hook_is_asked_only_for_a_member_the_body_does_not_declare(self):
+        from detectors.es_cast_unrelated_types import FileScopes, _argument_type
+
+        stripped = (
+            "class FX_H\n{\n    Object hit;\n    void F()\n    {\n"
+            "        G(hit, miss);\n    }\n}\n"
+        )
+        scopes = FileScopes(stripped)
+        asked = []
+
+        def inherited(open_brace, name, blocks):
+            asked.append((name, blocks))
+            return "IEntity"
+
+        at = stripped.index("G(")
+        self.assertEqual(
+            "Object", _argument_type(stripped, scopes, "hit", at, inherited)
+        )
+        self.assertEqual(
+            "IEntity", _argument_type(stripped, scopes, "miss", at, inherited)
+        )
+        self.assertEqual([("miss", ())], asked)
 
 
 if __name__ == "__main__":
