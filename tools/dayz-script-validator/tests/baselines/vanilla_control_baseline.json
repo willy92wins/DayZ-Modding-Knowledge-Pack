@@ -77,10 +77,10 @@
     }
   ],
   "measured": {
-    "date": "2026-10-17",
-    "elapsed_seconds": 141.756,
-    "roots": "P:\\scripts on the owner's PC (DayZ 1.30.164078 stable); the --update run and the check after it gave the same findings and the same digest",
-    "runs": 2
+    "date": "2026-10-24",
+    "elapsed_seconds": 178.491,
+    "roots": "P:\\scripts on the owner's PC (DayZ 1.30.164200 stable); four runs gave the same findings and the same digest: the control and a full dump of the findings before the update, the --update run and the check after it",
+    "runs": 4
   },
   "schema": 1,
   "totals": {
@@ -88,12 +88,12 @@
     "warnings": 424
   },
   "tree": {
-    "dayz_build": "1.30.0.164078",
-    "dayz_build_note": "Build of the measured tree: DayZ 1.30.164078 stable (DayZDiag_x64.exe product version 1.30.164078.38). sources/source-map.json declares the build the pack is anchored on, which can be older. Identity of the control tree is the digest; set this deliberately when re-baselining after a patch.",
-    "digest": "43ef5a139338fc3d1750b90e515f129b4b367f8f695bd27544747a4715e6612a",
+    "dayz_build": "1.30.0.164200",
+    "dayz_build_note": "Build of the measured tree: DayZ 1.30.164200 stable (DayZDiag_x64.exe file version 1.30.164.200, product version 1.30.164200.56), tree digest d24552ffc661b3ee2e6791013bf8cd8e3ef5dbbcde08f0e7a6a9a84f8efd0b23. sources/source-map.json declares the build the pack is anchored on, which can be older. Identity of the control tree is the digest; set this deliberately when re-baselining after a patch.",
+    "digest": "d24552ffc661b3ee2e6791013bf8cd8e3ef5dbbcde08f0e7a6a9a84f8efd0b23",
     "digest_scope": "sha256 over (posix relpath, sha256 of contents) of every file the validator discovers under the vanilla root, in walk order. Not comparable to the vanilla_index digest, which covers .c only.",
-    "file_count": 3043,
-    "total_bytes": 13983225
+    "file_count": 3057,
+    "total_bytes": 13998331
   },
   "warning_counts": {
     "ES-CTX-READ-UNCHECKED": 82,

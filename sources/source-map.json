@@ -1341,10 +1341,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: an Unreleased Changed entry for the vanilla control re-baselined on DayZ 1.30.164200 stable (DayZDiag_x64.exe 1.30.164.200). Before the update the control on P:\\scripts failed only with digest_mismatch (d24552ff against 43ef5a13); full dumps of the 1.30.164078 and 1.30.164200 trees with the same validator gave 15 errors and 424 warnings each, with the same count for each rule in each file, and the 22 findings in the changed files, mapped through a difflib line alignment, land exactly on the ones reported now: eleven warnings only moved (transport.c +3, constructionbase.c +41 and +49, pluginmanager.c +1, miscgameplayfunctions.c -62), and the 14 added files report nothing. The control on the 1.30.164078 tree and the baseline of main passes with this validator, so nothing comes from #121 to #123. --update and the check after it: 3057 files, digest d24552ff, PASS, 181 and 244 s by the wall clock. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d8cd56185fc1d9a3d3fe4daa46314e20ab5c6094cc93ae52eba5176d8a693a6f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-164200@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6df11310d19838023e5eb622b3c113759ff655d6e35c2a88f04f1939ee13bc72",
+      "output_hash": "d8cd56185fc1d9a3d3fe4daa46314e20ab5c6094cc93ae52eba5176d8a693a6f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -22624,10 +22634,20 @@
           "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
           "source_revision": "kp-update-818e-w3@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: vanilla control re-baselined on DayZ 1.30.164200 stable (DayZDiag_x64.exe file version 1.30.164.200, product version 1.30.164200.56, read on the owner's PC). P:\\scripts was re-extracted on 2026-10-23 from that build's dta\\scripts.pbo (sha256 ff0ad7ee5297c75d..., hashed again here) and checked file by file against it by the session that extracted it. Before the update the control on P:\\scripts failed only with digest_mismatch: digest d24552ffc661b3ee2e6791013bf8cd8e3ef5dbbcde08f0e7a6a9a84f8efd0b23 against 43ef5a13, with no extra or missing error, no new warning rule and no warning count above or below the baseline. Full dumps of both trees with the same validator gave 15 errors and 424 warnings each, with the same count for each rule in each file. The patch changes 68 of the files the validator reads and adds 14 (13 under 1_core/workbenchapi/, and 4_world/classes/basebuilding/typeconstructiondata/constructionpartrebuildinvertedsupport.c), none removed; the new files report nothing. Eleven warnings differ only in their line, because lines were added or removed above them: six ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN in 3_game/vehicles/transport.c (+3, HasCrew()), two in 4_world/classes/constructionbase.c (+41 and +49), two in 4_world/plugins/pluginmanager.c (+1) and one ES-GETTYPE-EXACT-MATCH in 4_world/static/miscgameplayfunctions.c (-62). The 22 findings in changed files (1 error, 21 warnings), mapped through a difflib line alignment of the two versions of each file, land exactly on the ones reported on 1.30.164200; without the mapping those 11 differ. Of the 14 files with an error only environment.c changed, at lines 696-697, and its note cites lines 1-3. With this validator the control on the 1.30.164078 tree and the baseline of main passes (digest 43ef5a13), so nothing here comes from the rule changes of #121 to #123. vanilla_control.py --update on P:\\scripts wrote 15 errors and 424 warnings over 3057 files (3043 before), digest d24552ff; tree.dayz_build, tree.dayz_build_note and measured were then set by hand, because --update keeps them; the 15 entries, their notes and the warning counts are unchanged. The check after it: PASS. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4296bc3c51546a7ab0d196f5c0634ec624361cbf0381a5c050b0fa28e85b2081",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
+          "source_revision": "kp-update-vanilla-164200@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "21cd81cbe304d0c21451b7617b8b8f76f68099a78ece58ba09b491547772df6a",
+      "output_hash": "4296bc3c51546a7ab0d196f5c0634ec624361cbf0381a5c050b0fa28e85b2081",
       "output_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
