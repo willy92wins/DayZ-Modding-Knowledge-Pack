@@ -4193,6 +4193,25 @@ class TestProtectedMethodCrossClass(unittest.TestCase):
         self.assertEqual([], outside)
         self.assertEqual([5 + 10], [w["line"] for w in _protected_method_warnings(_OWNER + call)])
 
+    def test_a_receiver_declared_after_a_case_label_is_read(self):
+        # Codex review of #125, G3: the local on the line of its case label,
+        # of a class whose FX_Hide is public, is the receiver, not the member
+        # of that name.
+        source = _OWNER + (
+            "class FX_Open\n{\n    void FX_Hide()\n    {\n    }\n}\n"
+            "class FX_U\n{\n    FX_Cmd c;\n    void F(int n)\n    {\n"
+            "        switch (n)\n        {\n"
+            "            case 0: FX_Open c = new FX_Open();\n"
+            "                c.FX_Hide();\n                break;\n"
+            "        }\n    }\n}\n"
+        )
+        line = source.count("\n", 0, source.index("c.FX_Hide")) + 1
+
+        self.assertEqual([], _protected_method_warnings(source))
+        # With the local named otherwise, the member is the receiver.
+        renamed = source.replace("FX_Open c =", "FX_Open other =")
+        self.assertEqual([line], [w["line"] for w in _protected_method_warnings(renamed)])
+
     def test_a_descendant_through_an_external_root_is_related(self):
         source = _OWNER + (
             "class FX_U : FX_Ext\n{\n    void F(FX_Cmd c)\n    {\n"
@@ -4870,13 +4889,15 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         # label a declaration was none for the lookup, which took the member
         # of that name: an Object local beside an IEntity member was FAIL,
         # and an IEntity local beside an Object member passed. On a line of
-        # its own the local was read.
+        # its own the local was read. A case of an enum's value and a second
+        # label on the line count too (Codex review of #125, G3).
         for local, member, fails in (
             ("Object", "IEntity", False), ("IEntity", "Object", True)
         ):
-            for label in ("case 0:", "default:"):
+            for label in ("case 0:", "default:", "case FX_Kind.FIRST:", "case 0: case 1:"):
                 for apart in (" ", "\n            "):
                     source = (
+                        "enum FX_Kind\n{\n    FIRST\n}\n"
                         "class FX_C\n{\n    %s hit;\n" % member
                         + "    void F(int n, vector a, int c)\n    {\n"
                         "        switch (n)\n        {\n"
@@ -4901,6 +4922,20 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         )
 
         self.assertEqual([6], _proto_lines(source))
+
+    def test_a_long_line_before_a_colon_is_read_once(self):
+        # Codex review of #125, G4: searched for, the label before a `:` took a
+        # time that grew with the square of the text before it on the line.
+        source = (
+            "class FX_G\n{\n    IEntity hit;\n    void F()\n    {\n"
+            "        " + "case x " * 20000 + "; not_a_label: Object hit;\n"
+            "        FX_Physics.FX_Tag(hit);\n    }\n}\n"
+        )
+
+        start = time.perf_counter()
+        lines = _proto_lines(source)
+        self.assertLess(time.perf_counter() - start, 2)
+        self.assertEqual([7], lines)
 
     def test_a_closed_declaration_leaves_the_open_and_the_compiled_ones(self):
         # Codex review of #125, F3: an IEntity local open at the call beside

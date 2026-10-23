@@ -152,8 +152,19 @@ class Hierarchy:
 
 # A declaration may follow a `case` or `default` label on its line, `case 0:
 # Object hit;` (Codex review of #125, F1): a `:` before the type counts only
-# there. Checked in the pattern, the label made it a third slower.
-_LABEL_RE = re.compile(r"\b(?:case\b[^;{}:\n]*|default[ \t]*)\Z")
+# there, where the text after the last `;`, `{`, `}` or `:` before it on its
+# line is a label, so a second label (`case 0: case 1:`) counts too. Checked
+# in the pattern, the label made it a third slower; searched for, a long line
+# took a time that grew with its square (Codex review of #125, G4).
+_LABEL_RE = re.compile(r"[ \t]*(?:case\b[^;{}:\n]*|default[ \t]*)")
+
+
+def _after_a_label(text, colon):
+    """True when the `:` at `colon` ends a `case` or `default` label."""
+    start = colon
+    while start and text[start - 1] not in ";{}:\n":
+        start -= 1
+    return _LABEL_RE.fullmatch(text, start, colon) is not None
 
 
 def _declaration_re(name):
@@ -171,9 +182,7 @@ def _declared_type(match):
     if match.group("type") in _NOT_A_TYPE:
         return None
     text, at = match.string, match.start()
-    if text[at] == ":" and not _LABEL_RE.search(
-        text, text.rfind("\n", 0, at) + 1, at
-    ):
+    if text[at] == ":" and not _after_a_label(text, at):
         return None
     if match.group("targs") or match.group("arr") or match.group("next") == "[":
         return ""
