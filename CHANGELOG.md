@@ -237,6 +237,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164200 stable
+  (`DayZDiag_x64.exe` 1.30.164.200). On that tree it failed only on the tree's digest: the
+  validator reported the same 15 errors and 424 warnings as on 1.30.164078, with the same count
+  for each rule in each file. The patch changes 68 of the files the validator reads and adds 14
+  (13 under `1_core/workbenchapi/`, and `constructionpartrebuildinvertedsupport.c`); it removes
+  none, and the new files report nothing. Eleven warnings only moved, because lines were added or
+  removed above them: six `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN` in `3_game/vehicles/transport.c`
+  (+3, `HasCrew()`), two in `4_world/classes/constructionbase.c` (+41 and +49), two in
+  `4_world/plugins/pluginmanager.c` (+1) and one `ES-GETTYPE-EXACT-MATCH` in
+  `4_world/static/miscgameplayfunctions.c` (-62). The 22 findings in changed files (1 error, 21
+  warnings), mapped through a line alignment of the two versions of each file, land exactly on
+  the ones reported now. Of the 14 files with a baseline error only `environment.c` changed, at
+  lines 696-697; its note cites lines 1-3, which did not. The baseline names that build and the
+  digest `d24552ff` over 3057 files (3043 before); its 15 entries, their notes and its warning
+  counts are unchanged. With the current validator the 1.30.164078 tree still passes against the
+  old baseline, so none of this comes from the rule changes since 2026-10-17 (#121 to #123).
+  Alone, the `--update` run and the check after it took 181 and 244 seconds by the wall clock on
+  the owner's PC on 2026-10-24.
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164078 stable. Its
   baseline came from 1.29.0.163451, and on 1.30 the control failed on the tree's digest and on 13
   errors in four files that the game compiles, all of them at code that 1.29 does not have. Ten are
