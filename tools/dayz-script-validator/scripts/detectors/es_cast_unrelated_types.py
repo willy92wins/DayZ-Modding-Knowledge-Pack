@@ -150,9 +150,15 @@ class Hierarchy:
         return chain
 
 
+# A declaration may follow a `case` or `default` label on its line, `case 0:
+# Object hit;` (Codex review of #125, F1): a `:` before the type counts only
+# there. Checked in the pattern, the label made it a third slower.
+_LABEL_RE = re.compile(r"\b(?:case\b[^;{}:\n]*|default[ \t]*)\Z")
+
+
 def _declaration_re(name):
     return re.compile(
-        r"(?:^|[;{}(,])[ \t]*" + _MODIFIERS
+        r"(?:^|[;{}(,:])[ \t]*" + _MODIFIERS
         + r"(?P<type>[A-Za-z_]\w*)(?P<targs>[ \t]*<[^;{}()\n]*?>)?"
         r"(?P<arr>[ \t]*\[[^\]\n]*\])?\s+" + re.escape(name)
         + r"\s*(?P<next>;|=(?!=)|\[|,|\)|:(?!:))",
@@ -163,6 +169,11 @@ def _declaration_re(name):
 def _declared_type(match):
     """The plain type of a declaration match, or "" when not plain."""
     if match.group("type") in _NOT_A_TYPE:
+        return None
+    text, at = match.string, match.start()
+    if text[at] == ":" and not _LABEL_RE.search(
+        text, text.rfind("\n", 0, at) + 1, at
+    ):
         return None
     if match.group("targs") or match.group("arr") or match.group("next") == "[":
         return ""
@@ -280,8 +291,8 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
     line_branches() of stripped: a declaration under an #if, #ifdef or
     #ifndef block that is not also around cast_at leaves the type unknown,
     and so does one in the method before cast_at that is not open there (a
-    for or foreach variable, a local of a block closed before cast_at),
-    where a member of that name would be taken.
+    for or foreach variable after its header, a local of a block closed
+    before cast_at), where a member of that name would be taken.
     inherited(open, arg, blocks), when given, is asked for a member that the
     enclosing class body (open: the offset of its `{`) does not declare,
     with the blocks around cast_at, and gives its type or None.

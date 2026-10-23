@@ -3667,6 +3667,19 @@ class TestCastUnrelatedTypes(unittest.TestCase):
 
         self.assertEqual([13], [e["line"] for e in _cast_errors(source)])
 
+    def test_a_local_after_a_case_label_is_resolved(self):
+        # Codex review of #125, F1: on the line of its label the local was
+        # passed over for the member of that name.
+        source = (
+            "class C\n{\n    Hud m_X;\n\n    void F(int n)\n    {\n"
+            "        switch (n)\n        {\n"
+            "            case 0: Mission m_X = null;\n"
+            "                IngameHud.Cast(m_X);\n                break;\n"
+            "        }\n    }\n}\n"
+        )
+
+        self.assertEqual([10], [e["line"] for e in _cast_errors(source)])
+
     def test_unresolvable_chains_and_declarations_are_skipped(self):
         cases = {
             # a parent nobody declares
@@ -4851,6 +4864,61 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         )
 
         self.assertEqual([9], _proto_lines(source))
+
+    def test_a_declaration_after_a_case_label_is_read(self):
+        # Codex review of #125, F1: on the line of its `case` or `default`
+        # label a declaration was none for the lookup, which took the member
+        # of that name: an Object local beside an IEntity member was FAIL,
+        # and an IEntity local beside an Object member passed. On a line of
+        # its own the local was read.
+        for local, member, fails in (
+            ("Object", "IEntity", False), ("IEntity", "Object", True)
+        ):
+            for label in ("case 0:", "default:"):
+                for apart in (" ", "\n            "):
+                    source = (
+                        "class FX_C\n{\n    %s hit;\n" % member
+                        + "    void F(int n, vector a, int c)\n    {\n"
+                        "        switch (n)\n        {\n"
+                        "            %s%s%s hit;\n" % (label, apart, local)
+                        + "                FX_Physics.FX_Raycast(a, a, a, a, c, null, "
+                        "hit, null, true, false, 0);\n"
+                        "                break;\n        }\n    }\n}\n"
+                    )
+                    line = source.count("\n", 0, source.index("FX_Physics")) + 1
+                    self.assertEqual(
+                        [line] if fails else [], _proto_lines(source), source
+                    )
+
+    def test_a_for_variable_is_read_in_its_own_header(self):
+        # Codex review of #125, F2: the header of a for is still open at a call
+        # in its condition, so the variable is read there, not the member.
+        source = (
+            "class FX_F\n{\n    Object hit;\n    void F(IEntity e, vector a, int c)\n"
+            "    {\n        for (IEntity hit = e; FX_Physics.FX_Raycast(a, a, a, a, "
+            "c, null, hit, null, true, false, 0); hit = null)\n        {\n        }\n"
+            "    }\n}\n"
+        )
+
+        self.assertEqual([6], _proto_lines(source))
+
+    def test_a_closed_declaration_leaves_the_open_and_the_compiled_ones(self):
+        # Codex review of #125, F3: an IEntity local open at the call beside
+        # an Object one of a block closed in the other branch of an #ifdef,
+        # and an IEntity member beside an Object foreach variable under #if 0,
+        # are FAIL: neither the closed declaration nor the one that never
+        # compiles leaves the name unknown.
+        cases = [
+            ("class FX_K\n{\n    Object hit;\n    void F(bool b)\n    {\n"
+             "#ifdef FX_FIRST\n        if (b)\n        {\n            Object hit;\n"
+             "        }\n#else\n        IEntity hit;\n"
+             "        FX_Physics.FX_Tag(hit);\n#endif\n    }\n}\n", [13]),
+            ("class FX_K\n{\n    IEntity hit;\n    void F(array<Object> list)\n"
+             "    {\n#if 0\n        foreach (Object hit : list)\n        {\n"
+             "        }\n#endif\n        FX_Physics.FX_Tag(hit);\n    }\n}\n", [11]),
+        ]
+        for source, lines in cases:
+            self.assertEqual(lines, _proto_lines(source), source)
 
 
 if __name__ == "__main__":

@@ -205,14 +205,16 @@ were not measured again.
   `#ifndef` leaves a name unknown unless it is in the call's file under
   blocks that are all around the call, and a method whose declaration has a
   line up to its `(` under such a block is unknown. A name that the method
-  declares before the call only as a `for` or `foreach` variable or in a
-  block closed before it is unknown too, also where a member has that name.
-  A call whose arguments hold `<`, `>` or a directive is skipped, and so is
-  one with more arguments than parameters. Protos are read from the addon,
-  the `--external-scripts` roots and the vanilla tree, so without a vanilla
-  tree no vanilla proto is judged, with no SKIP line. Only a proto's refusal
-  is measured: an argument of a script method and a down-cast in an
-  assignment are not judged.
+  declares before the call only where that declaration is no longer open at
+  the call (a `for` or `foreach` variable, for a call in the loop's body or
+  after it, or a local of a block closed before the call) is unknown too,
+  also where a member has that name; a call in that `for`'s own header, as
+  in its condition, takes the variable's type. A call whose arguments hold
+  `<`, `>` or a directive is skipped, and so is one with more arguments than
+  parameters. Protos are read from the addon, the `--external-scripts` roots
+  and the vanilla tree, so without a vanilla tree no vanilla proto is
+  judged, with no SKIP line. Only a proto's refusal is measured: an argument
+  of a script method and a down-cast in an assignment are not judged.
 
 ## Compile errors read from one file
 
