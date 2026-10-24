@@ -7097,7 +7097,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "2646025cc8ea2693abfcceaec160aae3cc0ef014cf695bba4ef0352922e4d081",
+          "source_hash": "529675bee4e740f93878718403025eb323298b00b0dd3cb6ee372cc94fa4b5bb",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-basebuilding/SKILL.md",
           "source_revision": "kp-update-inventory-130@2026-10-24",
@@ -7105,7 +7105,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2646025cc8ea2693abfcceaec160aae3cc0ef014cf695bba4ef0352922e4d081",
+      "output_hash": "529675bee4e740f93878718403025eb323298b00b0dd3cb6ee372cc94fa4b5bb",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -8597,7 +8597,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "ec71091142bbbe4dd89b7bae82b7f6239c84085002566dc117f7148de2f25c88",
+          "source_hash": "2badc7786c4634e3da327bf566aeb23f8f0d0a2a932bcb0ddc43c8ab78718c77",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-inventory-130@2026-10-24",
@@ -8605,7 +8605,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ec71091142bbbe4dd89b7bae82b7f6239c84085002566dc117f7148de2f25c88",
+      "output_hash": "2badc7786c4634e3da327bf566aeb23f8f0d0a2a932bcb0ddc43c8ab78718c77",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -18358,7 +18358,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "de5a735ad6f90465d194cf0cb9a6872df79ad0515c6588550cb785e022db0c95",
+          "source_hash": "0f5fe502d1b098af058cd6f3fe492f3a9eeb587086d3c26d7e31191424d9fe4f",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-inventory-130@2026-10-24",
@@ -18366,7 +18366,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "de5a735ad6f90465d194cf0cb9a6872df79ad0515c6588550cb785e022db0c95",
+      "output_hash": "0f5fe502d1b098af058cd6f3fe492f3a9eeb587086d3c26d7e31191424d9fe4f",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -33850,7 +33850,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "09adbe7998696b44f40e53b768451b066133b0a8a7fc5c29a87f1e8ff21fb730",
+          "source_hash": "224a978a33db08691aac6e96c688d6cd8ba62637e9012bcf8de1db2438031ce7",
           "source_id": "pack-r21-authored",
           "source_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
           "source_revision": "kp-update-inventory-130@2026-10-24",
@@ -33858,7 +33858,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "09adbe7998696b44f40e53b768451b066133b0a8a7fc5c29a87f1e8ff21fb730",
+      "output_hash": "224a978a33db08691aac6e96c688d6cd8ba62637e9012bcf8de1db2438031ce7",
       "output_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "historical"

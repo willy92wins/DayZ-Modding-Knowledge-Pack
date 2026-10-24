@@ -118,13 +118,14 @@ driven by the client's own inventory calls (`PredictiveTakeEntityToHands`, `Pred
 | WoodenPlank out of and into a `Land_House_1M1` slot `RB_LvL1_Plank` | ATTACHMENT ↔ HANDS |
 | WoodenCrate picked up from the ground, then dropped | GROUND → HANDS, HANDS → GROUND |
 
-- A take into hands that already held an item of the same type (a swap) printed two lines in the same
-  frame, one per item: the slot item to the hands and the hand item to the slot.
+- A take into hands that already held an item of the same type (a swap) printed two lines with the same
+  script-log timestamp, one per item: the slot item to the hands and the hand item to the slot.
 - The logger drops a callback before printing when both ends share a hierarchy root or neither end is a
   world object, so these lines bound what was printed, not how many callbacks the engine made.
 - Items the server created in a container (`CreateInInventory`, `CreateAttachmentEx`) printed no line.
-  The logger skips an `oldLoc` without a parent, the expected shape of a creation; `oldLoc` itself was
-  not printed.
+  For an item that is not itself a container, the logger prints nothing when `oldLoc` has no parent, the
+  expected shape of a creation; a container picked up from the ground also has a parentless `oldLoc` and
+  is printed as a pick-up. `oldLoc` itself was not printed.
 - The player of a world-to-world move is not in either location. `g_Game.HasInventoryJuncture(Man player, EntityAI item)`
   (`3_Game/Global/Game.c:758`), called from inside `EEItemLocationChanged`, returned true for the player
   who made the crate-to-crate move (1 move measured). A move made without a juncture (server scripts) and
@@ -138,7 +139,8 @@ the logger printed no move line):
   calling super, so ammo piles take another path.
 - A split creates the new stack at its destination (read in the source, not measured for every path).
   The `ItemBase` split functions (`4_World/Entities/ItemBase.c:1584-1953`) mark the new item with
-  `SetResultOfSplit(true)` (`:2213`), except `SplitItem` (`:1953`): it creates the copy through
+  `SetResultOfSplit(true)` (ten calls, `:1604` to `:1937`; definition `:2213`), except `SplitItem`
+  (`:1953`): it creates the copy through
   `PlayerBase.CreateCopyOfItemInInventoryOrGroundEx` (`4_World/Entities/ManBase/PlayerBase.c:6888-6899`),
   which marks it only when the copy lands on the ground, not when the player's cargo takes it
   (`CreateCopyOfItemInInventory`, `:6856`). `Magazine`'s own `SplitItemToInventoryLocation` and

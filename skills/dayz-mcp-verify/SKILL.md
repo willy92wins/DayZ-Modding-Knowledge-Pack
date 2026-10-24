@@ -1357,8 +1357,10 @@ extra mod, all but the first also with a test-only driver) [EXACT][CLAIM-MCPV-IN
   the ground (`WoodenCrate` into the hands).
 - `action_use(action="ActionAttach", classname="Land_House_1M1")` with a plank in hands returned
   `condition_failed`; on a `PowerGenerator` it attached the spark plug.
-- No verb puts an item from the player into a container's cargo, or moves it between two containers
-  (`hands_attach` puts the held item into an attachment slot of a world entity; not tried in these runs).
+- Of the inventory verbs of that build (`inventory_give` and `inventory_attach` create a new item,
+  `hands_take` takes to the hands, `hands_attach` puts the held item into an attachment slot of a world
+  entity and was not tried in these runs), none puts an item from the player into a container's cargo
+  or moves it between two containers.
   What did, in every case tried: a test-only addon whose `modded class MissionGameplay`
   (`#ifndef SERVER`) maps keys in `OnKeyPress` to the client's own inventory calls on objects found
   with `g_Game.GetObjectsAtPosition`, fired with `key_press` (DIK 63-67 for the moves, 68 for the
