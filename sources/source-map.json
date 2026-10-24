@@ -24,10 +24,20 @@
           "source_path": ".cursorrules",
           "source_revision": "release-v1.4.0@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Ten Python tools become thirteen, as in AGENTS.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "338438fdebf0f5eb1a0d04250b0ce29e3186273a0185c967ccfb2b5778092526",
+          "source_id": "pack-r21-authored",
+          "source_path": ".cursorrules",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cdd200533d8b5f0ba7186abf7ba9313febf3aad98f15309f309475b17762fb8b",
+      "output_hash": "338438fdebf0f5eb1a0d04250b0ce29e3186273a0185c967ccfb2b5778092526",
       "output_path": ".cursorrules",
       "routing_artifact_id": "root/cursorrules",
       "verification_level": "cross_checked"
@@ -89,10 +99,20 @@
           "source_path": ".github/copilot-instructions.md",
           "source_revision": "release-v1.4.0@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Ten Python tools become thirteen, as in AGENTS.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e74bca9b857f84ff5c261d0d17ea8875486183e9e2ac3c17bddd48ef45125e07",
+          "source_id": "pack-r21-authored",
+          "source_path": ".github/copilot-instructions.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfeabb9146697c71e19e2f957c854df8eb2f7f339de84ceaf52617a5d3ee3c5b",
+      "output_hash": "e74bca9b857f84ff5c261d0d17ea8875486183e9e2ac3c17bddd48ef45125e07",
       "output_path": ".github/copilot-instructions.md",
       "routing_artifact_id": "root/copilot-instructions",
       "verification_level": "cross_checked"
@@ -229,10 +249,20 @@
           "source_path": "AGENTS.md",
           "source_revision": "kp-update-docs@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Ten Python tools become thirteen, in 'What this repository is' and in the layout table (ls tools/ on this branch); two by-symptom rows (a rebuilt PBO that should differ only where it was changed; a regenerated navmesh that 'changed everywhere') and three by-task rows (dayz-pbo-diff, dayz-navmesh-compare, the experimental dayz-terrain-builder-runner). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "25d85f5c5cafcbf6fd63346b82f9031e36a5a1be3ac46ac01b1f79af5e156aec",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e5a64fd45fb2f54e0d22d31cd3a6624f7b4af72059d0b2bfb8d853d82c688e79",
+      "output_hash": "25d85f5c5cafcbf6fd63346b82f9031e36a5a1be3ac46ac01b1f79af5e156aec",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -1381,10 +1411,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-ddce-a140@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Four Added entries: dayz-pbo-diff, digest_pbo of dayz-vehicle-proxy-contract, dayz-navmesh-compare and the experimental dayz-terrain-builder-runner. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3068cf68b7629af2929c3b190351e71eb5776c7fed1b340ad82350f90c4dde0c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "630413e672dbaf6cc62cd49c9dce577cf1e1b42d42259e2824fb31701acdf5c0",
+      "output_hash": "3068cf68b7629af2929c3b190351e71eb5776c7fed1b340ad82350f90c4dde0c",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -1725,10 +1765,20 @@
           "source_path": "README.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). The tools/ row names the PBO entry diff, the structural navmesh comparison and the experimental Terrain Builder runner; the tools/ tree gains their three lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "83292295c5d31177f45655adb7eae18e0d88688b38da462c2c7bbf9809448ea4",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "493f20ea81a62e7218733571a2d34446ea175fbf0c9cdf5c58c5adb64f8d5b16",
+      "output_hash": "83292295c5d31177f45655adb7eae18e0d88688b38da462c2c7bbf9809448ea4",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -1829,10 +1879,20 @@
           "source_path": "TOOLS.md",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Ten tools become thirteen (ls tools/ on this branch); the experimental dayz-terrain-builder-runner is named as the exception to offline and deterministic, numpy as needed by dayz-navmesh-compare for its terrain inputs only, and the three new tools as scripts run from the tree; three rows in the summary table and three sections. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e4bf5be0d6cad682f0541601d73fa725ee038234d6010ff5d9d444cbe687ea9f",
+          "source_id": "pack-r21-authored",
+          "source_path": "TOOLS.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "eb4620196650cf28ef3b3759068c478581227866c77e917362621a152d4e46bf",
+      "output_hash": "e4bf5be0d6cad682f0541601d73fa725ee038234d6010ff5d9d444cbe687ea9f",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -10776,10 +10836,20 @@
           "source_path": "dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-docs-25af@2026-10-13",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). New section 'Compare the entries of two builds', before SP-347, as the ticket proposes (a 'compare entries' step in dayz-pbo-build): the command of tools/dayz-pbo-diff, to be read with SP-194 and 'Binarize is not byte-deterministic' (between two builds a different .p3d entry proves nothing by itself; a script, config, material or texture entry does), --ignore-prefix as a view, a compressed entry refused. Edited at the source, as CONTRIBUTING item 7 requires for a governed skill. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9841c7b55d2dbbd6312284c39708264ed4123f3c4c9ab20cad02e0af10433db2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3e445bac27b42abbd617a68bb2c268c94346d20d2af585e586db18328bb95e2b",
+      "output_hash": "9841c7b55d2dbbd6312284c39708264ed4123f3c4c9ab20cad02e0af10433db2",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -18323,10 +18393,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-ddce-a140@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Registers CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC (tools/dayz-navmesh-compare/README.md, lines 10-20, offline_tested); CLAIM-NAVMESH-TESM6-DNAV11-ENVELOPE (tools/dayz-navmesh-compare/README.md, lines 24-30, offline_tested); CLAIM-TB-WIN32-RUNNER-ENVELOPE (tools/dayz-terrain-builder-runner/README.md, lines 8-20, runtime_verified, as the ticket reports it); CLAIM-TB-WIN32-RUNNER-GOTCHAS (tools/dayz-terrain-builder-runner/README.md, lines 76-93, runtime_verified, as the ticket reports it). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c96078bed9b795fb0b3eaa2aaa0df4e735471f67ddad89c2002ddebc7b0ddc99",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7b60ca6c263bfce3684172a58d572fde47ffb8ba8ad963f7f48041e8aae9e7b4",
+      "output_hash": "c96078bed9b795fb0b3eaa2aaa0df4e735471f67ddad89c2002ddebc7b0ddc99",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -27414,10 +27494,20 @@
           "source_path": "README.md",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). One paragraph: its fail-closed PBO reader is also the reader of tools/dayz-pbo-diff, through digest_pbo. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "42ca4b7e5e2661ff421825b615c33e97ce89663c23659a56af4b7410f1641f61",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-vehicle-proxy-contract/README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "70328bb98d973fafdfd6f338b3a2b90412a086da2aac77fdd72b8c47f24e35e4",
+      "output_hash": "42ca4b7e5e2661ff421825b615c33e97ce89663c23659a56af4b7410f1641f61",
       "output_path": "tools/dayz-vehicle-proxy-contract/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27656,10 +27746,20 @@
           "source_path": "scripts/vehicle_proxy/pbo.py",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). digest_pbo and PboDigest added for tools/dayz-pbo-diff: the header properties in file order and every entry's payload SHA-256, from one snapshot checked before and after hashing; a compressed entry fails closed as in read_entry. _parse_pbo_handle takes an optional list for the properties it used to read and drop; parse_pbo, read_entry and the closure checks are unchanged, and the reader's tests (tests/test_vehicle_proxy_pbo.py) pass unchanged; 7 new tests in tests/test_vehicle_proxy_pbo_digest.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e95ac583ac2ddf890f7c5f1e398a205198b2906d0489c460bf137487081de7d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/pbo.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c8eee3a3b1e516f184c56e4adbaab60ef6cb861e623e2bf124dd93f0587d7b11",
+      "output_hash": "e95ac583ac2ddf890f7c5f1e398a205198b2906d0489c460bf137487081de7d6",
       "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/pbo.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -35930,6 +36030,332 @@
       "output_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/external_entityai/fx_external_kit_base.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-pbo-diff/pbo_diff.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The project's entry diff of two uncompressed PBOs (1 798 bytes), read as data: never run or imported here. Kept: the SHA-256 of every entry's payload and its report keys (entries, props_equal, only_old, only_new, differing, differing_count). Changed for the Pack: it reads through digest_pbo of tools/dayz-vehicle-proxy-contract instead of the project's read_pbo (tools/playtest/attach_navmesh.py, excluded as superseded); the entry table is no longer told from the header properties by size, which misread a PBO of 100 entries or fewer; its data/layers/ filter became the repeatable --ignore-prefix; asserts became refusals (exit 1); the header properties are compared as an ordered list of pairs, where the source compared a dictionary (order ignored, a repeated name kept once). Its use as the ticket reports it (a rebuilt terrain package changed 51 entries, the WRP, texHeaders.bin and 49 textures, the water the same) was not re-measured.",
+          "license": "User-authored input",
+          "source_hash": "8198c3881ced58b772948783ff96c7648f57104e02f7b3637d498d5841986969",
+          "source_id": "dayz-baltic-12km",
+          "source_path": "tools/playtest/diff_pbo_entries.py",
+          "source_revision": "84e2bb8 (branch v29-base)",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). New tool dayz-pbo-diff, adapted from the project's diff_pbo_entries.py (see the merge input): compares the entries of two uncompressed PBOs by the SHA-256 of each payload, and their header properties, through digest_pbo of tools/dayz-vehicle-proxy-contract; exit 0 with the report written, 1 refused, 2 usage. 22 tests in tools/dayz-pbo-diff/tests on synthetic PBOs written by the tests pass on Python 3.11, 3.13 and 3.14. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "faadca14d6bd6c88894c319d7a63854d477647e7d6d6005f801c4280d0860554",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-pbo-diff/pbo_diff.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "faadca14d6bd6c88894c319d7a63854d477647e7d6d6005f801c4280d0860554",
+      "output_path": "tools/dayz-pbo-diff/pbo_diff.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-pbo-diff/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). README of dayz-pbo-diff: how to run it, its exit codes and report keys, what it compares and what it does not, its changes from the source, its tests. The use it quotes (51 entries changed: the WRP, texHeaders.bin and 49 textures, the water the same) is the ticket's, not re-measured. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4014b7c48c26a09597d4cde84827841f313bde7a67eaaa40edd5137d737326c5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-pbo-diff/README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4014b7c48c26a09597d4cde84827841f313bde7a67eaaa40edd5137d737326c5",
+      "output_path": "tools/dayz-pbo-diff/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-pbo-diff/tests/test_pbo_diff.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 22 tests of dayz-pbo-diff (4 subtests) on synthetic PBOs written by the tests: identical PBOs, one entry changed, only_old and only_new, separators, a case-only rename, the properties and their order, the source's defect (one entry, no entry, more properties than entries), 150 entries, --ignore-prefix as a view and repeated, the stdout summary, a change in an entry header only; refusals of a compressed entry, four unsafe names, a duplicate, truncated data, a missing input and an existing --out (kept unchanged); usage exit 2; the script run from another directory. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f4db3cbb12b7142ea1d5a7b184715d38114dfe59d68f7de31f4e91343e6362ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-pbo-diff/tests/test_pbo_diff.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f4db3cbb12b7142ea1d5a7b184715d38114dfe59d68f7de31f4e91343e6362ce",
+      "output_path": "tools/dayz-pbo-diff/tests/test_pbo_diff.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/navmesh_tiles.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The project's empirical TESM 6 / DNAV 11 tile reader (3 420 bytes), read as data: never run or imported here. Every check it made is kept: magic and version of the file and of every tile, the tile count, origin (0, 0, 0), square tiles, an offset table that starts at 0 and strictly increases, tile coordinates inside the grid and never repeated, horizontal bounds within 1 mm of the cell; the tile hash covers the tile header and data. Changed for the Pack: the tile width and the grid come from the file header instead of an argument limited to 12.5, 25 or 50 m over a 12 288 m world, which is now reported as the verified envelope rather than enforced; an offset table or a tile past the end of the file, and non-finite bounds, are refused with a message; its __main__ with project paths is not carried.",
+          "license": "User-authored input",
+          "source_hash": "6e8c45d6b3f55c31f63189cede39e7955008ed8a1ec05a91aa1639f66bbcade9",
+          "source_id": "dayz-baltic-12km",
+          "source_path": "tools/navigation/inspect_navmesh_tiles.py",
+          "source_revision": "84e2bb8 (branch v29-base)",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). The fail-closed tile reader of dayz-navmesh-compare, adapted from the project's inspect_navmesh_tiles.py (see the merge input); the layout comes from the file header and NavmeshLayout.inside_verified_envelope says whether it is the one family measured. 28 tests in tests/test_navmesh_tiles.py on synthetic .nm files. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "209ef3342b7dfd99f83e921cd342cf1fb1727ab9b8edd5dfdcbb6d3962c09cbe",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/navmesh_tiles.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "209ef3342b7dfd99f83e921cd342cf1fb1727ab9b8edd5dfdcbb6d3962c09cbe",
+      "output_path": "tools/dayz-navmesh-compare/navmesh_tiles.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/compare_navmesh.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The project's structural tile comparator (4 483 bytes), read as data: never run or imported here. Kept: structure as polygon count, vertex count and vertical bounds; the distance of each structural tile to the nearest changed terrain vertex; routes as id;x y z;x y z widened by 25 m; its report keys and limits. Changed for the Pack: terrain inputs are optional and numpy is imported only for them; the 6 m, 2048-row terrain grid became --cell-m and the array's shape; --routes has no default project path; the statuses are defined (PASS_NO_STRUCTURE_DELTA and PASS_LOCAL_STRUCTURE_DELTA exit 0, REVIEW with review_reasons exit 1, usage 2, refused 3), and where the source reviewed every mesh with no structural change, that passes here unless the terrain changed; a structural tile with no changed vertex has a null distance (the source wrote Infinity, which is not JSON); a route covers the exact widened rectangle, clipped to the grid, instead of points one tile apart; file hashes come from the bytes read (no hashlib.file_digest, Python 3.11); an existing --out is refused rather than asserted.",
+          "license": "User-authored input",
+          "source_hash": "4de2a6121cde01a0cf2352fe62c5367ae02bc20cfb2803e3e2f3224b9a9d290b",
+          "source_id": "dayz-baltic-12km",
+          "source_path": "tools/navigation/compare_navmesh_tiles_v30.py",
+          "source_revision": "84e2bb8 (branch v29-base)",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). The comparator of dayz-navmesh-compare, adapted from the project's compare_navmesh_tiles_v30.py (see the merge input). 27 tests in tests/test_compare_navmesh.py on synthetic meshes, route files and NPZ terrains, 9 of them needing numpy (they skip without it); all pass on Python 3.13 with numpy, and on Python 3.11 and 3.14 without it, the 9 skipped. A synthetic pair of 983 x 983 meshes (119 747 207 bytes each) compared in 15.0 s with a peak of 767 MB. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a8bcd1cf3fc159c73056fd40882491346b04020f14bf181d9bd2aa3a51167bb6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/compare_navmesh.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a8bcd1cf3fc159c73056fd40882491346b04020f14bf181d9bd2aa3a51167bb6",
+      "output_path": "tools/dayz-navmesh-compare/compare_navmesh.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). README of dayz-navmesh-compare, with CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC and CLAIM-NAVMESH-TESM6-DNAV11-ENVELOPE (offline_tested, as the ticket reports them, not re-measured): statuses and exits, review_reasons, inputs, report, what the reader checks, limits, the changes from the source, tests. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7f084ec39470c7ed4428f4b6f294829f65caba017325b2e72eff2692995e926a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7f084ec39470c7ed4428f4b6f294829f65caba017325b2e72eff2692995e926a",
+      "output_path": "tools/dayz-navmesh-compare/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/tests/nm_fixture.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Writer of synthetic .nm files for the tests: the 48-byte file header, the offset table, a 16-byte prefix and a dtMeshHeader-shaped header per tile, with any field overridable to build the refusals. No game data. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4c304e95776ed22cbd757b2f71a09d5e6a35eeab38defe0f3c1bde78d447ba82",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/tests/nm_fixture.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4c304e95776ed22cbd757b2f71a09d5e6a35eeab38defe0f3c1bde78d447ba82",
+      "output_path": "tools/dayz-navmesh-compare/tests/nm_fixture.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/tests/test_navmesh_tiles.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 28 tests of the tile reader: layout and records, tile order in the file, the report fields, the verified envelope and outside it, and each refusal (file magic and version, a file shorter than its header, the tile count, the origin, square finite positive tiles, a truncated offset table, the first offset, unsorted and repeated offsets, a tile past the end of the file or with no data after its header, tile magic and version, a coordinate outside the grid, a duplicate tile, bounds off the cell and within the 1 mm tolerance, non-finite bounds), an unreadable file, errors naming the file, and the magics spelling the bytes the files start with. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "27284aae9d3db4a69b0f3b06a342a469ed7467b952eeee4c5e95bb45cb5255bb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/tests/test_navmesh_tiles.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "27284aae9d3db4a69b0f3b06a342a469ed7467b952eeee4c5e95bb45cb5255bb",
+      "output_path": "tools/dayz-navmesh-compare/tests/test_navmesh_tiles.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/tests/test_compare_navmesh.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 27 tests of the comparator: identical meshes, a serialized-only change, a structural change without terrain, the report fields, layouts that differ in grid or tile width, a malformed or missing mesh, an existing --out; routes over a changed tile, with a byte order mark, the widened rectangle and a route far off the map clipped to the grid, malformed route files and the line named; usage exits; numpy needed only for terrain; and, with numpy, a local change, a change beyond --local-m, row 0 as the largest z, a terrain change without a structural one, the same terrain and structure, a structural change with no terrain change, a route on a local change, a cell so large that distances overflow, and bad terrain inputs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d3884c329e394f729b7e794bdf682e4a99dd0edb61ada59ff0536d912d9f95ba",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/tests/test_compare_navmesh.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d3884c329e394f729b7e794bdf682e4a99dd0edb61ada59ff0536d912d9f95ba",
+      "output_path": "tools/dayz-navmesh-compare/tests/test_compare_navmesh.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-terrain-builder-runner/tbrunner.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The project's Terrain Builder runner (17 864 bytes), read as data: never run or imported here. Kept: the ten subcommands and every Win32 call, message and constant. Changed for the Pack, and only this: user32 and kernel32 are bound when a command runs, so the module imports on any OS and every command refuses off Windows; the executable comes from --tb-exe or TBRUNNER_TB_EXE instead of a fixed install path; asserts became explicit errors (exit 1), and so did the crashes around them (no state, log or frame recorded, a file that cannot be read, a bad wait_log pattern); the subcommands are read with argparse; the docstring points to the README instead of a private skill.",
+          "license": "User-authored input",
+          "source_hash": "b04ddecaf556334e4777899a7a48da3cb2deb614140fc26ab1c233d738a90b7f",
+          "source_id": "dayz-baltic-12km",
+          "source_path": "tools/terrain_builder/tbrunner.py",
+          "source_revision": "84e2bb8 (branch v29-base)",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). EXPERIMENTAL runner, Windows only, adapted from the project's tbrunner.py (see the merge input). Not run against Terrain Builder for the Pack: 29 tests (38 subtests) in tests/test_tbrunner.py drive it against a fake user32 and kernel32 that record every call, with ctypes.WinDLL, ctypes.WINFUNCTYPE and subprocess.Popen replaced by functions that fail the test; they pass on Python 3.11, 3.13 and 3.14. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "506984bc97c8d7611de06c0f42f418a99118bcd23922c8d6894c9102d8d566c1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/tbrunner.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "506984bc97c8d7611de06c0f42f418a99118bcd23922c8d6894c9102d8d566c1",
+      "output_path": "tools/dayz-terrain-builder-runner/tbrunner.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-terrain-builder-runner/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). README of dayz-terrain-builder-runner, with CLAIM-TB-WIN32-RUNNER-ENVELOPE and CLAIM-TB-WIN32-RUNNER-GOTCHAS (runtime_verified in Terrain Builder as the ticket reports them, not re-run): what was verified and what was not, what to do before a run, settings, commands and exits, the gotchas, the changes from the source, tests. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8942fae7759d3941fbec3f0970af5c31d54eb05e2e08cbf200928afa55beece2",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8942fae7759d3941fbec3f0970af5c31d54eb05e2e08cbf200928afa55beece2",
+      "output_path": "tools/dayz-terrain-builder-runner/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 29 tests (38 subtests) of the runner against a fake desktop: import off Windows without binding Win32, the state path from TBRUNNER_STATE and its default, refusal off Windows of every command, no command without the executable and the flag winning over the variable, launch refused while a pid is recorded or when the executable is not a file, commands without a recorded instance, log or frame, usage exits; the menu tree and its flattening, an unreadable item, menu.json, command posting to the recorded frame only after a refresh and refused while a dialog is open, windows listing the recorded instance only; the filename box of open and save dialogs, dialog_file and its refusals; press by label with swapped ids, Spanish labels and mnemonics, hidden buttons never pressed; wait_log on the recorded log and a bad pattern. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d63d5881f1d3a661a5e9dc7ff251a8cd14af6889d8728205e31e4c6ec663b839",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d63d5881f1d3a661a5e9dc7ff251a8cd14af6889d8728205e31e4c6ec663b839",
+      "output_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo_digest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 7 tests of digest_pbo on synthetic PBOs: properties in file order and payload hashes, the entries parse_pbo and read_entry see, no Vers block, more properties than entries, a compressed entry and truncated data failing closed, a missing file as a format error. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9c76660ddeae0b8d592bebc046ad4b68bf54c304427639b0c6493986f31fb48d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo_digest.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9c76660ddeae0b8d592bebc046ad4b68bf54c304427639b0c6493986f31fb48d",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo_digest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -36807,6 +37233,14 @@
       "source_id": "novogod-doors-buttons-lesson",
       "source_path": "Doors_Buttons_Lesson/Welcome to novoGODs Expert_Mode Door mod.txt",
       "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "The project's packaging script for its own terrain (5 711 bytes), read as data and never run: only its read_pbo was used, by diff_pbo_entries.py, and the Pack's fail-closed reader (tools/dayz-vehicle-proxy-contract, digest_pbo) replaces it, as pipeline inbox fb-20261003-203108-9821 proposes; the rest is specific to that project (its prefix and entry names). Not adopted.",
+      "reason": "superseded",
+      "source_hash": "72aa2a9600c20208aedab4864b6e96fc7ad767b419d843e4b2b02cc5d79c1d17",
+      "source_id": "dayz-baltic-12km",
+      "source_path": "tools/playtest/attach_navmesh.py",
+      "source_revision": "84e2bb8 (branch v29-base)"
     }
   ],
   "generated_artifacts": [
@@ -37017,6 +37451,13 @@
       "notes": "novoGOD's door tutorial Doors_Buttons_Lesson (three example models, each with model.cfg and config.cpp, and four texts), a Discord attachment (the attachment ID in the download's Zone.Identifier dates the upload to 2025-04-23 15:09 UTC; the members' timestamps are 2025-04-23); the archive holds no license or permission text. Reference only: dayz-doors describes its examples in first-party words and cites them by path and line. v1.3.0 to v1.5.0 shipped its nine example files as author-owned MIT by mistake; removed 2026-10-02. The signed attachment URL is deliberately not recorded.",
       "revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757",
       "source_id": "novogod-doors-buttons-lesson"
+    },
+    {
+      "kind": "git",
+      "license": "User-authored inputs; MIT public projection",
+      "notes": "The private Baltic 12 km terrain project of the Pack's owner. Five of its tool files, contributed through pipeline inbox fb-20261003-203108-9821 with the sha256 its inputs record, were read as data and never run or imported for the Pack: four were adapted into tools/dayz-pbo-diff, tools/dayz-navmesh-compare and tools/dayz-terrain-builder-runner; the fifth, whose PBO reader the entry diff used, is superseded by the Pack's own reader. Its evidence folders are not published.",
+      "revision": "84e2bb8 (branch v29-base)",
+      "source_id": "dayz-baltic-12km"
     }
   ]
 }

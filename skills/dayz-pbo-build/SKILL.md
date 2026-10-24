@@ -773,6 +773,21 @@ invariant: the file is a unique artifact and must be backed up by hash.
 
 - **Every expected difference needs a pinned base (LL-326).** Audit gate code for `continue`, `pass`, `ok += 1` and allowlists. A file known to differ because a delta/merge is not yet promoted cannot receive an unconditional OK: store the `SHA-256` of the exact source base at derivation time in an `enforce-base.json`, mark the artifact `STALE` if that base moved, and force the merge to be rebuilt. Separately, a proximity check for words such as "retired" or "obsolete" answers an adjacent question; require the live identifier beside each retired reference.
 
+### Compare the entries of two builds
+
+After a rebuild, check that only the entries you meant to change differ:
+
+```
+python <KNOWLEDGE_PACK>/tools/dayz-pbo-diff/pbo_diff.py --old <old.pbo> --new <new.pbo> --out <diff.json>
+```
+
+It compares the SHA-256 of every entry's payload and the header properties; `differing` lists every
+entry that changed or is on one side only. Read it with SP-194 above: between two builds a
+different `.p3d` entry proves nothing by itself, while a different script, config, material or
+texture entry does (§"Binarize is not byte-deterministic" below). `--ignore-prefix <prefix>` drops
+a prefix from `differing_not_ignored`, never from `differing`. A compressed entry is refused
+(exit 1); see `tools/dayz-pbo-diff/README.md`.
+
 ### Two silent no-load causes to check BEFORE blaming the engine (SP-347)
 
 Both produce the same symptom as the binarize/`.c` case above — the mod mounts, nothing

@@ -13,7 +13,7 @@ It contains three things:
 | Part | What it is |
 |---|---|
 | `skills/` | 42 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
-| `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, the pre-PBO script/config linter, the vehicle-proxy gate, UI lab, `.layout` previewer and 3D-viewer tools. |
+| `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, the pre-PBO script/config linter, the vehicle-proxy gate, UI lab, `.layout` previewer and 3D-viewer tools, a PBO entry diff, a structural navmesh comparison and an experimental Terrain Builder runner. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
 ---
@@ -113,7 +113,10 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── dayz-layout-viewer/       ← one .layout at four viewports, in one HTML
 │   ├── dayz-script-validator/    ← pre-PBO linter: Enforce, config.cpp, .layout, .rvmat
 │   ├── dayz-vehicle-proxy-contract/ ← offline vehicle-proxy reachability + fit gate
-│   └── dayz-3d-viewer/           ← MLOD .p3d / PAA / RVMAT → glTF + HTML
+│   ├── dayz-3d-viewer/           ← MLOD .p3d / PAA / RVMAT → glTF + HTML
+│   ├── dayz-pbo-diff/            ← entry-level SHA-256 diff of two PBOs
+│   ├── dayz-navmesh-compare/     ← .nm tile comparison by structure, not bytes
+│   └── dayz-terrain-builder-runner/ ← EXPERIMENTAL: Terrain Builder by Win32 messages
 ├── examples/                     ← worked examples that chain the tools
 │   └── end-to-end/               ← synthetic MLOD through preflight + viewer
 └── knowledge/
