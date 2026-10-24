@@ -659,6 +659,14 @@ DayZ uses V=0 at top. If textures were generated with OpenGL convention
 (V=0 at bottom), they appear vertically flipped. Detect by checking if
 the majority of UVs have V near 0 for top-facing geometry.
 
+A measurement on a file, not in game (pipeline inbox a140, LFPowerGrid,
+2026-09-21; claim: CLAIM-P3D-UV-V-TOP-SAMPLED): the ticket reports that
+sampling the texture on the faces of a selection with its own color (the
+`light_emit` bulb of a wall lamp) with both readings of V gave a difference
+of 177.6 against the rest of the model with V=0 at the top and 10.6 with
+V=0 at the bottom, which agrees with the `(u, 1.0 - v)` of Fix 2. The
+ticket gives no unit for the difference; not re-measured for this change.
+
 ```python
 def check_uv_range(model):
     """Check UV coordinates for potential V-flip issues."""
@@ -1073,6 +1081,22 @@ construction, compare the collider's winding sign against the Visual LOD of the 
 the signs match (SP-003). Invariant 18 records the expected absolute DayZ state as
 `dot(outward, cross_n) < 0`, but this coordinate-system-agnostic relative comparison is the
 operational gate; add one selection `component01` over all points + faces".)*
+
+Needle triangles (added 2026-10-24, ddce): Qhull can leave a needle where it triangulates a flat
+face of the hull with nearly collinear points on its border, a triangle whose area over the square
+of its longest edge is about 1e-7, and a filter of degenerate faces that reads the polygons before
+they are triangulated does not see it. Measured in game (DayZ 1.29.163709, SecretRock, 2026-10-02,
+hulls built with py3d and `scipy.spatial.ConvexHull`): two components of a lid, with needles of
+4.6e-7 and 1.6e-7 and areas of about 3e-8 m², took no `scene_raycast` ray in `geom`, `view` or
+`fire` all around their outline, while the lid's other two components (1.8e-4 and 8e-4) were hit.
+Each hull was closed and convex, had mass and was wound inward, and binarize printed nothing about
+it. Dropping from each component the vertex opposite the longest edge of its needle (one point per
+component; the hull shrank by less than 0.3 µm) and building the hull again made both components
+take the rays, with the lid at rest and closed, in the three LODs. `dayz-p3d-audit`'s
+`audit_p3d.py` reads every triangle of the components of the Geometry, View and Fire LODs (a quad
+as two) and fails one under 1e-6 m², or under 1e-4 of the square of its longest edge, naming the
+point to drop. Those are the project's thresholds: the engine's limit lies between 4.6e-7, which
+failed, and 1.19e-4, which worked (claim: CLAIM-P3D-NEEDLE-TRIANGLE-INGAME).
 
 Gotcha (non-idempotent): a script that ADDS LODs is NOT idempotent -- re-running it over already-
 processed output DUPLICATES the LODs (invalid model). Guard it (skip if the LOD resolution already

@@ -334,6 +334,13 @@ Missing stages produce engine warnings but don't crash.
                                    parts into one non-convex component.)
    f. Mesh watertight?           → If open: close gaps
    g. Geometry LOD exists?       → If missing: create one
+   h. No needle triangle in a component (ddce)?
+                                 → If audit_p3d.py names one: build that hull again without the
+                                   point it names, the corner opposite the needle's longest edge.
+                                   It fails a triangle of a ComponentNN in Geometry, View or Fire
+                                   under 1e-6 m², or under 1e-4 of the square of its longest edge
+                                   (dayz-model-pipeline references/py3d-direct-generation.md,
+                                   "Needle triangles").
 
 6. Animations not playing?
    → Check flag_mast selection in Visual LOD

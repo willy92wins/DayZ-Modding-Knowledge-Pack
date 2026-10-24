@@ -22,7 +22,7 @@ Requires: py3d DayZ fork >= 1.6.0 (`pip install -e tools/py3d`;
 NUNCA `pip install py3d` - el paquete PyPI es otra libreria).
 """
 
-import sys, os, re, glob, argparse
+import sys, os, re, glob, argparse, math
 
 try:
     import py3d
@@ -205,6 +205,126 @@ def check_collision_face_material(p):
                 "SP-023b / model-pipeline Rule 17)." % (i, k, empty, len(lod.faces))))
     return issues
 
+# --- ddce: needle triangles in the collision components -----------------------
+
+NEEDLE_MIN_AREA = 1e-6   # m^2
+NEEDLE_MIN_RATIO = 1e-4  # area / longest edge^2
+_COMPONENT_RE = re.compile(r"component\d+", re.I)
+
+def triangle_area_ratio(a, b, c):
+    """Area of the triangle a, b, c (each an (x, y, z)) and that area over the
+    square of its longest edge: sqrt(3)/4 = 0.433 for an equilateral triangle,
+    the most it can be, and 0.0 when the three points coincide."""
+    ab = [b[i] - a[i] for i in range(3)]
+    ac = [c[i] - a[i] for i in range(3)]
+    bc = [c[i] - b[i] for i in range(3)]
+    cross = (ab[1] * ac[2] - ab[2] * ac[1],
+             ab[2] * ac[0] - ab[0] * ac[2],
+             ab[0] * ac[1] - ab[1] * ac[0])
+    area = 0.5 * math.sqrt(sum(x * x for x in cross))
+    longest = max(sum(x * x for x in e) for e in (ab, ac, bc))
+    return area, (area / longest if longest > 0.0 else 0.0)
+
+def needle_triangles(points, faces, min_area=NEEDLE_MIN_AREA,
+                     min_ratio=NEEDLE_MIN_RATIO):
+    """ddce: the needle triangles of `faces`, as (face, corners, area, ratio).
+
+    points is a sequence of (x, y, z) and faces a sequence of faces, each a
+    sequence of indices into points. Each face is split into triangles from
+    its first corner, so a quad (a, b, c, d) reads as (a, b, c) and (a, c, d),
+    the split of py3d's LOD.triangulate(). A triangle is a needle when its
+    area is under min_area or its area over the square of its longest edge,
+    the ratio, is under min_ratio. Needles come in the order of faces: face
+    is a needle's position in faces and corners its three point indices."""
+    found = []
+    for n, face in enumerate(faces):
+        for j in range(1, len(face) - 1):
+            corners = (face[0], face[j], face[j + 1])
+            area, ratio = triangle_area_ratio(*[points[k] for k in corners])
+            if area < min_area or ratio < min_ratio:
+                found.append((n, corners, area, ratio))
+    return found
+
+def _opposite_longest_edge(points, corners):
+    """The corner of a triangle that faces its longest edge."""
+    def d2(i, j):
+        return sum((points[i][k] - points[j][k]) ** 2 for k in range(3))
+    a, b, c = corners
+    return max((d2(b, c), a), (d2(a, c), b), (d2(a, b), c))[1]
+
+# py3d's proxy name: PROXY_NAME_RE, tools/py3d/py3d/__init__.py:200-201.
+_PROXY_NAME_RE = re.compile(r"^proxy:(?P<path>.+)\.(?P<index>\d+)$",
+                            re.IGNORECASE)
+
+def _proxy_triangles(lod):
+    """ids of the proxy triangles of a LOD, by py3d's rule: a selection named
+    proxy:<path>.<index> (proxy: in any case) that holds exactly one face, a
+    triangle, and as its points exactly that triangle's three corners. A
+    selection under a proxy name with any other shape is not a proxy, and
+    its faces are read. This is py3d's _proxy_triangle_faces
+    (tools/py3d/py3d/__init__.py:1274-1296 in py3d 1.10.1, the same in 1.9.0
+    and 1.10.0) written out here, not called: py3d keeps it private, and this
+    script accepts py3d from 1.6.0. py3d reads a corner as vx.point, which is
+    lod.points[vx.point_index]. tests/test_needle_triangles.py checks that the
+    two agree on a LOD that py3d wrote and read back."""
+    out = set()
+    for name, sel in lod.selections.items():
+        if not _PROXY_NAME_RE.match(name):
+            continue
+        if len(sel.points) != 3 or len(sel.faces) != 1:
+            continue
+        face = next(iter(sel.faces))
+        if len(face.vertices) != 3:
+            continue
+        try:
+            corners = {id(lod.points[vx.point_index]) for vx in face.vertices}
+        except (IndexError, TypeError):
+            continue
+        if len(corners) == 3 and corners == set(map(id, sel.points)):
+            out.add(id(face))
+    return out
+
+def check_collision_needle_triangles(p):
+    """ddce: a needle triangle in a component of a collision LOD (Geometry,
+    View or Fire). Measured in DayZ 1.29.163709 (SecretRock, 2026-10-02): two
+    convex hulls built with Qhull that held one each took no ray in geom, view
+    or fire, and binarize said nothing; built again without the point opposite
+    each needle's longest edge, they took them. Every face of every ComponentNN
+    selection (any case; a face at weight 0 is not in it, and proxy triangles,
+    by py3d's rule, are left out) is read with needle_triangles(), at the
+    project's thresholds: the engine's own limit lies between a ratio of
+    4.6e-7 (no hit) and 1.19e-4 (hit). A face in no component is py3d's
+    coverage check. See dayz-model-pipeline
+    references/py3d-direct-generation.md, "Needle triangles"."""
+    issues = []
+    for i, lod in enumerate(p.lods):
+        k = classify_lod(lod.resolution)
+        if k not in _COLLISION:
+            continue
+        points = [pt.coords for pt in lod.points]
+        index = {id(fa): n for n, fa in enumerate(lod.faces)}
+        proxies = _proxy_triangles(lod)
+        for name, sel in lod.selections.items():
+            if not _COMPONENT_RE.fullmatch(name):
+                continue
+            faces = sorted(((index[id(fa)], fa) for fa, w in sel.faces.items()
+                            if w and id(fa) in index and id(fa) not in proxies),
+                           key=lambda item: item[0])
+            corners = [[v.point_index for v in fa.vertices] for _, fa in faces]
+            for n, tri, area, ratio in needle_triangles(points, corners):
+                issues.append(("CRITICAL",
+                    "LOD[%d] %s, %s, face %d: needle triangle (points %d, %d, "
+                    "%d), area %.2e m^2, area/longest edge^2 %.2e (this check "
+                    "fails a triangle under %.0e m^2 or %.0e). In game a convex "
+                    "hull holding one took no ray in geom, view or fire, and "
+                    "binarize said nothing: build the hull again without point "
+                    "%d, the corner opposite the longest edge (ddce; "
+                    "dayz-model-pipeline references/py3d-direct-generation.md)."
+                    % (i, k, name, faces[n][0], tri[0], tri[1], tri[2], area,
+                       ratio, NEEDLE_MIN_AREA, NEEDLE_MIN_RATIO,
+                       _opposite_longest_edge(points, tri))))
+    return issues
+
 # --- SP-017: CfgSlots.selection <-> FireGeometry proxy selection (P1) --------
 
 def _extract_block(text, header_re):
@@ -339,12 +459,15 @@ def audit_p3d(filepath, config_text=None):
         lod_tag = "" if f.lod is None else "LOD[%d] " % f.lod
         all_issues.append((sev, "%s[%s] %s" % (lod_tag, f.code, f.msg)))
 
-    # Tema B additive checks (complement the fork; SP-009/027/017/023b).
+    # Tema B additive checks (complement the fork; SP-009/027/017/023b), and
+    # the needle triangles of the collision components (ddce).
     for sev, msg in check_lod0_vertex_budget(p):
         all_issues.append((sev, msg))
     for sev, msg in check_geometry_class_vehicle(p):
         all_issues.append((sev, msg))
     for sev, msg in check_collision_face_material(p):
+        all_issues.append((sev, msg))
+    for sev, msg in check_collision_needle_triangles(p):
         all_issues.append((sev, msg))
     if config_text:
         for sev, msg in check_wheel_slot_firegeo(p, config_text):
