@@ -86,6 +86,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `dayz-model-pipeline` `SKILL.md` ("Damage variant rvmat pattern") and
   `references/lods-and-geometry.md` ("Resolution LODs (Visual)"), and `dayz-motorbikes` `SKILL.md`
   (step 5): pointers to those passages.
+- `dayz-script-validator` `ES-MODDED-ENGINE-CLASS` also fails `modded class DayZPlayerInventory`
+  and `modded class Magazine`: on DayZDiag 1.30.164200 the server log read "Engine class
+  'DayZPlayerInventory' cannot be modded." and "Engine class 'Magazine' cannot be modded.", the
+  World module did not compile and the server died before it was ready. Two fixtures and two tests.
+- `enforce-script-reference` `references/dayz-1-30-enforce-script.md` §3.2: how a mod can see
+  inventory moves on 1.30.164200 without modding `DayZPlayerInventory`, measured in game with a
+  server-side logger hooked on `ItemBase.EEItemLocationChanged`, which printed one line per tested
+  transfer for cargo take/put, crate-to-crate, slot detach/attach on an item on the ground and on a
+  `Land_House_1M1` slot, and picking up/dropping a crate, and two lines for a swap (the logger filters
+  callbacks, so their total count was not measured); `g_Game.HasInventoryJuncture` named the player of
+  a crate-to-crate move. Stacking is not a location change: hooks on `ItemBase.CombineItems` and on
+  `Ammunition_Base.CombineItems` (which compiled modded) logged 10 rounds into a crate pile and 5 planks
+  onto a house slot; the split paths are cited from the source, including `SplitItem`, whose copy into
+  the player's cargo is not marked as a split result. "What breaks" item 2 points there for observing
+  moves, not for intercepting commands.
+- `dayz-basebuilding`: on 1.30.164200 the rebuildable houses have configs and attachment slots on
+  the building (32 `House` classes with `attachments[]`, slot names listed); `Land_House_1M1` was
+  spawned and a plank attached to `RB_LvL1_Plank`.
+- `dayz-mcp-verify`: what the verbs reached in inventory in those runs (`hands_take` did not reach
+  the cargo of a `WoodenCrate` or `Barrel_Blue` nor the `RB_LvL1_Plank` slot of a `Land_House_1M1` at
+  6.5 and 12.7 m, `ActionAttach` failed on that house), a key-driven test addon that makes the client's
+  own inventory calls, and no `.ADM` in managed runs (no `-adminlog`).
 - `dayz-p3d-audit`: `audit_p3d.py` fails a needle triangle in a component of a Geometry, View or
   Fire LOD: a triangle (a quad is read as two) under 1e-6 m², or whose area is under 1e-4 of the
   square of its longest edge. A proxy triangle is left out by py3d's own rule (a selection named

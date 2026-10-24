@@ -3174,6 +3174,25 @@ class TestModdedEngineClass(unittest.TestCase):
         # and `modded class Transport` in a comment, a string or #if 0.
         self.assertEqual([], _errors_of(result, ENGINE_RULE))
 
+    def test_modded_inventory_and_magazine_fail_on_130(self):
+        # DayZDiag 1.30.164200: "Engine class 'DayZPlayerInventory' cannot be
+        # modded." and "Engine class 'Magazine' cannot be modded."
+        exit_code, result = script_validator.run([str(ENGINE / "bad_130")])
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, ENGINE_RULE)
+        self.assertEqual([7, 15], [e["line"] for e in errors])
+        self.assertIn("'modded class DayZPlayerInventory'", errors[0]["message"])
+        self.assertIn("'modded class Magazine'", errors[1]["message"])
+        assert_standard_findings(self, result)
+
+    def test_script_subclasses_of_magazine_pass(self):
+        _code, result = script_validator.run([str(ENGINE / "ok_130")])
+
+        # `modded class Ammunition_Base`, `modded class ItemBase`, a class
+        # extending Magazine, and the names in a comment and a string.
+        self.assertEqual([], _errors_of(result, ENGINE_RULE))
+
     def test_only_the_whole_class_name_counts(self):
         from detectors.es_modded_engine_class import check_es_modded_engine_class
 
