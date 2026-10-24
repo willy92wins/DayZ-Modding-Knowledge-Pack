@@ -1344,3 +1344,37 @@ ported here in English, without private names, and corrected in the review of PR
 observation scoped to its run, the interval between markers made a candidate until the source and
 the run's logs confirm it, and localization within one revision separated from attribution to a
 revision.
+
+## Driving real inventory moves: what the verbs reach, and a key-driven test addon (added 2026-10-24)
+
+Measured on DayZDiag 1.30.164200 (managed runs of project `DayZ_MCP` with a server-side logger as an
+extra mod, all but the first also with a test-only driver) [EXACT][CLAIM-MCPV-INVENTORY-MOVES-130]:
+
+- `hands_take` answered `not_reachable` for an item in the cargo of a world container (`WoodenCrate`,
+  `Barrel_Blue`, open, player 1.5 m away) and for an item in the `RB_LvL1_Plank` slot of a
+  `Land_House_1M1` (player 6.5 m and 12.7 m from its origin); other buildings were not tried. It worked for an
+  attachment of an item lying on the ground (`SparkPlug` in a `PowerGenerator`) and for a container on
+  the ground (`WoodenCrate` into the hands).
+- `action_use(action="ActionAttach", classname="Land_House_1M1")` with a plank in hands returned
+  `condition_failed`; on a `PowerGenerator` it attached the spark plug.
+- Of the inventory verbs of that build (`inventory_give` and `inventory_attach` create a new item,
+  `hands_take` takes to the hands, `hands_attach` puts the held item into an attachment slot of a world
+  entity and was not tried in these runs), none puts an item from the player into a container's cargo
+  or moves it between two containers.
+  What did, in every case tried: a test-only addon whose `modded class MissionGameplay`
+  (`#ifndef SERVER`) maps keys in `OnKeyPress` to the client's own inventory calls on objects found
+  with `g_Game.GetObjectsAtPosition`, fired with `key_press` (DIK 63-67 for the moves, 68 for the
+  combine, 88 for the half split, 87 for a split to the hands):
+  `PredictiveTakeEntityToHands` (cargo to hands, building slot to hands),
+  `PredictiveTakeEntityToTargetCargo` (hands to cargo, crate to crate) and
+  `PredictiveTakeEntityToTargetAttachment` (hands to an empty building slot), and the stack calls
+  `CombineItemsClient` (hands onto a stack in a crate or a building slot) and `OnRightClick` (split a
+  stack in half). Each one reached the server as a real inventory command. Read the hands on the server
+  (`weapon_state`): a client-side `no_item_in_hands` from `action_use` is the client's prediction. The runs loaded no CF/Dabs/VPP stack (SP-450 above: with that stack
+  `OnKeyPress` does not get the keys). Ship the driver as its own PBO and leave it out of the release.
+- `dayz_test_run` starts the server without `-adminlog`: no run left a `.ADM` in its server profile, so
+  lines written with `GetGame().AdminLog` are not readable from the harness. Have the test build copy them
+  to `Print` and read `script_*.log` (`logs_since`).
+- The player keeps what it carried between runs (gotcha 4 above). A plank left in the hands by the
+  previous run turned the next take from a slot into a swap.
+
