@@ -659,11 +659,13 @@ DayZ uses V=0 at top. If textures were generated with OpenGL convention
 (V=0 at bottom), they appear vertically flipped. Detect by checking if
 the majority of UVs have V near 0 for top-facing geometry.
 
-Measured on a file (LFPowerGrid, 2026-09-21; claim: CLAIM-P3D-UV-V-TOP-SAMPLED):
+A measurement on a file, not in game (pipeline inbox a140, LFPowerGrid,
+2026-09-21; claim: CLAIM-P3D-UV-V-TOP-SAMPLED): the ticket reports that
 sampling the texture on the faces of a selection with its own color (the
 `light_emit` bulb of a wall lamp) with both readings of V gave a difference
 of 177.6 against the rest of the model with V=0 at the top and 10.6 with
-V=0 at the bottom, which confirms the `(u, 1.0 - v)` of Fix 2.
+V=0 at the bottom, which agrees with the `(u, 1.0 - v)` of Fix 2. The
+ticket gives no unit for the difference; not re-measured for this change.
 
 ```python
 def check_uv_range(model):

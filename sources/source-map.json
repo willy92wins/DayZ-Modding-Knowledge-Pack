@@ -1364,9 +1364,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce and a140 (part 2). Added entries for the needle check of dayz-p3d-audit, with its first tests, and the measured V convention of dayz-model-pipeline. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce and a140 (part 2). Added entries for the needle check of dayz-p3d-audit, with py3d's proxy rule and its first tests, and for what pipeline inbox a140 reports on the V convention of dayz-model-pipeline. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "71ae5c28a85ffa9d827fd98a97684fdf00713229069d417de3ae97ad61b97f95",
+          "source_hash": "dcd7246bec5aa978c6f5f0dcec83928f4cfa7bcbaacab8321241775bf1912574",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-ddce-a140@2026-10-24",
@@ -1374,7 +1374,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "71ae5c28a85ffa9d827fd98a97684fdf00713229069d417de3ae97ad61b97f95",
+      "output_hash": "dcd7246bec5aa978c6f5f0dcec83928f4cfa7bcbaacab8321241775bf1912574",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9593,9 +9593,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). pipeline inbox a140 (fb-20260921-164248-a140, LFPowerGrid), part 2. Building a collision LOD from scratch (SP-025): new paragraph 'Needle triangles' after the scipy.ConvexHull recipe, with the ticket's in-game A/B, the fix and the audit check, CLAIM-P3D-NEEDLE-TRIANGLE-INGAME at lines 1083-1097. 3. UV Flip Detection: one measured sentence after the first paragraph, the light_emit sampling with both readings of V (177.6 and 10.6), CLAIM-P3D-UV-V-TOP-SAMPLED at line 662. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). pipeline inbox a140 (fb-20260921-164248-a140, LFPowerGrid), part 2. Building a collision LOD from scratch (SP-025): new paragraph 'Needle triangles' after the scipy.ConvexHull recipe, with the ticket's in-game A/B, the fix and the audit check, CLAIM-P3D-NEEDLE-TRIANGLE-INGAME at lines 1085-1099. 3. UV Flip Detection: one paragraph after the first, what pipeline inbox a140 reports from a file, not in game: the light_emit sampling with both readings of V (177.6 and 10.6), which agrees with Fix 2, with no unit and not re-measured, CLAIM-P3D-UV-V-TOP-SAMPLED at lines 662-668 (it said 'confirms' and its claim covered its first line only; Codex's review of #130, Z3 and Z4). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "f58192e6c85193fb1d6697f5850d41028054a8da65df52bd3354a5012fd63782",
+          "source_hash": "e84aeefefc8907d1fb9682d0c9fb335471ebad49d3070c37db4939ba0c55bdcf",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-ddce-a140@2026-10-24",
@@ -9603,7 +9603,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f58192e6c85193fb1d6697f5850d41028054a8da65df52bd3354a5012fd63782",
+      "output_hash": "e84aeefefc8907d1fb9682d0c9fb335471ebad49d3070c37db4939ba0c55bdcf",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -10041,9 +10041,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). Killer #1's AUTOMATED CHECK note cites audit_p3d.py:435, where the P3D.validate() call is now that the needle check sits above audit_p3d(); it read audit_p3d.py:337. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). Killer #1's AUTOMATED CHECK note cites audit_p3d.py:457, where the P3D.validate() call is now that the needle check sits above audit_p3d(); it read audit_p3d.py:337. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "149177804893012f66ceca27f924e0773210f6b32acd369539f4272b953d263e",
+          "source_hash": "7d202a0ad6fcabb0bcfbffe59f6749321f0249b26c6236b6cc20f3ce5fafc075",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-ddce-a140@2026-10-24",
@@ -10051,7 +10051,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "149177804893012f66ceca27f924e0773210f6b32acd369539f4272b953d263e",
+      "output_hash": "7d202a0ad6fcabb0bcfbffe59f6749321f0249b26c6236b6cc20f3ce5fafc075",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -10207,9 +10207,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). New check check_collision_needle_triangles, a standalone helper beside check_collision_face_material and called from audit_p3d() after it, so main() and --scan-dir run it: every triangle of every ComponentNN selection (any case; a proxy triangle, the one triangular face of a proxy: selection, left out) of the Geometry, View and Fire LODs, a quad read as (a, b, c) and (a, c, d) as py3d's LOD.triangulate() splits it, is CRITICAL under 1e-6 m^2 or under 1e-4 of the square of its longest edge (the ticket's thresholds, NEEDLE_MIN_AREA and NEEDLE_MIN_RATIO). The finding names the LOD, the component, the LOD face index, the triangle's point indices, both numbers and the corner opposite the longest edge, the point to drop. The arithmetic is in the pure functions triangle_area_ratio and needle_triangles, on points and faces. The Pack's own code, written from the ticket's description; no code of the project was read. Tested by tests/test_needle_triangles.py. An end-to-end run, not shipped: MLODs written with tools/py3d 1.10.1 (a box as Component01 and a second hull as Component02 in Geometry, View and Fire) gave three CRITICAL needle lines and exit 1 with a needle of 1e-5 or of 3e-8 in Component02, and none and exit 0 with a box there. Not run on a production or a vanilla model: the Pack's only MLODs, the four winding fixtures of dayz-characters, have no component selection, and vanilla models ship as ODOL. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). New check check_collision_needle_triangles, a standalone helper beside check_collision_face_material and called from audit_p3d() after it, so main() and --scan-dir run it: every triangle of every ComponentNN selection (any case, the whole name; a face at weight 0 is not in it) of the Geometry, View and Fire LODs, a quad read as (a, b, c) and (a, c, d) as py3d's LOD.triangulate() splits it, is CRITICAL under 1e-6 m^2 or under 1e-4 of the square of its longest edge (the ticket's thresholds, NEEDLE_MIN_AREA and NEEDLE_MIN_RATIO; a triangle at either passes). A proxy triangle is left out by py3d's own rule, written out in _proxy_triangles from py3d's _proxy_triangle_faces (tools/py3d/py3d/__init__.py:1274-1296, with PROXY_NAME_RE at :200-201, py3d 1.10.1): a selection named proxy:<path>.<index>, proxy: in any case, that holds exactly one face, a triangle, and as its points exactly that triangle's three corners. It is written out, not called, because py3d keeps it private and the script accepts py3d from 1.6.0. The first version left out the one triangular face of any selection whose name began with proxy:, which hid a needle under proxy:fake.001 with no points (Codex's review of #130, Z1). The finding names the LOD, the component, the LOD face index, the triangle's point indices, both numbers and the corner opposite the longest edge, the point to drop. The arithmetic is in the pure functions triangle_area_ratio and needle_triangles, on points and faces. The Pack's own code, written from the ticket's description; no code of the project was read. Tested by tests/test_needle_triangles.py, three of whose tests write MLODs with tools/py3d 1.10.1 and read them back. Not run on a production or a vanilla model: the Pack's only MLODs, the four winding fixtures of dayz-characters, have no component selection, and vanilla models ship as ODOL. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "17ae29fe6cbf2d45f4ac9e92e31009d8286d9d9ae97be2bce3ef878fd4302340",
+          "source_hash": "58d6845aff313a67fed10339d0e0ca3488b1a5e185f7b2fb26e86a88c2f0aa61",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/scripts/audit_p3d.py",
           "source_revision": "kp-update-ddce-a140@2026-10-24",
@@ -10217,7 +10217,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "17ae29fe6cbf2d45f4ac9e92e31009d8286d9d9ae97be2bce3ef878fd4302340",
+      "output_hash": "58d6845aff313a67fed10339d0e0ca3488b1a5e185f7b2fb26e86a88c2f0aa61",
       "output_path": "skills/dayz-p3d-audit/scripts/audit_p3d.py",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -10229,9 +10229,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). The skill's first test folder: 11 tests of the needle check of scripts/audit_p3d.py, with no py3d and no .p3d (a stand-in py3d module and stand-in LODs with the attributes the check reads). The arithmetic on four known triangles; a closed convex box hull, the same box as six quads (read as two triangles each, the split listed) and a 2 m triangle at a ratio of 1.19e-4 pass; a needle by ratio alone (area 1e-5 m^2, ratio 1e-5), by area alone (a corner cut at 1 mm, area 8.66e-7 m^2, ratio 0.433) and of the ticket's size (3e-8) fail, each named by its face and corners; the finding names the LOD, the component in any case, the LOD face index, both numbers and the point to drop, in Geometry, View and Fire and not in the Visual LOD; a proxy triangle and a face in no component are not read; main() exits 1 on a needle and 0 without one. Measured 2026-10-24: 11 passed under pytest 9.1.1 on Python 3.14.6 and under unittest on Python 3.11.17. Against the audit_p3d.py of main all 11 fail (10 on the functions missing, the main() test on exit 0). 17 mutants of the check, on copies outside the repository (the wiring removed, or for and, a quad's first triangle only, the other diagonal, the shortest edge, the area doubled, either threshold moved, proxies read, every selection read, names case-sensitive, the face's place in its component, the Visual LOD read, the wrong corner named, WARNING for CRITICAL): each fails at least one test, and each test fails under at least two of them. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). The skill's first test folder: 21 tests of the needle check of scripts/audit_p3d.py. 18 need no py3d and no .p3d: a stand-in py3d module and stand-in LODs with the attributes the check reads (the Wiring test runs main() on a 16-byte file, the MLOD signature and twelve zero bytes, for which the stand-in's P3D() returns the model). 3 load the Pack's py3d from tools/py3d by its file path, write MLODs, read them back and run main() or the check on them; they skip where that folder is not next to the skill. The arithmetic on four known triangles; a triangle exactly on each threshold (area 1e-6 m^2, ratio 1e-4, both checked to land on it in floating point) passes; a closed convex box hull, the same box as six quads (read as two triangles each, the split listed) and a 2 m triangle at a ratio of 1.19e-4 pass; a needle by ratio alone (1e-5, and 5e-5), by area alone (a corner cut at 1 mm, area 8.66e-7 m^2, ratio 0.433) and the ticket's needle (area 3e-8 m^2, ratio 4.6e-7) fail, each named by its face and corners; the finding names the LOD, the component in any case, the LOD face index, both numbers and the point to drop, in Geometry, View and Fire and not in the Visual LOD; a proxy triangle by py3d's rule is not read, proxy: in lower case or in capitals, and a selection under a proxy name that is not one (no points, in either case; no index; not proxy:; three other points; two faces) is read; a face in no component, a face at weight 0 and a selection named Component01a are not read; main() exits 1 on a needle and 0 without one. Written and read back with py3d: the ticket's needle as Component01 of the Geometry, View and Fire LODs, which py3d's validate() passes, gives three CRITICAL and exit 1, also under proxy:fake.001 with no points and under proxy:fake with its corners, and passes as a proxy triangle by py3d's rule; on a LOD with seven selections under proxy names the check's proxy triangles are those of py3d's _proxy_triangle_faces. Measured 2026-10-24: 21 passed under pytest 9.1.1 on Python 3.14.6 and under unittest on Python 3.11.17. Against the audit_p3d.py of main all 21 fail. 28 mutants of the check, on copies outside the repository laid out like the Pack: the 17 of the first version (the wiring removed, or for and, a quad's first triangle only, the other diagonal, the shortest edge, the area doubled, either threshold moved, proxies read, every selection read, names case-sensitive, the face's place in its component, the Visual LOD read, the wrong corner named, WARNING for CRITICAL), the six of Codex's review of #130 (Z2: the weight filter removed, match for fullmatch, <= for < on the ratio and on the area, the helper's default ratio at 1.1e-5, proxy: case-sensitive), the first version's proxy rule (Z1), and four of py3d's proxy clauses dropped one at a time (the full name, the points, the corners, the one face): each fails at least one test, and each test fails under at least two of them. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "749e9a2ae579e2ac4211b990253d19ddc372d6dfbaaf865456918a383ded395b",
+          "source_hash": "6ad84fbec7dfc4fc426c5e0ba0918d0128d3667fe2f142ec0f774ddb59979c22",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-p3d-audit/tests/test_needle_triangles.py",
           "source_revision": "kp-update-ddce-a140@2026-10-24",
@@ -10239,7 +10239,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "749e9a2ae579e2ac4211b990253d19ddc372d6dfbaaf865456918a383ded395b",
+      "output_hash": "6ad84fbec7dfc4fc426c5e0ba0918d0128d3667fe2f142ec0f774ddb59979c22",
       "output_path": "skills/dayz-p3d-audit/tests/test_needle_triangles.py",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "offline_tested"
@@ -18246,9 +18246,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce and a140 (part 2). Registers CLAIM-P3D-NEEDLE-TRIANGLE-INGAME (runtime_verified, py3d-direct-generation.md, lines 1083-1097) and CLAIM-P3D-UV-V-TOP-SAMPLED (offline_tested, line 662), and moves the ranges of the claims below the inserted lines, their text unchanged: CLAIM-BINARIZE-COLLISION-LOD-SILENT 335-337 to 336-338; CLAIM-BINARIZE-COLLISION-TOO-MANY-VERTICES 374-393 to 375-394; CLAIM-COLLISION-ONLY-MODEL-INGAME 366-370 to 367-371; CLAIM-P3D-BINARIZE-COLLISION-NORMALS 446-446 to 453-453; CLAIM-P3D-KITBOX-OUTWARD-INGAME 446-446 to 453-453; CLAIM-P3D-KITBOX-PAIRED-INGAME 446-446 to 453-453. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce and a140 (part 2). Registers CLAIM-P3D-NEEDLE-TRIANGLE-INGAME (runtime_verified, py3d-direct-generation.md, lines 1085-1099) and CLAIM-P3D-UV-V-TOP-SAMPLED (offline_tested, lines 662-668, its whole paragraph), and moves the ranges of the claims below the inserted lines, their text unchanged: CLAIM-BINARIZE-COLLISION-LOD-SILENT 335-337 to 336-338; CLAIM-BINARIZE-COLLISION-TOO-MANY-VERTICES 374-393 to 375-394; CLAIM-COLLISION-ONLY-MODEL-INGAME 366-370 to 367-371; CLAIM-P3D-BINARIZE-COLLISION-NORMALS 446-446 to 453-453; CLAIM-P3D-KITBOX-OUTWARD-INGAME 446-446 to 453-453; CLAIM-P3D-KITBOX-PAIRED-INGAME 446-446 to 453-453. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "865046a6ce8b15243d938794a7155f850353d73c7b334ebc85be8471b85668b7",
+          "source_hash": "e5f9fc30478c18b7d5ab2a6c319e55f01acc8f992dac297dfee3076f9c99d0a9",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-ddce-a140@2026-10-24",
@@ -18256,7 +18256,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "865046a6ce8b15243d938794a7155f850353d73c7b334ebc85be8471b85668b7",
+      "output_hash": "e5f9fc30478c18b7d5ab2a6c319e55f01acc8f992dac297dfee3076f9c99d0a9",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

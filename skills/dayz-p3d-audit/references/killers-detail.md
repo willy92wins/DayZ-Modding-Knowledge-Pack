@@ -69,7 +69,7 @@ this check; it reports the relative trigger below. The absolute mesh-center comp
 disabled for false positives.
 
 > **AUTOMATED CHECK (added 2026-05-21; scope corrected 2026-10-02)**: `audit_p3d.py` runs a
-> RELATIVE winding check through py3d `P3D.validate()` (`audit_p3d.py:435`): it compares each
+> RELATIVE winding check through py3d `P3D.validate()` (`audit_p3d.py:457`): it compares each
 > collision LOD's winding orientation, seen from that LOD's centroid, against the **Visual LOD**
 > and emits `ERR_WINDING_INVERTED` (printed as CRITICAL) when both are uniform and opposite.
 > This replaces the old absolute centroid heuristic, which false-positived on every Blender

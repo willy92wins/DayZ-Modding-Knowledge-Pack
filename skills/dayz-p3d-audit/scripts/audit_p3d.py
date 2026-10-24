@@ -252,15 +252,36 @@ def _opposite_longest_edge(points, corners):
     a, b, c = corners
     return max((d2(b, c), a), (d2(a, c), b), (d2(a, b), c))[1]
 
+# py3d's proxy name: PROXY_NAME_RE, tools/py3d/py3d/__init__.py:200-201.
+_PROXY_NAME_RE = re.compile(r"^proxy:(?P<path>.+)\.(?P<index>\d+)$",
+                            re.IGNORECASE)
+
 def _proxy_triangles(lod):
-    """ids of the proxy triangles of a LOD: the one face, a triangle, of a
-    selection whose name starts with proxy: (any case)."""
+    """ids of the proxy triangles of a LOD, by py3d's rule: a selection named
+    proxy:<path>.<index> (proxy: in any case) that holds exactly one face, a
+    triangle, and as its points exactly that triangle's three corners. A
+    selection under a proxy name with any other shape is not a proxy, and
+    its faces are read. This is py3d's _proxy_triangle_faces
+    (tools/py3d/py3d/__init__.py:1274-1296 in py3d 1.10.1, the same in 1.9.0
+    and 1.10.0) written out here, not called: py3d keeps it private, and this
+    script accepts py3d from 1.6.0. py3d reads a corner as vx.point, which is
+    lod.points[vx.point_index]. tests/test_needle_triangles.py checks that the
+    two agree on a LOD that py3d wrote and read back."""
     out = set()
     for name, sel in lod.selections.items():
-        if name.lower().startswith("proxy:") and len(sel.faces) == 1:
-            face = next(iter(sel.faces))
-            if len(face.vertices) == 3:
-                out.add(id(face))
+        if not _PROXY_NAME_RE.match(name):
+            continue
+        if len(sel.points) != 3 or len(sel.faces) != 1:
+            continue
+        face = next(iter(sel.faces))
+        if len(face.vertices) != 3:
+            continue
+        try:
+            corners = {id(lod.points[vx.point_index]) for vx in face.vertices}
+        except (IndexError, TypeError):
+            continue
+        if len(corners) == 3 and corners == set(map(id, sel.points)):
+            out.add(id(face))
     return out
 
 def check_collision_needle_triangles(p):
@@ -269,10 +290,11 @@ def check_collision_needle_triangles(p):
     convex hulls built with Qhull that held one each took no ray in geom, view
     or fire, and binarize said nothing; built again without the point opposite
     each needle's longest edge, they took them. Every face of every ComponentNN
-    selection (any case; proxy triangles left out) is read with
-    needle_triangles(), at the project's thresholds: the engine's own limit
-    lies between a ratio of 4.6e-7 (no hit) and 1.19e-4 (hit). A face in no
-    component is py3d's coverage check. See dayz-model-pipeline
+    selection (any case; a face at weight 0 is not in it, and proxy triangles,
+    by py3d's rule, are left out) is read with needle_triangles(), at the
+    project's thresholds: the engine's own limit lies between a ratio of
+    4.6e-7 (no hit) and 1.19e-4 (hit). A face in no component is py3d's
+    coverage check. See dayz-model-pipeline
     references/py3d-direct-generation.md, "Needle triangles"."""
     issues = []
     for i, lod in enumerate(p.lods):
