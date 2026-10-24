@@ -6,7 +6,7 @@ This is the canonical agent file; `CLAUDE.md`, `GEMINI.md`, `.cursorrules` and
 
 ## What this repository is
 
-A knowledge pack for **DayZ (Enfusion) modding**: 42 domain playbooks, ten
+A knowledge pack for **DayZ (Enfusion) modding**: 42 domain playbooks, thirteen
 Python tools, and verified reference notes, assembled from shipped mods. It is
 written to be handed to a coding agent, not read cover to cover by a human.
 
@@ -61,6 +61,8 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | About to change a linter rule | `python tools/dayz-script-validator/scripts/vanilla_control.py` | Whether the new rule is silent on Bohemia's tree |
 | Need a 3D preview of an MLOD `.p3d` without launching DayZ | `python -m dayz_3d_viewer build-viewer <p3d>` | Whether the visual LOD, textures and materials survived the export |
 | Two builds differ and nobody knows where | `python -m dayz_odol_strict diff <ref.json> <cand.json>` | The field that changed, not a visual impression |
+| A rebuilt PBO should differ only where you changed it | `python tools/dayz-pbo-diff/pbo_diff.py --old <old.pbo> --new <new.pbo> --out <diff.json>` | Which entries' bytes changed or appeared, and whether the header properties did |
+| A regenerated navmesh "changed everywhere" | `python tools/dayz-navmesh-compare/compare_navmesh.py --old-nm <old.nm> --new-nm <new.nm> --out <report.json>` | Which tiles changed structure rather than bytes, how far from the terrain edit and under which routes |
 | A change looks right in Blender but wrong in game | the in-game bridge — `knowledge/dayz-mcp-bridge-protocol.md` | The engine's opinion, which is the only one that counts |
 | You are about to parse or emit a `.p3d` by hand | `py3d` | Do not write a bespoke codec; this one fails closed and verifies its own writes |
 
@@ -77,6 +79,9 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | Changing a linter rule, detector or parser | `vanilla_control.py` | Gate for linter authors, not a mod-cycle step |
 | Preview an MLOD `.p3d` / PAA / RVMAT | `dayz-3d-viewer` | HTML loads three.js 0.160.0 from a CDN; SWIZ, proxies and ViewPilot 1100 are documented gaps |
 | Verifying anything in-game | the MCP bridge | Wiring example in `.mcp.example.json`, deliberately not auto-started |
+| Rebuilding or patching a PBO | `dayz-pbo-diff` | Payload SHA-256 per entry; between two builds a different `.p3d` entry proves nothing by itself |
+| Regenerating a terrain's navmesh | `dayz-navmesh-compare` | Structure, not bytes; verified only for one 12 288 m world in 12.5, 25 or 50 m tiles |
+| Driving Terrain Builder without the desktop | `dayz-terrain-builder-runner` | EXPERIMENTAL, Windows only: menus and file dialogs verified; Generate Layers, imports and WRP export not; a disposable instance only |
 
 Two habits make the difference. Propose the tool **before** the expensive step,
 not after it fails — that is the whole point of a preflight. And when a tool
@@ -122,7 +127,7 @@ Obsidian's.
 | Path | What it is |
 |---|---|
 | `skills/` | 42 playbooks + `_shared/`. The primary content. |
-| `tools/` | Ten Python tools. See [`TOOLS.md`](TOOLS.md). |
+| `tools/` | Thirteen Python tools. See [`TOOLS.md`](TOOLS.md). |
 | `examples/` | Worked examples that chain the tools on synthetic inputs. |
 | `knowledge/` | Verified reference notes: engine facts, infra, topic syntheses. |
 | `sources/` | Provenance: every distributed file's origin, licence and hash. |

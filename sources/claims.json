@@ -2106,6 +2106,58 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-ddce-a140@2026-10-24",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/readme.md",
+      "claim_id": "CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC",
+      "evidence_locator": "Measured on files, not in game, as pipeline inbox fb-20261003-203108-9821 (2026-10-03, the Baltic 12 km terrain project, commit 84e2bb8) reports it: with the project's comparator, tools/navigation/compare_navmesh_tiles_v30.py (sha256 4de2a6121cde01a0cf2352fe62c5367ae02bc20cfb2803e3e2f3224b9a9d290b), two meshes that DayZ Tools' NavMeshGenerator wrote over terrains differing in 126 height vertices held 966 289 tiles each (983 x 983, the 12.5 m layout); 966 286 of them changed bytes and 138 changed structure (polygon count, vertex count or vertical bounds), all within 14.1 m of a changed vertex. The project's evidence (evidence/v30-shore-wave-2026-10-03/README.md and its summary JSON) was not read for this change, and neither were the meshes or the terrains: the numbers are the ticket's. Not re-measured. The Pack's comparator is tested offline on synthetic meshes only (tools/dayz-navmesh-compare/tests).",
+      "license": "MIT",
+      "line_end": 20,
+      "line_start": 10,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "tools",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-9821@2026-10-24",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/readme.md",
+      "claim_id": "CLAIM-NAVMESH-TESM6-DNAV11-ENVELOPE",
+      "evidence_locator": "The format values and the three layouts are the ones the project's reader enforced: tools/navigation/inspect_navmesh_tiles.py of the Baltic 12 km terrain project (commit 84e2bb8, sha256 6e8c45d6b3f55c31f63189cede39e7955008ed8a1ec05a91aa1639f66bbcade9), read as data for this change and never run. It required file magic TESM and version 6, a tile count of side x side with side = 12 288 / width tiles along x and z, origin (0, 0, 0) and square tiles of 12.5, 25 or 50 m, which it calls its three explicit local diagnostic layouts, and tile magic DNAV and version 11. That NavMeshGenerator's files carry these values is the project's measurement on its own files, as pipeline inbox fb-20261003-203108-9821 (2026-10-03) and the thread that asked for this adoption give it; the ticket's numbers are on the 12.5 m layout (CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC). The 12 km world is the project's own terrain. Not re-measured: no .nm file was read for this change, and the Pack's tests use synthetic meshes.",
+      "license": "MIT",
+      "line_end": 30,
+      "line_start": 24,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "tools",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-9821@2026-10-24",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-terrain-builder-runner/readme.md",
+      "claim_id": "CLAIM-TB-WIN32-RUNNER-ENVELOPE",
+      "evidence_locator": "In Terrain Builder (DayZ Tools; the ticket gives no build), 2026-10-03, as pipeline inbox fb-20261003-203108-9821 reports it (the Baltic 12 km terrain project, commit 84e2bb8, tools/terrain_builder/tbrunner.py, sha256 b04ddecaf556334e4777899a7a48da3cb2deb614140fc26ab1c233d738a90b7f): on an instance the runner launched, menu commands posted as WM_COMMAND and the standard Windows file dialogs filled with WM_SETTEXT worked without Terrain Builder taking the focus or the mouse moving; Generate Layers, a real import and an end-to-end WRP export were not tried that way. Spanish Windows as the thread that asked for this adoption states it; the ticket names no language. Terrain Builder as wxWidgets 2.8.12 in a 32-bit PE with the large-address-aware flag, and wxFrame::HandleCommand (src/msw/frame.cpp:951-979) handling WM_COMMAND without a focus check, are the ticket's statements; neither the executable nor the wxWidgets source was read for this change, and neither were the spike's logs. Not re-run: the Pack's tests use a fake user32 and never start Terrain Builder (tools/dayz-terrain-builder-runner/tests).",
+      "license": "MIT",
+      "line_end": 20,
+      "line_start": 8,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "tools",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-9821@2026-10-24",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-terrain-builder-runner/readme.md",
+      "claim_id": "CLAIM-TB-WIN32-RUNNER-GOTCHAS",
+      "evidence_locator": "Measured in Terrain Builder on 2026-10-03, as pipeline inbox fb-20261003-203108-9821 reports it (the Baltic 12 km terrain project, commit 84e2bb8): menu ids are dynamic and are refreshed with WM_INITMENUPOPUP before every command; entries with an icon are owner-draw and expose no text; Terrain Builder's own dialogs swap Ok = 2 and Cancel = 1, so buttons are pressed by label, and a cancel by id once ran an SHP export; on exit Terrain Builder rewrites TerrainBuilder.opt, Proj.vdat and GUILayout.opt; the .rpt log records neither imports nor Generate Layers. That wxWidgets 2.8 updates a menu's enabled state only on WM_INITMENUPOPUP is also the source's comment (it cites framecmn.cpp, OnMenuOpen; not read for this change). The Spanish and English labels are the source's CANCEL_LABELS and OK_LABELS, measured on Spanish Windows as the thread that asked for this adoption states it. Nothing was re-run or re-read for this change: no log, dialog or settings file.",
+      "license": "MIT",
+      "line_end": 93,
+      "line_start": 76,
+      "observed_at": "2026-10-03",
+      "promotion_artifact_id": "tools",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-9821@2026-10-24",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

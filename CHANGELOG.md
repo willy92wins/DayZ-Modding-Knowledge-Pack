@@ -7,6 +7,43 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-pbo-diff`, a new tool: compares the entries of two uncompressed PBOs by the SHA-256 of each
+  payload, and their header properties, and writes one new JSON report (`differing`, `only_old`,
+  `only_new`, `props_equal`, `differing_not_ignored`). It reads both through the fail-closed reader of
+  `dayz-vehicle-proxy-contract` and refuses a compressed entry, an unsafe, duplicate or non-ASCII
+  name, a truncated archive and an existing `--out` (exit 1). Adapted from `diff_pbo_entries.py` of
+  the Baltic 12 km terrain project (commit 84e2bb8, pipeline inbox fb-20261003-203108-9821), which
+  told the entry table from the properties by size and misread a PBO of 100 entries or fewer; its
+  one `data/layers/` filter is the repeatable `--ignore-prefix`. 22 tests on synthetic PBOs.
+  `dayz-pbo-build` gains a "Compare the entries of two builds" step that names it.
+- `dayz-vehicle-proxy-contract` `scripts/vehicle_proxy/pbo.py`: `digest_pbo` and `PboDigest` return
+  the header properties in file order and the SHA-256 of every entry's payload from one snapshot; a
+  compressed entry fails closed as in `read_entry`. The reader's existing tests pass unchanged; 7 new
+  tests. Its README says that `dayz-pbo-diff` reads through it.
+- `dayz-navmesh-compare`, a new tool: compares two `.nm` navmeshes tile by tile by structure
+  (polygon and vertex counts, vertical bounds) rather than bytes, and optionally locates the
+  structural changes against the terrain vertices that changed (NPZ `heights`, `--cell-m`,
+  `--local-m`) and lists those under routes (`--routes`). Statuses `PASS_NO_STRUCTURE_DELTA` and
+  `PASS_LOCAL_STRUCTURE_DELTA` (exit 0), `REVIEW` with `review_reasons` (exit 1); usage 2, refused 3.
+  The reason, as pipeline inbox fb-20261003-203108-9821 reports it (offline, not re-measured): over
+  terrains that differ in 126 vertices, 966 286 of 966 289 tiles changed bytes and 138 changed
+  structure, all within 14.1 m of a changed vertex, so hashing the files says that everything
+  changed. Verified envelope: one 12 288 m world in 12.5, 25 or 50 m tiles, TESM 6 and DNAV 11; the
+  report says whether a layout is inside it. Adapted from `inspect_navmesh_tiles.py` and
+  `compare_navmesh_tiles_v30.py` of the same project: the layout comes from the file header with
+  every check kept, non-finite bounds are refused, terrain and routes are optional and numpy is
+  needed only for terrain, and no structural change passes unless the terrain changed (the source
+  reviewed it always). 55 tests, 9 of them needing numpy.
+- `dayz-terrain-builder-runner`, a new EXPERIMENTAL tool, Windows only: drives a Terrain Builder it
+  launched by Win32 messages (`PostMessage(WM_COMMAND)`, `WM_SETTEXT`), with the subcommands of the
+  source, `tbrunner.py` of the same project. Menu commands and the standard file dialogs were
+  verified there on 2026-10-03 without Terrain Builder taking the focus; Generate Layers, a real
+  import and a WRP export were not. Its README records the gotchas: dynamic menu ids, owner-draw
+  entries without text, Terrain Builder's dialogs with Ok and Cancel ids swapped (press by label),
+  settings files rewritten on exit, a log that records neither imports nor Generate Layers. Changed
+  from the source: Win32 bound when a command runs, so it imports on any OS and refuses off Windows;
+  the executable from `--tb-exe` or `TBRUNNER_TB_EXE`, no fixed path; explicit errors instead of
+  asserts. 29 tests with a fake `user32`: none calls a real Windows function or starts a process.
 - `dayz-p3d-audit`: `audit_p3d.py` fails a needle triangle in a component of a Geometry, View or
   Fire LOD: a triangle (a quad is read as two) under 1e-6 m², or whose area is under 1e-4 of the
   square of its longest edge. A proxy triangle is left out by py3d's own rule (a selection named
