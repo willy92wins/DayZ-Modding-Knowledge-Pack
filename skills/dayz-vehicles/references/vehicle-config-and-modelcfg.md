@@ -271,10 +271,23 @@ class DamageSystem
 };
 ```
 `healthLevels[]` has 5 thresholds (1.0/0.7/0.5/0.3/0.0); each supplies the `.rvmat` array to swap at that
-damage level (empty `{}` = no visual change). `"hidden"` instead of an rvmat array hides the selection at
-that level (glass). Every `dmgZone_*` in `componentNames[]` MUST exist as a selection in the model
+damage level (empty `{}` = no visual change). `"hidden"` instead of an rvmat array is the config shape for
+glass that should vanish at that level; this file has no in-game check of it, and on one import a glass
+slot never hid (end of §6b). Every `dmgZone_*` in `componentNames[]` MUST exist as a selection in the model
 (FireGeometry component + Hitpoints/Memory). Without DamageZones + FireGeometry components there is no
 localized damage.
+
+A zone's `class Health` can also declare `RefTexsMats[]`. Vanilla Motorbike_02 `Front` lists
+`motorbike_02_body`, `_glass` and `_wheel`, the rvmats of its 1.0 entry in the same order, and its 0.0
+entry is `{body_destruct, "hidden", wheel_destruct}` (`DZ\vehicles\singletrack\config.cpp:904-905`,
+1.30.164014 Exp): read from the config, each slot of an entry replaces the rvmat in the same slot of the
+list. In that config every motorbike zone that hides glass declares the list, while Motorbike_01
+`FuelTank` and Motorbike_02 `Engine` have none; in `DZ\vehicles\wheeled\config.cpp` none of the 18
+`Window*` zones whose `healthLevels[]` hold `"hidden"` declares one, and 14 of them hide with the whole
+entry `{0,"hidden"}`. How the engine matches rvmats to faces in a zone without the list is not
+established. A child zone that redefines `healthLevels[]` but not `RefTexsMats[]` keeps its parent's list
+through `class Health: Health`; what that does in game was never isolated
+(LL-565, point 1; claim: CLAIM-VEH-REFTEXSMATS-SLOTS-130).
 
 `[MECHANISM VERIFIED 2026-08-30]` Enforce reads `componentNames[]` (`damagesystem.c:63-68`), not
 `memoryPoints[]`. Vanilla Chassis may omit `memoryPoints[]` entirely. Missing Memory `dmgzone_*`
@@ -284,9 +297,11 @@ physics fix.
 
 ## 6b. Window / Glass damage (added 2026-07-07, cross-confirmed 3 real configs)
 
-Breakable glass is **not** a separate system — it is the same `DamageZones` + `healthLevels[]` rvmat-swap
-mechanism as any body panel (§6 above), applied to a window-named zone. All 3 independent real configs
-checked converge on the same shape (intact → intact/no-change → damage rvmat → destruct rvmat → `"hidden"`):
+In config, breakable glass is **not** a separate system — it is the same `DamageZones` + `healthLevels[]`
+rvmat-swap mechanism as any body panel (§6 above), applied to a window-named zone. That the swap and the
+hiding work on glass is not checked in game here (see the H2R windscreen at the end of §6b). All 3
+independent real configs checked converge on the same shape (intact → intact/no-change → damage rvmat →
+destruct rvmat → `"hidden"`):
 
 | Source | Zone | hitpoints | final state |
 |---|---|---|---|
@@ -337,6 +352,57 @@ opening) that does not apply to DayZ SA's config-driven DamageZones system — d
 Sources: Tyson89/Landrover `config.cpp` (curl-fetch verbatim 2026-07-07); DayZ-Expansion-Scripts UAZ
 `config.cpp`, raw.githubusercontent.com (curl-fetch verbatim 2026-07-07); `ravmustang/DayZ_SA_ClassName_Dump`
 `vehicles_wheeled/config.cpp`; StarDZ Modding Wiki vehicle-mod tutorial (hitpoints discrepancy source).
+
+### Per-slot `"hidden"` and a windscreen that never hid (H2R import 2026-10, SP-483, added 2026-10-24)
+
+[EXACT][CLAIM-VEH-GLASS-HIDDEN-SLOT-130] Vanilla motorbikes put `"hidden"` in the glass slot of a zone
+with `RefTexsMats[]` (§6): Motorbike_02 `Front`, `Reflector_1_1` and `FuelTank`, and Motorbike_01
+`Reflector_1_1` (quoted in `dayz-motorbikes` `references/config-contract.md` §4). In the Motorbike_02
+ODOL that glass rvmat sits on three LOD 0 sections, one in each of its three zones, with a procedural
+texture at 10% alpha (`#(argb,8,8,3)color(0.000,0.000,0.000,0.100,ca)`); `motorbike_02_glass.rvmat`
+itself sets `renderFlags[] = {"NoZWrite"}` and the `Super` shaders (`:16-18`). The Motorbike_02
+windscreen is not one of them: it is the attachment `Motorbike_02_ShieldFront_ColorBase`
+(`proxy\Motorbike_02_windshield.p3d`), with its own `GlobalHealth` swap to windshield, damage and
+destruct rvmats and no `"hidden"`, and its slot is listed in `Front`'s `inventorySlots[]`
+(`DZ\vehicles\singletrack\config.cpp:589-616` and `:909`, 1.30.164014 Exp).
+
+The H2R wired its windscreen like that body glass, not like the vanilla windscreen: its `Front` declares
+`RefTexsMats[]` with the glass rvmat in the same slot as in every `healthLevels[]` entry, and `"hidden"`
+in that slot at 0.0. In the ODOL of the kit tested on 2026-10-24, LOD 0 has 390 sections (the vanilla
+Motorbike_02 has 22); the windscreen is section 173, textured with a procedural at 35% alpha, and the
+ninth of the 67 sections of the sectional selection `dmgzone_front`; the glass rvmat is on 149 sections,
+146 of them in `dmgzone_back`. With the zones taken down by the vanilla contact-damage call
+(`process-gates.md`, SP-483) and levels 2 and 4 logged on server and client, the body panels of `Front`
+took the damage and destruct rvmats and came back on repair, while the windscreen stayed drawn at level 4
+(DayZDiag 1.30.164014 on 2026-10-15, 1.30.164200 in three runs on 2026-10-24, the last of them with the
+crack rvmat taken out of the 0.5/0.3 entries). The cause is unknown.
+
+- **Excluded:** a missing file. `"hidden"` needs none, the glass rvmat is on faces, and the diagnostic
+  PBO held its marker rvmat, so the config-only rvmat trap of `dayz-pbo-build` does not apply. binarize's
+  "Material not loaded" names the glass rvmat, but also the body rvmats that do swap.
+- **Weak evidence:** at level 2, cracks (two runs) and a red emissive marker (one run) never showed, but
+  no part carried those rvmats from the start, and cracks on alpha-blended glass are faint. A vanilla
+  Motorbike_02 control cannot witness the case: its nearly transparent glass looks the same hidden or not.
+  The strong evidence is the windscreen still drawn at level 4 (claim: CLAIM-VEH-GLASS-ZONE-NO-SWAP-130).
+
+**Open, untested:** a limit on section index or count (a cap at a zone's first 64 sections would still
+include its ninth entry, and 173 is under 256); a per-material section count; how transparent sections are handled (a
+blanket limit is unlikely, since vanilla glass is also `NoZWrite`/`Super`, but no vanilla glass was seen
+hiding either); the shape itself: vanilla puts its body glass in zones of two to five sections, cars give
+glass a zone of its own (§6b table) and the Motorbike_02 windscreen is an attachment. Section indices
+move between builds (`dayz-pbo-build` SP-194; `proxies-and-get-in.md`), so read the index from the ODOL
+you test.
+
+[DESIGN] Cheapest first, one variable per build against an unmodified control, every build counted
+against the ITERATION BUDGET of `SKILL.md`: (1) offline, the face-ownership census of `SKILL.md`
+invariant 15d for the windscreen section, against the H2R's hidden selections (`light_1_1`, `camo`,
+`light_1_2`, `dashboard` and the gauge glyphs); (2) the windscreen in a zone of its own whose 0.0 entry is
+`{0,"hidden"}`; (3) the windscreen as an attachment, like `Motorbike_02_ShieldFront`; (4) the windscreen
+at a low section index with the same material and section count (check the ODOL before the run); (5) its
+own rvmat path (same content) with its own `RefTexsMats[]` slot; (6) `NoZWrite` alone against an opaque
+texture alone; (7) an opaque, unmistakable final rvmat instead of `"hidden"`, next to a part that carries
+that rvmat from the start. Until one of them changes the result, a glass zone that passes config and
+ODOL checks is "config", not "works".
 
 ## 7. Attachments, Cargo, fuel, GUI groups
 

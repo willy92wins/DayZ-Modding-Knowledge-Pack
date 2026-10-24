@@ -6,7 +6,8 @@ the evidence behind it. Read it when a model passes every offline gate and still
 spawn, or when you need to know your headroom before adding geometry.
 
 Everything below is measured on the HH-60G, cross-checked against 25 in-game verdicts, except the
-two building cases under item 3, which are binarize runs with no in-game verdict.
+two building cases under item 3, which are binarize runs with no in-game verdict, and the H2R
+import's runs under item 2, another vehicle with `PASS` verdicts only.
 
 **1. `Too many vertices` and `Won't simulate, it has no geometry` are the SAME defect.**
 The rejection happens while **loading the MLOD**, before conversion, so the engine aborts the
@@ -20,6 +21,19 @@ basename in the source dir (undeclared basenames fall back to Default and change
 path). Validated on 28 variants against the in-game verdicts of the previous cycle:
 **13 PASS/PASS, 12 FAIL/FAIL, zero false greens, zero false reds.** This turns a model
 bisection from ~6 min per variant into ~90 s per batch.
+[DESIGN] Give the call `-addon=<bench>` as well, `<bench>` being a dedicated folder that holds the
+source dir (binarize parses every `config.cpp` under `-addon`: `dayz-pbo-build` SP-155 rule 1).
+The validation above ran without it, and so does the HH-60G project's copy of the bench named
+under Tool (read 2026-10-24), which also stops on a source outside `P:\`. In the H2R import
+(2026-10), a call of that form with its source outside `P:\` and no `-addon` waited about 5 min
+before loading its first model, and three days later, other processes busy, gave no ODOL in
+30 min; with `-addon` the first model loaded within a second, all 8 read `PASS` as they had
+without it, and the kits built from them spawned in game. No `CAPACITY_FAIL` has been run with
+`-addon`, and the stall was seen only with the source outside `P:\` (a source under `P:\` was not
+timed). The `Material not loaded` lines listed under "Noise that does NOT discriminate" are
+noise for the verdict, not for the ODOL: every material entry of the H2R bench's 8 ODOLs came
+out empty, with `-addon` and without (`dayz-pbo-build` SP-155 rule 5), so run rule 5's control
+before shipping a bench ODOL (claim: CLAIM-BINARIZE-DIRECT-ADDON-STALL-REF).
 
 **3. The verdict has THREE states. Using two is a bug in your bench.**
 - `PASS` - a **new**, non-empty ODOL for the basename under test, in an output dir that did

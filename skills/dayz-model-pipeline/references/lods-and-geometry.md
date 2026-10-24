@@ -3,7 +3,7 @@
 ## LOD Types and Their Purposes
 
 ### Resolution LODs (Visual)
-These are what the player sees. Multiple LODs at increasing distances reduce rendering cost.
+These are what the player sees. Multiple LODs at increasing distances reduce rendering cost. This file does not give the distance at which the game switches visual LODs: before tuning a far-LOD material, identify in game which LOD is drawn at that distance (`dayz-vehicles` `references/process-gates.md`, SP-483).
 
 | LOD | Resolution Value | Purpose |
 |-----|-----------------|---------|

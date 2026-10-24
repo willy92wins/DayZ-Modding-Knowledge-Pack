@@ -1041,6 +1041,9 @@ Then read `ModelInfo.CoM` (and inertia) straight from the resulting ODOL. Verifi
 resolve the model's material paths (`lfquad\...`); from `C:\tmp` the materials fail to load
 **but the mass bake still works correctly** (control validated) — so a `C:\tmp` run is fine
 when all you need is the baked CoM/mass, not the textures.
+*(2026-10-24)* Direct calls of the H2R import, all from outside `P:\`, did not load their materials
+with or without `-addon`; the location is one lead among several there (`dayz-pbo-build` SP-155
+rule 5), and AddonBuilder builds staged outside `P:\` resolved theirs (SP-155 rule 1).
 
 This turns a 5-minute build+deploy+spawn loop into a 30-second offline loop for any
 mass/CoM/ride-height/placement iteration on a vehicle. Use it together with the per-LOD
