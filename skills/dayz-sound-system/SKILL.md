@@ -97,11 +97,13 @@ but were not verifiable in local source — inherit a vanilla set rather than ha
 - `SoundParams("SetName")` → validates/loads a SoundSet (:137-144).
 - `SoundObjectBuilder(params)` → `AddEnvSoundVariables(pos)` / `AddVariable(name, val)` →
   `BuildSoundObject()` (:82-108).
-- `SoundObject.SetParent(entity)` / `SetPosition(pos)` / `SetKind(WaveKind.X)` (:111-134).
+- `SoundObject.SetParent(entity)` / `SetPosition(pos)` / `SetKind(WaveKind.X)` (:111-134). With a
+  parent, `SetPosition` is in the parent's model space: set it before `Play3D` (recipe A2).
 - Play: `g_Game.GetSoundScene().Play3D(so, sob)` / `Play2D(...)` (:53-79; access `game.c:734`).
 - `AbstractWave` handle: `Play/Stop/Loop(bool)/SetVolumeRelative(0..1)/SetFadeInFactor/
   SetFadeOutFactor/SetDoppler/GetLength/GetCurrPosition` + `GetEvents()` ScriptInvokers
-  (Started/Stopped/Loaded/HeaderLoaded/Ended) (:146-230).
+  (Started/Stopped/Loaded/HeaderLoaded/Ended) (:146-230). `SetFrequency` takes a pitch factor,
+  not Hz (recipe A2).
 - `EffectSound` (high-level wrapper): `SetSoundSet/SetSoundLoop/SetSoundFadeIn/Out/SetSoundVolume/
   SoundPlay/SoundStop/IsSoundPlaying` + its own invokers — what `PlaySoundSet` returns.
   (desde 1.30 Exp: if `m_SoundFadeInDuration > 0`, `Event_OnSoundWaveStarted` calls `SetSoundVolume(0)`
@@ -200,6 +202,27 @@ void UpdateRollAudio()                          // call from client-side update
 }
 ```
 Position is already replicated to clients, so no server involvement is needed for the audio itself.
+
+**A2. The same loop built by hand, to set its pitch** (measured in game, DayZ 1.30.164014 Exp,
+LFSkateboard R1e, 2026-10-07) [EXACT][CLAIM-SOUND-HANDBUILT-LOOP-POSITION-130]. `EffectSound` holds
+its wave in the protected `m_SoundWaveObject` (`3_game/effects/effectsound.c:23`), so to call
+`AbstractWave.SetFrequency` on a roll loop the project built the loop itself: `SoundParams`, then
+`SoundObjectBuilder` with `AddEnvSoundVariables`, `BuildSoundObject`,
+`SetKind(WaveKind.WAVEEFFECTEX)`, `SetParent` on the player and `g_Game.GetSoundScene().Play3D`. The
+loop played (its header loaded, and the script logged it) but was barely audible, while one-shots of
+the same character sound bases played through `PlaySoundSet` were loud. With a parent, the position
+of a `SoundObject` is in the parent's model space, and `EffectSound` always sets it right before its
+own `Play3D`: it calls `SetCurrentLocalPosition` at `:172`, just before `Play3D` at `:173`, and its
+override of `SetCurrentLocalPosition` passes the position to `m_SoundObject.SetPosition`
+(`:746-753`). The hand-built loop set no position, and sat far from the rider. What fixed it:
+`SetPosition` on the sound object after `SetParent` and before `Play3D`, with a small offset in the
+parent's model space (the project used 0.1 m up). Lines of 1.30.164.200; 1.29 has the same code, the
+override at `:742-749`.
+
+[EXACT][CLAIM-SOUND-WAVE-FREQUENCY-FACTOR-130] `GetFrequency()` of that wave, a playing OGG loop,
+returned 1.0: `SetFrequency` takes a factor, a pitch multiplier, not a frequency in Hz. Set it
+relative to `GetFrequency()` once `IsHeaderLoaded()` is true. The run called both; their lines in
+`3_game/sound.c` were not read for this note.
 
 **B. Server-triggered impact sound** — register a set in `InitItemSounds()`, call
 `StartItemSoundServer(id)` from the server event (e.g. `EOnContact`), done.
