@@ -5737,7 +5737,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox a46a (fb-20261007-010034-a46a), 3fc6 (fb-20261007-010041-3fc6), e018 (fb-20261008-165335-e018) and the note of 854c (fb-20261009-104228-854c), project LFSkateboard. Locomotion in scripted commands, new subsection on Raised: the raised-fists idle under a HumanCommandScript ride and the IdleRas start condition in the 1.30.164014 Experimental workspace, CLAIM-ANIM-HCS-RAISED-IDLERAS-130 at line 282; the cause and the fix, plausible and not verified in game after 3fc6, CLAIM-ANIM-HCS-RAISED-FALSE-FIX at line 284; and a weapon raised under such a command, whose vanilla lift check throws a NULL VM exception (weapon_base.c:1625 in 1.30.164.200), CLAIM-ANIM-HCS-WEAPON-LIFT-NULL-130 at line 286. A second new subsection points to E23 of dayz-mod-workflow references/error-catalog.md for the exit crash of a command class in 4_World. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "562bfddd40bd661c8db5ff41d3b45c43b9a8ea5708236066189fb5803dc61368",
+          "source_hash": "018bf966f6b2276bcedb0b24e555408635fca8011af4b9d9ddd446768b5ee596",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-lfsk-notes@2026-10-24",
@@ -5745,7 +5745,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "562bfddd40bd661c8db5ff41d3b45c43b9a8ea5708236066189fb5803dc61368",
+      "output_hash": "018bf966f6b2276bcedb0b24e555408635fca8011af4b9d9ddd446768b5ee596",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
