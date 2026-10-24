@@ -1361,10 +1361,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-e074-label-tests@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox 0cee, 8204, a46a, 3fc6, e018 and the note of 854c, project LFSkateboard. Five Added entries: the hand-built sound loop and SetFrequency (dayz-sound-system), the custom player camera's id and registration (enforce-script-reference), Raised under a scripted command (dayz-animation-pipeline), E23 (dayz-mod-workflow), and the weapon lift check under a scripted command (dayz-animation-pipeline). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a69428f237ecb9b8dd1b0b25df79cf97f06375334d8ad53d68639df7c4944aea",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "928b68ec749c79596bbf66be283597b989be76202688baa91f19e8c1e1e34580",
+      "output_hash": "a69428f237ecb9b8dd1b0b25df79cf97f06375334d8ad53d68639df7c4944aea",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5722,10 +5732,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox a46a (fb-20261007-010034-a46a), 3fc6 (fb-20261007-010041-3fc6), e018 (fb-20261008-165335-e018) and the note of 854c (fb-20261009-104228-854c), project LFSkateboard. Locomotion in scripted commands, new subsection on Raised: the raised-fists idle under a HumanCommandScript ride and the IdleRas start condition in the 1.30.164014 Experimental workspace, CLAIM-ANIM-HCS-RAISED-IDLERAS-130 at line 282; the cause and the fix, plausible and not verified in game after 3fc6, CLAIM-ANIM-HCS-RAISED-FALSE-FIX at line 284; and a weapon raised under such a command, whose vanilla lift check throws a NULL VM exception (weapon_base.c:1625 in 1.30.164.200), CLAIM-ANIM-HCS-WEAPON-LIFT-NULL-130 at line 286. A second new subsection points to E23 of dayz-mod-workflow references/error-catalog.md for the exit crash of a command class in 4_World. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "018bf966f6b2276bcedb0b24e555408635fca8011af4b9d9ddd446768b5ee596",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "357ab3768e9b718d4f79a7b16b7d89b8a4b3a66bd5709719a3304c63236bf7bc",
+      "output_hash": "018bf966f6b2276bcedb0b24e555408635fca8011af4b9d9ddd446768b5ee596",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -8780,10 +8800,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox a46a (fb-20261007-010034-a46a) and e018 (fb-20261008-165335-e018), project LFSkateboard. Recurring error catalog index: new line E23, a HumanCommandScript subclass declared in 4_World and started two or more times crashes every orderly exit; the detail is in references/error-catalog.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d2461e4998be29fe071368a1ab5ecddb976c563eeced9025028df2eeafe13936",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "735cd365f9f9252b1250e547c3d9febac28389649f4ce9529244bcbdbd3464a3",
+      "output_hash": "d2461e4998be29fe071368a1ab5ecddb976c563eeced9025028df2eeafe13936",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -8856,10 +8886,20 @@
           "source_path": "dayz-mod-workflow/references/error-catalog.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox a46a (fb-20261007-010034-a46a, point 2) and e018 (fb-20261008-165335-e018), project LFSkateboard. New row E23 and section 'E23, a HumanCommandScript subclass in 4_World, started twice, crashes the orderly exit (open)': the measurements of 2026-10-07 on DayZDiag 1.30.164014 Exp, CLAIM-WF-HCS-4WORLD-EXIT-CRASH-130 at lines 41-46; the unknown cause, the interpretation of the leak counts and the workaround still being verified when reported, CLAIM-WF-HCS-EXIT-CRASH-WORKAROUND at line 48. The header line names E23. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5002fd8b900b6c4ba0582532d763daef5a21dff08b173d677c9fafcfc5c477c2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/error-catalog.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "640b34fbc48ee0df8660e8044f3285d18c535f7525702316328513dea3ed4451",
+      "output_hash": "5002fd8b900b6c4ba0582532d763daef5a21dff08b173d677c9fafcfc5c477c2",
       "output_path": "skills/dayz-mod-workflow/references/error-catalog.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -11974,10 +12014,20 @@
           "source_path": "dayz-sound-system/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox 0cee (fb-20261007-010022-0cee), project LFSkateboard. Recipes: new recipe A2, 'The same loop built by hand, to set its pitch': a hand-built loop (SoundParams, SoundObjectBuilder, BuildSoundObject, SetKind(WAVEEFFECTEX), SetParent, Play3D) is barely audible unless SoundObject.SetPosition is set before Play3D, since with a parent that position is in model space and EffectSound sets it right before its own Play3D (effectsound.c:23, :172-173 and :746-753 in 1.30.164.200, :742-749 in 1.29), CLAIM-SOUND-HANDBUILT-LOOP-POSITION-130 at lines 206-220; and AbstractWave.SetFrequency takes a factor, since GetFrequency of a playing OGG wave returned 1.0, CLAIM-SOUND-WAVE-FREQUENCY-FACTOR-130 at lines 222-225. Script API core: the SoundObject and AbstractWave bullets point to it. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "447a8b3b089a86acaf181471cc9f581f6b792933f7e203b0c90cbc7ed9590159",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c27ff4fa95a1c75d8a8ee340f509020d27a3e952dda5c668e8f799f6891bd0b1",
+      "output_hash": "447a8b3b089a86acaf181471cc9f581f6b792933f7e203b0c90cbc7ed9590159",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -15536,10 +15586,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox 8204 (fb-20261007-010028-8204), project LFSkateboard. COMMON API PATTERNS: new subsection 'Custom player camera: a small id, registered in RegisterCameras': RegisterCameraCreator with id 1171 crashed the DayZDiag 1.30.164014 Exp dedicated server at startup and 17 works, vanilla's ids (1-14 and 30-32, 32 new in 1.30) and the unmeasured ceiling, CLAIM-ENF-CAMERA-CREATOR-ID-130 at line 594; and why a creator registered from ModItemRegisterCallbacks.RegisterCustom does not survive, vanilla's order read in 1.30.164.200 and 1.29, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER at line 596. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "21f2c6901a8b319e9f5fc3ed3b64003b24d81c57c20af292ba6839329ab16b44",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d0bfaed6b3ca6fed944790a617e5e1aaaf58265cade70be3d9378ff95682de17",
+      "output_hash": "21f2c6901a8b319e9f5fc3ed3b64003b24d81c57c20af292ba6839329ab16b44",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -18161,10 +18221,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox 0cee, 8204, a46a, 3fc6, e018 and the note of 854c, project LFSkateboard. Registers, runtime_verified unless named otherwise: CLAIM-SOUND-HANDBUILT-LOOP-POSITION-130 (lines 206-220) and CLAIM-SOUND-WAVE-FREQUENCY-FACTOR-130 (lines 222-225) in dayz-sound-system SKILL.md; CLAIM-ENF-CAMERA-CREATOR-ID-130 (line 594) and CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER (line 596, source_verified) in enforce-script-reference SKILL.md; CLAIM-ANIM-HCS-RAISED-IDLERAS-130 (line 282), CLAIM-ANIM-HCS-RAISED-FALSE-FIX (line 284, unverified) and CLAIM-ANIM-HCS-WEAPON-LIFT-NULL-130 (line 286) in dayz-animation-pipeline SKILL.md; CLAIM-WF-HCS-4WORLD-EXIT-CRASH-130 (lines 41-46) and CLAIM-WF-HCS-EXIT-CRASH-WORKAROUND (line 48, unverified) in dayz-mod-workflow references/error-catalog.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cf3a1d24c1b57cbc923d65791af4ccf75ed5757f21a851056ebd46f2c1679233",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ca7c017b2f71255ce3ed736152b52bfe5b82d8f08db8519b390096a170e1a6c7",
+      "output_hash": "cf3a1d24c1b57cbc923d65791af4ccf75ed5757f21a851056ebd46f2c1679233",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
