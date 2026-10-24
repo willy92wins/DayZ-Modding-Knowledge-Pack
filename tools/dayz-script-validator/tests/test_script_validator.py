@@ -4964,6 +4964,48 @@ class TestProtoArgumentDowncast(unittest.TestCase):
                     [line] if fails else [], _proto_lines(source), source
                 )
 
+    def test_a_label_indented_with_tabs_is_read(self):
+        # Codex review of #125, J1: a label indented with tabs is read like
+        # one indented with spaces, so the Object local after it is read, not
+        # the IEntity member of that name.
+        source = (
+            "class FX_T\n{\n    IEntity hit;\n    void F(int n)\n    {\n"
+            "        switch (n)\n        {\n"
+            "\t\t\tcase 0: Object hit;\n"
+            "                FX_Physics.FX_Tag(hit);\n"
+            "                break;\n        }\n    }\n}\n"
+        )
+
+        self.assertEqual([], _proto_lines(source))
+
+    def test_a_name_that_begins_with_case_is_no_label(self):
+        # Codex review of #125, J2: `casework:` is no `case` label, so the
+        # declaration after it is not read, as after `not_a_label:`, and the
+        # IEntity member of that name is.
+        source = (
+            "class FX_W\n{\n    IEntity hit;\n    void F(int n)\n    {\n"
+            "        switch (n)\n        {\n"
+            "            casework: Object hit;\n"
+            "                FX_Physics.FX_Tag(hit);\n"
+            "                break;\n        }\n    }\n}\n"
+        )
+
+        self.assertEqual([9], _proto_lines(source))
+
+    def test_a_template_with_a_comma_after_a_label_is_read(self):
+        # Codex review of #125, J3: the template part of a declaration after a
+        # label runs past its comma, so the map local is read and the IEntity
+        # member of that name is not.
+        source = (
+            "class FX_M\n{\n    IEntity hit;\n    void F(int n)\n    {\n"
+            "        switch (n)\n        {\n"
+            "            case 0: map<string, Object> hit;\n"
+            "                FX_Physics.FX_Tag(hit);\n"
+            "                break;\n        }\n    }\n}\n"
+        )
+
+        self.assertEqual([], _proto_lines(source))
+
     def test_a_long_line_of_template_or_array_parts_is_read_once(self):
         # Codex review of #125, H2: from each `:` before a type the template
         # part of the declaration pattern, and its array part, ran on to the
