@@ -7,6 +7,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-p3d-audit`: `audit_p3d.py` fails a needle triangle in a component of a Geometry, View or
+  Fire LOD: a triangle (a quad is read as two) under 1e-6 m², or whose area is under 1e-4 of the
+  square of its longest edge. The finding names the LOD, the component, the face, both numbers and
+  the point to drop. In DayZ 1.29.163709 two components of a lid built with Qhull, each holding one
+  needle (4.6e-7 and 1.6e-7), took no ray in `geom`, `view` or `fire` while binarize said nothing;
+  built again without the point opposite each needle's longest edge, they took the rays
+  (fb-20261002-175602-ddce). The skill's first tests, 11, need neither py3d nor a `.p3d`.
+  `dayz-model-pipeline` `references/py3d-direct-generation.md` ("Needle triangles") holds the
+  measurement and the fix, and `references/lods-and-geometry.md` points to it.
+- `dayz-model-pipeline` `references/py3d-direct-generation.md`, UV Flip Detection: V=0 at the top,
+  measured on a file. Sampling the texture on the faces of the `light_emit` bulb of a wall lamp, a
+  selection with its own color, with both readings of V gave a difference of 177.6 against the rest
+  of the model with V=0 at the top and 10.6 with V=0 at the bottom, which confirms the
+  `(u, 1.0 - v)` of Fix 2 (fb-20260921-164248-a140, part 2).
 - `dayz-script-validator`: `ES-PROTO-ARGUMENT-DOWNCAST` reports a name passed to a parameter of a
   `proto` method whose class derives from the class the name is declared as. DayZ 1.30.164014
   server refused `DayZPhysics.RaycastRV(..., hitEntity, m_Human, ...)`, with `hitEntity` an
