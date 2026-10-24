@@ -599,6 +599,7 @@ Per-session in-game gotchas moved to `references/session-findings.md`; load it w
 - **`@<Mod>_deps` separate dep addon (2026-06-26)** — put deps in `-BaseMods` (loads first) or the client fails `Unknown type` at compile; replicate the last successful `-mod=` from the RPT.
 - **Third-party "sloppy" scripts (2026-06-28)** — deps that only warn on retail but fatal-compile on diag require a user-owned external manual parity run; agent stays in quarantine.
 - **Launching DayZDiag from the agent (2026-06-28, superseded 2026-07-15)** — background tool-jobs can lose their child; use the Diag-only managed launcher and its exact run instead of an unmanaged process.
+- **H2R import (2026-10-24)** — some DayZDiag 1.30 runs never load their textures while their error counts read normal (compare the run's median JPEG size with a textured run of the same framing, the RPT warning set being specific to that probe, and relaunch); the vehicle 1PP eye rides the `Head` bone and moves between runs and looks: log it at every look.
 
 ## Backups (.bak_*) in scripts/ inflate the PBO and break grep-verify (SP-065, added 2026-07-14)
 
@@ -1478,7 +1479,7 @@ is only promoted for the mod when an in-game run demonstrates that it steers.
 ### Contract of a repeatable scripted cell (SP-279)
 
 - Spawn fixture at a known fixed location and place player at a fixed offset on
-  `SurfaceY`; random spawn turns obstacles and doors into environmental noise.
+  `SurfaceY`; random spawn turns obstacles and doors into environmental noise. A default spawn also draws a random character class: pin it (`references/session-findings.md`, "H2R import (2026-10)").
 - After an exit, rearm placement server-side after cooldown with player on foot.
   Re-entry is part of the test: a ghost pose on client invalidates reach and `Can()`.
 - `forces-off`, `clamp-abort`, `no-probes`, `no-pilot`, and `not-owner` are **INCONCLUSIVE** and accept
@@ -1696,6 +1697,9 @@ observation seems normal and user reports it in good faith.
 3. If any is missing, observation is not discarded: **it is reclassified**. Whatever does not depend on
    pose or LOD remains valid (a mirrored texture is so from any angle); whatever
    depends on where the eye is, does not.
+4. With every mod present, read two more things from THAT run: whether it rendered textured and, for
+   anything that depends on where the eye is, where the eye was. Both changed between runs with the same
+   command line in the H2R import (2026-10) (`references/session-findings.md`).
 
 Name trap in this tree: `@Survivor Animations` **with space** splits the command
 line (in RPT it is seen cut off at `-mod=...;P:\Mods\@Survivor`). The good junction is

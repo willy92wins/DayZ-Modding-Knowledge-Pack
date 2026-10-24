@@ -100,7 +100,7 @@ hit six traps, each costing a run:
 6. **Use a fresh `-profiles=` directory per run.** A readiness check that greps the
    newest `script_*.log` found a log left by an earlier run in the same directory.
    It reported the server ready and the client connected at +0 s (2026-09-26): the
-   run looked healthy and measured nothing.
+   run looked healthy and measured nothing. A client that never loads its textures fools a visual check the same way (`session-findings.md`, "H2R import (2026-10)").
 
 ## Measuring server load
 

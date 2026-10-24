@@ -202,3 +202,73 @@ SUB_BRZ Phase 5 smoke 2026-06-28 (cost ~half a session). Cross-ref LL-168.
 - `-resolveFilePatchingUsingEnfusion=0` / `-resolveFilePatchingUsingEnfusion=1` — Enfusion path for filePatching.
 
 (until 1.29: `-mod` was documented as packed `@Mod` folders.) Pair unpacked `-mod` with the filePatching caveats already in this file (empty-PBO compile, `-NoFilePatching` for production replica). Full notes: `dayz-1-30-test-ingame.md`.
+
+## H2R import (2026-10): untextured runs and a moving 1PP eye (SP-470, added 2026-10-24)
+
+Two ways a capture run misleads while its error counts look normal. Measured in the H2R import (2026-10):
+dedicated server and windowed client on one PC, the client window grabbed with Windows Graphics Capture at
+3841x2160, one JPEG a second (ffmpeg `-q:v 3`). MB is 10^6 bytes; script lines are 1.30.164.200's, then 1.29's.
+
+### Some runs never load their textures: judge the run before its frames
+
+[EXACT][CLAIM-TEST-DIAG-UNTEXTURED-RUN-130] On DayZDiag 1.30.164.200, 2 of 7 runs on 2026-10-19 and 5 of 12 on
+2026-10-24 drew the scene flat for most or all of the run (terrain, sky, vegetation as blocks, the mod's own
+model; in some, part of it arrived late) while lighting and shadows still drew and the run ended normally.
+The next run with the same server and client command line came back textured after 5 of the 7 flat runs (once
+three flat runs came in a row), and two textured runs opened with 4 and 11 s of flat frames. No error flags
+it: the client RPT and script log hold as many error lines as a textured run's. In all 24 captured runs of
+this probe (Chernarus, 2026-10-15 to 24), though, every textured run's client RPT had three warnings and no
+flat run's had all three: `MatMulti` on `atcbig_multi_5metal_plates_old_co.paa`, and `No components in` on
+`cl_rock1.p3d` and on `muzzle_flash_pistol_fnp.p3d`; two mostly flat runs had one or two of them (other maps
+not checked). Flat clients were also seen on 1.30.164014 (in part) and 1.29.163709 (`dayz-characters`
+`references/character-rigging.md`). Cause unknown; window focus was not recorded (`SKILL.md`, SP-391), so it
+is not ruled out. One observation from another project points at it (historical, not reproduced here): on
+2026-10-23 a client launched by the managed launcher stayed flat for about 3 min and loaded its textures as
+soon as the owner clicked into its window, and the managed tools do not give that window focus. Until focus is
+ruled out, log the foreground window, or have a human click the client window, before judging frames.
+
+- Signal: the run's median JPEG size, not a frame's: 0.36-0.45 MB for the 7 flat runs against 1.46-1.61 MB for
+  the 13 textured runs whose view filled the window. The last four runs of 2026-10-24 drew the view in about
+  72% of the window's width and height, and the textured one among them read 0.63 MB: compare runs with the
+  same framing. Single frames overlap (night, late textures).
+- For anything judged on its frames such a run is `SETUP_FAIL` (`SKILL.md`, "Validity of an automated run"):
+  relaunch; do not tune a material, LOD or closure on it, nor fail a model for missing textures
+  (`dayz-mcp-verify`) while the vanilla terrain and sky in the frame are flat too. Its script-side readings
+  still count: two of the Lewis eye readings below come from flat runs.
+
+### The 1PP eye is not a constant of the character class: log it in every run
+
+[EXACT][CLAIM-TEST-1PP-CAMERA-HEAD-BONE] The vehicle 1PP camera, `DayZPlayerCamera1stPersonVehicle`
+(`dayzplayercameravehicles.c:4`), keeps its parent's placement: bound by position to the character's `Head`
+bone, offset `"0.04 0.04 0"` (`dayzplayercamera1stperson.c:15`, `:21`, `:53-54`; the binding fields,
+`dayzplayer.c:23-24`; same lines in 1.29). `dayz-vehicles` `references/rip-import.md` item 5 rests on it.
+
+[EXACT][CLAIM-TEST-1PP-EYE-PER-RUN-130] On DayZDiag 1.30.164.200, logged in the bike's model space at seven
+fixed looks per run with the bike stopped (11 runs, 2026-10-16 to 24), the eye sat 5.4-6.1 cm from the `Head`
+bone at every look (the offset is 5.7 cm long), and that bone moved while the rest held: the pelvis stayed
+within 0.6 mm, with the bars at rest and the same rider clips swapped in, and the head ranged over 7.6 cm.
+
+- Between runs with one class and command line: four runs pinned to SurvivorM_Lewis on 2026-10-19 put the
+  eye at 1.479-1.493 m, one of them 8.5-9.4 cm to one side at yaw 0.
+- Between looks: SurvivorF_Keiko held 1.401 m for six of seven looks on 2026-10-19, with black clipped shards
+  where the handlebar and top clamp should be, and 1.474 m on the seventh, handlebar back; two runs pinned to
+  Keiko on 2026-10-24 read 1.42-1.51 m, changing from look to look. In 5 of the 11 runs, though, the eye held
+  within 1 mm over all seven looks, yaw ±45 included.
+- Across classes: SurvivorF_Judy read Lewis's eye to 0.2 mm on 2026-10-19 and 3.7 cm lower on 2026-10-16.
+
+Why the head moves, and what held Keiko at 1.401 m (not reproduced), is not established. It is not the
+missing-mod case either (`SKILL.md`, the `-mod=` line check, point 2): the mod set and the pose swap were the
+same in every run. Window focus, which changed client-side readings in SP-391 (`SKILL.md`), was not logged
+in these runs either.
+
+- Log the eye at every look of every run: `GetCurrentCameraTransform` (`dayzplayer.c:1237`, `:1219`) through
+  the vehicle's `WorldToModel` (`object.c:874`, `:870`). Compare first-person frames only between runs whose
+  eyes match, and check offline 1PP geometry (`dayz-vehicles`, SP-248, SP-249) against the eyes the runs
+  logged, not one eye per class.
+- Pin the class anyway, to remove one variable; whether the class moves the eye is not established.
+  [EXACT][CLAIM-TEST-PIN-CHARACTER-CREATECHARACTER] In a `modded class MissionServer`, override
+  `PlayerBase CreateCharacter(PlayerIdentity identity, vector pos, ParamsReadContext ctx, string characterName)`
+  (`missionserver.c:499`, `:486`; both spawn paths of `OnClientNewEvent` call it), set `characterName` from
+  `CommandlineGetParam` (`game.c:661`, `:660`) behind the test flag (`SKILL.md`, "AUTOMATED in-game cell
+  without pilot", point 1) and call `super`: all 7 runs that passed a class spawned it, and 17 runs without
+  it drew 14 classes.

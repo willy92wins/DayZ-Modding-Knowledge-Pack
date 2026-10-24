@@ -316,7 +316,7 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   `camera_set` + `capture_screenshot`; inspect each PNG. PASS = object visible (not invisible), without
   missing textures (no solid magenta/white/black), plausible proportions, without inverted faces
   or holes (winding). Hole/missing-face from one angle and solid from opposite = inverted
-  winding.
+  winding. Before failing a model on textures, look at the vanilla terrain and sky in the same frame: if they are flat too, the client did not load its textures and the frame says nothing about the model (`dayz-test-ingame` `references/session-findings.md`, "H2R import (2026-10)").
 - **Collision**: `scene_raycast(from_pos, to)` (default `method="rvproxy"`: LOD intersection in the
   `intersect` mode) aimed at the object in each of `geom`, `view` and `fire`: the battery below for a
   small object or an item, multi-point for a building (walls, corners, floor). PASS = rays that
@@ -652,7 +652,7 @@ Visual smoke of a CarScript vehicle driven by MCP, verified end-to-end on Merced
    instead of render. If it happens: wait for settle (~30-40 s in background — foreground sleep is
    blocked in this environment) and recapture; use several angles. Top-down that clearly reveals proxy
    (mis)alignment: `cam_pos=[carX+3, 16, carZ+1]` `look_at=[carX, ground+0.1, carZ]`. ~25k
-   tokens/image — batch captures, do not re-read a PNG except to verify something concrete.
+   tokens/image — batch captures, do not re-read a PNG except to verify something concrete. A frame flat everywhere, vanilla terrain and sky included, is not a flaky grab of the model: withhold its texture verdict, check that the client window has focus and capture again after settling, since textured runs have opened with 4-11 s of flat frames; if the scene stays flat, its visual evidence is `SETUP_FAIL` and the run is relaunched (`dayz-test-ingame` `references/session-findings.md`, "H2R import (2026-10)").
 7. **User's eye > capture** when render is ambiguous: in MercedesAMGLF grab was flaky and
    user reading was reliable diagnosis of winding and proxy alignment. If there is a human in
    the loop, cross-check with them. (Case s3 2026-06-24: I was about to sign PASS on faint renders; user's

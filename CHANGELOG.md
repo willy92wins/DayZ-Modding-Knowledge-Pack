@@ -7,6 +7,85 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-vehicles` `references/proxies-and-get-in.md`, new section "Closing first-person gaps"
+  (SP-469; the H2R import (2026-10), DayZDiag 1.30 Exp: 164014 through 2026-10-15, 164200 from
+  2026-10-16): gaps a seated rider sees through a fairing are closed with single-sided black
+  membranes that only the ViewPilot (res 1100) carries. On that motorbike, closures and 1PP inverted
+  twins in LOD0 showed from outside as black slivers, and with both in res-1100 LODs alone the
+  closures covered the large gaps in first person (claim `CLAIM-VEH-MOTO-1PP-VIEWPILOT-130`; the
+  rules' offline counts and in-game observations: `CLAIM-VEH-MOTO-1PP-CLOSURE-OFFLINE-130`,
+  `offline_tested`, and `CLAIM-VEH-MOTO-1PP-CLOSURE-INGAME-130`, `runtime_verified`). Four
+  rules from defects found there: test with the steering turned (offline only: closures checked with
+  the bars straight hid the fork once they turned, 247,420 px over 48 views at half resolution); put
+  the membrane behind the steering sweep, ray by ray, because trimming it there either stacked strips
+  (mottling in game) or left 55,884 px open, and pushing its vertices back hid the top clamp,
+  controls and grips in game; tuck the rim 2 cm under fixed parts, not 6 mm; trace the contour with
+  marching squares. Matte black is a [DESIGN] choice, not A/B-tested. The section also records what
+  the offline check misses: 23 measured or offset eyes left 526 px open in qualifying gaps over 69
+  views and nothing in front of fixed or turned parts at pitch -50, yet one eye moved 12 cm sideways
+  put 10 px of closure in front of a fixed part (cross-family review, offline); the renderer skips
+  glass, its gap detector misses slits up to about 2 px wide at half resolution, the in-game checks
+  of the final closures were at pitch -50, and no in-game capture had the bars turned. `dayz-vehicles` `SKILL.md` notes in the seated-view
+  invariant that seat-only geometry goes in res 1100 alone, keeps the first-person view of every
+  family in that atlas and indexes the section; `visual-gates-and-winding.md` #10 (m),
+  `dayz-model-pipeline` SP-166, `dayz-p3d-audit` ("Locating seat-visible see-through") and
+  `dayz-motorbikes` (Family Selector and forward contract) point to it.
+- `dayz-test-ingame` `references/session-findings.md`, "H2R import (2026-10)" (SP-470; DayZDiag 1.30.164.200):
+  two ways a capture run misleads while its error counts look normal. Some runs never load their
+  textures (2 of 7 on 2026-10-19, 5 of 12 on 2026-10-24; the next run with the same command line came
+  back textured after 5 of the 7; cause unknown; window focus was not recorded, and one observation
+  from another project, a flat client that loaded on a click into its window, points at it). When the view fills the
+  window, the run's median JPEG size tells them apart (0.36-0.45 MB against 1.46-1.61 MB at 3841x2160).
+  In the 24 captured runs of that probe, only textured runs had all three of a set of client RPT
+  warnings. Such a run is `SETUP_FAIL` for its frames, not for its script logs. The vehicle 1PP camera
+  rides the `Head` bone. With the bike stopped, the pelvis within 0.6 mm and the same rider clips, the
+  head still moved: four runs pinned to SurvivorM_Lewis with one command line put the eye at
+  1.479-1.493 m, SurvivorF_Keiko held 1.401 m for six looks and 1.474 m on the seventh, and
+  SurvivorF_Judy read Lewis's eye to 0.2 mm on one day and 3.7 cm lower on another. Log the eye at
+  every look; a `MissionServer.CreateCharacter` override pins the class, not the eye. `SKILL.md` gains
+  the index line, a fourth check in "An in-game observation is worth whatever the `-mod=` line of ITS
+  run is worth" and a class pin in the SP-279 cell contract; trap 6 of
+  `references/dayz-1-30-test-ingame.md` points to the untextured case.
+- `dayz-mcp-verify` `SKILL.md`, the static-object texture verdict and "Flaky capture" (SP-470): before
+  failing a model on textures, look at the vanilla terrain and sky in the same frame; a frame flat
+  everywhere withholds the verdict: check the window's focus and capture again after settling, and
+  relaunch if the scene stays flat.
+- `dayz-animation-pipeline` `references/vehicle-rider-ik-pose.md`, `dayz-motorbikes` `SKILL.md` and
+  `references/rider-animation.md` (SP-470): the stopped rider's 0.1-0.5 mm (0.4 mm for the head) from
+  the clip's FK is dated to the 2026-09-28 runs, with a pointer to the later first-person runs where
+  the stopped head moved by several cm.
+- `dayz-vehicles` `references/vehicle-config-and-modelcfg.md` (SP-483): §6 now says what
+  `RefTexsMats[]` is and which vanilla zones declare it: every vanilla motorbike zone that hides glass
+  does, and none of the 18 vanilla car `Window*` zones that hide glass does (claim
+  `CLAIM-VEH-REFTEXSMATS-SLOTS-130`, `source_verified`). A subsection at the end of §6b: vanilla
+  motorbikes declare body glass `"hidden"` in one slot of such a zone, while the Motorbike_02
+  windscreen is a separate attachment (`CLAIM-VEH-GLASS-HIDDEN-SLOT-130`, `source_verified`). The H2R
+  import (2026-10) wired its windscreen like that body glass, and it never hid: with the zones taken
+  down by the vanilla contact-damage call, the body panels of `Front` swapped and came back on repair
+  while the windscreen stayed drawn at level 4, in four runs, one on DayZDiag 1.30.164014 and three
+  on 1.30.164200; cracks and a red marker never showed either, but there was no positive control
+  (`CLAIM-VEH-GLASS-ZONE-NO-SWAP-130`, `runtime_verified`). The cause is unknown; the subsection lists untested hypotheses and a
+  cheapest-first plan. The `"hidden"` sentence of §6 and the opening of §6b now say that the glass case
+  has no in-game check.
+- `dayz-vehicles` `references/process-gates.md`, "A config gate is not a visual gate" (SP-483): the
+  H2R's feedback gates 12 (far-LOD silver rvmat) and 13 (crack rvmat and `"hidden"`; it never read
+  `RefTexsMats[]`) passed while the screen did not change (`CLAIM-VEH-GATE-CONFIG-NOT-VISUAL-130`,
+  `runtime_verified`). Rules: report such a PASS as "config"; take vehicle zones down with the vanilla
+  contact-damage call, which swapped the H2R and a vanilla Motorbike_02 in one run, while `SetHealth01`
+  runs on other days showed no swap without isolating the method (from LL-565, point 2;
+  `CLAIM-VEH-CONTACT-DAMAGE-SWAP-130`, `runtime_verified`); give a diagnostic marker a positive control;
+  use a control that can show the change; identify the drawn LOD before tuning a far-LOD material; and
+  point config gates at the packed artifact, with a [DESIGN] check that a far-LOD stand-in rvmat is in
+  its zone's `RefTexsMats[]` (the H2R's far silver was in none, effect untested:
+  `CLAIM-VEH-FAR-LOD-MAT-OUTSIDE-REFS-130`, `offline_tested`) and a packer that refuses diagnostic
+  builds. `SKILL.md`, LESSONS ARCHIVE, lists the section.
+- `dayz-vehicles` `references/proxies-and-get-in.md`, "`binarize` is NOT deterministic": face and
+  section order also change between builds (`dayz-pbo-build` SP-194), and the H2R import saw it with
+  `binarize.exe` called directly (the `dashboard` section at index 175 in one build and 204 in another;
+  `CLAIM-BINARIZE-SECTION-ORDER-130`, `offline_tested`). ODOL gates never key on section indices.
+- `dayz-model-pipeline` `SKILL.md` ("Damage variant rvmat pattern") and
+  `references/lods-and-geometry.md` ("Resolution LODs (Visual)"), and `dayz-motorbikes` `SKILL.md`
+  (step 5): pointers to those passages.
 - `dayz-p3d-audit`: `audit_p3d.py` fails a needle triangle in a component of a Geometry, View or
   Fire LOD: a triangle (a quad is read as two) under 1e-6 m², or whose area is under 1e-4 of the
   square of its longest edge. A proxy triangle is left out by py3d's own rule (a selection named
@@ -307,6 +386,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-vehicles` `references/binarize-vertex-budget.md` item 2 and invariant 27 (SP-468): the
+  offline vertex bench calls `binarize.exe -always <src under P:\> <out>` with no `-addon`. In the
+  H2R import (2026-10) a variant of that call, its source outside `P:\`, waited about 5 min before
+  loading its first model, and three days later, other processes busy, gave no ODOL in 30 min; with
+  a dedicated `-addon` folder, as AddonBuilder passes one, the first model loaded within a second
+  and all six builds converted their 8 models. A call with its source under `P:\` was not timed.
+  Why the wait grew is not established, and that binarize walks `P:` meanwhile is inferred, not
+  traced. Item 2 and invariant 27 keep the validated call, say that its 25/25 validation ran without
+  `-addon`, and add `-addon` as [DESIGN] advice, untested for a source under `P:\` and with only
+  `PASS` run so far; item 2 also says the bench's ODOLs came out with every material empty, and the
+  reference's header scopes the new runs. `dayz-pbo-build` SP-155 rule 1 adds the direct-call case
+  and the stall's signal, rule 3 names the stall, and rule 5 records the H2R import as a confounded
+  case of a texture missing on its own: with and without `-addon` the same 65 `.rvmat` were not
+  loaded and every material entry of the 8 ODOLs came out empty, while the mod's `.rvmat` sat at
+  their cited path. The unstaged vanilla textures they name, the source outside `P:\` and what the
+  direct call lacks against AddonBuilder are left as unmeasured leads. `dayz-model-pipeline`
+  `references/py3d-direct-generation.md` points from its LFQuad note to that case.
 - `dayz-script-validator`: `ES-MULTILINE-CONDITION-OPERATOR` is FAIL, no longer WARN. It was
   WARN on one measurement with the vanilla control still to run; the control has since found
   nothing for it on 1.29.0.163451 (review of #113) or on 1.30.164078 stable (#117), and its ticket,

@@ -200,3 +200,6 @@ Names verified in script: lights `MotorbikeScript.c:69-71`, `engine` `:181`, `pt
    - Convex for occlusion calculation and proxy positioning on server.
 3. **LOD Fire Geometry**:
    - Components named `dmgZone_chassis`, `dmgZone_fender`, `dmgZone_engine`, `dmgZone_front`, `dmgZone_back`, `dmgZone_fuelTank`, `dmgZone_lights_1_1` paired with `DamageSystem` damage zones.
+4. **LOD ViewPilot (res 1100, a visual LOD)**, optional:
+   - None on the vanilla motorbikes (`vanilla-p3d-anatomy.md`, parsed from their ODOLs, not checked in game).
+   - Add one only for geometry meant for the seat alone, such as closures over the gaps the rider sees through the fairing (`dayz-vehicles` `references/proxies-and-get-in.md`, SP-469).
