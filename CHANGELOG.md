@@ -7,6 +7,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-sound-system` `SKILL.md`, recipe A2: a roll loop built by hand to reach
+  `AbstractWave.SetFrequency` (`SoundParams`, `SoundObjectBuilder`, `BuildSoundObject`,
+  `SetKind(WAVEEFFECTEX)`, `SetParent`, `Play3D`) was barely audible until `SoundObject.SetPosition`
+  was set after `SetParent` and before `Play3D`: with a parent that position is in model space, and
+  `EffectSound` sets it right before its own `Play3D` (`effectsound.c:172-173` and `:746-753` in
+  1.30.164.200). `GetFrequency()` of a playing OGG wave returned 1.0, so `SetFrequency` takes a
+  factor, not Hz (DayZ 1.30.164014 Exp, LFSkateboard, 2026-10-07, fb-20261007-010022-0cee).
+- `enforce-script-reference` `SKILL.md`, "Custom player camera": `RegisterCameraCreator` with id
+  1171 crashed the DayZDiag 1.30.164014 Exp server at startup, and id 17 works; vanilla takes 1-14
+  and 30-32 (32, the motorbike's, is new in 1.30) and the ceiling is not measured, so take a free
+  id in 15-29. Register it in a `RegisterCameras` override after `super`: vanilla resets the camera
+  creators at the start of `RegisterCameras`, after `ModItemRegisterCallbacks.RegisterCustom` has
+  run (LFSkateboard, 2026-10-07, fb-20261007-010028-8204).
+- `dayz-animation-pipeline` `SKILL.md`: a ride `HumanCommandScript` sometimes started in the vanilla
+  raised-fists idle, the `IdleRas` state that starts on `Raised && MovementSpeed == 0` in the
+  1.30.164014 Experimental workspace. The cause LFSkateboard reads (the move command leaves `Raised`
+  set) and its fix (bind `Raised` in `OnActivate`, write it false with `PreAnim_SetBool` on every
+  `PreAnimUpdate`) are plausible, not verified in game (fb-20261007-010034-a46a, corrected by
+  fb-20261007-010041-3fc6).
+- `dayz-mod-workflow` `references/error-catalog.md`, E23: a `HumanCommandScript` subclass declared
+  in `4_World` and started two or more times crashed every orderly exit of client and server; an
+  empty one exited clean when declared in `3_Game`, and both exited clean after one start (DayZDiag
+  1.30.164014 Exp, 2026-10-07, fb-20261007-010034-a46a and fb-20261008-165335-e018). The cause is
+  not known, and the workaround LFSkateboard adopted, a `3_Game` shell forwarding to a `Managed`
+  object in `4_World`, was still being verified when reported. Indexed in `SKILL.md`, and
+  `dayz-animation-pipeline` points to it.
+- `dayz-animation-pipeline` `SKILL.md`: a weapon raises and fires under a `HumanCommandScript` that
+  reports `STANCEIDX_RAISEDERECT`, but vanilla's lift check then throws a NULL VM exception each
+  time it runs, since `Weapon_Base.ApproximateWeaponLiftTransform` uses the move command without a
+  null check (`weapon_base.c:1625` in 1.30.164.200); a test verdict that read only its own log lines
+  missed 241 of them (DayZ 1.30 Experimental, LFSkateboard, fb-20261009-104228-854c).
 - `dayz-script-validator`: `ES-PROTO-ARGUMENT-DOWNCAST` reports a name passed to a parameter of a
   `proto` method whose class derives from the class the name is declared as. DayZ 1.30.164014
   server refused `DayZPhysics.RaycastRV(..., hitEntity, m_Human, ...)`, with `hitEntity` an
