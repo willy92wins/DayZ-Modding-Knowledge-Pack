@@ -15,14 +15,25 @@ ES_MODDED_ENGINE_CLASS_RULE_ID = "ES-MODDED-ENGINE-CLASS"
 #   Can't compile "Game" script module!
 #   .../lfpg_moddedtransport.c(9): Engine class 'Transport' cannot be modded.
 #
-# Only classes measured in the engine are listed: Transport is the only one.
-# Another engine class goes in only after a compile refuses it. To change a
-# vehicle, mod the script bases in 4_World instead: CarScript
-# (4_world/entities/vehicles/carscript.c:170) or BoatScript (boatscript.c:41).
+# DayZDiag 1.30.164200 (StorageLogger, 2026-10-24), scripts/4_World, the
+# server script log of two boots:
+#
+#   storagelogger.c,315: Engine class 'DayZPlayerInventory' cannot be modded.
+#   storagelogger.c,432: Engine class 'Magazine' cannot be modded.
+#   Can't compile "World" script module!
+#
+# Only classes measured in the engine are listed. Another engine class goes in
+# only after a compile refuses it. To change a vehicle, mod the script bases in
+# 4_World instead: CarScript (4_world/entities/vehicles/carscript.c:94 in 1.30;
+# :170 was the 1.29 citation) or BoatScript (boatscript.c:41); for ammo piles,
+# Ammunition_Base
+# (4_world/entities/itembase/magazine/ammunitionpiles.c:2), which compiled
+# modded in the same 1.30 build. DayZPlayerInventory has no script subclass:
+# hook the item side (ItemBase.EEItemLocationChanged) instead.
 #
 # The refusal holds wherever the line compiles, so code under another mod's
 # #ifdef is judged too; what never compiles (shared/dead_branches.py) is not.
-ENGINE_CLASSES = ("Transport",)
+ENGINE_CLASSES = ("Transport", "DayZPlayerInventory", "Magazine")
 
 _MODDED_RE = re.compile(r"\bmodded\s+class\s+(?P<name>[A-Za-z_]\w*)")
 
@@ -31,7 +42,8 @@ ES_MODDED_ENGINE_CLASS_MESSAGE = (
     "engine class and cannot be modded (\"Engine class '{name}' cannot be "
     "modded.\"); the script module does not compile. Mod a script class "
     "that derives from it instead (for vehicles, CarScript or BoatScript in "
-    "4_World)."
+    "4_World; for ammo piles, Ammunition_Base; for inventory moves, "
+    "ItemBase.EEItemLocationChanged)."
 )
 
 
