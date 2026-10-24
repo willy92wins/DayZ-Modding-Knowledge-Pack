@@ -1351,10 +1351,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox e074 (fb-20261006-030019-e074), after #125. Added entry for the three tests of how ES-PROTO-ARGUMENT-DOWNCAST reads a declaration on the line of a label (J1 to J3 of the seventh Codex round of #125). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "928b68ec749c79596bbf66be283597b989be76202688baa91f19e8c1e1e34580",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-e074-label-tests@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "19f7b626121c267f3666dd59809f2df9b7a4a1badeac5a84714ca88794a6d37d",
+      "output_hash": "928b68ec749c79596bbf66be283597b989be76202688baa91f19e8c1e1e34580",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -26326,10 +26336,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox e074 (fb-20261006-030019-e074), after #125. Three tests pin how ES-PROTO-ARGUMENT-DOWNCAST reads a declaration on the line of a label, as Codex (Sol) asked in its seventh round of #125: a label indented with tabs is read (J1), a name that begins with case is no label, so the declaration after it is not read and the member of that name is (J2), and a template with a comma after a label is read (J3). Each is red under the mutant Codex gave for it and the other two stay green: no tab before the label (M21), no word boundary after case (M22), and the template part of the declaration pattern cut at a comma (M23). 317 tests pass (314 before). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2e7b3ce8dcbd2b7149cc947119511ce0c7af27820c1103a1a2484612de2a9a12",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-e074-label-tests@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4a7854238b7f6ca9c6ddbace3f39f0892a20c979aca40bc9e1562d7fdb356f88",
+      "output_hash": "2e7b3ce8dcbd2b7149cc947119511ce0c7af27820c1103a1a2484612de2a9a12",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

@@ -7,6 +7,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: three tests of how `ES-PROTO-ARGUMENT-DOWNCAST` reads a declaration
+  on the line of a label: a label indented with tabs is read, a name that begins with `case` is no
+  label, and a template with a comma after a label is read (review of #125,
+  fb-20261006-030019-e074). 317 unit tests pass (314 before).
 - `dayz-script-validator`: `ES-PROTO-ARGUMENT-DOWNCAST` reports a name passed to a parameter of a
   `proto` method whose class derives from the class the name is declared as. DayZ 1.30.164014
   server refused `DayZPhysics.RaycastRV(..., hitEntity, m_Human, ...)`, with `hitEntity` an
