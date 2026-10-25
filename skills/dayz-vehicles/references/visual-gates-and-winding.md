@@ -266,6 +266,8 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    RELATIVE). RESIDUAL not closed by the gap skirt: the lateral WEDGE (sail-panel under the mirror =
    a through-glass-EDGE view into a deep cabin cavity) needs a targeted frit-edge twin AT the glass,
    which risks re-greying → eye-gated, ship + confirm in-game.
+   A gap seen ONLY from the seat closes the other way round: single-sided, in the ViewPilot alone,
+   behind what moves through the rider's line of sight (SP-469, `references/proxies-and-get-in.md`).
 
    (n) **Decouple the wheel HUB level from the body rally LIFT (SUB_BRZ s23 2026-07-03, GdR6-5,
    offline-measured; in-game pending).** A rally/stance lift belongs to the body (Y0), NOT the wheel

@@ -556,6 +556,14 @@ healthLevels[] = {
 };
 ```
 
+This example declares no `RefTexsMats[]`; what that list is, and which vanilla zones declare it, is in
+`dayz-vehicles` `references/vehicle-config-and-modelcfg.md` §6. Whether a swap reaches its faces is
+judged in game, not from the rvmats or the config (`dayz-vehicles` `references/process-gates.md`,
+SP-483); the end of §6b in `dayz-vehicles` `references/vehicle-config-and-modelcfg.md` has a glass section
+that never hid although config and ODOL
+matched the vanilla motorbike glass slot in the two respects checked (glass rvmat in its `RefTexsMats[]`
+slot, section inside `dmgzone_front`), with a zone of 67 sections against two to five in vanilla.
+
 ### 6-stage rvmat variant (omit env stage)
 
 Standard rvmat has 7 stages (NOHQ, DT, MC, AS, SMDI, Fresnel, env). For cosmetic materials that don't need world environment reflection, omit Stage7 — fits in 6 stages + StageTI:
@@ -792,7 +800,7 @@ geometry. Finally, flip a suspect component and remeasure it: if the defect disa
 was winding; if it moves to the other side, the sheet needs two-sided geometry rather than
 another flip.
 
-**Instrument and seal for see-through triage (added 2026-09-24, LFDucati T96).** [DESIGN] To see what the game draws, render with Blender Workbench `show_backface_culling` (rasterizes and discards backfaces before depth, like the engine) — use it to locate see-through pixels, not to adjudicate winding signs (SP-179 in `dayz-vehicles`). Cycles with a transparent backface also skips the coincident twin, and per-face red overlays come out mottled on double layers: neither adjudicates what the player sees. [EXACT] Flipping a two-sided sheet only moves the hole (measured: 313 tank-lip faces flipped, the front lip then vanished from above); the seal that never removes what was visible is an inverted twin carrying its own UVs and normals in the same animation selections. Twins cost vertices — respect the per-model resolved budget (`dayz-p3d-audit` SP-359), not a fixed 65,535. For a real hole (side views show nothing behind), close the gap and back it with a dark inset sheet. After any mesh fix, compare before/after from the owner's viewpoint, not only the face counts.
+**Instrument and seal for see-through triage (added 2026-09-24, LFDucati T96).** [DESIGN] To see what the game draws, render with Blender Workbench `show_backface_culling` (rasterizes and discards backfaces before depth, like the engine) — use it to locate see-through pixels, not to adjudicate winding signs (SP-179 in `dayz-vehicles`). Cycles with a transparent backface also skips the coincident twin, and per-face red overlays come out mottled on double layers: neither adjudicates what the player sees. [EXACT] Flipping a two-sided sheet only moves the hole (measured: 313 tank-lip faces flipped, the front lip then vanished from above); the seal that never removes what was visible is an inverted twin carrying its own UVs and normals in the same animation selections. Twins cost vertices — respect the per-model resolved budget (`dayz-p3d-audit` SP-359), not a fixed 65,535. For a real hole (side views show nothing behind), close the gap and back it with a dark inset sheet. On a model with a ViewPilot, a seal for what only the seat sees, twin or closure, goes in res 1100 alone: in LOD0, closures and twins together drew black slivers seen from outside (`dayz-vehicles` `references/proxies-and-get-in.md`, SP-469). After any mesh fix, compare before/after from the owner's viewpoint, not only the face counts.
 
 ## Closed collision-LOD winding (SP-169, added 2026-08-31)
 

@@ -110,11 +110,17 @@ Two runs of `binarize.exe -always` over the same source, same flags: the shell c
 `2,886,719 b` / `8C290530214C...` and `2,763,097 b` / `0705207DB7F0...`; the interior `1,062,412 b`
 vs `1,062,417 b`. The two small rotor models were byte-identical, so the effect scales with model
 size. Semantically the two shells match (66/66 `model_info` fields, same faces/selections/properties
-per LOD); the divergence is encoding/compression order.
+per LOD); the divergence is encoding/compression order, and between builds the order of faces and
+sections changes too (`dayz-pbo-build` SP-194, measured with AddonBuilder; section order was not compared
+on the OH-1). The H2R import (2026-10) saw it with `binarize.exe` called directly: a rebuild from
+byte-identical MLODs kept every per-LOD count while its face arrays differed in every resolution LOD and
+the ViewPilot, and between two of its builds the LOD 0 section of `dashboard` went from index 175 to 204
+with the same faces, section count and material set (claim: CLAIM-BINARIZE-SECTION-ORDER-130).
 
 Rule: gates over ODOL compare SEMANTICS (per-LOD counts, selections, properties, proxies, centres),
-never bytes. Hash identity is still valid for MLOD, which the pipeline writes itself. Re-read any
-historical "the ODOL came out byte-identical" claim with this in mind.
+never bytes or section indices (between builds, key on SP-194's unordered multiset). Hash identity is
+still valid for MLOD, which the pipeline writes itself. Re-read any historical "the ODOL came out
+byte-identical" claim with this in mind.
 
 Origin: LFHeli OH-1 2026-07-28, the session that converted doors to proxied attachments after the
 user pointed out that a vanilla car only draws the door proxy when the door is attached.
@@ -487,3 +493,119 @@ and classify each selection into three buckets: **present seated** (>0 in LOD0 a
 **the view drops it** (>0 in LOD0, 0 in 1100), and **origin defect** (already 0 in LOD0). The useful
 question is not "is the full LOD present" but "what CLASS of thing is missing", because two views of the same tree
 can be missing different things.
+
+## Closing first-person gaps: membranes in the ViewPilot only, behind the steering sweep, tested with the steering turned (SP-469, added 2026-10-24, measured in game and offline, DayZDiag 1.30 Exp)
+
+Gaps in a fairing or cockpit through which the seated rider sees the ground can be closed with
+single-sided black membranes ("closures") that only the ViewPilot (res 1100) carries. On a model
+with a ViewPilot this narrows the seals of `dayz-model-pipeline` SP-166 ("Instrument and seal for
+see-through triage") and `dayz-p3d-audit` ("Locating seat-visible see-through"): a fix for what
+only the seat sees goes in res 1100 alone. Unlike the exterior gap closure of
+`visual-gates-and-winding.md` #10 (m), seen from every angle and double-sided in the gap, a 1100
+closure is seen only from the seat. It is single-sided on purpose (rule 3 relies on the culled
+side, and twins would double its cost in a 1100 with little headroom), and it goes behind the
+steering sweep because the bars and fork move through the rider's line of sight.
+
+[EXACT][CLAIM-VEH-MOTO-1PP-VIEWPILOT-130] Measured in game on the H2R import (2026-10), a motorbike
+derived from `Motorbike_02_ColorBase` (DayZDiag 1.30.164014 Exp): closures (double-sided at that date)
+and 1PP inverted twins in LOD0 showed from outside as black slivers, one closure hiding the compressor intake, and an A/B kit
+without both lost the slivers (it removed them together, so it does not say which made them). With
+both in res-1100 LODs only, close-up outside shots were clean and, in first person, the closures
+covered the large gaps.
+
+The vanilla bikes ship no ViewPilot (parsed from their ODOLs, not checked in game:
+`dayz-motorbikes/references/vanilla-p3d-anatomy.md`), so the 1100 is the author's to add. Seat-only
+geometry of a proxied part goes in that part's own 1100, since 1PP draws each referenced proxy's
+1100, or its finest visual LOD when it has none (SP-249 in `SKILL.md`); the H2R's engine proxy got
+a 1100 for its inverted twins.
+
+The H2R closures were generated offline. From each measured or offset eye and pitch, the project's
+rasterizer found the gaps (enclosed, at least 40 px at half resolution, centred in the cockpit, at
+least 20 % of the rim on fixed parts), and each such gap got a membrane whose depth is a Laplace
+fill from its rim, wound so that the engine draws it toward that eye (calibrate that convention on
+a face seen in game: `rip-geometry-and-winding.md` SP-191, `visual-metrics-and-viewer.md` SP-193).
+Rules 2-4 come from defects seen in game, rule 1 from offline renders only. The project's offline
+pixel counts are at half resolution (1920x1080) unless a line says otherwise; its in-game results
+from 2026-10-16 on are on DayZDiag 1.30.164200 Exp.
+
+1. **Test with the steering turned.** Offline, the closures of a kit that showed the steering intact
+   in game with the bars straight hid the fork once the bars turned: 247,420 px over 48 views (12
+   eyes at pitch -50, bars at ±10° and ±20°), up to ~8,000 px in one view. Every closure check until
+   then, offline and in game, had the bars straight; the defect was never observed or checked in
+   game.
+2. **Put the membrane behind everything the steering sweeps, ray by ray.** In each pixel, keep the
+   membrane at least 2 cm deeper than the deepest point of the sweep that projects there (bars, fork
+   and front wheel over the full lock, ±20° on the H2R, suspension at rest; that depth map dilated
+   4 px), then drop every face with a vertex, an edge midpoint or its centroid within 6 mm of the
+   sweep. From the eye that generated it, a gap's ray meets no fixed part, so there the membrane
+   hides only the ground; from other eyes it can still cover fixed parts (the final generator run's
+   first cleanup pass removed 111 such faces, 18,824 px), which is what rule 3's cleanup is for.
+   Both alternatives failed:
+   - Trimming the membrane where the sweep passes fails either way. Kept, the thin strips it leaves
+     stack up, one per eye and pitch, in the same gap: the H2R's earlier closures, trimmed cell by
+     cell, showed it in game as mottling, and the first pixel-trimmed run stacked strips until the
+     generator's vertex cap refused 52 patches. Refusing patches that cover under half of their gap
+     leaves the gaps the steering crosses open: 108 refused, 55,884 px open over 36 views, against
+     4,012 for the closures being replaced. Behind the sweep, the mottled gap read uniform black in
+     game, and that 50 % guard never fired: every patch of the final run covered its whole gap.
+   - Pushing single vertices back along their rays let triangles cross the steering: in game the top
+     clamp, controls and grips vanished behind black fragments, while the offline check, which
+     counted only ground seen through gaps, passed. That is the coverage-versus-appearance trap of
+     `visual-gates-and-winding.md` #10 (k-CORRECTION) and SP-247 in `SKILL.md`: count closure pixels
+     in front of parts next to open pixels.
+3. **Tuck the rim under fixed parts by centimetres, behind the deepest fixed point of its grid
+   cell.** A rim 6 mm behind each pixel cut panels seen edge-on between grid vertices: in game, an
+   irregular black edge and a row of light teeth; offline, 3,097 px (full resolution) of closure in
+   front of a fixed part from the eye of that capture. Three changes cleared it: the rim 2 cm behind
+   the deepest fixed point of its cell, the depth smoothed only backward (an edge-on wall turns its
+   back to the next eye and is not drawn), and a cleanup that removes any closure face more than
+   3 mm in front of any fixed part, not only the cockpit's. Offline that left 4 px in front of fixed
+   parts over 12 eyes at pitch -50, and in game the edge read clean.
+4. **Trace the contour with marching squares on a smoothed mask, crossings interpolated.** Membranes
+   assembled from whole grid cells gave the stair-stepped edges the user reported in game. From the
+   eye of that capture, exactly horizontal or vertical edge fell from 53 % to 14 % of the contour,
+   and turns over 60° from 43 % to 14 %; later kits showed no steps in game (in-game observations
+   of rules 2-4 and of the 2026-10-24 runs below, claim: CLAIM-VEH-MOTO-1PP-CLOSURE-INGAME-130).
+5. **[DESIGN] Matte black.** The H2R closures use a near-black procedural colour, specular 0 and an
+   SMDI with no level or gloss, because membranes behind the sweep have steep faces that a glossy
+   rvmat might light into pale bands. Not A/B-tested; in game the matte closures read as uniform
+   black.
+
+[DESIGN] The closures are computed against LOD0 and live in the 1100: regenerate them from the final
+LOD0 as a step of assembling the 1100, and again after any re-seed, merge or LOD0 edit (the SP-191
+lifecycle above). Declare them in any 1100 census or containment gate (the census by classes above,
+SP-249 in `SKILL.md`), where they are a class present in the 1100 and absent from LOD0, and keep
+them out of any pass that double-sides the 1100 (`visual-gates-and-winding.md` #10 (g),
+`rip-import.md` VISUAL CORRECTNESS #5), which would draw rule 3's edge-on walls. Not measured.
+
+**Generate from every eye the rider can have, then test outside that set.** On the H2R the 1PP eye
+changed with the character and between runs of one character, and within one run it moved with the
+pitch: on 2026-10-24 one eye went from 7.6 cm off-centre at pitch -50 to 4.7 cm on the other side
+at -65. With the head aside at yaw 0 it sat about 9 cm off-centre (8.7 cm at pitch -50, up to
+9.4 cm). Log the eye of every run (`dayz-test-ingame`, SP-470). The final set had 23 eyes: two eyes
+logged in game, each also moved ±3 cm in height and fore-aft; three more, two logged in game and one
+recovered by PnP from a user's screenshot (`dayz-p3d-audit`, "Locating seat-visible see-through");
+±9 cm lateral copies of the highest and the lowest eye logged in game, and ±4.5 and ±9 cm of a
+third; and the off-centre eye with its mirror. No offset combines two axes. Each eye looked at
+pitches -35, -50 and -65, yaw 0. Counting only enclosed gaps of at least 40 px centred in the
+cockpit with at least 40 % fixed rim, 526 px stayed open over the 69 views (the closures they
+replaced: 70,261 by the same count), and no closure stood in front of a fixed part or of a turned
+part, both checked at pitch -50 only. In game, at pitch -50 with the bars straight, two characters
+were clean over three runs, one with the head 7.6 cm off-centre. An eye set is a sample, not a
+bound: a cross-family review moved one measured eye 12 cm sideways, to 10.5 cm off-centre (beyond
+the 9.4 cm logged in game), and found offline, at pitch -50, 10 px of closure more than 3 mm in
+front of a fixed part (resolution not stated), not shown to be visible in DayZ. (Offline counts of
+rules 1-4 and of this eye set, claim: CLAIM-VEH-MOTO-1PP-CLOSURE-OFFLINE-130.)
+
+**What that offline check cannot see.** Its renderer drops every glass face, so "any fixed part"
+leaves out the windscreen: whether a closure stands in front of it, or behind it in the rider's
+view, was not measured. Geometry close to a pane has read in game as a painted-over window
+(`visual-gates-and-winding.md` #10 (k-CORRECTION): a black band 0-1 mm behind the glass) and as an
+artifact on the glass (SP-247 in `SKILL.md`: skirts within 5 cm of a pane, the closest 6.1 mm):
+check the clearance to transparent glass against the ~8 mm of #10 (m). The renderer samples points
+on the faces instead of rasterizing them as the engine does, and its gap detector closes slits up to
+about 2 px wide (about 4 px of the capture) and keeps only enclosed gaps, so a 2-3 px line like the
+one seen in game on 2026-10-16 is never counted. Fixed and turned parts were checked at pitch -50
+and yaw 0 only, and since the in-game eye moves with the pitch, real eye-and-pitch pairs fall
+between the sampled ones. No in-game 1PP capture with the bars turned was evaluated on the H2R; the
+in-game capture stays the last word.

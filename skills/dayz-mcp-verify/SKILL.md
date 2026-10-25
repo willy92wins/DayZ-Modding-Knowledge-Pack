@@ -316,7 +316,7 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   `camera_set` + `capture_screenshot`; inspect each PNG. PASS = object visible (not invisible), without
   missing textures (no solid magenta/white/black), plausible proportions, without inverted faces
   or holes (winding). Hole/missing-face from one angle and solid from opposite = inverted
-  winding.
+  winding. Before failing a model on textures, look at the vanilla terrain and sky in the same frame: if they are flat too, the client did not load its textures and the frame says nothing about the model (`dayz-test-ingame` `references/session-findings.md`, "H2R import (2026-10)").
 - **Collision**: `scene_raycast(from_pos, to)` (default `method="rvproxy"`: LOD intersection in the
   `intersect` mode) aimed at the object in each of `geom`, `view` and `fire`: the battery below for a
   small object or an item, multi-point for a building (walls, corners, floor). PASS = rays that
@@ -652,7 +652,7 @@ Visual smoke of a CarScript vehicle driven by MCP, verified end-to-end on Merced
    instead of render. If it happens: wait for settle (~30-40 s in background — foreground sleep is
    blocked in this environment) and recapture; use several angles. Top-down that clearly reveals proxy
    (mis)alignment: `cam_pos=[carX+3, 16, carZ+1]` `look_at=[carX, ground+0.1, carZ]`. ~25k
-   tokens/image — batch captures, do not re-read a PNG except to verify something concrete.
+   tokens/image — batch captures, do not re-read a PNG except to verify something concrete. A frame flat everywhere, vanilla terrain and sky included, is not a flaky grab of the model: withhold its texture verdict, check that the client window has focus and capture again after settling, since textured runs have opened with 4-11 s of flat frames; if the scene stays flat, its visual evidence is `SETUP_FAIL` and the run is relaunched (`dayz-test-ingame` `references/session-findings.md`, "H2R import (2026-10)").
 7. **User's eye > capture** when render is ambiguous: in MercedesAMGLF grab was flaky and
    user reading was reliable diagnosis of winding and proxy alignment. If there is a human in
    the loop, cross-check with them. (Case s3 2026-06-24: I was about to sign PASS on faint renders; user's
@@ -1344,3 +1344,37 @@ ported here in English, without private names, and corrected in the review of PR
 observation scoped to its run, the interval between markers made a candidate until the source and
 the run's logs confirm it, and localization within one revision separated from attribution to a
 revision.
+
+## Driving real inventory moves: what the verbs reach, and a key-driven test addon (added 2026-10-24)
+
+Measured on DayZDiag 1.30.164200 (managed runs of project `DayZ_MCP` with a server-side logger as an
+extra mod, all but the first also with a test-only driver) [EXACT][CLAIM-MCPV-INVENTORY-MOVES-130]:
+
+- `hands_take` answered `not_reachable` for an item in the cargo of a world container (`WoodenCrate`,
+  `Barrel_Blue`, open, player 1.5 m away) and for an item in the `RB_LvL1_Plank` slot of a
+  `Land_House_1M1` (player 6.5 m and 12.7 m from its origin); other buildings were not tried. It worked for an
+  attachment of an item lying on the ground (`SparkPlug` in a `PowerGenerator`) and for a container on
+  the ground (`WoodenCrate` into the hands).
+- `action_use(action="ActionAttach", classname="Land_House_1M1")` with a plank in hands returned
+  `condition_failed`; on a `PowerGenerator` it attached the spark plug.
+- Of the inventory verbs of that build (`inventory_give` and `inventory_attach` create a new item,
+  `hands_take` takes to the hands, `hands_attach` puts the held item into an attachment slot of a world
+  entity and was not tried in these runs), none puts an item from the player into a container's cargo
+  or moves it between two containers.
+  What did, in every case tried: a test-only addon whose `modded class MissionGameplay`
+  (`#ifndef SERVER`) maps keys in `OnKeyPress` to the client's own inventory calls on objects found
+  with `g_Game.GetObjectsAtPosition`, fired with `key_press` (DIK 63-67 for the moves, 68 for the
+  combine, 88 for the half split, 87 for a split to the hands):
+  `PredictiveTakeEntityToHands` (cargo to hands, building slot to hands),
+  `PredictiveTakeEntityToTargetCargo` (hands to cargo, crate to crate) and
+  `PredictiveTakeEntityToTargetAttachment` (hands to an empty building slot), and the stack calls
+  `CombineItemsClient` (hands onto a stack in a crate or a building slot) and `OnRightClick` (split a
+  stack in half). Each one reached the server as a real inventory command. Read the hands on the server
+  (`weapon_state`): a client-side `no_item_in_hands` from `action_use` is the client's prediction. The runs loaded no CF/Dabs/VPP stack (SP-450 above: with that stack
+  `OnKeyPress` does not get the keys). Ship the driver as its own PBO and leave it out of the release.
+- `dayz_test_run` starts the server without `-adminlog`: no run left a `.ADM` in its server profile, so
+  lines written with `GetGame().AdminLog` are not readable from the harness. Have the test build copy them
+  to `Print` and read `script_*.log` (`logs_since`).
+- The player keeps what it carried between runs (gotcha 4 above). A plank left in the hands by the
+  previous run turned the next take from a slot into a swap.
+
