@@ -570,6 +570,11 @@ class TestMenus(_Desktop):
             [item for item in self.user32.sent if item[1] == WM_INITMENUPOPUP],
         )
         self.assertEqual([(self.frame, WM_COMMAND, 101, 0)], self.user32.posted)
+        refresh_and_post = {("SendMessageTimeoutW", self.frame, WM_INITMENUPOPUP), ("PostMessageW", self.frame, WM_COMMAND)}
+        self.assertEqual(
+            ["SendMessageTimeoutW", "SendMessageTimeoutW", "PostMessageW"],
+            [call[0] for call in self.user32.calls if call[:3] in refresh_and_post],
+        )
         self.assertEqual({"path": "File > Open...", "disabled": False}, json.loads(stdout.splitlines()[0])["item"])
 
     def test_command_refused_while_a_dialog_is_open(self):

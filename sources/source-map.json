@@ -36900,7 +36900,7 @@
           "decision": "adopt",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 36 tests (38 subtests) of the runner against a fake desktop (the three TestImport tests spawn sys.executable -c to import the module in a child Python): import off Windows without binding Win32, the state path from TBRUNNER_STATE and its default, refusal off Windows of every command, no command without the executable and the flag winning over the variable, launch refused while a pid is recorded or when the executable is not a file, commands without a recorded instance, log or frame, usage exits; the menu tree and its flattening, an unreadable item printed by menu with exit 0 and skipped by probe, menu.json, command posting to the recorded frame only after a refresh and refused while a dialog is open, probe without a log printing an empty list when nothing matches and refusing an enabled leaf, close posting WM_CLOSE to the recorded frame, dialog_button posting WM_COMMAND to the open dialog, save_loop counting a changed file without focus or a dialog, windows listing the recorded instance only; the filename box of open and save dialogs, dialog_file and its refusals; press by label with swapped ids, Spanish labels and mnemonics, hidden buttons never pressed; wait_log on the recorded log and a bad pattern. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "95817d8468a35fbdd6f1a3f5edc66172e0aeaf2f52b9cdca7ac588ef17f2a2c5",
+          "source_hash": "504984eeec5ac69beb66dd2f989ca974c64c3b09d432af95f80deb32153079aa",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -36908,7 +36908,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "95817d8468a35fbdd6f1a3f5edc66172e0aeaf2f52b9cdca7ac588ef17f2a2c5",
+      "output_hash": "504984eeec5ac69beb66dd2f989ca974c64c3b09d432af95f80deb32153079aa",
       "output_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
