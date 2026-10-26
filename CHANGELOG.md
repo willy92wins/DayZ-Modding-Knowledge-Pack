@@ -468,6 +468,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-vehicles` `references/dayz-1-30-vehicles.md` and `SKILL.md`, `dayz-motorbikes`
+  `references/vehicle-1.30-refactor.md`: what porting a 1.29 quad (LFQuad) to DayZ 1.30.164200
+  stable found, read in the 1.30.164200 and 1.29 scripts on 2026-10-26.
+  - `CarScript.ToggleHeadlights()` (1.29 `CarScript.c:2088`) is deleted in 1.30 with no
+    `[Obsolete]` stub, unlike the rest of the light members. An `override` of it stops the
+    `4_World` compile (`CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130`; the in-game repro is pending).
+  - A battery car that does not override the three electricity-source methods reports
+    `NO_BATTERY` with a battery attached: no engine start, no light switch
+    (`CLAIM-VEH-NO-BATTERY-DEFAULT-130`). The refactor guide's table told readers to return `true`
+    from `NeedElectricitySourceDevice()`, which is already the default; it now points at the
+    getter that matters.
+  - Correction: 1.29 already called `CanReachSeatFromDoors(..., 1.0)` from the get-in condition,
+    and 1.30 only adds `CanGetIn()` and the DiagMenu wrapper `IsAreaAtDoorFreeDiag`
+    (`CLAIM-VEH-GETIN-REACH-129`).
+  - Migration checklist item 0: resolve every `override` against the target build's class chain.
+    `dayz-script-validator` passed the LFQuad v1.0.0 scripts against the 1.30.164200 tree with 0
+    errors (`CLAIM-VEH-OVERRIDE-RESOLVE-130`, `offline_tested`).
+
+  The two bullets in `SKILL.md` and the refactor guide carry `CLAIM-VEH-130-PORT-BLOCKERS` and
+  `CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS`.
+
 - `enforce-script-reference` `references/pitfalls-advanced.md`: the performance trap on
   `SurfaceIsPond`, `SurfaceIsSea` and `SurfaceRoadY` cited them at `game.c:1181-1183`, where 1.29
   declares `SurfaceIsSea`, `SurfaceIsPond` and `GetWaterDepth`, and `SurfaceRoadY` is at `:1163`. It

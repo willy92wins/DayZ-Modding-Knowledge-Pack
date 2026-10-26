@@ -14,6 +14,7 @@ Migration of a 1.29 *car* mod also lives in `dayz-motorbikes/references/vehicle-
 | Horn actions | `ActionCarHornShort`/`Long` | `ActionVehicleHornShort`/`Long`; `CarHorn*ActionInput` are empty aliases | `CarScript.c:2319-2320`, `ActionCarHorn.c:1,69-70,213-214`, `ActionInput.c:757-758` |
 | Light toggle input | `UAToggleHeadlight` (`ToggleLightsActionInput`) | vehicle lights use `UAToggleVehicleLights` (`ToggleVehicleLightsActionInput`) | `ActionSwitchLights.c:16-18`, `ActionInput.c:776-782,849-855`, `bin\constants.xml:90-91` |
 | Forced light refresh | `ForceUpdateLightsStart`/`End` | `[Obsolete("1.30: no replacement")]` — delete the calls | `CarScript.c:2805-2809` |
+| Headlight toggle | `CarScript.ToggleHeadlights()`, called by `ActionSwitchLights` | **deleted**, with no `[Obsolete]` stub; the action calls the native `Transport.LightToggle()` | 1.29 `CarScript.c:2088`; 1.30.164200 `transport.c:239`, `actionswitchlights.c:64` |
 | Fluids | `CarFluid` / isolated `BoatFluid` | `enum ETransportFluid`; `BoatFluid : ETransportFluid {}` | `Transport.c:52-63`, `Boat.c:13` |
 | Boat speedo | listed as Car-only | `Boat.GetSpeedometer` + `GetSpeedometerAbsolute` | `Boat.c:42-56` |
 | Get-in | `IsAreaAtDoorFree` | `CanGetIn()` then `IsAreaAtDoorFreeDiag`; script **does** call `CanReachSeatFromDoors` | `ActionGetInTransport.c:36,54,64`, `Transport.c:672-675` |
@@ -23,6 +24,8 @@ Migration of a 1.29 *car* mod also lives in `dayz-motorbikes/references/vehicle-
 | Motorbike 3PP camera | — | `DAYZCAMERA_3RD_VEHICLE_MOTORBIKE = 32` | `DayZPlayerCameras.c:20,63` — detail in `dayz-motorbikes/references/rider-animation.md` |
 
 [EXACT][CLAIM-ODOL-V56-130] Vanilla P3Ds on 1.30 Exp are ODOL **v56** (1.29 stable: v54); read the P3D header (bytes 4-7) before any extraction or parity tooling on a new build — a v54 reader fails with `ValueError: subsection not found`. [DESIGN] Preflight: on a new build, run a positive control with the previous build's reader before starting vehicle parity work. Measured headers: `Motorbike_01`/`Motorbike_02` and `offroadhatchback` read 56 on 1.30.164014 Exp; the 1.29 `offroadhatchback.p3d` reads 54 and converts cleanly. Full motorbike anatomy tables read from the v56 binaries: `dayz-motorbikes/references/vanilla-p3d-anatomy.md`. An external ODOL->MLOD converter needs a v56-capable reader for 1.30 vanilla models.
+
+[EXACT][CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130] `CarScript.ToggleHeadlights()` is the one light member that 1.30 deleted instead of marking `[Obsolete]`. 1.29 declares it at `CarScript.c:2088` and calls it from `ActionSwitchLights.c:75` and `CarScript.c:834, 3061`; no script of 1.30.164014 Exp, 1.30.164078 or 1.30.164200 declares or calls it, and the switch action toggles the native state with `Transport.LightToggle()` (1.30.164200 `transport.c:239`, `actionswitchlights.c:64`). So a 1.29 car whose script says `override void ToggleHeadlights()` overrides a method that no longer exists, which Enforce refuses to compile: the `4_World` module fails and the game or server does not start with the mod (source-verified 2026-10-26; the in-game confirmation is the LFQuad repro, pending). The `[Obsolete]` members of this table are the opposite case: they compile and are never called. Resolve every `override` against the target build before shipping (migration checklist, item 0).
 
 ## 1. Lights: `VehicleLightBase` + profiles (not `CarLightBase`)
 
@@ -115,6 +118,13 @@ Headgear torches still bind `UAToggleHeadlight` (`ToggleLightsActionInput` at `A
 
 Magneto/kickstart bikes override `NeedElectricitySourceDevice()` to `false` (`Motorbike_02.c:34-37`).
 
+[EXACT][CLAIM-VEH-NO-BATTERY-DEFAULT-130] A battery car that does not override the three methods has no battery as far as 1.30 is concerned, with one attached. `Transport` answers `true`, `null` and `""` (1.30.164200 `transport.c:830-843`), and `CarScript.GetBattery()` casts that `null` (`carscript.c:2437-2440`). Three things follow:
+- `CheckOperationalRequirements` adds `NO_BATTERY` (`carscript.c:1768-1774`), so the engine never starts;
+- `OnBeforeLightOn` refuses (`carscript.c:1841-1851`);
+- `ActionSwitchLights` never offers itself to the driver (`actionswitchlights.c:38-43`).
+
+The 1.29 way, overriding `IsVitalCarBattery` or `IsVitalTruckBattery`, still compiles and has no effect (`carscript.c:2811-2821`). Source-verified on 1.30.164200 while porting the LFQuad, 2026-10-26.
+
 ## 3. Horn
 
 `CarScript.SetActions()` registers `ActionVehicleHornShort`/`Long` (`CarScript.c:2313-2321`). `ActionCarHornShort`/`Long` are `[Obsolete("replaced by ActionVehicleHornShort/Long")]` (`ActionCarHorn.c:69-70,213-214`). Empty aliases `CarHornShortActionInput : VehicleHornShortActionInput {}` (`ActionInput.c:757-758`) exist so old typenames still compile; logic lives on the VehicleHorn* parent. Register sounds on `m_HornComponent` in the ctor (`Offroad_02.c:33` pattern; trucks at `Truck_01_Base.c:25-26`).
@@ -166,6 +176,12 @@ When true, reverse/position material swaps do not turn the brake selection off (
 ```
 
 The 1 m third argument is therefore observable: vanilla script passes `1.0` (`ActionGetInTransport.c:64`). The 2026-09-07 "engine-native only" reading is false on this build. The measured LFQuad2 cost of changing `GetDoorConditionPointFromSelection` still stands as a 1.29 lesson.
+
+*(Corrected 2026-10-26: the "until 1.29" note at the top of this section is wrong about 1.29, and so was the "engine-native only" reading there.)* [EXACT][CLAIM-VEH-GETIN-REACH-129] 1.29's `ActionGetInTransport.ActionCondition` already ended with the same `CanReachSeatFromDoors(selections[i], player.GetPosition(), 1.0)` loop (1.29 `ActionGetInTransport.c:73`), and `CarScript.CanReachSeatFromDoors` reads the same in both builds. The condition gained only two things in 1.30:
+- `CanGetIn()`, default `true` (1.30.164200 `transport.c:675-678`);
+- the `IsAreaAtDoorFreeDiag` wrapper, which returns `IsAreaAtDoorFree` unless the DiagMenu toggle `TRANSPORT_FREESPACE_DISABLED` is on (`transport.c:910-924`).
+
+`Start` also keeps its order: it runs `super.Start`, where `OnStartServer`/`OnStartClient` fire, before `StartCommand_Vehicle` (1.29 `ActionGetInTransport.c:82-91`, 1.30.164200 `actiongetintransport.c:71-104`). A mod that adjusts the player in those two hooks, such as a bilateral get-in, sees the same sequence on both builds.
 
 ## 6. Boats
 
@@ -238,10 +254,11 @@ These core SKILL.md cites were true on 1.29 and are displaced in 1.30 Exp (same 
 
 ## Migration checklist (1.29 car → 1.30 Exp)
 
-1. Delete overrides of `CreateFrontLight` / `CreateRearLight` / `IsVitalCarBattery` / `IsVitalTruckBattery` / `CarPartsHealthCheck` / `ForceUpdateLightsStart`/`End`.
+0. Resolve every `override` of the car's scripts against the 1.30 class chain, class by class and not by method name. A method 1.30 deleted (`ToggleHeadlights`) fails the module's compile; an `[Obsolete]` one compiles and is never called. [EXACT][CLAIM-VEH-OVERRIDE-RESOLVE-130] On 2026-10-26 the pack's `dayz-script-validator`, with `--vanilla-root` on the 1.30.164200 tree, returned PASS with 0 errors on the LFQuad v1.0.0 scripts, which override `ToggleHeadlights`. A class-chain resolver over the same tree reported that override as missing and three others as `[Obsolete]`, and it resolved all 211 overrides of the vanilla `inheritedcars` folder without a finding.
+1. Delete overrides of `ToggleHeadlights` (deleted in 1.30) / `CreateFrontLight` / `CreateRearLight` / `IsVitalCarBattery` / `IsVitalTruckBattery` / `CarPartsHealthCheck` / `ForceUpdateLightsStart`/`End`.
 2. Instantiate / keep `m_LightsComponent`, `m_HornComponent`, `m_VFXComponent` (already constructed on `CarScript` in 1.30).
 3. `RegisterLight("Front"|"Rear", new VehicleLightData(new YourProfile()))` and `RegisterSound(VehicleHornMode.SHORT/LONG, "...")`.
-4. Override `NeedElectricitySourceDevice` + getters if the vehicle needs a battery; return false for magneto.
+4. Override `NeedElectricitySourceDevice` + getters if the vehicle needs a battery; return false for magneto. Without the getters a battery car reports `NO_BATTERY` with a battery attached (section 2).
 5. Bind vehicle light action to `UAToggleVehicleLights`, not `UAToggleHeadlight`.
 6. `SetActions` / `AddAction(ActionVehicleHornShort/Long)` — not `ActionCarHorn*`.
 7. Override `GetWeightCoef` if dust/exhaust scale is wrong; override `HasGangedTailAndBrakeLights` if brake+tail share a bulb.

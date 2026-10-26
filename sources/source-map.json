@@ -1401,10 +1401,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: Fixed entry for the LFQuad 1.30 port lessons (dayz-vehicles references/dayz-1-30-vehicles.md and SKILL.md, dayz-motorbikes references/vehicle-1.30-refactor.md; six claims).",
+          "license": "MIT",
+          "source_hash": "27d8eac1cdeaa8cddaa9932bdf442591d8ac04b8e4e6b24ee79b98ed14b821a6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "07b5d46c26204253b4b172ec2b706cd8f750875ffbca2e8e43a4c8076d100cd0",
+      "output_hash": "27d8eac1cdeaa8cddaa9932bdf442591d8ac04b8e4e6b24ee79b98ed14b821a6",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -14208,10 +14218,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: one bullet in the 1.30 block (CLAIM-VEH-130-PORT-BLOCKERS) pointing at the two 1.30 changes that stop a 1.29 car outright (ToggleHeadlights deleted; NO_BATTERY without the electricity-source overrides), detailed in references/dayz-1-30-vehicles.md. Authored by Claude (Anthropic) while porting the LFQuad to 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "382b21b6e59b6d7ff2a37c181d12883ff9da727794da6fe589c48989b799731c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "5dd4d84938752251b0efa2f6c83bcea7606a35202418d247f1f0ae1185c8dc0d",
+      "output_hash": "382b21b6e59b6d7ff2a37c181d12883ff9da727794da6fe589c48989b799731c",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -18533,10 +18553,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: what porting the LFQuad (a 1.29 quad) to DayZ 1.30.164200 stable found. Registers six claims: CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130 (dayz-vehicles references/dayz-1-30-vehicles.md, line 28), CLAIM-VEH-NO-BATTERY-DEFAULT-130 (121-126) and CLAIM-VEH-GETIN-REACH-129 (180-184), all source_verified, and CLAIM-VEH-OVERRIDE-RESOLVE-130 (257, offline_tested); CLAIM-VEH-130-PORT-BLOCKERS (dayz-vehicles SKILL.md, 65) and CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS (dayz-motorbikes references/vehicle-1.30-refactor.md, 41-45), source_verified. Shifts the ranges of three existing claims whose markers moved one line: CLAIM-ODOL-V56-130 (25 to 26), CLAIM-GETIN-LHD-BASE-TABLE (526 to 527) and CLAIM-INVVIEW-VIEW0-DEF (1638 to 1639).",
+          "license": "MIT",
+          "source_hash": "6aa4a61e7fa2e7654a99e25ef8170906f2f23c35a6873750c4bfc613429c7e52",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0746b85e3c3a093305cf068f9f5b67d91b2bef8130cf66419fe0597b4aaca679",
+      "output_hash": "6aa4a61e7fa2e7654a99e25ef8170906f2f23c35a6873750c4bfc613429c7e52",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -33745,10 +33775,20 @@
           "source_path": "dayz-motorbikes/references/vehicle-1.30-refactor.md",
           "source_revision": "filesystem@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: section 2 table gains a ToggleHeadlights row (deleted in 1.30) and its two battery rows are corrected (returning true from NeedElectricitySourceDevice is already the default; GetElectricitySourceDevice is what a battery car needs), CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS; Step 1 names ToggleHeadlights. Authored by Claude (Anthropic), cites checked against the 1.30.164200 and 1.29 script trees.",
+          "license": "MIT",
+          "source_hash": "5036039c6e9fcaee4bff91b60e5a848e8f78bf1544353e4606cdd1949cf6ea50",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/references/vehicle-1.30-refactor.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9eb3b1d6b75f9f5befd96282c1a6d6a283eaf01f79f706859b91993a2a448153",
+      "output_hash": "5036039c6e9fcaee4bff91b60e5a848e8f78bf1544353e4606cdd1949cf6ea50",
       "output_path": "skills/dayz-motorbikes/references/vehicle-1.30-refactor.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -33981,10 +34021,20 @@
           "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: what porting the LFQuad (a 1.29 quad) to DayZ 1.30.164200 stable found. Table row and CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130: ToggleHeadlights() deleted without an [Obsolete] stub. Section 2, CLAIM-VEH-NO-BATTERY-DEFAULT-130: without the three electricity-source overrides a battery car reports NO_BATTERY. Section 5, CLAIM-VEH-GETIN-REACH-129: correction, 1.29 already called CanReachSeatFromDoors from script. Migration checklist item 0, CLAIM-VEH-OVERRIDE-RESOLVE-130: resolve every override against the target build; the pack's validator passed a mod that overrides the deleted method. Authored by Claude (Anthropic), every cite checked against the 1.30.164200 and 1.29 script trees.",
+          "license": "MIT",
+          "source_hash": "31dcb8cc8d7a2101195ca94d81d271e9b46e5399c4de8148b704b6b91092af9e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a22827bdfdf3247947f0998d23e398866bb333edb06f40d1f4382a51d53745d2",
+      "output_hash": "31dcb8cc8d7a2101195ca94d81d271e9b46e5399c4de8148b704b6b91092af9e",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"
