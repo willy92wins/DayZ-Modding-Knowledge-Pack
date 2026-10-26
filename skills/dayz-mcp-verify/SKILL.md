@@ -185,6 +185,14 @@ changed, and `@DayZ_MCP` as additional dependency:
    before build and launching anything): without mods OK · `@DayZ_MCP` OK · `@A6_SR2M` OK · `@CF` FAIL ·
    `base_mods=["@CF"]` FAIL.
 
+   [EXACT][CLAIM-MCPV-JUNCTION-EXTRA-MODS-130] *(Corrected 2026-10-26, stable box, DayZDiag
+   1.30.164200.)* A Steam junction did pass in `extra_mods`: `@SurvivorAnims`, a mount-point
+   junction in `!Workshop` (Workshop item 2918418331), passed `preflight=true` with project
+   `DayZ_MCP` and then loaded in two runs, server and client (`-mod=P:\Mods\@DayZ_MCP;P:\Mods\@SurvivorAnims;...`
+   in the RPT header, `World` module at 2349 files with its scripts). The rejection above was measured
+   on 2026-08-02 with `@CF`. Run the preflight on the junction you need before going through
+   `request-policy.json`.
+
    **When the mod under test does not compile, test a probe copy of it** (added 2026-10-03,
    measured 2026-10-02, dayz-mcp run 606a5dbb) [EXACT][CLAIM-MCPV-PROBE-COPY], for example when
    its build packed another session's untracked test scripts:

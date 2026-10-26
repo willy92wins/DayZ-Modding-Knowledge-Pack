@@ -28,14 +28,21 @@ In DayZ 1.30, `CarScript.c` (-1155 / +877 lines) ceases to be a self-contained m
 |---|---|---|
 | `CreateFrontLight()` | `[Obsolete("1.30: use VehicleLightsComponent instead")]` | Register `VehicleLightProfileFront` in `m_LightsComponent`. |
 | `CreateRearLight()` | `[Obsolete("1.30: use VehicleLightsComponent instead")]` | Register `VehicleLightProfileRear` in `m_LightsComponent`. |
-| `IsVitalCarBattery()` | `[Obsolete("1.30: use Transport.NeedElectricitySourceDevice")]` | Override `NeedElectricitySourceDevice()` and return `true`. |
-| `IsVitalTruckBattery()` | `[Obsolete("1.30: use Transport.NeedElectricitySourceDevice")]` | Override `NeedElectricitySourceDevice()` and return `true`. |
+| `IsVitalCarBattery()` | `[Obsolete("1.30: use Transport.NeedElectricitySourceDevice")]` | Override `NeedElectricitySourceDevice()`, `GetElectricitySourceDevice()` and `GetElectricitySourceDeviceType()` (Step 4). |
+| `IsVitalTruckBattery()` | `[Obsolete("1.30: use Transport.NeedElectricitySourceDevice")]` | Override `NeedElectricitySourceDevice()`, `GetElectricitySourceDevice()` and `GetElectricitySourceDeviceType()` (Step 4). |
 | `IsScriptedLightsOn()` | `[Obsolete("1.30: use Transport.LightIsOn")]` | Invoke `LightIsOn()`. |
 | `CarPartsHealthCheck()` | `[Obsolete("1.30: use Transport::PartsHealthCheck instead")]` | Rename signature to `override protected void PartsHealthCheck()`. |
 | `CheckVitalItem(bool, int)` | `[Obsolete("1.30: use Transport::CheckVitalItemCallback instead")]` | Use `CheckVitalItemCallback(...)`. |
 | `OnBeforeSwitchLights()` | `[Obsolete("1.30: no replacement")]` | Remove prior logic; control is immediate in components. |
 | `ForceUpdateLightsStart/End()` | `[Obsolete("1.30: no replacement")]` | Remove manual lights synchronization. |
 | `BrakesRearLight()`, etc. | `[Obsolete("1.30: use VehicleLightsComponent instead")]` | Use `m_LightsComponent.SetLightTypeAndMode(...)`. |
+| `ToggleHeadlights()` | none: **deleted**, not in this section | Remove the override; it no longer compiles. |
+
+[EXACT][CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS] Two corrections to this table (2026-10-26, checked on the 1.30.164200 stable scripts while porting a 1.29 quad).
+- `ToggleHeadlights()` is not in the `DEPRECATED` section because 1.30 deleted it. 1.29 declares it at `CarScript.c:2088`; in 1.30 `ActionSwitchLights` calls the native `Transport.LightToggle()` instead (`actionswitchlights.c:64`). An `override` of it stops the module from compiling.
+- The battery rows used to say "override `NeedElectricitySourceDevice()` and return `true`", which is already the default (`transport.c:830-833`). What a battery car needs is `GetElectricitySourceDevice()`, because the default `null` makes `CarScript` report `NO_BATTERY` with a battery attached (`transport.c:835-838`, `carscript.c:1768-1774`).
+
+Detail: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
 
 ---
 
@@ -69,7 +76,7 @@ In DayZ 1.30, all car wheel classes (`HatchbackWheel`, `CivSedanWheel`, `Offroad
 Follow this step-by-step list to update an existing car:
 
 - [EXACT] **Step 1: Remove obsolete light factories**:
-  Delete any implementation of `override CarLightBase CreateFrontLight()` and `override CarRearLightBase CreateRearLight()`.
+  Delete any implementation of `override CarLightBase CreateFrontLight()` and `override CarRearLightBase CreateRearLight()`, and any override of `ToggleHeadlights()`, which 1.30 deleted (section 2).
 - [EXACT] **Step 2: Register lighting profiles**:
   Create your profile derived from `VehicleLightProfileFront` / `VehicleLightProfileRear` and register it in the vehicle constructor:
   ```c
