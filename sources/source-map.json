@@ -1404,6 +1404,16 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. One Added entry for the dayz-test-ingame TROUBLESHOOTING row. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "91fd436b7aa84ddb553f75f158b29f1679389c7c64b73d6d7a33aa317fe85448",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-26: Fixed entry for the LFQuad 1.30 port lessons (dayz-vehicles references/dayz-1-30-vehicles.md and SKILL.md, dayz-motorbikes references/vehicle-1.30-refactor.md; six claims).",
           "license": "MIT",
           "source_hash": "27d8eac1cdeaa8cddaa9932bdf442591d8ac04b8e4e6b24ee79b98ed14b821a6",
@@ -1431,10 +1441,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "ed40f5e551d0cd7f68292eeffec5de1ff49a40a79532ebbdfa218da9434779aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "332d94330ac14aac772b4894a695c2bae179d19e2dc86c5b11b1c4bb4fc3fdf4",
+      "output_hash": "ed40f5e551d0cd7f68292eeffec5de1ff49a40a79532ebbdfa218da9434779aa",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -12453,6 +12473,16 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. TROUBLESHOOTING gains a row for it, under CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE. CLAIM-TEST-DAYZMCP-CARRIER moves from 668 to 669, its text unchanged; the four other claims of this file sit above the row and keep their lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-26: trap 3 of the build-deploy-test cycle, CLAIM-SIGN-NEGATIVE-CONTROL: a DSCheckSignatures negative control made by flipping a byte can pass. Authored by Claude (Anthropic) while sealing LFQuad v1.0.1.",
           "license": "MIT",
           "source_hash": "269a55dbe69bd49a8ad2bcb40a60b291705c5ad55987b311e5d66bc7f1b872a1",
@@ -12460,10 +12490,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "c90bb73bcf565e3a4200b22d787d7d52044977cc7dd5f0ae8efa675ce69b06eb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "269a55dbe69bd49a8ad2bcb40a60b291705c5ad55987b311e5d66bc7f1b872a1",
+      "output_hash": "c90bb73bcf565e3a4200b22d787d7d52044977cc7dd5f0ae8efa675ce69b06eb",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -18616,6 +18656,16 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. Registers CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE (runtime_verified, dayz-test-ingame SKILL.md, line 570) and moves CLAIM-TEST-DAYZMCP-CARRIER from 668 to 669. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f6955dac0fdc0c9ea7dea9b77410b692d8bef928077c19562e8e8f34dde490ec",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-26: what porting the LFQuad (a 1.29 quad) to DayZ 1.30.164200 stable found. Registers six claims: CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130 (dayz-vehicles references/dayz-1-30-vehicles.md, line 28), CLAIM-VEH-NO-BATTERY-DEFAULT-130 (121-126) and CLAIM-VEH-GETIN-REACH-129 (180-184), all source_verified, and CLAIM-VEH-OVERRIDE-RESOLVE-130 (257, offline_tested); CLAIM-VEH-130-PORT-BLOCKERS (dayz-vehicles SKILL.md, 65) and CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS (dayz-motorbikes references/vehicle-1.30-refactor.md, 41-45), source_verified. Shifts the ranges of three existing claims whose markers moved one line: CLAIM-ODOL-V56-130 (25 to 26), CLAIM-GETIN-LHD-BASE-TABLE (526 to 527) and CLAIM-INVVIEW-VIEW0-DEF (1638 to 1639).",
           "license": "MIT",
           "source_hash": "6aa4a61e7fa2e7654a99e25ef8170906f2f23c35a6873750c4bfc613429c7e52",
@@ -18643,10 +18693,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "918a163cbb57ccb0a0c8ccecf83059a9f9a23e56a570ceac04985cc7b3b33bd6",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7816598e64b873555ff2a4ea7e6780ef66f5e08f4b719d37d9b4f1d91b2a39a0",
+      "output_hash": "918a163cbb57ccb0a0c8ccecf83059a9f9a23e56a570ceac04985cc7b3b33bd6",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
