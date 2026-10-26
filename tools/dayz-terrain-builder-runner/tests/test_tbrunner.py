@@ -3,12 +3,13 @@
 No test here calls a real Windows function (no GetForegroundWindow, SetForegroundWindow,
 SendMessage, PostMessage, EnumWindows) or starts Terrain Builder or another program;
 the three TestImport tests spawn sys.executable -c to import the module in a child
-Python. tbrunner.user32 and
-tbrunner.kernel32 are replaced by fakes that record every call, ctypes.WinDLL,
-ctypes.WINFUNCTYPE and subprocess.Popen are replaced by functions that fail the
-test, and the platform check is patched. The fakes keep ctypes semantics: they
-fill the out-parameters and the buffers tbrunner passes, through ctypes.byref
-and the buffer addresses, the way the real calls do. Stdlib only; runs on any OS.
+Python. tbrunner.user32 is replaced by a fake that records every call and
+tbrunner.kernel32, which tbrunner binds but never calls, by one that fails the
+test on any call; ctypes.WinDLL, ctypes.WINFUNCTYPE and subprocess.Popen are
+replaced by functions that fail the test, and the platform check is patched.
+The user32 fake keeps ctypes semantics: it fills the out-parameters and the
+buffers tbrunner passes, through ctypes.byref and the buffer addresses, the way
+the real calls do. Stdlib only; runs on any OS.
 """
 
 from __future__ import annotations
@@ -139,20 +140,25 @@ class FakeUser32:
         return len(buffer.value)
 
     def IsWindowVisible(self, hwnd):
+        self._log("IsWindowVisible", hwnd)
         return int(self.windows[hwnd].visible)
 
     def IsWindowEnabled(self, hwnd):
+        self._log("IsWindowEnabled", hwnd)
         return int(self.windows[hwnd].enabled)
 
     def GetDlgCtrlID(self, hwnd):
+        self._log("GetDlgCtrlID", hwnd)
         window = self.windows.get(hwnd)
         return 0 if window is None else window.ctrl_id
 
     def GetParent(self, hwnd):
+        self._log("GetParent", hwnd)
         window = self.windows.get(hwnd)
         return None if window is None else window.parent
 
     def IsHungAppWindow(self, hwnd):
+        self._log("IsHungAppWindow", hwnd)
         return 0
 
     def GetForegroundWindow(self):
@@ -208,9 +214,11 @@ class FakeUser32:
         return None if window is None else window.menu
 
     def GetMenuItemCount(self, hmenu):
+        self._log("GetMenuItemCount", hmenu)
         return len(self.menus[hmenu]) if hmenu in self.menus else -1
 
     def GetSubMenu(self, hmenu, index):
+        self._log("GetSubMenu", hmenu, index)
         return self.menus[hmenu][index].get("submenu")
 
     def GetMenuItemInfoW(self, hmenu, index, by_position, info_ref):

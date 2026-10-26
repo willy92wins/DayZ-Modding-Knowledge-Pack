@@ -36854,7 +36854,7 @@
         },
         {
           "decision": "adopt",
-          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). EXPERIMENTAL runner, Windows only, adapted from the project's tbrunner.py (see the merge input). Not run against Terrain Builder for the Pack: 36 tests (38 subtests) in tests/test_tbrunner.py drive it against a fake user32 and kernel32 that record every call, with ctypes.WinDLL, ctypes.WINFUNCTYPE and subprocess.Popen replaced by functions that fail the test, except in the three TestImport tests, which spawn sys.executable -c to import the module in a child Python; they pass on Python 3.11, 3.13 and 3.14. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). EXPERIMENTAL runner, Windows only, adapted from the project's tbrunner.py (see the merge input). Not run against Terrain Builder for the Pack: 36 tests (38 subtests) in tests/test_tbrunner.py drive it against a fake user32 that records every call and a fake kernel32, which tbrunner binds but never calls, that fails the test on any call, with ctypes.WinDLL, ctypes.WINFUNCTYPE and subprocess.Popen replaced by functions that fail the test, except in the three TestImport tests, which spawn sys.executable -c to import the module in a child Python; they pass on Python 3.11, 3.13 and 3.14. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "767af5caff9624112ae9084242cf2b110ce01a5e9d64a7aeba94e37845c7fe63",
           "source_id": "pack-r21-authored",
@@ -36878,7 +36878,7 @@
           "decision": "adopt",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). README of dayz-terrain-builder-runner, with CLAIM-TB-WIN32-RUNNER-ENVELOPE and CLAIM-TB-WIN32-RUNNER-GOTCHAS (runtime_verified in Terrain Builder as the ticket reports them, not re-run): what was verified and what was not, what to do before a run, settings, commands and exits, the gotchas, the changes from the source, tests. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "36151ea4d355c73a421c5641810032b9dd2df172d266726003d7802c4dda900e",
+          "source_hash": "88e344f76cf0b46fbed8a2fc0f728cb75ce1506d7f79b170dddad8bf51035698",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-terrain-builder-runner/README.md",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -36886,7 +36886,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "36151ea4d355c73a421c5641810032b9dd2df172d266726003d7802c4dda900e",
+      "output_hash": "88e344f76cf0b46fbed8a2fc0f728cb75ce1506d7f79b170dddad8bf51035698",
       "output_path": "tools/dayz-terrain-builder-runner/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -36900,7 +36900,7 @@
           "decision": "adopt",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 36 tests (38 subtests) of the runner against a fake desktop (the three TestImport tests spawn sys.executable -c to import the module in a child Python): import off Windows without binding Win32, the state path from TBRUNNER_STATE and its default, refusal off Windows of every command, no command without the executable and the flag winning over the variable, launch refused while a pid is recorded or when the executable is not a file, commands without a recorded instance, log or frame, usage exits; the menu tree and its flattening, an unreadable item printed by menu with exit 0 and skipped by probe, menu.json, command posting to the recorded frame only after a refresh and refused while a dialog is open, probe without a log printing an empty list when nothing matches and refusing an enabled leaf, close posting WM_CLOSE to the recorded frame, dialog_button posting WM_COMMAND to the open dialog, save_loop counting a changed file without focus or a dialog, windows listing the recorded instance only; the filename box of open and save dialogs, dialog_file and its refusals; press by label with swapped ids, Spanish labels and mnemonics, hidden buttons never pressed; wait_log on the recorded log and a bad pattern. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "33a2645b44464e7ee0970f72ed603682651f656cde97875a9ed4bd01700ed088",
+          "source_hash": "95817d8468a35fbdd6f1a3f5edc66172e0aeaf2f52b9cdca7ac588ef17f2a2c5",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -36908,7 +36908,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "33a2645b44464e7ee0970f72ed603682651f656cde97875a9ed4bd01700ed088",
+      "output_hash": "95817d8468a35fbdd6f1a3f5edc66172e0aeaf2f52b9cdca7ac588ef17f2a2c5",
       "output_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

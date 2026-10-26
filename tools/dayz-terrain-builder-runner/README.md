@@ -117,8 +117,9 @@ only these:
 python -m pytest tools/dayz-terrain-builder-runner/tests -q
 ```
 
-They run on any OS. `user32` and `kernel32` are fakes that record every call
-and fill the out-parameters and buffers the way the real calls do; no test
+They run on any OS. `user32` is a fake that records every call and fills the
+out-parameters and buffers the way the real calls do, and `kernel32`, which
+tbrunner binds but never calls, a fake that fails the test on any call; no test
 calls a real Windows function or starts Terrain Builder or another program;
 the three `TestImport` tests spawn `sys.executable -c` to import the module in
 a child Python.
