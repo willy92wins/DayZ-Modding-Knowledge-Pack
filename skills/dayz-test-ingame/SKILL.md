@@ -1550,6 +1550,17 @@ applies) and records it in log. And if there is a client part depending on that 
 **the condition, not a timer**: wait to observe subject already normalized, because
 normalization itself is a state change that can clobber what you were about to measure.
 
+### 3. A signature negative control that cannot fail (added 2026-10-26)
+
+[EXACT][CLAIM-SIGN-NEGATIVE-CONTROL] `DSCheckSignatures` does not check every byte of a PBO,
+nor the PBO's own SHA-1 trailer against its content. Measured on the LFQuad v1.0.1 release
+(`Return0` key, the default v3 signature of `DSSignFile`, 2026-10-26): one byte changed inside
+the `data\LFQuad_wheel_rear_co.paa` entry, with the trailer left as it was, still answered
+`Signature ... is OK`. Two controls did fail with `is wrong`: the previous build's PBO next
+to the new `.bisign`, and the new PBO with one byte of a `.c` entry changed and the trailer
+recomputed, which is what any repacker writes. Build the negative control the way a packer
+would, or from another PBO; a raw byte flip proves nothing about the signature.
+
 ### Bonus: a disposable probe does not need to register as an MCP project
 
 `P:\Mods` is `mod_root` of the ten approved projects in `request-policy.json`, and
