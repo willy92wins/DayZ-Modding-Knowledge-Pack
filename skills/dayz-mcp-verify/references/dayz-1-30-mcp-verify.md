@@ -149,3 +149,31 @@ already do not complete via MCP (existing SKILL.md limitation). Instant
 actions: if a second inject returns `setup_failed` / no-op, wait for
 `GetActionState()` to leave `UA_AM_INIT`. Detail:
 `dayz-test-ingame/references/dayz-1-30-test-ingame.md`.
+
+## Vehicle tests on 1.30.164200: what the LFQuad port ran into (2026-10-26)
+
+[EXACT][CLAIM-MCPV-VEHICLE-GAPS-130] Five behaviours of the bridge that shaped a car test,
+on 1.30.164200 DayZDiag (Exp and stable installs), each with its way round:
+
+- `vehicle_control` does not shift an automatic gearbox: the bridge changes gear only when
+  `GearboxGetType()` is manual (`MCP_CarScript.c:790-810` of the deployed `@DayZ_MCP`), so an
+  automatic car stays in neutral with the throttle open (pipeline ticket
+  `fb-20261026-142708-3efe`). To drive one, test a copy of the build whose `Gearbox.type` is
+  `GEARBOX_MANUAL` and every other entry byte-identical, and say so in the verdict.
+- `vehicle_prepare_fixture` answered `fixture_not_ready` with `fuel_fraction=0.0` right after
+  `OnDebugSpawn()`, in four runs on two boxes, although `OnDebugSpawn()` fills the tank:
+  `telemetry_read object_at` read `fuel_fraction=1` afterwards, and the car started and drove.
+  The bridge reads the tank in the tick of the `Fill()` (ticket `fb-20261026-150310-9582`).
+  Confirm with `telemetry_read` before calling it a failure.
+- `entities_query` returns the config class as `type` and the script class as `classname`:
+  a mod wheel with no script class of its own reads `CarWheel`, its `_Ruined` twin with one
+  reads its own name. That is a cheap check that a mod's script class binds.
+- No tool sets an item's health (request `fb-20261026-150310-c703`), so health-level
+  transitions such as the 1.30 ruined-wheel swap cannot be driven. An RGD5 dropped unpinned
+  1.5 m from a loose wheel took it only to 0.971. A grenade unpinned in the hands
+  (`action_use ActionUnpin`, target `hands`) arms only when it leaves them
+  (`grenade_base.c:273-281`); `ActionDropItem`, target `hands`, drops it.
+- With the player seated, `camera_set` failed with `camera_unmoved_cabin`, yet the next
+  capture showed the requested outside view and carried the warning `camera_unverified`
+  (ticket `fb-20261026-152109-2277`). The camera had moved: that is how the driver's pose
+  was checked from outside. It stays mounted until `restore_gameplay`.

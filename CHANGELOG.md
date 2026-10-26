@@ -520,6 +520,49 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-vehicles` `references/dayz-1-30-vehicles.md` and `SKILL.md`, `dayz-motorbikes`
+  `references/vehicle-1.30-refactor.md`: what porting a 1.29 quad (LFQuad) to DayZ 1.30.164200
+  stable found, read in the 1.30.164200 and 1.29 scripts on 2026-10-26.
+  - `CarScript.ToggleHeadlights()` (1.29 `CarScript.c:2088`) is deleted in 1.30 with no
+    `[Obsolete]` stub, unlike the rest of the light members. An `override` of it stops the
+    `4_World` compile (`CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130`, now measured in game: the
+    1.30.164200 server logs `Can't compile "World" script module!` and crashes).
+  - A battery car that does not override the three electricity-source methods reports
+    `NO_BATTERY` with a battery attached: no engine start, no light switch
+    (`CLAIM-VEH-NO-BATTERY-DEFAULT-130`). The refactor guide's table told readers to return `true`
+    from `NeedElectricitySourceDevice()`, which is already the default; it now points at the
+    getter that matters.
+  - Correction: 1.29 already called `CanReachSeatFromDoors(..., 1.0)` from the get-in condition,
+    and 1.30 only adds `CanGetIn()` and the DiagMenu wrapper `IsAreaAtDoorFreeDiag`
+    (`CLAIM-VEH-GETIN-REACH-129`).
+  - Migration checklist item 0: resolve every `override` against the target build's class chain.
+    `dayz-script-validator` passed the LFQuad v1.0.0 scripts against the 1.30.164200 tree with 0
+    errors (`CLAIM-VEH-OVERRIDE-RESOLVE-130`, `offline_tested`).
+
+  The two bullets in `SKILL.md` and the refactor guide carry `CLAIM-VEH-130-PORT-BLOCKERS` and
+  `CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS`.
+
+  Measured afterwards in game on the 1.30.164200 DayZDiag (Exp and stable installs, server and
+  client) while testing the port, which shipped as LFQuad v1.0.1:
+  - A backslash script module path (`files[] = {"LFQuad\scripts\4_world"}`), which loaded on
+    1.29, loaded nothing on 1.30.164200 and logged nothing; forward slashes load
+    (`CLAIM-VEH-SCRIPT-PATH-SLASH-130`). `vehicle-structural-parity.md` advised backslashes and now
+    carries the correction.
+  - Every wheel class needs a `<class>_Ruined` twin: 1.30 swaps a ruined wheel for that class and
+    raises a script error when it is missing. Recipe, evidence and the 1.30 tyre fields in a new
+    section 11 (`CLAIM-VEH-RUINED-WHEEL-CLASS-130`).
+  - `LightIsOn()` stays true on both sides after the driver gets out, and `OnDriverEnter` /
+    `OnDriverExit` run on server and client (`CLAIM-VEH-LIGHTS-EXIT-130`).
+  - `dayz-mcp-verify` `references/dayz-1-30-mcp-verify.md`: five bridge behaviours that shape a car
+    test (automatic gearbox, fixture fuel read, `classname`, no health tool, seated `camera_set`),
+    with their pipeline tickets (`CLAIM-MCPV-VEHICLE-GAPS-130`).
+  - `dayz-test-ingame` `SKILL.md`: a `DSCheckSignatures` negative control made by flipping a byte
+    can pass; change hashed content and recompute the trailer, or use another PBO
+    (`CLAIM-SIGN-NEGATIVE-CONTROL`).
+  - `dayz-mcp-verify` `SKILL.md` prerequisite 4: a Steam junction (`@SurvivorAnims`) passed the
+    preflight and loaded in `extra_mods` on the stable box, against the rule measured with `@CF` on
+    2026-08-02 (`CLAIM-MCPV-JUNCTION-EXTRA-MODS-130`).
+
 - `enforce-script-reference` `references/pitfalls-advanced.md`: the performance trap on
   `SurfaceIsPond`, `SurfaceIsSea` and `SurfaceRoadY` cited them at `game.c:1181-1183`, where 1.29
   declares `SurfaceIsSea`, `SurfaceIsPond` and `GetWaterDepth`, and `SurfaceRoadY` is at `:1163`. It

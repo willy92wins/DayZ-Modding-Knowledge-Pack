@@ -1444,9 +1444,49 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: Fixed entry for the LFQuad 1.30 port lessons (dayz-vehicles references/dayz-1-30-vehicles.md and SKILL.md, dayz-motorbikes references/vehicle-1.30-refactor.md; six claims).",
+          "license": "MIT",
+          "source_hash": "27d8eac1cdeaa8cddaa9932bdf442591d8ac04b8e4e6b24ee79b98ed14b821a6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (second pass): the Fixed entry of the LFQuad 1.30 port gains the in-game results (five new claims, two raised to runtime_verified).",
+          "license": "MIT",
+          "source_hash": "afa5a847618a6c039504b9818a22c6ba6e813b59659b4765b74083305b7e0282",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): one more bullet in the LFQuad 1.30 entry, the Steam-junction correction of dayz-mcp-verify.",
+          "license": "MIT",
+          "source_hash": "332d94330ac14aac772b4894a695c2bae179d19e2dc86c5b11b1c4bb4fc3fdf4",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "ed40f5e551d0cd7f68292eeffec5de1ff49a40a79532ebbdfa218da9434779aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Four Added entries: dayz-pbo-diff, digest_pbo of dayz-vehicle-proxy-contract, dayz-navmesh-compare and the experimental dayz-terrain-builder-runner. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "48ae92fce82ba521d0f14f32cfe21717351a11350f11ad425305f4d25fb6f0b6",
+          "source_hash": "2dcc1f50c8796adad85e6f99b11d4349b1238f533cd1a7adee004ba678f951d1",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -1454,7 +1494,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "48ae92fce82ba521d0f14f32cfe21717351a11350f11ad425305f4d25fb6f0b6",
+      "output_hash": "2dcc1f50c8796adad85e6f99b11d4349b1238f533cd1a7adee004ba678f951d1",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8702,10 +8742,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): prerequisite 4 gains a dated correction, CLAIM-MCPV-JUNCTION-EXTRA-MODS-130: a Steam junction (@SurvivorAnims) passed the preflight and loaded in extra_mods on the stable box, against the 2026-08-02 measurement with @CF, which is kept. Authored by Claude (Anthropic) from the LFQuad v1.0.1 stable-box runs.",
+          "license": "MIT",
+          "source_hash": "4eb6c70ba65bc5236fbca593f60b11163df3d6b8dcfbb2339a1ba4bf574a6680",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "0a4a39b13b1f888d98401218cd89d5d5c5cf5a9ee541cfe861cb884bcca899d8",
+      "output_hash": "4eb6c70ba65bc5236fbca593f60b11163df3d6b8dcfbb2339a1ba4bf574a6680",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -12500,10 +12550,30 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-fdf5@2026-10-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: trap 3 of the build-deploy-test cycle, CLAIM-SIGN-NEGATIVE-CONTROL: a DSCheckSignatures negative control made by flipping a byte can pass. Authored by Claude (Anthropic) while sealing LFQuad v1.0.1.",
+          "license": "MIT",
+          "source_hash": "269a55dbe69bd49a8ad2bcb40a60b291705c5ad55987b311e5d66bc7f1b872a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "c90bb73bcf565e3a4200b22d787d7d52044977cc7dd5f0ae8efa675ce69b06eb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
+      "output_hash": "c90bb73bcf565e3a4200b22d787d7d52044977cc7dd5f0ae8efa675ce69b06eb",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -14298,10 +14368,30 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: one bullet in the 1.30 block (CLAIM-VEH-130-PORT-BLOCKERS) pointing at the two 1.30 changes that stop a 1.29 car outright (ToggleHeadlights deleted; NO_BATTERY without the electricity-source overrides), detailed in references/dayz-1-30-vehicles.md. Authored by Claude (Anthropic) while porting the LFQuad to 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "382b21b6e59b6d7ff2a37c181d12883ff9da727794da6fe589c48989b799731c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (second pass): CLAIM-VEH-130-PORT-BLOCKERS names the two blockers measured in game on 1.30.164200 (backslash script module path, missing _Ruined wheel twins). Authored by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2ec89a8c066e00aa704d3b97a77dcc45198eca18a8290acd8e348cf5ff1036ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "5dd4d84938752251b0efa2f6c83bcea7606a35202418d247f1f0ae1185c8dc0d",
+      "output_hash": "2ec89a8c066e00aa704d3b97a77dcc45198eca18a8290acd8e348cf5ff1036ca",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -15458,10 +15548,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: correction under 'Script binding': the backslash advice dates from 1.29 and does not hold on 1.30.164200, where the LFQuad backslash path loaded nothing and forward slashes loaded (CLAIM-VEH-SCRIPT-PATH-SLASH-130 in dayz-1-30-vehicles.md). Historical text kept. Authored by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "95f6ded04d6b969896b59fbef47157b8a7fbf565fc6ae73ca4b357c5c597bf13",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "bbb770e15f3c159c47944d21e8c00478f26ff194880aec50cc1db9f057aabe22",
+      "output_hash": "95f6ded04d6b969896b59fbef47157b8a7fbf565fc6ae73ca4b357c5c597bf13",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -18636,9 +18736,49 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: what porting the LFQuad (a 1.29 quad) to DayZ 1.30.164200 stable found. Registers six claims: CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130 (dayz-vehicles references/dayz-1-30-vehicles.md, line 28), CLAIM-VEH-NO-BATTERY-DEFAULT-130 (121-126) and CLAIM-VEH-GETIN-REACH-129 (180-184), all source_verified, and CLAIM-VEH-OVERRIDE-RESOLVE-130 (257, offline_tested); CLAIM-VEH-130-PORT-BLOCKERS (dayz-vehicles SKILL.md, 65) and CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS (dayz-motorbikes references/vehicle-1.30-refactor.md, 41-45), source_verified. Shifts the ranges of three existing claims whose markers moved one line: CLAIM-ODOL-V56-130 (25 to 26), CLAIM-GETIN-LHD-BASE-TABLE (526 to 527) and CLAIM-INVVIEW-VIEW0-DEF (1638 to 1639).",
+          "license": "MIT",
+          "source_hash": "6aa4a61e7fa2e7654a99e25ef8170906f2f23c35a6873750c4bfc613429c7e52",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (second pass, LFQuad v1.0.1 in-game results): adds CLAIM-VEH-SCRIPT-PATH-SLASH-130, CLAIM-VEH-LIGHTS-EXIT-130, CLAIM-VEH-RUINED-WHEEL-CLASS-130 (runtime_verified, dayz-vehicles), CLAIM-MCPV-VEHICLE-GAPS-130 (runtime_verified, dayz-mcp-verify) and CLAIM-SIGN-NEGATIVE-CONTROL (offline_tested, dayz-test-ingame); raises CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130 and CLAIM-VEH-130-PORT-BLOCKERS to runtime_verified; shifts the ranges of claims whose markers moved.",
+          "license": "MIT",
+          "source_hash": "8ccac5f0c67d99f8d4a0a7b693fa9fa254381b4847a3bf25209128397d059aa6",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): adds CLAIM-MCPV-JUNCTION-EXTRA-MODS-130 (runtime_verified, dayz-mcp-verify) and shifts the claims of dayz-mcp-verify SKILL.md whose markers moved.",
+          "license": "MIT",
+          "source_hash": "7816598e64b873555ff2a4ea7e6780ef66f5e08f4b719d37d9b4f1d91b2a39a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "918a163cbb57ccb0a0c8ccecf83059a9f9a23e56a570ceac04985cc7b3b33bd6",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Registers CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC (tools/dayz-navmesh-compare/README.md, lines 10-20, offline_tested); CLAIM-NAVMESH-TESM6-DNAV11-ENVELOPE (tools/dayz-navmesh-compare/README.md, lines 24-30, offline_tested); CLAIM-TB-WIN32-RUNNER-ENVELOPE (tools/dayz-terrain-builder-runner/README.md, lines 8-20, runtime_verified, as the ticket reports it); CLAIM-TB-WIN32-RUNNER-GOTCHAS (tools/dayz-terrain-builder-runner/README.md, lines 76-93, runtime_verified, as the ticket reports it). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "0a76a975b95cf884cd82baa6a08176411509782dd525f073f516d6eef8b55f14",
+          "source_hash": "fe07dc014b021088deff630da3e29c67401e1f7717666a41c72e0fed36d94d14",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -18646,7 +18786,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0a76a975b95cf884cd82baa6a08176411509782dd525f073f516d6eef8b55f14",
+      "output_hash": "fe07dc014b021088deff630da3e29c67401e1f7717666a41c72e0fed36d94d14",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -33523,10 +33663,20 @@
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "roboclient-run3@2026-09-26",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: new section with CLAIM-MCPV-VEHICLE-GAPS-130, five bridge behaviours met while testing the LFQuad port on 1.30.164200 (automatic gearbox, fixture fuel read, classname, no health tool, seated camera_set), each with its pipeline ticket. Authored by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b47b39167fd798240e288e640aeab6252e5cd01d08692e88ff173de8bfbfe61b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "0ca8fe983e40219e0779188620fa70798416d1b9a7afe8ce3035e3075f847352",
+      "output_hash": "b47b39167fd798240e288e640aeab6252e5cd01d08692e88ff173de8bfbfe61b",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
@@ -33875,10 +34025,20 @@
           "source_path": "dayz-motorbikes/references/vehicle-1.30-refactor.md",
           "source_revision": "filesystem@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: section 2 table gains a ToggleHeadlights row (deleted in 1.30) and its two battery rows are corrected (returning true from NeedElectricitySourceDevice is already the default; GetElectricitySourceDevice is what a battery car needs), CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS; Step 1 names ToggleHeadlights. Authored by Claude (Anthropic), cites checked against the 1.30.164200 and 1.29 script trees.",
+          "license": "MIT",
+          "source_hash": "5036039c6e9fcaee4bff91b60e5a848e8f78bf1544353e4606cdd1949cf6ea50",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/references/vehicle-1.30-refactor.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9eb3b1d6b75f9f5befd96282c1a6d6a283eaf01f79f706859b91993a2a448153",
+      "output_hash": "5036039c6e9fcaee4bff91b60e5a848e8f78bf1544353e4606cdd1949cf6ea50",
       "output_path": "skills/dayz-motorbikes/references/vehicle-1.30-refactor.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -34111,10 +34271,30 @@
           "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: what porting the LFQuad (a 1.29 quad) to DayZ 1.30.164200 stable found. Table row and CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130: ToggleHeadlights() deleted without an [Obsolete] stub. Section 2, CLAIM-VEH-NO-BATTERY-DEFAULT-130: without the three electricity-source overrides a battery car reports NO_BATTERY. Section 5, CLAIM-VEH-GETIN-REACH-129: correction, 1.29 already called CanReachSeatFromDoors from script. Migration checklist item 0, CLAIM-VEH-OVERRIDE-RESOLVE-130: resolve every override against the target build; the pack's validator passed a mod that overrides the deleted method. Authored by Claude (Anthropic), every cite checked against the 1.30.164200 and 1.29 script trees.",
+          "license": "MIT",
+          "source_hash": "31dcb8cc8d7a2101195ca94d81d271e9b46e5399c4de8148b704b6b91092af9e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (second pass): the in-game results of the LFQuad 1.30 port, shipped as LFQuad v1.0.1. CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130 now measured in game; new CLAIM-VEH-SCRIPT-PATH-SLASH-130 (a backslash script module path loaded nothing on 1.30.164200), CLAIM-VEH-LIGHTS-EXIT-130 (native light state around the driver seat), section 11 with CLAIM-VEH-RUINED-WHEEL-CLASS-130 (a _Ruined twin for every wheel class, and the 1.30 tyre fields); two table rows and checklist items 11-13. Authored by Claude (Anthropic) from logs of the T130 and stable boxes.",
+          "license": "MIT",
+          "source_hash": "802df083b83e5bbd1153e792f8da26ae510a08aee087ba2cdd69184bdb9187bd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a22827bdfdf3247947f0998d23e398866bb333edb06f40d1f4382a51d53745d2",
+      "output_hash": "802df083b83e5bbd1153e792f8da26ae510a08aee087ba2cdd69184bdb9187bd",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"
