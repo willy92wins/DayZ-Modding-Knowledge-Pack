@@ -1484,9 +1484,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): one Added entry for the Arma2Quad 1.30 port lessons in dayz-vehicles and dayz-mcp-verify.",
+          "license": "MIT",
+          "source_hash": "830dc583cb19671e2a21d2b51a2e9ca5ec2418f63fe7a106ee7546a46f543123",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Four Added entries: dayz-pbo-diff, digest_pbo of dayz-vehicle-proxy-contract, dayz-navmesh-compare and the experimental dayz-terrain-builder-runner. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "8d90c49200fad13fd8aa400fd2988d8e404644f488344583c9edaf240860e222",
+          "source_hash": "3cb1ca5319a3089488af8e2a32282485ec7cf89acb8cf00765967279dcb1f4ff",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -1494,7 +1504,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8d90c49200fad13fd8aa400fd2988d8e404644f488344583c9edaf240860e222",
+      "output_hash": "3cb1ca5319a3089488af8e2a32282485ec7cf89acb8cf00765967279dcb1f4ff",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -18776,9 +18786,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): adds CLAIM-VEH-FRONT-FLARE-STICKY-130, CLAIM-VEH-LIGHT-PROFILE-UNREAD-130, CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130 and CLAIM-MCPV-VEHICLE-GAPS-A2Q-130, extends the evidence of CLAIM-VEH-LIGHTS-EXIT-130, and shifts the claims whose markers moved.",
+          "license": "MIT",
+          "source_hash": "60763b5d2f3bc33f1c68166446e6c226dc1d847286ecbef9122679d85a172e7f",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Registers CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC (tools/dayz-navmesh-compare/README.md, lines 10-20, offline_tested); CLAIM-NAVMESH-TESM6-DNAV11-ENVELOPE (tools/dayz-navmesh-compare/README.md, lines 24-30, offline_tested); CLAIM-TB-WIN32-RUNNER-ENVELOPE (tools/dayz-terrain-builder-runner/README.md, lines 8-20, runtime_verified, as the ticket reports it); CLAIM-TB-WIN32-RUNNER-GOTCHAS (tools/dayz-terrain-builder-runner/README.md, lines 76-93, runtime_verified, as the ticket reports it). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "fe07dc014b021088deff630da3e29c67401e1f7717666a41c72e0fed36d94d14",
+          "source_hash": "e1d89a6b3a118aa6fcbe920b5e93449a16c14868a7a5c710755387ba0c4a236d",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -18786,7 +18806,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fe07dc014b021088deff630da3e29c67401e1f7717666a41c72e0fed36d94d14",
+      "output_hash": "e1d89a6b3a118aa6fcbe920b5e93449a16c14868a7a5c710755387ba0c4a236d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -33673,10 +33693,20 @@
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): new section with CLAIM-MCPV-VEHICLE-GAPS-A2Q-130, six bridge behaviours of a car test on the stable box. Authored by Claude (Anthropic) from the Arma2Quad 1.30 port (willy92wins/Arma2Quad PR #1).",
+          "license": "MIT",
+          "source_hash": "81779583815cc0051dba1784a19832ad6d209ad8c156ff69db6a1682c2ded26a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "b47b39167fd798240e288e640aeab6252e5cd01d08692e88ff173de8bfbfe61b",
+      "output_hash": "81779583815cc0051dba1784a19832ad6d209ad8c156ff69db6a1682c2ded26a",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
@@ -34291,10 +34321,20 @@
           "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): section 1 gains CLAIM-VEH-FRONT-FLARE-STICKY-130 and CLAIM-VEH-LIGHT-PROFILE-UNREAD-130 and a second measurement in CLAIM-VEH-LIGHTS-EXIT-130; section 11 gains CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130; migration checklist items 14 and 15. Authored by Claude (Anthropic) from the Arma2Quad 1.30 port (willy92wins/Arma2Quad PR #1).",
+          "license": "MIT",
+          "source_hash": "6d5bff6cbe4409421c2e588a235d939b7828983b9308e702fea0a0bdce51e8aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "802df083b83e5bbd1153e792f8da26ae510a08aee087ba2cdd69184bdb9187bd",
+      "output_hash": "6d5bff6cbe4409421c2e588a235d939b7828983b9308e702fea0a0bdce51e8aa",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"
