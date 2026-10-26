@@ -12425,7 +12425,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. TROUBLESHOOTING gains a row for it, under CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE. CLAIM-TEST-DAYZMCP-CARRIER moves from 668 to 669, its text unchanged; the four other claims of this file sit above the row and keep their lines. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "3eefe46d2d4ede4715cc66f578321ed8e237bec7681a6e3903087755b5d54bd0",
+          "source_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-fdf5@2026-10-26",
@@ -12433,7 +12433,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3eefe46d2d4ede4715cc66f578321ed8e237bec7681a6e3903087755b5d54bd0",
+      "output_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -18558,7 +18558,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. Registers CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE (runtime_verified, dayz-test-ingame SKILL.md, line 570) and moves CLAIM-TEST-DAYZMCP-CARRIER from 668 to 669. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "541067965c4d542909a07f29d32d2bb4a666aa5b4596bf4e8a8b2e127b25257c",
+          "source_hash": "f6955dac0fdc0c9ea7dea9b77410b692d8bef928077c19562e8e8f34dde490ec",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-fdf5@2026-10-26",
@@ -18566,7 +18566,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "541067965c4d542909a07f29d32d2bb4a666aa5b4596bf4e8a8b2e127b25257c",
+      "output_hash": "f6955dac0fdc0c9ea7dea9b77410b692d8bef928077c19562e8e8f34dde490ec",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
