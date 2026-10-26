@@ -1446,7 +1446,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Four Added entries: dayz-pbo-diff, digest_pbo of dayz-vehicle-proxy-contract, dayz-navmesh-compare and the experimental dayz-terrain-builder-runner. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "51e16dbae15cff84d8222ec8734e41b26d0e4314a9dab2ea657d97316011f3be",
+          "source_hash": "48ae92fce82ba521d0f14f32cfe21717351a11350f11ad425305f4d25fb6f0b6",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -1454,7 +1454,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "51e16dbae15cff84d8222ec8734e41b26d0e4314a9dab2ea657d97316011f3be",
+      "output_hash": "48ae92fce82ba521d0f14f32cfe21717351a11350f11ad425305f4d25fb6f0b6",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"

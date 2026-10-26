@@ -14,11 +14,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   name, a truncated archive and an existing `--out` (exit 1). Adapted from `diff_pbo_entries.py` of
   the Baltic 12 km terrain project (commit 84e2bb8, pipeline inbox fb-20261003-203108-9821), which
   told the entry table from the properties by size and misread a PBO of 100 entries or fewer; its
-  one `data/layers/` filter is the repeatable `--ignore-prefix`. 22 tests on synthetic PBOs.
+  one `data/layers/` filter is the repeatable `--ignore-prefix`. 24 tests on synthetic PBOs.
   `dayz-pbo-build` gains a "Compare the entries of two builds" step that names it.
 - `dayz-vehicle-proxy-contract` `scripts/vehicle_proxy/pbo.py`: `digest_pbo` and `PboDigest` return
   the header properties in file order and the SHA-256 of every entry's payload from one snapshot; a
-  compressed entry fails closed as in `read_entry`. The reader's existing tests pass unchanged; 7 new
+  compressed entry fails closed as in `read_entry`. The reader's existing tests pass unchanged; 12 new
   tests. Its README says that `dayz-pbo-diff` reads through it.
 - `dayz-navmesh-compare`, a new tool: compares two `.nm` navmeshes tile by tile by structure
   (polygon and vertex counts, vertical bounds) rather than bytes, and optionally locates the
@@ -33,7 +33,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `compare_navmesh_tiles_v30.py` of the same project: the layout comes from the file header with
   every check kept, non-finite bounds are refused, terrain and routes are optional and numpy is
   needed only for terrain, and no structural change passes unless the terrain changed (the source
-  reviewed it always). 55 tests, 9 of them needing numpy.
+  reviewed it always). 60 tests, 9 of them needing numpy.
 - `dayz-terrain-builder-runner`, a new EXPERIMENTAL tool, Windows only: drives a Terrain Builder it
   launched by Win32 messages (`PostMessage(WM_COMMAND)`, `WM_SETTEXT`), with the subcommands of the
   source, `tbrunner.py` of the same project. Menu commands and the standard file dialogs were
@@ -43,7 +43,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   settings files rewritten on exit, a log that records neither imports nor Generate Layers. Changed
   from the source: Win32 bound when a command runs, so it imports on any OS and refuses off Windows;
   the executable from `--tb-exe` or `TBRUNNER_TB_EXE`, no fixed path; explicit errors instead of
-  asserts. 29 tests with a fake `user32`: none calls a real Windows function or starts Terrain
+  asserts. 36 tests with a fake `user32`: none calls a real Windows function or starts Terrain
   Builder or another program; the three TestImport tests spawn `sys.executable -c` to import the
   module in a child Python.
 - Round 2 of these tools: the `.nm` reader checks the size each tile prefix declares, `digest_pbo`
