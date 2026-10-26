@@ -16,7 +16,7 @@ actual behavior (process dies) without verification.
 
 ### Operational antidote before drafting audit findings
 
-1. Reproduce bug on local server (`dayz-launch-test` if available).
+1. Reproduce bug on local server (`dayz-test-ingame`).
 2. Log complete bug cycle (load -> execute -> autosave -> reload).
 3. Distinguish:
    - `crash` <-> process dies, server drops, requires restart.

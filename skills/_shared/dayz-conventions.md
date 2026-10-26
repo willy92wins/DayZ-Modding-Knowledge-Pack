@@ -573,6 +573,21 @@ Every DayZ skill using a magic number (LOD range, version range, density, instan
 
 Rule: any value cited by an agent or skill that is not in this table with verified source must be marked `[EMPIRICAL]` or `[NEEDS VERIFICATION]`. Do not present as facts until verification pass is closed. And before accepting an audit finding as a bug → verify against actual file with grep + line number.
 
+## Citation placeholders: `[PROJ]`, `[SKILLS]`, `<project>_dev/...`
+
+Evidence trails across the skills cite files the author verified in their own workspace. Two
+placeholders and one naming pattern recur; none of them resolve inside this pack:
+
+| Token | Meaning | Ships here? |
+|---|---|---|
+| `[SKILLS]\<skill>\...` | The installed skills root (`~/.claude/skills/` or `<project>/.claude/skills/`). Resolvable: replace the prefix with your skills directory. | Yes |
+| `[PROJ]\<name>_dev\...` | The author's per-project working folder (a vault/repo, not `P:\`). | No |
+| `LFHeli_dev`, `LFQuad_dev`, `A6_SR2M_dev`, `LFPowerGrid_dev`, `WeaponAnimPipeline_dev`, `Utopia_PC_Suite`... | Those same private project folders, named directly. | No |
+
+Treat a `[PROJ]` or `*_dev` citation as *provenance* (where the claim was verified and when), not
+as a file you can open. When the cited artefact matters, re-verify against `P:\scripts` or the
+pack's own `references/` and record the new `path:line`.
+
 ## AUDIT-TO-FIX TRACKER (added 2026-05-12)
 
 When an audit produces actionable findings — detected bugs, non-existent paths, incorrect magic numbers, confabulated APIs — generate at audit close, alongside human-readable report, an explicit **fix-tracker**.

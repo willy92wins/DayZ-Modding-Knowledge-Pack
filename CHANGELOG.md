@@ -7,6 +7,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-animation-pipeline` `references/anim-graph.md`, new section "Porting a 1.29 `$AnimGraph 7`
+  graph to 1.30 — field-by-field mapping" (DayZ 1.30.164078 stable, 2026-10-15): the 1.30 file set
+  (`.agr` as `AnimSrcGraph`, `.agf` as `AnimSrcGraphFile`, `.ast` as `AnimSetTemplateSource`,
+  `.asi` as `AnimSetInstanceSource`), node by node (source, blend, timed blend, group select, state
+  machine, state, transition, procedural rotation), the three-part template and instance keys, and
+  the resource GUIDs: vanilla clip GUIDs are unchanged from 1.29 on all 17 infected hit and death
+  clips checked, and your own files take GUIDs derived from a stable seed so a regeneration is
+  byte-identical. `SKILL.md` adds a checklist item to port every custom creature graph from it.
+- `dayz-physics-engine` `references/dayz-1-30-ragdoll-and-fall.md`, new section "Infected do not
+  ragdoll" (in game 2026-10-16, 1.30.164078): the ragdoll API (`PhysicsSetRagdoll`,
+  `PhysicsSetSimpleDeath`) is declared on `Human` only, and neither `ragdoll =` in an infected's
+  `enfanimsys` nor player death clips carrying the `Ragdoll` event make an infected ragdoll: the clip
+  plays out and the body freezes. A corpse swap is the remaining route. `SKILL.md` lists the
+  assumption with its pitfalls.
+
 - `dayz-pbo-diff`, a new tool: compares the entries of two uncompressed PBOs by the SHA-256 of each
   payload, and their header properties, and writes one new JSON report (`differing`, `only_old`,
   `only_new`, `props_equal`, `differing_not_ignored`). It reads both through the fail-closed reader of
@@ -551,6 +566,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- Citations of files this pack does not ship now say so. `_shared/dayz-conventions.md` gains
+  "Citation placeholders: `[PROJ]`, `[SKILLS]`, `<project>_dev/...`": what each token means, and
+  that a `[PROJ]` or `*_dev` citation records provenance, not a file you can open. The project-only
+  scripts and files cited in `blender-animation` `references/dayz-handoff.md`,
+  `dayz-animation-pipeline` `references/weapon-anim-authoring-viewer.md`, `dayz-vehicles`
+  `references/vehicle-structural-parity.md` (which now points at the pattern in `dayz-p3d-audit`
+  `references/vehicle-killers.md`), `dayz-weapons` `references/p3d-selection-contract.md`,
+  `enforce-script-reference` `SKILL.md` and `rip-vehicle-import` `SKILL.md` are marked as not
+  shipped, and `rigorous-data-audit` `index.md` replaces its links to the 11 per-skill audit
+  reports, which are not in the pack, with a note.
+- Paths that pointed at the wrong place: Route C's exporter is the skill's own
+  `scripts/seanim_export.py` (`weapon-anim-authoring-viewer.md`, `dayz-handoff.md`), and the viewer
+  builder `dayz-handoff.md` cites is `dayz-animation-pipeline/scripts/build_viewer.py`;
+  `dayz-mod-workflow` `SKILL.md` cites the validator's tables at
+  `tools/dayz-script-validator/scripts/shared/vanilla_reference.py` and names the
+  `dayz-ui-development` skill in full; its `references/audit-escalation.md` reproduces a bug with
+  `dayz-test-ingame`, since the pack has no `dayz-launch-test`. The two claims after the new line in
+  `weapon-anim-authoring-viewer.md` (`CLAIM-ANIM-ROUTEC-RIG-FRAMES`,
+  `CLAIM-ANIM-ROUTEC-FBX-INGAME`) move down one line.
 - `dayz-vehicles` `references/dayz-1-30-vehicles.md` and `SKILL.md`, `dayz-motorbikes`
   `references/vehicle-1.30-refactor.md`: what porting a 1.29 quad (LFQuad) to DayZ 1.30.164200
   stable found, read in the 1.30.164200 and 1.29 scripts on 2026-10-26.

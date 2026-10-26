@@ -827,7 +827,7 @@ Remedy: replicate the state (`RegisterNetSyncVariableBool` written in `OnEngineS
 
 **Autotest harness — close the transition:** an autotest that only covers the ENTRY of a transition does not test the EXIT, where the bug usually lives. Close the cycle with a hook the project already has (a watcher that forces the cancel) instead of synthetic input.
 
-Evidence: `LFHeli_dev/reviews/evidence-2026-08-17/flir-autotest-0{1,2}/`, `tools/run_flir_autotest.ps1`, LL-309/310, bugs.md LF-008.
+Evidence: `LFHeli_dev/reviews/evidence-2026-08-17/flir-autotest-0{1,2}/`, `LFHeli_dev/tools/run_flir_autotest.ps1` (project file, not shipped), LL-309/310, bugs.md LF-008.
 
 
 ### `HumanCommandVehicle` is client-local — the get-in ACTION creates it, not crew replication (SP-295)
