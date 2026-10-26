@@ -7,6 +7,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-vehicles` `references/dayz-1-30-vehicles.md`: what porting a second 1.29 quad (Arma2Quad)
+  to DayZ 1.30.164200 added, read in the 1.30.164200 and 1.29 scripts and measured on the stable
+  DayZDiag on 2026-10-26. The 1.30 front light profile switches the lens flare off for good once
+  both bulbs have lit as one, also on the vanilla cars, and the fix Arma2Quad ships
+  (`CLAIM-VEH-FRONT-FLARE-STICKY-130`); `m_DaylightVisible`, `m_CastShadow` and `m_FadeInTime` of a
+  profile are never read, and the 1.29 brake and reverse fade-out was 0.1 s
+  (`CLAIM-VEH-LIGHT-PROFILE-UNREAD-130`); 1.29 overrides that returned the `_Ruined` twins still
+  compile and return what 1.30 derives, with that quad's in-game wheel and drive results
+  (`CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130`); a second mod measured with its lights still on after
+  the driver gets out (`CLAIM-VEH-LIGHTS-EXIT-130`); and two checklist items, hashing the Workshop
+  PBO before porting a published mod and the flare fix. `dayz-mcp-verify`
+  `references/dayz-1-30-mcp-verify.md`: six more bridge behaviours of a car test, with their
+  pipeline tickets (`CLAIM-MCPV-VEHICLE-GAPS-A2Q-130`).
 - `dayz-test-ingame` TROUBLESHOOTING, a row for the `PluginConfigDebugProfile is not Registred`
   stack that every DayZDiag mission start logs (pipeline inbox fb-20261025-044934-fdf5, which took it
   for a DayZ_MCP error): it is vanilla. Under `DIAG_DEVELOPER` the manager registers

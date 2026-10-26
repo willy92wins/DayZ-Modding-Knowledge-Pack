@@ -1451,10 +1451,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): one Added entry for the Arma2Quad 1.30 port lessons in dayz-vehicles and dayz-mcp-verify.",
+          "license": "MIT",
+          "source_hash": "830dc583cb19671e2a21d2b51a2e9ca5ec2418f63fe7a106ee7546a46f543123",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ed40f5e551d0cd7f68292eeffec5de1ff49a40a79532ebbdfa218da9434779aa",
+      "output_hash": "830dc583cb19671e2a21d2b51a2e9ca5ec2418f63fe7a106ee7546a46f543123",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -18703,10 +18713,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): adds CLAIM-VEH-FRONT-FLARE-STICKY-130, CLAIM-VEH-LIGHT-PROFILE-UNREAD-130, CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130 and CLAIM-MCPV-VEHICLE-GAPS-A2Q-130, extends the evidence of CLAIM-VEH-LIGHTS-EXIT-130, and shifts the claims whose markers moved.",
+          "license": "MIT",
+          "source_hash": "60763b5d2f3bc33f1c68166446e6c226dc1d847286ecbef9122679d85a172e7f",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "918a163cbb57ccb0a0c8ccecf83059a9f9a23e56a570ceac04985cc7b3b33bd6",
+      "output_hash": "60763b5d2f3bc33f1c68166446e6c226dc1d847286ecbef9122679d85a172e7f",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -33573,10 +33593,20 @@
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): new section with CLAIM-MCPV-VEHICLE-GAPS-A2Q-130, six bridge behaviours of a car test on the stable box. Authored by Claude (Anthropic) from the Arma2Quad 1.30 port (willy92wins/Arma2Quad PR #1).",
+          "license": "MIT",
+          "source_hash": "81779583815cc0051dba1784a19832ad6d209ad8c156ff69db6a1682c2ded26a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "b47b39167fd798240e288e640aeab6252e5cd01d08692e88ff173de8bfbfe61b",
+      "output_hash": "81779583815cc0051dba1784a19832ad6d209ad8c156ff69db6a1682c2ded26a",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
@@ -34191,10 +34221,20 @@
           "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): section 1 gains CLAIM-VEH-FRONT-FLARE-STICKY-130 and CLAIM-VEH-LIGHT-PROFILE-UNREAD-130 and a second measurement in CLAIM-VEH-LIGHTS-EXIT-130; section 11 gains CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130; migration checklist items 14 and 15. Authored by Claude (Anthropic) from the Arma2Quad 1.30 port (willy92wins/Arma2Quad PR #1).",
+          "license": "MIT",
+          "source_hash": "6d5bff6cbe4409421c2e588a235d939b7828983b9308e702fea0a0bdce51e8aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "802df083b83e5bbd1153e792f8da26ae510a08aee087ba2cdd69184bdb9187bd",
+      "output_hash": "6d5bff6cbe4409421c2e588a235d939b7828983b9308e702fea0a0bdce51e8aa",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"

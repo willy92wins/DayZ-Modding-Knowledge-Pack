@@ -177,3 +177,32 @@ on 1.30.164200 DayZDiag (Exp and stable installs), each with its way round:
   capture showed the requested outside view and carried the warning `camera_unverified`
   (ticket `fb-20261026-152109-2277`). The camera had moved: that is how the driver's pose
   was checked from outside. It stays mounted until `restore_gameplay`.
+
+## Vehicle tests on 1.30.164200: what the Arma2Quad port added (2026-10-26)
+
+[EXACT][CLAIM-MCPV-VEHICLE-GAPS-A2Q-130] Six more behaviours of the bridge, from the stable
+box (DayZDiag 1.30.164200 of the stable install) with a second 1.29 quad, Arma2Quad:
+
+- In-vehicle actions need `vehicle_get_in_client` as well as `vehicle_enter`. After
+  `vehicle_enter` alone, `action_use ActionSwitchLights` (target `self`) answered
+  `condition_failed`; after `vehicle_get_in_client` it started and the lights came on (ticket
+  `fb-20261026-203150-6f62`). The client stays bound to that first car: after
+  `ActionGetOutTransport`, `vehicle_enter` into a second car seated the server player, and the
+  switch failed there twice. Plan one car per run.
+- `vehicle_enter` with its default 15 s timeout answered `timeout` with the player already in
+  the seat (`query_player_state`); with `timeout_s=30` it answered in 1.3 s.
+- Parts that `OnDebugSpawn` mounts are not world objects: `object_resolve` on a mounted
+  `HeadlightH7` gave `object_not_found` at 0.3 and 3 m. To remove a part during a test, mount it
+  with `inventory_attach`, keep its `item_object_id` and `object_delete` that id; the detach
+  path runs (the headlights went from the two-bulb to the one-bulb state in game).
+- No bridge reader exposes the light state: `vehicle_telemetry` and `telemetry_read` have no
+  light field. Log it from the mod under `#ifdef DIAG_DEVELOPER` (Arma2Quad prints it in
+  `OnDriverExit`) or compare captures.
+- With another box's DayZ server holding port 2302, `dayz_test_run` on the stable box answered
+  `port_in_use_foreign` with a hint to pass another `port=`; with `port=2402` it answered
+  `active_run_exists` and only queued until that server exited (ticket
+  `fb-20261026-203149-88fe`).
+- `wait_for(log_matches, role=server, lookback_from=launch)` returned the client's
+  `Module: World` line and listed only `_client` files in `scanned` (ticket
+  `fb-20261026-203149-33c3`). Check `scanned.files`, or the defines of the returned line
+  (`SERVER`), before taking it for the server's.
