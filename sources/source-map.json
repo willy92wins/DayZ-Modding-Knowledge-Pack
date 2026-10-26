@@ -1421,10 +1421,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): one more bullet in the LFQuad 1.30 entry, the Steam-junction correction of dayz-mcp-verify.",
+          "license": "MIT",
+          "source_hash": "332d94330ac14aac772b4894a695c2bae179d19e2dc86c5b11b1c4bb4fc3fdf4",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "afa5a847618a6c039504b9818a22c6ba6e813b59659b4765b74083305b7e0282",
+      "output_hash": "332d94330ac14aac772b4894a695c2bae179d19e2dc86c5b11b1c4bb4fc3fdf4",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8652,10 +8662,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): prerequisite 4 gains a dated correction, CLAIM-MCPV-JUNCTION-EXTRA-MODS-130: a Steam junction (@SurvivorAnims) passed the preflight and loaded in extra_mods on the stable box, against the 2026-08-02 measurement with @CF, which is kept. Authored by Claude (Anthropic) from the LFQuad v1.0.1 stable-box runs.",
+          "license": "MIT",
+          "source_hash": "4eb6c70ba65bc5236fbca593f60b11163df3d6b8dcfbb2339a1ba4bf574a6680",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "0a4a39b13b1f888d98401218cd89d5d5c5cf5a9ee541cfe861cb884bcca899d8",
+      "output_hash": "4eb6c70ba65bc5236fbca593f60b11163df3d6b8dcfbb2339a1ba4bf574a6680",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -18613,10 +18633,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): adds CLAIM-MCPV-JUNCTION-EXTRA-MODS-130 (runtime_verified, dayz-mcp-verify) and shifts the claims of dayz-mcp-verify SKILL.md whose markers moved.",
+          "license": "MIT",
+          "source_hash": "7816598e64b873555ff2a4ea7e6780ef66f5e08f4b719d37d9b4f1d91b2a39a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8ccac5f0c67d99f8d4a0a7b693fa9fa254381b4847a3bf25209128397d059aa6",
+      "output_hash": "7816598e64b873555ff2a4ea7e6780ef66f5e08f4b719d37d9b4f1d91b2a39a0",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

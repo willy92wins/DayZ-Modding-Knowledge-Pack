@@ -507,6 +507,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `dayz-test-ingame` `SKILL.md`: a `DSCheckSignatures` negative control made by flipping a byte
     can pass; change hashed content and recompute the trailer, or use another PBO
     (`CLAIM-SIGN-NEGATIVE-CONTROL`).
+  - `dayz-mcp-verify` `SKILL.md` prerequisite 4: a Steam junction (`@SurvivorAnims`) passed the
+    preflight and loaded in `extra_mods` on the stable box, against the rule measured with `@CF` on
+    2026-08-02 (`CLAIM-MCPV-JUNCTION-EXTRA-MODS-130`).
 
 - `enforce-script-reference` `references/pitfalls-advanced.md`: the performance trap on
   `SurfaceIsPond`, `SurfaceIsSea` and `SurfaceRoadY` cited them at `game.c:1181-1183`, where 1.29
