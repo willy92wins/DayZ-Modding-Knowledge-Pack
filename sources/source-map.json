@@ -1401,10 +1401,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. One Added entry for the dayz-test-ingame TROUBLESHOOTING row. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "91fd436b7aa84ddb553f75f158b29f1679389c7c64b73d6d7a33aa317fe85448",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "07b5d46c26204253b4b172ec2b706cd8f750875ffbca2e8e43a4c8076d100cd0",
+      "output_hash": "91fd436b7aa84ddb553f75f158b29f1679389c7c64b73d6d7a33aa317fe85448",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -12410,10 +12420,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. TROUBLESHOOTING gains a row for it, under CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE. CLAIM-TEST-DAYZMCP-CARRIER moves from 668 to 669, its text unchanged; the four other claims of this file sit above the row and keep their lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "df5edd5bdbc3495c8d31d194ff162f9398e6c3261df47dab903752487c0a5ff4",
+      "output_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -18533,10 +18553,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. Registers CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE (runtime_verified, dayz-test-ingame SKILL.md, line 570) and moves CLAIM-TEST-DAYZMCP-CARRIER from 668 to 669. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f6955dac0fdc0c9ea7dea9b77410b692d8bef928077c19562e8e8f34dde490ec",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0746b85e3c3a093305cf068f9f5b67d91b2bef8130cf66419fe0597b4aaca679",
+      "output_hash": "f6955dac0fdc0c9ea7dea9b77410b692d8bef928077c19562e8e8f34dde490ec",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
