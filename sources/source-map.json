@@ -1434,9 +1434,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. One Added entry for the dayz-test-ingame TROUBLESHOOTING row. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "91fd436b7aa84ddb553f75f158b29f1679389c7c64b73d6d7a33aa317fe85448",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Four Added entries: dayz-pbo-diff, digest_pbo of dayz-vehicle-proxy-contract, dayz-navmesh-compare and the experimental dayz-terrain-builder-runner. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "3661418e0280f74b7459ebf7f2ae649ea87d03e2e0ec6462ec8e89df4f904503",
+          "source_hash": "51e16dbae15cff84d8222ec8734e41b26d0e4314a9dab2ea657d97316011f3be",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -1444,7 +1454,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3661418e0280f74b7459ebf7f2ae649ea87d03e2e0ec6462ec8e89df4f904503",
+      "output_hash": "51e16dbae15cff84d8222ec8734e41b26d0e4314a9dab2ea657d97316011f3be",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -12480,10 +12490,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. TROUBLESHOOTING gains a row for it, under CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE. CLAIM-TEST-DAYZMCP-CARRIER moves from 668 to 669, its text unchanged; the four other claims of this file sit above the row and keep their lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "df5edd5bdbc3495c8d31d194ff162f9398e6c3261df47dab903752487c0a5ff4",
+      "output_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -18606,9 +18626,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. Registers CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE (runtime_verified, dayz-test-ingame SKILL.md, line 570) and moves CLAIM-TEST-DAYZMCP-CARRIER from 668 to 669. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f6955dac0fdc0c9ea7dea9b77410b692d8bef928077c19562e8e8f34dde490ec",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Registers CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC (tools/dayz-navmesh-compare/README.md, lines 10-20, offline_tested); CLAIM-NAVMESH-TESM6-DNAV11-ENVELOPE (tools/dayz-navmesh-compare/README.md, lines 24-30, offline_tested); CLAIM-TB-WIN32-RUNNER-ENVELOPE (tools/dayz-terrain-builder-runner/README.md, lines 8-20, runtime_verified, as the ticket reports it); CLAIM-TB-WIN32-RUNNER-GOTCHAS (tools/dayz-terrain-builder-runner/README.md, lines 76-93, runtime_verified, as the ticket reports it). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "2b991173e6b7c2406a70dd39cdc684fe1ebddf08cb20a3dafa9303815b6a5d41",
+          "source_hash": "0a76a975b95cf884cd82baa6a08176411509782dd525f073f516d6eef8b55f14",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-9821@2026-10-24",
@@ -18616,7 +18646,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2b991173e6b7c2406a70dd39cdc684fe1ebddf08cb20a3dafa9303815b6a5d41",
+      "output_hash": "0a76a975b95cf884cd82baa6a08176411509782dd525f073f516d6eef8b55f14",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
