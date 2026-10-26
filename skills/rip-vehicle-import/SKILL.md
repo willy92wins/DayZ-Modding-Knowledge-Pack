@@ -148,7 +148,8 @@ Do not create `INDEX.yaml`, a cookbook router or any other symptom→cookbook ta
 
 The car profile declares `source.asset_contract` (path to ledger entry) — this activates the contract
 mode of `rip_p2_import.py`: INCLUDE/SHADOW lists projected from the ledger entry by
-`scripts/rip_contract_source.py` (fail-closed per-container homogeneity), never with
+`scripts/rip_contract_source.py` (fail-closed per-container homogeneity; `rip_p2_import.py` and
+`rip_contract_source.py` are scripts of the import project and are not shipped in this pack), never with
 `manifest_decisions.json`, far-shell deferred to human classification, G0 anchors per
 profile (`source.g0_anchors` = pairs [part, locator]). The three commands, in order:
 

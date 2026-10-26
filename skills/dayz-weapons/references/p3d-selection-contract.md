@@ -38,7 +38,7 @@ that feeds a bone-remap — a mis-authored one passes every syntactic check yet 
 `A6_SR2M_dev\reviews\2026-06-30-handoff-bolt-trigger-fix.md:12-17`:
 
 1. **Paint faces → selection** with a face painter HTML (SR2M used `tools/sr2m_selection_painter.html`,
-   self-test PASS). The painter + dilation-refiner tooling PATTERN is documented in
+   self-test PASS; that HTML is an A6_SR2M project file and is not shipped in this pack). The painter + dilation-refiner tooling PATTERN is documented in
    `dayz-animation-pipeline` (`selection-painter-for-actions.md`) — reference it, do not re-derive.
 2. **Write selections to the `.p3d` via py3d DIRECTLY, NOT recipe→build.** A recipe→build round-trip
    DROPS selections (SP-002). SR2M wrote 245v `bolt` / 243v `trigger` in `visual_0` this way.

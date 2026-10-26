@@ -182,8 +182,9 @@ sliders; polish-verify 12/12; self-test 47 checks PASS):
   rigidly follows the right hand (`weaponRel`).
 - Two export routes to `.anm` (both round-trip-verified offline; in-game is the gate):
   - Route A (canonical): `tools/txa/dump_viewer_world.py` + `viewer_to_txa_via_plugin.py`
+    (project scripts under `WeaponAnimPipeline_dev/tools/txa/`, NOT shipped in this pack)
     -> `.txa` -> Workbench -> `.anm`. Handles root motion. USE THIS FOR THE GRIP.
-  - Route C (CLI): `tools/seanim_export.py` -> `.seanim` -> `DayZATool --generate-anim
+  - Route C (CLI): `scripts/seanim_export.py` (this skill's `scripts/`) -> `.seanim` -> `DayZATool --generate-anim
     <f>.seanim 100` -> `.anm`. Rotations + rest only. The viewer->seanim quat convention
     `(-vy,-vz,vx,vw)` is exact on fingers but `LeftHand` does NOT obey it (separate wrist
     process) -> do not use Route C for the support-hand wrist. Route C is also NOT valid

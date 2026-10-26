@@ -76,7 +76,7 @@ After each file, include:
 | API/Function         | Source                    | Status   |
 |----------------------|---------------------------|----------|
 | CreateObjectEx       | enforce-ref / vanilla     | VERIFIED |
-| SomeWidget.SetColor  | dayz-ui-dev ref           | VERIFIED |
+| SomeWidget.SetColor  | dayz-ui-development ref   | VERIFIED |
 | entity.GetSomeMethod | not found                 | ASSUMED  |
 ```
 
@@ -524,7 +524,7 @@ missing method override, `delete`, empty `#ifdef`, item override in wrong
 predicts that module COMPILES and that asset LOADS. Says nothing about behavior
 of the engine. Behavioral gate remains mandatory separately.
 
-Known coverage: tables in `scripts/shared/vanilla_reference.py` are
+Known coverage: tables in `tools/dayz-script-validator/scripts/shared/vanilla_reference.py` are
 deliberately small (linter does not parse `P:\scripts` at runtime), so there are
 false negatives by design and never false positives through that path. Green is not proof
 of absence.

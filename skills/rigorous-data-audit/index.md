@@ -157,19 +157,11 @@ Base class list includes `HouseNoDestruct`, `Motorcycle`, `Helicopter`, `Vehicle
 
 ## Reportes individuales (drill-down)
 
-| Skill | Reporte |
-|---|---|
-| dayz-3d-viewer | [audit-dayz-3d-viewer.md](./audit-dayz-3d-viewer.md) |
-| dayz-mod-workflow | [audit-dayz-mod-workflow.md](./audit-dayz-mod-workflow.md) |
-| dayz-model-pipeline | [audit-dayz-model-pipeline.md](./audit-dayz-model-pipeline.md) |
-| dayz-p3d-audit | [audit-dayz-p3d-audit.md](./audit-dayz-p3d-audit.md) |
-| dayz-p3d-inspector | [audit-dayz-p3d-inspector.md](./audit-dayz-p3d-inspector.md) |
-| dayz-particles | [audit-dayz-particles.md](./audit-dayz-particles.md) |
-| dayz-pbo-build | [audit-dayz-pbo-build.md](./audit-dayz-pbo-build.md) |
-| dayz-preflight | [audit-dayz-preflight.md](./audit-dayz-preflight.md) |
-| dayz-ui-development | [audit-dayz-ui-development.md](./audit-dayz-ui-development.md) |
-| enforce-script-reference | [audit-enforce-script-reference.md](./audit-enforce-script-reference.md) |
-| japm-pbo-recovery | [audit-japm-pbo-recovery.md](./audit-japm-pbo-recovery.md) |
+Los 11 reportes por skill (`audit-<skill>.md`: dayz-3d-viewer, dayz-mod-workflow,
+dayz-model-pipeline, dayz-p3d-audit, dayz-p3d-inspector, dayz-particles, dayz-pbo-build,
+dayz-preflight, dayz-ui-development, enforce-script-reference, japm-pbo-recovery) **no se
+distribuyen en este pack**: quedaron en el vault del autor. Dada la tasa de confabulación
+del aviso de cabecera, no son citables; este índice conserva solo las lecciones.
 
 ---
 
