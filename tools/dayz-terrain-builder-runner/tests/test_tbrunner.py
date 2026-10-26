@@ -1,7 +1,9 @@
 """tbrunner against a fake desktop: fake user32 and kernel32, never the real Win32 API.
 
 No test here calls a real Windows function (no GetForegroundWindow, SetForegroundWindow,
-SendMessage, PostMessage, EnumWindows) or starts a process: tbrunner.user32 and
+SendMessage, PostMessage, EnumWindows) or starts Terrain Builder or another program;
+the three TestImport tests spawn sys.executable -c to import the module in a child
+Python. tbrunner.user32 and
 tbrunner.kernel32 are replaced by fakes that record every call, ctypes.WinDLL,
 ctypes.WINFUNCTYPE and subprocess.Popen are replaced by functions that fail the
 test, and the platform check is patched. The fakes keep ctypes semantics: they
@@ -448,6 +450,91 @@ class TestMenus(_Desktop):
             tree = tbrunner.menu_tree(0x100)
 
         self.assertEqual({"path": ["Help", "#1"], "error": 1400}, tree[1]["submenu"][1])
+
+    def test_menu_prints_an_unreadable_item_and_exits_0(self):
+        self.record()
+        self.user32.menus[0x130].append({"fail": True})
+        with mock.patch.object(ctypes, "get_last_error", lambda: 1400, create=True):
+            code, stdout, stderr = self.tb("menu")
+
+        self.assertEqual(0, code, stderr)
+        self.assertIn("unreadable, GetMenuItemInfoW error 1400", stdout)
+        self.assertEqual([], self.user32.posted)
+
+    def test_probe_skips_an_unreadable_item(self):
+        self.record()
+        self.user32.menus[0x130].append({"fail": True})
+        with mock.patch.object(ctypes, "get_last_error", lambda: 1400, create=True):
+            code, stdout, stderr = self.tb("probe", "Help > #1")
+
+        self.assertEqual(0, code, stderr)
+        self.assertEqual([], json.loads(stdout))
+        self.assertEqual([], self.user32.posted)
+
+    def test_probe_without_a_log_and_no_matches_prints_empty(self):
+        self.record(log=None)
+
+        code, stdout, stderr = self.tb("probe", "NoSuchMenu")
+
+        self.assertEqual(0, code, stderr)
+        self.assertEqual([], json.loads(stdout))
+        self.assertEqual([], self.user32.posted)
+
+    def test_probe_without_a_log_refuses_an_enabled_leaf(self):
+        self.record(log=None)
+
+        code, _, stderr = self.tb("probe", "File > Open...")
+
+        self.assertEqual(1, code)
+        self.assertIn("no log", stderr)
+        self.assertEqual([], self.user32.posted)
+
+    def test_close_posts_wm_close_to_the_recorded_frame(self):
+        self.record()
+
+        code, _, stderr = self.tb("close")
+
+        self.assertEqual(0, code, stderr)
+        self.assertEqual([(self.frame, WM_CLOSE, 0, 0)], self.user32.posted)
+
+    def test_dialog_button_posts_wm_command_to_the_open_dialog(self):
+        self.record()
+        dialog = self.user32.add(0x500, "#32770", "Message")
+        self.user32.add(0x501, "Button", "Ok", parent=dialog, ctrl_id=2)
+
+        code, _, stderr = self.tb("dialog_button", "2")
+
+        self.assertEqual(0, code, stderr)
+        self.assertEqual([(dialog, WM_COMMAND, 2, 0x501)], self.user32.posted)
+
+    def test_save_loop_counts_a_changed_file_without_focus_or_dialog(self):
+        self.record()
+        tv4p = self.root / "p.tv4p"
+        tv4p.write_bytes(b"v1")
+        original = self.user32.PostMessageW
+
+        def bump_mtime(hwnd, message, wparam, lparam):
+            result = original(hwnd, message, wparam, lparam)
+            tv4p.write_bytes(b"v2")
+            return result
+
+        self.user32.PostMessageW = bump_mtime
+
+        code, stdout, stderr = self.tb("save_loop", "105", str(tv4p), "1")
+
+        self.assertEqual(0, code, stderr)
+        decoder, idx, objects = json.JSONDecoder(), 0, []
+        while idx < len(stdout):
+            while idx < len(stdout) and stdout[idx].isspace():
+                idx += 1
+            if idx >= len(stdout):
+                break
+            obj, idx = decoder.raw_decode(stdout, idx)
+            objects.append(obj)
+        report = next(obj for obj in objects if isinstance(obj, dict) and "passed" in obj)
+        self.assertEqual(1, report["passed"])
+        self.assertEqual(1, report["of"])
+        self.assertEqual([(self.frame, WM_COMMAND, 105, 0)], self.user32.posted)
 
     def test_menu_prints_the_leaves_and_writes_menu_json(self):
         self.record()

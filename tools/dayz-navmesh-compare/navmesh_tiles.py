@@ -8,8 +8,14 @@ a check raises NavmeshFormatError naming the file and the check.
 File header (48 bytes): magic b"TESM", version 6, tile count, tiles along x,
 tiles along z (5 x uint32 LE); origin x y z, tile width, tile depth (5 x
 float32 LE); 8 bytes not read. Then the offset table, one uint32 per tile,
-relative to the end of the table. Each tile: a 16-byte prefix not interpreted,
-then a header laid out as Detour's dtMeshHeader (magic b"VAND", version 11,
+relative to the end of the table. Each tile: a 16-byte prefix whose uint32 at
+byte 8 is the size of the tile after the prefix and is checked (measured on
+two Baltic 12.5 m .nm files of 966 289 tiles each, two Baltic 50 m .nm files of
+60 025 tiles each, and the three vanilla navmesh.nm files of Chernarus+,
+Livonia and Sakhal, 94 249, 65 536 and 94 249 tiles: 2 306 662 tiles; in all of
+them that field equals the bytes from the end of the prefix to the next tile
+or the end of the file). The uint64 at byte 0 and the uint32 at byte 12 are
+not interpreted. Then a header laid out as Detour's dtMeshHeader (magic b"VAND", version 11,
 the tile's grid x and y, which are x and z here, layer, user id, polygon
 count, vertex count, seven more int fields; walkable height, radius and climb,
 bmin x y z, bmax x y z, bv quantisation factor), then the tile data. Upstream
@@ -40,6 +46,7 @@ DNAV_VERSION = 11
 
 FILE_HEADER_BYTES = 48
 TILE_PREFIX_BYTES = 16
+TILE_PREFIX_SIZE_OFFSET = 8  # uint32 LE: bytes after the prefix to the next tile
 TILE_HEADER_BYTES = 100  # 15 x uint32 then 10 x float32
 BOUNDS_TOLERANCE_M = 0.001
 
@@ -175,6 +182,14 @@ def _parse(path: Path, data: bytes) -> Navmesh:
         end = table_end + offsets[index + 1] if index + 1 < count else len(data)
         if end > len(data) or start >= end:
             raise _error(path, f"table entry {index}: the tile at offset {offset} runs past the end of the file")
+        if end - start >= TILE_PREFIX_BYTES:
+            declared = struct.unpack_from("<I", data, start + TILE_PREFIX_SIZE_OFFSET)[0]
+            if start + TILE_PREFIX_BYTES + declared != end:
+                raise _error(
+                    path,
+                    f"table entry {index}: prefix size {declared} does not match the "
+                    f"{end - start - TILE_PREFIX_BYTES} bytes to the next tile or the end of the file",
+                )
         header = start + TILE_PREFIX_BYTES
         if end - header <= TILE_HEADER_BYTES:
             raise _error(

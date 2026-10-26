@@ -43,7 +43,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   settings files rewritten on exit, a log that records neither imports nor Generate Layers. Changed
   from the source: Win32 bound when a command runs, so it imports on any OS and refuses off Windows;
   the executable from `--tb-exe` or `TBRUNNER_TB_EXE`, no fixed path; explicit errors instead of
-  asserts. 29 tests with a fake `user32`: none calls a real Windows function or starts a process.
+  asserts. 29 tests with a fake `user32`: none calls a real Windows function or starts Terrain
+  Builder or another program; the three TestImport tests spawn `sys.executable -c` to import the
+  module in a child Python.
+- Round 2 of these tools: the `.nm` reader checks the size each tile prefix declares, `digest_pbo`
+  refuses leftover bytes after the entries except a 21-byte SHA-1 trailer, `probe` requires the log
+  only before its first post, `menu` prints an item it cannot read and `probe` skips it, and the new
+  tests cover those cases.
 - `dayz-vehicles` `references/proxies-and-get-in.md`, new section "Closing first-person gaps"
   (SP-469; the H2R import (2026-10), DayZDiag 1.30 Exp: 164014 through 2026-10-15, 164200 from
   2026-10-16): gaps a seated rider sees through a fairing are closed with single-sided black

@@ -229,6 +229,23 @@ class TestDiff(_Case):
         self.assertEqual(20, len(report["differing"]))
         self.assertEqual("20 items", json.loads(stdout)["differing"])
 
+    def test_stdout_lists_eleven_and_summarises_twelve(self):
+        for count in (11, 12):
+            with self.subTest(count=count):
+                many = [(f"t_{index:02d}.c", b"%d" % index) for index in range(count)]
+                changed = [(name, data + b"!") for name, data in many]
+                report, stdout = self.diff(
+                    self.write(f"old{count}.pbo", many),
+                    self.write(f"new{count}.pbo", changed),
+                )
+                listed = json.loads(stdout)["differing"]
+                self.assertEqual(count, report["differing_count"])
+                if count == 12:
+                    self.assertEqual("12 items", listed)
+                else:
+                    self.assertEqual(count, len(listed))
+                    self.assertIsInstance(listed, list)
+
     def test_equal_payload_under_a_different_header_is_equal(self):
         # Only the payload is hashed: a timestamp in the entry header is not content.
         old = self.write("old.pbo", BASE)
@@ -269,6 +286,14 @@ class TestRefusals(_Case):
         truncated = self.write("new.pbo", BASE, sizes={4: 4096}, trailer=b"")
 
         self.refused(self.write("old.pbo", BASE), truncated)
+
+    def test_three_payload_bytes_eaten_from_the_trailer_is_refused(self):
+        trailer = b"\x00" + b"\x5a" * 20
+        data = pbo_bytes(BASE, trailer=trailer)
+        new = self.root / "new.pbo"
+        new.write_bytes(data[: -len(trailer) - 3] + trailer)
+
+        self.refused(self.write("old.pbo", BASE), new)
 
     def test_missing_input(self):
         self.refused(self.write("old.pbo", BASE), self.root / "absent.pbo")

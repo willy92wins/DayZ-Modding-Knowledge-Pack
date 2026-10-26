@@ -11,11 +11,13 @@ import struct
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from vehicle_proxy import pbo as pbo_mod  # noqa: E402
 from vehicle_proxy.pbo import (  # noqa: E402
     PboDigest,
     PboFormatError,
@@ -120,6 +122,56 @@ class TestDigestPbo(unittest.TestCase):
 
         with self.assertRaises(PboFormatError):
             digest_pbo(path)
+
+    def test_three_payload_bytes_eaten_from_the_trailer_are_refused(self):
+        trailer = b"\x00" + b"\x11" * 20
+        data = _pbo_bytes([("a.c", b"0123456789", 0)], trailer=trailer)
+        path = self.root / "a.pbo"
+        path.write_bytes(data[: -len(trailer) - 3] + trailer)
+
+        with self.assertRaises(PboFormatError) as raised:
+            digest_pbo(path)
+
+        self.assertIn("leftover", str(raised.exception))
+
+    def test_five_bytes_after_the_trailer_are_refused(self):
+        path = self._write(
+            "a.pbo",
+            [("a.c", b"x", 0)],
+            trailer=b"\x00" + b"\x11" * 20 + b"xxxxx",
+        )
+
+        with self.assertRaises(PboFormatError) as raised:
+            digest_pbo(path)
+
+        self.assertIn("26", str(raised.exception))
+
+    def test_no_trailer_is_accepted(self):
+        path = self._write("a.pbo", [("a.c", b"x", 0)], trailer=b"")
+
+        self.assertEqual(["a.c"], [entry.name for entry, _ in digest_pbo(path).entries])
+
+    def test_twenty_one_byte_trailer_is_accepted(self):
+        path = self._write(
+            "a.pbo", [("a.c", b"x", 0)], trailer=b"\x00" + b"\x11" * 20
+        )
+
+        self.assertEqual(["a.c"], [entry.name for entry, _ in digest_pbo(path).entries])
+
+    def test_file_that_changes_while_hashing_is_refused(self):
+        path = self._write("a.pbo", [("a.c", b"payload", 0)])
+        original = pbo_mod._sha256_entry_handle
+
+        def mutate_after_hash(handle, entry):
+            digest = original(handle, entry)
+            path.write_bytes(path.read_bytes() + b"x")
+            return digest
+
+        with mock.patch.object(pbo_mod, "_sha256_entry_handle", mutate_after_hash):
+            with self.assertRaises(PboFormatError) as raised:
+                digest_pbo(path)
+
+        self.assertIn("PBO snapshot changed while reading", str(raised.exception))
 
     def test_missing_file_is_a_format_error(self):
         with self.assertRaises(PboFormatError):

@@ -159,6 +159,16 @@ class TestStructure(_Case):
 
 
 class TestRoutes(_Case):
+    def test_compare_uses_the_module_route_margin(self):
+        # Tile (0, 0) is [0, 12.5]; a point at (30, 30) meets it only with the 25 m margin.
+        new = self.new({(0, 0): tile_bytes(0, 0, W, polygons=5)})
+        routes = self.routes("pt;30 0 30;30 0 30\n")
+
+        report = self.compare(new, "--routes", routes, expect=1)
+
+        self.assertEqual({"pt": [[0, 0]]}, report["route_tiles_changed"])
+        self.assertIn("route_tile_changed", report["review_reasons"])
+
     def test_route_over_a_changed_tile(self):
         new = self.new({(1, 2): tile_bytes(1, 2, W, polygons=5)})
         # The 25 m margin puts "near" over tile (1, 2); "far" covers x from 35 m, tiles 2 and up.

@@ -278,8 +278,11 @@ def digest_pbo(path: Path) -> PboDigest:
     """Return the header properties and every entry's payload SHA-256.
 
     One snapshot: the header is parsed and each payload streamed from the same
-    open handle, which must still match the path afterwards. Properties keep
-    their file order. A compressed entry fails closed, as in read_entry.
+    open handle, which must still match the path afterwards. After the last
+    entry (or after the header when there are no entries) the file may end, or
+    hold exactly 21 bytes starting with 0x00 (the SHA-1 trailer, not checked);
+    any other leftover is refused. Properties keep their file order. A
+    compressed entry fails closed, as in read_entry.
     """
     pbo_path = Path(path)
     properties: list[tuple[str, str]] = []
@@ -287,6 +290,25 @@ def digest_pbo(path: Path) -> PboDigest:
         with pbo_path.open("rb") as handle:
             fingerprint = _snapshot_fingerprint(pbo_path, handle)
             entries = _parse_pbo_handle(handle, fingerprint, properties)
+            payload_end = (
+                entries[-1].data_offset + entries[-1].data_size
+                if entries
+                else handle.tell()
+            )
+            leftover = fingerprint[2] - payload_end
+            if leftover == 21:
+                handle.seek(payload_end)
+                first = handle.read(1)
+                if first != b"\x00":
+                    raise PboFormatError(
+                        "PBO has 21 leftover bytes after the last entry "
+                        "that do not start with 0x00"
+                    )
+            elif leftover != 0:
+                raise PboFormatError(
+                    f"PBO has {leftover} leftover bytes after the last entry "
+                    "(accept none, or a 21-byte SHA-1 trailer starting with 0x00)"
+                )
             _require_unchanged_snapshot(pbo_path, handle, fingerprint)
             hashed = tuple(
                 (entry, _sha256_entry_handle(handle, entry)) for entry in entries

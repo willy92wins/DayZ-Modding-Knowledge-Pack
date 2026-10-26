@@ -3,7 +3,8 @@
 File: magic, version, tile count, tiles x, tiles z (5 x uint32), origin x y z,
 tile width, tile depth (5 x float32), 8 bytes the reader skips, an offset table
 (count x uint32, relative to its end), then the tiles. Tile: a 16-byte prefix
-the reader skips, a dtMeshHeader (15 x uint32, 10 x float32) and a payload.
+(uint64 unused, uint32 size of the header plus payload, uint32 unused), a
+dtMeshHeader (15 x uint32, 10 x float32) and a payload.
 """
 
 from __future__ import annotations
@@ -29,13 +30,16 @@ def tile_bytes(
     coords=None,
     bmin=None,
     bmax=None,
+    prefix_size=None,
 ):
     cx, cz = (x, z) if coords is None else coords
     low = (width * x, y[0], width * z) if bmin is None else bmin
     high = (width * (x + 1), y[1], width * (z + 1)) if bmax is None else bmax
     ints = (magic, version, cx, cz, 0, 0, polygons, vertices, 0, 0, 0, 0, 0, 0, 0)
     floats = (2.0, 0.6, 0.9, *low, *high, 0.5)
-    return b"\xee" * 16 + struct.pack("<15I", *ints) + struct.pack("<10f", *floats) + payload
+    body = struct.pack("<15I", *ints) + struct.pack("<10f", *floats) + payload
+    size = len(body) if prefix_size is None else prefix_size
+    return struct.pack("<QII", 0x1111111111111111, size, 0x22222222) + body
 
 
 def grid(nx, nz):

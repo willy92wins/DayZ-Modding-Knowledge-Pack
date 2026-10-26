@@ -41,6 +41,11 @@ class _Case(unittest.TestCase):
 
 
 class TestRead(_Case):
+    def test_prefix_size_matches_bytes_to_the_next_tile(self):
+        mesh = read_navmesh(self.nm(3, 2, 12.5))
+
+        self.assertEqual(6, len(mesh.tiles))
+
     def test_layout_and_records(self):
         special = tile_bytes(2, 1, 12.5, polygons=9, vertices=17, y=(-3.5, 42.25), payload=b"payload")
         path = self.nm(3, 2, 12.5, {(2, 1): special})
@@ -134,6 +139,23 @@ class TestRefusals(_Case):
     def test_tile_past_the_end_of_the_file(self):
         size = len(tile_bytes(0, 0, 12.5))
         self.refused("past the end", 2, 1, 12.5, offsets=[0, 10 * size])
+
+    def test_extra_bytes_after_the_last_tile(self):
+        path = self.nm(1, 1, 12.5)
+        path.write_bytes(path.read_bytes() + b"EXTRA")
+        with self.assertRaises(NavmeshFormatError) as raised:
+            read_navmesh(path)
+        self.assertIn("table entry 0", str(raised.exception))
+
+    def test_last_tile_payload_three_bytes_short(self):
+        path = self.nm(1, 1, 12.5)
+        path.write_bytes(path.read_bytes()[:-3])
+        with self.assertRaises(NavmeshFormatError) as raised:
+            read_navmesh(path)
+        self.assertIn("table entry 0", str(raised.exception))
+
+    def test_middle_tile_prefix_size_does_not_match(self):
+        self.refused("table entry 1", 3, 1, 12.5, {(1, 0): tile_bytes(1, 0, 12.5, prefix_size=50)})
 
     def test_tile_with_no_data_after_its_header(self):
         self.refused("no data after", 1, 1, 12.5, {(0, 0): tile_bytes(0, 0, 12.5, payload=b"")})

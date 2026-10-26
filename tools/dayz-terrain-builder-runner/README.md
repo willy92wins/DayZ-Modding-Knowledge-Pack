@@ -58,7 +58,7 @@ python tools/dayz-terrain-builder-runner/tbrunner.py close
 | `dialog_file <path>` | Type a path into the one open file dialog and press its OK by id 1, right for the standard Windows dialogs and not for Terrain Builder's own |
 | `dialog_button <id>` | Press a button of the one open dialog **by id** (read the gotcha on swapped ids first) |
 | `wait_log <regex> <seconds>` | Wait for a match in the instance's `.rpt` log |
-| `save_loop <id> <tv4p> <count>` | Post a save command `count` times; check that the `.tv4p` changes and that the focus and cursor stay where they were |
+| `save_loop <id> <tv4p> <count>` | Post a save command `count` times; `passed` counts a changed `.tv4p`, Terrain Builder not taking the foreground, and no dialog. `foreground_same` and `cursor_same` are reported per iteration and do not count toward `passed` |
 | `close` | Post `WM_CLOSE` to the frame |
 | `probe <prefix>` | Post every enabled leaf under a menu path prefix (`File > Export`), or exact paths joined by `\|`, record the dialogs each opens and cancel them by label; stops at a dialog it cannot close |
 
@@ -116,4 +116,6 @@ python -m pytest tools/dayz-terrain-builder-runner/tests -q
 
 They run on any OS. `user32` and `kernel32` are fakes that record every call
 and fill the out-parameters and buffers the way the real calls do; no test
-calls a real Windows function or starts a process.
+calls a real Windows function or starts Terrain Builder or another program;
+the three `TestImport` tests spawn `sys.executable -c` to import the module in
+a child Python.

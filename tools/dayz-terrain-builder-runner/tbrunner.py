@@ -6,8 +6,9 @@ NOT driven by this tool yet.
 
 No SendInput, no SetCursorPos, no SetForegroundWindow. Menu commands go through
 PostMessage(WM_COMMAND), which wx 2.8.12 wxFrame::HandleCommand processes without a focus
-check (src/msw/frame.cpp:951-979). File dialogs are filled with WM_SETTEXT and confirmed by
-button label. Only the instance recorded in the state file is ever addressed. Back up and
+check (src/msw/frame.cpp:951-979). File dialogs are filled with WM_SETTEXT; dialog_file
+confirms with the OK by id 1 (standard Windows dialogs; Terrain Builder's own swap the
+Ok and Cancel ids). probe cancels by label. Only the instance recorded in the state file is ever addressed. Back up and
 restore Bin/TerrainBuilder *.opt and Proj.vdat around a run: TB rewrites them on exit.
 
 Windows only. The module imports on any OS; the Win32 functions are bound when a command
@@ -305,6 +306,9 @@ def cmd_menu():
     tree = menu_tree(hmenu) if hmenu else []
     (HERE / 'menu.json').write_text(json.dumps(tree, indent=1, ensure_ascii=False), encoding='utf-8')
     for e in flatten(tree):
+        if e.get('error') is not None:
+            print(' > '.join(e['path']), f"(unreadable, GetMenuItemInfoW error {e['error']})")
+            continue
         if not e.get('separator') and 'submenu' not in e:
             print(e['id'], ' > '.join(e['path']), '(disabled)' if e.get('disabled') else '',
                   '(ownerdraw)' if e.get('ownerdraw') else '')
@@ -447,20 +451,23 @@ def cmd_probe(prefix):
     """Post every enabled leaf under a menu path prefix (e.g. 'File > #10'), record the dialog title it
     opens, cancel it. Disposable instance only."""
     state = load_state()
-    log = _require_log(state)
+    _require_pid(state)
     f = _require_frame(state)
     results = []
     refresh_menus(f)
     exact = prefix.split('|') if '|' in prefix else None
     leaves = [e for e in flatten(menu_tree(user32.GetMenu(f)))
-              if 'submenu' not in e and not e['separator'] and
+              if 'submenu' not in e and 'error' not in e and not e['separator'] and
               (' > '.join(e['path']) in exact if exact else ' > '.join(e['path']).startswith(prefix))]
+    log = None
     for e in leaves:
         refresh_menus(f)
         cur = next((x for x in flatten(menu_tree(user32.GetMenu(f))) if x['path'] == e['path']), None)
-        if not cur or cur['disabled']:
+        if not cur or 'error' in cur or cur['disabled']:
             results.append(dict(path=' > '.join(e['path']), skipped='disabled'))
             continue
+        if log is None:
+            log = _require_log(state)
         size0 = log.stat().st_size
         user32.PostMessageW(f, WM_COMMAND, cur['id'] & 0xFFFF, 0)
         time.sleep(2.0)
@@ -521,7 +528,7 @@ def _parser():
     wait = sub.add_parser('wait_log', help="wait for a regex in the instance's .rpt log")
     wait.add_argument('pattern')
     wait.add_argument('timeout', type=float)
-    save = sub.add_parser('save_loop', help='post a save command COUNT times and check the .tv4p changes')
+    save = sub.add_parser('save_loop', help='post a save command COUNT times; passed counts a changed .tv4p, Terrain Builder not taking the foreground, and no dialog; foreground_same and cursor_same are reported per iteration and do not count toward passed')
     save.add_argument('save_id', type=int)
     save.add_argument('tv4p')
     save.add_argument('count', type=int)

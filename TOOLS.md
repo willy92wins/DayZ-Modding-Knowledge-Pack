@@ -2,12 +2,12 @@
 
 Thirteen Python tools ship in this pack. They are offline and deterministic,
 except the experimental
-[`dayz-terrain-builder-runner`](#tools-dayz-terrain-builder-runner), which
+[`dayz-terrain-builder-runner`](#toolsdayz-terrain-builder-runner), which
 drives a Terrain Builder it launched; none of them phone home, and none of
 them guess. Most are stdlib-only;
 [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) also
 needs numpy, scipy, matplotlib and the pack py3d fork, and
-[`dayz-navmesh-compare`](#tools-dayz-navmesh-compare) needs numpy for its
+[`dayz-navmesh-compare`](#toolsdayz-navmesh-compare) needs numpy for its
 terrain inputs only.
 
 **Install before invoking.** The `python -m <tool>` forms below resolve only
@@ -37,9 +37,9 @@ one.
 | [`dayz-script-validator`](#tools-dayz-script-validator) | Lint Enforce, `config.cpp`, `.layout` and `.rvmat` before packing | Reports only |
 | [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) | Audit vehicle proxy graph, fit, engine properties and PBO closure | Reports only; `repair` stages copies outside the addon |
 | [`skill-runtime-pin`](#tools-skill-runtime-pin) | Capture a Pack commit and expose one derived runtime adapter | **Yes** — new task-local root only |
-| [`dayz-pbo-diff`](#tools-dayz-pbo-diff) | Compare the entries of two PBOs by SHA-256, and their header properties | Reports only — one new JSON |
-| [`dayz-navmesh-compare`](#tools-dayz-navmesh-compare) | Compare two `.nm` navmeshes tile by tile, by structure, against terrain edits and routes | Reports only — one new JSON |
-| [`dayz-terrain-builder-runner`](#tools-dayz-terrain-builder-runner) | EXPERIMENTAL, Windows only: drive a Terrain Builder it launched by Win32 messages | **Yes** — its state file and `menu.json`; Terrain Builder rewrites its own settings on exit |
+| [`dayz-pbo-diff`](#toolsdayz-pbo-diff) | Compare the entries of two PBOs by SHA-256, and their header properties | Reports only — one new JSON |
+| [`dayz-navmesh-compare`](#toolsdayz-navmesh-compare) | Compare two `.nm` navmeshes tile by tile, by structure, against terrain edits and routes | Reports only — one new JSON |
+| [`dayz-terrain-builder-runner`](#toolsdayz-terrain-builder-runner) | EXPERIMENTAL, Windows only: drive a Terrain Builder it launched by Win32 messages | **Yes** — its state file and `menu.json`; Terrain Builder rewrites its own settings on exit |
 
 ---
 

@@ -95,12 +95,19 @@ without `--routes` the route keys. stdout carries the same report without
 count, tiles along x and z; origin, tile width and depth), the offset table and
 the 100-byte header that follows a 16-byte prefix in every tile, laid out as
 Detour's `dtMeshHeader` (magic `VAND` on disk, version, tile x and z, polygon
-and vertex counts, bounds). It
+and vertex counts, bounds). The uint32 at byte 8 of that prefix is the size of
+the tile after the prefix and is checked against the bytes to the next tile or
+the end of the file; the uint64 at byte 0 and the uint32 at byte 12 are not
+interpreted. That size field matched on two Baltic 12.5 m `.nm` files of
+966 289 tiles each, two Baltic 50 m `.nm` files of 60 025 tiles each, and the
+three vanilla `navmesh.nm` files of Chernarus+, Livonia and Sakhal (94 249,
+65 536 and 94 249 tiles): 2 306 662 tiles. It
 refuses, naming the file and the check: a wrong magic or version in the file or
 in any tile; a tile count other than tiles x times tiles z; an origin other than
 (0, 0, 0); tiles that are not one finite, positive square; an offset table that
 does not start at 0, is not strictly increasing or runs past the end of the
-file; a tile past the end of the file or with no data after its header; a tile
+file; a tile past the end of the file or with no data after its header; a prefix
+size that does not match the bytes to the next tile; a tile
 outside the grid or present twice; non-finite bounds; horizontal bounds more
 than 1 mm off the tile's cell. A tile's hash covers its header and data, not
 the 16 bytes before the header.
