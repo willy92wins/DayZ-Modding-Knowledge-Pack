@@ -18,7 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `dayz-pbo-build` gains a "Compare the entries of two builds" step that names it.
 - `dayz-vehicle-proxy-contract` `scripts/vehicle_proxy/pbo.py`: `digest_pbo` and `PboDigest` return
   the header properties in file order and the SHA-256 of every entry's payload from one snapshot; a
-  compressed entry fails closed as in `read_entry`. The reader's existing tests pass unchanged; 12 new
+  compressed entry fails closed as in `read_entry`. The reader's existing tests pass unchanged; 13 new
   tests. Its README says that `dayz-pbo-diff` reads through it.
 - `dayz-navmesh-compare`, a new tool: compares two `.nm` navmeshes tile by tile by structure
   (polygon and vertex counts, vertical bounds) rather than bytes, and optionally locates the

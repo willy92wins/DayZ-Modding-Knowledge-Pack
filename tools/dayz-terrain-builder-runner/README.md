@@ -107,6 +107,9 @@ only these:
   `wait_log` pattern.
 - The same ten subcommands, read with argparse. `press_label` is a helper used
   by `probe`, not a subcommand, as in the source's dispatch.
+- A menu item that `GetMenuItemInfoW` cannot read stopped the source with a
+  `KeyError`; here `menu` prints it with its error and exits 0, and `probe`
+  leaves it out of the leaves it posts.
 
 ## Tests
 

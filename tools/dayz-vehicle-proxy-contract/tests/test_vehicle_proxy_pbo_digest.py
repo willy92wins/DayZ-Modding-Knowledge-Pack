@@ -158,6 +158,16 @@ class TestDigestPbo(unittest.TestCase):
 
         self.assertEqual(["a.c"], [entry.name for entry, _ in digest_pbo(path).entries])
 
+    def test_twenty_one_byte_trailer_without_the_zero_marker_is_refused(self):
+        path = self._write(
+            "a.pbo", [("a.c", b"x", 0)], trailer=b"X" + b"Z" * 20
+        )
+
+        with self.assertRaises(PboFormatError) as raised:
+            digest_pbo(path)
+
+        self.assertIn("do not start with 0x00", str(raised.exception))
+
     def test_file_that_changes_while_hashing_is_refused(self):
         path = self._write("a.pbo", [("a.c", b"payload", 0)])
         original = pbo_mod._sha256_entry_handle
