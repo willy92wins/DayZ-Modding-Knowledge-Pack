@@ -582,7 +582,7 @@ ejected: a stray `#Mass#` tagg on a NON-Geometry LOD (typically FireGeometry 7e1
   mass-distribution, tris-vs-quads, skeleton and the py3d writer were all ruled out by experiment.
 - `#Mass#` MUST live only on the Geometry LOD (1e13). py3d emits `#Mass#` on any LOD with a point whose
   `mass != None`. After every assemble, assert `lod.mass` per-LOD: only Geometry `!= None`, rest `None`.
-  Fix: `point.mass=None` on non-Geometry LODs (see tools/fix_firegeo_mass.py).
+  Fix: `point.mass=None` on non-Geometry LODs (`LFQuad_dev/tools/fix_firegeo_mass.py`, not shipped; the pattern is in `dayz-p3d-audit/references/vehicle-killers.md`).
 - Placement depends on the baked CoM (`h ~= CoM.y - GeometryYmin`), NOT on Geometry-Ymin / LandContact /
   bbox. No geometry tweak fixes a CoM=0 spawn -- bake the mass first.
 - Cross-refs preserved from the fork copy (LL-110 merge 2026-07-06): the Landrover/Bohemia build
