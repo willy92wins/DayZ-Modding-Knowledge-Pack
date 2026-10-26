@@ -13,8 +13,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `PluginItemDiagnostic`, whose `OnInit` asks for `PluginConfigDebugProfile`, which only an internal
   build (`IsDebug()`) registers, so `GetPlugin` prints the line and dumps the stack. 375 of 386
   DayZDiag 1.30 RPTs without DayZ_MCP carry it; with `@DayZ_MCP` the stack has one more frame, its
-  modded `PluginsInit` calling `super`. A test that counts `SCRIPT (E)` lines as addon errors leaves
-  it out (claim `CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE`, `runtime_verified`).
+  modded `PluginsInit`, and the RPTs measured lack the `Module` line. A test that counts `SCRIPT (E)`
+  lines as addon errors leaves out the whole block, 8 lines (9 with `@DayZ_MCP`), recognized by its
+  frames (claim `CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE`, `runtime_verified`).
 - `dayz-vehicles` `references/proxies-and-get-in.md`, new section "Closing first-person gaps"
   (SP-469; the H2R import (2026-10), DayZDiag 1.30 Exp: 164014 through 2026-10-15, 164200 from
   2026-10-16): gaps a seated rider sees through a fairing are closed with single-sided black
