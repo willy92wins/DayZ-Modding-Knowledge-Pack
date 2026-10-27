@@ -92,3 +92,67 @@ for `COULD_NOT_INSPECT`. Missing or wrong-format input, parser/import/tool failu
 an absent report, or a missing target row is state 2. A deliberate product mutant
 must produce 1, and an unreadable-input fixture must produce 2. Never treat state 2
 as PASS or as evidence that product geometry or configuration needs repair.
+
+## A config gate is not a visual gate (SP-483, added 2026-10-24)
+
+On the H2R import (2026-10) two feedback gates passed and the screen did not change. Gate 12 required a
+duller silver rvmat (specular 0.4) on the far visual LODs, resolutions 3-6. Gate 13 required a crack rvmat
+at 0.5 and 0.3 and `"hidden"` at 0.0 in `Front` and `Back`, the vanilla crack texture in that rvmat, and a
+non-zero UV on the glass material; it never read `RefTexsMats[]`. The built config did list the glass
+rvmat there, in its slot, but only a cross-family review noticed that the gate did not check it. In game
+the windscreen still drew at level 4 (`vehicle-config-and-modelcfg.md`, end of §6b), and a white blob seen
+from afar did not change between material variants: pixels of luminance 200 or more in an 80x60 window at
+the centre were 60/68/39/23 at 40/60/85/240 m with the duller silver and 58/68/42/28 with a matte one
+(specular 0, resolutions 2-6), and the blob looked the same with the original material on 2026-10-15
+(claim: CLAIM-VEH-GATE-CONFIG-NOT-VISUAL-130).
+
+1. **Name a PASS by what the gate reads.** A gate over config, stage files or ODOL proves wiring: report its
+   PASS as "config", never as "works" (`SKILL.md`: ITERATION BUDGET item 3, and SP-132 for calibrating the
+   gate itself). A damage look or a far-LOD look is judged from in-game captures with a fixed camera, next
+   to the logged state (damage level on server and client, camera distance).
+2. **Take vehicle zones down the way the game does.** Use the call vanilla makes on contact,
+   `ProcessDirectDamage(DamageType.CUSTOM, null, zoneName, "EnviroDmg", "0 0 0", dmg, pddfFlags);`
+   (`4_World/Entities/Vehicles/MotorbikeScript.c:1350`, 1.30.164014 Exp; cars: `SKILL.md` invariant 35).
+   In one run it swapped the damage materials on the H2R and on a vanilla Motorbike_02 control, and
+   `SetHealthMax` brought the healthy look back (DayZDiag 1.30.164014, 2026-10-15). Runs with `SetHealth01`
+   logged levels 2 and 4 and showed no swap (2026-09-28, on the control too; 2026-10-07, control not
+   recorded), with each level held 4 s as in that run. They also used other probe builds on other days,
+   and `SetHealthMax` is itself a `SetHealth` call, so they do not show that `SetHealth01` cannot swap
+   (LL-398 in `dayz-mcp-verify`); on clothing the engine did apply `healthLevels[]` on scripted health
+   steps (`dayz-texture-pipeline`). Cross both with the same probe build and the same control before
+   naming the method as a cause (LL-565, point 2; claim: CLAIM-VEH-CONTACT-DAMAGE-SWAP-130). On
+   2026-10-24 (1.30.164200) the contact-damage call swapped the H2R's body panels in three of four
+   textured runs; in the fourth, with the same kit as a later run that swapped, the client logged levels
+   2 and 4 and no material changed, cause unknown. One run without a swap shows nothing either way: repeat
+   it before blaming the kit or the method.
+3. **Give a diagnostic marker a positive control.** When an unmistakable marker (a saturated emissive) in
+   the rvmat that should come in never shows, that says nothing unless the same capture holds a part that
+   carries that rvmat from the start: the pair of `dayz-texture-pipeline` ("PASS ... is given by the pair")
+   and SP-193's self-check (`visual-metrics-and-viewer.md`). The H2R's red marker had none.
+4. **A control must be able to show the change** (SP-254 above). A vanilla Motorbike_02's nearly
+   transparent glass looks the same hidden or not, so it cannot witness a glass swap.
+5. **Know which LOD is drawn before tuning a far-LOD material.** The H2R never identified the LOD drawn at
+   those distances, so its blob clears neither the material nor any LOD. Run the existing far-look checks
+   first (`SKILL.md`: the collapsed-UV census, invariant 13 (b) and (d)); the H2R checked UVs, albedo and
+   mipmaps and redid its far normals with no change, which settles little while the drawn LOD is unknown.
+   Those ODOLs also carried every material entry empty (`dayz-pbo-build` SP-155 rule 5), so it is not
+   shown that a face rvmat edited in the p3d reached the screen.
+   [DESIGN] Give each visual LOD a colour mark visible away from the defect, and darken one material group
+   in all its LODs per build, against a control.
+6. **Point config gates at the delivered artifact.**
+   (a) The far silver was on resolutions 3-6; in resolution 3 alone it sat on eight sections across
+   `Back`, `Chassis`, `Front` and `FuelTank`, and it was in no `RefTexsMats[]`, so those faces would
+   presumably keep the healthy look on a wreck. That was never tested in game, and the material was
+   removed (claim: CLAIM-VEH-FAR-LOD-MAT-OUTSIDE-REFS-130).
+   [DESIGN] For a zone that declares `RefTexsMats[]` (`vehicle-config-and-modelcfg.md` §6), check in every
+   visual LOD that each rvmat meant to look damaged is in the list, above all a far-LOD stand-in for a
+   listed rvmat. The gate names its deliberate exemptions (the H2R keeps 378 faces of its instrument
+   cluster, with 41 materials, in `Front` out on purpose) and ships with its negative fixture (SP-096).
+   (b) Read the packed PBO and its ODOLs: a gate over stage JSON or dumps can stay green on inputs other
+   than the ones packed (`dayz-test-ingame`: the verdict of a build is the PBO file table; `dayz-pbo-build`:
+   rvmats referenced only from config.cpp stay out of the PBO).
+   (c) Make the packer refuse diagnostic variants: the red-marker build was packable, and gate 13 could
+   pass it.
+
+Origin: the H2R import (2026-10): feedback gates 12 and 13, in-game runs from 2026-09-28 to 2026-10-24,
+and a cross-family review of 2026-10-24 that found 6a-6c in the code.

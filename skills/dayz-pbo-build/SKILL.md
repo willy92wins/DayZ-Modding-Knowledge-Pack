@@ -487,7 +487,8 @@ build reports success. If the PBO does not reflect your changes, wipe `P:\temp\<
 AddonBuilder clears its `-temp` before copying.
 
 **Binarized-build preflight rules (SP-155, verified 2026-08-03 ArmorHneck build; rule 1 corrected
-2026-10-03 from measurements of 2026-09-27 and 2026-10-01; rule 5 added the same day):**
+2026-10-03 from measurements of 2026-09-27 and 2026-10-01; rule 5 added the same day; rules 1, 3
+and 5 extended 2026-10-24, SP-468):**
 
 1. **Staging is mandatory for binarized builds, and binarize looks for everything under the
    staging folder.**
@@ -533,6 +534,23 @@ AddonBuilder clears its `-temp` before copying.
      material empty. With the cited files staged there were none, and the gate's control
      without them failed (6 failures).
    - Not measured: what an empty material does in game.
+   - **A direct `binarize.exe` call needs a dedicated `-addon` folder too** (SP-468, the H2R
+     import, 2026-10, source outside `P:\`; claim: CLAIM-BINARIZE-DIRECT-ADDON-STALL), as the
+     pack's direct-call templates have it (`dayz-model-pipeline` SKILL.md and
+     `references/py3d-direct-generation.md`, `dayz-p3d-audit` `references/vehicle-killers.md`).
+     Without it (BINARIZE 1.30.164078.38) the first model loaded about 5 min after launch on
+     2026-10-16; on 2026-10-19 none had come out after 30 min (a timeout; right after it, other
+     processes held more than 10 of the 16 threads) or after 13 (stopped by hand). With
+     `-addon=<parent of the staged source>` the first model loaded within a second of the start
+     (one run timed), and all six builds with it converted their 8 models, each log spanning
+     under 3.5 min. Why the wait grew is not established: by birth time, under 0.3 % of the
+     drive's folders, files and `config.cpp` were created between the two runs. Over 10 s a
+     stalled run read nothing, held a flat working set of about 15 MB and did about 183,000
+     other I/O operations (Windows `OtherOperationCount`); the `-addon` run did about 100,000,
+     with reads and a growing working set. That binarize walks `P:` meanwhile is inferred, not
+     traced, and one fact cuts against it: vanilla penetration `.rvmat` present on `P:\dz` still
+     failed to load without `-addon` (rule 5). Signal: binarize alive, no reads, a flat working
+     set, an empty output folder.
 
    *(corrected 2026-10-03)* This rule used to end: «"Material not loaded" / "Note: creating
    empty class" messages from the staging are tolerable (verified: HH-60G heli and ArmorHneck
@@ -554,7 +572,8 @@ AddonBuilder clears its `-temp` before copying.
 
 3. **Parallelism.** Binarize without high `-maxProcesses` is slow on dense skinned p3d
    (>5 min for 3 models at 18k pts in series). Use AddonBuilder's default parallelism and
-   run in background; an apparent hang may just be serial + skinning.
+   run in background; an apparent hang may just be serial + skinning, or, on a direct
+   `binarize.exe` call, the wait before the first model seen without `-addon` (rule 1).
 
 4. **config.bin may silently fail to register in the engine (most severe).** The mod mounts
    (engine reads the dir, zero RPT errors) but `CreateObjectEx` returns `unknown_type` and the
@@ -591,6 +610,23 @@ AddonBuilder clears its `-temp` before copying.
    - Compare ODOLs by those fields, not by hash: three SimpleGroup flagpoles varied by up to
      67 B across five builds that resolved the same files (2026-10-01; same trap in
      `tools/py3d/KNOWN-ISSUES.md`).
+   - **The H2R import is a confounded case of a texture missing on its own** (SP-468, 2026-10;
+     claim: CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY). Its direct `binarize.exe` calls (BINARIZE
+     1.30.164078.38, source outside `P:\`) logged `Material not loaded` for the same 65 `.rvmat`
+     with a dedicated `-addon` folder as without one (plus one added that day), and the control
+     above reads every material entry of both builds' 8 ODOLs empty (189 of 189 and 190 of 190;
+     the same reader finds shaders and stage textures in vanilla `Motorbike_02`), confirmed for
+     three against their text `.rvmat`. The mod's own sat at their cited path under `-addon`,
+     but each names a vanilla texture that was not staged (`dz\data\data\env_land_co.paa` or
+     `env_land_optic_co.paa`); the other 7 are vanilla penetration `.rvmat`, not staged either
+     (rule 1), and they failed without `-addon` too, though present on `P:\dz`. Not measured
+     which keeps them from loading: the unstaged texture, the source outside `P:\`
+     (`dayz-model-pipeline` `references/py3d-direct-generation.md`, LFQuad), or what the direct
+     call lacks against AddonBuilder 1.0.240639 (`-binpath`, `-textures`, `-exclude`,
+     `-maxProcesses`, `-targetBonesInterval`, `-silent`, and the `-addon` folder as working
+     directory, per its rpt of 2026-10-23). AddonBuilder builds staged outside `P:\` resolved
+     their files (rule 1). What these entries do in the kit that packs these ODOLs is rule 1's
+     open point.
 
 The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ingame's
 `dayz-test.ps1` template.
@@ -772,6 +808,21 @@ In a project with release or audit anchored to a hash, "do not rebuild the PBO" 
 invariant: the file is a unique artifact and must be backed up by hash.
 
 - **Every expected difference needs a pinned base (LL-326).** Audit gate code for `continue`, `pass`, `ok += 1` and allowlists. A file known to differ because a delta/merge is not yet promoted cannot receive an unconditional OK: store the `SHA-256` of the exact source base at derivation time in an `enforce-base.json`, mark the artifact `STALE` if that base moved, and force the merge to be rebuilt. Separately, a proximity check for words such as "retired" or "obsolete" answers an adjacent question; require the live identifier beside each retired reference.
+
+### Compare the entries of two builds
+
+After a rebuild, check that only the entries you meant to change differ:
+
+```
+python <KNOWLEDGE_PACK>/tools/dayz-pbo-diff/pbo_diff.py --old <old.pbo> --new <new.pbo> --out <diff.json>
+```
+
+It compares the SHA-256 of every entry's payload and the header properties; `differing` lists every
+entry that changed or is on one side only. Read it with SP-194 above: between two builds a
+different `.p3d` entry proves nothing by itself, while a different script, config, material or
+texture entry does (§"Binarize is not byte-deterministic" below). `--ignore-prefix <prefix>` drops
+a prefix from `differing_not_ignored`, never from `differing`. A compressed entry is refused
+(exit 1); see `tools/dayz-pbo-diff/README.md`.
 
 ### Two silent no-load causes to check BEFORE blaming the engine (SP-347)
 

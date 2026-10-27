@@ -150,11 +150,32 @@ class Hierarchy:
         return chain
 
 
+# A declaration may follow a `case` or `default` label on its line, `case 0:
+# Object hit;` (Codex review of #125, F1): a `:` before the type counts only
+# there, where the text after the last `;`, `{`, `}` or `:` before it on its
+# line is a label, so a second label (`case 0: case 1:`) counts too. Checked
+# in the pattern, the label made it a third slower; searched for, a long line
+# took a time that grew with its square (Codex review of #125, G4).
+_LABEL_RE = re.compile(r"[ \t]*(?:case\b[^;{}:\n]*|default[ \t]*)")
+
+
+def _after_a_label(text, colon):
+    """True when the `:` at `colon` ends a `case` or `default` label."""
+    start = colon
+    while start and text[start - 1] not in ";{}:\n":
+        start -= 1
+    return _LABEL_RE.fullmatch(text, start, colon) is not None
+
+
+# Neither a template's arguments nor an array's size hold a `:`, so neither
+# part runs past one: from each `:` before a type they ran on to the end of
+# the line, and a line of `: Object<` took a time that grew with its square
+# (Codex review of #125, H2).
 def _declaration_re(name):
     return re.compile(
-        r"(?:^|[;{}(,])[ \t]*" + _MODIFIERS
-        + r"(?P<type>[A-Za-z_]\w*)(?P<targs>[ \t]*<[^;{}()\n]*?>)?"
-        r"(?P<arr>[ \t]*\[[^\]\n]*\])?\s+" + re.escape(name)
+        r"(?:^|[;{}(,:])[ \t]*" + _MODIFIERS
+        + r"(?P<type>[A-Za-z_]\w*)(?P<targs>[ \t]*<[^;{}()\n:]*?>)?"
+        r"(?P<arr>[ \t]*\[[^\]\n:]*\])?\s+" + re.escape(name)
         + r"\s*(?P<next>;|=(?!=)|\[|,|\)|:(?!:))",
         re.M,
     )
@@ -163,6 +184,9 @@ def _declaration_re(name):
 def _declared_type(match):
     """The plain type of a declaration match, or "" when not plain."""
     if match.group("type") in _NOT_A_TYPE:
+        return None
+    text, at = match.string, match.start()
+    if text[at] == ":" and not _after_a_label(text, at):
         return None
     if match.group("targs") or match.group("arr") or match.group("next") == "[":
         return ""
@@ -239,8 +263,12 @@ class FileScopes:
                 around.pop()
             self._region_parents.append(around[-1] if around else -1)
             around.append(index)
-        # {(class body open, name): its type as a member of that body}
+        # {(class body open, name, blocks around the cast or call): its type
+        #  as a member of that body}
         self.members = {}
+        # {(class body open, name): [(type, line), ...] of its declarations
+        #  at the top level of that body}
+        self.declarations = {}
 
     def line(self, at):
         """The 1-based line of offset `at`."""
@@ -263,12 +291,27 @@ class FileScopes:
         return None
 
 
-def _argument_type(stripped, scopes, arg, cast_at):
+def _apart(around, line, blocks):
+    """True when around, a line_branches(), puts `line` under a conditional
+    block that is not one of `blocks`."""
+    return around is not None and around[line] != blocks[:len(around[line])]
+
+
+def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
     """The one plain declared type of `arg` at `cast_at`, or None.
 
-    scopes: the FileScopes of `stripped`.
+    scopes: the FileScopes of `stripped`. around, when given, is the
+    line_branches() of stripped: a declaration under an #if, #ifdef or
+    #ifndef block that is not also around cast_at leaves the type unknown,
+    and so does one in the method before cast_at that is not open there (a
+    for or foreach variable after its header, a local of a block closed
+    before cast_at), where a member of that name would be taken.
+    inherited(open, arg, blocks), when given, is asked for a member that the
+    enclosing class body (open: the offset of its `{`) does not declare,
+    with the blocks around cast_at, and gives its type or None.
     """
     line = scopes.line(cast_at)
+    blocks = () if around is None else around[line]
     declaration_re = _declaration_re(arg)
     method = scopes.method(line)
     if method is not None:
@@ -278,6 +321,7 @@ def _argument_type(stripped, scopes, arg, cast_at):
         if re.search(r",\s*" + re.escape(arg) + r"\s*(?=;|=(?!=)|\[)", scope):
             return None
         found = set()
+        closed = False
         for match in declaration_re.finditer(stripped, start, cast_at):
             at = match.start("type")
             if scopes.line(at) in scopes.dead:
@@ -286,31 +330,54 @@ def _argument_type(stripped, scopes, arg, cast_at):
             if declared is None:
                 continue
             if at < body or _still_open(stripped, match.end(), cast_at):
-                found.add(declared)
+                found.add("" if _apart(around, scopes.line(at), blocks) else declared)
+            else:
+                closed = True
         if found:
             return found.pop() if len(found) == 1 and "" not in found else None
+        # `foreach (Object hit : list)` closes its `(` before a call in the
+        # loop, which then took the type of a member `IEntity hit` (Codex
+        # review of #125, E1).
+        if closed and around is not None:
+            return None
     enclosing = scopes.class_body(cast_at)
     if enclosing is None:
         return None
     open_brace, close_brace = enclosing
-    # The same for every cast or call in the body: read once per name.
-    if (open_brace, arg) in scopes.members:
-        return scopes.members[(open_brace, arg)]
-    found = set()
-    for match in declaration_re.finditer(stripped, open_brace, close_brace):
-        at = match.start("type")
-        if scopes.line(at) in scopes.dead:
-            continue
-        inner = stripped[open_brace:at]
-        if inner.count("{") - inner.count("}") != 1 or inner.count(
-            "("
-        ) != inner.count(")"):
-            continue  # inside a method, or a parameter
-        declared = _declared_type(match)
-        if declared is not None:
-            found.add(declared)
-    member = found.pop() if len(found) == 1 and "" not in found else None
-    scopes.members[(open_brace, arg)] = member
+    # The same for every cast or call in the body under the same blocks:
+    # read once per name.
+    key = (open_brace, arg, blocks)
+    if key in scopes.members:
+        return scopes.members[key]
+    # The body is scanned once per name, whatever the blocks: scanning it
+    # for each set of blocks around the calls made the rule 21 % slower than
+    # the second version over the mods (third round of the review of #125).
+    if (open_brace, arg) not in scopes.declarations:
+        declarations = []
+        for match in declaration_re.finditer(stripped, open_brace, close_brace):
+            at = match.start("type")
+            if scopes.line(at) in scopes.dead:
+                continue
+            inner = stripped[open_brace:at]
+            if inner.count("{") - inner.count("}") != 1 or inner.count(
+                "("
+            ) != inner.count(")"):
+                continue  # inside a method, or a parameter
+            declared = _declared_type(match)
+            if declared is not None:
+                declarations.append((declared, scopes.line(at)))
+        scopes.declarations[(open_brace, arg)] = declarations
+    found = {
+        "" if _apart(around, declared_line, blocks) else declared
+        for declared, declared_line in scopes.declarations[(open_brace, arg)]
+    }
+    if found:
+        member = found.pop() if len(found) == 1 and "" not in found else None
+    elif inherited is not None:
+        member = inherited(open_brace, arg, blocks)
+    else:
+        member = None
+    scopes.members[key] = member
     return member
 
 

@@ -149,3 +149,60 @@ already do not complete via MCP (existing SKILL.md limitation). Instant
 actions: if a second inject returns `setup_failed` / no-op, wait for
 `GetActionState()` to leave `UA_AM_INIT`. Detail:
 `dayz-test-ingame/references/dayz-1-30-test-ingame.md`.
+
+## Vehicle tests on 1.30.164200: what the LFQuad port ran into (2026-10-26)
+
+[EXACT][CLAIM-MCPV-VEHICLE-GAPS-130] Five behaviours of the bridge that shaped a car test,
+on 1.30.164200 DayZDiag (Exp and stable installs), each with its way round:
+
+- `vehicle_control` does not shift an automatic gearbox: the bridge changes gear only when
+  `GearboxGetType()` is manual (`MCP_CarScript.c:790-810` of the deployed `@DayZ_MCP`), so an
+  automatic car stays in neutral with the throttle open (pipeline ticket
+  `fb-20261026-142708-3efe`). To drive one, test a copy of the build whose `Gearbox.type` is
+  `GEARBOX_MANUAL` and every other entry byte-identical, and say so in the verdict.
+- `vehicle_prepare_fixture` answered `fixture_not_ready` with `fuel_fraction=0.0` right after
+  `OnDebugSpawn()`, in four runs on two boxes, although `OnDebugSpawn()` fills the tank:
+  `telemetry_read object_at` read `fuel_fraction=1` afterwards, and the car started and drove.
+  The bridge reads the tank in the tick of the `Fill()` (ticket `fb-20261026-150310-9582`).
+  Confirm with `telemetry_read` before calling it a failure.
+- `entities_query` returns the config class as `type` and the script class as `classname`:
+  a mod wheel with no script class of its own reads `CarWheel`, its `_Ruined` twin with one
+  reads its own name. That is a cheap check that a mod's script class binds.
+- No tool sets an item's health (request `fb-20261026-150310-c703`), so health-level
+  transitions such as the 1.30 ruined-wheel swap cannot be driven. An RGD5 dropped unpinned
+  1.5 m from a loose wheel took it only to 0.971. A grenade unpinned in the hands
+  (`action_use ActionUnpin`, target `hands`) arms only when it leaves them
+  (`grenade_base.c:273-281`); `ActionDropItem`, target `hands`, drops it.
+- With the player seated, `camera_set` failed with `camera_unmoved_cabin`, yet the next
+  capture showed the requested outside view and carried the warning `camera_unverified`
+  (ticket `fb-20261026-152109-2277`). The camera had moved: that is how the driver's pose
+  was checked from outside. It stays mounted until `restore_gameplay`.
+
+## Vehicle tests on 1.30.164200: what the Arma2Quad port added (2026-10-26)
+
+[EXACT][CLAIM-MCPV-VEHICLE-GAPS-A2Q-130] Six more behaviours of the bridge, from the stable
+box (DayZDiag 1.30.164200 of the stable install) with a second 1.29 quad, Arma2Quad:
+
+- In-vehicle actions need `vehicle_get_in_client` as well as `vehicle_enter`. After
+  `vehicle_enter` alone, `action_use ActionSwitchLights` (target `self`) answered
+  `condition_failed`; after `vehicle_get_in_client` it started and the lights came on (ticket
+  `fb-20261026-203150-6f62`). The client stays bound to that first car: after
+  `ActionGetOutTransport`, `vehicle_enter` into a second car seated the server player, and the
+  switch failed there twice. Plan one car per run.
+- `vehicle_enter` with its default 15 s timeout answered `timeout` with the player already in
+  the seat (`query_player_state`); with `timeout_s=30` it answered in 1.3 s.
+- Parts that `OnDebugSpawn` mounts are not world objects: `object_resolve` on a mounted
+  `HeadlightH7` gave `object_not_found` at 0.3 and 3 m. To remove a part during a test, mount it
+  with `inventory_attach`, keep its `item_object_id` and `object_delete` that id; the detach
+  path runs (the headlights went from the two-bulb to the one-bulb state in game).
+- No bridge reader exposes the light state: `vehicle_telemetry` and `telemetry_read` have no
+  light field. Log it from the mod under `#ifdef DIAG_DEVELOPER` (Arma2Quad prints it in
+  `OnDriverExit`) or compare captures.
+- With another box's DayZ server holding port 2302, `dayz_test_run` on the stable box answered
+  `port_in_use_foreign` with a hint to pass another `port=`; with `port=2402` it answered
+  `active_run_exists` and only queued until that server exited (ticket
+  `fb-20261026-203149-88fe`).
+- `wait_for(log_matches, role=server, lookback_from=launch)` returned the client's
+  `Module: World` line and listed only `_client` files in `scanned` (ticket
+  `fb-20261026-203149-33c3`). Check `scanned.files`, or the defines of the returned line
+  (`SERVER`), before taking it for the server's.

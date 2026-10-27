@@ -93,6 +93,72 @@ Caps: `INVENTORY_REPAIR_MAX_DISTANCE = 500.0`, `INVENTORY_REPAIR_MAX_ITEMS = 5` 
 
 Mismatch → `InventoryInputUserData.SendServerInventoryCheck` (`:5052`), DIAG-gated by `IsDesyncRepairEnable` (`:5048-5055`).
 
+
+### 3.2 Hooking inventory moves from a mod (measured on 1.30.164200)
+
+[EXACT][CLAIM-ENFORCE-130-INVENTORY-NOT-MODDABLE] The table above is the vanilla path, not a hook point:
+on DayZDiag 1.30.164200 `modded class DayZPlayerInventory` (scripts/4_World) does not compile. The server
+script log reads `Engine class 'DayZPlayerInventory' cannot be modded.` and `Can't compile "World" script
+module!`, and the server process died before the managed launcher saw it ready. `modded class Magazine`
+fails the same way (`Engine class 'Magazine' cannot be modded.`); `modded class Ammunition_Base`
+(`4_World/Entities/ItemBase/Magazine/AmmunitionPiles.c:2`) compiled in the same build. The validator rule
+`ES-MODDED-ENGINE-CLASS` lists the classes whose refusal is on record.
+
+[EXACT][CLAIM-ENFORCE-130-ITEM-LOCATION-AUDIT] Measured in game on the same build (StorageLogger test
+runs, 2026-10-24, one server and one client on one machine): a `modded class ItemBase` overriding
+`EEItemLocationChanged(notnull InventoryLocation oldLoc, notnull InventoryLocation newLoc)` (`3_Game/Entities/EntityAI.c:976`,
+ItemBase override `4_World/Entities/ItemBase.c:987`) printed one line per tested transfer, for each of these,
+driven by the client's own inventory calls (`PredictiveTakeEntityToHands`, `PredictiveTakeEntityToTargetCargo`,
+`PredictiveTakeEntityToTargetAttachment`) or by an action:
+
+| Move | oldLoc → newLoc |
+|---|---|
+| crate cargo → hands, hands → crate cargo, crate → second crate | CARGO ↔ HANDS, CARGO → CARGO |
+| SparkPlug out of / into a PowerGenerator lying on the ground | ATTACHMENT ↔ HANDS |
+| WoodenPlank out of and into a `Land_House_1M1` slot `RB_LvL1_Plank` | ATTACHMENT ↔ HANDS |
+| WoodenCrate picked up from the ground, then dropped | GROUND → HANDS, HANDS → GROUND |
+
+- A take into hands that already held an item of the same type (a swap) printed two lines with the same
+  script-log timestamp, one per item: the slot item to the hands and the hand item to the slot.
+- The logger drops a callback before printing when both ends share a hierarchy root or neither end is a
+  world object, so these lines bound what was printed, not how many callbacks the engine made.
+- Items the server created in a container (`CreateInInventory`, `CreateAttachmentEx`) printed no line.
+  For an item that is not itself a container, the logger prints nothing when `oldLoc` has no parent, the
+  expected shape of a creation; a container picked up from the ground also has a parentless `oldLoc` and
+  is printed as a pick-up. `oldLoc` itself was not printed.
+- The player of a world-to-world move is not in either location. `g_Game.HasInventoryJuncture(Man player, EntityAI item)`
+  (`3_Game/Global/Game.c:758`), called from inside `EEItemLocationChanged`, returned true for the player
+  who made the crate-to-crate move (1 move measured). A move made without a juncture (server scripts) and
+  two players near the crate were not measured.
+
+[EXACT][CLAIM-ENFORCE-130-STACK-NOT-A-MOVE] Stacking moves quantity, not an item, and a split creates a
+new item, so neither is a move from one parent to another (read in the source; in the two combines below
+the logger printed no move line):
+- The quantity of a combine moves in `ItemBase.CombineItems` (`4_World/Entities/ItemBase.c:2247-2270`).
+  `Magazine.CombineItems` (`4_World/Entities/ItemBase/Magazine/Magazine.c:317`) overrides it without
+  calling super, so ammo piles take another path.
+- A split creates the new stack at its destination (read in the source, not measured for every path).
+  The `ItemBase` split functions (`4_World/Entities/ItemBase.c:1584-1953`) mark the new item with
+  `SetResultOfSplit(true)` (ten calls, `:1604` to `:1937`; definition `:2213`), except `SplitItem`
+  (`:1953`): it creates the copy through
+  `PlayerBase.CreateCopyOfItemInInventoryOrGroundEx` (`4_World/Entities/ManBase/PlayerBase.c:6888-6899`),
+  which marks it only when the copy lands on the ground, not when the player's cargo takes it
+  (`CreateCopyOfItemInInventory`, `:6856`). `Magazine`'s own `SplitItemToInventoryLocation` and
+  `SplitItem` (`Magazine.c:231`, `:256`) do not call `SetResultOfSplit`. The server's item-manipulation
+  handler calls them from `PlayerBase` (`:6640-6725`).
+- Measured with a `modded class ItemBase` that wraps `CombineItems`, a `modded class Ammunition_Base`
+  that wraps `CombineItems` (`Magazine` itself cannot be modded) and both reading the receiver's quantity
+  before and after super: 10 rounds of `Ammo_762x39` stacked from the hands onto a pile in a crate, and 5
+  `WoodenPlank` stacked from the hands onto the plank in the `RB_LvL1_Plank` slot of a `Land_House_1M1`,
+  each gave one line with the moved quantity. The server read the hands after each (`weapon_state`): the
+  remaining rounds after the first, empty after the second.
+- `SplitIntoStackMaxHands` (`ItemBase.c:1889`) does nothing when the whole stack fits in the hands
+  (`ShouldSplitQuantity`): through that function, a split from a container to the hands only happens for
+  a stack larger than the hand stack (1 observation: after a hand split of a whole `Ammo_762x39` pile the server read the hands empty).
+  `SplitItemToInventoryLocation` (`:1917`) splits half towards an explicit destination instead.
+- `[DESIGN]` For `SplitItem`, an audit compares the source quantity before and after super: the copy into
+  the player's cargo carries no split mark. Not measured in game.
+
 ---
 
 ## 4. `[Obsolete]` takes → Target* variants
@@ -394,7 +460,7 @@ class DoOnce
 ## What breaks for a 1.29 mod
 
 1. `override OnCEUpdate` — obsolete; CE work may never run → `OnCEIterate`.
-2. `modded DayZPlayerInventory.ProcessInputData` — not called in retail → Validate / Execute*.
+2. `modded DayZPlayerInventory.ProcessInputData` — not called in retail, and on 1.30.164200 `modded class DayZPlayerInventory` does not compile at all (§3.2). To observe completed item moves, hook `ItemBase.EEItemLocationChanged`; a replacement for intercepting or rejecting inventory commands is not established.
 3. `TakeEntityToCargo*` / `TakeEntityAsAttachment*` — obsolete → Target*.
 4. `ActionFillBottleBase` — obsolete and **absent** from `RegisterActions` → `ActionObtainLiquidBase`.
 5. `ItemBase.m_ItemActionOverrides` — compile error → `EntityAI.OverrideActionAnimation`.

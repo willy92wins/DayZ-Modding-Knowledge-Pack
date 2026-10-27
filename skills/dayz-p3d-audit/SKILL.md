@@ -334,6 +334,13 @@ Missing stages produce engine warnings but don't crash.
                                    parts into one non-convex component.)
    f. Mesh watertight?           → If open: close gaps
    g. Geometry LOD exists?       → If missing: create one
+   h. No needle triangle in a component (ddce)?
+                                 → If audit_p3d.py names one: build that hull again without the
+                                   point it names, the corner opposite the needle's longest edge.
+                                   It fails a triangle of a ComponentNN in Geometry, View or Fire
+                                   under 1e-6 m², or under 1e-4 of the square of its longest edge
+                                   (dayz-model-pipeline references/py3d-direct-generation.md,
+                                   "Needle triangles").
 
 6. Animations not playing?
    → Check flag_mast selection in Visual LOD
@@ -420,7 +427,7 @@ Qualify the release gate with a known MLOD/ODOL pair and prove it separates a he
 
 ### Locating seat-visible see-through: render from the REAL first-person camera (added 2026-09-18, SUB_BRZ s96)
 
-A defect the player reports from the seat must be reproduced from the real first-person camera, not an estimated eye: an eye 23 cm below and behind the real one showed neither windshield-base patch. [EXACT] Recover the camera from the user's own screenshot by PnP over known-position dashboard features (measured reprojection error 2.7 px), then z-buffer-render the LOD flagging every pixel whose nearest opaque face is a backface; the seal is measured, not estimated (2,203 inverted twins added, 0 see-through pixels afterwards). [DESIGN] Show the before/after to the user BEFORE touching geometry. Seal culprits with inverted twins — same points, reversed vertex order and UVs, negated normals — never by flipping; exclude twin candidates that coincide with another piece (< 2 mm) or they will flicker. Winding-vs-hole still goes through the battery above and `dayz-model-pipeline` SP-166.
+A defect the player reports from the seat must be reproduced from the real first-person camera, not an estimated eye: an eye 23 cm below and behind the real one showed neither windshield-base patch. One real camera is still a sample: where the eye moves with the character, the run and the pitch, test from every eye the rider can have (`dayz-vehicles` `references/proxies-and-get-in.md`, SP-469). [EXACT] Recover the camera from the user's own screenshot by PnP over known-position dashboard features (measured reprojection error 2.7 px), then z-buffer-render the LOD flagging every pixel whose nearest opaque face is a backface; the seal is measured, not estimated (2,203 inverted twins added, 0 see-through pixels afterwards). [DESIGN] Show the before/after to the user BEFORE touching geometry. Seal culprits with inverted twins — same points, reversed vertex order and UVs, negated normals — never by flipping; exclude twin candidates that coincide with another piece (< 2 mm) or they will flicker. Winding-vs-hole still goes through the battery above and `dayz-model-pipeline` SP-166.
 
 ### Absolute winding check: what 0 % means (added 2026-09-07, corrected the same day with the engine verdict)
 

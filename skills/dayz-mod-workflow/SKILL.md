@@ -330,6 +330,7 @@ Verified errors committed more than once. Check ACTIVELY during implementation. 
 - **E20** — modded vehicle won't drive, `WheelCountPresent()=0` while `WheelCount()=N` — `CfgSlots.<wheel-slot>.selection` must exist in the body FireGeometry LOD with a wheel proxy
 - **E21** — (since 1.30 Exp) custom-map `cfgeconomycore.xml` missing `MotorbikeScript` / `HouseDestructible` rootclasses — `exp\worlds_chernarusplus_ce\DZ\worlds\chernarusplus\ce\cfgeconomycore.xml:17-18`
 - **E22** — (since 1.30 Exp) visible action widget but F does nothing, or custom pond drink never lists — `CanBeStarted()` / `CCTLiquid` (see E21/E22 in `references/error-catalog.md` and `references/dayz-1-30-mod-workflow.md`)
+- **E23** — (measured on 1.30 Exp) a `HumanCommandScript` subclass declared in `4_World` and started two or more times crashes every orderly exit of client and server; an empty such class exits clean from `3_Game`, and the workaround is open (see E23 in `references/error-catalog.md`)
 
 ---
 

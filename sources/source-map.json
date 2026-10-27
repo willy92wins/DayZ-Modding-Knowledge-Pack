@@ -24,10 +24,20 @@
           "source_path": ".cursorrules",
           "source_revision": "release-v1.4.0@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Ten Python tools become thirteen, as in AGENTS.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "338438fdebf0f5eb1a0d04250b0ce29e3186273a0185c967ccfb2b5778092526",
+          "source_id": "pack-r21-authored",
+          "source_path": ".cursorrules",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cdd200533d8b5f0ba7186abf7ba9313febf3aad98f15309f309475b17762fb8b",
+      "output_hash": "338438fdebf0f5eb1a0d04250b0ce29e3186273a0185c967ccfb2b5778092526",
       "output_path": ".cursorrules",
       "routing_artifact_id": "root/cursorrules",
       "verification_level": "cross_checked"
@@ -89,10 +99,20 @@
           "source_path": ".github/copilot-instructions.md",
           "source_revision": "release-v1.4.0@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Ten Python tools become thirteen, as in AGENTS.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e74bca9b857f84ff5c261d0d17ea8875486183e9e2ac3c17bddd48ef45125e07",
+          "source_id": "pack-r21-authored",
+          "source_path": ".github/copilot-instructions.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfeabb9146697c71e19e2f957c854df8eb2f7f339de84ceaf52617a5d3ee3c5b",
+      "output_hash": "e74bca9b857f84ff5c261d0d17ea8875486183e9e2ac3c17bddd48ef45125e07",
       "output_path": ".github/copilot-instructions.md",
       "routing_artifact_id": "root/copilot-instructions",
       "verification_level": "cross_checked"
@@ -229,10 +249,20 @@
           "source_path": "AGENTS.md",
           "source_revision": "kp-update-docs@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Ten Python tools become thirteen, in 'What this repository is' and in the layout table (ls tools/ on this branch); two by-symptom rows (a rebuilt PBO that should differ only where it was changed; a regenerated navmesh that 'changed everywhere') and three by-task rows (dayz-pbo-diff, dayz-navmesh-compare, the experimental dayz-terrain-builder-runner). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "25d85f5c5cafcbf6fd63346b82f9031e36a5a1be3ac46ac01b1f79af5e156aec",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e5a64fd45fb2f54e0d22d31cd3a6624f7b4af72059d0b2bfb8d853d82c688e79",
+      "output_hash": "25d85f5c5cafcbf6fd63346b82f9031e36a5a1be3ac46ac01b1f79af5e156aec",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -1344,9 +1374,139 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Added entry for ES-PROTO-ARGUMENT-DOWNCAST and Changed entry for ES-MULTILINE-CONDITION-OPERATOR, FAIL instead of WARN. After the Codex (Sol) review of #125 the proto entry says that only an IEntity where an Object is taken is FAIL and any other pair WARN, that a call is judged only in a method the validator reads, and what the first version found on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and over 1037 mod folders. After its second round it says that a declaration under an #ifdef that may not compile with the call, or a member of a later script module, is not taken, and what the second version and this one found on both trees and over 1040 mod folders; after its third round, that a member named as a for or foreach variable or as a local of a block closed before the call is not taken either, and that 306 unit tests pass; after its fourth round, that 310 do, and after its fifth, that 312 do. After its sixth it says that 314 do, and it names the versions, after the fourth and fifth rounds, that found on both trees and over the 1040 folders what the second found, where it said 'and so did this version' (H5). Planned by Claude (Anthropic) and applied by Grok CLI, except the changes after Codex's fifth round (G1 to G4), which Claude wrote and applied.",
+          "license": "MIT",
+          "source_hash": "19f7b626121c267f3666dd59809f2df9b7a4a1badeac5a84714ca88794a6d37d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox e074 (fb-20261006-030019-e074), after #125. Added entry for the three tests of how ES-PROTO-ARGUMENT-DOWNCAST reads a declaration on the line of a label (J1 to J3 of the seventh Codex round of #125). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "928b68ec749c79596bbf66be283597b989be76202688baa91f19e8c1e1e34580",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-e074-label-tests@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox 0cee, 8204, a46a, 3fc6, e018 and the note of 854c, project LFSkateboard. Five Added entries: the hand-built sound loop and SetFrequency (dayz-sound-system), the custom player camera's id and registration (enforce-script-reference), Raised under a scripted command (dayz-animation-pipeline), E23 (dayz-mod-workflow), and the weapon lift check under a scripted command (dayz-animation-pipeline). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a69428f237ecb9b8dd1b0b25df79cf97f06375334d8ad53d68639df7c4944aea",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce and a140 (part 2). Added entries for the needle check of dayz-p3d-audit, with py3d's proxy rule and its first tests, and for what pipeline inbox a140 reports on the V convention of dayz-model-pipeline. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "630413e672dbaf6cc62cd49c9dce577cf1e1b42d42259e2824fb31701acdf5c0",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-ddce-a140@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e6f4ea4201e2d6b06db114030c5cb66b94843058cb5aa119f76efabd0be4d5c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-468, SP-469, SP-470 and SP-483. One Changed entry, SP-468: the offline vertex bench of dayz-vehicles references/binarize-vertex-budget.md item 2 and invariant 27 called binarize.exe with no -addon, now advised, with the stall seen without it and the dayz-pbo-build SP-155 rules 1, 3 and 5 it extends. Added entries for SP-469 (dayz-vehicles references/proxies-and-get-in.md, closing first-person gaps in the ViewPilot), SP-470 (dayz-test-ingame references/session-findings.md, runs that never load their textures and the moving 1PP eye; the dayz-mcp-verify pointers; the dated stopped-rider qualifiers) and SP-483 (dayz-vehicles references/vehicle-config-and-modelcfg.md and references/process-gates.md, the glass slot that never hid and config gates; references/proxies-and-get-in.md, section order between builds). Each draft was checked by three Claude reviews (evidence, conflicts, conventions) and revised before it was applied; a fresh Claude review and a cross-family review (OpenAI Codex) of the final diff followed, and their findings were applied. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "07b5d46c26204253b4b172ec2b706cd8f750875ffbca2e8e43a4c8076d100cd0",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. One Added entry for the dayz-test-ingame TROUBLESHOOTING row. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "91fd436b7aa84ddb553f75f158b29f1679389c7c64b73d6d7a33aa317fe85448",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: Fixed entry for the LFQuad 1.30 port lessons (dayz-vehicles references/dayz-1-30-vehicles.md and SKILL.md, dayz-motorbikes references/vehicle-1.30-refactor.md; six claims).",
+          "license": "MIT",
+          "source_hash": "27d8eac1cdeaa8cddaa9932bdf442591d8ac04b8e4e6b24ee79b98ed14b821a6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (second pass): the Fixed entry of the LFQuad 1.30 port gains the in-game results (five new claims, two raised to runtime_verified).",
+          "license": "MIT",
+          "source_hash": "afa5a847618a6c039504b9818a22c6ba6e813b59659b4765b74083305b7e0282",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): one more bullet in the LFQuad 1.30 entry, the Steam-junction correction of dayz-mcp-verify.",
+          "license": "MIT",
+          "source_hash": "332d94330ac14aac772b4894a695c2bae179d19e2dc86c5b11b1c4bb4fc3fdf4",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "ed40f5e551d0cd7f68292eeffec5de1ff49a40a79532ebbdfa218da9434779aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): one Added entry for the Arma2Quad 1.30 port lessons in dayz-vehicles and dayz-mcp-verify.",
+          "license": "MIT",
+          "source_hash": "830dc583cb19671e2a21d2b51a2e9ca5ec2418f63fe7a106ee7546a46f543123",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Four Added entries: dayz-pbo-diff, digest_pbo of dayz-vehicle-proxy-contract, dayz-navmesh-compare and the experimental dayz-terrain-builder-runner. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3cb1ca5319a3089488af8e2a32282485ec7cf89acb8cf00765967279dcb1f4ff",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-10-24: an Unreleased Changed entry for the vanilla control re-baselined on DayZ 1.30.164200 stable (DayZDiag_x64.exe 1.30.164.200). Before the update the control on P:\\scripts failed only with digest_mismatch (d24552ff against 43ef5a13); full dumps of the 1.30.164078 and 1.30.164200 trees with the same validator gave 15 errors and 424 warnings each, with the same count for each rule in each file, and the 22 findings in the changed files, mapped through a difflib line alignment, land exactly on the ones reported now: eleven warnings only moved (transport.c +3, constructionbase.c +41 and +49, pluginmanager.c +1, miscgameplayfunctions.c -62), and the 14 added files report nothing. The control on the 1.30.164078 tree and the baseline of main passes with this validator, so nothing comes from #121 to #123. --update and the check after it: 3057 files, digest d24552ff, PASS, 181 and 244 s by the wall clock. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "d8cd56185fc1d9a3d3fe4daa46314e20ab5c6094cc93ae52eba5176d8a693a6f",
+          "source_hash": "f969b0435d4a73b657de1644560cfa218d46f47ea35e88f075d4676aac8226ec",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-164200@2026-10-24",
@@ -1354,7 +1514,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d8cd56185fc1d9a3d3fe4daa46314e20ab5c6094cc93ae52eba5176d8a693a6f",
+      "output_hash": "f969b0435d4a73b657de1644560cfa218d46f47ea35e88f075d4676aac8226ec",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -1695,10 +1855,20 @@
           "source_path": "README.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). The tools/ row names the PBO entry diff, the structural navmesh comparison and the experimental Terrain Builder runner; the tools/ tree gains their three lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "83292295c5d31177f45655adb7eae18e0d88688b38da462c2c7bbf9809448ea4",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "493f20ea81a62e7218733571a2d34446ea175fbf0c9cdf5c58c5adb64f8d5b16",
+      "output_hash": "83292295c5d31177f45655adb7eae18e0d88688b38da462c2c7bbf9809448ea4",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -1799,10 +1969,20 @@
           "source_path": "TOOLS.md",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Ten tools become thirteen (ls tools/ on this branch); the experimental dayz-terrain-builder-runner is named as the exception to offline and deterministic, numpy as needed by dayz-navmesh-compare for its terrain inputs only, and the three new tools as scripts run from the tree; three rows in the summary table and three sections. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3cd40663a6f790930df25ac3df407effc590513e6d147e097c72a8cbfbc6ea85",
+          "source_id": "pack-r21-authored",
+          "source_path": "TOOLS.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "eb4620196650cf28ef3b3759068c478581227866c77e917362621a152d4e46bf",
+      "output_hash": "3cd40663a6f790930df25ac3df407effc590513e6d147e097c72a8cbfbc6ea85",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -5712,10 +5892,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-anim-r1c-measured@2026-10-06",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox a46a (fb-20261007-010034-a46a), 3fc6 (fb-20261007-010041-3fc6), e018 (fb-20261008-165335-e018) and the note of 854c (fb-20261009-104228-854c), project LFSkateboard. Locomotion in scripted commands, new subsection on Raised: the raised-fists idle under a HumanCommandScript ride and the IdleRas start condition in the 1.30.164014 Experimental workspace, CLAIM-ANIM-HCS-RAISED-IDLERAS-130 at line 282; the cause and the fix, plausible and not verified in game after 3fc6, CLAIM-ANIM-HCS-RAISED-FALSE-FIX at line 284; and a weapon raised under such a command, whose vanilla lift check throws a NULL VM exception (weapon_base.c:1625 in 1.30.164.200), CLAIM-ANIM-HCS-WEAPON-LIFT-NULL-130 at line 286. A second new subsection points to E23 of dayz-mod-workflow references/error-catalog.md for the exit crash of a command class in 4_World. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "018bf966f6b2276bcedb0b24e555408635fca8011af4b9d9ddd446768b5ee596",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "357ab3768e9b718d4f79a7b16b7d89b8a4b3a66bd5709719a3304c63236bf7bc",
+      "output_hash": "018bf966f6b2276bcedb0b24e555408635fca8011af4b9d9ddd446768b5ee596",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6190,10 +6380,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-470. The bullet on the stopped per-bone medians (0.1-0.5 mm from the clip's FK) dates them to the 2026-09-28 runs and points to the later first-person probe runs on the H2R (2026-10-16 to 24, DayZDiag 1.30.164.200) where, with the same clips, the bike stopped and the pelvis within 0.6 mm, the head moved over up to 7.6 cm, cause not established (dayz-test-ingame references/session-findings.md). Same line; the claims at 88-110 keep their lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6086d128afe91a4102ca0699455da122a1690ac406ace4a39122bf75b532d340",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "92a3df5cd7157064fb2269d1069ecf06685db96d800b3dd717673aa53306795d",
+      "output_hash": "6086d128afe91a4102ca0699455da122a1690ac406ace4a39122bf75b532d340",
       "output_path": "skills/dayz-animation-pipeline/references/vehicle-rider-ik-pose.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7042,10 +7242,20 @@
           "source_path": "skills/dayz-basebuilding/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "529675bee4e740f93878718403025eb323298b00b0dd3cb6ee372cc94fa4b5bb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/SKILL.md",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "73576b6dfca02cb86d320e2f15a2c87699965a51d6de98570612a0e05b061061",
+      "output_hash": "529675bee4e740f93878718403025eb323298b00b0dd3cb6ee372cc94fa4b5bb",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -8532,10 +8742,40 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "kp-update-mcpv-hang-log-tails@2026-10-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2badc7786c4634e3da327bf566aeb23f8f0d0a2a932bcb0ddc43c8ab78718c77",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-470. The 'Visible + textured + winding' verdict says to look at the vanilla terrain and sky in the same frame before failing a model on textures, and 'Flaky capture' says a frame flat everywhere withholds the texture verdict: check the window's focus, capture again after settling, and relaunch if the scene stays flat (dayz-test-ingame references/session-findings.md). Same lines; CLAIM-MCPV-COLLISION-BATTERY (328) keeps its line. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0a4a39b13b1f888d98401218cd89d5d5c5cf5a9ee541cfe861cb884bcca899d8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): prerequisite 4 gains a dated correction, CLAIM-MCPV-JUNCTION-EXTRA-MODS-130: a Steam junction (@SurvivorAnims) passed the preflight and loaded in extra_mods on the stable box, against the 2026-08-02 measurement with @CF, which is kept. Authored by Claude (Anthropic) from the LFQuad v1.0.1 stable-box runs.",
+          "license": "MIT",
+          "source_hash": "4eb6c70ba65bc5236fbca593f60b11163df3d6b8dcfbb2339a1ba4bf574a6680",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "407436caf26f96967689f8e843ced5402168461492af314c6535d6c8ecdfe7c6",
+      "output_hash": "4eb6c70ba65bc5236fbca593f60b11163df3d6b8dcfbb2339a1ba4bf574a6680",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -8770,10 +9010,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox a46a (fb-20261007-010034-a46a) and e018 (fb-20261008-165335-e018), project LFSkateboard. Recurring error catalog index: new line E23, a HumanCommandScript subclass declared in 4_World and started two or more times crashes every orderly exit; the detail is in references/error-catalog.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d2461e4998be29fe071368a1ab5ecddb976c563eeced9025028df2eeafe13936",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "735cd365f9f9252b1250e547c3d9febac28389649f4ce9529244bcbdbd3464a3",
+      "output_hash": "d2461e4998be29fe071368a1ab5ecddb976c563eeced9025028df2eeafe13936",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -8846,10 +9096,20 @@
           "source_path": "dayz-mod-workflow/references/error-catalog.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox a46a (fb-20261007-010034-a46a, point 2) and e018 (fb-20261008-165335-e018), project LFSkateboard. New row E23 and section 'E23, a HumanCommandScript subclass in 4_World, started twice, crashes the orderly exit (open)': the measurements of 2026-10-07 on DayZDiag 1.30.164014 Exp, CLAIM-WF-HCS-4WORLD-EXIT-CRASH-130 at lines 41-46; the unknown cause, the interpretation of the leak counts and the workaround still being verified when reported, CLAIM-WF-HCS-EXIT-CRASH-WORKAROUND at line 48. The header line names E23. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5002fd8b900b6c4ba0582532d763daef5a21dff08b173d677c9fafcfc5c477c2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/error-catalog.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "640b34fbc48ee0df8660e8044f3285d18c535f7525702316328513dea3ed4451",
+      "output_hash": "5002fd8b900b6c4ba0582532d763daef5a21dff08b173d677c9fafcfc5c477c2",
       "output_path": "skills/dayz-mod-workflow/references/error-catalog.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -9048,10 +9308,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-96e0@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-469 and SP-483. SP-469: SP-166 ('Instrument and seal for see-through triage') says that on a model with a ViewPilot a seal for what only the seat sees, twin or closure, goes in res 1100 alone, pointing to dayz-vehicles references/proxies-and-get-in.md. SP-483: a paragraph under the healthLevels[] example of 'Damage variant rvmat pattern', before '6-stage rvmat variant': the example declares no RefTexsMats[], and whether a swap reaches its faces is judged in game (dayz-vehicles references/vehicle-config-and-modelcfg.md section 6 and the end of 6b, references/process-gates.md). CLAIM-B2D-PROXY-FRAME-EQUIV (224) and CLAIM-BLENDER-DAYZ-DET-NEG1 (310) keep their lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fad7aa8318e9684a86a3036b0c14c798686b5d7ec641cafdf9180eb6fd28b72f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e01730d725eb757c77685af13bd71c3c359a12377fae798f50eba290a760f8db",
+      "output_hash": "fad7aa8318e9684a86a3036b0c14c798686b5d7ec641cafdf9180eb6fd28b72f",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -9312,10 +9582,30 @@
           "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
           "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). Geometry LOD, In Blender, the Mesh > Convex Hull bullet: passing the convexity check does not rule out a needle triangle from Qhull, with a pointer to py3d-direct-generation.md, 'Needle triangles'; CLAIM-BINARIZE-COLLISION-LOD-SILENT from 335-337 to 336-338; CLAIM-BINARIZE-COLLISION-TOO-MANY-VERTICES from 374-393 to 375-394; CLAIM-COLLISION-ONLY-MODEL-INGAME from 366-370 to 367-371 (their text unchanged). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d7037f31e9b96bc6df2361a8382e61e9ccd3c26d56993e5d5d1b7589b313654f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "kp-update-ddce-a140@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-483. Resolution LODs (Visual): this file gives no LOD switch distance, so identify in game which LOD is drawn before tuning a far-LOD material (dayz-vehicles references/process-gates.md). Appended to its line; the claims at 336-338, 367-371 and 375-394 keep their ranges. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fd784643d68a6f4dbd4b3ccdacef5128f75f50a9243b80e7e82c664dded5d5d1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5c208d2a36c0e42f6fda7930a4619cb65bf6539920bfa5670adc009ff9d430fe",
+      "output_hash": "fd784643d68a6f4dbd4b3ccdacef5128f75f50a9243b80e7e82c664dded5d5d1",
       "output_path": "skills/dayz-model-pipeline/references/lods-and-geometry.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -9560,10 +9850,30 @@
           "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
           "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). pipeline inbox a140 (fb-20260921-164248-a140, LFPowerGrid), part 2. Building a collision LOD from scratch (SP-025): new paragraph 'Needle triangles' after the scipy.ConvexHull recipe, with the ticket's in-game A/B, the fix and the audit check, CLAIM-P3D-NEEDLE-TRIANGLE-INGAME at lines 1085-1099. 3. UV Flip Detection: one paragraph after the first, what pipeline inbox a140 reports from a file, not in game: the light_emit sampling with both readings of V (177.6 and 10.6), which agrees with Fix 2, with no unit and not re-measured, CLAIM-P3D-UV-V-TOP-SAMPLED at lines 662-668 (it said 'confirms' and its claim covered its first line only; Codex's review of #130, Z3 and Z4). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e84aeefefc8907d1fb9682d0c9fb335471ebad49d3070c37db4939ba0c55bdcf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-ddce-a140@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-468. The LFQuad 'source under P:' gotcha gains a dated pointer: the H2R's direct calls, all from outside P:, did not load their materials with or without -addon, the location being one lead among several (dayz-pbo-build SP-155 rule 5), while AddonBuilder builds staged outside P: resolved theirs (rule 1). CLAIM-P3D-NEEDLE-TRIANGLE-INGAME moves from 1085-1099 to 1088-1102, its text unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "be54b96b4df35e63ab7c23a6126225e48ef49a09f499a03f73e2d5065bbf2a71",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d4e0e2ac3052e4aefe928a9991bfbec63b032b6bffc96d116b49bf6d7d1dfce4",
+      "output_hash": "be54b96b4df35e63ab7c23a6126225e48ef49a09f499a03f73e2d5065bbf2a71",
       "output_path": "skills/dayz-model-pipeline/references/py3d-direct-generation.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -9856,10 +10166,30 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-spa-bldg-collision@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). PART 4, step 5 of the decision tree (what to check with audit_p3d.py): item h, the needle triangles audit_p3d.py now fails in the components of the Geometry, View and Fire LODs, the fix (build the hull again without the point it names) and the pointer to dayz-model-pipeline references/py3d-direct-generation.md, 'Needle triangles'; CLAIM-P3D-BINARIZE-COLLISION-NORMALS from 446-446 to 453-453; CLAIM-P3D-KITBOX-OUTWARD-INGAME from 446-446 to 453-453; CLAIM-P3D-KITBOX-PAIRED-INGAME from 446-446 to 453-453 (their text unchanged). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bf0d72ec6e655712fd910bed7d1d6041353a9a605f2e2575c1c89da5c1648576",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-ddce-a140@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-469. 'Locating seat-visible see-through': one real camera is still a sample; where the eye moves with the character, the run and the pitch, test from every eye the rider can have (dayz-vehicles references/proxies-and-get-in.md). Same line; the claims at 453 keep their line. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "09a013f97293e174a8b51fe2e5897e12cd767fd11b471d923721bc5821587561",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3e0ba4af2d68357130610972fbad9662f4732a370a14098533848589e2ef133b",
+      "output_hash": "09a013f97293e174a8b51fe2e5897e12cd767fd11b471d923721bc5821587561",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -9988,10 +10318,20 @@
           "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
           "source_revision": "kp-update-py3d-wheel-1.10.1@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). Killer #1's AUTOMATED CHECK note cites audit_p3d.py:457, where the P3D.validate() call is now that the needle check sits above audit_p3d(); it read audit_p3d.py:337. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7d202a0ad6fcabb0bcfbffe59f6749321f0249b26c6236b6cc20f3ce5fafc075",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/references/killers-detail.md",
+          "source_revision": "kp-update-ddce-a140@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "dc34eabb7487e3d2575740d07537b1014f2a8a2f39a8d9f701af0e12220c6641",
+      "output_hash": "7d202a0ad6fcabb0bcfbffe59f6749321f0249b26c6236b6cc20f3ce5fafc075",
       "output_path": "skills/dayz-p3d-audit/references/killers-detail.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -10144,13 +10484,45 @@
           "source_path": "dayz-p3d-audit/scripts/audit_p3d.py",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). New check check_collision_needle_triangles, a standalone helper beside check_collision_face_material and called from audit_p3d() after it, so main() and --scan-dir run it: every triangle of every ComponentNN selection (any case, the whole name; a face at weight 0 is not in it) of the Geometry, View and Fire LODs, a quad read as (a, b, c) and (a, c, d) as py3d's LOD.triangulate() splits it, is CRITICAL under 1e-6 m^2 or under 1e-4 of the square of its longest edge (the ticket's thresholds, NEEDLE_MIN_AREA and NEEDLE_MIN_RATIO; a triangle at either passes). A proxy triangle is left out by py3d's own rule, written out in _proxy_triangles from py3d's _proxy_triangle_faces (tools/py3d/py3d/__init__.py:1274-1296, with PROXY_NAME_RE at :200-201, py3d 1.10.1): a selection named proxy:<path>.<index>, proxy: in any case, that holds exactly one face, a triangle, and as its points exactly that triangle's three corners. It is written out, not called, because py3d keeps it private and the script accepts py3d from 1.6.0. The first version left out the one triangular face of any selection whose name began with proxy:, which hid a needle under proxy:fake.001 with no points (Codex's review of #130, Z1). The finding names the LOD, the component, the LOD face index, the triangle's point indices, both numbers and the corner opposite the longest edge, the point to drop. The arithmetic is in the pure functions triangle_area_ratio and needle_triangles, on points and faces. The Pack's own code, written from the ticket's description; no code of the project was read. Tested by tests/test_needle_triangles.py, three of whose tests write MLODs with tools/py3d 1.10.1 and read them back. Not run on a production or a vanilla model: the Pack's only MLODs, the four winding fixtures of dayz-characters, have no component selection, and vanilla models ship as ODOL. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "58d6845aff313a67fed10339d0e0ca3488b1a5e185f7b2fb26e86a88c2f0aa61",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/scripts/audit_p3d.py",
+          "source_revision": "kp-update-ddce-a140@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f284d27347dbd620246f4f529ce3e872a424a7d6699f4ef488122154ed92795d",
+      "output_hash": "58d6845aff313a67fed10339d0e0ca3488b1a5e185f7b2fb26e86a88c2f0aa61",
       "output_path": "skills/dayz-p3d-audit/scripts/audit_p3d.py",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-p3d-audit/tests/test_needle_triangles.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce (fb-20261002-175602-ddce, SecretRock). The skill's first test folder: 21 tests of the needle check of scripts/audit_p3d.py. 18 need no py3d and no .p3d: a stand-in py3d module and stand-in LODs with the attributes the check reads (the Wiring test runs main() on a 16-byte file, the MLOD signature and twelve zero bytes, for which the stand-in's P3D() returns the model). 3 load the Pack's py3d from tools/py3d by its file path, write MLODs, read them back and run main() or the check on them; they skip where that folder is not next to the skill. The arithmetic on four known triangles; a triangle exactly on each threshold (area 1e-6 m^2, ratio 1e-4, both checked to land on it in floating point) passes; a closed convex box hull, the same box as six quads (read as two triangles each, the split listed) and a 2 m triangle at a ratio of 1.19e-4 pass; a needle by ratio alone (1e-5, and 5e-5), by area alone (a corner cut at 1 mm, area 8.66e-7 m^2, ratio 0.433) and the ticket's needle (area 3e-8 m^2, ratio 4.6e-7) fail, each named by its face and corners; the finding names the LOD, the component in any case, the LOD face index, both numbers and the point to drop, in Geometry, View and Fire and not in the Visual LOD; a proxy triangle by py3d's rule is not read, proxy: in lower case or in capitals, and a selection under a proxy name that is not one (no points, in either case; no index; not proxy:; three other points; two faces) is read; a face in no component, a face at weight 0 and a selection named Component01a are not read; main() exits 1 on a needle and 0 without one. Written and read back with py3d: the ticket's needle as Component01 of the Geometry, View and Fire LODs, which py3d's validate() passes, gives three CRITICAL and exit 1, also under proxy:fake.001 with no points and under proxy:fake with its corners, and passes as a proxy triangle by py3d's rule; on a LOD with seven selections under proxy names the check's proxy triangles are those of py3d's _proxy_triangle_faces. Measured 2026-10-24: 21 passed under pytest 9.1.1 on Python 3.14.6 and under unittest on Python 3.11.17. Against the audit_p3d.py of main all 21 fail. 28 mutants of the check, on copies outside the repository laid out like the Pack: the 17 of the first version (the wiring removed, or for and, a quad's first triangle only, the other diagonal, the shortest edge, the area doubled, either threshold moved, proxies read, every selection read, names case-sensitive, the face's place in its component, the Visual LOD read, the wrong corner named, WARNING for CRITICAL), the six of Codex's review of #130 (Z2: the weight filter removed, match for fullmatch, <= for < on the ratio and on the area, the helper's default ratio at 1.1e-5, proxy: case-sensitive), the first version's proxy rule (Z1), and four of py3d's proxy clauses dropped one at a time (the full name, the points, the corners, the one face): each fails at least one test, and each test fails under at least two of them. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6ad84fbec7dfc4fc426c5e0ba0918d0128d3667fe2f142ec0f774ddb59979c22",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/tests/test_needle_triangles.py",
+          "source_revision": "kp-update-ddce-a140@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6ad84fbec7dfc4fc426c5e0ba0918d0128d3667fe2f142ec0f774ddb59979c22",
+      "output_path": "skills/dayz-p3d-audit/tests/test_needle_triangles.py",
+      "routing_artifact_id": "skill/dayz-p3d-audit",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/skills/dayz-p3d-inspector/skill.md",
@@ -10644,10 +11016,30 @@
           "source_path": "dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-docs-25af@2026-10-13",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-468. SP-155: the heading records rules 1, 3 and 5 extended. Rule 1 gains the direct binarize.exe call, which needs a dedicated -addon folder too, as the pack's direct-call templates have it: without it (BINARIZE 1.30.164078.38) the first model loaded about 5 min after launch on 2026-10-16, and on 2026-10-19 none came out in 30 min (a timeout) or 13 (stopped by hand); with -addon=<parent of the staged source> the first model loaded within a second and all six builds converted their 8 models. Why the wait grew is not established; that binarize walks P: meanwhile is inferred from Win32_Process counters, not traced; the signal is binarize alive, no reads, a flat working set and an empty output folder (CLAIM-BINARIZE-DIRECT-ADDON-STALL, lines 537-553). Rule 3 names that wait as another apparent hang. Rule 5 records the H2R bench as a confounded case of a texture missing on its own: the same 65 .rvmat not loaded with and without -addon, every material entry of both builds' 8 ODOLs empty in a same-version A/B, and three leads left unmeasured (the unstaged env_land textures, the source outside P:, what the direct call lacks against AddonBuilder 1.0.240639) (CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY, lines 613-629). Evidence: the project's saved binarize logs and session record, the ODOLs its kits packed read with an external ODOL reader, the AddonBuilder rpt of 2026-10-23 and a read-only census of P: by birth time. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3537eb38c82ead5b9289c5b228638cbc1eccc3143a0da07fbc1e6675cad0938e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). New section 'Compare the entries of two builds', before SP-347, as the ticket proposes (a 'compare entries' step in dayz-pbo-build): the command of tools/dayz-pbo-diff, to be read with SP-194 and 'Binarize is not byte-deterministic' (between two builds a different .p3d entry proves nothing by itself; a script, config, material or texture entry does), --ignore-prefix as a view, a compressed entry refused. Edited at the source, as CONTRIBUTING item 7 requires for a governed skill. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a2a44c154760da28f79e72704c6b59a377ba784bbc7679df78c7c238ff41467f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3e445bac27b42abbd617a68bb2c268c94346d20d2af585e586db18328bb95e2b",
+      "output_hash": "a2a44c154760da28f79e72704c6b59a377ba784bbc7679df78c7c238ff41467f",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -11964,10 +12356,20 @@
           "source_path": "dayz-sound-system/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox 0cee (fb-20261007-010022-0cee), project LFSkateboard. Recipes: new recipe A2, 'The same loop built by hand, to set its pitch': a hand-built loop (SoundParams, SoundObjectBuilder, BuildSoundObject, SetKind(WAVEEFFECTEX), SetParent, Play3D) is barely audible unless SoundObject.SetPosition is set before Play3D, since with a parent that position is in model space and EffectSound sets it right before its own Play3D (effectsound.c:23, :172-173 and :746-753 in 1.30.164.200, :742-749 in 1.29), CLAIM-SOUND-HANDBUILT-LOOP-POSITION-130 at lines 206-220; and AbstractWave.SetFrequency takes a factor, since GetFrequency of a playing OGG wave returned 1.0, CLAIM-SOUND-WAVE-FREQUENCY-FACTOR-130 at lines 222-225. Script API core: the SoundObject and AbstractWave bullets point to it. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "447a8b3b089a86acaf181471cc9f581f6b792933f7e203b0c90cbc7ed9590159",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c27ff4fa95a1c75d8a8ee340f509020d27a3e952dda5c668e8f799f6891bd0b1",
+      "output_hash": "447a8b3b089a86acaf181471cc9f581f6b792933f7e203b0c90cbc7ed9590159",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -12148,10 +12550,50 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-c9aa@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-470. The Session findings index lists the new appendix of references/session-findings.md; the first bullet of the SP-279 cell contract says a default spawn also draws a random character class, so pin it; the checklist under 'An in-game observation is worth whatever the -mod= line of ITS run is worth' gains point 4 (read whether that run rendered textured and where its eye was). CLAIM-TEST-DAYZMCP-CARRIER moves from 667 to 668, its text unchanged; the claims at 53, 64, 247 and 377 keep their lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "df5edd5bdbc3495c8d31d194ff162f9398e6c3261df47dab903752487c0a5ff4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. TROUBLESHOOTING gains a row for it, under CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE. CLAIM-TEST-DAYZMCP-CARRIER moves from 668 to 669, its text unchanged; the four other claims of this file sit above the row and keep their lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "13979ea05fe141248ba8852cc3ae9b9026627325cb282cc25bce6a135a30b2e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: trap 3 of the build-deploy-test cycle, CLAIM-SIGN-NEGATIVE-CONTROL: a DSCheckSignatures negative control made by flipping a byte can pass. Authored by Claude (Anthropic) while sealing LFQuad v1.0.1.",
+          "license": "MIT",
+          "source_hash": "269a55dbe69bd49a8ad2bcb40a60b291705c5ad55987b311e5d66bc7f1b872a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "c90bb73bcf565e3a4200b22d787d7d52044977cc7dd5f0ae8efa675ce69b06eb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9cee04e15359d184c0e324e322111be412d426537be26ea637ef825babf250af",
+      "output_hash": "c90bb73bcf565e3a4200b22d787d7d52044977cc7dd5f0ae8efa675ce69b06eb",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -12200,10 +12642,20 @@
           "source_path": "skills/dayz-test-ingame/references/session-findings.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-470. New appendix 'H2R import (2026-10): untextured runs and a moving 1PP eye'. DayZDiag 1.30.164.200 runs that never load their textures while their error counts read normal, 2 of 7 on 2026-10-19 and 5 of 12 on 2026-10-24, told apart by the run's median JPEG size and by three client RPT warnings in that probe, SETUP_FAIL for their frames only (CLAIM-TEST-DIAG-UNTEXTURED-RUN-130, runtime_verified, lines 214-237); the vehicle 1PP camera bound by position to the Head bone (CLAIM-TEST-1PP-CAMERA-HEAD-BONE, source_verified, lines 241-244); the eye moving between runs and looks while the pelvis held (CLAIM-TEST-1PP-EYE-PER-RUN-130, runtime_verified, lines 246-267); the class pinned through a MissionServer.CreateCharacter override, as a precaution (CLAIM-TEST-PIN-CHARACTER-CREATECHARACTER, runtime_verified, lines 268-274). Evidence: the probe's run folders (RUN_SUMMARY.json, client and server RPTs, script logs), its captures and kit PBOs, the H2R project log and the vanilla 1.30.164.200 and 1.29 scripts. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "91b6256a3db4b885760dba2e82f32d18e516cf9adc16707e8ddf2b96c9e2c614",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/session-findings.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4c8b694a4cb36643febc3d05f5313dd4005296195e366b7371f5791a9f290659",
+      "output_hash": "91b6256a3db4b885760dba2e82f32d18e516cf9adc16707e8ddf2b96c9e2c614",
       "output_path": "skills/dayz-test-ingame/references/session-findings.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -13926,10 +14378,40 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "kp-update-ai3d-sp071-rule12@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-468, SP-469 and SP-483. SP-468: invariant 27 says its 25/25 validation ran without -addon and advises a dedicated -addon folder, and its Tool line says the HH-60G copy of the bench calls binarize without it, both pointing to references/binarize-vertex-budget.md item 2. SP-469: the seated-view invariant (patch both res 0 and res 1100) says that seat-only geometry, the 1PP gap closures, goes in res 1100 alone, re-wrapped within its five lines; the routing sentence keeps the ViewPilot and the first-person view of any family in this atlas; the LESSONS ARCHIVE lists the new section of references/proxies-and-get-in.md. SP-483: the LESSONS ARCHIVE lists the new section of references/process-gates.md. CLAIM-GETIN-LHD-BASE-TABLE (526) and CLAIM-INVVIEW-VIEW0-DEF (1638) keep their lines. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5dd4d84938752251b0efa2f6c83bcea7606a35202418d247f1f0ae1185c8dc0d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: one bullet in the 1.30 block (CLAIM-VEH-130-PORT-BLOCKERS) pointing at the two 1.30 changes that stop a 1.29 car outright (ToggleHeadlights deleted; NO_BATTERY without the electricity-source overrides), detailed in references/dayz-1-30-vehicles.md. Authored by Claude (Anthropic) while porting the LFQuad to 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "382b21b6e59b6d7ff2a37c181d12883ff9da727794da6fe589c48989b799731c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (second pass): CLAIM-VEH-130-PORT-BLOCKERS names the two blockers measured in game on 1.30.164200 (backslash script module path, missing _Ruined wheel twins). Authored by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2ec89a8c066e00aa704d3b97a77dcc45198eca18a8290acd8e348cf5ff1036ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "1b42ad114cdb582e2ce753fdc901cb260d0371b00006e4a8a4189157310857f0",
+      "output_hash": "2ec89a8c066e00aa704d3b97a77dcc45198eca18a8290acd8e348cf5ff1036ca",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -14096,10 +14578,20 @@
           "source_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
           "source_revision": "kp-update-ce25-b967-db6f@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-468. The header scopes the H2R runs added under item 2 (another vehicle, PASS verdicts only). Item 2 keeps the validated call and adds -addon=<bench> as advice; it says that the 25/25 validation and the HH-60G project's copy of the bench ran without it, records the H2R runs (the wait before the first model without -addon, the first model within a second with it, 8 of 8 PASS, no CAPACITY_FAIL run with it) and that every material entry of the H2R bench's ODOLs came out empty, so rule 5's control runs before a bench ODOL ships (CLAIM-BINARIZE-DIRECT-ADDON-STALL-REF, lines 24-36). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "804a7a52e3ecebff37fc7697d4692c0cef351e4a9c8e93ad54312dbdbc8a498e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f9290cf88a38e44e99daa56d2a0934fce0d5dd6560abd8915966ba5d42123e29",
+      "output_hash": "804a7a52e3ecebff37fc7697d4692c0cef351e4a9c8e93ad54312dbdbc8a498e",
       "output_path": "skills/dayz-vehicles/references/binarize-vertex-budget.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -14716,10 +15208,20 @@
           "source_path": "skills/dayz-vehicles/references/process-gates.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-483. New section 'A config gate is not a visual gate': the H2R's feedback gates 12 and 13, as they ran, passed while the screen did not change (CLAIM-VEH-GATE-CONFIG-NOT-VISUAL-130, runtime_verified, lines 98-107). Six rules: name a PASS by what the gate reads; take vehicle zones down with the vanilla contact-damage call, the SetHealth01 comparison reported as not isolated (CLAIM-VEH-CONTACT-DAMAGE-SWAP-130, runtime_verified, lines 113-127); give a diagnostic marker a positive control; use a control that can show the change; identify the drawn LOD before tuning a far-LOD material; point config gates at the delivered artifact, with the far silver outside RefTexsMats[] (CLAIM-VEH-FAR-LOD-MAT-OUTSIDE-REFS-130, offline_tested, lines 143-146) and [DESIGN] checks. Evidence: the gate code as it ran, quoted in the cross-family review's run log, the probe's run logs and capture sheets, the H2R project log, VAULT LL-565 and the vanilla 1.30.164014 Exp scripts. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7417cd9493126ef8423ea316d46e273bd5e5bcaaff79d3f000d7843106e1afde",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/process-gates.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1cf83af2e2f894386704ce8331875e9720da59355a0e842510a9e1f827917999",
+      "output_hash": "7417cd9493126ef8423ea316d46e273bd5e5bcaaff79d3f000d7843106e1afde",
       "output_path": "skills/dayz-vehicles/references/process-gates.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -14748,10 +15250,20 @@
           "source_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-469 and SP-483. SP-469: new section 'Closing first-person gaps: membranes in the ViewPilot only, behind the steering sweep, tested with the steering turned' after the census by classes: closures and 1PP inverted twins in LOD0 drew black slivers from outside, and in res-1100 LODs alone the closures covered the large gaps in first person (CLAIM-VEH-MOTO-1PP-VIEWPILOT-130, runtime_verified, lines 509-514); four rules from defects found there (rule 1 offline only) and a [DESIGN] matte black; the [DESIGN] lifecycle of the closures; the 23-eye generation set with its offline counts and a cross-family counterexample, with the rules' in-game observations (CLAIM-VEH-MOTO-1PP-CLOSURE-INGAME-130, runtime_verified, lines 536-594) and offline counts (CLAIM-VEH-MOTO-1PP-CLOSURE-OFFLINE-130, offline_tested, lines 531-598); what the offline check cannot see. Evidence: the project's phase notes of 2026-10-07, its project log, the RPTs of each run, the closure generator, its rasterizer and their logs, and the eye lines the probe logged. SP-483: '`binarize` is NOT deterministic' now says face and section order also change between builds (dayz-pbo-build SP-194), adds the H2R's observation with binarize.exe called directly (CLAIM-BINARIZE-SECTION-ORDER-130, offline_tested, lines 115-118), and its rule no longer keys on section indices. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2c83eb88f0a5acbd9553d9b81b35de3710a7d7f3b070c6ea320cea91706db762",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "019746fb581336c9afa062f91f3dd63ebea73efc01dc2a8ba383d388b2c65fed",
+      "output_hash": "2c83eb88f0a5acbd9553d9b81b35de3710a7d7f3b070c6ea320cea91706db762",
       "output_path": "skills/dayz-vehicles/references/proxies-and-get-in.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -14954,10 +15466,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
           "source_revision": "kp-chips-privname@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-483. Section 6: the \"hidden\" sentence is a config shape with no in-game check here, and a new paragraph says what RefTexsMats[] is, with a census of the vanilla motorbike and car configs and LL-565 point 1 at config level (CLAIM-VEH-REFTEXSMATS-SLOTS-130, source_verified, lines 280-290). Section 6b: its opening says the swap and the hiding on glass are not checked in game here, and a subsection after its Sources gives the vanilla per-slot \"hidden\" form, with the Motorbike_02 windscreen as an attachment (CLAIM-VEH-GLASS-HIDDEN-SLOT-130, source_verified, dayz-vanilla 1.30.164014-exp, lines 358-367), the H2R windscreen that stayed drawn at level 4 while the body panels of Front swapped (CLAIM-VEH-GLASS-ZONE-NO-SWAP-130, runtime_verified, lines 369-386), the untested hypotheses and a [DESIGN] cheapest-first plan. Evidence: the vanilla 1.30.164014 Exp extraction (config.cpp, rvmat, ODOL), the H2R generator, probe and built configs, its ODOL read with the project's reader, the probe's run logs and capture sheets, the H2R project log, VAULT LL-565 and the cross-family review of 2026-10-24. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0ba72d736bbd887f81c8da51b5d350f074bdf6246dca8466d1c35f8b5d8c1480",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "612fa060527e7692dee9e06c73ffabc9f847022be04018a566986f8e561cb075",
+      "output_hash": "0ba72d736bbd887f81c8da51b5d350f074bdf6246dca8466d1c35f8b5d8c1480",
       "output_path": "skills/dayz-vehicles/references/vehicle-config-and-modelcfg.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -15046,10 +15568,20 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "kp-update-py3d-wheel-1.9.0@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: correction under 'Script binding': the backslash advice dates from 1.29 and does not hold on 1.30.164200, where the LFQuad backslash path loaded nothing and forward slashes loaded (CLAIM-VEH-SCRIPT-PATH-SLASH-130 in dayz-1-30-vehicles.md). Historical text kept. Authored by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "95f6ded04d6b969896b59fbef47157b8a7fbf565fc6ae73ca4b357c5c597bf13",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "bbb770e15f3c159c47944d21e8c00478f26ff194880aec50cc1db9f057aabe22",
+      "output_hash": "95f6ded04d6b969896b59fbef47157b8a7fbf565fc6ae73ca4b357c5c597bf13",
       "output_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -15140,10 +15672,20 @@
           "source_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-469. #10 (m) ends with a back-pointer: a gap seen only from the seat closes the other way round, single-sided, in the ViewPilot alone, behind what moves through the rider's line of sight (references/proxies-and-get-in.md). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "76eab397a7685cd05381c2d44e45cbcdfadaa7486f93b42998f6e61744553e0a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8adeea0271eaa953c43d04bf8c02acfaf95e22c5a3fdd7fce31139dce8eea48",
+      "output_hash": "76eab397a7685cd05381c2d44e45cbcdfadaa7486f93b42998f6e61744553e0a",
       "output_path": "skills/dayz-vehicles/references/visual-gates-and-winding.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -15526,10 +16068,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "kp-update-inbb-rules@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox 8204 (fb-20261007-010028-8204), project LFSkateboard. COMMON API PATTERNS: new subsection 'Custom player camera: a small id, registered in RegisterCameras': RegisterCameraCreator with id 1171 crashed the DayZDiag 1.30.164014 Exp dedicated server at startup and 17 works, vanilla's ids (1-14 and 30-32, 32 new in 1.30) and the unmeasured ceiling, CLAIM-ENF-CAMERA-CREATOR-ID-130 at line 594; and why a creator registered from ModItemRegisterCallbacks.RegisterCustom does not survive, vanilla's order read in 1.30.164.200 and 1.29, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER at line 596. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "21f2c6901a8b319e9f5fc3ed3b64003b24d81c57c20af292ba6839329ab16b44",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d0bfaed6b3ca6fed944790a617e5e1aaaf58265cade70be3d9378ff95682de17",
+      "output_hash": "21f2c6901a8b319e9f5fc3ed3b64003b24d81c57c20af292ba6839329ab16b44",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -18141,10 +18693,130 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Registers CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST at lines 28-82 of es_proto_argument_downcast.py, and moves CLAIM-ENFORCE-MULTILINE-CONDITION-OPERATOR to lines 9-31 of its detector, FAIL after the vanilla controls. The proto claim's evidence gives the declarations the Codex (Sol) review of #125 read on the owner's PC (RaycastRV at dayzphysics.c:199 in 1.30 and 1.29, Object and IEntity), the FAIL and WARN split, what the first and second versions found on the vanilla scripts and over 1037 and 1040 mod folders, that the versions after the fourth and fifth rounds of that review found what the second did (after its sixth round, where it said 'and so did this version', H5), and the unit cases added after its first four rounds. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "ca7c017b2f71255ce3ed736152b52bfe5b82d8f08db8519b390096a170e1a6c7",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox 0cee, 8204, a46a, 3fc6, e018 and the note of 854c, project LFSkateboard. Registers, runtime_verified unless named otherwise: CLAIM-SOUND-HANDBUILT-LOOP-POSITION-130 (lines 206-220) and CLAIM-SOUND-WAVE-FREQUENCY-FACTOR-130 (lines 222-225) in dayz-sound-system SKILL.md; CLAIM-ENF-CAMERA-CREATOR-ID-130 (line 594) and CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER (line 596, source_verified) in enforce-script-reference SKILL.md; CLAIM-ANIM-HCS-RAISED-IDLERAS-130 (line 282), CLAIM-ANIM-HCS-RAISED-FALSE-FIX (line 284, unverified) and CLAIM-ANIM-HCS-WEAPON-LIFT-NULL-130 (line 286) in dayz-animation-pipeline SKILL.md; CLAIM-WF-HCS-4WORLD-EXIT-CRASH-130 (lines 41-46) and CLAIM-WF-HCS-EXIT-CRASH-WORKAROUND (line 48, unverified) in dayz-mod-workflow references/error-catalog.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cf3a1d24c1b57cbc923d65791af4ccf75ed5757f21a851056ebd46f2c1679233",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-lfsk-notes@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox ddce and a140 (part 2). Registers CLAIM-P3D-NEEDLE-TRIANGLE-INGAME (runtime_verified, py3d-direct-generation.md, lines 1085-1099) and CLAIM-P3D-UV-V-TOP-SAMPLED (offline_tested, lines 662-668, its whole paragraph), and moves the ranges of the claims below the inserted lines, their text unchanged: CLAIM-BINARIZE-COLLISION-LOD-SILENT 335-337 to 336-338; CLAIM-BINARIZE-COLLISION-TOO-MANY-VERTICES 374-393 to 375-394; CLAIM-COLLISION-ONLY-MODEL-INGAME 366-370 to 367-371; CLAIM-P3D-BINARIZE-COLLISION-NORMALS 446-446 to 453-453; CLAIM-P3D-KITBOX-OUTWARD-INGAME 446-446 to 453-453; CLAIM-P3D-KITBOX-PAIRED-INGAME 446-446 to 453-453. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7b60ca6c263bfce3684172a58d572fde47ffb8ba8ad963f7f48041e8aae9e7b4",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-ddce-a140@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0f5fe502d1b098af058cd6f3fe492f3a9eeb587086d3c26d7e31191424d9fe4f",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-468, SP-469, SP-470 and SP-483. Registers seventeen claims: CLAIM-BINARIZE-DIRECT-ADDON-STALL (dayz-pbo-build SKILL.md, lines 537-553) and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY (613-629), CLAIM-BINARIZE-DIRECT-ADDON-STALL-REF (dayz-vehicles references/binarize-vertex-budget.md, 24-36), all offline_tested; CLAIM-VEH-MOTO-1PP-VIEWPILOT-130 (runtime_verified, dayz-vehicles references/proxies-and-get-in.md, 509-514), CLAIM-VEH-MOTO-1PP-CLOSURE-INGAME-130 (runtime_verified, 536-594) and CLAIM-VEH-MOTO-1PP-CLOSURE-OFFLINE-130 (offline_tested, 531-598); in dayz-test-ingame references/session-findings.md, CLAIM-TEST-DIAG-UNTEXTURED-RUN-130 (runtime_verified, 214-237), CLAIM-TEST-1PP-CAMERA-HEAD-BONE (source_verified, 241-244), CLAIM-TEST-1PP-EYE-PER-RUN-130 (runtime_verified, 246-267) and CLAIM-TEST-PIN-CHARACTER-CREATECHARACTER (runtime_verified, 268-274); in dayz-vehicles references/vehicle-config-and-modelcfg.md, CLAIM-VEH-REFTEXSMATS-SLOTS-130 (source_verified, 280-290), CLAIM-VEH-GLASS-HIDDEN-SLOT-130 (source_verified, dayz-vanilla 1.30.164014-exp, 358-367) and CLAIM-VEH-GLASS-ZONE-NO-SWAP-130 (runtime_verified, 369-386); in references/process-gates.md, CLAIM-VEH-GATE-CONFIG-NOT-VISUAL-130 (runtime_verified, 98-107), CLAIM-VEH-CONTACT-DAMAGE-SWAP-130 (runtime_verified, 113-127) and CLAIM-VEH-FAR-LOD-MAT-OUTSIDE-REFS-130 (offline_tested, 143-146); CLAIM-BINARIZE-SECTION-ORDER-130 (offline_tested, references/proxies-and-get-in.md, 115-118). Moves two ranges, their text unchanged: CLAIM-P3D-NEEDLE-TRIANGLE-INGAME from 1085-1099 to 1088-1102 (three lines added above it in dayz-model-pipeline references/py3d-direct-generation.md, SP-468) and CLAIM-TEST-DAYZMCP-CARRIER from 667 to 668 (the Session findings index of dayz-test-ingame SKILL.md gained the H2R import line, SP-470). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0746b85e3c3a093305cf068f9f5b67d91b2bef8130cf66419fe0597b4aaca679",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: pipeline inbox fb-20261025-044934-fdf5 (LFSkateboard, 2026-10-25) took the PluginConfigDebugProfile stack that every DayZDiag mission start logs for a DayZ_MCP error. Read only on the test PC: the stack is vanilla (the 1.29 and 1.30 pluginmanager.c and pluginitemdiagnostic.c), and 375 of 386 DayZDiag 1.30 RPTs that never name DayZ_MCP carry it. Registers CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE (runtime_verified, dayz-test-ingame SKILL.md, line 570) and moves CLAIM-TEST-DAYZMCP-CARRIER from 668 to 669. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f6955dac0fdc0c9ea7dea9b77410b692d8bef928077c19562e8e8f34dde490ec",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-fdf5@2026-10-26",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: what porting the LFQuad (a 1.29 quad) to DayZ 1.30.164200 stable found. Registers six claims: CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130 (dayz-vehicles references/dayz-1-30-vehicles.md, line 28), CLAIM-VEH-NO-BATTERY-DEFAULT-130 (121-126) and CLAIM-VEH-GETIN-REACH-129 (180-184), all source_verified, and CLAIM-VEH-OVERRIDE-RESOLVE-130 (257, offline_tested); CLAIM-VEH-130-PORT-BLOCKERS (dayz-vehicles SKILL.md, 65) and CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS (dayz-motorbikes references/vehicle-1.30-refactor.md, 41-45), source_verified. Shifts the ranges of three existing claims whose markers moved one line: CLAIM-ODOL-V56-130 (25 to 26), CLAIM-GETIN-LHD-BASE-TABLE (526 to 527) and CLAIM-INVVIEW-VIEW0-DEF (1638 to 1639).",
+          "license": "MIT",
+          "source_hash": "6aa4a61e7fa2e7654a99e25ef8170906f2f23c35a6873750c4bfc613429c7e52",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (second pass, LFQuad v1.0.1 in-game results): adds CLAIM-VEH-SCRIPT-PATH-SLASH-130, CLAIM-VEH-LIGHTS-EXIT-130, CLAIM-VEH-RUINED-WHEEL-CLASS-130 (runtime_verified, dayz-vehicles), CLAIM-MCPV-VEHICLE-GAPS-130 (runtime_verified, dayz-mcp-verify) and CLAIM-SIGN-NEGATIVE-CONTROL (offline_tested, dayz-test-ingame); raises CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130 and CLAIM-VEH-130-PORT-BLOCKERS to runtime_verified; shifts the ranges of claims whose markers moved.",
+          "license": "MIT",
+          "source_hash": "8ccac5f0c67d99f8d4a0a7b693fa9fa254381b4847a3bf25209128397d059aa6",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (third pass): adds CLAIM-MCPV-JUNCTION-EXTRA-MODS-130 (runtime_verified, dayz-mcp-verify) and shifts the claims of dayz-mcp-verify SKILL.md whose markers moved.",
+          "license": "MIT",
+          "source_hash": "7816598e64b873555ff2a4ea7e6780ef66f5e08f4b719d37d9b4f1d91b2a39a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: merge of main (ac2bc90, #136, the PluginConfigDebugProfile stack) into update/dayz-130-car-port-lfquad; both changes kept, claim ranges recomputed from their markers.",
+          "license": "MIT",
+          "source_hash": "918a163cbb57ccb0a0c8ccecf83059a9f9a23e56a570ceac04985cc7b3b33bd6",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): adds CLAIM-VEH-FRONT-FLARE-STICKY-130, CLAIM-VEH-LIGHT-PROFILE-UNREAD-130, CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130 and CLAIM-MCPV-VEHICLE-GAPS-A2Q-130, extends the evidence of CLAIM-VEH-LIGHTS-EXIT-130, and shifts the claims whose markers moved.",
+          "license": "MIT",
+          "source_hash": "60763b5d2f3bc33f1c68166446e6c226dc1d847286ecbef9122679d85a172e7f",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Registers CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC (tools/dayz-navmesh-compare/README.md, lines 10-20, offline_tested); CLAIM-NAVMESH-TESM6-DNAV11-ENVELOPE (tools/dayz-navmesh-compare/README.md, lines 24-30, offline_tested); CLAIM-TB-WIN32-RUNNER-ENVELOPE (tools/dayz-terrain-builder-runner/README.md, lines 8-20, runtime_verified, as the ticket reports it); CLAIM-TB-WIN32-RUNNER-GOTCHAS (tools/dayz-terrain-builder-runner/README.md, lines 76-93, runtime_verified, as the ticket reports it). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e1d89a6b3a118aa6fcbe920b5e93449a16c14868a7a5c710755387ba0c4a236d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "22626cfa02475c2747181501ce996153ebc7bce7e88562b9491a4058f81f15a1",
+      "output_hash": "e1d89a6b3a118aa6fcbe920b5e93449a16c14868a7a5c710755387ba0c4a236d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -21486,10 +22158,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-818e@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). ES-PROTO-ARGUMENT-DOWNCAST (FAIL or WARN) among the checks that read the tree, FAIL only for an IEntity where an Object is taken, with the calls it judges, as the Codex (Sol) review of #125 asked; the section says which roots each of those checks reads instead of counting them. After the second round of that review it says when a member of another file counts (its script module not later than the call's, both files under N_Module folders), that a declaration under #if, #ifdef or #ifndef leaves a name unknown unless it is in the call's file under blocks all around the call, and that a method whose declaration has a line up to its ( under such a block is unknown; after the third round, that a name the method declares before the call only as a for or foreach variable or in a block closed before it is unknown too, also where a member has that name, and after the fourth, that this holds where that declaration is no longer open at the call (a for or foreach variable, for a call in the loop's body or after it, or a local of a block closed before the call), while a call in that for's own header, as in its condition, takes the variable's type. ES-MULTILINE-CONDITION-OPERATOR is FAIL, with the controls that found nothing for it. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "7f615479f9fc77fc55618e6613494186002668aa85990492bc9a79f2acd5248c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "616500e7c01ea883303b2b0a3d71e754f54b1117b830067b8abcc34012304d21",
+      "output_hash": "7f615479f9fc77fc55618e6613494186002668aa85990492bc9a79f2acd5248c",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22386,10 +23068,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-6b76@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). Runs ES-PROTO-ARGUMENT-DOWNCAST after ES-CAST-UNRELATED-TYPES, over the addon with the --external-scripts sources and the vanilla root, its FAIL findings among the errors and its WARN findings among the warnings, and counts ES-MULTILINE-CONDITION-OPERATOR among the errors. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "c2aebb81dc20b8d66c9d49d9d68a8cd40b21e17ca3eddce6596b7e457ca9e15f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b35a89932a37922a85e146a5b463b4aed9b9390e07fa60fa0c70f135cf2b7844",
+      "output_hash": "c2aebb81dc20b8d66c9d49d9d68a8cd40b21e17ca3eddce6596b7e457ca9e15f",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26296,10 +26988,40 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-e6d6@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). TestMultilineConditionOperator asks for FAIL, and for each finding's message to name its own line. TestProtoArgumentDowncast (30 tests) runs the bad and ok fixtures with the vanilla stand-in and without it, and unit cases of the shapes judged and skipped; after the Codex (Sol) review of #125 it adds an IEntity where an Object is taken (FAIL) beside three pairs that are WARN, through the command line too, a member of another body of the class or of a class up its chain, a call outside every method the validator reads, an argument that holds a call, declarations that never compile or sit under #ifdef or #ifndef, and more shapes skipped. After the second round (N1 to N4) seven tests more, each red at the second version: a member of a class up the chain, of the enclosing body and a local under a block apart from the call's (unknown), and each without that block; a file under one #ifdef with calls under one more, a member under the inner block for a call outside it (unknown) and a member under a block of another file (unknown); a member of a later script module, of the same or an earlier one, and of a file under no N_Module folder or for a call in one; a member of a 3_game file of a temporary vanilla tree, seen from World and not from GameLib; a proto word under #if 0 and a word under #ifdef before the declaration; a member of a template class; and the member lookup asked only for a member the body does not declare. After the pass over the mods of the third round, a class of 20,000 members with 400 calls, each under a block of its own, read in under 2 s (12.4 s at the third version). After the third round (E1, E3) two tests more: a foreach variable, also as the receiver, a for variable and a local of a block closed before the call, each with the name of a member declared as another class, leave the name unknown, and with the local named otherwise the member is read (red at the third version, which took the member); and an IEntity member beside an Object one under #if 0 is FAIL (green at the third version, red without the filter of lines that never compile in the class body). After the fourth round (F1 to F3) four tests more: a declaration on the line of its case or default label, an Object local beside an IEntity member (no finding) and an IEntity local beside an Object member (FAIL), at the stand-in of RaycastRV and against the same declaration on a line of its own, and for the cast rule a Mission local on the line of its case label beside a Hud member (FAIL), where the fourth version took the member, the two red at the fourth version; an IEntity for variable at a call in that for's own condition beside an Object member (FAIL); and an IEntity local open at the call beside an Object one of a block closed in the other branch of an #ifdef (FAIL on 13), and an IEntity member beside an Object foreach variable under #if 0 (FAIL on 11), which Codex's mutants M10 (the closed check before the open declarations) and M15 (a closed declaration marked before the filter of lines that never compile) left green. The fourth version passes the last two tests, which hold what it does: they turn red with a for variable left unknown in its own header, and with M10 and M15. After the fifth round (G1 to G4), the label test of the new rule also takes a case of an enum's value and a second label on the line, case 0: case 1:, which Codex's mutants M05 (a number alone after case) and M06 (one label alone) left green, and two tests more: for ES-PROTECTED-METHOD-CROSS-CLASS a receiver declared on the line of its case label, of a class whose method is public (no finding, and with the local named otherwise the member's WARN), which Codex's M12 (that rule without the label check) left green; and a line of 20,000 words case x before ; not_a_label: Object hit; read in under 2 s, with the member's FAIL, which the fifth version took 14.9 s to read in Linux (G4). Of these, the fifth version fails only the last. After the sixth round (H2, H4), two tests more: a declaration after a label that follows a statement, a switch head or a closed block on its line, case 0: break; case 1: Object hit;, switch (n) { case 0: Object hit; and case 0: if (n) {} case 1: Object hit;, an Object local beside an IEntity member (no finding) and an IEntity local beside an Object member (FAIL), which Codex's mutants M14, M15 and M16 (the ;, the { or the } no longer a boundary of the label) left green; and a line of 20,000 : Object< and one of 20,000 : Object[ before ; Object hit;, each read in under 2 s with no finding, which the sixth version took 27.7 s and 10.8 s to read in Linux (H2). In Linux: python3 -m unittest discover tests, 314 passed (282 before). Of 66 mutants of the rule, its registration, the multiline change and _argument_type, 63 turn a test red. Read in the code, the 3 left change no finding, only the work done: one drops the filter of the methods some tree declares proto, one keeps the text of an argument that holds a bracket, which the plain-name check then skips as it skips the empty text, and one drops the early return when no file of the addon holds a call. Of 6 mutants of the class-body lookup added after the pass over the mods of the third round, 5 turn a test red, and the sixth, which reads the declarations on lines that never compile in the class body, turns the E3 test red. Of 5 mutants of the E1 change, 3 turn a test red; of the two left, one marks every declaration of the name, which changes no answer (a declaration open at the call answers first), and one drops the around gate, which changes only ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS, whose tests hold no such name. Of 8 mutants of the fourth round's changes, 7 turn a test red at the fifth version: no : before a type, the case or the default half of the label check, the : for the new rule alone, M10, M15, and a for variable left unknown in its own header; the one left drops the label check, taking any : before a type as Codex's M14 did, and no test of that version tells the two apart. Of 12 mutants of the sixth version, the same 8, Codex's M05, M06 and M12, and the label searched for as the fifth version did, all 12 turn a test red: the : taken anywhere turns the G4 test red, whose not_a_label: is no label. Of 18 mutants of this version, those 12, Codex's M14, M15, M16 and M18 (no space before the label), and the template part or the array part of the declaration pattern let past a : again, all 18 turn a test red. Planned by Claude (Anthropic) and applied by Grok CLI, except the changes after Codex's fifth round (G1 to G4), which Claude wrote and applied.",
+          "license": "MIT",
+          "source_hash": "4a7854238b7f6ca9c6ddbace3f39f0892a20c979aca40bc9e1562d7fdb356f88",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox e074 (fb-20261006-030019-e074), after #125. Three tests pin how ES-PROTO-ARGUMENT-DOWNCAST reads a declaration on the line of a label, as Codex (Sol) asked in its seventh round of #125: a label indented with tabs is read (J1), a name that begins with case is no label, so the declaration after it is not read and the member of that name is (J2), and a template with a comma after a label is read (J3). Each is red under the mutant Codex gave for it and the other two stay green: no tab before the label (M21), no word boundary after case (M22), and the template part of the declaration pattern cut at a comma (M23). 317 tests pass (314 before). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2e7b3ce8dcbd2b7149cc947119511ce0c7af27820c1103a1a2484612de2a9a12",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-e074-label-tests@2026-10-24",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "defab0c117232d61d32e31bdd0a6b30ab70ae4c54e6a1a2461c4e96fd69e201a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "62366a577255e413e798870b6349383013c98b2b4515729fafcc36314313f966",
+      "output_hash": "defab0c117232d61d32e31bdd0a6b30ab70ae4c54e6a1a2461c4e96fd69e201a",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27202,10 +27924,20 @@
           "source_path": "README.md",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). One paragraph: its fail-closed PBO reader is also the reader of tools/dayz-pbo-diff, through digest_pbo. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "42ca4b7e5e2661ff421825b615c33e97ce89663c23659a56af4b7410f1641f61",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-vehicle-proxy-contract/README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "70328bb98d973fafdfd6f338b3a2b90412a086da2aac77fdd72b8c47f24e35e4",
+      "output_hash": "42ca4b7e5e2661ff421825b615c33e97ce89663c23659a56af4b7410f1641f61",
       "output_path": "tools/dayz-vehicle-proxy-contract/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27444,10 +28176,20 @@
           "source_path": "scripts/vehicle_proxy/pbo.py",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). digest_pbo and PboDigest added for tools/dayz-pbo-diff: the header properties in file order and every entry's payload SHA-256, from one snapshot checked before and after hashing; after the last entry the file may end or hold exactly 21 bytes starting with 0x00, and any other leftover is refused; a compressed entry fails closed as in read_entry. _parse_pbo_handle takes an optional list for the properties it used to read and drop; parse_pbo, read_entry and the closure checks are unchanged, and the reader's tests (tests/test_vehicle_proxy_pbo.py) pass unchanged; 13 new tests in tests/test_vehicle_proxy_pbo_digest.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e5d919bda3a4fabae86c170a7ce7aefe39ac69b519101eb831967a391941ac89",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/pbo.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c8eee3a3b1e516f184c56e4adbaab60ef6cb861e623e2bf124dd93f0587d7b11",
+      "output_hash": "e5d919bda3a4fabae86c170a7ce7aefe39ac69b519101eb831967a391941ac89",
       "output_path": "tools/dayz-vehicle-proxy-contract/scripts/vehicle_proxy/pbo.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32961,10 +33703,30 @@
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "roboclient-run3@2026-09-26",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: new section with CLAIM-MCPV-VEHICLE-GAPS-130, five bridge behaviours met while testing the LFQuad port on 1.30.164200 (automatic gearbox, fixture fuel read, classname, no health tool, seated camera_set), each with its pipeline ticket. Authored by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b47b39167fd798240e288e640aeab6252e5cd01d08692e88ff173de8bfbfe61b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): new section with CLAIM-MCPV-VEHICLE-GAPS-A2Q-130, six bridge behaviours of a car test on the stable box. Authored by Claude (Anthropic) from the Arma2Quad 1.30 port (willy92wins/Arma2Quad PR #1).",
+          "license": "MIT",
+          "source_hash": "81779583815cc0051dba1784a19832ad6d209ad8c156ff69db6a1682c2ded26a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "0ca8fe983e40219e0779188620fa70798416d1b9a7afe8ce3035e3075f847352",
+      "output_hash": "81779583815cc0051dba1784a19832ad6d209ad8c156ff69db6a1682c2ded26a",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
@@ -33077,10 +33839,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-469, SP-470 and SP-483. SP-469: a Family Selector row routes the first-person view (a ViewPilot LOD, none on the vanilla bikes, and closing the gaps the rider sees through the fairing) to dayz-vehicles references/proxies-and-get-in.md. SP-470: the preflight's 0.4 mm from the clip's FK is scoped to those runs, with a pointer to the later first-person probe runs where the stopped head moved by several cm (dayz-test-ingame references/session-findings.md). SP-483: step 5 says a glass slot that should hide at 0.0, as in Reflector_1_1, is a config shape the Pack has not seen work in game (dayz-vehicles references/vehicle-config-and-modelcfg.md, end of 6b). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e8fef9818e56fbdb9d5421b2231850fc7d9b9e4d20c72112f108bf50de549f8e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "38f2bf4264a883013f76f7edf71f3562c25d971751a66bc2cdaf328c0a7a2e72",
+      "output_hash": "e8fef9818e56fbdb9d5421b2231850fc7d9b9e4d20c72112f108bf50de549f8e",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -33163,10 +33935,20 @@
           "source_path": "skills/dayz-motorbikes/references/forward-contract.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-469. Section C gains item 4, an optional ViewPilot LOD (res 1100): none on the vanilla motorbikes (parsed from their ODOLs, not checked in game), added only for geometry meant for the seat alone, such as closures over the gaps the rider sees through the fairing (dayz-vehicles references/proxies-and-get-in.md). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "433c36fd11db275a595c4012040c313c87bbd6318efa4b1935a8c267568e323f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/references/forward-contract.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2a87c8d4d184aefb014a959b854984e8c13997b334c25523530aa974484391b9",
+      "output_hash": "433c36fd11db275a595c4012040c313c87bbd6318efa4b1935a8c267568e323f",
       "output_path": "skills/dayz-motorbikes/references/forward-contract.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -33195,10 +33977,20 @@
           "source_path": "skills/dayz-motorbikes/references/rider-animation.md",
           "source_revision": "kp-update-review@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-470. The LFRider own-clips bullet dates its stopped medians to the 2026-09-28 runs and points to the later first-person probe runs where, with the same clips and the pelvis fixed, the stopped head moved by several cm between runs and looks (dayz-test-ingame references/session-findings.md). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0cf9b2f6223ff702ad764f0edcf7c7d5b6ef164dbe136f64d49380c7dbae5bbd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/references/rider-animation.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5171e751ba4058b8ef363d187d9b68aa126419281c7616db10946241583fe53b",
+      "output_hash": "0cf9b2f6223ff702ad764f0edcf7c7d5b6ef164dbe136f64d49380c7dbae5bbd",
       "output_path": "skills/dayz-motorbikes/references/rider-animation.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -33283,10 +34075,20 @@
           "source_path": "dayz-motorbikes/references/vehicle-1.30-refactor.md",
           "source_revision": "filesystem@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: section 2 table gains a ToggleHeadlights row (deleted in 1.30) and its two battery rows are corrected (returning true from NeedElectricitySourceDevice is already the default; GetElectricitySourceDevice is what a battery car needs), CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS; Step 1 names ToggleHeadlights. Authored by Claude (Anthropic), cites checked against the 1.30.164200 and 1.29 script trees.",
+          "license": "MIT",
+          "source_hash": "5036039c6e9fcaee4bff91b60e5a848e8f78bf1544353e4606cdd1949cf6ea50",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/references/vehicle-1.30-refactor.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9eb3b1d6b75f9f5befd96282c1a6d6a283eaf01f79f706859b91993a2a448153",
+      "output_hash": "5036039c6e9fcaee4bff91b60e5a848e8f78bf1544353e4606cdd1949cf6ea50",
       "output_path": "skills/dayz-motorbikes/references/vehicle-1.30-refactor.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -33445,10 +34247,20 @@
           "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
           "source_revision": "kp-update-wp-test@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: the H2R import (2026-10), SP-470. Trap 6 of 'Launching the 1.30 Exp DayZDiag directly' adds that a client that never loads its textures fools a visual check the same way (session-findings.md). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9312258c6cc48d580dee597d711d62896a84bf1cc83a07039d9bb20b5d9e90a3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
+          "source_revision": "kp-update-h2r-2410@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d207d21085099d85fae91e7dd86aebc9fe361b3ed700534dc0c4339275833b98",
+      "output_hash": "9312258c6cc48d580dee597d711d62896a84bf1cc83a07039d9bb20b5d9e90a3",
       "output_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "historical"
@@ -33509,10 +34321,40 @@
           "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26: what porting the LFQuad (a 1.29 quad) to DayZ 1.30.164200 stable found. Table row and CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130: ToggleHeadlights() deleted without an [Obsolete] stub. Section 2, CLAIM-VEH-NO-BATTERY-DEFAULT-130: without the three electricity-source overrides a battery car reports NO_BATTERY. Section 5, CLAIM-VEH-GETIN-REACH-129: correction, 1.29 already called CanReachSeatFromDoors from script. Migration checklist item 0, CLAIM-VEH-OVERRIDE-RESOLVE-130: resolve every override against the target build; the pack's validator passed a mod that overrides the deleted method. Authored by Claude (Anthropic), every cite checked against the 1.30.164200 and 1.29 script trees.",
+          "license": "MIT",
+          "source_hash": "31dcb8cc8d7a2101195ca94d81d271e9b46e5399c4de8148b704b6b91092af9e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (second pass): the in-game results of the LFQuad 1.30 port, shipped as LFQuad v1.0.1. CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130 now measured in game; new CLAIM-VEH-SCRIPT-PATH-SLASH-130 (a backslash script module path loaded nothing on 1.30.164200), CLAIM-VEH-LIGHTS-EXIT-130 (native light state around the driver seat), section 11 with CLAIM-VEH-RUINED-WHEEL-CLASS-130 (a _Ruined twin for every wheel class, and the 1.30 tyre fields); two table rows and checklist items 11-13. Authored by Claude (Anthropic) from logs of the T130 and stable boxes.",
+          "license": "MIT",
+          "source_hash": "802df083b83e5bbd1153e792f8da26ae510a08aee087ba2cdd69184bdb9187bd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-26 (Arma2Quad): section 1 gains CLAIM-VEH-FRONT-FLARE-STICKY-130 and CLAIM-VEH-LIGHT-PROFILE-UNREAD-130 and a second measurement in CLAIM-VEH-LIGHTS-EXIT-130; section 11 gains CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130; migration checklist items 14 and 15. Authored by Claude (Anthropic) from the Arma2Quad 1.30 port (willy92wins/Arma2Quad PR #1).",
+          "license": "MIT",
+          "source_hash": "6d5bff6cbe4409421c2e588a235d939b7828983b9308e702fea0a0bdce51e8aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-arma2quad@2026-10-26",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a22827bdfdf3247947f0998d23e398866bb333edb06f40d1f4382a51d53745d2",
+      "output_hash": "6d5bff6cbe4409421c2e588a235d939b7828983b9308e702fea0a0bdce51e8aa",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"
@@ -33583,10 +34425,20 @@
           "source_path": "enforce-script-reference/references/dayz-1-30-enforce-script.md",
           "source_revision": "kp-update-docs-2783-5c98-ca47@2026-10-13",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "224a978a33db08691aac6e96c688d6cd8ba62637e9012bcf8de1db2438031ce7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "historical"
         }
       ],
       "license": "MIT",
-      "output_hash": "414785ccdacbca41f8bbadacdc9d1e4c6a087baf2ab27a1d4fd96b5cbaccad21",
+      "output_hash": "224a978a33db08691aac6e96c688d6cd8ba62637e9012bcf8de1db2438031ce7",
       "output_path": "skills/enforce-script-reference/references/dayz-1-30-enforce-script.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "historical"
@@ -34101,10 +34953,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
           "source_revision": "kp-update-val-tickets-403a-89d1@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7f313f9e3257fc94131c298064a8321d175f2c23ecafa3670dc3f14793f78701",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e572ae8d185bf3d44b6c4c90ba1fc6eccb14c2f6148ff2b48e1b3cdbe2b924ad",
+      "output_hash": "7f313f9e3257fc94131c298064a8321d175f2c23ecafa3670dc3f14793f78701",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -34216,6 +35078,94 @@
       "license": "MIT",
       "output_hash": "f647356651094d1c1db0fa57b02692936591fa697c00bfe0da84dee8de1ab041",
       "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok/scripts/4_World/fx_vehicles.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad_130/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c7aea199a83ec423edb6d28a7faef4c036959d13d555dea5325d68002daa255c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad_130/config.cpp",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c7aea199a83ec423edb6d28a7faef4c036959d13d555dea5325d68002daa255c",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad_130/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad_130/scripts/4_World/fx_moddedinventory.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f6f9b81e8474d3dc2165903806ddffe723cd252145a2ff03817cdad55c2d5316",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad_130/scripts/4_World/fx_moddedinventory.c",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f6f9b81e8474d3dc2165903806ddffe723cd252145a2ff03817cdad55c2d5316",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/bad_130/scripts/4_World/fx_moddedinventory.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok_130/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "131e4a249a8b8ab9ec9b986f51b070dbc821ad887ab13a7bb07b9b719c771729",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok_130/config.cpp",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "131e4a249a8b8ab9ec9b986f51b070dbc821ad887ab13a7bb07b9b719c771729",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok_130/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok_130/scripts/4_World/fx_ammo.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: what a server-side inventory logger (StorageLogger) measured on DayZDiag 1.30.164200 in managed dayz-mcp runs 1af014c7, 3d509bd6 and 33d2ed33 (one server and one client on one machine), read line by line in the server and client script logs, with the vanilla citations re-read in the 1.30 scripts. ES-MODDED-ENGINE-CLASS lists DayZPlayerInventory and Magazine after two refused compiles; enforce-script-reference 1.30 reference §3.2 (hooks that work, juncture attribution, stacks are not moves); dayz-basebuilding (house slots on 1.30.164200); dayz-mcp-verify (what the verbs reach, key-driven test addon, no .ADM). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "45fdf3ee16d61e7380081c6e5d2c52e011505340ccde182c54de17b319036252",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok_130/scripts/4_World/fx_ammo.c",
+          "source_revision": "kp-update-inventory-130@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "45fdf3ee16d61e7380081c6e5d2c52e011505340ccde182c54de17b319036252",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modded_engine_class/ok_130/scripts/4_World/fx_ammo.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
@@ -34607,10 +35557,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
           "source_revision": "kp-update-mods-pass-113@2026-10-17",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). _argument_type takes an optional inherited(open, name, blocks), asked only for a member that the enclosing class body does not declare (in the second round of the Codex (Sol) review of #125 it was also asked when the body declared one type, and replaced it: N4), and an optional around, the line_branches() of the file, with which a declaration under an #if, #ifdef or #ifndef block that is not also around the cast or call leaves the type unknown (N1). ES-PROTO-ARGUMENT-DOWNCAST passes both, to look the member up in the other bodies of the class and up its chain (D3). ES-CAST-UNRELATED-TYPES and ES-PROTECTED-METHOD-CROSS-CLASS pass neither, so their findings do not change, and their tests pass unchanged. After the pass over the mods of the third round of that review (the rule 21 % slower than the second version, 1366 s against 1129 s over 1040 folders), the declarations at the top level of a class body are read once per body and name, and the blocks around each cast or call are decided at each lookup: keyed with the blocks too, the lookups of one copy of LFPowerGrid read class bodies 488 times, 86.1 million characters, where the second version read them 277 times, 41.1 million (counted on the owner's PC). In Linux 400 calls, each under a block of its own, in a class of 20,000 members take 0.3 s, 12.4 s before. On the owner's PC the rule then took 970 s of the 14,591 s spent in rules over the same folders, with the same findings. After the third round (E1), with around given, a name that the method declares before the cast or call only where it is not open there, a for or foreach variable or a local of a block closed before it, is unknown, where the type of a member of that name was taken: foreach (Object hit : list) beside a member IEntity hit made the new rule FAIL. The other two rules, which pass no around, still take the member there. After the fourth round (F1), a declaration on the line of its case or default label, case 0: Object hit;, is read: the lookup passed over it and took the member of that name, so an Object local beside a member IEntity hit made the new rule FAIL, and an IEntity local beside an Object member passed. The pattern takes a : before the type, and a match there counts only when the text before the : on its line ends in a case or default label: with the label in the pattern, a scan of the 535 KB of the dayz-mcp addon took 0.042 to 0.046 s against 0.032 s before (in Linux, best of nine), and with the check after the match it takes 0.030 to 0.033 s. That is the lookup of all three rules, so the other two read such a local too, where they took the member or left the name unknown. Its docstring says that a for or foreach variable is not open after the loop's header (F2). After the fifth round (G4), a : before a type counts when the text between it and the last ;, {, }, : or line start before it is a case or default label, read once: the fifth version searched the line for a label from each word, so 20,000 words case x before ; not_a_label: took 14.9 s (0.041, 0.144 and 0.576 s for 1000, 2000 and 4000 words), and the sixth version took 0.002 s (in Linux). A second label on the line, case 0: case 1:, counts as before, and not_a_label default:, which Codex found taken as a label, is none now. The scan of the dayz-mcp addon took 0.029 to 0.032 s, as at the fifth version. After the sixth round (H2), the template part and the array part of the pattern stop at a :, which neither holds: from each : before a type they ran on to the end of the line, so 1000, 2000 and 4000 : Object< on a line took 0.071, 0.264 and 1.053 s at the sixth version and take 0.001, 0.002 and 0.003 s, and as many : Object[ took 0.026, 0.100 and 0.398 s and take 0.001, 0.002 and 0.004 s (in Linux). The scan of the dayz-mcp addon takes 0.030 to 0.033 s. Planned by Claude (Anthropic) and applied by Grok CLI, except the changes after Codex's fifth round (G1 to G4), which Claude wrote and applied.",
+          "license": "MIT",
+          "source_hash": "5ec3a06d9bee0e1d4093afb3c3ae1cb0e33471e6f54b4094cc951340aed8160b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "65580ea65f5aec6931683bad520776495f01c92116f9d924e2825539ca7dbe02",
+      "output_hash": "5ec3a06d9bee0e1d4093afb3c3ae1cb0e33471e6f54b4094cc951340aed8160b",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -35087,10 +36047,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
           "source_revision": "kp-update-val-tickets-28fa-e074@2026-10-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-10-19: pipeline inbox e074 (fb-20261006-030019-e074). ES-MULTILINE-CONDITION-OPERATOR is FAIL, no longer WARN, as its ticket asked: the vanilla control found nothing for it on 1.29.0.163451 and 1.30.164014 Exp (2026-10-13) or on 1.29.0.163451 and 1.30.164078 stable in the review of #113, and the baseline measured on 1.30.164078 stable (#117) holds no finding of it. The claim comment says so, the message reads [FAIL] and the findings are errors. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "a746ee37f74d7451d2b9f7470a74b5d35421ba454fec247b1eef766d3890ab55",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8b7e7e3fb97884b292b13189d2bc703a9ead754f51e8c3853b8359d5d3817dc8",
+      "output_hash": "a746ee37f74d7451d2b9f7470a74b5d35421ba454fec247b1eef766d3890ab55",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_multiline_condition_operator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -35180,6 +36150,160 @@
       "license": "MIT",
       "output_hash": "352da68c6fe7e8019a75d8e609304f86668c7b91999a2ca7b6205f50c4d07929",
       "output_path": "tools/dayz-script-validator/tests/fixtures/multiline_condition_operator/ok/scripts/4_World/fx_window.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074, part 2). Rule ES-PROTO-ARGUMENT-DOWNCAST for dayz-script-validator from fb-20261006-030019-e074 (DayZ 1.30.164014 server: an IEntity at the Object argument 6 of DayZPhysics.RaycastRV, `Cannot convert 'IEntity' to 'Object' for argument '6' to method 'RaycastRV'`, and the World module did not compile). A plain name passed to a parameter of a proto method whose class derives from the name's declared class: FAIL for an IEntity where an Object is taken, the one pair measured, WARN for any other. Judged only when everything is known: the call in a method that shared/method_recognition.py reads, the receiver a class or a plain name with one plain declared type (a member of another body of the class or of the nearest class up its chain that declares it included, from a body of the call's file or of a file of the same or an earlier script module, a declaration under #if, #ifdef or #ifndef counting only in the call's file under blocks all around the call), the first class up its chain that declares the method declaring it proto with one parameter list, where a declaration whose ( is on a line that never compiles does not count and one with a line up to its ( under #if, #ifdef or #ifndef leaves the method unknown, and the parameter neither out nor inout, with a plain class type. Calls whose arguments hold <, > or a directive, or more arguments than parameters, are skipped, Class is not judged as the argument's class, and lines that never compile are not judged; CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST. After the Codex (Sol) review of #125 (D1 to D11) the vanilla tree is read once per tree, the arguments of a call in one pass (2048 nested calls in 0.02 s in Linux, 1.57 s before), and an addon with no call reads no tree. After its second round (N1 to N5) the member lookup keeps the blocks and the script module of each declaration and reads each class and name once, and the lines before a method's head are dropped by index; N6, the copy of the vanilla index for each run (about 3 ms on 1.30 by Codex's count), stays. The second version and this one found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and, over 1040 mod folders, one call, WARN. On the owner's PC the third version took 34.2 s of the 176.7 s spent in rules on 1.30 (43.1 s for the second) and 29.6 s of 151.7 s on 1.29 (38.0 s), and 1366 s of 15,911 s over the mods (1129 s of 15,786 s); with the class body read once per name, the fix of its third round, it took 32.5 s of 168.7 s, 27.8 s of 146.8 s and 970 s of 14,591 s. With either tree the probes of N1 to N4 give what the unit cases expect; the second version gets 7 of those 11 wrong. After its third round (E1 to E3) a name that the method declares before the call only as a for or foreach variable or in a block closed before it is unknown, also where a member has that name. After its fourth round (F1 to F3) the claim says that this holds where that declaration is no longer open at the call (a for or foreach variable, for a call in the loop's body or after it, or a local of a block closed before the call), and that a call in that for's own header, as in its condition, takes the variable's type (F2); a declaration on the line of its case or default label is read, in the lookup the rule shares with ES-CAST-UNRELATED-TYPES (F1). Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "7240b61e8365ff9a1f0fb401d9c31be73a064a88cf5d1922b68e1bb93c0e7272",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7240b61e8365ff9a1f0fb401d9c31be73a064a88cf5d1922b68e1bb93c0e7272",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. CfgPatches of the bad addon; written for the pack. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "b94b5cf0ded8309fda78d117b10624acbf567902d68781843cd40be5ef5ac7c6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b94b5cf0ded8309fda78d117b10624acbf567902d68781843cd40be5ef5ac7c6",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Fail fixture: the ticket's call with fixture names, an IEntity at the Object argument 6 of a stand-in proto (line 19), and the same down-cast to a proto that EntityAI has from Object (line 21); written for the pack, no mod or vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "623dbec4e6972b6e020ad7ad79918d9ddcf799c465cfb617efab7400a5f140ef",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "623dbec4e6972b6e020ad7ad79918d9ddcf799c465cfb617efab7400a5f140ef",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_rider.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. CfgPatches of the ok addon; written for the pack. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "87fc2c116c42a302ac62b41599a47de1232363eb1d0ed1481c87701d52fd3160",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "87fc2c116c42a302ac62b41599a47de1232363eb1d0ed1481c87701d52fd3160",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Pass fixture: an out argument, the entity cast first, an EntityAI and null where an Object is taken, and the bad call in a comment, a string and #if 0; written for the pack, no mod or vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "6318b4b1fcdd8681ebe59742d3a0eb0a7bc9fc285e2524e7c09b495cf17faa18",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6318b4b1fcdd8681ebe59742d3a0eb0a7bc9fc285e2524e7c09b495cf17faa18",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/ok/scripts/4_World/fx_rider.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Stand-in for the vanilla tree, shape only: Class, Managed, and IEntity deriving from Managed; no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "ee9a883204404c002e065d6ba76df9efbdcac175acf25e5c3817f94b48092f6e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ee9a883204404c002e065d6ba76df9efbdcac175acf25e5c3817f94b48092f6e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/1_core/fx_core.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-10-19 (pipeline inbox e074), fixture of TestProtoArgumentDowncast. Stand-in for the vanilla tree, shape only: Object deriving from IEntity, with a proto that takes an Object and a script method, EntityAI deriving from Object, and FX_Physics with the protos the tests need (13 parameters with an Object at 6, as the Codex (Sol) review of #125 read RaycastRV in 1.30 and 1.29, where the ticket's call passes 11; out, inout, an array, a default string and an EntityAI); no vanilla code copied. Planned by Claude (Anthropic) and applied by Grok CLI.",
+          "license": "MIT",
+          "source_hash": "b2a80d70c3dd3540a9b110bc92d0db477e7857c9a9e45521d5e4bb87677e1b09",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
+          "source_revision": "kp-update-e074@2026-10-19",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b2a80d70c3dd3540a9b110bc92d0db477e7857c9a9e45521d5e4bb87677e1b09",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
@@ -35542,6 +36666,332 @@
       "license": "MIT",
       "output_hash": "a42a080cc74f34671852d6464a4baff1b6ab8760ad63fe9b22d40ceeef11fc8e",
       "output_path": "tools/dayz-script-validator/tests/fixtures/syncvar_construction/external_entityai/fx_external_kit_base.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-pbo-diff/pbo_diff.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The project's entry diff of two uncompressed PBOs (1 798 bytes), read as data: never run or imported here. Kept: the SHA-256 of every entry's payload and its report keys (entries, props_equal, only_old, only_new, differing, differing_count). Changed for the Pack: it reads through digest_pbo of tools/dayz-vehicle-proxy-contract instead of the project's read_pbo (tools/playtest/attach_navmesh.py, excluded as superseded); the entry table is no longer told from the header properties by size, which misread a PBO of 100 entries or fewer; its data/layers/ filter became the repeatable --ignore-prefix; asserts became refusals (exit 1); the header properties are compared as an ordered list of pairs, where the source compared a dictionary (order ignored, a repeated name kept once). Its use as the ticket reports it (a rebuilt terrain package changed 51 entries, the WRP, texHeaders.bin and 49 textures, the water the same) was not re-measured.",
+          "license": "User-authored input",
+          "source_hash": "8198c3881ced58b772948783ff96c7648f57104e02f7b3637d498d5841986969",
+          "source_id": "dayz-baltic-12km",
+          "source_path": "tools/playtest/diff_pbo_entries.py",
+          "source_revision": "84e2bb8 (branch v29-base)",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). New tool dayz-pbo-diff, adapted from the project's diff_pbo_entries.py (see the merge input): compares the entries of two uncompressed PBOs by the SHA-256 of each payload, and their header properties, through digest_pbo of tools/dayz-vehicle-proxy-contract; exit 0 with the report written, 1 refused, 2 usage. 24 tests in tools/dayz-pbo-diff/tests on synthetic PBOs written by the tests pass on Python 3.11, 3.13 and 3.14. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "faadca14d6bd6c88894c319d7a63854d477647e7d6d6005f801c4280d0860554",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-pbo-diff/pbo_diff.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "faadca14d6bd6c88894c319d7a63854d477647e7d6d6005f801c4280d0860554",
+      "output_path": "tools/dayz-pbo-diff/pbo_diff.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-pbo-diff/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). README of dayz-pbo-diff: how to run it, its exit codes and report keys, what it compares and what it does not, its changes from the source, its tests. The use it quotes (51 entries changed: the WRP, texHeaders.bin and 49 textures, the water the same) is the ticket's, not re-measured. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4014b7c48c26a09597d4cde84827841f313bde7a67eaaa40edd5137d737326c5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-pbo-diff/README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4014b7c48c26a09597d4cde84827841f313bde7a67eaaa40edd5137d737326c5",
+      "output_path": "tools/dayz-pbo-diff/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-pbo-diff/tests/test_pbo_diff.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 24 tests of dayz-pbo-diff (6 subtests) on synthetic PBOs written by the tests: identical PBOs, one entry changed, only_old and only_new, separators, a case-only rename, the properties and their order, the source's defect (one entry, no entry, more properties than entries), 150 entries, --ignore-prefix as a view and repeated, the stdout summary (eleven differing names listed, twelve summarised as a count), a change in an entry header only; refusals of a compressed entry, four unsafe names, a duplicate, truncated data, three payload bytes eaten by the 21-byte trailer, a missing input and an existing --out (kept unchanged); usage exit 2; the script run from another directory. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9ad85fed6fb5cbf612ab4110886a1c0526ce8df629fd153fce24f39cc40e38bb",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-pbo-diff/tests/test_pbo_diff.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9ad85fed6fb5cbf612ab4110886a1c0526ce8df629fd153fce24f39cc40e38bb",
+      "output_path": "tools/dayz-pbo-diff/tests/test_pbo_diff.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/navmesh_tiles.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The project's empirical TESM 6 / DNAV 11 tile reader (3 420 bytes), read as data: never run or imported here. Every check it made is kept: magic and version of the file and of every tile, the tile count, origin (0, 0, 0), square tiles, an offset table that starts at 0 and strictly increases, tile coordinates inside the grid and never repeated, horizontal bounds within 1 mm of the cell; the tile hash covers the tile header and data. Changed for the Pack: the tile width and the grid come from the file header instead of an argument limited to 12.5, 25 or 50 m over a 12 288 m world, which is now reported as the verified envelope rather than enforced; an offset table or a tile past the end of the file, and non-finite bounds, are refused with a message; its __main__ with project paths is not carried.",
+          "license": "User-authored input",
+          "source_hash": "6e8c45d6b3f55c31f63189cede39e7955008ed8a1ec05a91aa1639f66bbcade9",
+          "source_id": "dayz-baltic-12km",
+          "source_path": "tools/navigation/inspect_navmesh_tiles.py",
+          "source_revision": "84e2bb8 (branch v29-base)",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). The fail-closed tile reader of dayz-navmesh-compare, adapted from the project's inspect_navmesh_tiles.py (see the merge input); the layout comes from the file header and NavmeshLayout.inside_verified_envelope says whether it is the one family measured. 32 tests in tests/test_navmesh_tiles.py on synthetic .nm files. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d4ff6bf88cef8ba5f05253c2a3824fc81eec2b415cd954547b05e84030bb318c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/navmesh_tiles.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d4ff6bf88cef8ba5f05253c2a3824fc81eec2b415cd954547b05e84030bb318c",
+      "output_path": "tools/dayz-navmesh-compare/navmesh_tiles.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/compare_navmesh.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The project's structural tile comparator (4 483 bytes), read as data: never run or imported here. Kept: structure as polygon count, vertex count and vertical bounds; the distance of each structural tile to the nearest changed terrain vertex; routes as id;x y z;x y z widened by 25 m; its report keys and limits. Changed for the Pack: terrain inputs are optional and numpy is imported only for them; the 6 m, 2048-row terrain grid became --cell-m and the array's shape; --routes has no default project path; the statuses are defined (PASS_NO_STRUCTURE_DELTA and PASS_LOCAL_STRUCTURE_DELTA exit 0, REVIEW with review_reasons exit 1, usage 2, refused 3), and where the source reviewed every mesh with no structural change, that passes here unless the terrain changed; a structural tile with no changed vertex has a null distance (the source wrote Infinity, which is not JSON); a route covers the exact widened rectangle, clipped to the grid, instead of points one tile apart; file hashes come from the bytes read (no hashlib.file_digest, Python 3.11); an existing --out is refused rather than asserted.",
+          "license": "User-authored input",
+          "source_hash": "4de2a6121cde01a0cf2352fe62c5367ae02bc20cfb2803e3e2f3224b9a9d290b",
+          "source_id": "dayz-baltic-12km",
+          "source_path": "tools/navigation/compare_navmesh_tiles_v30.py",
+          "source_revision": "84e2bb8 (branch v29-base)",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). The comparator of dayz-navmesh-compare, adapted from the project's compare_navmesh_tiles_v30.py (see the merge input). 28 tests in tests/test_compare_navmesh.py on synthetic meshes, route files and NPZ terrains, 9 of them needing numpy (they skip without it); all 28 pass on Python 3.14 with numpy, and on Python 3.11 and 3.13 without it, the 9 skipped. On the first revision of the reader, a synthetic pair of 983 x 983 meshes (119 747 207 bytes each) compared in 15.0 s with a peak of 767 MB. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a8bcd1cf3fc159c73056fd40882491346b04020f14bf181d9bd2aa3a51167bb6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/compare_navmesh.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a8bcd1cf3fc159c73056fd40882491346b04020f14bf181d9bd2aa3a51167bb6",
+      "output_path": "tools/dayz-navmesh-compare/compare_navmesh.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). README of dayz-navmesh-compare, with CLAIM-NAVMESH-GENERATOR-NOT-BYTE-DETERMINISTIC and CLAIM-NAVMESH-TESM6-DNAV11-ENVELOPE (offline_tested, as the ticket reports them, not re-measured): statuses and exits, review_reasons, inputs, report, what the reader checks, limits, the changes from the source, tests. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d34a290ad60d82747cb5afc4e58c4ca35d7fbd3d155b17466770dc86535e5f03",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d34a290ad60d82747cb5afc4e58c4ca35d7fbd3d155b17466770dc86535e5f03",
+      "output_path": "tools/dayz-navmesh-compare/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/tests/nm_fixture.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). Writer of synthetic .nm files for the tests: the 48-byte file header, the offset table, a 16-byte prefix and a dtMeshHeader-shaped header per tile, with any field overridable to build the refusals. No game data. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "18d0fa50d09fdf0fbdda2ef18670cd7203772e6233ee89881072e6ca0fe3a123",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/tests/nm_fixture.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "18d0fa50d09fdf0fbdda2ef18670cd7203772e6233ee89881072e6ca0fe3a123",
+      "output_path": "tools/dayz-navmesh-compare/tests/nm_fixture.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/tests/test_navmesh_tiles.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 32 tests of the tile reader: layout and records, tile order in the file, the report fields, the verified envelope and outside it, and each refusal (file magic and version, a file shorter than its header, the tile count, the origin, square finite positive tiles, a truncated offset table, the first offset, unsorted and repeated offsets, a tile past the end of the file or with no data after its header, the size each tile's prefix declares against the bytes to the next tile (a middle tile that does not match, extra bytes after the last tile, a last tile three payload bytes short), tile magic and version, a coordinate outside the grid, a duplicate tile, bounds off the cell and within the 1 mm tolerance, non-finite bounds), an unreadable file, errors naming the file, and the magics spelling the bytes the files start with. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "58bf4540e989aa00ff1beb6592f53becbda460a0705e5e03c817966d3bcaa3cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/tests/test_navmesh_tiles.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "58bf4540e989aa00ff1beb6592f53becbda460a0705e5e03c817966d3bcaa3cc",
+      "output_path": "tools/dayz-navmesh-compare/tests/test_navmesh_tiles.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-navmesh-compare/tests/test_compare_navmesh.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 28 tests of the comparator: identical meshes, a serialized-only change, a structural change without terrain, the report fields, layouts that differ in grid or tile width, a malformed or missing mesh, an existing --out; routes over a changed tile, with a byte order mark, the widened rectangle, the comparison widening each route by the module's 25 m margin and a route far off the map clipped to the grid, malformed route files and the line named; usage exits; numpy needed only for terrain; and, with numpy, a local change, a change beyond --local-m, row 0 as the largest z, a terrain change without a structural one, the same terrain and structure, a structural change with no terrain change, a route on a local change, a cell so large that distances overflow, and bad terrain inputs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d7047a46d0e386dd528f693b984d7fe66378b5748aff17800e8c5a8defaa78aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-navmesh-compare/tests/test_compare_navmesh.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d7047a46d0e386dd528f693b984d7fe66378b5748aff17800e8c5a8defaa78aa",
+      "output_path": "tools/dayz-navmesh-compare/tests/test_compare_navmesh.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-terrain-builder-runner/tbrunner.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "The project's Terrain Builder runner (17 864 bytes), read as data: never run or imported here. Kept: the ten subcommands and every Win32 call, message and constant. Changed for the Pack, and only this: user32 and kernel32 are bound when a command runs, so the module imports on any OS and every command refuses off Windows; the executable comes from --tb-exe or TBRUNNER_TB_EXE instead of a fixed install path; asserts became explicit errors (exit 1), and so did the crashes around them (no state, log or frame recorded, a file that cannot be read, a bad wait_log pattern); the subcommands are read with argparse; a menu item GetMenuItemInfoW cannot read, which stopped the source with a KeyError, is printed by menu with its error (exit 0) and left out of the leaves probe posts; the docstring points to the README instead of a private skill.",
+          "license": "User-authored input",
+          "source_hash": "b04ddecaf556334e4777899a7a48da3cb2deb614140fc26ab1c233d738a90b7f",
+          "source_id": "dayz-baltic-12km",
+          "source_path": "tools/terrain_builder/tbrunner.py",
+          "source_revision": "84e2bb8 (branch v29-base)",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). EXPERIMENTAL runner, Windows only, adapted from the project's tbrunner.py (see the merge input). Not run against Terrain Builder for the Pack: 36 tests (38 subtests) in tests/test_tbrunner.py drive it against a fake user32 that records every call and a fake kernel32, which tbrunner binds but never calls, that fails the test on any call, with ctypes.WinDLL, ctypes.WINFUNCTYPE and subprocess.Popen replaced by functions that fail the test, except in the three TestImport tests, which spawn sys.executable -c to import the module in a child Python; they pass on Python 3.11, 3.13 and 3.14. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "767af5caff9624112ae9084242cf2b110ce01a5e9d64a7aeba94e37845c7fe63",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/tbrunner.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "767af5caff9624112ae9084242cf2b110ce01a5e9d64a7aeba94e37845c7fe63",
+      "output_path": "tools/dayz-terrain-builder-runner/tbrunner.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-terrain-builder-runner/readme.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). README of dayz-terrain-builder-runner, with CLAIM-TB-WIN32-RUNNER-ENVELOPE and CLAIM-TB-WIN32-RUNNER-GOTCHAS (runtime_verified in Terrain Builder as the ticket reports them, not re-run): what was verified and what was not, what to do before a run, settings, commands and exits, the gotchas, the changes from the source, tests. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "88e344f76cf0b46fbed8a2fc0f728cb75ce1506d7f79b170dddad8bf51035698",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/README.md",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "88e344f76cf0b46fbed8a2fc0f728cb75ce1506d7f79b170dddad8bf51035698",
+      "output_path": "tools/dayz-terrain-builder-runner/README.md",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 36 tests (38 subtests) of the runner against a fake desktop (the three TestImport tests spawn sys.executable -c to import the module in a child Python): import off Windows without binding Win32, the state path from TBRUNNER_STATE and its default, refusal off Windows of every command, no command without the executable and the flag winning over the variable, launch refused while a pid is recorded or when the executable is not a file, commands without a recorded instance, log or frame, usage exits; the menu tree and its flattening, an unreadable item printed by menu with exit 0 and skipped by probe, menu.json, command posting to the recorded frame only after a refresh and refused while a dialog is open, probe without a log printing an empty list when nothing matches and refusing an enabled leaf, close posting WM_CLOSE to the recorded frame, dialog_button posting WM_COMMAND to the open dialog, save_loop counting a changed file without focus or a dialog, windows listing the recorded instance only; the filename box of open and save dialogs, dialog_file and its refusals; press by label with swapped ids, Spanish labels and mnemonics, hidden buttons never pressed; wait_log on the recorded log and a bad pattern. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "504984eeec5ac69beb66dd2f989ca974c64c3b09d432af95f80deb32153079aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "504984eeec5ac69beb66dd2f989ca974c64c3b09d432af95f80deb32153079aa",
+      "output_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo_digest.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-10-24: pipeline inbox fb-20261003-203108-9821 (the Baltic 12 km terrain project, commit 84e2bb8). 13 tests of digest_pbo on synthetic PBOs: properties in file order and payload hashes, the entries parse_pbo and read_entry see, no Vers block, more properties than entries, a compressed entry and truncated data failing closed, the trailer (none or 21 bytes starting with 0x00 accepted; three payload bytes eaten by it, five bytes after it and 21 bytes not starting with 0x00 refused), a file that changes while hashing refused, a missing file as a format error. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e1514f73b6a1a93b0e5290de25f7c63339c694d7a990b31dd219a9f8c9a19ffd",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo_digest.py",
+          "source_revision": "kp-update-9821@2026-10-24",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e1514f73b6a1a93b0e5290de25f7c63339c694d7a990b31dd219a9f8c9a19ffd",
+      "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo_digest.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }
@@ -36421,6 +37871,14 @@
       "source_id": "novogod-doors-buttons-lesson",
       "source_path": "Doors_Buttons_Lesson/Welcome to novoGODs Expert_Mode Door mod.txt",
       "source_revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757"
+    },
+    {
+      "decision_evidence": "The project's packaging script for its own terrain (5 711 bytes), read as data and never run: only its read_pbo was used, by diff_pbo_entries.py, and the Pack's fail-closed reader (tools/dayz-vehicle-proxy-contract, digest_pbo) replaces it, as pipeline inbox fb-20261003-203108-9821 proposes; the rest is specific to that project (its prefix and entry names). Not adopted.",
+      "reason": "superseded",
+      "source_hash": "72aa2a9600c20208aedab4864b6e96fc7ad767b419d843e4b2b02cc5d79c1d17",
+      "source_id": "dayz-baltic-12km",
+      "source_path": "tools/playtest/attach_navmesh.py",
+      "source_revision": "84e2bb8 (branch v29-base)"
     }
   ],
   "generated_artifacts": [
@@ -36631,6 +38089,13 @@
       "notes": "novoGOD's door tutorial Doors_Buttons_Lesson (three example models, each with model.cfg and config.cpp, and four texts), a Discord attachment (the attachment ID in the download's Zone.Identifier dates the upload to 2025-04-23 15:09 UTC; the members' timestamps are 2025-04-23); the archive holds no license or permission text. Reference only: dayz-doors describes its examples in first-party words and cites them by path and line. v1.3.0 to v1.5.0 shipped its nine example files as author-owned MIT by mistake; removed 2026-10-02. The signed attachment URL is deliberately not recorded.",
       "revision": "sha256:eb61101dff4df49614caa19f377a18586e3442ccb0853d82a9790468b87ff757",
       "source_id": "novogod-doors-buttons-lesson"
+    },
+    {
+      "kind": "git",
+      "license": "User-authored inputs; MIT public projection",
+      "notes": "The private Baltic 12 km terrain project of the Pack's owner. Five of its tool files, contributed through pipeline inbox fb-20261003-203108-9821 with the sha256 its inputs record, were read as data and never run or imported for the Pack: four were adapted into tools/dayz-pbo-diff, tools/dayz-navmesh-compare and tools/dayz-terrain-builder-runner; the fifth, whose PBO reader the entry diff used, is superseded by the Pack's own reader. Its evidence folders are not published.",
+      "revision": "84e2bb8 (branch v29-base)",
+      "source_id": "dayz-baltic-12km"
     }
   ]
 }

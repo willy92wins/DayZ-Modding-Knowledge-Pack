@@ -1093,6 +1093,12 @@ Fix: `dir = "<Mod>";` + backslashes `files[] = {"<Mod>\scripts\4_World"}` (like 
 telemetry `ClassName()` ≠ base. For telemetry to read the EXACT config-class name, the leaf class
 `class <Mod> extends <Mod>_Base {}` is required. See LL-163.
 
+*(Corrected 2026-10-26, DayZ 1.30.164200: the slash advice above dates from 1.29 and does not hold on
+1.30. The LFQuad's `dir = "LFQuad"` plus backslash path loaded nothing on the 1.30.164200 server, and the
+same path with forward slashes loaded; detail and counts in `dayz-1-30-vehicles.md`,
+CLAIM-VEH-SCRIPT-PATH-SLASH-130. Write forward slashes. The `ClassName()` check still applies, and so does
+comparing the script log's `Module: World; loaded Nx files` line with a run without the mod.)*
+
 ### The "Get in" radial — blocker is GEOMETRIC (collision component + crew proxy), NOT `GetCrewIndex`
 > Correction 2026-06-27: an offline audit hypothesized that source-game cars were missing the `GetCrewIndex`
 > override. **REFUTED in-game** — MERCEDES s8 resolved DRIVER get-in without touching `GetCrewIndex`

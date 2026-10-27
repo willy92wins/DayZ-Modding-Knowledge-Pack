@@ -7,6 +7,242 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-pbo-diff`, a new tool: compares the entries of two uncompressed PBOs by the SHA-256 of each
+  payload, and their header properties, and writes one new JSON report (`differing`, `only_old`,
+  `only_new`, `props_equal`, `differing_not_ignored`). It reads both through the fail-closed reader of
+  `dayz-vehicle-proxy-contract` and refuses a compressed entry, an unsafe, duplicate or non-ASCII
+  name, a truncated archive and an existing `--out` (exit 1). Adapted from `diff_pbo_entries.py` of
+  the Baltic 12 km terrain project (commit 84e2bb8, pipeline inbox fb-20261003-203108-9821), which
+  told the entry table from the properties by size and misread a PBO of 100 entries or fewer; its
+  one `data/layers/` filter is the repeatable `--ignore-prefix`. 24 tests on synthetic PBOs.
+  `dayz-pbo-build` gains a "Compare the entries of two builds" step that names it.
+- `dayz-vehicle-proxy-contract` `scripts/vehicle_proxy/pbo.py`: `digest_pbo` and `PboDigest` return
+  the header properties in file order and the SHA-256 of every entry's payload from one snapshot; a
+  compressed entry fails closed as in `read_entry`. The reader's existing tests pass unchanged; 13 new
+  tests. Its README says that `dayz-pbo-diff` reads through it.
+- `dayz-navmesh-compare`, a new tool: compares two `.nm` navmeshes tile by tile by structure
+  (polygon and vertex counts, vertical bounds) rather than bytes, and optionally locates the
+  structural changes against the terrain vertices that changed (NPZ `heights`, `--cell-m`,
+  `--local-m`) and lists those under routes (`--routes`). Statuses `PASS_NO_STRUCTURE_DELTA` and
+  `PASS_LOCAL_STRUCTURE_DELTA` (exit 0), `REVIEW` with `review_reasons` (exit 1); usage 2, refused 3.
+  The reason, as pipeline inbox fb-20261003-203108-9821 reports it (offline, not re-measured): over
+  terrains that differ in 126 vertices, 966 286 of 966 289 tiles changed bytes and 138 changed
+  structure, all within 14.1 m of a changed vertex, so hashing the files says that everything
+  changed. Verified envelope: one 12 288 m world in 12.5, 25 or 50 m tiles, TESM 6 and DNAV 11; the
+  report says whether a layout is inside it. Adapted from `inspect_navmesh_tiles.py` and
+  `compare_navmesh_tiles_v30.py` of the same project: the layout comes from the file header with
+  every check kept, non-finite bounds are refused, terrain and routes are optional and numpy is
+  needed only for terrain, and no structural change passes unless the terrain changed (the source
+  reviewed it always). 60 tests, 9 of them needing numpy.
+- `dayz-terrain-builder-runner`, a new EXPERIMENTAL tool, Windows only: drives a Terrain Builder it
+  launched by Win32 messages (`PostMessage(WM_COMMAND)`, `WM_SETTEXT`), with the subcommands of the
+  source, `tbrunner.py` of the same project. Menu commands and the standard file dialogs were
+  verified there on 2026-10-03 without Terrain Builder taking the focus; Generate Layers, a real
+  import and a WRP export were not. Its README records the gotchas: dynamic menu ids, owner-draw
+  entries without text, Terrain Builder's dialogs with Ok and Cancel ids swapped (press by label),
+  settings files rewritten on exit, a log that records neither imports nor Generate Layers. Changed
+  from the source: Win32 bound when a command runs, so it imports on any OS and refuses off Windows;
+  the executable from `--tb-exe` or `TBRUNNER_TB_EXE`, no fixed path; explicit errors instead of
+  asserts. 36 tests with a fake `user32`: none calls a real Windows function or starts Terrain
+  Builder or another program; the three TestImport tests spawn `sys.executable -c` to import the
+  module in a child Python.
+- Round 2 of these tools: the `.nm` reader checks the size each tile prefix declares, `digest_pbo`
+  refuses leftover bytes after the entries except a 21-byte SHA-1 trailer, `probe` requires the log
+  only before its first post, `menu` prints an item it cannot read and `probe` skips it, and the new
+  tests cover those cases.
+- `dayz-vehicles` `references/dayz-1-30-vehicles.md`: what porting a second 1.29 quad (Arma2Quad)
+  to DayZ 1.30.164200 added, read in the 1.30.164200 and 1.29 scripts and measured on the stable
+  DayZDiag on 2026-10-26. The 1.30 front light profile switches the lens flare off for good once
+  both bulbs have lit as one, also on the vanilla cars, and the fix Arma2Quad ships
+  (`CLAIM-VEH-FRONT-FLARE-STICKY-130`); `m_DaylightVisible`, `m_CastShadow` and `m_FadeInTime` of a
+  profile are never read, and the 1.29 brake and reverse fade-out was 0.1 s
+  (`CLAIM-VEH-LIGHT-PROFILE-UNREAD-130`); 1.29 overrides that returned the `_Ruined` twins still
+  compile and return what 1.30 derives, with that quad's in-game wheel and drive results
+  (`CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130`); a second mod measured with its lights still on after
+  the driver gets out (`CLAIM-VEH-LIGHTS-EXIT-130`); and two checklist items, hashing the Workshop
+  PBO before porting a published mod and the flare fix. `dayz-mcp-verify`
+  `references/dayz-1-30-mcp-verify.md`: six more bridge behaviours of a car test, with their
+  pipeline tickets (`CLAIM-MCPV-VEHICLE-GAPS-A2Q-130`).
+- `dayz-test-ingame` TROUBLESHOOTING, a row for the `PluginConfigDebugProfile is not Registred`
+  stack that every DayZDiag mission start logs (pipeline inbox fb-20261025-044934-fdf5, which took it
+  for a DayZ_MCP error): it is vanilla. Under `DIAG_DEVELOPER` the manager registers
+  `PluginItemDiagnostic`, whose `OnInit` asks for `PluginConfigDebugProfile`, which only an internal
+  build (`IsDebug()`) registers, so `GetPlugin` prints the line and dumps the stack. 375 of 386
+  DayZDiag 1.30 RPTs without DayZ_MCP carry it; with `@DayZ_MCP` the stack has one more frame, its
+  modded `PluginsInit`, and the RPTs measured lack the `Module` line. A test that counts `SCRIPT (E)`
+  lines as addon errors leaves out the whole block, 8 lines (9 with `@DayZ_MCP`), recognized by its
+  frames (claim `CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE`, `runtime_verified`).
+- `dayz-vehicles` `references/proxies-and-get-in.md`, new section "Closing first-person gaps"
+  (SP-469; the H2R import (2026-10), DayZDiag 1.30 Exp: 164014 through 2026-10-15, 164200 from
+  2026-10-16): gaps a seated rider sees through a fairing are closed with single-sided black
+  membranes that only the ViewPilot (res 1100) carries. On that motorbike, closures and 1PP inverted
+  twins in LOD0 showed from outside as black slivers, and with both in res-1100 LODs alone the
+  closures covered the large gaps in first person (claim `CLAIM-VEH-MOTO-1PP-VIEWPILOT-130`; the
+  rules' offline counts and in-game observations: `CLAIM-VEH-MOTO-1PP-CLOSURE-OFFLINE-130`,
+  `offline_tested`, and `CLAIM-VEH-MOTO-1PP-CLOSURE-INGAME-130`, `runtime_verified`). Four
+  rules from defects found there: test with the steering turned (offline only: closures checked with
+  the bars straight hid the fork once they turned, 247,420 px over 48 views at half resolution); put
+  the membrane behind the steering sweep, ray by ray, because trimming it there either stacked strips
+  (mottling in game) or left 55,884 px open, and pushing its vertices back hid the top clamp,
+  controls and grips in game; tuck the rim 2 cm under fixed parts, not 6 mm; trace the contour with
+  marching squares. Matte black is a [DESIGN] choice, not A/B-tested. The section also records what
+  the offline check misses: 23 measured or offset eyes left 526 px open in qualifying gaps over 69
+  views and nothing in front of fixed or turned parts at pitch -50, yet one eye moved 12 cm sideways
+  put 10 px of closure in front of a fixed part (cross-family review, offline); the renderer skips
+  glass, its gap detector misses slits up to about 2 px wide at half resolution, the in-game checks
+  of the final closures were at pitch -50, and no in-game capture had the bars turned. `dayz-vehicles` `SKILL.md` notes in the seated-view
+  invariant that seat-only geometry goes in res 1100 alone, keeps the first-person view of every
+  family in that atlas and indexes the section; `visual-gates-and-winding.md` #10 (m),
+  `dayz-model-pipeline` SP-166, `dayz-p3d-audit` ("Locating seat-visible see-through") and
+  `dayz-motorbikes` (Family Selector and forward contract) point to it.
+- `dayz-test-ingame` `references/session-findings.md`, "H2R import (2026-10)" (SP-470; DayZDiag 1.30.164.200):
+  two ways a capture run misleads while its error counts look normal. Some runs never load their
+  textures (2 of 7 on 2026-10-19, 5 of 12 on 2026-10-24; the next run with the same command line came
+  back textured after 5 of the 7; cause unknown; window focus was not recorded, and one observation
+  from another project, a flat client that loaded on a click into its window, points at it). When the view fills the
+  window, the run's median JPEG size tells them apart (0.36-0.45 MB against 1.46-1.61 MB at 3841x2160).
+  In the 24 captured runs of that probe, only textured runs had all three of a set of client RPT
+  warnings. Such a run is `SETUP_FAIL` for its frames, not for its script logs. The vehicle 1PP camera
+  rides the `Head` bone. With the bike stopped, the pelvis within 0.6 mm and the same rider clips, the
+  head still moved: four runs pinned to SurvivorM_Lewis with one command line put the eye at
+  1.479-1.493 m, SurvivorF_Keiko held 1.401 m for six looks and 1.474 m on the seventh, and
+  SurvivorF_Judy read Lewis's eye to 0.2 mm on one day and 3.7 cm lower on another. Log the eye at
+  every look; a `MissionServer.CreateCharacter` override pins the class, not the eye. `SKILL.md` gains
+  the index line, a fourth check in "An in-game observation is worth whatever the `-mod=` line of ITS
+  run is worth" and a class pin in the SP-279 cell contract; trap 6 of
+  `references/dayz-1-30-test-ingame.md` points to the untextured case.
+- `dayz-mcp-verify` `SKILL.md`, the static-object texture verdict and "Flaky capture" (SP-470): before
+  failing a model on textures, look at the vanilla terrain and sky in the same frame; a frame flat
+  everywhere withholds the verdict: check the window's focus and capture again after settling, and
+  relaunch if the scene stays flat.
+- `dayz-animation-pipeline` `references/vehicle-rider-ik-pose.md`, `dayz-motorbikes` `SKILL.md` and
+  `references/rider-animation.md` (SP-470): the stopped rider's 0.1-0.5 mm (0.4 mm for the head) from
+  the clip's FK is dated to the 2026-09-28 runs, with a pointer to the later first-person runs where
+  the stopped head moved by several cm.
+- `dayz-vehicles` `references/vehicle-config-and-modelcfg.md` (SP-483): §6 now says what
+  `RefTexsMats[]` is and which vanilla zones declare it: every vanilla motorbike zone that hides glass
+  does, and none of the 18 vanilla car `Window*` zones that hide glass does (claim
+  `CLAIM-VEH-REFTEXSMATS-SLOTS-130`, `source_verified`). A subsection at the end of §6b: vanilla
+  motorbikes declare body glass `"hidden"` in one slot of such a zone, while the Motorbike_02
+  windscreen is a separate attachment (`CLAIM-VEH-GLASS-HIDDEN-SLOT-130`, `source_verified`). The H2R
+  import (2026-10) wired its windscreen like that body glass, and it never hid: with the zones taken
+  down by the vanilla contact-damage call, the body panels of `Front` swapped and came back on repair
+  while the windscreen stayed drawn at level 4, in four runs, one on DayZDiag 1.30.164014 and three
+  on 1.30.164200; cracks and a red marker never showed either, but there was no positive control
+  (`CLAIM-VEH-GLASS-ZONE-NO-SWAP-130`, `runtime_verified`). The cause is unknown; the subsection lists untested hypotheses and a
+  cheapest-first plan. The `"hidden"` sentence of §6 and the opening of §6b now say that the glass case
+  has no in-game check.
+- `dayz-vehicles` `references/process-gates.md`, "A config gate is not a visual gate" (SP-483): the
+  H2R's feedback gates 12 (far-LOD silver rvmat) and 13 (crack rvmat and `"hidden"`; it never read
+  `RefTexsMats[]`) passed while the screen did not change (`CLAIM-VEH-GATE-CONFIG-NOT-VISUAL-130`,
+  `runtime_verified`). Rules: report such a PASS as "config"; take vehicle zones down with the vanilla
+  contact-damage call, which swapped the H2R and a vanilla Motorbike_02 in one run, while `SetHealth01`
+  runs on other days showed no swap without isolating the method (from LL-565, point 2;
+  `CLAIM-VEH-CONTACT-DAMAGE-SWAP-130`, `runtime_verified`); give a diagnostic marker a positive control;
+  use a control that can show the change; identify the drawn LOD before tuning a far-LOD material; and
+  point config gates at the packed artifact, with a [DESIGN] check that a far-LOD stand-in rvmat is in
+  its zone's `RefTexsMats[]` (the H2R's far silver was in none, effect untested:
+  `CLAIM-VEH-FAR-LOD-MAT-OUTSIDE-REFS-130`, `offline_tested`) and a packer that refuses diagnostic
+  builds. `SKILL.md`, LESSONS ARCHIVE, lists the section.
+- `dayz-vehicles` `references/proxies-and-get-in.md`, "`binarize` is NOT deterministic": face and
+  section order also change between builds (`dayz-pbo-build` SP-194), and the H2R import saw it with
+  `binarize.exe` called directly (the `dashboard` section at index 175 in one build and 204 in another;
+  `CLAIM-BINARIZE-SECTION-ORDER-130`, `offline_tested`). ODOL gates never key on section indices.
+- `dayz-model-pipeline` `SKILL.md` ("Damage variant rvmat pattern") and
+  `references/lods-and-geometry.md` ("Resolution LODs (Visual)"), and `dayz-motorbikes` `SKILL.md`
+  (step 5): pointers to those passages.
+- `dayz-script-validator` `ES-MODDED-ENGINE-CLASS` also fails `modded class DayZPlayerInventory`
+  and `modded class Magazine`: on DayZDiag 1.30.164200 the server log read "Engine class
+  'DayZPlayerInventory' cannot be modded." and "Engine class 'Magazine' cannot be modded.", the
+  World module did not compile and the server died before it was ready. Two fixtures and two tests.
+- `enforce-script-reference` `references/dayz-1-30-enforce-script.md` §3.2: how a mod can see
+  inventory moves on 1.30.164200 without modding `DayZPlayerInventory`, measured in game with a
+  server-side logger hooked on `ItemBase.EEItemLocationChanged`, which printed one line per tested
+  transfer for cargo take/put, crate-to-crate, slot detach/attach on an item on the ground and on a
+  `Land_House_1M1` slot, and picking up/dropping a crate, and two lines for a swap (the logger filters
+  callbacks, so their total count was not measured); `g_Game.HasInventoryJuncture` named the player of
+  a crate-to-crate move. Stacking is not a location change: hooks on `ItemBase.CombineItems` and on
+  `Ammunition_Base.CombineItems` (which compiled modded) logged 10 rounds into a crate pile and 5 planks
+  onto a house slot; the split paths are cited from the source, including `SplitItem`, whose copy into
+  the player's cargo is not marked as a split result. "What breaks" item 2 points there for observing
+  moves, not for intercepting commands.
+- `dayz-basebuilding`: on 1.30.164200 the rebuildable houses have configs and attachment slots on
+  the building (32 `House` classes with `attachments[]`, slot names listed); `Land_House_1M1` was
+  spawned and a plank attached to `RB_LvL1_Plank`.
+- `dayz-mcp-verify`: what the verbs reached in inventory in those runs (`hands_take` did not reach
+  the cargo of a `WoodenCrate` or `Barrel_Blue` nor the `RB_LvL1_Plank` slot of a `Land_House_1M1` at
+  6.5 and 12.7 m, `ActionAttach` failed on that house), a key-driven test addon that makes the client's
+  own inventory calls, and no `.ADM` in managed runs (no `-adminlog`).
+- `dayz-p3d-audit`: `audit_p3d.py` fails a needle triangle in a component of a Geometry, View or
+  Fire LOD: a triangle (a quad is read as two) under 1e-6 m², or whose area is under 1e-4 of the
+  square of its longest edge. A proxy triangle is left out by py3d's own rule (a selection named
+  `proxy:<path>.<index>` that holds one triangle and, as its points, its three corners); a face
+  under a proxy name of any other shape is read. The finding names the LOD, the component, the
+  face, both numbers and the point to drop. In DayZ 1.29.163709 two components of a lid built with
+  Qhull, each holding one needle (4.6e-7 and 1.6e-7), took no ray in `geom`, `view` or `fire`
+  while binarize said nothing; built again without the point opposite each needle's longest edge,
+  they took the rays (fb-20261002-175602-ddce). The skill's first tests, 21: 18 run on stand-in
+  LODs with no py3d, and 3 write MLODs with the Pack's `tools/py3d` and read them back.
+  `dayz-model-pipeline` `references/py3d-direct-generation.md` ("Needle triangles") holds the
+  measurement and the fix, and `references/lods-and-geometry.md` points to it.
+- `dayz-model-pipeline` `references/py3d-direct-generation.md`, UV Flip Detection: what pipeline
+  inbox fb-20260921-164248-a140 (part 2) reports from a file, not in game. Sampling the texture on
+  the faces of the `light_emit` bulb of a wall lamp, a selection with its own color, with both
+  readings of V gave a difference of 177.6 against the rest of the model with V=0 at the top and
+  10.6 with V=0 at the bottom, which agrees with the `(u, 1.0 - v)` of Fix 2. Not re-measured for
+  this change.
+- `dayz-sound-system` `SKILL.md`, recipe A2: a roll loop built by hand to reach
+  `AbstractWave.SetFrequency` (`SoundParams`, `SoundObjectBuilder`, `BuildSoundObject`,
+  `SetKind(WAVEEFFECTEX)`, `SetParent`, `Play3D`) was barely audible until `SoundObject.SetPosition`
+  was set after `SetParent` and before `Play3D`: with a parent that position is in model space, and
+  `EffectSound` sets it right before its own `Play3D` (`effectsound.c:172-173` and `:746-753` in
+  1.30.164.200). `GetFrequency()` of a playing OGG wave returned 1.0, so `SetFrequency` takes a
+  factor, not Hz (DayZ 1.30.164014 Exp, LFSkateboard, 2026-10-07, fb-20261007-010022-0cee).
+- `enforce-script-reference` `SKILL.md`, "Custom player camera": `RegisterCameraCreator` with id
+  1171 crashed the DayZDiag 1.30.164014 Exp server at startup, and id 17 works; vanilla takes 1-14
+  and 30-32 (32, the motorbike's, is new in 1.30) and the ceiling is not measured, so take a free
+  id in 15-29. Register it in a `RegisterCameras` override after `super`: vanilla resets the camera
+  creators at the start of `RegisterCameras`, after `ModItemRegisterCallbacks.RegisterCustom` has
+  run (LFSkateboard, 2026-10-07, fb-20261007-010028-8204).
+- `dayz-animation-pipeline` `SKILL.md`: a ride `HumanCommandScript` sometimes started in the vanilla
+  raised-fists idle, the `IdleRas` state that starts on `Raised && MovementSpeed == 0` in the
+  1.30.164014 Experimental workspace. The cause LFSkateboard reads (the move command leaves `Raised`
+  set) and its fix (bind `Raised` in `OnActivate`, write it false with `PreAnim_SetBool` on every
+  `PreAnimUpdate`) are plausible, not verified in game (fb-20261007-010034-a46a, corrected by
+  fb-20261007-010041-3fc6).
+- `dayz-mod-workflow` `references/error-catalog.md`, E23: a `HumanCommandScript` subclass declared
+  in `4_World` and started two or more times crashed every orderly exit of client and server; an
+  empty one exited clean when declared in `3_Game`, and both exited clean after one start (DayZDiag
+  1.30.164014 Exp, 2026-10-07, fb-20261007-010034-a46a and fb-20261008-165335-e018). The cause is
+  not known, and the workaround LFSkateboard adopted, a `3_Game` shell forwarding to a `Managed`
+  object in `4_World`, was still being verified when reported. Indexed in `SKILL.md`, and
+  `dayz-animation-pipeline` points to it.
+- `dayz-animation-pipeline` `SKILL.md`: a weapon raises and fires under a `HumanCommandScript` that
+  reports `STANCEIDX_RAISEDERECT`, but vanilla's lift check then throws a NULL VM exception each
+  time it runs, since `Weapon_Base.ApproximateWeaponLiftTransform` uses the move command without a
+  null check (`weapon_base.c:1625` in 1.30.164.200); a test verdict that read only its own log lines
+  missed 241 of them (DayZ 1.30 Experimental, LFSkateboard, fb-20261009-104228-854c).
+- `dayz-script-validator`: three tests of how `ES-PROTO-ARGUMENT-DOWNCAST` reads a declaration
+  on the line of a label: a label indented with tabs is read, a name that begins with `case` is no
+  label, and a template with a comma after a label is read (review of #125,
+  fb-20261006-030019-e074). 317 unit tests pass (314 before).
+- `dayz-script-validator`: `ES-PROTO-ARGUMENT-DOWNCAST` reports a name passed to a parameter of a
+  `proto` method whose class derives from the class the name is declared as. DayZ 1.30.164014
+  server refused `DayZPhysics.RaycastRV(..., hitEntity, m_Human, ...)`, with `hitEntity` an
+  `IEntity` at the `Object` parameter 6, with `Cannot convert 'IEntity' to 'Object' for argument
+  '6' to method 'RaycastRV'`, and the World module did not compile (fb-20261006-030019-e074). That
+  pair, an `IEntity` where an `Object` is taken, is FAIL; any other is WARN, since no refusal of it
+  is measured. Judged only when the call is in a method the validator reads and the receiver's
+  class, the proto's one parameter list and the argument's declared class are all known: a
+  declaration under an `#ifdef` that may not compile with the call, a member of a later script
+  module, or a member named as a `for` or `foreach` variable or a local of a block closed before
+  the call, is not taken. Protos are read from the addon, the `--external-scripts` roots and the
+  vanilla tree, so without a vanilla tree no vanilla proto is judged. A first version, FAIL for
+  every pair, found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451 and one call
+  over 1037 mod folders, an `Object` passed where `ItemPreviewWidget.SetItem` takes an `EntityAI`;
+  a second, with that pair WARN, found nothing on either tree and that call alone over 1040 folders
+  (review of #125), and so did the versions after the fourth and fifth rounds of that review. 314
+  unit tests pass (282 before).
 - Vault note `dayz-engine-water`: what the engine's water queries read over water objects,
   measured on the DayZDiag server (pipeline inbox fb-20261014-123911-3f33,
   fb-20261003-203108-0303, fb-20261003-231327-2466). With no player connected they read no water
@@ -255,6 +491,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   old baseline, so none of this comes from the rule changes since 2026-10-17 (#121 to #123).
   Alone, the `--update` run and the check after it took 181 and 244 seconds by the wall clock on
   the owner's PC on 2026-10-24.
+- `dayz-vehicles` `references/binarize-vertex-budget.md` item 2 and invariant 27 (SP-468): the
+  offline vertex bench calls `binarize.exe -always <src under P:\> <out>` with no `-addon`. In the
+  H2R import (2026-10) a variant of that call, its source outside `P:\`, waited about 5 min before
+  loading its first model, and three days later, other processes busy, gave no ODOL in 30 min; with
+  a dedicated `-addon` folder, as AddonBuilder passes one, the first model loaded within a second
+  and all six builds converted their 8 models. A call with its source under `P:\` was not timed.
+  Why the wait grew is not established, and that binarize walks `P:` meanwhile is inferred, not
+  traced. Item 2 and invariant 27 keep the validated call, say that its 25/25 validation ran without
+  `-addon`, and add `-addon` as [DESIGN] advice, untested for a source under `P:\` and with only
+  `PASS` run so far; item 2 also says the bench's ODOLs came out with every material empty, and the
+  reference's header scopes the new runs. `dayz-pbo-build` SP-155 rule 1 adds the direct-call case
+  and the stall's signal, rule 3 names the stall, and rule 5 records the H2R import as a confounded
+  case of a texture missing on its own: with and without `-addon` the same 65 `.rvmat` were not
+  loaded and every material entry of the 8 ODOLs came out empty, while the mod's `.rvmat` sat at
+  their cited path. The unstaged vanilla textures they name, the source outside `P:\` and what the
+  direct call lacks against AddonBuilder are left as unmeasured leads. `dayz-model-pipeline`
+  `references/py3d-direct-generation.md` points from its LFQuad note to that case.
+- `dayz-script-validator`: `ES-MULTILINE-CONDITION-OPERATOR` is FAIL, no longer WARN. It was
+  WARN on one measurement with the vanilla control still to run; the control has since found
+  nothing for it on 1.29.0.163451 (review of #113) or on 1.30.164078 stable (#117), and its ticket,
+  fb-20261006-030019-e074, asked for an error.
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164078 stable. Its
   baseline came from 1.29.0.163451, and on 1.30 the control failed on the tree's digest and on 13
   errors in four files that the game compiles, all of them at code that 1.29 does not have. Ten are
@@ -293,6 +550,49 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   there were no rolling samples at full lean and its continuous blend was not isolated.
 
 ### Fixed
+
+- `dayz-vehicles` `references/dayz-1-30-vehicles.md` and `SKILL.md`, `dayz-motorbikes`
+  `references/vehicle-1.30-refactor.md`: what porting a 1.29 quad (LFQuad) to DayZ 1.30.164200
+  stable found, read in the 1.30.164200 and 1.29 scripts on 2026-10-26.
+  - `CarScript.ToggleHeadlights()` (1.29 `CarScript.c:2088`) is deleted in 1.30 with no
+    `[Obsolete]` stub, unlike the rest of the light members. An `override` of it stops the
+    `4_World` compile (`CLAIM-VEH-TOGGLEHEADLIGHTS-REMOVED-130`, now measured in game: the
+    1.30.164200 server logs `Can't compile "World" script module!` and crashes).
+  - A battery car that does not override the three electricity-source methods reports
+    `NO_BATTERY` with a battery attached: no engine start, no light switch
+    (`CLAIM-VEH-NO-BATTERY-DEFAULT-130`). The refactor guide's table told readers to return `true`
+    from `NeedElectricitySourceDevice()`, which is already the default; it now points at the
+    getter that matters.
+  - Correction: 1.29 already called `CanReachSeatFromDoors(..., 1.0)` from the get-in condition,
+    and 1.30 only adds `CanGetIn()` and the DiagMenu wrapper `IsAreaAtDoorFreeDiag`
+    (`CLAIM-VEH-GETIN-REACH-129`).
+  - Migration checklist item 0: resolve every `override` against the target build's class chain.
+    `dayz-script-validator` passed the LFQuad v1.0.0 scripts against the 1.30.164200 tree with 0
+    errors (`CLAIM-VEH-OVERRIDE-RESOLVE-130`, `offline_tested`).
+
+  The two bullets in `SKILL.md` and the refactor guide carry `CLAIM-VEH-130-PORT-BLOCKERS` and
+  `CLAIM-MOTO-REFACTOR-130-PORT-BLOCKERS`.
+
+  Measured afterwards in game on the 1.30.164200 DayZDiag (Exp and stable installs, server and
+  client) while testing the port, which shipped as LFQuad v1.0.1:
+  - A backslash script module path (`files[] = {"LFQuad\scripts\4_world"}`), which loaded on
+    1.29, loaded nothing on 1.30.164200 and logged nothing; forward slashes load
+    (`CLAIM-VEH-SCRIPT-PATH-SLASH-130`). `vehicle-structural-parity.md` advised backslashes and now
+    carries the correction.
+  - Every wheel class needs a `<class>_Ruined` twin: 1.30 swaps a ruined wheel for that class and
+    raises a script error when it is missing. Recipe, evidence and the 1.30 tyre fields in a new
+    section 11 (`CLAIM-VEH-RUINED-WHEEL-CLASS-130`).
+  - `LightIsOn()` stays true on both sides after the driver gets out, and `OnDriverEnter` /
+    `OnDriverExit` run on server and client (`CLAIM-VEH-LIGHTS-EXIT-130`).
+  - `dayz-mcp-verify` `references/dayz-1-30-mcp-verify.md`: five bridge behaviours that shape a car
+    test (automatic gearbox, fixture fuel read, `classname`, no health tool, seated `camera_set`),
+    with their pipeline tickets (`CLAIM-MCPV-VEHICLE-GAPS-130`).
+  - `dayz-test-ingame` `SKILL.md`: a `DSCheckSignatures` negative control made by flipping a byte
+    can pass; change hashed content and recompute the trailer, or use another PBO
+    (`CLAIM-SIGN-NEGATIVE-CONTROL`).
+  - `dayz-mcp-verify` `SKILL.md` prerequisite 4: a Steam junction (`@SurvivorAnims`) passed the
+    preflight and loaded in `extra_mods` on the stable box, against the rule measured with `@CF` on
+    2026-08-02 (`CLAIM-MCPV-JUNCTION-EXTRA-MODS-130`).
 
 - `enforce-script-reference` `references/pitfalls-advanced.md`: the performance trap on
   `SurfaceIsPond`, `SurfaceIsSea` and `SurfaceRoadY` cited them at `game.c:1181-1183`, where 1.29

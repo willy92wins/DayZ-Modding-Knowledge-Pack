@@ -37,8 +37,10 @@ Exit `0` = PASS, `1` = FAIL, `2` = WARN. Findings are JSON on stdout.
 
 ## Checks that need more than one file
 
-Most rules read a single file. Seven read the tree, and four of them need roots
-outside the addon:
+Most rules read a single file. The ones below read the tree:
+`ES-PROTECTED-CROSS-MODULE` the addon's modules, `ES-EXTERNAL-CONSUMER-MISSING`
+the addon and the `--external-scripts` roots, and the others the addon, those
+roots and the vanilla tree:
 
 - `ES-PROTECTED-CROSS-MODULE` compares modules against each other. Enforce
   enforces `protected` across script modules, so a `5_Mission` class reading a
@@ -176,6 +178,43 @@ were not measured again.
   chain leaves the addon and the external roots counts as unrelated: a
   vanilla class cannot derive from an addon class. A caller or an ancestor
   whose header a directive splits is not read, and the call is skipped.
+- `ES-PROTO-ARGUMENT-DOWNCAST` (FAIL or WARN): a name passed to a parameter
+  of a `proto` method where the parameter's class derives from the class
+  the name is declared as. `DayZPhysics.RaycastRV(from, to, pos, dir, comp,
+  hits, hitEntity, m_Human, true, false, ObjIntersectGeom)`, with
+  `hitEntity` an `IEntity` at the `Object` parameter 6, made DayZ
+  1.30.164014 server refuse the World module with `Cannot convert 'IEntity'
+  to 'Object' for argument '6' to method 'RaycastRV'` (inbox
+  fb-20261006-030019-e074; the compiler counts arguments from 0). That
+  pair, an `IEntity` where an `Object` is taken, is FAIL; any other is WARN,
+  because no refusal of it is measured. Judged only when everything is
+  known: the call is in a method the validator reads (not one whose return
+  type has template arguments, `array<T> F(`); the receiver is a class, or a
+  name looked up as in `ES-CAST-UNRELATED-TYPES` or else as a member of
+  another body of the enclosing class or of the nearest class up its chain
+  that declares it; the first class up the receiver's chain that declares
+  the method (a `modded class` included) declares it `proto` every time,
+  with one parameter list, where a declaration whose `(` is on a line that
+  never compiles does not count; the argument is a plain name looked up the
+  same way; and the parameter is not `out` or `inout` and has a plain class
+  type whose chain holds the argument's class above its own. `Class` is not
+  judged as the argument's class. A member in a body of another file counts
+  when that file's script module is not later than the call's (a later one
+  is compiled after it), and leaves the name unknown when either file is
+  under no `N_Module` folder. A declaration under `#if`, `#ifdef` or
+  `#ifndef` leaves a name unknown unless it is in the call's file under
+  blocks that are all around the call, and a method whose declaration has a
+  line up to its `(` under such a block is unknown. A name that the method
+  declares before the call only where that declaration is no longer open at
+  the call (a `for` or `foreach` variable, for a call in the loop's body or
+  after it, or a local of a block closed before the call) is unknown too,
+  also where a member has that name; a call in that `for`'s own header, as
+  in its condition, takes the variable's type. A call whose arguments hold
+  `<`, `>` or a directive is skipped, and so is one with more arguments than
+  parameters. Protos are read from the addon, the `--external-scripts` roots
+  and the vanilla tree, so without a vanilla tree no vanilla proto is
+  judged, with no SKIP line. Only a proto's refusal is measured: an argument
+  of a script method and a down-cast in an assignment are not judged.
 
 ## Compile errors read from one file
 
@@ -225,12 +264,13 @@ log, or from a broken file the validator passed:
   fb-20261005-233046-89d1). Transport is the only class listed: another
   engine class goes in only after a compile refuses it. Mod the script
   bases in 4_World instead, `CarScript` or `BoatScript`.
-- `ES-MULTILINE-CONDITION-OPERATOR` (WARN): a line inside the parentheses
+- `ES-MULTILINE-CONDITION-OPERATOR` (FAIL): a line inside the parentheses
   of an `if (` or `while (` that ends in `&&` or `||`, once per header.
   DayZ 1.30.164014 server refused `if ((t >= A && t < B) ||` followed by
   `(t >= C && t < D))` with `Invalid statement ')'` and `Syntax error` at the
-  continuation (inbox fb-20261006-030019-e074). WARN until the vanilla
-  control has run: one measurement. The operator leading the next line is
+  continuation (inbox fb-20261006-030019-e074). One measurement; FAIL since
+  the vanilla control found nothing for it on 1.29.0.163451 and on
+  1.30.164078 stable. The operator leading the next line is
   the same parser rule (enforce-script-reference SKILL.md, SP-386) and is not
   reported here; neither is a call's argument list over two lines.
 

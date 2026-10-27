@@ -3,7 +3,7 @@
 ## LOD Types and Their Purposes
 
 ### Resolution LODs (Visual)
-These are what the player sees. Multiple LODs at increasing distances reduce rendering cost.
+These are what the player sees. Multiple LODs at increasing distances reduce rendering cost. This file does not give the distance at which the game switches visual LODs: before tuning a far-LOD material, identify in game which LOD is drawn at that distance (`dayz-vehicles` `references/process-gates.md`, SP-483).
 
 | LOD | Resolution Value | Purpose |
 |-----|-----------------|---------|
@@ -42,7 +42,8 @@ Defines physical collision — what stops players and objects from passing throu
 - Name objects as `ComponentXX_LODGeometry` for auto-assignment on FBX import
 - Use Mesh > Convex Hull in edit mode to ensure convexity. Check the result: hulls built by script
   with `bmesh.ops.convex_hull` came out folded by a few mm, and recomputed with Qhull they passed
-  the convexity check (`dayz-p3d-audit` SKILL.md, "Source meshes for collision")
+  the convexity check (`dayz-p3d-audit` SKILL.md, "Source meshes for collision"). Passing it does
+  not rule out a needle triangle from Qhull (`py3d-direct-generation.md`, "Needle triangles")
 - Assign mass via the Arma 3 Object Builder addon's vertex mass tools
 
 ### Fire Geometry LOD (Ballistics/Damage)

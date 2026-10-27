@@ -567,6 +567,7 @@ fine. Check the regex against a raw sample line before concluding the build is b
 | Kicked `240 ("Game restart required")` 20-60 s after connect | server BE active + client launched bare (`DayZ_x64.exe` never inits BE); `BattlEye = 0;` stops masking it after a BE service hot-update (check mtimes in `Common Files\BattlEye`) | historical diagnosis: `DayZ_BE.exe` correctly initialized BE in session 2026-06-11; user decides whether to open retail externally and agent remains in quarantine, without launching it |
 | Retail server binds, then dies ~1 min later; `BattlEye initialization failed`, RPT ends "Termination successfully completed" | `BEServer_x64.dll` missing/renamed | Historical observation: the 1.29 dedicated server shut down when BE initialization lacked that DLL. The external owner/user decides and performs any restoration outside the agent workflow; the agent remains in quarantine/read-only [session 2026-06-11] |
 | Modal "Compile error … Missing function scope" citing a third-party file at boot | diag exe strict-compiles third-party packs | report incompatibility; if user opens retail externally, apply quarantine and do not pursue third-party "bug" |
+| Every DayZDiag mission start logs a `SCRIPT (E)` stack, once per peer: the `-- Stack trace --` header, the frames `GetPlugin()` of `pluginmanager.c`, `OnInit()` of `pluginitemdiagnostic.c`, `PluginsInit()`, `PluginManagerInit()`, `MissionBase()` and the mission's own (`CreateMission()` of `somemission.c` on a client, a frame of the mission's `init.c` on a server), and a `-----------------` closing line. In the 375 DayZDiag 1.30 RPTs measured without `@DayZ_MCP` that carry it, the line `Module PluginConfigDebugProfile is not Registred in PluginManager.c!` comes before it. That line can be missing: none of the RPTs measured with `@DayZ_MCP` carries it, and neither does a 1.29 client RPT without `@DayZ_MCP`. With `@DayZ_MCP` loaded the stack has one more frame, `PluginsInit() DayZ_MCP/scripts/4_World/mcp_diagplugins.c : 30` | vanilla, not the mod. `PluginManager.Init` registers `PluginItemDiagnostic` as Diag, inserted under `DIAG_DEVELOPER` (DayZDiag defines it), and `PluginConfigDebugProfile` as Debug, inserted only when `IsDebug()` (an internal build). `PluginItemDiagnostic.OnInit` asks for that plugin, and under `DIAG_DEVELOPER` `GetPlugin` prints the line and dumps the stack; the caller checks for null, so the run goes on. Same code in 1.29 and 1.30. DayZ_MCP's frame is its modded `PluginsInit`, which calls `super` and then prints one `[DayZ_MCP] diag PluginInventoryDebug registered=` line | nothing to fix. A test that counts `SCRIPT (E)` lines as addon errors leaves out the whole block, header to closing line, and recognizes it by its frames, not by the `Module PluginConfigDebugProfile` line: in the runs measured, 8 `SCRIPT (E)` lines per peer per mission start (header, six frames, closing line), 9 with `@DayZ_MCP` [EXACT][CLAIM-TEST-DIAG-PLUGIN-PROFILE-NOISE] |
 
 Logs (where to look): `script.log` = script compile/runtime errors; `*.RPT` = engine errors
 (missing assets, malformed configs); `crash_*.log` = handled exceptions, not hard segfaults.
@@ -599,6 +600,7 @@ Per-session in-game gotchas moved to `references/session-findings.md`; load it w
 - **`@<Mod>_deps` separate dep addon (2026-06-26)** — put deps in `-BaseMods` (loads first) or the client fails `Unknown type` at compile; replicate the last successful `-mod=` from the RPT.
 - **Third-party "sloppy" scripts (2026-06-28)** — deps that only warn on retail but fatal-compile on diag require a user-owned external manual parity run; agent stays in quarantine.
 - **Launching DayZDiag from the agent (2026-06-28, superseded 2026-07-15)** — background tool-jobs can lose their child; use the Diag-only managed launcher and its exact run instead of an unmanaged process.
+- **H2R import (2026-10-24)** — some DayZDiag 1.30 runs never load their textures while their error counts read normal (compare the run's median JPEG size with a textured run of the same framing, the RPT warning set being specific to that probe, and relaunch); the vehicle 1PP eye rides the `Head` bone and moves between runs and looks: log it at every look.
 
 ## Backups (.bak_*) in scripts/ inflate the PBO and break grep-verify (SP-065, added 2026-07-14)
 
@@ -1478,7 +1480,7 @@ is only promoted for the mod when an in-game run demonstrates that it steers.
 ### Contract of a repeatable scripted cell (SP-279)
 
 - Spawn fixture at a known fixed location and place player at a fixed offset on
-  `SurfaceY`; random spawn turns obstacles and doors into environmental noise.
+  `SurfaceY`; random spawn turns obstacles and doors into environmental noise. A default spawn also draws a random character class: pin it (`references/session-findings.md`, "H2R import (2026-10)").
 - After an exit, rearm placement server-side after cooldown with player on foot.
   Re-entry is part of the test: a ghost pose on client invalidates reach and `Can()`.
 - `forces-off`, `clamp-abort`, `no-probes`, `no-pilot`, and `not-owner` are **INCONCLUSIVE** and accept
@@ -1548,6 +1550,17 @@ The probe **normalizes the subject** before measuring anything (`SetWet(0)`, `Se
 applies) and records it in log. And if there is a client part depending on that state, it binds to
 **the condition, not a timer**: wait to observe subject already normalized, because
 normalization itself is a state change that can clobber what you were about to measure.
+
+### 3. A signature negative control that cannot fail (added 2026-10-26)
+
+[EXACT][CLAIM-SIGN-NEGATIVE-CONTROL] `DSCheckSignatures` does not check every byte of a PBO,
+nor the PBO's own SHA-1 trailer against its content. Measured on the LFQuad v1.0.1 release
+(`Return0` key, the default v3 signature of `DSSignFile`, 2026-10-26): one byte changed inside
+the `data\LFQuad_wheel_rear_co.paa` entry, with the trailer left as it was, still answered
+`Signature ... is OK`. Two controls did fail with `is wrong`: the previous build's PBO next
+to the new `.bisign`, and the new PBO with one byte of a `.c` entry changed and the trailer
+recomputed, which is what any repacker writes. Build the negative control the way a packer
+would, or from another PBO; a raw byte flip proves nothing about the signature.
 
 ### Bonus: a disposable probe does not need to register as an MCP project
 
@@ -1696,6 +1709,9 @@ observation seems normal and user reports it in good faith.
 3. If any is missing, observation is not discarded: **it is reclassified**. Whatever does not depend on
    pose or LOD remains valid (a mirrored texture is so from any angle); whatever
    depends on where the eye is, does not.
+4. With every mod present, read two more things from THAT run: whether it rendered textured and, for
+   anything that depends on where the eye is, where the eye was. Both changed between runs with the same
+   command line in the H2R import (2026-10) (`references/session-findings.md`).
 
 Name trap in this tree: `@Survivor Animations` **with space** splits the command
 line (in RPT it is seen cut off at `-mod=...;P:\Mods\@Survivor`). The good junction is
