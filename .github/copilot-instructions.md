@@ -3,8 +3,8 @@
 Canonical agent file: [`AGENTS.md`](../AGENTS.md). Summary below.
 
 This repository is a **DayZ (Enfusion) modding knowledge pack**: 42 domain
-playbooks in `skills/`, ten Python tools in `tools/`, verified reference notes
-in `knowledge/`.
+playbooks in `skills/`, thirteen Python tools in `tools/`, verified reference
+notes in `knowledge/`.
 
 ## Routing
 

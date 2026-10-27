@@ -1,9 +1,14 @@
 # Tools
 
-Ten Python tools ship in this pack. They are offline and deterministic;
-none of them phone home, and none of them guess. Most are stdlib-only;
+Thirteen Python tools ship in this pack. They are offline and deterministic,
+except the experimental
+[`dayz-terrain-builder-runner`](#toolsdayz-terrain-builder-runner), which
+drives a Terrain Builder it launched; none of them phone home, and none of
+them guess. Most are stdlib-only;
 [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) also
-needs numpy, scipy, matplotlib and the pack py3d fork.
+needs numpy, scipy, matplotlib and the pack py3d fork, and
+[`dayz-navmesh-compare`](#toolsdayz-navmesh-compare) needs numpy for its
+terrain inputs only.
 
 **Install before invoking.** The `python -m <tool>` forms below resolve only
 once that tool is installed — `python -m pip install -e tools/<name>` from the
@@ -11,6 +16,8 @@ repository root. On a fresh clone they fail with `No module named`, which
 reads like a broken tool and is a missing install. Tools that also ship a
 script path (`dayz-script-validator`, `dayz-ui-lab`, `skill-runtime-pin`) can
 be run from the tree without installing; each tool's section says which.
+`dayz-pbo-diff`, `dayz-navmesh-compare` and `dayz-terrain-builder-runner` are
+scripts only, run from the tree.
 
 They exist because the DayZ asset pipeline fails *silently*: a `.p3d` written
 with a stale selection loads white, a mistyped RTM signature produces an
@@ -30,6 +37,9 @@ one.
 | [`dayz-script-validator`](#tools-dayz-script-validator) | Lint Enforce, `config.cpp`, `.layout` and `.rvmat` before packing | Reports only |
 | [`dayz-vehicle-proxy-contract`](#tools-dayz-vehicle-proxy-contract) | Audit vehicle proxy graph, fit, engine properties and PBO closure | Reports only; `repair` stages copies outside the addon |
 | [`skill-runtime-pin`](#tools-skill-runtime-pin) | Capture a Pack commit and expose one derived runtime adapter | **Yes** — new task-local root only |
+| [`dayz-pbo-diff`](#toolsdayz-pbo-diff) | Compare the entries of two PBOs by SHA-256, and their header properties | Reports only — one new JSON |
+| [`dayz-navmesh-compare`](#toolsdayz-navmesh-compare) | Compare two `.nm` navmeshes tile by tile, by structure, against terrain edits and routes | Reports only — one new JSON |
+| [`dayz-terrain-builder-runner`](#toolsdayz-terrain-builder-runner) | EXPERIMENTAL, Windows only: drive a Terrain Builder it launched by Win32 messages | **Yes** — its state file and `menu.json`; Terrain Builder rewrites its own settings on exit |
 
 ---
 
@@ -370,6 +380,67 @@ prompt. Codex `--ignore-user-config` is not HOME isolation; Cursor has no
 exclusive catalog. Consumer argv is `[DESIGN]` until the owner runs the real
 Cursor/Codex probes. A nonce without a read or injection of the original is a
 failed grade, not a pin.
+
+## `tools/dayz-pbo-diff`
+
+Compare the entries of two uncompressed PBOs by the SHA-256 of each entry's
+payload, and their header properties: did the new package change only what
+you meant to change?
+
+```bash
+python tools/dayz-pbo-diff/pbo_diff.py --old <old.pbo> --new <new.pbo> --out <diff.json>
+python tools/dayz-pbo-diff/pbo_diff.py --old <old.pbo> --new <new.pbo> --out <diff.json> --ignore-prefix data/layers/
+```
+
+Stdlib only. Both PBOs are read through the fail-closed reader of
+`dayz-vehicle-proxy-contract` (`digest_pbo`): a compressed entry, an unsafe,
+duplicate or non-ASCII name and a truncated archive are refused (exit 1), never
+skipped. `differing` lists every entry whose bytes differ or that is on one
+side only; `--ignore-prefix` filters a view (`differing_not_ignored`), not the
+comparison. `--out` must not exist. Between two AddonBuilder runs a different
+`.p3d` entry proves nothing by itself (`dayz-pbo-build`, SP-194).
+
+## `tools/dayz-navmesh-compare`
+
+Compare two `.nm` navmeshes tile by tile by structure (polygon and vertex
+counts, vertical bounds) instead of bytes. NavMeshGenerator rewrites almost
+every tile's bytes between runs: in the measurement its README cites, 966 286
+of 966 289 tiles changed bytes and 138 changed structure, so a hash says that
+everything changed.
+
+```bash
+python tools/dayz-navmesh-compare/compare_navmesh.py --old-nm <accepted.nm> --new-nm <new.nm> --out <report.json>
+python tools/dayz-navmesh-compare/compare_navmesh.py --old-nm <accepted.nm> --new-nm <new.nm> --out <report.json> --old-terrain <old.npz> --new-terrain <new.npz> --cell-m 6 --routes <routes.txt>
+```
+
+Exit `0` for `PASS_NO_STRUCTURE_DELTA` and `PASS_LOCAL_STRUCTURE_DELTA`, `1`
+for `REVIEW` (with `review_reasons`), `2` usage, `3` refused. The reader is
+fail-closed: magic and version of the file and of every tile, the offset
+table, one tile per cell, bounds against the cell. Stdlib only without terrain
+inputs, numpy with them. Verified envelope: one 12 288 m world in 12.5, 25 or
+50 m tiles, TESM 6 and DNAV 11; any other layout is read and reported as
+outside it. Unchanged structure along a route is not a locomotion result.
+
+## `tools/dayz-terrain-builder-runner`
+
+**Experimental.** Drive a Terrain Builder this runner launched by Win32
+messages only (`PostMessage(WM_COMMAND)`, `WM_SETTEXT`), without taking the
+focus or moving the mouse. Windows only; it imports anywhere and every
+command refuses off Windows.
+
+```powershell
+$env:TBRUNNER_TB_EXE = "<DayZ Tools>\Bin\TerrainBuilder\terrainBuilder.exe"
+python tools/dayz-terrain-builder-runner/tbrunner.py launch
+python tools/dayz-terrain-builder-runner/tbrunner.py menu
+python tools/dayz-terrain-builder-runner/tbrunner.py command <menu id>
+```
+
+Verified on 2026-10-03 for menu commands and the standard file dialogs;
+**not** for Generate Layers, a real import or a WRP export. Use a disposable
+instance (`probe` posts every enabled entry under a prefix), back up
+`TerrainBuilder.opt`, `GUILayout.opt` and `Proj.vdat` (rewritten on exit), and
+press Terrain Builder's own dialog buttons by label: their ids are swapped (Ok
+2, Cancel 1). Its README holds the gotchas.
 
 ---
 

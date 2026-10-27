@@ -8,6 +8,9 @@ payloads into a JSON report before a build is launched.
 This is the pack OFFLINE layer. It does not launch DayZ. In-game verification
 belongs to DayZ-MCP.
 
+Its fail-closed PBO reader, `scripts/vehicle_proxy/pbo.py`, is also the reader
+of [`tools/dayz-pbo-diff`](../dayz-pbo-diff/README.md), through `digest_pbo`.
+
 ## Install
 
 ```powershell
