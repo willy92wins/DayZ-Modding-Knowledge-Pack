@@ -18,14 +18,16 @@ There is **no** `LoadRagdollFile` (or similar) in extracted 1.30 scripts. [UNVER
 custom creature auto-loads a same-named `.ragdoll` via the `.xob` GUID. `dayz-characters` documents
 the `SurvivorBase` config bind.
 
-### Infected do not ragdoll (in-game tested 2026-10-16, 1.30.164078)
+### Infected do not ragdoll (in-game test reported by the contributor, 2026-10-16, 1.30.164078)
 
-The ragdoll API is on `Human` only: `PhysicsSetRagdoll` / `PhysicsSetSimpleDeath` are declared in
-`scripts/3_Game/DayZ/human.c:1449-1451`. Infected inherit `DayZInfected` -> `DayZCreatureAI` ->
-`DayZCreature` -> `EntityAI` (`3_Game/DayZ/Entities/DayZInfected.c:104`, `DayZAnimal.c:24,191`), so
-none of those calls exist on an infected and a script call will not compile.
+[EXACT][CLAIM-PHYS-RAGDOLL-API-HUMAN-ONLY-130] The ragdoll API is on `Human` only: `PhysicsSetSimpleDeath` /
+`PhysicsSetRagdoll` / `PhysicsIsRagdoll` are declared in `scripts/3_Game/human.c:1449,1451-1452`, inside
+`class Human : Man` (`human.c:1359`). Infected inherit `DayZInfected` -> `DayZCreatureAI` ->
+`DayZCreature` -> `EntityAI` (`3_Game/Entities/DayZInfected.c:104`, `3_Game/Entities/DayZAnimal.c:24,191`), so
+none of those calls exist on an infected and a script call will not compile. The lines are the same in
+1.30.164014, 1.30.164078 and 1.30.164200.
 
-Config and clips do not work around it. [TESTED] An EOC custom infected (`z_hermit_m.xob`, own
+Config and clips do not work around it. [TESTED by the contributor] claim: CLAIM-PHYS-INFECTED-NO-RAGDOLL-130. A custom infected (`z_hermit_m.xob`, own
 1.30 graph) was given `ragdoll = "DZ/characters/bodies/human.ragdoll";` in both `enfanimsys`
 blocks, and its death states were pointed at vanilla player death `.anm` clips that embed the
 `Ragdoll` event (`p_erc_death01_F` etc.). Both test kills ran `DayZInfectedCommandDeathModdable`,

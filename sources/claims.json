@@ -2665,6 +2665,45 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-9821@2026-10-24",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/anim-graph.md",
+      "claim_id": "CLAIM-ANIM-AGR-PORT-129-130",
+      "evidence_locator": "Contributed through pull request #135 (written on DayZ 1.30.164078 stable, 2026-10-15). Re-read on review 2026-10-27 in local extractions of the 1.29 stable and 1.30.164014 animation workspaces. The one $AnimGraph 7 old/new pair is the infected graph: 1.29 DZ/anims/workspaces/infected/infected_main/{infected,Locomotion,Combat,Interaction}.agr against 1.30 infected.agr + Locomotion.agf, Combat.agf, Interaction.agf, infected.ast, infected_main.asi; on 1.29 samples/cow_example/*.agr is $AnimGraph 3 and samples/zombie_commonsamples/zow_graph_*.agr is $AnimGraph 2. Transition: Locomotion.agr:1145,1148,1151 against Locomotion.agf:1368-1395 (an empty from-state drops FromState, post-eval 0 drops PostEval). State: notime -> TimeStorage Inherit, normtime -> \"Normalized Time\" (Locomotion.agr:79 -> Locomotion.agf:92), realtime -> \"Real Time\". BlendT flags: DeathT, Locomotion.agr:1369 (... \"\" 0.1 \"S\" 7) against Locomotion.agf:1594-1606 (OptimizeMin 1, OptimizeMax 1, SelectMainPath 1). EditorPos: x kept and y negated for 214 of 214 uniquely named nodes of the three sub-graphs. Commands: 120 of 120 AnimSrcGCTCmd in the ten 1.30 masters are Synchronized 1. DefaultRunNode only in infected.agr and player_main.agr; AnimSyncTable absent only in player_inventory.agr, player_menu.agr and AmbientLife_Graph.agr (Wolf_Graph.agr:3 has one). Name \"Default\" at infected.ast:76 and Wolf.ast:4; \".unnamed\" only at zoW.ast:4. Sources: Combat.agf:7 \"Attack.Attack Left Heavy\", Wolf_MainGraph.agf:49 \"Default.Normal.attack_high\". GUIDs: 187 of 187 clips of the 1.29 infected_main.asi keep their GUID in 1.30 (43 of them hit or death clips). The rot code letters and Amount are the contributor's inference, the port has not been loaded in game, and RaG PBO Builder packing is the contributor's report. The 1.30.164200 animation PBOs were not re-read.",
+      "license": "MIT",
+      "line_end": 418,
+      "line_start": 347,
+      "observed_at": "2026-10-27",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "pr-135-kinkurono-dev",
+      "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
+      "claim_id": "CLAIM-PHYS-RAGDOLL-API-HUMAN-ONLY-130",
+      "evidence_locator": "Contributed through pull request #135; re-read on review 2026-10-27 in the 1.30.164014, 1.30.164078 and 1.30.164200 scripts, the same lines in all three: scripts/3_Game/human.c:1359 class Human : Man, :1449 PhysicsSetSimpleDeath, :1451 PhysicsSetRagdoll, :1452 PhysicsIsRagdoll; 3_Game/Entities/DayZInfected.c:104 class DayZInfected extends DayZCreatureAI; 3_Game/Entities/DayZAnimal.c:24 class DayZCreature extends EntityAI, :191 class DayZCreatureAI extends DayZCreature. In 1.30.164200 the one script call of PhysicsSetSimpleDeath is the player's, 4_World/Entities/DayZPlayerImplement.c:745. The pull request cited 3_Game/DayZ/... paths and human.c:1449-1451; corrected on review.",
+      "license": "MIT",
+      "line_end": 28,
+      "line_start": 21,
+      "observed_at": "2026-10-27",
+      "promotion_artifact_id": "skill/dayz-physics-engine",
+      "source_id": "pr-135-kinkurono-dev",
+      "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
+      "claim_id": "CLAIM-PHYS-INFECTED-NO-RAGDOLL-130",
+      "evidence_locator": "In-game test reported by the contributor through pull request #135 (DayZ 1.30.164078 stable, 2026-10-16): a custom infected (z_hermit_m.xob, its own 1.30 graph) with ragdoll = \"DZ/characters/bodies/human.ragdoll\" in both enfanimsys blocks and its death states on vanilla player death clips that carry the Ragdoll event; both test kills ran DayZInfectedCommandDeathModdable (4_World/Entities/DayZInfectedImplement.c:2 in 1.30.164200), played the full clip and froze in the last pose, with no RPT error. Not re-run for the pack. The corpse swap is a design and untested.",
+      "license": "MIT",
+      "line_end": 43,
+      "line_start": 30,
+      "observed_at": "2026-10-16",
+      "promotion_artifact_id": "skill/dayz-physics-engine",
+      "source_id": "pr-135-kinkurono-dev",
+      "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+      "verification_level": "historical"
     }
   ],
   "schema_version": 1

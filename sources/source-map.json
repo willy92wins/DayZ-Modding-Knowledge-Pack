@@ -1511,10 +1511,30 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-164200@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: two Added entries (the 1.29 to 1.30 AnimGraph port in anim-graph.md; infected do not ragdoll) and two Fixed entries (citations of files the pack does not ship; paths that pointed at the wrong place).",
+          "license": "MIT",
+          "source_hash": "d3129fb29e7947c468ed9e385f0daea5739824c1b1d8a80ad7f9f812810411be",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review of pull request #135 (2026-10-27): the contributor is credited on each of their four entries, the GUID count becomes 187 of 187 clips, and a Fixed entry records the line numbers corrected in anim-graph.md and dayz-handoff.md.",
+          "license": "MIT",
+          "source_hash": "28a4ebc33cd27727adc49404c97da6f7245cf5766905c774ea6393cdf5670ee6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/pr-135-review@2026-10-27",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d3129fb29e7947c468ed9e385f0daea5739824c1b1d8a80ad7f9f812810411be",
+      "output_hash": "28a4ebc33cd27727adc49404c97da6f7245cf5766905c774ea6393cdf5670ee6",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4664,6 +4684,16 @@
           "source_path": "skills/_shared/dayz-conventions.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: new section 'Citation placeholders: [PROJ], [SKILLS], <project>_dev/...', what each token means and that such a citation records provenance, not a file in the pack.",
+          "license": "MIT",
+          "source_hash": "7c019e4b0ed4839fec891e0a7c868c4c749ec236495bfbe27fe636d3d3e4573c",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/_shared/dayz-conventions.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -5168,10 +5198,30 @@
           "source_path": "skills/blender-animation/references/dayz-handoff.md",
           "source_revision": "kp-update-routec-fbx-ingame@2026-10-02",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: the project-only Route A scripts are marked as not shipped, Route C's exporter is the skill's scripts/seanim_export.py and the viewer builder is dayz-animation-pipeline/scripts/build_viewer.py.",
+          "license": "MIT",
+          "source_hash": "8e3ba998a5a033a6c6ba20cea9b058307714d7808d4b21cf845a70fc693680bd",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/blender-animation/references/dayz-handoff.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review of pull request #135 (2026-10-27): the seven quotes of weapon-anim-authoring-viewer.md point at its current lines (184-186, 190-192, 187-193, 188-189, 189-190, 171-172 twice), re-read line by line.",
+          "license": "MIT",
+          "source_hash": "c715330d04526a340eeb422dab2f9a34ed62b264a61a771e8eb7aac3e7456e97",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/references/dayz-handoff.md",
+          "source_revision": "update/pr-135-review@2026-10-27",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8e3ba998a5a033a6c6ba20cea9b058307714d7808d4b21cf845a70fc693680bd",
+      "output_hash": "c715330d04526a340eeb422dab2f9a34ed62b264a61a771e8eb7aac3e7456e97",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -5902,10 +5952,30 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "kp-update-lfsk-notes@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: a checklist item to port every custom creature graph with the 1.29 to 1.30 mapping in references/anim-graph.md.",
+          "license": "MIT",
+          "source_hash": "1a2d2a55d3fec20eafb54cb2d76e949194a360b6854b1ee11297238af395a04f",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review of pull request #135 (2026-10-27): the checklist item says the generator is the contributor's own and names the infected graph as the $AnimGraph 7 pair.",
+          "license": "MIT",
+          "source_hash": "7a4927666360e691228d5861d030d1fce66338fea601012836227367b066811f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "update/pr-135-review@2026-10-27",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1a2d2a55d3fec20eafb54cb2d76e949194a360b6854b1ee11297238af395a04f",
+      "output_hash": "7a4927666360e691228d5861d030d1fce66338fea601012836227367b066811f",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -5944,10 +6014,30 @@
           "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: new section 'Porting a 1.29 $AnimGraph 7 graph to 1.30 — field-by-field mapping' (written on 1.30.164078 stable) and the Human-only ragdoll note in the 1.30 script animation API list.",
+          "license": "MIT",
+          "source_hash": "d0a0bda9836665ac6a3caffc9e56ae3d2c177063641e0013a6f0e0d1ec44b312",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review of pull request #135 (2026-10-27), re-read in the 1.29 stable and 1.30.164014 animation extractions and the 1.30.164014/164078/164200 scripts: the infected graph is the one $AnimGraph 7 pair (the samples are $AnimGraph 3 and 2), DefaultRunNode and AnimSyncTable census of the ten masters (Wolf_Graph.agr:3 has a sync table), normtime -> Normalized Time, EditorPos y flip (214 of 214), DeathT at Locomotion.agf:1594-1606 against Locomotion.agr:1369, Combat.agf:7 and Wolf_MainGraph.agf:49 source examples, 187 of 187 clip GUIDs, packing labelled as reported, ragdoll prototypes at human.c:1449, :1451, :1452 (were 1448-1450). Adds the CLAIM-ANIM-AGR-PORT-129-130 marker.",
+          "license": "MIT",
+          "source_hash": "ba62701d4a25d1abe627a48d67fb1f062b72f85a6193cbb5f6ed8bffab18424e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "update/pr-135-review@2026-10-27",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d0a0bda9836665ac6a3caffc9e56ae3d2c177063641e0013a6f0e0d1ec44b312",
+      "output_hash": "ba62701d4a25d1abe627a48d67fb1f062b72f85a6193cbb5f6ed8bffab18424e",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6461,6 +6551,16 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: Route A's scripts are marked as project scripts not shipped; Route C's exporter is this skill's scripts/seanim_export.py.",
+          "license": "MIT",
+          "source_hash": "a158f842c90f678bc09bcaf68b2661cfa40ac77b90c391c4724caab815a0b4ee",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-authoring-viewer.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
         }
       ],
@@ -9020,6 +9120,16 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "kp-update-lfsk-notes@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: the validator's tables are cited at tools/dayz-script-validator/scripts/shared/vanilla_reference.py and dayz-ui-development is named in full.",
+          "license": "MIT",
+          "source_hash": "77f1454bbf0a7358c8e80968da2a8681eb6830c910c4252d0c810da457f86cc2",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -9051,6 +9161,16 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mod-workflow/references/audit-escalation.md",
           "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: a bug is reproduced with dayz-test-ingame, since the pack has no dayz-launch-test.",
+          "license": "MIT",
+          "source_hash": "b18f149955e9b62b4f302561299e4fd389917401a7c007fe8a429e5d0a492e98",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-mod-workflow/references/audit-escalation.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
         }
       ],
@@ -11518,10 +11638,30 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: a pitfall, assuming an infected can ragdoll on 1.30.",
+          "license": "MIT",
+          "source_hash": "56f4bcb1192d30ec2810c74a7c5364d72fe38ab0e69f7771d1c3b058f967f10f",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review of pull request #135 (2026-10-27): the pitfall labels the in-game test as reported in #135 on 1.30.164078.",
+          "license": "MIT",
+          "source_hash": "34a199208130f4b94d3df53eaf03925ce2317b613c5693767ed3b512688c4118",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "update/pr-135-review@2026-10-27",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "56f4bcb1192d30ec2810c74a7c5364d72fe38ab0e69f7771d1c3b058f967f10f",
+      "output_hash": "34a199208130f4b94d3df53eaf03925ce2317b613c5693767ed3b512688c4118",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -15578,6 +15718,16 @@
           "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: the fix_firegeo_mass.py citation is marked as a project file not shipped and points at the pattern in dayz-p3d-audit references/vehicle-killers.md.",
+          "license": "MIT",
+          "source_hash": "592c5532b4d9d25284c16b0409e0d9b66e7051807daa09000049d0d225fa273b",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-vehicles/references/vehicle-structural-parity.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -15966,6 +16116,16 @@
           "source_path": "skills/dayz-weapons/references/p3d-selection-contract.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: the painter HTML is marked as a project file not shipped.",
+          "license": "MIT",
+          "source_hash": "d59caa1c5a33a5f89cb532d0826b9f40dd9eac98b17c7e154a4b151ce45f22e5",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-weapons/references/p3d-selection-contract.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -16078,6 +16238,16 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "kp-update-lfsk-notes@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: run_flir_autotest.ps1 is cited under its project folder and marked as not shipped.",
+          "license": "MIT",
+          "source_hash": "b504cb7cd479f017fea96dd83af55d2b4e11c85265cb0315fb410f6f06b5e754",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -16634,6 +16804,16 @@
           "source_path": "skills/rigorous-data-audit/index.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: the links to the 11 per-skill audit reports, which are not in the pack, are replaced with a note.",
+          "license": "MIT",
+          "source_hash": "238f4eeaf61e03bfd3003ca5e59c09fc36dc96f39f458330b65116bfdd7af538",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/rigorous-data-audit/index.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -17175,6 +17355,16 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: rip_p2_import.py and rip_contract_source.py are marked as scripts of the import project, not shipped.",
+          "license": "MIT",
+          "source_hash": "188c99ddf208df901641bf142f4501ae6e892818cf77c1176040f395f51effe7",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
         }
       ],
@@ -18813,10 +19003,30 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: CLAIM-ANIM-ROUTEC-RIG-FRAMES and CLAIM-ANIM-ROUTEC-FBX-INGAME move down one line after the line it adds to weapon-anim-authoring-viewer.md.",
+          "license": "MIT",
+          "source_hash": "47910657a0bb442df65230a66b26989b3006dfe925c8f079dea4d53e937e8441",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "sources/claims.json",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review of pull request #135 (2026-10-27): adds CLAIM-ANIM-AGR-PORT-129-130, CLAIM-PHYS-RAGDOLL-API-HUMAN-ONLY-130 and CLAIM-PHYS-INFECTED-NO-RAGDOLL-130.",
+          "license": "MIT",
+          "source_hash": "0668c88c10c78723f774eb12ed53df56cca752af47883c586e3eb5b09d15b882",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/pr-135-review@2026-10-27",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "47910657a0bb442df65230a66b26989b3006dfe925c8f079dea4d53e937e8441",
+      "output_hash": "0668c88c10c78723f774eb12ed53df56cca752af47883c586e3eb5b09d15b882",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -34173,10 +34383,30 @@
           "source_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pull request #135: new section 'Infected do not ragdoll', with the contributor's in-game test of 2026-10-16 on 1.30.164078 and the corpse-swap design.",
+          "license": "MIT",
+          "source_hash": "96b8ed09cb7397407d3f77ffb0ac27e65ffd7359c900f18163ffd04a4ab37e07",
+          "source_id": "pr-135-kinkurono-dev",
+          "source_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
+          "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+          "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review of pull request #135 (2026-10-27): the declarations are cited at scripts/3_Game/human.c:1449,1451-1452 inside class Human (:1359) and the class chain at 3_Game/Entities/DayZInfected.c:104 and DayZAnimal.c:24,191 (the pull request's 3_Game/DayZ/ paths do not exist), the same in 1.30.164014, 164078 and 164200; the test is labelled as the contributor's. Adds the CLAIM-PHYS-RAGDOLL-API-HUMAN-ONLY-130 and CLAIM-PHYS-INFECTED-NO-RAGDOLL-130 markers.",
+          "license": "MIT",
+          "source_hash": "6b6f96828cb34e4057408744a0cff932d4813eea3890c007160ab9069958b412",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
+          "source_revision": "update/pr-135-review@2026-10-27",
+          "verification_level": "historical"
         }
       ],
       "license": "MIT",
-      "output_hash": "96b8ed09cb7397407d3f77ffb0ac27e65ffd7359c900f18163ffd04a4ab37e07",
+      "output_hash": "6b6f96828cb34e4057408744a0cff932d4813eea3890c007160ab9069958b412",
       "output_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "historical"
@@ -38096,6 +38326,14 @@
       "notes": "The private Baltic 12 km terrain project of the Pack's owner. Five of its tool files, contributed through pipeline inbox fb-20261003-203108-9821 with the sha256 its inputs record, were read as data and never run or imported for the Pack: four were adapted into tools/dayz-pbo-diff, tools/dayz-navmesh-compare and tools/dayz-terrain-builder-runner; the fifth, whose PBO reader the entry diff used, is superseded by the Pack's own reader. Its evidence folders are not published.",
       "revision": "84e2bb8 (branch v29-base)",
       "source_id": "dayz-baltic-12km"
+    },
+    {
+      "kind": "git",
+      "license": "MIT (contributed to the pack under its licence through a pull request)",
+      "notes": "Community contribution by GitHub user kinkurono-dev (commits authored as Kinkurono) through pull request #135, opened 2026-10-26: a 1.29 to 1.30 AnimGraph port mapping, the infected ragdoll test and citation fixes. Its three commits were cherry-picked with authorship kept and reviewed on 2026-10-27 against local 1.29, 1.30.164014, 1.30.164078 and 1.30.164200 vanilla extractions; the corrections are recorded as pack-r21-authored inputs. The contributor's own project files it names (a creature-graph generator, an infected test mod) are not shipped.",
+      "public_locator": "https://github.com/willy92wins/DayZ-Modding-Knowledge-Pack/pull/135",
+      "revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
+      "source_id": "pr-135-kinkurono-dev"
     }
   ]
 }

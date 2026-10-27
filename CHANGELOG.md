@@ -12,16 +12,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (`.agr` as `AnimSrcGraph`, `.agf` as `AnimSrcGraphFile`, `.ast` as `AnimSetTemplateSource`,
   `.asi` as `AnimSetInstanceSource`), node by node (source, blend, timed blend, group select, state
   machine, state, transition, procedural rotation), the three-part template and instance keys, and
-  the resource GUIDs: vanilla clip GUIDs are unchanged from 1.29 on all 17 infected hit and death
-  clips checked, and your own files take GUIDs derived from a stable seed so a regeneration is
-  byte-identical. `SKILL.md` adds a checklist item to port every custom creature graph from it.
+  the resource GUIDs: all 187 clips of the vanilla infected instance keep their 1.29 GUID (43 of
+  them hit or death clips), and your own files take GUIDs derived from a stable seed so a
+  regeneration is byte-identical. `SKILL.md` adds a checklist item to port every custom creature
+  graph from it. Contributed by @kinkurono-dev (#135). On review the mapping was re-read in the one
+  `$AnimGraph 7` pair vanilla ships, the infected graph (the `cow_example` and `zombie_commonsamples`
+  samples are `$AnimGraph 3` and `2` on 1.29), which adds the `normtime` state mode and the
+  `EditorPos` y flip; `CLAIM-ANIM-AGR-PORT-129-130`.
 - `dayz-physics-engine` `references/dayz-1-30-ragdoll-and-fall.md`, new section "Infected do not
   ragdoll" (in game 2026-10-16, 1.30.164078): the ragdoll API (`PhysicsSetRagdoll`,
   `PhysicsSetSimpleDeath`) is declared on `Human` only, and neither `ragdoll =` in an infected's
   `enfanimsys` nor player death clips carrying the `Ragdoll` event make an infected ragdoll: the clip
   plays out and the body freezes. A corpse swap is the remaining route. `SKILL.md` lists the
-  assumption with its pitfalls.
-
+  assumption with its pitfalls. Contributed by @kinkurono-dev (#135), with their in-game test
+  (`CLAIM-PHYS-INFECTED-NO-RAGDOLL-130`); the declarations and the class chain were re-read in
+  1.30.164014, 1.30.164078 and 1.30.164200 (`CLAIM-PHYS-RAGDOLL-API-HUMAN-ONLY-130`).
 - `dayz-pbo-diff`, a new tool: compares the entries of two uncompressed PBOs by the SHA-256 of each
   payload, and their header properties, and writes one new JSON report (`differing`, `only_old`,
   `only_new`, `props_equal`, `differing_not_ignored`). It reads both through the fail-closed reader of
@@ -575,7 +580,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `references/vehicle-killers.md`), `dayz-weapons` `references/p3d-selection-contract.md`,
   `enforce-script-reference` `SKILL.md` and `rip-vehicle-import` `SKILL.md` are marked as not
   shipped, and `rigorous-data-audit` `index.md` replaces its links to the 11 per-skill audit
-  reports, which are not in the pack, with a note.
+  reports, which are not in the pack, with a note. Contributed by @kinkurono-dev (#135).
 - Paths that pointed at the wrong place: Route C's exporter is the skill's own
   `scripts/seanim_export.py` (`weapon-anim-authoring-viewer.md`, `dayz-handoff.md`), and the viewer
   builder `dayz-handoff.md` cites is `dayz-animation-pipeline/scripts/build_viewer.py`;
@@ -584,7 +589,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `dayz-ui-development` skill in full; its `references/audit-escalation.md` reproduces a bug with
   `dayz-test-ingame`, since the pack has no `dayz-launch-test`. The two claims after the new line in
   `weapon-anim-authoring-viewer.md` (`CLAIM-ANIM-ROUTEC-RIG-FRAMES`,
-  `CLAIM-ANIM-ROUTEC-FBX-INGAME`) move down one line.
+  `CLAIM-ANIM-ROUTEC-FBX-INGAME`) move down one line. Contributed by @kinkurono-dev (#135).
+- Line numbers that had drifted, found while reviewing #135: `dayz-animation-pipeline`
+  `references/anim-graph.md` gives the 1.30 ragdoll prototypes at `human.c:1449`, `:1451` and
+  `:1452` (not 1448 to 1450), and `blender-animation` `references/dayz-handoff.md` quotes
+  `weapon-anim-authoring-viewer.md` at its current lines (Route A 184-186, Route C 187-193, the quat
+  convention 188-190, the switch to the JD rig 171-172).
 - `dayz-vehicles` `references/dayz-1-30-vehicles.md` and `SKILL.md`, `dayz-motorbikes`
   `references/vehicle-1.30-refactor.md`: what porting a 1.29 quad (LFQuad) to DayZ 1.30.164200
   stable found, read in the 1.30.164200 and 1.29 scripts on 2026-10-26.
