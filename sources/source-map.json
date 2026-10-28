@@ -1564,7 +1564,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "46eed8cb7efa6a832e50e8b08d8e995c80668c6401ccba54557243126a46276d",
+      "output_hash": "bc9378115d81afc45d3b573f6c7444665c29a1eaccf691b8e6e817299d1c3427",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -16061,7 +16061,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "acfa263642a4cc2d5a39b639fea64722cebbf1f681f457e79a7dde4e14a457a9",
+      "output_hash": "d2e843111e4fa9e7b481fd0d40f0eddb1e2d347228b3b91b6f1e5096f353a451",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -34786,7 +34786,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "edf74be6cef95315722a6ec55a3e8e3531f52e099f04f91ccc72d7f366266fbe",
+      "output_hash": "2741c5cbca1a82395ae580237ca35bca5a9dbbf6cd5ca7951f6930bbfe4a5e2a",
       "output_path": "skills/dayz-weapons/references/dayz-1-30-weapons.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "historical"

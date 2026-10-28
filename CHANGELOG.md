@@ -542,10 +542,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     (`nasdara\addons\`, 24 PBOs and the encrypted `worlds_nasdara.ebo`, which was not opened), where
     1.30.164014 had only a 6-file `data_nasdara.pbo`. The sickness-icon defect, which changed on
     1.30.164078, is still there.
-  - `dayz-weapons`: W-STAGING1 now holds for 1.30.164014 only. On 1.30.164200 the SCARL, Luger,
-    LeeEnfield and MP18, their magazines and the P1907 bayonet ship with their models and configs
-    in `nasdara\addons\weapons_nasdara.pbo` (prefix `DZ\weapons_takistan`), not in
-    `weapons_firearms` or `weapons_pistols`; spawning them was not tried.
+  - `dayz-weapons`: W-STAGING1 is re-checked. On 1.30.164200 the SCARL, Luger, LeeEnfield and
+    MP18, their magazines and the P1907 bayonet ship with their models and configs in
+    `nasdara\addons\weapons_nasdara.pbo` (prefix `DZ\weapons_takistan`), not in `weapons_firearms`
+    or `weapons_pistols`, and the vanilla Nasdara `types.xml` spawns them, so "no model and no config
+    class" holds for 1.30.164014 only. `references/dayz-1-30-weapons.md` lists their classes: two
+    config parents are not the script ones (`SCARL_Base` and `MP18_Base` inherit `Rifle_Base`).
+    Spawning them in game was not tried.
 
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164200 stable
   (`DayZDiag_x64.exe` 1.30.164.200). On that tree it failed only on the tree's digest: the
