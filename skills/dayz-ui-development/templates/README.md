@@ -107,8 +107,8 @@ the panel is not on screen. Text floats over the world.
 | Style | Type it belongs to | What `Normal` draws |
 |---|---|---|
 | `Colorable` | `WindowWidget` (`gui/layouts/dialog.layout:16`) | WhitePixel (window) |
-| `ColorablePanel` | `PanelWidget` (`dayzwidgets.styles:3327`) | `Center=""` — nothing |
-| `rover_sim_colorable` | `PanelWidget` (`dayzwidgets.styles:3223`) | `Center="WhitePixel"` |
+| `ColorablePanel` | `PanelWidget` (`dayzwidgets.styles:3388`) | `Center=""` — nothing |
+| `rover_sim_colorable` | `PanelWidget` (`dayzwidgets.styles:3284`) | `Center="WhitePixel"` |
 
 Vanilla uses `rover_sim_colorable` on panels **577 times**. `ColorablePanel`
 exists and is the wrong guess. Existence is not enough; open

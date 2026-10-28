@@ -150,9 +150,9 @@ an in-game measurement.
 | `MultilineTextWidgetClass` | 351 | Multi-line static text (word-wraps; distinct from MultilineEditBox) |
 | `TextListboxWidgetClass` | 133 | Row/column list (AddItem/GetSelectedRow API in SKILL.md table) |
 | `WindowWidgetClass` | 66 | Titled window chrome |
-| `ItemPreviewWidgetClass` | 65 | 3D item render; script API `SetItem(EntityAI)/SetView(idx)` — `gameplay.c:276-288` |
+| `ItemPreviewWidgetClass` | 65 | 3D item render; script API `SetItem(EntityAI)/SetView(idx)` — `gameplay.c:286-302` |
 | `ThreeStateCheckboxWidgetClass` | 10 | CheckBox variant |
-| `PlayerPreviewWidgetClass` | 5 | 3D player render; `SetPlayer(DayZPlayer)` — `gameplay.c:300-312` |
+| `PlayerPreviewWidgetClass` | 5 | 3D player render; `SetPlayer(DayZPlayer)` — `gameplay.c:305-313` |
 | `PasswordEditBoxWidgetClass` | 1 | EditBox with masked input |
 
 Attributes the property reference below omits (corpus counts): `priority` (1,440 — layout-side
@@ -679,7 +679,7 @@ ImageWidgetClass ClickBlocker {
    call `SetLV`.** *(Corrected twice. 2026-07-03 retired "boost colors 30%+". 2026-08-22 retired
    its replacement, `SetLV(0)` at init: those setters are `proto static`/global
    (`enwidgets.c:114-117`) and vanilla drives them from `EDayZProfilesOptions.HUD_BRIGHTNESS`
-   (`dayzgame.c:3778-3787`), so calling them from a mod overwrites the player's setting.)*
+   (`dayzgame.c:3910-3919`), so calling them from a mod overwrites the player's setting.)*
    Author ARGB honestly, pick colors that survive a dimmed HUD, and verify at a non-zero
    brightness. Saturated colors were barely affected; grays and pastels were the ones darkened.
    See SKILL.md COLOR SYSTEM.

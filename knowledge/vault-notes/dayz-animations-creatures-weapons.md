@@ -546,7 +546,7 @@ base pose override, without scripted bones.
   `init.c` — the captured character is the client's local player and server overrides do not move its
   render (gate iter36: server `raised=1` but weapon lowered). `WeaponADS()` is input flag (without script
   override) → erroneous success metric; use `IsRaised()` / client log. Not `SetIronsights()` (fights with
-  free-cam). 3rd person aim pose depends only on `IsRaised()` (`dayzplayerimplement.c:1726`,
+  free-cam). 3rd person aim pose depends only on `IsRaised()` (`dayzplayerimplement.c:1742`,
   AimingModel).
 - **Judge by the hand at NATIVE resolution**, never rescaled contact-sheet (the ~30px hand is deceptive; a
   good grip was declared "inert" from looking at thumbnail).

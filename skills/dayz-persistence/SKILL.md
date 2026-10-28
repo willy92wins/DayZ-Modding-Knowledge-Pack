@@ -27,20 +27,20 @@ ownership and the required recovery surface.
 Use the stream for data owned by the entity's own mod when uninstall survival is
 not required. `EntityAI.OnStoreSave(ParamsWriteContext)` and
 `EntityAI.OnStoreLoad(ParamsReadContext, int)` are the hooks
-(`VANILLA/3_game/entities/entityai.c:2925`; `VANILLA/3_game/entities/entityai.c:2989`). Save and load fields in the same
+(`VANILLA/3_game/entities/entityai.c:2910`; `VANILLA/3_game/entities/entityai.c:2978`). Save and load fields in the same
 order and type, propagate `super`, stage reads, and return `false` on any failed
 `ctx.Read`; partial state is never valid
-(`VANILLA/3_game/entities/entityai.c:2969-2985`).
+(`VANILLA/3_game/entities/entityai.c:2958-2974`).
 
 The hook version is the DayZ build from `g_Game.SaveVersion()`, not the mod's
-schema version (`VANILLA/3_game/global/game.c:434`). The base stream has variable
+schema version (`VANILLA/3_game/global/game.c:435`). The base stream has variable
 width: the optional energy component writes nine fields or none, so a fixed
 offset after `super` is a latent alignment bug
-(`VANILLA/3_game/entities/entityai.c:2928-2959`). If the mod is removed, no
+(`VANILLA/3_game/entities/entityai.c:2917-2948`). If the mod is removed, no
 remaining code re-emits its appended bytes.
 (hasta 1.29: that EntityAI prefix was energy-or-nothing plus `SaveVariables`;
 `GAME_STORAGE_VERSION` was 142.)
-(desde 1.30 Exp: energy is still optional, but `HandleStoreSave` runs first and
+(desde 1.30: energy is still optional, but `HandleStoreSave` runs first and
 `PlayerBase` appends `ThermalBiasHandler` with no version gate. See
 [references/dayz-1-30-persistence.md](references/dayz-1-30-persistence.md).)
 
@@ -143,8 +143,8 @@ Rules: (1) before censusing a storage copy, check that `data/` brings `types.bin
 
 [EXACT][CLAIM-PERS-CE-DEFAULT-LIFETIME] The central economy keeps a lifetime, in seconds, on every
 entity it persists: `GetLifetime`/`SetLifetime` read and set what remains, `GetLifetimeMax`/`SetLifetimeMax`
-the maximum (`VANILLA/3_game/entities/entityai.c:3378-3387`), and `GetEconomyProfile` returns the class's
-economy profile (`VANILLA/3_game/entities/entityai.c:883`). A probe in the LFPowerGrid mod logged them for
+the maximum (`VANILLA/3_game/entities/entityai.c:3377-3386`), and `GetEconomyProfile` returns the class's
+economy profile (`VANILLA/3_game/entities/entityai.c:888`). A probe in the LFPowerGrid mod logged them for
 classes that have no entry in any `types.xml`:
 
 - the profile's lifetime and `GetLifetimeMax()` are both 1800;
@@ -189,7 +189,7 @@ restrict where an entry spawns; they are not needed for it to spawn.
 ### `OnStoreLoad` returning false keeps the entity (SP-460, added 2026-10-04, measured in game, DayZDiag 1.29.163709)
 
 [EXACT][CLAIM-PERS-ONSTORELOAD-FALSE-KEEPS] When an entity's `OnStoreLoad`
-(`VANILLA/3_game/entities/entityai.c:2989`) returns false, the engine does not delete the entity. The RPT prints
+(`VANILLA/3_game/entities/entityai.c:2978`) returns false, the engine does not delete the entity. The RPT prints
 `!!! Scripted variables corrupted upon "<class>"` with `Reason: [EntityAI::OnStoreLoad] :: [WARNING]`, and the
 entity stays in the world with its script variables at their defaults, except what the load had already assigned
 before it returned. Measured with three batteries of the LFPowerGrid mod whose load read their wires and then
@@ -300,7 +300,7 @@ three ways to cross that binding.
 Every entry point that creates or deletes such an entity has to honour the first rule; the
 inventory to walk is in `rigorous-data-audit`, `references/entry-point-audit.md`.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 Verified against `exp\scripts\scripts\` (1.30.164014) vs `stable-1.29`. Full
 `[EXACT]` bodies live in
@@ -316,8 +316,8 @@ Mission-file exception: [references/sidecar-files.md](references/sidecar-files.m
   at `:435`. CombinationLock and EntityAI construction load branch on
   `version >= 143`; a 1.29 record (`142`) skips those new fields.
 - `EntityAI.OnStoreSave` calls `ConstructionBasic.HandleStoreSave` before
-  energy (`3_Game\Entities\EntityAI.c:2887-2891`). Load of that block is
-  `version >= 143` (`:2955-2961`). Empty for `BaseBuildingBase`; `Rebuilding`
+  energy (`3_Game\Entities\EntityAI.c:2910-2914`). Load of that block is
+  `version >= 143` (`:2978-2984`). Empty for `BaseBuildingBase`; `Rebuilding`
   writes `REBUILDING_STORAGE_VERSION` plus ten ints.
 - `PlayerBase` MP save appends `m_ThermalBiasHandler.OnStoreSave` after the
   arrow manager (`4_World\Entities\ManBase\PlayerBase.c:7395`). Load has **no**
@@ -326,7 +326,7 @@ Mission-file exception: [references/sidecar-files.md](references/sidecar-files.m
 - `CombinationLock` writes `m_CombinationInside` and reads it at
   `version >= 143` (`4_World\Entities\ItemBase\CombinationLock.c:128-177`).
 - New `DigitalCodeLock` streams PIN / locked / door index through
-  `CodeLockComponent` (`ItemBase\CodeLock.c:469-482`;
+  `CodeLockComponent` (`ItemBase\CodeLock.c:484-497`;
   `Classes\CodeLockComponent.c:257-277`).
 - New `$mission:BunkerBroadcastPersistenceStorage.bin` via `FileSerializer`
   (`Classes\BunkerBroadcastHandler.c:16-82`). Not the character/world bin.

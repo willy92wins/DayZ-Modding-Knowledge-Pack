@@ -1,4 +1,4 @@
-# DayZ 1.30 Exp (build 1.30.164014) — vehicle script/config deltas
+# DayZ 1.30 — vehicle script/config deltas
 
 This atlas `SKILL.md` already carries a 2026-09-16 1.30 matrix (Motorbike sibling + component refactor). This file holds the rest of the 1.30 vehicle contract that does not fit in the 1896-line core: physics/VFX knobs, lights/horn/input migration, get-in gate changes, boats, wrecks, and `speedGeoms`. Every `[EXACT]` block was copied from `exp\` on 2026-09-17. Car/truck authoring that still talks about 1.29 (`CarLightBase`, `CreateFrontLight`, `ForceUpdateLightsStart`) is kept in the core and marked there.
 
@@ -6,11 +6,11 @@ Migration of a 1.29 *car* mod also lives in `dayz-motorbikes/references/vehicle-
 
 ## What 1.30 changes (cars / trucks / boats)
 
-| Topic | Until 1.29 | Since 1.30 Exp | Cite |
+| Topic | Until 1.29 | Since 1.30 | Cite |
 |---|---|---|---|
 | Transport children | `Car` + `Boat` | third sibling `Motorbike` (`simulation = "motorbike"`) | `exp\bin\bin\config.cpp:1054-1059`, `Motorbike.c:30` |
 | Headlights | subclass `CarLightBase` + `CreateFrontLight`/`CreateRearLight` | `VehicleLightBase` + `VehicleLightProfileBase` registered on `m_LightsComponent` | `VehicleLightBase.c:1`, `CivilianSedanFrontLight.c:1`, `Offroad_02.c:21-22` |
-| Battery vital | `IsVitalCarBattery` / `IsVitalTruckBattery` | `NeedElectricitySourceDevice` / `GetElectricitySourceDevice` / `GetElectricitySourceDeviceType` | `Transport.c:821-833`, `CarScript.c:2811-2817` |
+| Battery vital | `IsVitalCarBattery` / `IsVitalTruckBattery` | `NeedElectricitySourceDevice` / `GetElectricitySourceDevice` / `GetElectricitySourceDeviceType` | `Transport.c:830-842`, `CarScript.c:2811-2817` |
 | Horn actions | `ActionCarHornShort`/`Long` | `ActionVehicleHornShort`/`Long`; `CarHorn*ActionInput` are empty aliases | `CarScript.c:2319-2320`, `ActionCarHorn.c:1,69-70,213-214`, `ActionInput.c:757-758` |
 | Light toggle input | `UAToggleHeadlight` (`ToggleLightsActionInput`) | vehicle lights use `UAToggleVehicleLights` (`ToggleVehicleLightsActionInput`) | `ActionSwitchLights.c:16-18`, `ActionInput.c:776-782,849-855`, `bin\constants.xml:90-91` |
 | Forced light refresh | `ForceUpdateLightsStart`/`End` | `[Obsolete("1.30: no replacement")]` — delete the calls | `CarScript.c:2805-2809` |
@@ -19,10 +19,10 @@ Migration of a 1.29 *car* mod also lives in `dayz-motorbikes/references/vehicle-
 | Ruined wheel swap | a `switch` over the vanilla wheel names; a mod wheel was never swapped | every wheel class is swapped for `<class>_Ruined`, and a missing one raises an error | 1.29 `InventoryItem.c:214-248`; 1.30.164200 `inventoryitemtype.c:17-46`; section 11 |
 | Fluids | `CarFluid` / isolated `BoatFluid` | `enum ETransportFluid`; `BoatFluid : ETransportFluid {}` | `Transport.c:52-63`, `Boat.c:13` |
 | Boat speedo | listed as Car-only | `Boat.GetSpeedometer` + `GetSpeedometerAbsolute` | `Boat.c:42-56` |
-| Get-in | `IsAreaAtDoorFree` | `CanGetIn()` then `IsAreaAtDoorFreeDiag`; script **does** call `CanReachSeatFromDoors` | `ActionGetInTransport.c:36,54,64`, `Transport.c:672-675` |
-| VFX scale | — | `GetWeightCoef()` (default 1.0) | `Transport.c:475-478` |
+| Get-in | `IsAreaAtDoorFree` | `CanGetIn()` then `IsAreaAtDoorFreeDiag`; script **does** call `CanReachSeatFromDoors` | `ActionGetInTransport.c:36,54,64`, `Transport.c:675-678` |
+| VFX scale | — | `GetWeightCoef()` (default 1.0) | `Transport.c:478-481` |
 | Ganged rear bulbs | — | `HasGangedTailAndBrakeLights()` (default false) | `CarScript.c:468-471,2061-2094` |
-| High-speed geom | changelog only | config `speedGeomActivation` + `speedGeoms[]` | `vehicles_singletrack\config.cpp:226-227`; changelog MODDING |
+| High-speed geom | changelog only | config `speedGeomActivation` + `speedGeoms[]` | `vehicles_singletrack\config.cpp:230-231`; changelog MODDING |
 | Motorbike 3PP camera | — | `DAYZCAMERA_3RD_VEHICLE_MOTORBIKE = 32` | `DayZPlayerCameras.c:20,63` — detail in `dayz-motorbikes/references/rider-animation.md` |
 
 [EXACT][CLAIM-ODOL-V56-130] Vanilla P3Ds on 1.30 Exp are ODOL **v56** (1.29 stable: v54); read the P3D header (bytes 4-7) before any extraction or parity tooling on a new build — a v54 reader fails with `ValueError: subsection not found`. [DESIGN] Preflight: on a new build, run a positive control with the previous build's reader before starting vehicle parity work. Measured headers: `Motorbike_01`/`Motorbike_02` and `offroadhatchback` read 56 on 1.30.164014 Exp; the 1.29 `offroadhatchback.p3d` reads 54 and converts cleanly. Full motorbike anatomy tables read from the v56 binaries: `dayz-motorbikes/references/vanilla-p3d-anatomy.md`. An external ODOL->MLOD converter needs a v56-capable reader for 1.30 vanilla models.
@@ -35,7 +35,7 @@ Migration of a 1.29 *car* mod also lives in `dayz-motorbikes/references/vehicle-
 
 (until 1.29: subclass `CarLightBase` / `CarRearLightBase` and override `CreateFrontLight`/`CreateRearLight`.)
 
-(since 1.30 Exp:) `CreateFrontLight`/`CreateRearLight` are `[Obsolete("1.30: use VehicleLightsComponent instead")]` (`CarScript.c:2936-2948`). Vanilla `*FrontLight` classes stay on disk as obsolete wrappers:
+(since 1.30:) `CreateFrontLight`/`CreateRearLight` are `[Obsolete("1.30: use VehicleLightsComponent instead")]` (`CarScript.c:2936-2948`). Vanilla `*FrontLight` classes stay on disk as obsolete wrappers:
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Entities\ScriptedLightBase\SpotLightBase\CarLightBase\CivilianSedanFrontLight.c:1-4
@@ -56,7 +56,7 @@ The live light entity is `VehicleLightBase : SpotLightBase` (`VehicleLightBase.c
 `ActionSwitchLights` now uses `ToggleVehicleLightsActionInput` and `transport.LightToggle()`:
 
 ```c
-// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\Vehicles\ActionSwitchLights.c:16-18
+// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\Vehicles\ActionSwitchLights.c:16-19
 	override typename GetInputType()
 	{
 		return ToggleVehicleLightsActionInput;
@@ -87,7 +87,7 @@ Headgear torches still bind `UAToggleHeadlight` (`ToggleLightsActionInput` at `A
 ## 2. Electricity: `NeedElectricitySourceDevice` (not `IsVital*Battery`)
 
 ```c
-// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:821-833
+// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:830-843
 	bool NeedElectricitySourceDevice()
 	{
 		return true;
@@ -107,7 +107,7 @@ Headgear torches still bind `UAToggleHeadlight` (`ToggleLightsActionInput` at `A
 `ActionSwitchLights.ActionCondition` consults that trio (`ActionSwitchLights.c:38-46`). Vanilla Offroad_02:
 
 ```c
-// [EXACT] exp\scripts\scripts\4_World\Entities\Vehicles\InheritedCars\Offroad_02.c:73-87
+// [EXACT] exp\scripts\scripts\4_World\Entities\Vehicles\InheritedCars\Offroad_02.c:73-88
 	override bool NeedElectricitySourceDevice()
 	{
 		return true;
@@ -126,7 +126,7 @@ Headgear torches still bind `UAToggleHeadlight` (`ToggleLightsActionInput` at `A
 	}
 ```
 
-Magneto/kickstart bikes override `NeedElectricitySourceDevice()` to `false` (`Motorbike_02.c:34-37`).
+Magneto/kickstart bikes override `NeedElectricitySourceDevice()` to `false` (`Motorbike_02.c:31-34`).
 
 [EXACT][CLAIM-VEH-NO-BATTERY-DEFAULT-130] A battery car that does not override the three methods has no battery as far as 1.30 is concerned, with one attached. `Transport` answers `true`, `null` and `""` (1.30.164200 `transport.c:830-843`), and `CarScript.GetBattery()` casts that `null` (`carscript.c:2437-2440`). Three things follow:
 - `CheckOperationalRequirements` adds `NO_BATTERY` (`carscript.c:1768-1774`), so the engine never starts;
@@ -142,7 +142,7 @@ The 1.29 way, overriding `IsVitalCarBattery` or `IsVitalTruckBattery`, still com
 ## 4. `GetWeightCoef` and `HasGangedTailAndBrakeLights`
 
 ```c
-// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:475-478
+// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:478-481
 	float GetWeightCoef()
 	{
 		return 1.0;
@@ -150,7 +150,7 @@ The 1.29 way, overriding `IsVitalCarBattery` or `IsVitalTruckBattery`, still com
 	
 ```
 
-Vanilla overrides (verified): `Truck_01_Base` → `2.0` (`Truck_01_Base.c:120-123`); `Offroad_02` → `1.5` (`Offroad_02.c:133-136`); `Motorbike_01` → `0.5` (`Motorbike_01.c:87-90`); `Motorbike_02` → `0.75` (`Motorbike_02.c:77-80`). `CarScript` feeds the coef into VFX float modifiers (`CarScript.c:720,793`). Digest M claimed motorbikes return `0.25` from `MotorbikeScript.c:646`; that line *uses* `GetWeightCoef()`, it does not return 0.25.
+Vanilla overrides (verified): `Truck_01_Base` → `2.0` (`Truck_01_Base.c:120-123`); `Offroad_02` → `1.5` (`Offroad_02.c:133-136`); `Motorbike_01` → `0.5` (`Motorbike_01.c:84-87`); `Motorbike_02` → `0.75` (`Motorbike_02.c:74-77`). `CarScript` feeds the coef into VFX float modifiers (`CarScript.c:720,793`). Digest M claimed motorbikes return `0.25` from `MotorbikeScript.c:661`; that line *uses* `GetWeightCoef()`, it does not return 0.25.
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c:468-471
@@ -160,13 +160,13 @@ Vanilla overrides (verified): `Truck_01_Base` → `2.0` (`Truck_01_Base.c:120-12
 	}
 ```
 
-When true, reverse/position material swaps do not turn the brake selection off (`CarScript.c:2061-2094`). Offroad_02 and both vanilla bikes override to `true` (`Offroad_02.c:68-71`, `Motorbike_01.c:28` / `Motorbike_02.c:29`).
+When true, reverse/position material swaps do not turn the brake selection off (`CarScript.c:2061-2094`). Offroad_02 overrides it to `true` (`Offroad_02.c:68-71`). The bikes are `MotorbikeScript`, which has its own copy, also `false` (`MotorbikeScript.c:169-172`): until 1.30.164078 both vanilla bikes overrode it to `true` (1.30.164078 `motorbike_01.c:28` / `motorbike_02.c:29`), and on 1.30.164200 neither does.
 
 ## 5. Get-in (1.30 condition)
 
 (until 1.29: four gates ending at `IsAreaAtDoorFree` + a claim that script never calls `CanReachSeatFromDoors`.)
 
-(since 1.30 Exp:) `ActionGetInTransport.ActionCondition` also requires `transport.CanGetIn()` (default `true` on `Transport`, `Transport.c:672-675`) and `IsAreaAtDoorFreeDiag(crewIndex)` (`ActionGetInTransport.c:36,54`). Gate 4 **is** invoked from script:
+(since 1.30:) `ActionGetInTransport.ActionCondition` also requires `transport.CanGetIn()` (default `true` on `Transport`, `Transport.c:675-678`) and `IsAreaAtDoorFreeDiag(crewIndex)` (`ActionGetInTransport.c:36,54`). Gate 4 **is** invoked from script:
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:54-66
@@ -227,7 +227,7 @@ enum BoatFluid : ETransportFluid {}
 [CHANGELOG] Official MODDING notes: hide named components when travelling at speed to prevent ground snags. Vanilla motorbikes:
 
 ```cpp
-// [EXACT] exp\vehicles_singletrack\DZ\vehicles\singletrack\config.cpp:226-227
+// [EXACT] exp\vehicles_singletrack\DZ\vehicles\singletrack\config.cpp:230-231
 		speedGeomActivation = 0.29;
 		speedGeoms[] = {"geotohide"};
 ```
@@ -252,14 +252,14 @@ Chinook / Mi24 wreck *scripts* exist (`Wreck_Chinook.c:1-24`, `Wreck_Mi24_TK.c:1
 
 ## 10. Line-number drift inside this atlas (1.29 cites)
 
-These core SKILL.md cites were true on 1.29 and are displaced in 1.30 Exp (same symbols, new lines). Keep the old numbers as "(until 1.29)" and use:
+The core SKILL.md cited these symbols at their 1.29 lines; it now cites the 1.30 lines (same symbols, new lines). The 1.29 column is for copies of the atlas written before 1.30:
 
-| Symbol | until 1.29 (atlas) | since 1.30 Exp |
+| Symbol | until 1.29 (atlas) | since 1.30 |
 |---|---|---|
 | `CarScript` ctor `SetEventMask(POSTSIMULATE/POSTFRAME)` | `carscript.c:325-326` | `CarScript.c:207-208` |
 | `CarScript.EOnPostSimulate` | `carscript.c:948` | `CarScript.c:807` |
 | `CarScript.OnDriverExit` gear-stop | `carscript.c:1207-1215` | `CarScript.c:940-948` |
-| `Transport.OnDriverExit` empty body | `transport.c:161` | `Transport.c:224` |
+| `Transport.OnDriverExit` empty body | `transport.c:161` | `Transport.c:227` |
 | `ForceUpdateLightsStart`/`End` | `:535-536`, `:2981/:2990` | `[Obsolete]` at `CarScript.c:2805-2809`; no replacement |
 
 ## 11. Wheels: a `_Ruined` twin and the 1.30 tyre fields
@@ -292,7 +292,7 @@ Every vanilla 1.30 car wheel also declares `tyreType`, `tyreRoughness`, `tyreLon
 
 [EXACT][CLAIM-VEH-RUINED-OVERRIDES-REDUNDANT-130] A 1.29 mod that already shipped `_Ruined` twins and returned them from overrides of `CarWheel.GetRuinedReplacement()` and `CarWheel_Ruined.GetReplacement()` still compiles on 1.30: both methods remain and now read the names `SetReplacementTypes()` derived (`inventoryitem.c:215-218`, `:342-345`), which are the names such overrides return. Arma2Quad v1.0.1 dropped its four overrides and kept empty script classes, the way vanilla declares its wheels (`inventoryitem.c:449-468`). In game on the stable 1.30.164200 DayZDiag (2026-10-26) its four wheel classes reported their own script class in `entities_query`, no `SetReplacementTypes` error was logged, each ruined wheel fitted the two slots of its own axle and was refused by the other's, and the mounted ruined wheels drew their own torn-tyre models through their proxies. A copy with a manual gearbox and the `Offroad_02_Wheel` tyre set reached 34 to 39 km/h in 2.8 s, turned about 65 degrees in 2.3 s at full lock and 38 to 47 km/h without rolling over, and stopped from about 38 km/h in about 1.6 s.
 
-## Migration checklist (1.29 car → 1.30 Exp)
+## Migration checklist (1.29 car → 1.30)
 
 0. Resolve every `override` of the car's scripts against the 1.30 class chain, class by class and not by method name. A method 1.30 deleted (`ToggleHeadlights`) fails the module's compile; an `[Obsolete]` one compiles and is never called. [EXACT][CLAIM-VEH-OVERRIDE-RESOLVE-130] On 2026-10-26 the pack's `dayz-script-validator`, with `--vanilla-root` on the 1.30.164200 tree, returned PASS with 0 errors on the LFQuad v1.0.0 scripts, which override `ToggleHeadlights`. A class-chain resolver over the same tree reported that override as missing and three others as `[Obsolete]`, and it resolved all 211 overrides of the vanilla `inheritedcars` folder without a finding.
 1. Delete overrides of `ToggleHeadlights` (deleted in 1.30) / `CreateFrontLight` / `CreateRearLight` / `IsVitalCarBattery` / `IsVitalTruckBattery` / `CarPartsHealthCheck` / `ForceUpdateLightsStart`/`End`.

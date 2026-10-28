@@ -136,7 +136,7 @@ slots - that is why a VPP-spawned vanilla car has no wheels. The moment you move
 baked hull geometry to an attachment, a spawned vehicle shows an empty doorway, and it reads as
 a regression when it is the contract working.
 
-The hook is `OnDebugSpawn()` (`P:\scripts\3_game\entities\entityai.c:3902-3907`, with
+The hook is `OnDebugSpawn()` (`P:\scripts\3_game\entities\entityai.c:3934-3939`, with
 `OnDebugSpawnEx(DebugSpawnParams)` delegating to it). Two source-verified patterns:
 
 - explicit `CreateAttachment` per part - `LFQuad.c:176-189`:
@@ -153,12 +153,12 @@ The hook is `OnDebugSpawn()` (`P:\scripts\3_game\entities\entityai.c:3902-3907`,
       }
   }
   ```
-- vanilla car, `CreateInInventory` per part - `P:\scripts\4_world\entities\vehicles\inheritedcars\civiliansedan.c:407-429`
+- vanilla car, `CreateInInventory` per part - `P:\scripts\4_world\entities\vehicles\inheritedcars\civiliansedan.c:415-437`
   (`SpawnUniversalParts(); SpawnAdditionalItems(); FillUpCarFluids();` then one call per door/wheel).
 
 The `EntityAI` base implementation is config-driven instead: it reads the type's `attachments[]`
 and scans `CfgVehicles`/`CfgMagazines`/`CfgWeapons` for any class whose `inventorySlot` matches,
-then `CreateInInventory`s it (`entityai.c:3907-3958`). Calling `super.OnDebugSpawn()` therefore
+then `CreateInInventory`s it (`entityai.c:3955-4009`). Calling `super.OnDebugSpawn()` therefore
 attaches per-type from config with no per-airframe code - useful when one script base serves
 several models. Note the vanilla cars deliberately do NOT call super; they list parts explicitly.
 
@@ -176,8 +176,8 @@ Measured on LFHeli OH-1, which spent a build cycle on "the close-door action doe
 when seated" with the action class already correct.
 
 1. The action must opt in: `ActionBase.InitConditionMask` only sets `ACM_IN_VEHICLE` when
-   `CanBeUsedInVehicle()` returns true (`actionbase.c:113`), and the base returns false
-   (`actionbase.c:335`). Any world action inherited from `ActionInteractBase` is therefore
+   `CanBeUsedInVehicle()` returns true (`actionbase.c:110`), and the base returns false
+   (`actionbase.c:361`). Any world action inherited from `ActionInteractBase` is therefore
    MASKED OUT the moment the player boards.
 2. A seated player has no cursor target on the vehicle carrying them, so the target contract
    is `CCTNone` plus `HasTarget()` false - the shape vanilla uses in `actioncardoors.c:20-27`.
@@ -185,7 +185,7 @@ when seated" with the action class already correct.
    - `ActionConstructor.RegisterActions` - builds the instance into the global pool.
    - `PlayerBase.SetActions(out TInputActionMap)` - `AddAction(MyAction, InputActionMap)`.
      Vanilla puts `ActionOpenCarDoors`/`ActionCloseCarDoors` right there
-     (`playerbase.c:1669-1670`).
+     (`playerbase.c:1714-1715`).
    Registering only in the constructor builds an action the manager never offers, because
    `FindContextualUserActions` walks the player's `InputActionMap` per input, not the pool.
 
@@ -242,8 +242,8 @@ trace, and it survives rebuilds because nothing in the mod is broken. Mechanism:
 'ActionGetInTransport.ActionCondition' runs on BOTH sides; the CLIENT player (clean) shows the
 prompt, but the SERVER-side player still carries a non-null 'GetCommand_Vehicle()' restored
 from player storage after a client crash while seated. The first server gate
-(actiongetintransport.c:45-48) rejects silently, and a null 'StartCommand_Vehicle' in Start()
-(actiongetintransport.c:91-92) produces no log either.
+(actiongetintransport.c:42-43) rejects silently, and a null 'StartCommand_Vehicle' in Start()
+(actiongetintransport.c:104-105) produces no log either.
 
 Checklist BEFORE suspecting model/proxies/config for a get-in regression:
 1. Check the previous run's client profiles for a 'crash_*.log' - a crash while seated is the
@@ -356,7 +356,7 @@ The final placement verdict remains in-game.
   modifier can animate while never reaching `OnFinishProgress`.
 - For an interface that uses `AddActiveInputExcludes(...)`, interrupt any action
   already in progress with `ActionManagerClient.RequestInterruptAction()`
-  (`actionmanagerclient.c:1280`). Excluding input first can swallow the release,
+  (`actionmanagerclient.c:1341`). Excluding input first can swallow the release,
   wedge the action manager, and suppress every later action. Record ownership and
   remove only that interface's exclude idempotently on close, force-close, abort
   and teardown; `SetDisabled(true)` alone does not block action input.
@@ -375,7 +375,7 @@ is drawn whether or not its slot holds an item. `HideSelection(name)` looks like
 the fix and silently does nothing on its own:
 
 ```c
-// scripts/3_game/entities/entityai.c:3356
+// scripts/3_game/entities/entityai.c:3355
 void HideSelection( string selection_name )
 {
     if ( !ToDelete() )
@@ -384,7 +384,7 @@ void HideSelection( string selection_name )
 ```
 
 `SetAnimationPhase` addresses an **animation source**, not a bare selection. The
-engine says so in `entityai.c:1403`: *"making them INVISIBLE if they are
+engine says so in `entityai.c:1430`: *"making them INVISIBLE if they are
 configured in models.cfg in such way. These selections must also be defined in
 the entity's config class in 'AnimationSources'"*. Without both halves every
 call is a no-op — and a no-op that looks like a timing race, which is how a whole
@@ -417,7 +417,7 @@ the engine reads.
   indistinguishable from the unfixed symptom, and each in-game cycle costs
   minutes, so match the precedent unless you have a reason not to.
 - Refresh the phase in `DeferredInit` **and** `AfterStoreLoad`
-  (`entityai.c:1390`, "called when entity is being loaded from DB or Storage
+  (`entityai.c:1418`, "called when entity is being loaded from DB or Storage
   (after all children loaded)"), plus `EEItemAttached`/`EEItemDetached`.
 
 ## Gating a crew position on an attachment (added 2026-09-04, LFQuad3)
@@ -427,11 +427,11 @@ mounted, override the gate `ActionGetInTransport` already consults; do not add a
 parallel condition.
 
 ```c
-// scripts/3_game/vehicles/transport.c:493
+// scripts/3_game/vehicles/transport.c:727
 bool CrewCanGetThrough( int posIdx )
 
-// scripts/4_world/.../actiongetintransport.c:63
-if (!trans.CrewCanGetThrough(crew_index) || !trans.IsAreaAtDoorFree(crew_index))
+// scripts/4_world/.../actiongetintransport.c:54
+if (!transport.CrewCanGetThrough(crewIndex) || !transport.IsAreaAtDoorFreeDiag(crewIndex))
     return false;
 ```
 

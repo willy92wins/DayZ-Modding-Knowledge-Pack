@@ -160,7 +160,7 @@ python '<skill>\scripts\run_regression_tests.py'
 
 To include the real SR2M fixture, define `SR2M_V44_BLEND` and add `--real-fixtures`. If variable is missing, correct result is `SKIP_REAL_FIXTURE`, not PASS.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 ### What changes in 1.30 for realistic animation direction
 
@@ -170,9 +170,9 @@ To include the real SR2M fixture, define `SR2M_V44_BLEND` and add `--real-fixtur
    - Handlebar grip with continuous two-bone IK solvers (`AnimSrcNodeIK2` and `AnimSrcNodeIK2Target` in `Vehicles.agf`) modulated by physical lean and roll variables (`VehicleSteering`, `VehicleThrottle`, `VehicleSuspension`).
    - Unified transition query via `HumanCommandVehicle.IsTransitioning()` (`exp\scripts\scripts\3_Game\human.c:735-738`).
 2. **Surrender refactoring [EXACT]:**
-   - *(Up to 1.29: surrendering physically created invisible `SurrenderDummyItem` in hands; since 1.30 Exp: `SurrenderDummyItem` is completely eliminated and natively governed via `PlayerBase.SetSurrenderState(bool)` and `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
+   - *(Up to 1.29: surrendering physically created invisible `SurrenderDummyItem` in hands; since 1.30: `SurrenderDummyItem` is completely eliminated and natively governed via `PlayerBase.SetSurrenderState(bool)` and `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
 3. **Dynamic instance control and in-hands decoupling [EXACT]:**
-   - Direct transition between animation instances at runtime with `Human.SetAnimationInstanceByName(string animationInstanceName, float blendingTime)` (`exp\scripts\scripts\3_Game\human.c:1384`), backed by `"Empty"` profile registered in `player_main.asi` (`DayZPlayerCfgBase.c:1537`).
+   - Direct transition between animation instances at runtime with `Human.SetAnimationInstanceByName(string animationInstanceName, float blendingTime)` (`exp\scripts\scripts\3_Game\human.c:1384`), backed by `"Empty"` profile registered in `player_main.asi` (`DayZPlayerCfgBase.c:1548`).
    - Decoupling of in-hands item swapping: `HumanItemAccessor.OnItemInHandsChanged(bool pInstant, bool pChangeAnimationInstance)` (`exp\scripts\scripts\3_Game\humanitems.c:112`).
 4. **Per-stance camera rotation and speed limits [EXACT]:**
    - `HumanInputController` exposes `SetErectSpeedLimit`, `SetCrouchSpeedLimit`, `SetProneSpeedLimit`, and `DisableErectCameratHorizontalRotation` [sic], etc. (`exp\scripts\scripts\3_Game\human.c:230-243`).

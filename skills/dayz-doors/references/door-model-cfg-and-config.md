@@ -9,7 +9,7 @@
 - [DamageSystem contract](#damagesystem-contract)
 - [Verified mappings](#verified-mappings)
 - [Unverified or conflicting details](#unverified-or-conflicting-details)
-- [Door open conditions and locks (DayZ 1.30 Exp)](#door-open-conditions-and-locks-dayz-130-exp)
+- [Door open conditions and locks (DayZ 1.30)](#door-open-conditions-and-locks-dayz-130)
 - [Sources](#sources)
 
 ## Evidence convention
@@ -116,10 +116,10 @@ The button is absent from its skeleton because it does not animate (**Door_w_But
 | **soundClose** | Closing sound name. | Full door entries Simple/button/expert **:27**. |
 | **soundLocked** | Locked/rattle sound. | Full door entries Simple/button/expert **:28**. |
 | **soundOpenABit** | Partial-opening sound. | Full door entries Simple/button/expert **:29**. |
-| **relatedInventorySlots[]** (since 1.30 Exp) | Names of inventory slots tied to this door (locks). Parsed into `AdditionalDoorInfo.m_RelatedInventorySlotNames`. Absent from the tutorial's examples. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:23-26`. **[UNVERIFIED]** no extracted vanilla `config.cpp` **class Doors** entry in this dump actually sets the property. |
-| **lockCompatibilityBitMask** (since 1.30 Exp) | Integer already in bitwise form. If omitted, script default is `1 << EBuildingLockType.LOCKPICK`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:29-32`, `exp/scripts/scripts/3_Game/Enums/EBuildingLockTypes.c:7-16`. |
-| **interactPositionPoint** / **interactDirPoint** (since 1.30 Exp) | Memory point names for one-sided open/close. Config keys are these two strings; members are `m_InteractLimitingPositionPoint` / `m_InteractLimitingDirPoint`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:34-38`, `exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:335-342`. |
-| **doorConstructionPart** / **doorConstructionPhysicsSource** (since 1.30 Exp) | Rebuildable-house door: construction part name and AnimationSource that toggles door physics. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:40-44`, `exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:440-464`. |
+| **relatedInventorySlots[]** (since 1.30) | Names of inventory slots tied to this door (locks). Parsed into `AdditionalDoorInfo.m_RelatedInventorySlotNames`. Absent from the tutorial's examples. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:23-26`. **[UNVERIFIED]** no extracted vanilla `config.cpp` **class Doors** entry in this dump actually sets the property. |
+| **lockCompatibilityBitMask** (since 1.30) | Integer already in bitwise form. If omitted, script default is `1 << EBuildingLockType.LOCKPICK`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:29-32`, `exp/scripts/scripts/3_Game/Enums/EBuildingLockTypes.c:7-16`. |
+| **interactPositionPoint** / **interactDirPoint** (since 1.30) | Memory point names for one-sided open/close. Config keys are these two strings; members are `m_InteractLimitingPositionPoint` / `m_InteractLimitingDirPoint`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:34-38`, `exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:335-342`. |
+| **doorConstructionPart** / **doorConstructionPhysicsSource** (since 1.30) | Rebuildable-house door: construction part name and AnimationSource that toggles door physics. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:40-44`, `exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:439-463`. |
 
 Tutorial sound list: **DZ\sounds\hpp\config.cpp** (**WELCOME TO novoGODS Shit Door Tutorial.txt:255-256**). Verify a sound there before adding it.
 
@@ -168,11 +168,11 @@ Remaining:
 - Conflict (resolved by authority): Expert prose has `soundOpen = "switchOpen"` / `soundClose = "switchClose"`, but the tutorial's real `Doors_Buttons_Lesson/Expert_Mode/config.cpp:31-38` omits both. The real file wins.
 - ? (1.30 Exp) No extracted vanilla `config.cpp` **class Doors** child in this dump sets `relatedInventorySlots[]`, `lockCompatibilityBitMask`, `interactPositionPoint`, or `doorConstructionPart`. The parser and script consumers are verified; a copy-paste vanilla Doors block with those keys is **[UNVERIFIED]**. Fence uses entity-level `attachments[] = {..., "Att_CombinationLock", "Att_CodeLock", ...}` (`exp/gear_camping/DZ/gear/camping/config.cpp:2683`) rather than per-door `relatedInventorySlots[]`.
 
-## Door open conditions and locks (DayZ 1.30 Exp)
+## Door open conditions and locks (DayZ 1.30)
 
 (until 1.29: `Building.CanDoorBeOpened(int doorIndex, bool checkIfLocked = false)` was the only script signature, and vanilla `ActionOpenDoors` called it directly — `stable-1.29/scripts/scripts/4_World/Classes/UserActionsComponent/Actions/Interact/ActionOpenDoors.c:45,63`. `GetLockCompatibilityType` always returned `1 << EBuildingLockType.LOCKPICK`.)
 
-(since 1.30 Exp: both signatures exist. The `int` form is a wrapper that builds `DoorManipulationParams` and does **not** set `m_Caller`. Vanilla Open uses the params form plus a directional check.)
+(since 1.30: both signatures exist. The `int` form is a wrapper that builds `DoorManipulationParams` and does **not** set `m_Caller`. Vanilla Open uses the params form plus a directional check.)
 
 ```c
 // [EXACT] exp/scripts/scripts/3_Game/Entities/Building.c:5
@@ -285,7 +285,7 @@ Directional check (missing/empty memory points pass — the helper returns true)
 ```
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Static/MiscGameplayFunctions.c:911
+// [EXACT] exp/scripts/scripts/4_World/Static/MiscGameplayFunctions.c:944
 	static bool MemPointDirectionalCheck(PlayerBase player, EntityAI targetEnt, string memPointStartName, string memPointEndName, float toleranceAngle = Math.PI_HALF)
 	{
 		if (player && targetEnt && memPointEndName != "" && targetEnt.MemoryPointExists(memPointEndName) && memPointStartName != "" && targetEnt.MemoryPointExists(memPointStartName))
@@ -300,7 +300,7 @@ Directional check (missing/empty memory points pass — the helper returns true)
 			memDir.Normalize();
 ```
 
-If that `if` fails (empty names or missing Memory points), the function returns `true` (`MiscGameplayFunctions.c:936`).
+If that `if` fails (empty names or missing Memory points), the function returns `true` (`MiscGameplayFunctions.c:969`).
 
 ### `EBuildingLockType` (not attachment locks)
 
@@ -318,7 +318,7 @@ enum EBuildingLockType
 }
 ```
 
-**[DESIGN]** Combination locks and code locks are `IsExternalLockType()` inventory items (`DigitalCodeLock` / `CombinationLock` override, `CodeLock.c:527`, `CombinationLock.c:779`), not extra `EBuildingLockType` values. Digest J's `COMBINATION_LOCK = 2` / `CODE_LOCK = 4` is false against this file.
+**[DESIGN]** Combination locks and code locks are `IsExternalLockType()` inventory items (`DigitalCodeLock` / `CombinationLock` override, `CodeLock.c:542`, `CombinationLock.c:779`), not extra `EBuildingLockType` values. Digest J's `COMBINATION_LOCK = 2` / `CODE_LOCK = 4` is false against this file.
 
 `GetLockCompatibilityType` now returns `GetDoorInfo(doorIdx).m_LockCompatibilityBitMask` (`Building.c:193-196`). `ActionLockDoors` / `ActionUnlockDoors` still use that mask against `tool.GetKeyCompatibilityType()`, but they return false first if any related slot already holds an `IsExternalLockType()` item (`ActionLockDoors.c:40-57`).
 

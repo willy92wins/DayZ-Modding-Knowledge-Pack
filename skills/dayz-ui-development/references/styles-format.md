@@ -128,7 +128,7 @@ Highlights per type (full inventory in the styles file itself):
 - Styles exist for XComboBox/SmartPanel/Html/ThreeStateCheckbox/graph widgets too — the 4 graph
   widgets are the only types with styles but zero vanilla layout instantiation.
 
-### The `ActionWidget` Style for `PanelWidget` (Added in DayZ 1.30 Exp)
+### The `ActionWidget` Style for `PanelWidget` (Added in DayZ 1.30)
 
 In DayZ 1.30 Exp (`exp\gui\gui\looknfeel\dayzwidgets.styles:3700-3723`), a new style `ActionWidget`
 was introduced for `PanelWidget`:

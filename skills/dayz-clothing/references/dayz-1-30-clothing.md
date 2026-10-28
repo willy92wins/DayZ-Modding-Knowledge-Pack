@@ -1,16 +1,17 @@
-# DayZ 1.30 Exp — clothing / gear contract (build 1.30.164014)
+# DayZ 1.30 — clothing / gear contract
 
-Companion to `SKILL.md` § DayZ 1.30 Exp. Worn-mesh killers, canonical frame, and
+Companion to `SKILL.md` § DayZ 1.30. Worn-mesh killers, canonical frame, and
 `DayzTemporarySkeleton` are unchanged; this file is the config/script delta.
 
 Line numbers are from the files opened under `exp\` (and `stable-1.29\` where a
 1.29 contrast is stated). Digest L/E/F line numbers were **not** copied.
+Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## NBC secondary slots
 
 (until 1.29: `NBCHoodBase.inventorySlot[] = {"Headgear"}` only —
 `stable-1.29\characters_headgear\DZ\characters\headgear\config.cpp:3968`.)
-(since 1.30 Exp: each NBC clothing base lists the primary slot **and** a dedicated
+(since 1.30: each NBC clothing base lists the primary slot **and** a dedicated
 NBC slot. Gloves follow the same pattern; digest L omitted them.)
 
 ```cpp
@@ -71,7 +72,7 @@ NBC slot. Gloves follow the same pattern; digest L omitted them.)
 `CfgSlots` names (ghost icons + display strings):
 
 ```cpp
-// [EXACT] exp\scripts\scripts\config.cpp:3124
+// [EXACT] exp\scripts\scripts\config.cpp:3115
 	class Slot_NBCBag
 	{
 		name = "NBCBag";
@@ -104,7 +105,7 @@ NBC slot. Gloves follow the same pattern; digest L omitted them.)
 
 (until 1.29: `TaloonBag_ColorBase.attachments[] = {"Chemlight","WalkieTalkie","Backpack_1"}`
 — `stable-1.29\characters_backpacks\DZ\characters\backpacks\config.cpp:43`.)
-(since 1.30 Exp: nine backpack bases append `"NBCBag"`. Digest L claimed every
+(since 1.30: nine backpack bases append `"NBCBag"`. Digest L claimed every
 vanilla backpack; that is false.)
 
 **Have `"NBCBag"`:** `TaloonBag_ColorBase:43`, `TortillaBag:125`, `DryBag_ColorBase:440`,
@@ -130,7 +131,7 @@ bases that never gained the slot.
 
 The attachable pack is scripted as `NBCPack_ColorBase : Container_Base` with
 `CanDisplayAttachmentCargo` forced false
-(`exp\scripts\scripts\4_World\Entities\ItemBase\Gear\Containers\containers.c:83-92`).
+(`exp\scripts\scripts\4_World\Entities\ItemBase\Gear\Containers\containers.c:83-107`).
 No `class NBCPack` appears in extracted `exp\**\config.cpp`. `[UNVERIFIED]`:
 inventorySlot of the pack item (expected `"NBCBag"`), cargo size, model path.
 
@@ -144,7 +145,7 @@ script `GasMask_Filter : ItemBase`.
 at `stable-1.29\characters_masks\DZ\characters\masks\config.cpp:451-456`. Airborne
 matched at `:517-522`. Digest L's "1.29 was biological = 0.25" is false.)
 
-(since 1.30 Exp: GP5 and Airborne **omit** `biological` and `dust_particle_breath`;
+(since 1.30: GP5 and Airborne **omit** `biological` and `dust_particle_breath`;
 they keep `dust_particle_eyes = 1`. They do not write `= 0`.)
 
 ```cpp
@@ -236,7 +237,7 @@ the parse onto the type:
 Instance accessors:
 
 ```c
-// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase.c:4518
+// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase.c:4522
 	array<string> GetHeadHidingSelection()
 	{
 		return ItemBaseType.Cast(GetEntityType()).m_HeadHidingSelections;
@@ -340,7 +341,7 @@ Measured 1.29 width-4 → 1.30 width-3 on the same line of `shoes\config.cpp`
 (until 1.29: `class WaterPouch_ColorBase: Bottle_Base` /
 `class WaterPouch_Natural: WaterPouch_ColorBase` in
 `stable-1.29\gear_drinks\DZ\gear\drinks\config.cpp:347,421`.)
-(since 1.30 Exp: those config classnames are `Waterskin_ColorBase` /
+(since 1.30: those config classnames are `Waterskin_ColorBase` /
 `Waterskin_Natural`. AnimEvents still use `WaterPouch_*_SoundSet` names.)
 
 Script: `exp\scripts\scripts\4_World\Entities\ItemBase\Gear\Drinks\WaterPouch_ColorBase.c`
@@ -395,7 +396,7 @@ That alias is not in vanilla 1.30.
 
 (until 1.29: `CanDo` was `return ingredients[0].IsEmpty();` —
 `stable-1.29\scripts\scripts\4_World\Classes\Recipes\Recipes\CraftArmbandFlag.c:101`.)
-(since 1.30 Exp: only rejects a flag that is already attached. Tool list gained
+(since 1.30: only rejects a flag that is already attached. Tool list gained
 `Jambiya`, `Scimitar`, `DonerKnife`, `Akinaka`.)
 
 ```c

@@ -13,13 +13,13 @@ Verified invariant (source + in-game, DayZ-MCP Phase 5 S0). PREFLIGHT before any
 drive/automate a car from a client peer or reason about "who drives":
 
 - The car is a **Pawn** (`Transport extends Pawn` under `FEATURE_NETWORK_RECONCILIATION`,
-  transport.c:53 -> Car car.c:98 -> CarScript carscript.c:170). The `IsOwner()` of `IsServerOrOwner()`
-  (carscript.c:3222-3231) is the **car's network OWNERSHIP**, not the player's (glossary pawn.c:5-8:
+  transport.c:66 -> Car car.c:87 -> CarScript carscript.c:94). The `IsOwner()` of `IsServerOrOwner()`
+  (carscript.c:2592-2601) is the **car's network OWNERSHIP**, not the player's (glossary pawn.c:5-8:
   Owner = client controlling the pawn).
 - **`IsServerOrOwner()` DOES NOT gate throttle.** Its only consumers are teardown/fluids
-  (carscript.c:822/850/986). Throttle->physics is **proto native** (`SetThrottle` car.c:202, "future
+  (carscript.c:552/850/986). Throttle->physics is **proto native** (`SetThrottle` car.c:191, "future
   throttle value") and is applied by **body simulator = the OWNER**. The only script `SetThrottle`
-  (carscript.c:1377) is dead in production (`#ifdef DIAG_DEVELOPER`).
+  (carscript.c:1202) is dead in production (`#ifdef DIAG_DEVELOPER`).
 - A car **without client-owner = `IsAuthorityOwner`** (authority without owner, pawn.c:199-200) -> simulated
   by server -> a server-side `SetThrottle` **DOES move it**. This is a **single-box/SP
   artifact**, NOT proof that server drives cars owned by a client. (DayZ-MCP S0 F2:
@@ -27,22 +27,22 @@ drive/automate a car from a client peer or reason about "who drives":
 - A server-side **`StartCommand_Vehicle`** (e.g. MCP's `vehicle_enter`) seats the player ONLY
   server-side: the client **never gets `GetGame().GetPlayer().GetCommand_Vehicle()` nor car
   ownership** (measured in-game x6, yields `not_seated` on client peer). Real get-in
-  (`ActionGetInTransport.Start()`, shared client+server method, actiongetintransport.c:82-98) runs
+  (`ActionGetInTransport.Start()`, shared client+server method, actiongetintransport.c:71-111) runs
   `StartCommand_Vehicle` on the **CLIENT'S** Human + reserves seat via juncture
-  (`AddInventoryJunctureEx`/`SetVehicle`, :141-161). Ownership transfer is proto-native (no
+  (`AddInventoryJunctureEx`/`SetVehicle`, :138-158). Ownership transfer is proto-native (no
   `SetNetworkOwner` exists in script).
 - **Practical consequence:** to drive/measure **owner-side** from a client, client must
   **take ownership itself** (client-side get-in), not rely on server-side forced seat. And an
   owner-authority test in **single-box** is **confounded** (client never truly owns) ->
   clean discriminator is a 2-machine dedicated setup with remote client performing get-in.
 - Diagnostic readings: `IsOwner()` (pawn.c:194), `IsAuthorityOwner()` (pawn.c:199-200),
-  `GetOwnerIdentity()` (pawn.c:209), `GetNetworkID()` (object.c:815). Extends get-in/radial case
+  `GetOwnerIdentity()` (pawn.c:209), `GetNetworkID()` (object.c:819). Extends get-in/radial case
   (LL-164) to network dimension. Origin: DayZ-MCP S0 (2026-06-28).
 - **Driving owner-side from script (the actuator — verified in-game 0→39 km/h):** `Car.SetThrottle/SetSteering/
   SetBrake` called from MISSION (`OnUpdate` / a job) DO NOT move owner-sim PHYSICS — **`super` of
-  `CarScript.OnInput(dt)` (`carscript.c:1303`) OVERWRITES them every frame** with local driver input=0. Fix: apply
+  `CarScript.OnInput(dt)` (`carscript.c:1041`) OVERWRITES them every frame** with local driver input=0. Fix: apply
   throttle INSIDE a `modded class CarScript.OnInput`, **AFTER `super.OnInput(dt)`** (where vanilla debug autopilot
-  `carscript.c:1377` does it). NO injection via `HumanInputController` (vehicle input is native,
+  `carscript.c:1202` does it). NO injection via `HumanInputController` (vehicle input is native,
   no override API). Symptom: "car belongs to owner but `SetThrottle` does not move it". Origin: DayZ-MCP Phase 5 (SP-032).
 
 ## Angular velocity is NOT yaw/pitch/roll; derive omega from the pose delta (SP-170, origen LFHeli 2026-08-05)
@@ -53,7 +53,7 @@ rotation around x, y and z axis (not yaw/pitch/roll)"*. The Enfusion axis map is
 yaw → Y, pitch → Z, roll → X (right-hand rule). Cross-checked on two independent
 vanilla sources: `YawPitchRollMatrix("70 15 45", mat)` at `enmath3d.c:125-131`
 matches the COLUMNS of `Rz(pitch) . Ry(yaw) . Rx(roll)` to 4e-7;
-`dayzplayercameravehicles.c:137-139` reads `dBodyGetAngularVelocity(vehicle)` and
+`dayzplayercameravehicles.c:132-134` reads `dBodyGetAngularVelocity(vehicle)` and
 routes Y to yaw, Z to pitch, X to roll for camera lag. Corollary: `mat[i]` from
 `GetTransform` (`enentity.c:288`) and from `YawPitchRollMatrix` are world-space
 BASIS VECTORS (columns), not rows — mixing them up flips the sign of any rotation
@@ -93,8 +93,8 @@ server-authoritative CarScript:
   (verified vanilla + Expansion): the engine sets it by native class. `FEATURE_NETWORK_RECONCILIATION` is
   unconditional (`defines.c:64`).
 - **Under PHYSICS the owner ALREADY simulates predictively** (full Pawn contract in vanilla: `pawn.c:256-329`
-  ObtainMove/ConsumeMove/ReplayMove/RewindState; `CarScriptMove/OwnerState` `carscript.c:3198-3218`;
-  `IsServerOrOwner()` `carscript.c:3222-3231`). Consequences:
+  ObtainMove/ConsumeMove/ReplayMove/RewindState; `CarScriptMove/OwnerState` `carscript.c:2568-2588`;
+  `IsServerOrOwner()` `carscript.c:2592-2601`). Consequences:
   1. A server that writes pose/velocity per tick (`SetOrientation`/`SetVelocity`) DOES NOT cooperate: it causes
      continuous owner<-authority correction = **structural round-trip lag + snap-backs**. The symptom is
      felt even on loopback (RTT is not the only latency: server tick + replication + rewind).
@@ -128,14 +128,14 @@ Expansion corpus). Recipe verified by vanilla source + compile gate (LFHeli 2026
 
 - **Type ladder** (derive from the last rung, not from Pawn*): `PawnMove -> TransportMove ->
   CarMove -> CarScriptMove` and `PawnOwnerState -> TransportOwnerState -> CarOwnerState ->
-  CarScriptOwnerState` (`transport.c:11-50`, `car.c:89-93`, `carscript.c:135-152`).
+  CarScriptOwnerState` (`transport.c:11-50`, `car.c:78-82`, `carscript.c:57-74`).
   `TransportOwnerState/TransportMove` carry NATIVE transform + linear + angular velocity
   (`transport.c:13-23,:35-42`): **DO NOT duplicate them in custom state**.
 - **Hooks** (`pawn.c:238-311`, all `protected event`): `GetMoveType`/`GetOwnerStateType` (the
   engine instantiates the types AT CONSTRUCTION, `pawn.c:235,:244` — overrides must exist on the
   class, not activate late), `ObtainMove`, `ConsumeMove`, `ReplayMove` (bool: honor super's
   rejection before processing), `ObtainState`, `RewindState(state, move, inout NetworkRewindType)`.
-  CarScript already implements Get*Type/ObtainState/RewindState (`carscript.c:3198-3218`) — super
+  CarScript already implements Get*Type/ObtainState/RewindState (`carscript.c:2568-2588`) — super
   ALWAYS and exactly once (super's ObtainState/RewindState carry `m_fTime`).
 - **Serialization**: `Write/Read` with super FIRST; NEVER serialize `vector` (expand to
   floats); `EstimateMaximumSize()` = super + 4 bytes per scalar (bool counts as 4, conservative).

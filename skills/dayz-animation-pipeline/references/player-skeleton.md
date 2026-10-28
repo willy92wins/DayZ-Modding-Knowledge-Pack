@@ -162,7 +162,7 @@ Workflow when bringing the skeleton into Blender to author a new `.txa` or `.anm
 - `references/skeletal-anm-enfusion.md` — the `.anm` route from authoring to runtime.
 - `references/blender-authoring.md` — bone-name discipline + headless Blender export pattern.
 
-## DayZ 1.30 Exp: Bone Indexing & skeletons.anim.xml Deprecation [EXACT]
+## DayZ 1.30: Bone Indexing & skeletons.anim.xml Deprecation [EXACT]
 
 In DayZ 1.30 Exp (build 1.30.164014), the global skeleton architecture underwent fundamental changes:
 

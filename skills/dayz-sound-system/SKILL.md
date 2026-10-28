@@ -5,23 +5,23 @@ description: "Use when: sonido DayZ, CfgSoundShaders, SoundSet, sound not playin
 
 # DayZ Sound System (Enforce Script + config)
 
-Verified reference for mod audio. Citations are `path:line` against vanilla v1.24 decompiled scripts
-(±3 drift) and two real mods used as prior art (IMPWMODPart2 weapons, DoorLockSystem). The full
+Verified reference for mod audio. Citations are `path:line` against the vanilla 1.30.164200 scripts
+(first verified on v1.24, re-checked on 2026-10-28; a cite labelled 1.29 is the 1.29 line; ±3 drift) and two real mods used as prior art (IMPWMODPart2 weapons, DoorLockSystem). The full
 deep-dive with every signature lives in `references/sonido-deep-dive.md` — load it for AbstractWave
 events, DynamicMusicPlayer internals, or PlayerSoundManager handlers. 1.30 Exp cites:
 `references/dayz-1-30-sound.md`.
 
 ## The one rule that explains most bugs
 
-**Audio is client-only.** `SEffectManager.Init()` runs only on clients (`3_game/effectmanager.c:498-512`)
+**Audio is client-only.** `SEffectManager.Init()` runs only on clients (`3_game/effectmanager.c:507-521`)
 and `Object.PlaySoundSet` is guarded by `if (g_Game && !g_Game.IsDedicatedServer())`
-(`3_game/entities/object.c:1245`). Any `Play*` call on a dedicated server is a silent no-op.
+(`3_game/entities/object.c:1249`). Any `Play*` call on a dedicated server is a silent no-op.
 To make a sound happen "from the server", you synchronize a state change and let each client play it:
 the official vehicle for that is `StartItemSoundServer` (below), or your own SyncVar +
 `OnVariablesSynchronized`.
 (hasta 1.29 / still on `Object.PlaySoundSet` in 1.30: the guard is `object.c:1249` —
 `if ( g_Game && !g_Game.IsDedicatedServer() )`.)
-(desde 1.30 Exp: item/player sound **handlers** use `g_Game.IsHeadlessOrDedicatedServer()` so headless
+(desde 1.30: item/player sound **handlers** use `g_Game.IsHeadlessOrDedicatedServer()` so headless
 clients are skipped too — `ItemSoundHandler.c:121`, `PlayerSoundManager.c:105`,
 `DayZPlayerCfgSounds.c:335`. Proto: `Game.c:1132-1136`. `[EXACT]`: `references/dayz-1-30-sound.md`.)
 
@@ -29,17 +29,17 @@ clients are skipped too — `ItemSoundHandler.c:121`, `PlayerSoundManager.c:105`
 
 | Situation | Use |
 |---|---|
-| One-shot 3D sound at a position (client code) | `SEffectManager.PlaySound("Set", pos)` (`effectmanager.c:169+`) |
-| Sound that follows an object (client code) | `SEffectManager.PlaySoundOnObject("Set", obj)` or `obj.PlaySoundSet(snd, "Set", fadeIn, fadeOut, loop)` (`object.c:1243-1321`) |
-| Server-driven item sound, synced to all clients | `StartItemSoundServer(id)` / `StopItemSoundServer(id)` (`4_world/entities/itembase.c:4468-4508`) |
-| Sound at a memory point of the model | `PlaySoundSetAtMemoryPoint(...)` (`object.c:1293+`) |
+| One-shot 3D sound at a position (client code) | `SEffectManager.PlaySound("Set", pos)` (`effectmanager.c:178+`) |
+| Sound that follows an object (client code) | `SEffectManager.PlaySoundOnObject("Set", obj)` or `obj.PlaySoundSet(snd, "Set", fadeIn, fadeOut, loop)` (`object.c:1247-1325`) |
+| Server-driven item sound, synced to all clients | `StartItemSoundServer(id)` / `StopItemSoundServer(id)` (`4_world/entities/itembase.c:4440-4507`) |
+| Sound at a memory point of the model | `PlaySoundSetAtMemoryPoint(...)` (`object.c:1294+`) |
 | Animation-bound audio (footsteps, gestures) | AnimEvents in the anim config — engine plays them client-side automatically |
 | Building door/alarm | `building.PlaySound/PlaySoundLoop` (native on Building; prior art DoorLockSystem `ActionUnlockDLSDoor.c:63,73`) |
-| Make AI/infected hear something | `g_Game.GetNoiseSystem().AddNoise/AddNoisePos/AddNoiseTarget` (`3_game/noise.c:1-23`) — server side |
+| Make AI/infected hear something | `g_Game.GetNoiseSystem().AddNoise/AddNoisePos/AddNoiseTarget` (`3_game/noise.c:1-26`) — server side |
 | Ambient music zone | `DynamicMusicPlayer.RegisterDynamicLocation` (`dynamicmusicplayer.c:289`) |
-| (since 1.30 Exp) Per-world static music boxes | Subclass `DynamicMusicPlayerRegistry` and `RegisterTrackLocationStaticMultiRectangle` (`DynamicMusicPlayerRegistryNasdara.c:39-67`, wired `missionBase.c:130-132`) |
-| (since 1.30 Exp) Radio tuned to bunker frequency | Set `SOUND_BUNKER_STATIC_NOISE` on the transmitter; `IsTunedToBunkerFrequency()` (`TransmitterBase.c:6,135-137`, proto on `ItemTransmitter` in `InventoryItem.c:25`) |
-| (since 1.30 Exp) Per-bush / static vegetation footsteps | `CfgNonAIVehicles <class> VegetationSounds` via `StaticObjectType` (`StaticObjectType.c:13-47`); macro `CUSTOM_PLAYER_MOVEMENT_SOUNDSETS` (`basicDefines.hpp:310-338`) |
+| (since 1.30) Per-world static music boxes | Subclass `DynamicMusicPlayerRegistry` and `RegisterTrackLocationStaticMultiRectangle` (`DynamicMusicPlayerRegistryNasdara.c:39-67`, wired `missionBase.c:143-145`) |
+| (since 1.30) Radio tuned to bunker frequency | Set `SOUND_BUNKER_STATIC_NOISE` on the transmitter; `IsTunedToBunkerFrequency()` (`TransmitterBase.c:6,135-137`, proto on `ItemTransmitter` in `InventoryItem.c:25`) |
+| (since 1.30) Per-bush / static vegetation footsteps | `CfgNonAIVehicles <class> VegetationSounds` via `StaticObjectType` (`StaticObjectType.c:13-47`); macro `CUSTOM_PLAYER_MOVEMENT_SOUNDSETS` (`basicDefines.hpp:310-338`) |
 
 Cleanup matters: every `SEffectManager.Play*` registers a ref; call `SEffectManager.DestroyEffect(eff)`
 or set autodestroy, or you leak (`effectmanager.c:41-44`).
@@ -99,14 +99,14 @@ but were not verifiable in local source — inherit a vanilla set rather than ha
   `BuildSoundObject()` (:82-108).
 - `SoundObject.SetParent(entity)` / `SetPosition(pos)` / `SetKind(WaveKind.X)` (:111-134). With a
   parent, `SetPosition` is in the parent's model space: set it before `Play3D` (recipe A2).
-- Play: `g_Game.GetSoundScene().Play3D(so, sob)` / `Play2D(...)` (:53-79; access `game.c:734`).
+- Play: `g_Game.GetSoundScene().Play3D(so, sob)` / `Play2D(...)` (:53-79; access `game.c:735`).
 - `AbstractWave` handle: `Play/Stop/Loop(bool)/SetVolumeRelative(0..1)/SetFadeInFactor/
   SetFadeOutFactor/SetDoppler/GetLength/GetCurrPosition` + `GetEvents()` ScriptInvokers
   (Started/Stopped/Loaded/HeaderLoaded/Ended) (:146-230). `SetFrequency` takes a pitch factor,
   not Hz (recipe A2).
 - `EffectSound` (high-level wrapper): `SetSoundSet/SetSoundLoop/SetSoundFadeIn/Out/SetSoundVolume/
   SoundPlay/SoundStop/IsSoundPlaying` + its own invokers — what `PlaySoundSet` returns.
-  (desde 1.30 Exp: if `m_SoundFadeInDuration > 0`, `Event_OnSoundWaveStarted` calls `SetSoundVolume(0)`
+  (desde 1.30: if `m_SoundFadeInDuration > 0`, `Event_OnSoundWaveStarted` calls `SetSoundVolume(0)`
   so the first frame is silent — `EffectSound.c:549-555`. `[EXACT]`: `references/dayz-1-30-sound.md`.)
 - `WaveKind` enum: WAVEEFFECT, WAVEEFFECTEX, WAVESPEECH, WAVEMUSIC, WAVEENVIRONMENT, WAVEWEAPONS,
   WAVEATTALWAYS, WAVEUI... (:1-14) — controls mixer category (and thus user volume sliders).
@@ -115,7 +115,7 @@ but were not verifiable in local source — inherit a vanilla set rather than ha
 
 ## Server→client item sound (the official pattern)
 
-1. Register sets in `InitItemSounds()` (`itembase.c:4448-4465`):
+1. Register sets in `InitItemSounds()` (`itembase.c:4420-4437`):
 ```c
 override void InitItemSounds()
 {
@@ -128,13 +128,18 @@ override void InitItemSounds()
 }
 ```
 2. Fire from server: `StartItemSoundServer(SoundConstants.ITEM_DEPLOY)` /
-   `StopItemSoundServer(SoundConstants.ITEM_DEPLOY_LOOP)` (`itembase.c:4468-4508`).
-3. Client side is automatic: `OnVariablesSynchronized` dispatches `m_SoundSyncPlay/m_SoundSyncStop`
-   to `PlayItemSoundClient/StopItemSoundClient` (`itembase.c:3319-3332`).
+   `StopItemSoundServer(SoundConstants.ITEM_DEPLOY_LOOP)` (`itembase.c:4440-4507`).
+3. Client side is automatic. On 1.30 the server queues every sound started in a frame and sends them
+   in one `RPC_ITEM_SOUND_PLAY` (`itembase.c:4440-4484`), a stop goes as `RPC_ITEM_SOUND_STOP`
+   (`:4499-4507`), and `ItemBase.OnRPC` plays them on the client (`:2800-2829`). On 1.29
+   `OnVariablesSynchronized` dispatched `m_SoundSyncPlay/m_SoundSyncStop` to
+   `PlayItemSoundClient/StopItemSoundClient` (1.29 `itembase.c:3319-3332`); on 1.30 that path runs only
+   in a class whose `OnVariablesSynchronized` calls `LegacyItemSoundSync()` (`:3297-3314`).
 
-Limits: int IDs up to `ITEM_SOUNDS_MAX = 63` (`3_game/constants.c:415-435`); only ONE play + ONE stop
-can be in flight per sync tick by design (`4_world/classes/soundhandlers/itemsoundhandler.c:19-20`) —
-sync vars are cleared ~100 ms later via CallLater.
+Limits: int IDs up to `ITEM_SOUNDS_MAX = 63` (`3_game/constants.c:415-435`). On 1.29 only ONE play + ONE
+stop could be in flight per sync tick (`4_world/classes/soundhandlers/itemsoundhandler.c:19-20`), and the
+sync vars were cleared ~100 ms later via CallLater; on 1.30 the queue sends several sounds in one RPC, and
+the handler's comment, unchanged, describes only the legacy path.
 
 For non-item state sounds, the generic pattern is the same: server sets a SyncVar → client plays in
 `OnVariablesSynchronized` (remote clients never see one-frame server states otherwise).
@@ -142,15 +147,15 @@ For non-item state sounds, the generic pattern is the same: server sets a SyncVa
 ## NoiseSystem (AI hearing)
 
 ```c
-// 3_game/noise.c:1-23 — server side
+// 3_game/noise.c:1-26 — server side
 g_Game.GetNoiseSystem().AddNoise(entity, noiseParams, multiplier);      // at entity
 g_Game.GetNoiseSystem().AddNoisePos(entity, pos, noiseParams, mult);    // at position
 g_Game.GetNoiseSystem().AddNoiseTarget(pos, lifetimeSec, noiseParams);  // positional DECOY with duration
 NoiseParams np = new NoiseParams();  np.Load("name_in_CfgNoises");      // or LoadFromPath
 ```
 (hasta 1.29: Rain/wind reduce effective noise via `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())`
-(used by player steps, `4_world/entities/dayzplayerimplement.c:3204-3208`).)
-(desde 1.30 Exp: climate is native. Query `GetGame().GetNoiseSystem().GetEnvironmentNoiseReduction(pos)`
+(used by player steps, `4_world/entities/dayzplayerimplement.c:3250-3254`).)
+(desde 1.30: climate is native. Query `GetGame().GetNoiseSystem().GetEnvironmentNoiseReduction(pos)`
 — `exp\scripts\scripts\3_Game\Noise.c:13`. `GetNoiseReduction` / `GetNoiseReductionByWeather` are
 `[Obsolete]` (`SensesAIEvaluate.c:92`, `Weather.c:454`). Player steps pass only
 `NoiseAIEvaluate.GetNoiseMultiplier(this)` (`DayZPlayerImplement.c:3472-3474`). Infected
@@ -173,16 +178,16 @@ daytime, shooting, coast, waterDepth, overcast, fog, snowfall, caveSmall, caveBi
 
 | Confabulation | Reality |
 |---|---|
-| `SEffectManager` works on server | Client-only; `InitServer()` exists for particles, not sound (`effectmanager.c:498-512`) |
-| `PlaySoundSet` audible on dedicated server | Guarded no-op (`object.c:1245`) — sync state instead |
-| `GetGame().CreateSoundOnObject(...)` returns EffectSound | Returns `SoundOnVehicle` entity (`game.c:691`; class `3_game/entities/soundonvehicle.c:1-4`) — legacy, prefer SEffectManager |
+| `SEffectManager` works on server | Client-only; `InitServer()` exists for particles, not sound (`effectmanager.c:507-521`) |
+| `PlaySoundSet` audible on dedicated server | Guarded no-op (`object.c:1249`) — sync state instead |
+| `GetGame().CreateSoundOnObject(...)` returns EffectSound | Returns `SoundOnVehicle` entity (`game.c:692`; class `3_game/entities/soundonvehicle.c:1-4`) — legacy, prefer SEffectManager |
 | `DynamicMusicPlayer.PlayTrack("...")` | Private; public API is `SetCategory(...)` + `RegisterDynamicLocation` (`dynamicmusicplayer.c:511,289`) |
 | `OnSoundEvent` override on ItemBase | Does not exist — use ItemSoundHandler or PlaySoundSet manually |
 | Several simultaneous synced sounds via StartItemSoundServer | One play + one stop per sync by protocol (`itemsoundhandler.c:19-20`) |
 | Per-sound master volume API | Only `SetVolumeRelative(0..1)` per wave; shader `volume` is fixed config |
 | samples[] with file extension | Engine infers `.ogg` — paths go extension-less (all prior-art configs) |
 
-(desde 1.30 Exp: the `PlaySoundSet` row above is still true for `Object.PlaySoundSet`. Item/player
+(desde 1.30: the `PlaySoundSet` row above is still true for `Object.PlaySoundSet`. Item/player
 **handlers** additionally skip headless via `IsHeadlessOrDedicatedServer()`. Do not write
 `GetNoiseReductionByWeather()` into new mods — `[Obsolete]`; use `GetEnvironmentNoiseReduction(pos)`
 or `AIParams`.)
@@ -214,10 +219,10 @@ the same character sound bases played through `PlaySoundSet` were loud. With a p
 of a `SoundObject` is in the parent's model space, and `EffectSound` always sets it right before its
 own `Play3D`: it calls `SetCurrentLocalPosition` at `:172`, just before `Play3D` at `:173`, and its
 override of `SetCurrentLocalPosition` passes the position to `m_SoundObject.SetPosition`
-(`:746-753`). The hand-built loop set no position, and sat far from the rider. What fixed it:
+(`:750-757`). The hand-built loop set no position, and sat far from the rider. What fixed it:
 `SetPosition` on the sound object after `SetParent` and before `Play3D`, with a small offset in the
 parent's model space (the project used 0.1 m up). Lines of 1.30.164.200; 1.29 has the same code, the
-override at `:742-749`.
+override at `:746-753`.
 
 [EXACT][CLAIM-SOUND-WAVE-FREQUENCY-FACTOR-130] `GetFrequency()` of that wave, a playing OGG loop,
 returned 1.0: `SetFrequency` takes a factor, a pitch multiplier, not a frequency in Hz. Set it
@@ -233,11 +238,11 @@ NoiseParams np = new NoiseParams();
 np.Load("FlareLight");                          // any CfgNoises entry; verify name in config dump
 g_Game.GetNoiseSystem().AddNoiseTarget(pos, 30, np, 2.0);
 ```
-(desde 1.30 Exp: do not multiply that `2.0` by a weather reduction you computed in script.)
+(desde 1.30: do not multiply that `2.0` by a weather reduction you computed in script.)
 
 **D. Music zone** — `RegisterDynamicLocation(this, locationType, radius)` on spawn,
 `UnregisterDynamicLocation(this)` on delete; track = SoundSet with `WaveKind.WAVEMUSIC`.
-(desde 1.30 Exp: a custom world should also subclass `DynamicMusicPlayerRegistry` like
+(desde 1.30: a custom world should also subclass `DynamicMusicPlayerRegistry` like
 `DynamicMusicPlayerRegistryNasdara` and construct it from `missionBase` world switch.)
 
 ## Cross-skill pointers
@@ -248,7 +253,7 @@ g_Game.GetNoiseSystem().AddNoiseTarget(pos, 30, np, 2.0);
 - `dayz-particles` — SEffectManager also owns particles; same lifecycle/leak rules.
 - `dayz-ai-patterns` — how the eAI/infected consume NoiseSystem events.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 What changes, what breaks, and the migration checklist. `[EXACT]` blocks: `references/dayz-1-30-sound.md`.
 Deep-dive updates: `references/sonido-deep-dive.md`. Shared AI noise: skill `dayz-ai-patterns` (its 1.30 noise section).

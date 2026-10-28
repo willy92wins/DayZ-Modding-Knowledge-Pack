@@ -17,6 +17,11 @@ every row below was checked against.
 > unlikely" is not evidence and this matrix only records what was measured. Treat
 > every level below as verified on `163451` until someone re-runs it.
 
+> **Since 2026-10-15 the stable branch is DayZ 1.30** (`1.30.164078`; the author's
+> install has run `1.30.164200` since 2026-10-21). The levels in §Skill coverage are
+> still the 1.29 ones: no row was re-run on 1.30. What was checked on 1.30 stable, and
+> how, is in §DayZ 1.30 below.
+
 This matrix records what was actually checked. It does not claim that every
 workflow was run end-to-end on this build during r21 Phase 01.
 
@@ -32,10 +37,10 @@ workflow was run end-to-end on this build during r21 Phase 01.
   when reused.
 - `unverified`: no sufficient evidence; never interpret as compatible.
 
-## DayZ 1.30 Experimental (build 1.30.164014)
+## DayZ 1.30
 
-Added **2026-10-01**. 1.30 is still Experimental on this date (Experimental Update 1
-shipped 2026-09-16); the stable target above is unchanged.
+Added **2026-10-01**, while 1.30 was still Experimental (Experimental Update 1
+shipped 2026-09-16). 1.30 reached stable on 2026-10-15.
 
 Between 2026-09-16 and 2026-10-01, sections for 1.30 Experimental were added to
 the 28 skills below, plus the 1.30-only `dayz-motorbikes`. They were written
@@ -43,10 +48,17 @@ against a local extraction of build `1.30.164014` (scripts, `config.cpp` files a
 the plain-text `.agf` animation graphs). **This table only locates that content; it
 does not re-verify it.** The evidence level of each 1.30 statement is the one its own
 section records (`[EXACT]` with a `path:line` for source checks, "measured in game"
-for runtime ones). None of it has been checked against a 1.30 stable build, because
-none exists yet.
+for runtime ones).
 
-| Skill | Where the 1.30 Experimental content lives |
+**Re-check on 1.30 stable (2026-10-28).** Every vanilla `path:line` citation in the
+skills (the 1.30 sections and the rest) was checked against `1.30.164200` and moved
+with the text it cites; the `[EXACT]` blocks that quote vanilla script were compared
+with that build; the status lists of `dayz-motorbikes` and `dayz-environment-hazards`
+were read again on it. Measurements were not repeated: something measured in game on
+`1.30.164014` is evidence for that build. How to tell which build a citation's lines
+come from: `skills/_shared/dayz-conventions.md` §Vanilla line numbers: which build.
+
+| Skill | Where the 1.30 content lives |
 |---|---|
 | `dayz-ai-patterns` | `references/dayz-1-30-ai.md` |
 | `dayz-animation-pipeline` | `SKILL.md`, `references/anim-graph.md`, `references/dual-entry-action-pattern.md` (+6 more) |
@@ -92,7 +104,7 @@ none exists yet.
 | `dayz-3d-viewer` | `offline_tested` | pack `tools/py3d` >=1.5.0; optional Pillow and LZO extras | Offline conversion only. HTML loads three.js 0.160.0 from a CDN. SWIZ, proxy triangles and ViewPilot 1100 remain documented gaps. No in-game render was run for this row. | `skills/dayz-3d-viewer/SKILL.md`; `tools/dayz-3d-viewer/tests` |
 | `dayz-feature-spec` | `offline_tested` | project spec, plan, task/handoff and source evidence | Engine-independent process skill. New injected-object Forward Contract is source-verified; it does not itself prove runtime behavior. | `skills/dayz-feature-spec/SKILL.md:46-59`; `GAMEMASTER_SOURCE/tools/gm/service.py:209-218` |
 | `dayz-mcp-verify` | `source_verified` + historical runtime evidence | public `dayz_test_run` / `dayz_test_stop`; configured DayZ MCP bridge; `dayz-test-ingame` | The bridge is not bundled. Player UI, door interaction, inventory use and firing remain manual. This phase inspected lifecycle code but did not start DayZ. | `skills/dayz-mcp-verify/SKILL.md:33-64`; `DAYZ_MCP_SOURCE/server.py:915-995` |
-| `dayz-persistence` | `source_verified` | `enforce-script-reference`; `rigorous-data-audit`; optional Community Framework ModStorage | Entity-stream, schema-version and JSON-loader contracts are read from vanilla source for this build. Nothing here asserts runtime behaviour: atomic-save and recovery claims are design contracts and still need a real save/restart cycle. | `skills/dayz-persistence/SKILL.md:30-39,70-71`; `VANILLA/3_game/entities/entityai.c:2925,2969-2989`; `VANILLA/3_game/tools/jsonfileloader.c:7-40` |
+| `dayz-persistence` | `source_verified` | `enforce-script-reference`; `rigorous-data-audit`; optional Community Framework ModStorage | Entity-stream, schema-version and JSON-loader contracts are read from vanilla source for this build. Nothing here asserts runtime behaviour: atomic-save and recovery claims are design contracts and still need a real save/restart cycle. | `skills/dayz-persistence/SKILL.md:30-39,70-71`; `VANILLA/3_game/entities/entityai.c:2910,2958-2978`; `VANILLA/3_game/tools/jsonfileloader.c:7-40` |
 | `dayz-pbo-reverse-engineering` | `offline_tested` | lawful PBO access; Mikero ExtractPbo or equivalent; optional p3d tooling | Tool output and legal permissions vary. Binarized/obfuscated content may limit recovery; no third-party payload may be redistributed automatically. | `skills/dayz-pbo-reverse-engineering/SKILL.md`; `THIRD_PARTY_NOTICES.md` |
 | `dayz-test-ingame` | `source_verified` + `offline_tested` | DayZ Tools; AddonBuilder; DayZDiag; managed lifecycle; optional CF/VPP | Generated launcher parser and secret tests pass. Runtime launch was intentionally not run in this phase. 1.29 mod/tool changes require dependency checks before reuse. | `skills/dayz-test-ingame/SKILL.md`; `tests/packctl/test_dayz_test_template_contract.py` |
 | `dayz-vehicles` | `source_verified` + historical runtime evidence | `enforce-script-reference`; `dayz-model-pipeline`; `dayz-pbo-build`; `dayz-test-ingame` | Several advanced proxy/winding rules are explicitly offline-only or pending in-game; preserve those labels. 1.29 vehicle fixes do not prove custom vehicle compatibility. | `skills/dayz-vehicles/SKILL.md:110-118,256-264`; local vanilla vehicle/action sources |
@@ -121,14 +133,15 @@ none exists yet.
 | `dayz-realistic-animation-director` | `cross_checked` | Blender with `bpy`; `blender-animation`; `dayz-animation-pipeline`; optional DayZDiag for the in-game gate | Offline validators compile. No third-party motion models or ARDY weights ship. Adopted, not re-run. | `skills/dayz-realistic-animation-director/SKILL.md`; `skills/dayz-realistic-animation-director/scripts/` |
 | `uv-clean-atlas` | `cross_checked` | Blender 4.3+ headless; optional PartUV (not shipped) | Scripts compile; `sys.path` stays at the skill `scripts/` directory. One source-game brand token was neutralized. Adopted, not re-run. | `skills/uv-clean-atlas/SKILL.md`; `skills/uv-clean-atlas/scripts/` |
 | `3d-generation-harness` | `cross_checked` | `blender-assembly`; `blender-visual-review`; `dayz-model-pipeline`; `dayz-p3d-audit`; optional external image-to-3D skill (not in this pack) | Process harness. `hunyuan3d-local` and kin are optional/external — the pack does not include them. Adopted, not re-run. | `skills/3d-generation-harness/SKILL.md` |
-| `dayz-environment-hazards` | `unverified` (1.30 Experimental feature set) | `enforce-script-reference`; `dayz-underground` | Written against 1.30.164014 Exp; not checked on 1.29. | `skills/dayz-environment-hazards/references/sources.md` |
-| `dayz-motorbikes` | `unverified` (targets 1.30 only) | `dayz-vehicles`; `dayz-animation-pipeline`; `dayz-model-pipeline` | 1.30 Experimental `MotorbikeScript` contract; the 1.29 stable scripts contain no `MotorbikeScript` (0 references, checked 2026-10-01). | `skills/dayz-motorbikes/references/sources.md` |
-| `dayz-underground` | `unverified` (1.30 Experimental terrain holes) | `dayz-basebuilding`; `dayz-test-ingame` | Written against 1.30.164014 Exp; not checked on 1.29. | `skills/dayz-underground/references/terrain-holes-evidence.md` |
+| `dayz-environment-hazards` | `unverified` (1.30-only feature set) | `enforce-script-reference`; `dayz-underground` | Written against 1.30.164014 Exp; citations re-checked on 1.30.164200 stable (2026-10-28); not checked on 1.29. | `skills/dayz-environment-hazards/references/sources.md` |
+| `dayz-motorbikes` | `unverified` (targets 1.30 only) | `dayz-vehicles`; `dayz-animation-pipeline`; `dayz-model-pipeline` | 1.30 `MotorbikeScript` contract, written against 1.30.164014 Exp and re-checked on 1.30.164200 stable (2026-10-28); the 1.29 stable scripts contain no `MotorbikeScript` (0 references, checked 2026-10-01). | `skills/dayz-motorbikes/references/sources.md` |
+| `dayz-underground` | `unverified` (1.30-only terrain holes) | `dayz-basebuilding`; `dayz-test-ingame` | Written against 1.30.164014 Exp; citations re-checked on 1.30.164200 stable (2026-10-28); not checked on 1.29. | `skills/dayz-underground/references/terrain-holes-evidence.md` |
 
 ## Stable-build evidence and update policy
 
 - The exact local game/scripts baseline used for source checks is
-  `1.29.0.163451`.
+  `1.29.0.163451`. For the 1.30 content it is `1.30.164200` since the
+  2026-10-28 re-check (§DayZ 1.30).
 - The [official stable changelog](https://forums.dayz.com/topic/266379-stable-update-129/)
   identifies Steam Stable `1.29.163451`, released 2026-07-15.
 - Before a DayZ stable update is adopted, pin its build, diff relevant vanilla

@@ -196,12 +196,12 @@ Every rule below caused a real crash or visual failure in production.
    Either form loads; when debugging a missing widget check brace balance and file format
    (brace vs XML), not leaf blocks. The ONE real use of an anonymous block on a leaf is holding
    `ScriptParamsClass` (see layout-format.md — dedicated block, 157/157 corpus instances).
-   Vanilla's own tree dumper `MissionBase.DumpCurrentUILayout()` (missionbase.c:357-377) prints
+   Vanilla's own tree dumper `MissionBase.DumpCurrentUILayout()` (missionbase.c:378-398) prints
    every widget of the current menu with visibility totals — use it for "half my UI is missing".
 
 2. **`FrameWidgetClass`/`PanelWidgetClass` are INVISIBLE** (unless a `style` gives Panel a 9-slice
    — see styles-format.md).
-   *(hasta 1.29: For visible backgrounds use ImageWidgetClass with ignorepointer 1 and stretch 1; desde 1.30 Exp: vanilla systematically uses styled `PanelWidgetClass` (`style ActionWidget` in `dayzwidgets.styles:3700`) with parametric gradient slices across all interaction prompts in `day_z_hud.layout:2294, 2477, 2755, 3033, 3311`, replacing `ImageWidgetClass` with `linear_gradient.edds` / `card_drop.edds`).*
+   *(hasta 1.29: For visible backgrounds use ImageWidgetClass with ignorepointer 1 and stretch 1; desde 1.30: vanilla systematically uses styled `PanelWidgetClass` (`style ActionWidget` in `dayzwidgets.styles:3700`) with parametric gradient slices across all interaction prompts in `day_z_hud.layout:2294, 2477, 2755, 3033, 3311`, replacing `ImageWidgetClass` with `linear_gradient.edds` / `card_drop.edds`).*
    ⚠️ **Breaking change 1.30:** `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` or `"item"` returns `null` in 1.30 (causing Null Pointer Exception when calling `LoadImageFile`/`SetColor`). Migrate to `PanelWidget.Cast(...)` or generic `Widget`.
    For procedural textures: In script `LoadImageFile(0, "#(argb,8,8,3)color(1,1,1,1,CO)")` then
    `SetColor(ARGB(...))`. ⚠️ The procedural texture FAILED on DayZ 1.29 ("Bad texture name" /
@@ -522,7 +522,7 @@ limitation — and no framework plugs it (see the CUI correction below).
    re-declaring in a subclass changes nothing.
 
    Worse: `COLOR_DAYZ_RED` (the most-named "DayZ red") is referenced in **exactly
-   one** call site across vanilla scripts — `mainmenupromo.c:158`, the main-menu
+   one** call site across vanilla scripts — `mainmenupromo.c:157`, the main-menu
    promo banner. Verified 2026-05-04 against `P:\scripts\`. So even a working
    override of `COLOR_DAYZ_RED` would only recolor that one element.
 
@@ -573,8 +573,9 @@ surface worth knowing is the server-aware NotificationSystem.
   `proto static` — global, not per-widget (`enwidgets.c:114-117`, whose own comment
   says "Set **global** LV of widgets"). Vanilla uses those exact two calls to apply
   the player's brightness preference: `SetHudBrightness()` is
-  `Widget.SetLV(value); Widget.SetTextLV(value);` (`dayzgame.c:3778-3782`), fed from
-  `EDayZProfilesOptions.HUD_BRIGHTNESS` (`:3784-3787`) at `OnInitialize()` (`:2075`).
+  `Widget.SetLV(value); Widget.SetTextLV(value);` (`dayzgame.c:3910-3914`), fed from
+  `EDayZProfilesOptions.HUD_BRIGHTNESS` through `GetHUDBrightnessSetting()` (`:3916-3919`) at
+  `OnInitialize()` (`:2109-2114`).
   So `SetLV(0)` at mod init does not "normalize colors" — it **overwrites the
   player's HUD brightness setting**, globally, for vanilla UI too.
 - If your colors look darker than their hex values, that is the player's brightness
@@ -917,7 +918,7 @@ Useful for feature flags across mod boundaries.
 | Text overlaps widget below | Absolute positioning + dynamic visibility | Use RecalculateLayout() pattern (see advanced-patterns.md) |
 | Button click doesn't fire | Missing `SetHandler(this)` in vanilla handler | Add SetHandler in constructor; not needed with Dabs ViewController |
 | OnMouseLeave never fires | Wrong parameter count (3 instead of 4) | Signature: `OnMouseLeave(Widget w, Widget enterW, int x, int y)` — 4 params |
-| Colors appear darker than expected | The player's HUD_BRIGHTNESS, applied globally by vanilla | Design against it. **Do NOT call `Widget.SetLV(0)`** — it is `proto static` and overwrites the player's setting (`dayzgame.c:3778-3782`). See COLOR SYSTEM |
+| Colors appear darker than expected | The player's HUD_BRIGHTNESS, applied globally by vanilla | Design against it. **Do NOT call `Widget.SetLV(0)`** — it is `proto static` and overwrites the player's setting (`dayzgame.c:3910-3914`). See COLOR SYSTEM |
 | Alpha below ~48 is invisible | Engine low-alpha clamp | Keep alpha ≥ 0x30 (48). Measured bracket: 0x12 invisible, 0x26 visible |
 | Relay_Command runs more than once | Handler returned false/void → re-invoked up the parent chain | Command handlers must `return true` when handled (Rule 16) |
 | EditBox text not updating | Binding not notified | Call `NotifyPropertyChanged("FieldName")` after changing value |
@@ -1227,9 +1228,12 @@ usually appears on exit, after the feature itself looked complete.
    specific: first person works, while third person remains pinned to the former camera transform
    and player actions are absent.
 4. **Do not reuse a continuous-action binding as the exit binding.** Use a separate key such as
-   SPACE or ESC. Otherwise the ActionManager can retain an action in progress, and vanilla blocks
+   SPACE or ESC. Otherwise the ActionManager can retain an action in progress, and 1.29 vanilla blocks
    third-person look while a non-freelook action is active
-   (`VANILLA/scripts/4_world/.../dayzplayercamera_base.c:157-177`).
+   (1.29 `VANILLA/scripts/4_world/.../dayzplayercamera_base.c:157-177`). On 1.30 the script takes the
+   up/down limits from the native `GetLookLimits` on every frame
+   (`VANILLA/scripts/4_world/.../dayzplayercamera_base.c:152-156`), so whether an action still narrows
+   them is decided in the engine and was not re-checked.
 
 Verification boundary: rules 1-2 were checked against an author-owned production implementation.
 Rules 3-4 were source-checked and matched the observed 1PP/3PP asymmetry, but the originating
@@ -1252,7 +1256,7 @@ Without them, the canonical symptom is an opaque black rectangle the size of the
 art still visible inside. This was isolated by an in-game A/B and matches the vanilla projected
 crosshair (`VANILLA/gui/layouts/day_z_hud.layout:2263-2264`). Add this check during layout authoring
 and again at delivery. For a strip or tape that must be clipped by its parent, the real attribute is
-`clipchildren 1` (`day_z_hud.layout:555`), not `clipping`.
+`clipchildren 1` (`day_z_hud.layout:595`), not `clipping`.
 
 ## In-seat interfaces: interrupt before excluding input (added 2026-08-31)
 
@@ -1263,7 +1267,7 @@ close the interface and complete the vanilla action underneath it.
 - Add the relevant mission input exclude (for example `{"menu"}`) on open. Restore it on **every**
   exit path, guarded by a flag so a partial open cannot over-release another owner's exclude.
 - **Before adding an exclude, interrupt any continuous action already in progress** with
-  `ActionManagerClient.RequestInterruptAction()` (`actionmanagerclient.c:1280`). Excluding input
+  `ActionManagerClient.RequestInterruptAction()` (`actionmanagerclient.c:1341`). Excluding input
   first can hide the release event and leave the ActionManager permanently in progress until relog.
 - While the exclude is active, `UAInput.LocalValue()` is gated to zero. Raw
   `KeyState(KeyCode.KC_X)` (`ensystem.c:291`) and `GetMouseState` still read hardware state, but
@@ -1282,7 +1286,7 @@ This section supersedes the timer/hand-written-`.edds` example in
   `LoginQueueBase`/`LoginTimeBase` already inherit through `LoginScreenBase`
   (`VANILLA/scripts/3_game/dayzgame.c:63,110,205,688`).
 - Do not add a `Timer` just to rotate backgrounds. Accumulate `timeslice` in
-  `LoadingScreen.OnUpdate(float)` (called every loading frame at `dayzgame.c:2990-2992`) and in the
+  `LoadingScreen.OnUpdate(float)` (called every loading frame at `dayzgame.c:3034-3036`) and in the
   inherited `LoginScreenBase.Update(float)` for the queue/time screens. Loading has no known total
   duration, so rotate on a fixed period rather than trying to divide it in half.
 - Use a `.paa` produced by DayZ Tools `ImageToPAA.exe`; do not ship a hand-written `.edds`.
@@ -1710,7 +1714,7 @@ To resume them, having the display turned on is enough: load `$profile:uiprobe.l
 
 ---
 
-## DayZ 1.30 Exp (build 1.30.164014) — UI Architecture & Breaking Changes
+## DayZ 1.30 — UI Architecture & Breaking Changes
 
 ### What changes in DayZ 1.30
 
@@ -1752,7 +1756,7 @@ To resume them, having the display turned on is enough: load `$profile:uiprobe.l
 - [ ] For new cursor inspection panels, consult the modular architecture in `references/hud-action-info-panels.md`.
 - [ ] Verify 9-slice style compatibility with the new `ActionWidget` style in `references/styles-format.md`.
 
-### Detailed references for DayZ 1.30 Exp
+### Detailed references for DayZ 1.30
 - **Modular cursor panels and construction grids**: `references/hud-action-info-panels.md`
 - **HUD mapping and inventory architecture**: `references/vanilla-menus-map.md`
 - **Widget API catalog and verification**: `references/widget-api.md`

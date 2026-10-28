@@ -10,10 +10,10 @@ Use only the sections relevant to the task, in addition to the common contract a
 - Test stance and camera variants that can change IK/blending.
 - Review transitions into and out of the action, not only its central pose.
 - **Surrender state (DayZ 1.30 [EXACT]):**
-  *(Until 1.29: surrender physically spawned virtual item `SurrenderDummyItem` in hands to block reloading and interaction; since 1.30 Exp: `SurrenderDummyItem` is completely eliminated and surrender is handled natively with `PlayerBase.SetSurrenderState(bool)` and `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
+  *(Until 1.29: surrender physically spawned virtual item `SurrenderDummyItem` in hands to block reloading and interaction; since 1.30: `SurrenderDummyItem` is completely eliminated and surrender is handled natively with `PlayerBase.SetSurrenderState(bool)` and `Man.IsSurrendered()` [`exp\scripts\scripts\3_Game\Entities\Man.c:67`, `exp\scripts\scripts\4_World\Classes\EmoteManager.c:314, 1248-1250`]).*
   Do not author interactions assuming an invisible dummy weapon in hands during surrender.
 - **Dynamic Animation Instance switching [EXACT]:**
-  Script can now force transitions between `.asi` instances at runtime via `Human.SetAnimationInstanceByName(string animationInstanceName, float blendingTime)` (`// [EXACT] exp\scripts\scripts\3_Game\human.c:1384`). To reset back to unarmed base pose without an item, DayZ registers the `"Empty"` profile on `player_main.asi` (`// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1537`).
+  Script can now force transitions between `.asi` instances at runtime via `Human.SetAnimationInstanceByName(string animationInstanceName, float blendingTime)` (`// [EXACT] exp\scripts\scripts\3_Game\human.c:1384`). To reset back to unarmed base pose without an item, DayZ registers the `"Empty"` profile on `player_main.asi` (`// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1548`).
 - **Stance-based speed and camera rotation limits [EXACT]:**
   `HumanInputController` can clamp movement speed and freeze horizontal camera rotation per stance:
   - `SetErectSpeedLimit(bool bShouldDisable, int pMaxErectSpeed)`, `SetCrouchSpeedLimit(...)`, `SetProneSpeedLimit(...)` (`// [EXACT] exp\scripts\scripts\3_Game\human.c:230-233`).
@@ -46,16 +46,16 @@ Use only the sections relevant to the task, in addition to the common contract a
 - **Hands item decoupling [EXACT]:**
   Changing the item in hands no longer automatically forces an animation instance change if `pChangeAnimationInstance = false` in `HumanItemAccessor.OnItemInHandsChanged(bool pInstant = false, bool pChangeAnimationInstance = true)` (`// [EXACT] exp\scripts\scripts\3_Game\humanitems.c:112`) and `EnableAutoAnimInstUpdateOnHandsChange(bool)` (`humanitems.c:115`).
 - **Dedicated weapon and tool `.asi` profiles [EXACT]:**
-  DayZ 1.30 splits generic 1H/2H instances into dedicated `.asi` files for specific tools and weapons (`DayZPlayerCfgBase.c:1540-1620`), including:
+  DayZ 1.30 splits generic 1H/2H instances into dedicated `.asi` files for specific tools and weapons (`DayZPlayerCfgBase.c:395`, `:432`, `:444-446`, `:747`, `:753`, `:757`, `:807`, `:809`, `:1251`; on 1.29 only `SCARH_Base` had one, 1.29 `:442`), including:
   - Bandage: `props/player_main_1h_bandage.asi`
   - Sickle: `props/player_main_1h_sickle.asi`
   - HayHook: `weapons/player_main_1h_hayhook.asi`
   - Hatchet: `weapons/player_main_1h_hatchet.asi`
   - Pitchfork: `weapons/player_main_2h_pitchfork.asi`
   - Sword: `weapons/player_main_2h_sword.asi`
-  - Luger P08: `weapons/player_main_luger08.asi` (with `LugerBoneRemap` in `DayZPlayerCfgBase.c:1610`)
+  - Luger P08: `weapons/player_main_luger08.asi` (with `LugerBoneRemap` in `DayZPlayerCfgBase.c:1621`)
   - MP18: `weapons/player_main_mp18.asi`
-  - Lee-Enfield: `weapons/player_main_leeEnfield.asi` (with `LeeEnfieldBoneRemap` in `DayZPlayerCfgBase.c:1594`)
+  - Lee-Enfield: `weapons/player_main_leeEnfield.asi` (with `LeeEnfieldBoneRemap` in `DayZPlayerCfgBase.c:1605`)
   - SCAR-L: `weapons/player_main_SCARH.asi`
   Audit hand poses against the exact weapon/prop `.asi` profile rather than assuming generic `player_main_1h.asi` or `player_main_2h.asi`.
 
@@ -72,7 +72,7 @@ Use only the sections relevant to the task, in addition to the common contract a
 
 - Obtain the actual skeleton, rest pose and gait reference for that species/rig.
 - **Skeleton bone index deregulation (DayZ 1.30 [EXACT]):**
-  *(Until 1.29: skeletons.anim.xml defined fixed indices and limited system to 250 bones; since 1.30 Exp: 250-bone limit is removed; indices are calculated at runtime by bone name hash and skeletons.anim.xml only retains index="0" on EntityPosition [`work\changelog-1.30-exp-modding.md:31, 43`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:986-988`]).*
+  *(Until 1.29: skeletons.anim.xml defined fixed indices and limited system to 250 bones; since 1.30: 250-bone limit is removed; indices are calculated at runtime by bone name hash and skeletons.anim.xml only retains index="0" on EntityPosition [`work\changelog-1.30-exp-modding.md:31, 43`, `exp\anims_cfg\DZ\anims\cfg\skeletons.anim.xml:986-988`]).*
   Four new animal skeletons are introduced in DayZ 1.30: `ovis_gmelini_skeleton.xob` (mouflon), `canis_familiaris_dobermann_skeleton.xob`, `canis_familiaris_german_shepherd_skeleton.xob`, and `varanus_griseus_skeleton.xob` (`skeletons.anim.xml:986-1150`).
 - **Graph modularity (`.agf` files) [EXACT]:**
   Creature graphs migrate from old-format text `.agr` sub-graphs to modular Enfusion Config `.agf` files (`wolf_maingraph.agf`, `ambientlife_maingraph.agf`, `locomotion.agf`) referenced by master `AnimSrcGraph` `.agr` indexes (`wolf_graph.agr:157-159`). (corrected 2026-09-28: this line used to say "monolithic binary `.agr`". In the 1.29 extraction the wolf graph is already two text files, `Wolf_Graph.agr` listing `Wolf_MainGraph.agr` at `:58`, both opening with `$AnimGraph 7 {`, and all six 1.29 animal `.agr` files are text.)
@@ -136,5 +136,5 @@ Use only the sections relevant to the task, in addition to the common contract a
   Scripts separate animated death from ragdoll simulation:
   - `PhysicsSetSimpleDeath(bool pEnable)` handles animated death (`// [EXACT] exp\scripts\scripts\3_Game\human.c:1448-1449`).
   - `PhysicsSetRagdoll(bool pEnable)` and `PhysicsIsRagdoll()` handle physical ragdoll simulation (`// [EXACT] exp\scripts\scripts\3_Game\human.c:1451-1452`).
-  - `HumanCommandUnconscious.IsRagdoll()` queries whether an unconscious character is ragdolling (`exp\scripts\scripts\3_Game\human.c:646`).
+  - `HumanCommandUnconscious.IsRagdoll()` queries whether an unconscious character is ragdolling (`exp\scripts\scripts\3_Game\human.c:647`).
   When authoring death animations, note that DayZ default deaths invoke `PhysicsSetSimpleDeath(true)` rather than pure ragdoll.

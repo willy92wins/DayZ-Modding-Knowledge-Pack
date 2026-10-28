@@ -16,7 +16,7 @@ This document establishes the complete specification for creating a new motorbik
   - `simulation = "motorbike";` (inherited from `Motorbike`, `exp\bin\bin\config.cpp:1059`).
   - `attachments[] = {"SparkPlug", "Reflector_1_1", "MiMoto_Wheel_1", "MiMoto_Wheel_2"};` (`config.cpp:220`).
   - `hiddenSelections[] = {"camo1", "camo_fender", "lights_brake", "lights_front", "lights_rear"};` (`config.cpp:221`).
-  - `speedGeomActivation = 0.29;` and `speedGeoms[] = {"geotohide"};` (`config.cpp:226-227`).
+  - `speedGeomActivation = 0.29;` and `speedGeoms[] = {"geotohide"};` (`config.cpp:230-231`).
   - *Consumer*: Enfusion engine and `VehicleLightsComponent.c`.
 
 ### `class Crew` Block
@@ -45,7 +45,7 @@ This document establishes the complete specification for creating a new motorbik
   - *Consumer*: `ActionGetInTransport.c:81-100` and `Transport.CrewMember()`.
 
 ### `class SimulationModule` Block
-- [EXACT] 2-wheel structure without `Axles` (`config.cpp:228-343`):
+- [EXACT] 2-wheel structure without `Axles` (`config.cpp:232-347`):
   - `class Steering`: `tipoverAngle = 50.0;`, curves `maxSteeringAngle[]`, `maxLeanAngle[]`, `steerIncreaseSpeed[]`, `directControl[]`.
   - `class Throttle`: `reactionTime = 0.15;`, `defaultThrust = 0.82;`, `slopeCoef = 0.75;`.
   - `class Brakes`:
@@ -60,14 +60,14 @@ This document establishes the complete specification for creating a new motorbik
     - `class Rear: Rear`: `maxBrakeTorque = 1200;`, `wheelHubMass = 10;`, `driveRatio = 10.2789;`, `animDamper = "damperback";`, `inventorySlot = "MiMoto_Wheel_2";`, `class Suspension { stiffness = 7000; compression = 750; damping = 1350; travelMaxUp = 0.058; travelMaxDown = 0.043; };`.
 
 ### Animation Sources (`AnimationSources`)
-- [EXACT] Declare minimum sources (`config.cpp:112-148, 344-364`):
+- [EXACT] Declare minimum sources (`config.cpp:112-148, 348-368`):
   - `damper_1` and `damper_2` (`source = "user";`).
   - `AnimHitWheel_1` and `AnimHitWheel_2` (`source = "Hit"; hitpoint = "HitWheel_1/2"; raw = 1;`).
   - `HideDestroyed_1_1` through `_2_2` (`source = "user";`).
   - If flip-up seat is present: `SeatDriver` (`source = "user"; initPhase = 0.0; animPeriod = 1.0;`).
 
 ### Damage System (`DamageSystem`)
-- [EXACT] Define `GlobalHealth` (1000 HP) and DamageZones of `Motorbike_01` (`config.cpp:365-515`, with `GUIInventoryAttachmentsProps` at `:491-514`):
+- [EXACT] Define `GlobalHealth` (1000 HP) and DamageZones of `Motorbike_01` (`config.cpp:369-519`, with `GUIInventoryAttachmentsProps` at `:491-514`):
   - `Chassis`: 1000 HP, `componentNames[] = {"dmgZone_chassis"}`.
   - `Fender`: 200 HP, `componentNames[] = {"dmgZone_fender"}` (transfer target for `Front`).
   - `Engine`: 1000 HP, `transferToGlobalCoef = 1;`, `inventorySlots[] = {"SparkPlug"}`.
@@ -84,8 +84,8 @@ This document establishes the complete specification for creating a new motorbik
 - [EXACT] Front and rear wheels derived from `MotorbikeWheel` (`config.cpp:155-214`):
   - Define `radius`, `width`, `tyreRollResistance`, `tyreRoughness`, `tyreLongitudinalFriction`, `tyreLateralFriction`.
   - Create ruined wheel classes `_Ruined`.
-- [EXACT] Proxies in `CfgNonAIVehicles` (`config.cpp:1061-1083`):
-  - `class ProxyMiMoto_wheel_1: ProxyVehiclePart { model = "MiMod\data\proxy\mimoto_wheel_1.p3d"; inventorySlot[] = {"MiMoto_Wheel_1"}; };`, following the vanilla pattern of `config.cpp:1064-1068`.
+- [EXACT] Proxies in `CfgNonAIVehicles` (`config.cpp:1068-1090`):
+  - `class ProxyMiMoto_wheel_1: ProxyVehiclePart { model = "MiMod\data\proxy\mimoto_wheel_1.p3d"; inventorySlot[] = {"MiMoto_Wheel_1"}; };`, following the vanilla pattern of `config.cpp:1071-1075`.
 
 ---
 
@@ -102,7 +102,7 @@ class MiMoto extends MotorbikeScript
         m_VehicleContactDamageCoef = 0.03;   // exp\scripts\scripts\4_World\Entities\Vehicles\InheritedMotorbikes\Motorbike_01.c:5
         m_CrewContactDamageCoef    = 0.018;  // Motorbike_01.c:6
 
-        // [EXACT] Engine SoundSet string binding (from exp\sounds_hpp\DZ\sounds\hpp\config.cpp:98414-98439)
+        // [EXACT] Engine SoundSet string binding (from exp\sounds_hpp\DZ\sounds\hpp\config.cpp:99196-99221)
         m_EngineStartOK   = "Motorbike_01_engine_start_SoundSet";
         m_EngineStartFuel = "Motorbike_01_engine_failed_start_fuel_SoundSet";
         m_EngineStop      = "Motorbike_01_engine_stop_SoundSet";
@@ -115,22 +115,22 @@ class MiMoto extends MotorbikeScript
         m_HornComponent.RegisterSound(VehicleHornMode.LONG,  "Motorbike_01_Horn_SoundSet");
 
         // [EXACT] Engine block position in model space
-        SetEnginePos("0 0.3 -0.06"); // Motorbike_01.c:25
+        SetEnginePos("0 0.3 -0.06"); // Motorbike_01.c:27
     }
 
     // [EXACT] Rider animation profile in Vehicles.agf (10 = MOTO1, 11 = MOTO2)
     override int GetAnimInstance()
     {
-        return VehicleAnimInstances.MOTO1; // Motorbike_01.c:50
+        return VehicleAnimInstances.MOTO1; // Motorbike_01.c:47
     }
 
     // [EXACT] Subida y bajada direccional (izquierda / derecha)
     override bool HasDirectionalInOutAction()
     {
-        return true; // Motorbike_01.c:55
+        return true; // Motorbike_01.c:52
     }
 
-    // [EXACT] Motorbike_01.c:58-69: conductor (posIdx 0) -> 0 = GetIn_L, 1 = GetIn_R; resto de plazas -> 0
+    // [EXACT] Motorbike_01.c:55-66: conductor (posIdx 0) -> 0 = GetIn_L, 1 = GetIn_R; resto de plazas -> 0
     override int GetSeatAnimationTypeDirectional(int posIdx, int directionIndex)
     {
         if (posIdx == 0)
@@ -147,18 +147,18 @@ class MiMoto extends MotorbikeScript
     // [EXACT] 3rd person camera parameters (ID 32)
     override float GetTransportCameraDistance()
     {
-        return 2.5; // Motorbike_01.c:40
+        return 2.5; // Motorbike_01.c:37
     }
 
     override vector GetTransportCameraOffset()
     {
-        return "0 1.3 -0.25"; // Motorbike_01.c:45
+        return "0 1.3 -0.25"; // Motorbike_01.c:42
     }
 
     // [EXACT] Magneto / kick-start bike: needs no battery to start
     override bool NeedElectricitySourceDevice()
     {
-        return false; // Motorbike_01.c:35
+        return false; // Motorbike_01.c:32
     }
 }
 ```
@@ -170,7 +170,7 @@ class MiMoto extends MotorbikeScript
 Since binary `.p3d` files cannot be read in plain text, the modder **must measure** the following mandatory elements on their 3D model before compiling the addon, using `dayz-p3d-audit` or `py3d` tools:
 
 ### A. Skeleton Bones in `model.cfg`
-1. **`drivewheel` [MANDATORY]**: The front fork and handlebars must have this exact name. `MotorbikeScript.c:1107` executes `GetBoneIndex("drivewheel")` to attach the headlight cone. If the bone is named differently, the headlight will not rotate with steering.
+1. **`drivewheel` [MANDATORY]**: The front fork and handlebars must have this exact name. `MotorbikeScript.c:1122` executes `GetBoneIndex("drivewheel")` to attach the headlight cone. If the bone is named differently, the headlight will not rotate with steering.
 2. **`damperfront` and `damperback`**: names passed by config in `animDamper` (`config.cpp:95, 103`); they must exist as `model.cfg` animations with their bone [UNVERIFIED: vanilla `model.cfg` is not in the extraction].
 3. **`wheelfront`/`wheelback` and `turnfront`/`turnback`**: rotation (`animRotation`) and turning (`animTurn`) animations for each wheel, along with `wheelHub` names `wheel_1_damper_land` and `wheel_2_damper_land` (`config.cpp:90-105`).
 

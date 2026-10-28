@@ -1,15 +1,15 @@
-# DayZ 1.30 Exp (build 1.30.164014) — Enforce Script contract
+# DayZ 1.30 — Enforce Script contract
 
-Consultation reference for `enforce-script-reference`. Facts re-opened under `exp\` (digests E / F / O as a map). `[EXACT]` copied from those files. `[DESIGN]` = migration advice.
+Consultation reference for `enforce-script-reference`. Facts re-opened under `exp\` (digests E / F / O as a map). Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). `[EXACT]` copied from those files. `[DESIGN]` = migration advice.
 
-Until 1.29: CE tick `OnCEUpdate()`, inventory hooked `ProcessInputData`, fill-bottle `ActionFillBottleBase`, 3rd-person `World.Is3rdPersonDisabled()`, storage `142`. Since 1.30 Exp: replacements below.
+Until 1.29: CE tick `OnCEUpdate()`, inventory hooked `ProcessInputData`, fill-bottle `ActionFillBottleBase`, 3rd-person `World.Is3rdPersonDisabled()`, storage `142`. Since 1.30: replacements below.
 
 ## 1. Central Economy tick: `OnCEUpdate` → `OnCEIterate`
 
-Until 1.29: `EntityAI.OnCEUpdate()` had no time args (`stable-1.29\scripts\scripts\3_Game\Entities\EntityAI.c:3860`). Since 1.30 Exp it is empty `[Obsolete]`; the live tick is `OnCEIterate(float currentTime, float elapsedTime)`.
+Until 1.29: `EntityAI.OnCEUpdate()` had no time args (`stable-1.29\scripts\scripts\3_Game\Entities\EntityAI.c:3860`). Since 1.30 it is empty `[Obsolete]`; the live tick is `OnCEIterate(float currentTime, float elapsedTime)`.
 
 ```c
-// [EXACT] exp\scripts\scripts\3_Game\Entities\EntityAI.c:3881
+// [EXACT] exp\scripts\scripts\3_Game\Entities\EntityAI.c:3904
 	void OnCEIterate(float currentTime, float elapsedTime)
 	{
 		ProcessVariables(elapsedTime);
@@ -21,7 +21,7 @@ Until 1.29: `EntityAI.OnCEUpdate()` had no time args (`stable-1.29\scripts\scrip
 ```
 
 ```c
-// [EXACT] exp\scripts\scripts\3_Game\Entities\EntityAI.c:4893
+// [EXACT] exp\scripts\scripts\3_Game\Entities\EntityAI.c:4924
 	[Obsolete("1.30: Use OnCEIterate(float currentTime, float elapsedTime) instead")]
 	void OnCEUpdate();
 ```
@@ -30,7 +30,7 @@ Until 1.29: `EntityAI.OnCEUpdate()` had no time args (`stable-1.29\scripts\scrip
 
 ## 2. `GAME_STORAGE_VERSION = 144`
 
-Until 1.29: `static int GAME_STORAGE_VERSION = 142;` (`stable-1.29\scripts\scripts\3_Game\Global\Game.c:5`). Since 1.30 Exp:
+Until 1.29: `static int GAME_STORAGE_VERSION = 142;` (`stable-1.29\scripts\scripts\3_Game\Global\Game.c:5`). Since 1.30:
 
 ```c
 // [EXACT] exp\scripts\scripts\3_Game\Global\Game.c:5
@@ -41,10 +41,10 @@ static int GAME_STORAGE_VERSION = 144;
 
 ## 3. Inventory command pipeline (retail no longer calls `ProcessInputData`)
 
-Until 1.29: one `ProcessInputData(ParamsReadContext ctx, bool is_juncture, bool is_remote)`. Since 1.30 Exp that method still exists (`DayZPlayerInventory.c:3319`) but call sites are `#ifdef DIAG_DEVELOPER` **and** `PluginInventoryDebug.IsOldProcessInputDataEnable()`. Retail uses Validate / Execute*.
+Until 1.29: one `ProcessInputData(ParamsReadContext ctx, bool is_juncture, bool is_remote)`. Since 1.30 that method still exists (`DayZPlayerInventory.c:3319`) but call sites are `#ifdef DIAG_DEVELOPER` **and** `PluginInventoryDebug.IsOldProcessInputDataEnable()`. Retail uses Validate / Execute*.
 
 ```c
-// [EXACT] exp\scripts\scripts\4_World\Systems\Inventory\DayZPlayerInventory.c:668
+// [EXACT] exp\scripts\scripts\4_World\Systems\Inventory\DayZPlayerInventory.c:669
 #ifdef DIAG_DEVELOPER
 		if (PluginInventoryDebug.Cast(GetPlugin(PluginInventoryDebug)).IsOldProcessInputDataEnable())
 		{
@@ -163,7 +163,7 @@ the logger printed no move line):
 
 ## 4. `[Obsolete]` takes → Target* variants
 
-Until 1.29: `TakeEntityToCargo` / `ToCargoEx` / `AsAttachment` / `AsAttachmentEx`. Since 1.30 Exp they are `[Obsolete]` wrappers (digest E said `:1388-1430`; real block is `:1345-1386`).
+Until 1.29: `TakeEntityToCargo` / `ToCargoEx` / `AsAttachment` / `AsAttachmentEx`. Since 1.30 they are `[Obsolete]` wrappers (digest E said `:1388-1430`; real block is `:1345-1386`).
 
 ```c
 // [EXACT] exp\scripts\scripts\3_Game\Systems\Inventory\Inventory.c:1345
@@ -179,7 +179,7 @@ Replacements: `TakeEntityToTargetCargo(mode, target, item)` `:1077`; `TakeEntity
 
 ## 5. Hand FSM guards
 
-Until 1.29: `HandGuardCanMove` / `CanSwap` / `CanForceSwap` auto-passed `e.m_IsJuncture || e.m_IsRemote` (`stable-1.29\scripts\scripts\3_Game\Systems\Inventory\Hand_Guards.c:299,325,351`). Since 1.30 Exp only `e.m_IsRemote`; else `LocationCanMoveEntity` / `CanSwapEntitiesEx` / `CanForceSwapEntitiesEx`.
+Until 1.29: `HandGuardCanMove` / `CanSwap` / `CanForceSwap` auto-passed `e.m_IsJuncture || e.m_IsRemote` (`stable-1.29\scripts\scripts\3_Game\Systems\Inventory\Hand_Guards.c:299,325,351`). Since 1.30 only `e.m_IsRemote`; else `LocationCanMoveEntity` / `CanSwapEntitiesEx` / `CanForceSwapEntitiesEx`.
 
 ```c
 // [EXACT] exp\scripts\scripts\3_Game\Systems\Inventory\Hand_Guards.c:299
@@ -205,7 +205,7 @@ Same `m_IsRemote` test at `:325` and `:351`. New guard `HandGuardIsNotSurrendere
 
 Category reach is a 1.5 m dome, vertical leeway `-range/5` (`AttachmentCategoriesRow.c:764`, default `range = 1.5` → −0.3 m).
 
-`ItemBaseType` (`typedef ItemBaseType Inventory_BaseType`, `ItemBaseType.c:1-4`) caches type config. Keys re-opened: `varWetMax` `:71`, `headSelectionsToHide` `:105-108`, `hideSelectionsByinventorySlot` `:111-113`, `quickBarBonus` `:115`, `itemModelLength` / `itemAttachOffset` `:86-92`, `temperaturePerQuantityWeight` `:117-119`, `EnvironmentWetnessIncrements` Soaking/Drying `:121-137`, `compatibleLocks` / `lockType` `:96-99`. Rebuilding slots `Slot_RB_LvL*` from `exp\scripts\scripts\config.cpp:2924` (`Slot_RB_LvL1_Log`, `stackMax = 15`).
+`ItemBaseType` (`typedef ItemBaseType Inventory_BaseType`, `ItemBaseType.c:1-4`) caches type config. Keys re-opened: `varWetMax` `:71`, `headSelectionsToHide` `:105-108`, `hideSelectionsByinventorySlot` `:111-113`, `quickBarBonus` `:115`, `itemModelLength` / `itemAttachOffset` `:86-92`, `temperaturePerQuantityWeight` `:117-119`, `EnvironmentWetnessIncrements` Soaking/Drying `:121-137`, `compatibleLocks` / `lockType` `:96-99`. Rebuilding slots `Slot_RB_LvL*` from `exp\scripts\scripts\config.cpp:2915` (`Slot_RB_LvL1_Log`, `stackMax = 15`).
 
 ---
 
@@ -241,7 +241,7 @@ Category reach is a 1.5 m dome, vertical leeway `-range/5` (`AttachmentCategorie
 
 ### 7.2 Line drift: `PerformAction` / `Can()` / `UA_AM_*`
 
-Until 1.29: SKILL.md cited `PerformAction` `:756` inside `#ifdef BOT` `:754-760`, `PerformActionStart` `:762`, `ActionBase.Can` `:912`. Since 1.30 Exp:
+Until 1.29: SKILL.md cited `PerformAction` `:756` inside `#ifdef BOT` `:754-760`, `PerformActionStart` `:762`, `ActionBase.Can` `:912`. Since 1.30:
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\ActionManagerClient.c:796
@@ -295,7 +295,7 @@ class ActionFillBottleBase: ActionContinuousBase
 	static ref map<typename, ref TActionAnimOverrideMap> m_EntityActionOverrides = new map<typename, ref TActionAnimOverrideMap>; 
 ```
 
-`OverrideActionAnimation(typename action, int commandUID, int stanceMask = -1, int commandUIDProne = -1)` at `:4758`. `AnimatedActionBase.GetCommandOverride` looks up item type then **target object type** (`:284-290`). Until 1.29 this lived on `ItemBase.m_ItemActionOverrides` — that name is gone.
+`OverrideActionAnimation(typename action, int commandUID, int stanceMask = -1, int commandUIDProne = -1)` at `:4781`. `AnimatedActionBase.GetCommandOverride` looks up item type then **target object type** (`:284-290`). Until 1.29 this lived on `ItemBase.m_ItemActionOverrides` — that name is gone.
 
 ### 7.5 CCT: `CCTLiquid`, `CCTCursorInherited`, head distance
 
@@ -311,7 +311,7 @@ class ActionFillBottleBase: ActionContinuousBase
 				bool fromPlayerHead = vector.DistanceSq(cursorHitPos, MiscGameplayFunctions.GetPlayerHeadPosition(player)) <= m_MaximalActionDistanceSq;
 ```
 
-`CCTCursor.c:27-28` also uses `GetPlayerHeadPosition`. Stance height, not Head bone (`MiscGameplayFunctions.c:748-756`).
+`CCTCursor.c:35-36` also uses `GetPlayerHeadPosition`. Stance height, not Head bone (`MiscGameplayFunctions.c:778-786`).
 
 ### 7.6 New inputs in `exp\bin\bin\constants.xml`
 
@@ -325,18 +325,18 @@ Also `:282-285` `UABuldLinkCamToTerrain` / `UABuldCopyTileCoord` / `UABuldMarkUn
 
 ### 7.7 Recipes
 
-Until 1.29, `m_ResultReplacesIngredient` + `TransferItemProperties` could overwrite health from `m_ResultInheritsHealth`. Since 1.30 Exp 5th arg is `transfer_health = false`. Signature: `MiscGameplayFunctions.c:269`.
+Until 1.29, `m_ResultReplacesIngredient` + `TransferItemProperties` could overwrite health from `m_ResultInheritsHealth`. Since 1.30 5th arg is `transfer_health = false`. Signature: `MiscGameplayFunctions.c:271`.
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Classes\Recipes\RecipeBase.c:353
 						MiscGameplayFunctions.TransferItemProperties(ingr, res, true, true, false, false);
 ```
 
-`GetRecipeClassName(int recipe_id)` is `PluginRecipesManager.c:84` (digest E said `:54`, which is the constructor).
+`GetRecipeClassName(int recipe_id)` is `PluginRecipesManager.c:84` (digest E said `:54`, a line inside the constructor at `:52`).
 
 ### 7.8 `ActionTargetsCursor.Update(bool fullUpdate = true)`
 
-Until 1.29 the vanilla method is `Update()`. Since 1.30 Exp it is `Update(bool fullUpdate = true)`. A 1.29 override does not compile on 1.30: `Overloaded function 'Update' not compatible` (DayZ-MCP PBO 12, `mcp_actioncursor.c(60)`, DayZDiag 1.30 Exp, 2026-10-09). Gate the override on the version define (see dayz-mod-workflow `dayz-1-30-mod-workflow.md`):
+Until 1.29 the vanilla method is `Update()`. Since 1.30 it is `Update(bool fullUpdate = true)`. A 1.29 override does not compile on 1.30: `Overloaded function 'Update' not compatible` (DayZ-MCP PBO 12, `mcp_actioncursor.c(60)`, DayZDiag 1.30 Exp, 2026-10-09). Gate the override on the version define (see dayz-mod-workflow `dayz-1-30-mod-workflow.md`):
 
 ```c
 #ifdef DAYZ_1_29
@@ -402,8 +402,10 @@ Digest O claimed `GetNoiseReductionByWeather` was removed. Both methods exist. N
 
 Digest O cited `EnConvert.c:29-36` (`int.MAX`/`MIN`) and `EnScript.c:33-40` (`ClassName` docs). Real bodies:
 
+**1.30.164200 stable removed `vector.Cross`.** The method below is in 1.30.164014 Exp and 1.30.164078 (`EnConvert.c:239-246`), and in no script file of 1.30.164200 (1.29 did not have it either). On 1.30.164200 a mod that calls `v.Cross(w)` has nothing to call: write the three lines of the body inline.
+
 ```c
-// [EXACT] exp\scripts\scripts\1_Core\proto\EnConvert.c:239
+// [EXACT] exp\scripts\scripts\1_Core\proto\EnConvert.c:239 (1.30.164014 and 1.30.164078 only)
 	vector Cross(vector v)
 	{
     	float x = value[1] * v[2] - value[2] * v[1];
@@ -426,7 +428,7 @@ Digest O cited `EnConvert.c:29-36` (`int.MAX`/`MIN`) and `EnScript.c:33-40` (`Cl
 	}
 ```
 
-`to` is inclusive. `typename.EnumFlagsToString` `EnConvert.c:614`; `Enum.EnumFlagsToString` `:704` forwards.
+`to` is inclusive. `typename.EnumFlagsToString` `EnConvert.c:593`; `Enum.EnumFlagsToString` `:683` forwards.
 
 ### 8.4 `DoOnce`, `IsFirstRenderFrame`, `DisableSimulation`
 
@@ -477,5 +479,5 @@ class DoOnce
 - [ ] Target* takes. `AddAction(ActionObtainLiquidBase)`. `EntityAI.OverrideActionAnimation` (item and target).
 - [ ] Info actions: `InitInfoData` + `CanBeStarted()==false`. `new CCTLiquid(mask, ...)`. `GetPlayerHeadPosition`.
 - [ ] `GetThirdPersonViewMode() == ThirdPersonMode.ENABLED`. Weather HUD: `GetNoiseReductionByWeatherEx(object)`.
-- [ ] `vector.Cross` / `array.Slice` / `EnumFlagsToString`. Client catch-up: `IsFirstRenderFrame()`. Storage `144`.
+- [ ] No `vector.Cross` on 1.30.164200 (inline it). `array.Slice` / `EnumFlagsToString`. Client catch-up: `IsFirstRenderFrame()`. Storage `144`.
 - [ ] Recipes with `m_ResultReplacesIngredient`: set `m_ResultInheritsHealth`. Bind `UAToggleVehicleLights` / `UAUICodeLock*`. Never hardcode `UA_AM_*`.

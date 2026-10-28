@@ -1,4 +1,4 @@
-# DayZ 1.30 Exp — PBO / binarizer deltas (build 1.30.164014)
+# DayZ 1.30 — PBO / binarizer deltas
 
 Companion to `SKILL.md` § DayZ 1.30 Exp. Folder structure, stringtable.csv,
 include-list, and ODOL non-determinism still hold. This file is the 1.30
@@ -8,7 +8,7 @@ binarizer contract.
 
 (until 1.29: pre-build check "Duplicate class names: Same class cannot be
 defined twice" — duplicate **properties** inside one class were a silent last-
-write-wins.) (since 1.30 Exp [CHANGELOG], `work\changelog-1.30-exp-modding.md:19`):
+write-wins.) (since 1.30 [CHANGELOG], `work\changelog-1.30-exp-modding.md:19`):
 
 > Changed: Binarizer will now stop binarising if a member is defined multiple
 > times in a config file
@@ -27,7 +27,7 @@ Pre-build check 2 in `SKILL.md` now covers both class names **and** members.
 
 ## Unpacked mods do not retire the PBO gate
 
-(since 1.30 Exp [CHANGELOG]: `-mod` can point at a folder and RV configs load
+(since 1.30 [CHANGELOG]: `-mod` can point at a folder and RV configs load
 unpacked.) That is a **diag iteration** path (`dayz-test-ingame`). Workshop /
 dedicated shipping still needs a PBO. Do not skip AddonBuilder for a release
 because unpacked load exists.

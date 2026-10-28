@@ -9,7 +9,7 @@ router in `../SKILL.md`.
 
 The engine hooks are `EntityAI.OnStoreSave(ParamsWriteContext)` and
 `EntityAI.OnStoreLoad(ParamsReadContext, int)` returning `bool`
-(`VANILLA/3_game/entities/entityai.c:2925`; `VANILLA/3_game/entities/entityai.c:2989`). The stream has no field names or
+(`VANILLA/3_game/entities/entityai.c:2910`; `VANILLA/3_game/entities/entityai.c:2978`). The stream has no field names or
 random access: correctness is the exact sequence of typed writes and reads.
 
 ## Normative write/load order
@@ -32,22 +32,22 @@ A subclass loads in this order:
    and validation succeeds.
 
 This propagation and fail-closed read behavior follows the vanilla contract at
-`VANILLA/3_game/entities/entityai.c:2969-2985`. A load that consumed some bytes
+`VANILLA/3_game/entities/entityai.c:2958-2974`. A load that consumed some bytes
 before failure is still a failed load; byte consumption does not authorize
 partial state.
 
 ## Version unit
 
 The `version` argument is the DayZ save/build version produced by
-`g_Game.SaveVersion()` (`VANILLA/3_game/global/game.c:434`). Vanilla subsystems
+`g_Game.SaveVersion()` (`VANILLA/3_game/global/game.c:435`). Vanilla subsystems
 use storage-version gates at
 `VANILLA/4_world/classes/playerstomach.c:255` and
-`VANILLA/4_world/classes/playermodifiers/modifiersmanager.c:170`. These build
+`VANILLA/4_world/classes/playermodifiers/modifiersmanager.c:178`. These build
 checks describe engine compatibility; they do not version a mod release.
 (hasta 1.29: `GAME_STORAGE_VERSION` was 142 at
 `stable-1.29\scripts\scripts\3_Game\Global\Game.c:5`; `SaveVersion()` was the
 native at the 1.29 `game.c:434` cite.)
-(desde 1.30 Exp: `GAME_STORAGE_VERSION` is 144 at
+(desde 1.30: `GAME_STORAGE_VERSION` is 144 at
 `exp\scripts\scripts\3_Game\Global\Game.c:5`; `SaveVersion()` is at `:435`.
 `PlayerStomach.OnStoreLoad` is at
 `exp\scripts\scripts\4_World\Classes\PlayerStomach.c:471` with a `version >= 140`
@@ -58,7 +58,7 @@ temperature read at `:492`. `ModifiersManager.OnStoreLoad` is at
 
 `EntityAI.OnStoreSave` conditionally writes nine energy-component fields when
 `m_EM` exists and writes none when it does not
-(`VANILLA/3_game/entities/entityai.c:2928-2959`). Therefore the base prefix width
+(`VANILLA/3_game/entities/entityai.c:2917-2948`). Therefore the base prefix width
 is a runtime property.
 
 A reader that seeks to a remembered offset, skips a fixed number of fields, or
@@ -71,12 +71,12 @@ the resulting sequential position.
 This trap applies even when a fixture with the component present passes. Test
 both component-present and component-absent streams against the same reader.
 
-(desde 1.30 Exp: energy is no longer the only optional prefix. `EntityAI.OnStoreSave`
+(desde 1.30: energy is no longer the only optional prefix. `EntityAI.OnStoreSave`
 calls `GetConstructionBasic().HandleStoreSave` **before** the `m_EM` block
-(`exp\scripts\scripts\3_Game\Entities\EntityAI.c:2887-2891`); `OnStoreLoad`
-consumes it only when `version >= 143` (`:2955-2961`). `ConstructionBasic`
+(`exp\scripts\scripts\3_Game\Entities\EntityAI.c:2910-2914`); `OnStoreLoad`
+consumes it only when `version >= 143` (`:2978-2984`). `ConstructionBasic`
 writes nothing (`HandleStorageEvents` returns `false` at
-`exp\scripts\scripts\3_Game\Systems\Construction_Basic.c:23-29`). `Rebuilding`
+`exp\scripts\scripts\3_Game\Systems\Construction_Basic.c:29-35`). `Rebuilding`
 writes eleven ints when present. `PlayerBase` then appends
 `ThermalBiasHandler` after the arrow manager with no version gate — a second
 width that 1.29 did not have. Bodies:
@@ -103,7 +103,7 @@ width that 1.29 did not have. Bodies:
 - Both optional-component widths are exercised.
 - The hook build version is not presented as the mod's format version.
 - Uninstall behavior is declared rather than implied.
-- (desde 1.30 Exp) Construction-present and construction-absent EntityAI
+- (desde 1.30) Construction-present and construction-absent EntityAI
   prefixes are both exercised; PlayerBase thermal float is present on 1.30 MP
   saves; CombinationLock `version >= 143` is exercised against a 142 fixture.
 
@@ -118,7 +118,7 @@ not a mod `storageVersion`):
 | `< 105` (legacy remnant) | `CombinationLock` (until removed) | attached-bool | still skipped when `version < 105` (`CombinationLock.c:160-167`) |
 | `>= 140` | `EntityAI` variables / `PlayerStomach` temperature | existing 1.29 gates | `EntityAI.c:3030-3035`; `PlayerStomach.c:492` |
 | `>= 143` | `CombinationLock` | `int m_CombinationInside` | `CombinationLock.c:169-177` |
-| `>= 143` | `EntityAI` construction handle | `Rebuilding` payload or nothing | `EntityAI.c:2958-2961` |
+| `>= 143` | `EntityAI` construction handle | `Rebuilding` payload or nothing | `EntityAI.c:2981-2984` |
 | (ungated on 1.30 MP load) | `PlayerBase` | `float m_TemporaryResistanceTime` | `PlayerBase.c:7520-7524`; `ThermalBiasHandler.c:72-77` |
 
 `BaseBuildingBase` subclass suffix is unchanged: `super`, three sync ints,
@@ -126,7 +126,7 @@ not a mod `storageVersion`):
 
 New 1.30 entity (no 1.29 fixture): `DigitalCodeLock` writes
 `m_LockPIN` (string), `m_IsLocked` (bool), `m_DoorIndex` (int) after `super`
-(`CodeLock.c:469-482`; `CodeLockComponent.c:257-277`).
+(`CodeLock.c:484-497`; `CodeLockComponent.c:257-277`).
 
 Full `[EXACT]` copies:
 [dayz-1-30-persistence.md](dayz-1-30-persistence.md).

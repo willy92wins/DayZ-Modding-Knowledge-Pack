@@ -1,10 +1,10 @@
-# DayZ 1.30 Exp (build 1.30.164014) — persistence deltas
+# DayZ 1.30 — persistence deltas
 
 Insertion-only companion to `dayz-persistence`. Digests I, J, and O named this
 skill; every `[EXACT]` block below was copied from `exp\` after opening the
 file. Digest line numbers that disagreed with disk were discarded.
 
-Path prefix for all script cites: `exp\scripts\scripts\`.
+Path prefix for all script cites: `exp\scripts\scripts\`. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## What changed
 
@@ -31,14 +31,14 @@ static int GAME_STORAGE_VERSION = 144;
 `game.c:434` is the same native one line earlier in this extract.
 
 (hasta 1.29: `GAME_STORAGE_VERSION = 142`.)
-(desde 1.30 Exp: `144`. CombinationLock and EntityAI construction load branch
+(desde 1.30: `144`. CombinationLock and EntityAI construction load branch
 on `version >= 143`, so a 1.29 record whose stored version is 142 skips those
 new fields. `ThermalBiasHandler` does not.)
 
 ## EntityAI prefix (construction then energy)
 
 ```
-// [EXACT] exp\scripts\scripts\3_Game\Entities\EntityAI.c:2887
+// [EXACT] exp\scripts\scripts\3_Game\Entities\EntityAI.c:2910
 	void OnStoreSave (ParamsWriteContext ctx)
 	{
 		ConstructionBasic constructionComponent = GetConstructionBasic();
@@ -64,12 +64,12 @@ new fields. `ThermalBiasHandler` does not.)
 (hasta 1.29: `OnStoreSave` began at the `m_EM` block;
 `stable-1.29\scripts\scripts\3_Game\Entities\EntityAI.c:2930-2933`. No
 construction handle.)
-(desde 1.30 Exp: `HandleStoreSave` is a no-op on `ConstructionBasic`
-(`3_Game\Systems\Construction_Basic.c:23-29`, `HandleStorageEvents` returns
+(desde 1.30: `HandleStoreSave` is a no-op on `ConstructionBasic`
+(`3_Game\Systems\Construction_Basic.c:29-35`, `HandleStorageEvents` returns
 `false`). Only `Rebuilding` overrides it and writes. Load:
 
 ```
-// [EXACT] exp\scripts\scripts\3_Game\Entities\EntityAI.c:2955
+// [EXACT] exp\scripts\scripts\3_Game\Entities\EntityAI.c:2978
 	bool OnStoreLoad (ParamsReadContext ctx, int version)
 	{
 		ConstructionBasic constructionComponent = GetConstructionBasic();
@@ -85,10 +85,10 @@ construction handle.)
 
 Energy field count is unchanged versus 1.29: eight typed writes when `m_EM`
 exists (`GetEnergy`, `IsPassive`, `IsSwitchedOn`, `IsPlugged`, four persistent-ID
-ints) then `SaveVariables` at `:2928`. The SKILL.md "nine fields" wording is
+ints) then `SaveVariables` at `:2951`. The SKILL.md "nine fields" wording is
 the 1.29 phrasing; 1.30 did not add a ninth energy field.
 
-`LoadVariables` remains behind `version >= 140` (`EntityAI.c:3030-3035`).
+`LoadVariables` remains behind `version >= 140` (`EntityAI.c:3053-3058`).
 
 ## `PlayerBase` + `ThermalBiasHandler`
 
@@ -155,7 +155,7 @@ suffix without the thermal float desyncs the stream. 1.29 save ended at
 (hasta 1.29: save wrote `m_Combination` then `m_CombinationLocked`; load had
 the `version < 105` attached-bool remnant.
 `stable-1.29\scripts\scripts\4_World\Entities\ItemBase\CombinationLock.c:90-129`.)
-(desde 1.30 Exp: save always writes a third int; load reads it only at
+(desde 1.30: save always writes a third int; load reads it only at
 `version >= 143`.)
 
 ```
@@ -201,7 +201,7 @@ copy it. Stage, then commit.
 New 1.30 item. Entity stream is `super` then the component:
 
 ```
-// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase\CodeLock.c:469
+// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase\CodeLock.c:484
 	override void OnStoreSave(ParamsWriteContext ctx)
 	{
 		super.OnStoreSave(ctx);
@@ -277,7 +277,7 @@ class Rebuilding : ConstructionBase
 ```
 
 ```
-// [EXACT] exp\scripts\scripts\4_World\Classes\Rebuilding\Rebuilding.c:502
+// [EXACT] exp\scripts\scripts\4_World\Classes\Rebuilding\Rebuilding.c:501
 	protected void SerializeConstructionData(ParamsWriteContext ctx)
 	{
 		ctx.Write(REBUILDING_STORAGE_VERSION);
@@ -296,7 +296,7 @@ class Rebuilding : ConstructionBase
 
 `DeserializeConstructionData` rejects `m_LastStorageVersion < REBUILDING_STORAGE_VERSION`
 and **accepts** a stored version greater than current
-(`Rebuilding.c:519-525`). That is the opposite of this skill's
+(`Rebuilding.c:518-524`). That is the opposite of this skill's
 `future-version` cell. [DESIGN] Do not copy it. A future extra int after the
 ten sync fields would be consumed as `EntityAI` energy and desync the rest of
 the house.

@@ -177,15 +177,15 @@ If step 4 misbehaves, the bail-out check is wrong — likely you whitelisted a t
 
 `LFQuad_dev/task4_handoff/LFQuad_ActionGetInTransport.c` and `LFQuad_dev/handoff_2026-05-28.md`. The pattern generalizes to any vehicle with bilateral ingress.
 
-## DayZ 1.30 Exp: Native Directional In/Out (Alternative) [EXACT]
+## DayZ 1.30: Native Directional In/Out (Alternative) [EXACT]
 
 In DayZ 1.30 Exp, vanilla introduced a native engine-supported mechanism for directional get-in / get-out on single-track vehicles (motorcycles / bikes), eliminating the need for scripted player snaps on vehicles implementing this contract.
 
 ### Engine flow in `ActionGetInTransport.c`
-When `transport.HasDirectionalInOutAction()` returns `true` (`Transport.c:677`), `ActionGetInTransport` computes the approach side using the dot product between the target direction vector and the vehicle's right-normal vector:
+When `transport.HasDirectionalInOutAction()` returns `true` (`Transport.c:680`), `ActionGetInTransport` computes the approach side using the dot product between the target direction vector and the vehicle's right-normal vector:
 
 ```c
-// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:81-100
+// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:81-102
 		if (transport.HasDirectionalInOutAction())
 		{
 			vector fwd = transport.GetDirection();
@@ -212,7 +212,7 @@ When `transport.HasDirectionalInOutAction()` returns `true` (`Transport.c:677`),
 
 ### Transport interface methods in `Transport.c`
 ```c
-// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:677-680
+// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:680-683
 	bool HasDirectionalInOutAction()
 	{
 		return false;
@@ -220,7 +220,7 @@ When `transport.HasDirectionalInOutAction()` returns `true` (`Transport.c:677`),
 ```
 and:
 ```c
-// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:690-695
+// [EXACT] exp\scripts\scripts\3_Game\Vehicles\Transport.c:693-699
 	int GetSeatAnimationTypeDirectional(int posIdx, int directionIndex)
 	{
 #ifndef CFGMODS_DEFINE_TEST

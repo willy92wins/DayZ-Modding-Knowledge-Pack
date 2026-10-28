@@ -157,15 +157,15 @@ after the idle is closed.
 
 ### Forcing the aim stance for gate capture — must be CLIENT-side [VERIFIED-SR2M gate iter36→37]
 To capture/validate the AIM grip from a scripted/spawned player, force the raise each frame with
-`p.GetInputController().OverrideRaise(HumanInputControllerOverrideType.ENABLED, true)` (`scripts\3_game\human.c:249`;
+`p.GetInputController().OverrideRaise(HumanInputControllerOverrideType.ENABLED, true)` (`scripts\3_game\human.c:268`;
 enum `:7-12` — ENABLED persists, ONE_FRAME flickers and drops to idle). CRITICAL: it MUST run CLIENT-side, NOT
 in the server mission `init.c`. The captured character is the client's OWN local player; a server-side override
 does not move the pose the client renders for it (iter36: server logged `raised=1` but the weapon rendered
 LOWERED). Ship it as `modded class MissionGameplay { override void OnUpdate(...) { ...GetGame().GetPlayer()... } }`
 in a gate mod (declare a `missionScriptModule`). The 3rd-person aim pose is gated purely on `IsRaised()`
-(`dayzplayerimplement.c:1726`, AimingModel) → a held raise is enough; do NOT call `SetIronsights()` (forces the
+(`dayzplayerimplement.c:1742`, AimingModel) → a held raise is enough; do NOT call `SetIronsights()` (forces the
 ironsight camera, fights an MCP free-cam, and server-side left the weapon untextured). `WeaponADS()`
-(`human.c:86`) is an INPUT flag with no script override (`human.c:234-255`) → always 0 even when ADS works; the
+(`human.c:86`) is an INPUT flag with no script override (`human.c:253-274`) → always 0 even when ADS works; the
 success signal is `IsRaised()` / the client log, not `WeaponADS()`. Keep a matching server-side OverrideRaise so
 the server agrees. Full recipe + drop-in snippet: `dayz-mcp-verify`.
 
@@ -234,8 +234,8 @@ Model: base pose (= raised aim) + weapon at `Weapon_Root` with its PARITY geomet
 Closes WeaponAnimPipeline s4. The offline ikpose resolution (sections above) nails the HANDS (the ikpose's IK-target positions are static data), but the ELBOW is engine-IK-resolved at runtime from the forearm-direction pole and is NOT cleanly derivable offline: the plugin's Blender IK pole gives a winged elbow, and a naive swivel guess was the OPPOSITE direction (right elbow guessed +tuck, true measured -81.7 deg OPEN; left +50.4). Do NOT eyeball-iterate it.
 
 Authoritative source = dump the live player skeleton (model space):
-- API (verified): `int idx = player.GetBoneIndexByName("RightForeArm")` (`human.c:1387`, used on the player at `dayzplayerimplement.c:625`); `vector p = player.GetBonePositionMS(idx)` + `player.GetBoneRotationMS(idx, float q[4])` (`object.c:243,248`). MS = relative to the player entity -> pose independent of world position/facing.
-- Mechanism: a CLIENT-side `modded class MissionGameplay` that force-raises (`OverrideRaise(ENABLED)`, `human.c:249`) and, once `IsWeaponRaiseCompleted()` + ~120 frames settle, Prints each bone MS pos+quat ONCE. The Print lands in `client_profiles\script_*.log` (NOT the `.RPT`). Launch with the retail SR2M gate (`A6_SR2M_dev/_gate/gate-mcp.ps1 -Retail`, slot 0 = production SR2M = pm73_ik).
+- API (verified): `int idx = player.GetBoneIndexByName("RightForeArm")` (`human.c:1417`, used on the player at `dayzplayerimplement.c:628`); `vector p = player.GetBonePositionMS(idx)` + `player.GetBoneRotationMS(idx, float q[4])` (`object.c:237,242`). MS = relative to the player entity -> pose independent of world position/facing.
+- Mechanism: a CLIENT-side `modded class MissionGameplay` that force-raises (`OverrideRaise(ENABLED)`, `human.c:268`) and, once `IsWeaponRaiseCompleted()` + ~120 frames settle, Prints each bone MS pos+quat ONCE. The Print lands in `client_profiles\script_*.log` (NOT the `.RPT`). Launch with the retail SR2M gate (`A6_SR2M_dev/_gate/gate-mcp.ps1 -Retail`, slot 0 = production SR2M = pm73_ik).
 - Enforce gotcha: build the Print string in single-line statements (`ln = ln + ...`); a multi-line `+` expression is a compile error (R11g family). `-packonly` PBO rebuild + retail (the A6 weapon pack fails DayZDiag strict-compile).
 - game-MS -> Three.js viewer: position `(x, y, -z)` (z-flip, Enfusion LH -> Three RH). The quaternion z-flip `(-x,-y,z,w)` rendered MIRRORED -> reconstruct from POSITIONS (solid), not raw quats. Clean fix: keep the offline-resolved pose (perfect hands) and compute the EXACT elbow-swivel angle landing the resolved elbow on the measured in-game elbow (same shoulder+hand => elbow lies on the swivel arc; solve the signed angle about the shoulder->hand axis - lands within ~5 mm, hands untouched).
 

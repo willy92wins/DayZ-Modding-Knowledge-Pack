@@ -8,7 +8,7 @@ description: "Use when: clothing mod, worn model, ClothingTypes, chaleco, armadu
 Distilled from ArmorHneck (2026-08-03): third-party body armor RAR → fully working
 worn item, ~6 in-game cycles to isolate three independent SILENT failure modes.
 Everything below is in-game verified on DayZ 1.29 diag unless labeled otherwise.
-(until 1.29: the worn pipeline below is the 1.29-diag contract.) (since 1.30 Exp: killers #1–#3 and the worn p3d/model.cfg contract still hold. Config-side NBC layering, mask-filter protection, ItemBaseType wet/hide keys, shoe `itemSize`, Waterskin rename, and wash/wet actions: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the worn pipeline below is the 1.29-diag contract.) (since 1.30: killers #1–#3 and the worn p3d/model.cfg contract still hold. Config-side NBC layering, mask-filter protection, ItemBaseType wet/hide keys, shoe `itemSize`, Waterskin rename, and wash/wet actions: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md) and ## DayZ 1.30.)
 
 ## THE THREE SILENT KILLERS (check these FIRST, in this order)
 
@@ -95,9 +95,9 @@ config.cpp (text!):
 - Class inherits a vanilla clothing base for the slot (`Armband_ColorBase`,
   `Chainmail`, vest/top bases...). `model=` the GROUND p3d (`*_g.p3d`).
 - `class ClothingTypes { male="..._m.p3d"; female="..._f.p3d"; };`
-- `inventorySlot[]` names the worn slots. (until 1.29: NBC pieces listed only the primary slot — `"Headgear"`, `"Body"`, `"Legs"`, `"Feet"`, `"Gloves"`.) (since 1.30 Exp: those NBC bases also list secondary slots `"NBCHead"`, `"NBCTop"`, `"NBCPants"`, `"NBCBoots"`, `"NBCGloves"` so they can coexist with regular clothing.)
+- `inventorySlot[]` names the worn slots. (until 1.29: NBC pieces listed only the primary slot — `"Headgear"`, `"Body"`, `"Legs"`, `"Feet"`, `"Gloves"`.) (since 1.30: those NBC bases also list secondary slots `"NBCHead"`, `"NBCTop"`, `"NBCPants"`, `"NBCBoots"`, `"NBCGloves"` so they can coexist with regular clothing.)
 - `hiddenSelections[]` per model section; textures/materials arrays aligned.
-- (since 1.30 Exp) Type metadata lives on `ItemBaseType`: `headSelectionsToHide[]`, `hideSelectionsByinventorySlot`, `varWetMax`, `temperaturePerQuantityWeight`, `EnvironmentWetnessIncrements`. The config keys existed in 1.29 (parsed on `ItemBase`); 1.30 centralizes them on the type. Dual-slot headgear (bandana/shemag) still uses `hideSelectionsByinventorySlot = 1` plus `simpleHiddenSelections[]`.
+- (since 1.30) Type metadata lives on `ItemBaseType`: `headSelectionsToHide[]`, `hideSelectionsByinventorySlot`, `varWetMax`, `temperaturePerQuantityWeight`, `EnvironmentWetnessIncrements`. The config keys existed in 1.29 (parsed on `ItemBase`); 1.30 centralizes them on the type. Dual-slot headgear (bandana/shemag) still uses `hideSelectionsByinventorySlot = 1` plus `simpleHiddenSelections[]`.
 - Damage rvmats referenced only from healthLevels must be re-added at pack
   time (AddonBuilder whitelist gap — see dayz-pbo-build SP-155).
 
@@ -148,8 +148,8 @@ model.cfg:
 | Fits but plates misaligned (arms/legs) | rip proportions vs canonical bind | alignment viewer (below) or artist pass |
 | Body/arms invisible when equipped | expected: torso-slot hide (Body/Vest classes hide skin) | wear it with the intended slot class |
 | Coarse joints while moving | 0/1 plate weights, no transition bones | optional weight-smoothing pass |
-| Gas mask worn, still takes bio/gas damage | (since 1.30 Exp) GP5/Airborne `Protection` no longer carries biological/dust_particle_breath; those come from attached `GasMask_Filter` | config `class Protection` vs slot `GasMaskFilter` |
-| Custom backpack cannot attach NBC pack | (since 1.30 Exp) backpack `attachments[]` missing `"NBCBag"` (not every vanilla bag has it) | compare `TaloonBag_ColorBase` vs `SmershBag` / `ChildBag_ColorBase` |
+| Gas mask worn, still takes bio/gas damage | (since 1.30) GP5/Airborne `Protection` no longer carries biological/dust_particle_breath; those come from attached `GasMask_Filter` | config `class Protection` vs slot `GasMaskFilter` |
+| Custom backpack cannot attach NBC pack | (since 1.30) backpack `attachments[]` missing `"NBCBag"` (not every vanilla bag has it) | compare `TaloonBag_ColorBase` vs `SmershBag` / `ChildBag_ColorBase` |
 
 **Config-vs-p3d bisection (one config-only rebuild, answers "which side is broken"):**
 add two test classes — {your slot class + a VANILLA worn p3d (chainmail)} and
@@ -212,7 +212,7 @@ measurement + transform prescription). Cross-refs: dayz-characters §2026-08-03
 (same finding, humanoid context), dayz-pbo-build SP-155 (staged build + rvmat
 gap), dayz-test-ingame (launch/lifecycle), external ODOL parsing (converter not distributed).
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 Worn-mesh killers #1–#3, the canonical frame, `DayzTemporarySkeleton`, and the
 staged packonly build are unchanged. What 1.30 adds is **config/script contract**
@@ -223,7 +223,7 @@ blocks: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md).
 
 - **NBC secondary slots.** Vanilla NBC hood/jacket/pants/boots/gloves list both
   the primary clothing slot and `NBCHead` / `NBCTop` / `NBCPants` / `NBCBoots` /
-  `NBCGloves` (`CfgSlots` in `exp\scripts\scripts\config.cpp:3124-3159`).
+  `NBCGloves` (`CfgSlots` in `exp\scripts\scripts\config.cpp:3115-3150`).
 - **`NBCBag` on some backpacks, not all.** `TaloonBag_ColorBase`, `TortillaBag`,
   `DryBag_ColorBase`, `HuntingBag`, `MountainBag_ColorBase`, `AssaultBag_ColorBase`,
   `Attack2Bag_ColorBase`, `CoyoteBag_ColorBase`, `AliceBag_ColorBase` append

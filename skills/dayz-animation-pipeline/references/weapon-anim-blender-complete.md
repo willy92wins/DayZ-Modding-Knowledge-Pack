@@ -22,7 +22,7 @@ A playable-character weapon animation in DayZ is **not** wired through `config.c
 2. **Mapping** — a per-weapon `.asi` (`$animsetinstance`) text file maps dotted engine state paths `WeaponOperations.<RigKey>.<State>` to your `.anm` files, inheriting a parent chain (your `weapon.asi` → `player_main_rifle.asi` → `player_main.asi`).
 3. **Binding** — an Enforce Script call `AddItemInHandsProfileIK(itemClass, asi, behavior, ikPose.anm, weaponStates.anm)` binds your weapon classname to the `.asi` + a one-time IK pose + a separate weapon-states `.anm`; a second call `AddItemBoneRemap(itemClass, pairs[])` maps your p3d/model.cfg part selections to the player skeleton's `Weapon_*` bones.
 
-Because this ASI route does **not** modify `player_main.aw`/`.agr`, it is **conflict-free across mods** (multiple weapon-anim mods coexist; vehicles are the unsupported exception). The "only one animation mod at a time" wall applies only to mods that replace the **player animation graph** itself (e.g. Expansion-Animations). (`dayzplayer.c:243`; `dayzplayercfgbase.c:382,411`; release transcript Yrh2ZIqAaOs; `answeroverflow.com/m/1090534919182233642`.)
+Because this ASI route does **not** modify `player_main.aw`/`.agr`, it is **conflict-free across mods** (multiple weapon-anim mods coexist; vehicles are the unsupported exception). The "only one animation mod at a time" wall applies only to mods that replace the **player animation graph** itself (e.g. Expansion-Animations). (`dayzplayer.c:243`; `dayzplayercfgbase.c:382,412`; release transcript Yrh2ZIqAaOs; `answeroverflow.com/m/1090534919182233642`.)
 
 Three distinct artifact kinds exist per weapon (do not conflate):
 
@@ -32,7 +32,7 @@ Three distinct artifact kinds exist per weapon (do not conflate):
 | **Weapon-states** (`w_*_states.anm`) | 3-frame additive anim of only the `Weapon_*` bones (bolt closed/open/jammed) | 5th arg of `AddItemInHandsProfileIK`; `SetInitState` reads it |
 | **Action anims** (reload/fire/chamber/jam) | Additive deltas (≈ shoulders-down) blended on the idle | `.asi` `$animations` map |
 
-The `.asi` animations **blend on top of** the weapon-states `.anm` and override those bone transforms. (`answeroverflow.com/m/906540004170432552`, MarioE; `human.c:1081-1088`.)
+The `.asi` animations **blend on top of** the weapon-states `.anm` and override those bone transforms. (`answeroverflow.com/m/906540004170432552`, MarioE; `human.c:1108-1115`.)
 
 ### 0.2 The two routes (and when to use which)
 
@@ -236,7 +236,7 @@ The three weapon conditions — the **only** ones — are:
 - Only `Weapon_*` bones matter; the rest of the body is irrelevant. Use the **"weapon bones" preselection** group.
 - In Blender set **end-on-frame 2** (NOT frame 1) or you only get 2 frames and the jammed/open states break.
 - Export **Type = `ADD` (Additive) + "Selected Bones Only" + 30 fps**.
-- Each frame = one weapon init state, set at runtime via `proto native void SetInitState(int pFrameIndex)`. (`human.c:1081-1088`.)
+- Each frame = one weapon init state, set at runtime via `proto native void SetInitState(int pFrameIndex)`. (`human.c:1108-1115`.)
 
 (`w_JD_SVD_states.txa` = 3 frames: `Weapon_Bolt` frame0 closed / frame1 t=0.121 open / frame2 t=0.035 jammed; transcript.)
 
@@ -441,7 +441,7 @@ Verified proto signatures (vanilla `dayzplayer.c`):
 - `proto native int AddItemInHandsProfileIK(string pItemClass, string pAnimInstanceName, HumanItemBehaviorCfg pBehaviorCfg, string pIkPoseAnim, string pWeaponStates = "")` — `dayzplayer.c:243`. The 5th arg (weapon states) is present only for weapons; items use the 4-arg form with the generic `player_main_1h.asi`/`_2h.asi`/`_heavy.asi`.
 - `proto native int AddItemBoneRemap(string pItemClass, array<string> pBoneRemap)` — `dayzplayer.c:245-252`; pairs are 2×N: "bone in item's P3D first, bone in Character skeleton second".
 
-Register against the **`*_Base`** class so all variants inherit and the call count stays low. (`ModItemRegisterCallbacks.c:7,12-33`; `dayzplayercfgbase.c:382,411`.)
+Register against the **`*_Base`** class so all variants inherit and the call count stays low. (`ModItemRegisterCallbacks.c:7,12-33`; `dayzplayercfgbase.c:382,412`.)
 
 **Bone-remap contract:** first column = the **p3d/model.cfg selection name**, second column = the **player-skeleton `Weapon_*` bone**. Standard slots: `Weapon_Bolt`, `Weapon_Magazine`, `Weapon_Trigger`, `Weapon_Bullet`; non-standard parts use `Weapon_Bone_01..06`. **Skipping the remap is why bolt/mag/trigger don't animate.** A mismatch silently drops that part's motion.
 
@@ -907,7 +907,7 @@ programmatic pose extraction — complements §3.1 (interactive import):
 
 ---
 
-## [2026-09-16] DayZ 1.30 Exp Updates: AnimSetInstanceSource, Dynamic ASI Switching & Workbench 2021 [EXACT]
+## [2026-09-16] DayZ 1.30 Updates: AnimSetInstanceSource, Dynamic ASI Switching & Workbench 2021 [EXACT]
 
 ### 1.30 Enfusion Workspace Schema: `AnimSetInstanceSource` & `AnimSetTemplateSource`
 
@@ -952,7 +952,7 @@ Prior to 1.30, swapping weapon animation stances or grip IK dynamically without 
 
 ```c
 // In 3_Game/human.c
-proto native void SetAnimationInstanceByName(string asiName);
+proto native void SetAnimationInstanceByName(string animationInstanceName, float blendingTime);
 ```
 *(Verified in `exp/scripts/scripts/3_Game/human.c:1383-1384`)*
 
@@ -969,7 +969,7 @@ void OnItemInHandsChanged()
 {
 }
 ```
-*(Verified in `exp/scripts/scripts/3_Game/DayZPlayerCfgBase.c:1537`)*
+*(Verified in `exp/scripts/scripts/3_Game/Entities/Man.c:163-166`, overridden at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:997`)*
 
 This enables mods to swap character weapon profiles dynamically when grips or attachments are mounted/unmounted at runtime without class hot-swapping hacks.
 

@@ -1,4 +1,4 @@
-# DayZ 1.30 Exp (build 1.30.164014) — CarScript-as-aviation deltas
+# DayZ 1.30 — CarScript-as-aviation deltas
 
 Digests F and M do not list `dayz-aviation` in SKILL IMPACT. This file is what 1.30 still changes for a plane/heli that **inherits `CarScript`**: the vehicle-light/horn/battery/event-mask contract moved under the aircraft. Native `HelicopterScript` remains a stub. Line numbers cited in the core SKILL.md against `P:\scripts\...\carscript.c` are 1.29; re-open `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c` before copying them.
 
@@ -6,7 +6,7 @@ Compose with `dayz-vehicles/references/dayz-1-30-vehicles.md` for the car-side m
 
 ## Native aviation class is still a stub
 
-(until 1.29 and since 1.30 Exp: still true.) `HelicopterScript extends HelicopterAuto` registers only `POSTSIMULATE` and has an empty `EOnPostSimulate` plus empty engine hooks.
+(until 1.29 and since 1.30: still true.) `HelicopterScript extends HelicopterAuto` registers only `POSTSIMULATE` and has an empty `EOnPostSimulate` plus empty engine hooks.
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Entities\Vehicles\HelicopterScript.c:4-13
@@ -27,7 +27,7 @@ Do not inherit it expecting a flight model. CarScript-as-aviation stays the patt
 ## CarScript ctor / per-tick (line drift)
 
 (until 1.29: SKILL.md cites `carscript.c:325-326` for `SetEventMask` and `:948` for `EOnPostSimulate`.)
-(desde 1.30 Exp:)
+(desde 1.30:)
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c:207-208
@@ -35,7 +35,7 @@ Do not inherit it expecting a flight model. CarScript-as-aviation stays the patt
 		SetEventMask(EntityEvent.POSTFRAME);
 ```
 
-`EOnPostSimulate` is at `CarScript.c:807`. `OnDriverExit` gear-stop is `CarScript.c:940-948` (was `:1207-1215`). Empty `Transport.OnDriverExit` is `Transport.c:224` (was `:161`).
+`EOnPostSimulate` is at `CarScript.c:807`. `OnDriverExit` gear-stop is `CarScript.c:940-948` (was `:1207-1215`). Empty `Transport.OnDriverExit` is `Transport.c:227` (was `:161`).
 
 ## Lights, battery, ForceUpdateLights
 
@@ -49,7 +49,7 @@ A CarScript aircraft that still overrides `CreateFrontLight` / subclasses `CarLi
 
 `ForceUpdateLightsStart`/`End` are `[Obsolete("1.30: no replacement")]` (`CarScript.c:2805-2809`). The SKILL.md parked-beam recipe that copies those two calls is a 1.29 pattern; delete the calls on 1.30.
 
-Electricity: `NeedElectricitySourceDevice()` (`Transport.c:821`) replaces `IsVitalCarBattery`. Magneto aircraft can return false (vanilla bikes do: `Motorbike_02.c:34-37`).
+Electricity: `NeedElectricitySourceDevice()` (`Transport.c:830`) replaces `IsVitalCarBattery`. Magneto aircraft can return false (vanilla bikes do: `Motorbike_02.c:31-34`).
 
 Vehicle light toggle input is `UAToggleVehicleLights` (`ToggleVehicleLightsActionInput`, `ActionInput.c:849-855`), not `UAToggleHeadlight` (headgear). Custom flight `UA*` bindings are unchanged.
 

@@ -102,10 +102,10 @@ The validator that renders + checks these — `scripts/weapon_grip_viewer.py` �
 - `[TBD-verify]` memory-point semantics for `magazine_axis`, `recoil`, `weapon back` carry over from
   `weapon-in-hands.md` — not independently confirmed here.
 
-## DayZ 1.30 Exp (build 1.30.164014) — do not debinarize staged classnames
+## DayZ 1.30 — do not debinarize staged classnames
 
 (hasta 1.29: PARITY-FIRST meant unpacking the vanilla weapon whose **script** you inherit.)
-(desde 1.30 Exp: `SCARL` / `Luger` / `LeeEnfield` / `MP18` / `P1907_Bayonet` scripts exist, but
+(desde 1.30: `SCARL` / `Luger` / `LeeEnfield` / `MP18` / `P1907_Bayonet` scripts exist, but
 `work\pbo-listings\exp__Addons__weapons_firearms.txt` and `exp__Addons__weapons_pistols.txt` have no
 matching `.p3d`. `SCARH\ScarH.p3d` **is** packed — use that (or AKM / CZ61 / a 1.29 pistol) as the
 memory-LOD reference.)

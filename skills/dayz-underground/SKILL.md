@@ -7,21 +7,22 @@ description: >
   irrigation tunnel, cfgundergroundtriggers.json, UndergroundTrigger, breadcrumbs,
   EyeAccommodation, EUndergroundPresence, INPUT_UDT_UNDERGROUND_SYNC, underground
   trigger editor, disallowedTypesInUnderground, bunker broadcast,
-  cfgbunkerbroadcast.json, Buldozer MarkUnderground or CopyTileCoord. DayZ 1.30 Exp
-  (1.30.164014). Not construction parts, rebuilding or code locks: dayz-basebuilding.
+  cfgbunkerbroadcast.json, Buldozer MarkUnderground or CopyTileCoord. DayZ 1.30
+  (stable 1.30.164200). Not construction parts, rebuilding or code locks: dayz-basebuilding.
   Not the bunker-broadcast storage file: dayz-persistence. Not sandstorm or heat:
   dayz-environment-hazards.
 ---
 
-# DayZ Underground (1.30 Exp)
+# DayZ Underground (1.30)
 
-Underground areas in DayZ 1.30 Experimental (build 1.30.164014): the hole in the
+Underground areas in DayZ 1.30 (written on Experimental build 1.30.164014, re-checked on
+stable 1.30.164200): the hole in the
 terrain (*terrain holes*, new in 1.30), the underground triggers that darken and
 change the environment, the player's "underground" state, and what Badlands builds on top
 (radio-announced bunkers, irrigation tunnel entrance).
 
-Citations `exp\scripts\scripts\…` are from `dta\scripts.pbo` of 1.30.164014, compared
-with 1.29. Everything marked `source_verified` was opened in those files. **Nothing in
+Citations `exp\scripts\scripts\…` were first read in `dta\scripts.pbo` of 1.30.164014 and compared
+with 1.29. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Everything marked `source_verified` was opened in those files. **Nothing in
 this skill has been tested in game yet**: §Verification Status states the level
 of each claim and §Before designing with holes, how to raise it.
 
@@ -183,7 +184,7 @@ proto native bool		SurfaceIsHole(float x, float z);
 
 - **Radio-announced bunkers.**
   - Classes `Land_Bunker_Basement_*` and `Land_Bunker_Shelter_*`
-    (`4_World\Entities\Building\Bunker.c:289-294`), with code lock.
+    (`4_World\Entities\Building\Bunker.c:331-336`), with code lock.
   - The radio broadcasts coordinates and code in Morse.
   - Configured in `cfgbunkerbroadcast.json`, in `$mission:` or in
     `dz/worlds/<mundo>/ce/` (`3_Game\CfgBunkerBroadcastHandler.c:5,23-27`), plus
@@ -194,7 +195,9 @@ proto native bool		SurfaceIsHole(float x, float z);
   entrance is rebuildable, and its debug spawn populates it with sticks and rope.
   Rebuilding is covered by `dayz-basebuilding`.
 - Nasdara configs and models are not included in 1.30 Exp: only its scripts (measured
-  2026-09-24 on unencrypted PBOs).
+  2026-09-24 on unencrypted PBOs). Stable 1.30.164200 installs them: `nasdara\addons\` holds
+  24 PBOs (structures, CE, navmesh, world data) and the world in the encrypted
+  `worlds_nasdara.ebo`; what they hold underground was not read for this skill.
 - Bohemia (Dev Blog Recap 2, Steam, 2026-09-22): Badlands underground facilities
   use the terrain holes system, which will be available for other maps and
   for the modding community.

@@ -205,7 +205,7 @@ dynamic camouflage, team marking, target highlighting.
 **The fact.** `DamageSystem.GlobalHealth.Health.healthLevels[]` maps health thresholds to rvmat —
 in `DZ\characters\tops\config.cpp:2276-2333`, `1.0`/`0.7` → `tshirt.rvmat`, `0.5`/`0.3` →
 `tshirt_damage.rvmat`, `0` → `tshirt_destruct.rvmat`. **Engine applies it**: `GetHealthLevel` is
-`proto native` (`P:/scripts/3_game/entities/object.c:1167`) and **no script in `P:/scripts` reads
+`proto native` (`P:/scripts/3_game/entities/object.c:1171`) and **no script in `P:/scripts` reads
 `healthLevels` to call `SetObjectMaterial`**. A static audit of vanilla scripts with
 zero hits does NOT rule out this writer, because it is not in the scripts.
 
@@ -213,7 +213,7 @@ zero hits does NOT rule out this writer, because it is not in the scripts.
 following frame. There is no hook to intercept it.
 
 **Wetness, on the other hand, does NOT repaint clothing.** Having crossed the four `EWetnessLevel`
-thresholds (`P:/scripts/3_game/constants.c:875-878`), override remains intact. In vanilla sole material
+thresholds (`P:/scripts/3_game/constants.c:933-936`), override remains intact. In vanilla sole material
 swap by wetness is in `GardenBase` (`P:/scripts/4_world/entities/gardenbase.c:605,610`) and is
 **script-side**. Under `DZ\characters\` there are **0** `*wet*` assets versus 349 `*damage*.rvmat` with
 same search: absence is verified, not assumed.
@@ -242,7 +242,7 @@ clothing (health level change, equipment change), or maintain per tick while eff
 is active. **Do not** call it once and assume it applied.
 
 And leave `personality` selection out of lease: vanilla already writes there
-(`P:/scripts/4_world/entities/itembase/clothing_base.c:154`), and stomping it turns normal
+(`P:/scripts/4_world/entities/itembase/clothing_base.c:155`), and stomping it turns normal
 repainting into a false positive of "it was stolen from me".
 
 ### How it was measured, in case it needs repeating
@@ -298,11 +298,11 @@ effect must appear when player activates it, reconstruction must be forced throu
 route.
 
 **`SwitchItemSelectionTextureEx` is NOT that route, and was published here for a few hours as if it
-were.** It is a **bodyless declaration** (`P:/scripts/3_game/entities/entityai.c:1170`): script
+were.** It is a **bodyless declaration** (`P:/scripts/3_game/entities/entityai.c:1196`): script
 hook, not `proto native`, so calling it rebuilds nothing — only runs whatever overrides
 exist, and the one in `Clothing_Base` exits via early `return` if `par` is null. What is misleading is
 who calls it: vanilla invokes it from `EEItemAttached`
-(`P:/scripts/4_world/entities/manbase/playerbase.c:1469-1471`), meaning **rebuild is the
+(`P:/scripts/4_world/entities/manbase/playerbase.c:1507-1509`), meaning **rebuild is the
 attach** and it rides along. It is recorded as ruled out **with the reason**, not as pending:
 a pending item is inherited by someone in a month and wastes their afternoon.
 
@@ -311,10 +311,10 @@ they are TWO distinct index spaces, and mixing them crashes the client.**
 
 | API | indexa | comentario de vanilla |
 |---|---|---|
-| `SetObjectTexture` / `SetObjectMaterial` (`entityai.c:2895,2898`) | `hiddenSelections` | «Change texture/material **in hiddenSelections**» |
-| `SetSimpleHiddenSelectionState` / `IsSimpleHiddenSelectionVisible` (`entityai.c:2891-2892`) | `simpleHiddenSelections` | «**Simple** hidden selection state; 0 == hidden» |
+| `SetObjectTexture` / `SetObjectMaterial` (`entityai.c:2881,2884`) | `hiddenSelections` | «Change texture/material **in hiddenSelections**» |
+| `SetSimpleHiddenSelectionState` / `IsSimpleHiddenSelectionVisible` (`entityai.c:2877-2878`) | `simpleHiddenSelections` | «**Simple** hidden selection state; 0 == hidden» |
 
-`GetHiddenSelectionIndex` (`entityai.c:2792`) returns an index of the **first** array — its own
+`GetHiddenSelectionIndex` (`entityai.c:2778`) returns an index of the **first** array — its own
 comment says so: "index of the string found in cfg array `hiddenSelections`". Passing it to the
 *simple* API indexes another array. Measured: **native client crash with minidump**, no trace
 beneath script.
@@ -322,9 +322,9 @@ beneath script.
 That they are distinct arrays is not inference: `weapon_base.c:62` declares
 `m_weaponHideBarrelIdx` with comment "index in **simpleHiddenSelections** cfg array", and in
 **30 vanilla call-sites of the simple API, ZERO** use `GetHiddenSelectionIndex` — they use fixed
-ordinals (`SIMPLE_SELECTION_MELEE_RIFLE = 0` … `SHOULDER_MELEE = 3`, `dayzplayer.c:1160-1163`),
-member indices (`weapon_base.c:391,2133,2141`), or dedicated getters (`GetHairIndex()`,
-`GetBeardIndex()`, `playerbase.c:9055-9057`).
+ordinals (`SIMPLE_SELECTION_MELEE_RIFLE = 0` … `SHOULDER_MELEE = 3`, `dayzplayer.c:1173-1176`),
+member indices (`weapon_base.c:383,2128,2136`), or dedicated getters (`GetHairIndex()`,
+`GetBeardIndex()`, `playerbase.c:9405-9407`).
 
 **And there is indeed a correct way to get simple index: Bohemia wrote it.** The equivalent of
 `GetHiddenSelectionIndex` for this space is not a function, it is reading array and searching within.
@@ -367,7 +367,8 @@ one sample and both are left recorded. What does not depend on sample size is th
 6648 writes.
 
 **The hook that seems the solution and is not**: `EEHealthLevelChanged` DOES run on client (measured;
-vanilla body of `clothing_base.c:111-125` is guarded by `!IsDedicatedServer` and only does
+vanilla body of `clothing_base.c:111-125` is guarded by `!IsHeadlessOrDedicatedServer` (`!IsDedicatedServer`
+on 1.29) and only does
 client work), but **the engine writes AFTER the hook** — inside hook read already
 returns your material, and on next tick it is empty. Re-asserting in there is lost by order.
 
@@ -399,7 +400,7 @@ engine holds material (not a normalized vanilla path, which was expected), and o
 
 ## A selection the log calls painted can be hidden by config (SP-445, added 2026-09-28)
 
-[EXACT] `hiddenSelectionsTextures[] = {""}` in config HIDES the selection — the script-side material/texture apply then succeeds and still nothing renders. Vanilla precedent: `XmasLights.HideOnItem` clears selection textures and materials with `""` (`xmaslights.c:94-103`), and `Blowtorch` hides its flame with `SetObjectTexture(0, "")` (`blowtorch.c:48-51`) (DayZ 1.30.164014 Exp). A selection whose material is swapped from script must declare its REAL texture in config, like `BatteryCharger` (`gear_camping/DZ/gear/camping/config.cpp:6975-6977`). [DESIGN] If the emissive must stay visible over a dark `_co` region, also switch that selection to a bright procedural colour texture (`#(argb,8,8,3)color(r,g,b,1,CO)`); not yet verified in game on its own.
+[EXACT] `hiddenSelectionsTextures[] = {""}` in config HIDES the selection — the script-side material/texture apply then succeeds and still nothing renders. Vanilla precedent: `XmasLights.HideOnItem` clears selection textures and materials with `""` (`xmaslights.c:94-103`), and `Blowtorch` hides its flame with `SetObjectTexture(0, "")` (`blowtorch.c:48-51`) (DayZ 1.30.164014 Exp). A selection whose material is swapped from script must declare its REAL texture in config, like `BatteryCharger` (`gear_camping/DZ/gear/camping/config.cpp:6993-6995`). [DESIGN] If the emissive must stay visible over a dark `_co` region, also switch that selection to a bright procedural colour texture (`#(argb,8,8,3)color(r,g,b,1,CO)`); not yet verified in game on its own.
 
 ## From baked PNG to `.paa` and atlas rvmat (added 2026-09-02)
 

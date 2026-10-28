@@ -1,17 +1,17 @@
-# DayZ 1.30 Exp — launch / session-test deltas (build 1.30.164014)
+# DayZ 1.30 — launch / session-test deltas
 
 Companion to `SKILL.md` § DayZ 1.30 Exp. Diag-only managed lifecycle, absolute
 `-mod` paths, and the filepatching-vs-PBO caveats still hold. This file is the
 1.30 launch-flag and action-injection delta.
 
 Line numbers are from files opened under `exp\` and the changelog
-transcription. Runtime behaviour of the new exe flags is [CHANGELOG] /
+transcription. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Runtime behaviour of the new exe flags is [CHANGELOG] /
 [UNVERIFIED] (no DayZ 1.30 Tools binary in this extract).
 
 ## Unpacked `-mod` folder (configs without packing)
 
 (until 1.29: this skill's loop was "re-pack the PBO, deploy it where the
-engine reads mods, and launch DayZDiag".) (since 1.30 Exp [CHANGELOG],
+engine reads mods, and launch DayZDiag".) (since 1.30 [CHANGELOG],
 `work\changelog-1.30-exp-modding.md:25-28`):
 
 > Changed: Mods now have their own named filesystem
@@ -27,7 +27,7 @@ filepatching-does-not-reload-binaries rule. A shipping test still packs.
 
 ## New launch flags
 
-(since 1.30 Exp [CHANGELOG], `work\changelog-1.30-exp-modding.md:10-11`):
+(since 1.30 [CHANGELOG], `work\changelog-1.30-exp-modding.md:10-11`):
 
 > Added: '-resolveFilePatchingUsingEnfusion=0/1' for file patching to
 > prioritize looking through named enfusion filesystems before checking
@@ -46,7 +46,7 @@ Requires `-filePatching`. Workbench always enables the resolve flag.
 
 ## Headless roboclients vs `Mode=all`
 
-(since 1.30 Exp) `CGame.IsHeadless()` and `IsHeadlessOrDedicatedServer()` —
+(since 1.30) `CGame.IsHeadless()` and `IsHeadlessOrDedicatedServer()` —
 see `dayz-mod-workflow/references/dayz-1-30-mod-workflow.md`. This skill's
 MCP composition still requires `-Mode all` for a **rendered** client
 (`dayz-mcp-verify`: headless has no window to grab).
@@ -63,7 +63,7 @@ this build yet. Server-side dummy bots do the job instead; details and numbers i
 `dayz-mcp-verify/references/dayz-1-30-mcp-verify.md` § Roboclients vs server-side
 dummy bots.
 
-## Launching the 1.30 Exp DayZDiag directly (outside the managed lifecycle)
+## Launching the 1.30 DayZDiag directly (outside the managed lifecycle)
 
 The managed launcher runs the 1.29 install. Probing the Exp install by hand
 (measured 2026-09-26, evidence in `VAULT/AI/10_Projects/DayZ_MCP/lanes/2026-09-26-roboclient-130/`)
@@ -138,12 +138,12 @@ What worked on 2026-09-26 (dummy-bot load, same evidence folder):
 
 ## `PerformActionStart` in SP — pending guard + `UA_AM_INIT`
 
-(until 1.29: this skill cited `actionmanagerclient.c:762`.) (since 1.30 Exp:
+(until 1.29: this skill cited `actionmanagerclient.c:762`.) (since 1.30:
 the method is at `:804`. Singleplayer no longer overwrites an in-flight
 pending/current action.)
 
 ```
-// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\ActionManagerClient.c:804-827
+// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\ActionManagerClient.c:804-828
 	void PerformActionStart(ActionBase action, ActionTarget target, ItemBase item, Param extra_data = NULL)
 	{
 		if (!g_Game.IsMultiplayer())

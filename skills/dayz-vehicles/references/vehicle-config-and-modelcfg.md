@@ -279,7 +279,7 @@ localized damage.
 
 A zone's `class Health` can also declare `RefTexsMats[]`. Vanilla Motorbike_02 `Front` lists
 `motorbike_02_body`, `_glass` and `_wheel`, the rvmats of its 1.0 entry in the same order, and its 0.0
-entry is `{body_destruct, "hidden", wheel_destruct}` (`DZ\vehicles\singletrack\config.cpp:904-905`,
+entry is `{body_destruct, "hidden", wheel_destruct}` (`DZ\vehicles\singletrack\config.cpp:911-912`,
 1.30.164014 Exp): read from the config, each slot of an entry replaces the rvmat in the same slot of the
 list. In that config every motorbike zone that hides glass declares the list, while Motorbike_01
 `FuelTank` and Motorbike_02 `Engine` have none; in `DZ\vehicles\wheeled\config.cpp` none of the 18
@@ -423,7 +423,7 @@ class GUIInventoryAttachmentsProps
 ```
 `CarBattery` + `SparkPlug` (+ `CarRadiator`) are vanilla engine-part slots **required for the engine to
 start** — see §15. Vanilla leaves BOTH `IsVitalSparkPlug` and `IsVitalGlowPlug` true by default, so a
-petrol car must `override IsVitalGlowPlug()→false` (`civiliansedan.c:363`) or it silently also demands a
+petrol car must `override IsVitalGlowPlug()→false` (`civiliansedan.c:370`) or it silently also demands a
 GlowPlug it has no slot for (the bug that bit SUB_BRZ). `ObstacleGenerator { class Shapes { class Cylindric {...} } }` (in the Landrover) carves
 the road-block volume; optional.
 
@@ -625,7 +625,7 @@ not the Landrover template above:
 What this settles (the earlier `[Landrover]` template rows are consistent with it):
 
 1. `speed`, `rpm`, `fuel`, `coolant` are engine-provided sources; vanilla declares NO `AnimationSources` for them.
-2. `speed` arrives on the speedometer scale, i.e. km/h like `GetSpeedometer()` (`3_Game\vehicles\car.c:113`):
+2. `speed` arrives on the speedometer scale, i.e. km/h like `GetSpeedometer()` (`3_Game\vehicles\car.c:102`):
    `maxValue` is simply the top number painted on the dial (120 hatchback, 200 sedan).
 3. `rpm` arrives NORMALISED 0..1 (`maxValue = 1.0` on both cars). Which engine rpm maps to 1.0 (`EngineGetRPMMax`
    = end of `torqueCurve[]`, or `rpmRedline`) is NOT settled by the ODOL; on LFQuad2 they differ by 1 rpm
@@ -682,7 +682,7 @@ full model.cfg (§11–12) — it is self-contained and the Landrover proves it 
 | Symptom | Likely cause | Check / fix |
 |---|---|---|
 | Engine won't start at all | Missing engine-part slots | `CarBattery` + `SparkPlug` (and often `CarRadiator`) must be in `attachments[]` and physically attached in-game; a car with no battery/plug cranks but won't run |
-| Won't start even WITH a SparkPlug attached | Default `IsVitalGlowPlug()=true` demands a GlowPlug too (`carscript.c:2011`); a bare `CarScript` needs BOTH plugs (all `IsVital*` default true, `carscript.c:2734-2762`) | Override the unused igniter — petrol: `IsVitalGlowPlug()→false` (`civiliansedan.c:363`) keep SparkPlug; diesel: `IsVitalSparkPlug()→false` (`offroad_02.c:389`) keep GlowPlug. Declare ONLY the vital plug in `attachments[]` + attach it in `OnDebugSpawn`. `IsVitalGlowPlug→false` is the vanilla petrol pattern, NOT a removed check. Bit SUB_BRZ 2026-06-28 |
+| Won't start even WITH a SparkPlug attached | Default `IsVitalGlowPlug()=true` demands a GlowPlug too (`carscript.c:1783`); a bare `CarScript` needs BOTH plugs (all `IsVital*` default true, `transport.c:407-420` for the plugs and the fuel tank, `carscript.c:2201-2209` for the belt and the radiator; 1.29 `carscript.c:2734-2762`) | Override the unused igniter — petrol: `IsVitalGlowPlug()→false` (`civiliansedan.c:370`) keep SparkPlug; diesel: `IsVitalSparkPlug()→false` (`offroad_02.c:415`) keep GlowPlug. Declare ONLY the vital plug in `attachments[]` + attach it in `OnDebugSpawn`. `IsVitalGlowPlug→false` is the vanilla petrol pattern, NOT a removed check. Bit SUB_BRZ 2026-06-28 |
 | Engine drowns instantly at spawn | Missing `drown_engine` memory point ⇒ it defaults to (0,0,0) | Add `drown_engine` at the engine in the Memory LOD (`vehicle-structural-parity.md` Addendum 2026-05-30 #9) |
 | RPT: `unknown animation source damper` | `AnimationSources` damper class missing | Add `class damper_X_Y { source="user"; ... }` for all four (§10) |
 | Revs but no torque / stalls weirdly | `torqueCurve[]` starts/ends nonzero or rpm bands wrong | Curve must start at 0 Nm (stall rpm) and return to 0 at redline; keep `rpmIdle<rpmMin<rpmClutch<rpmRedline` |
@@ -714,7 +714,7 @@ MCP / admin spawn), or a "wheels missing / engine won't start" verdict is a fals
   added by engine later", `Arma_3_Cars_Config_Guidelines`); the DayZ references (Landrover, QuadBike, Croco,
   civiliansedan) use **Geometry 1e13 only**. Do NOT add a 4e13 LOD for a DayZ car unless verified in-game.
 - `type="GEARBOX_AUTOMATIC"`: the engine natively supports it — `enum CarGearboxType {MANUAL, AUTOMATIC}`
-  plus `GearboxGetMode()`/`CarAutomaticGearboxMode` confirmed verbatim in vanilla `car.c:33-38,277-280`
+  plus `GearboxGetMode()`/`CarAutomaticGearboxMode` confirmed verbatim in vanilla `car.c:22-27,266-269`
   (2026-07-07) — but **zero real-world configs found using it** (Landrover, UAZ, vanilla-dump all ship
   `GEARBOX_MANUAL`). Treat as native-but-unprecedented: no ratios/tuning reference exists to copy. If
   attempted, verify behavior live via the in-game Diag tool (§15), don't guess.
@@ -748,7 +748,7 @@ MCP / admin spawn), or a "wheels missing / engine won't start" verdict is a fals
 ### 17.1 Get-in is resolved per COLLISION COMPONENT (not per selection, not per memory point)
 
 The engine maps a get-in to a seat through **`Transport.CrewPositionIndex(int componentIndex)`** —
-`proto native int CrewPositionIndex(int position)` at `P:\scripts\3_game\vehicles\transport.c:116`
+`proto native int CrewPositionIndex(int position)` at `P:\scripts\3_game\vehicles\transport.c:182`
 (opaque; no script body). The `componentIndex` is the **collision component** that the cursor's raycast
 hits when the player presses "enter". The engine pre-associates each crew slot with the component(s) that
 contain that slot's `actionSel` selection (the `seat_driver` / `seat_codriver` named selection from the
@@ -855,14 +855,15 @@ vehicle plus an auto-connecting client and probes each seat:
   vanilla config occurrences and unknown properties are ignored without a log.
   If a config edit has no effect, verify that the property exists before tuning it.
 - `VehicleAnimInstances` is fixed by
-  `scripts/4_world/entities/vehicles/vehicleaniminstances.c:1-13`:
+  `scripts/4_world/entities/vehicles/vehicleaniminstances.c:1-15`:
   `CIVVAN=0`, `V3S=1`, `SEDAN=2`, `HATCHBACK=3`, `BUS=4`, `S120=5`,
-  `MULTICAR=6`, `GOLF=7`, `HMMWV=8`, `ZODIAC=9`. Return the instance that matches
+  `MULTICAR=6`, `GOLF=7`, `HMMWV=8`, `ZODIAC=9`, and since 1.30 `MOTO1=10`,
+  `MOTO2=11` (1.29 ended at `ZODIAC`, 1.29 `:1-13`). Return the instance that matches
   the model skeleton; a wrong value can fail as missing get-in pose or clipping,
   not a crash.
 - Offroad Hatchback door slots are exactly `NivaDriverDoors`,
   `NivaCoDriverDoors`, `NivaHood`, and `NivaTrunk`
-  (`offroadhatchback.c:133,147,176,196-206`). Slot lookup and SoundSet names are
+  (`offroadhatchback.c:146,160,189,209-219`). Slot lookup and SoundSet names are
   case-sensitive; a mismatch returns no attachment or no sound without a clear
   diagnostic.
 
@@ -871,8 +872,8 @@ vehicle plus an auto-connecting client and probes each seat:
 
 Declaring `<Mod>_Wheel_Ruined` in `CfgVehicles` and shipping the destroyed `.p3d` changes
 nothing in game: the wheel reaches 0 health still wearing its healthy model. The swap is done
-by `CarWheel.EEHealthLevelChanged` (`inventoryitem.c:250-279`), which asks
-`GetRuinedReplacement()`; that method (`:214-248`) is a `switch` over **seven hardcoded vanilla
+by `CarWheel.EEHealthLevelChanged` (`inventoryitem.c:220-248`), which asks
+`GetRuinedReplacement()`. On 1.29 that method (1.29 `InventoryItem.c:214-248`) is a `switch` over **seven hardcoded vanilla
 classnames** - HatchbackWheel, CivSedanWheel, Hatchback_02_Wheel, Sedan_02_Wheel,
 Truck_01_Wheel, Truck_01_WheelDouble, Offroad_02_Wheel. Anything else returns `""`, and an
 empty name makes the handler do nothing at all. The fix is four leaf classes. Do NOT
@@ -887,6 +888,14 @@ Keep the override on the LEAF, never on a shared base. The ruined class inherits
 `GetRuinedReplacement` from `CarWheel`, whose switch does not match it either, and that is
 what stops a ruined wheel from swapping itself forever.
 
+**On 1.30 the name is derived, so these overrides are no longer needed.** `GetRuinedReplacement()`
+returns the name `CarWheelType.SetReplacementTypes()` set when the first wheel of the class was
+created, `<class>_Ruined`, and that call logs an error when the config class does not exist
+(`inventoryitem.c:215-218`, `inventoryitemtype.c:17-46`). A 1.30 mod wheel needs the `_Ruined`
+config class and an empty script class that extends `CarWheel_Ruined`; overrides like the ones
+above still compile and return the same names. The vanilla pattern and the in-game runs on
+1.30.164200 are in `dayz-1-30-vehicles.md`, section 11.
+
 - **The ruined model needs its own `CfgNonAIVehicles` proxy.** A proxy binds one model file to
   the slots it may fill, so without it the engine has no route to draw the new mesh once the
   attachment is replaced. Vanilla declares one per destroyed wheel, `inventorySlot[]` copied
@@ -900,12 +909,12 @@ what stops a ruined wheel from swapping itself forever.
   inherited `repairableWithKits[]` on the ruined class is harmless. Do not invent a mechanic to
   block what the engine already refuses.
 - **`GetReplacement()` is diagnostic only.** Its single consumer is under `#ifdef
-  DIAG_DEVELOPER` (`inventoryitem.c:375-392`, the debug "fix the whole car"): live in
+  DIAG_DEVELOPER` (`inventoryitem.c:350-366`, the debug "fix the whole car"): live in
   DayZDiag, compiled out of retail. Implement it for parity, never describe it as repair.
 - **Register the heavy in-hands IK for the ruined leaf classes too**, or a destroyed wheel
   taken in hands falls back to the one-handed profile - the profile is looked up by exact leaf
-  class. Vanilla registers all seven (`dayzplayercfgbase.c:852, :869, :879, :889, :899`) and
-  reuses the healthy `.anm` where no destroyed pose exists.
+  class. Vanilla registers all seven (`dayzplayercfgbase.c:876, :884, :886, :893, :903, :913, :923`),
+  1.30 also the four motorbike ones (`:933-939`), and reuses the healthy `.anm` where no destroyed pose exists.
 
 **The physical radius comes from the envelope, not from one distance.** A modelled flat tyre is
 usually collapsed over a sector, not all round: on LFQuad2 the axis-to-lowest-point figure was

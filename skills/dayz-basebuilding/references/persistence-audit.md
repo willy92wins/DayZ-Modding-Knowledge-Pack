@@ -10,7 +10,7 @@ the hand-off checklist. Roots: `P:\scripts\` = `<dayz-projects>\scripts\`.
 ## 1. The representation — three 31-bit ints, netsync AND save at once
 
 Part-built state is NOT stored per part. It is packed into three sync ints `m_SyncParts01/02/03`
-(`basebuildingbase.c:12-14`), registered for netsync in the ctor (`:44-46`). This SAME representation is both
+(`basebuildingbase.c:10-12`), registered for netsync in the ctor (`:43-45`). This SAME representation is both
 the network sync AND the persistence format — there is no separate per-part save record.
 
 Part `id` → bit:
@@ -19,9 +19,9 @@ Part `id` → bit:
 - `id` 32..62 → `m_SyncParts02`
 - `id` 63..93 → `m_SyncParts03`
 
-Bit ops in `RegisterPartForSync` (`basebuildingbase.c:148-175`). Also `m_InteractedPartId` /
-`m_PerformedActionId` (`:15-16`, registered `:47-48`) sync the last action so clients play the right SFX
-(`SetActionFromSyncData` `:259-273`).
+Bit ops in `RegisterPartForSync` (`basebuildingbase.c:137-164`). Also `m_InteractedPartId` /
+`m_PerformedActionId` (`:13-14`, registered `:46-47`) sync the last action so clients play the right SFX
+(`SetActionFromSyncData` `:248-262`).
 
 ## 2. The 93-part cap
 
@@ -38,7 +38,7 @@ no runtime warning — verify by hand or with a script that every `id` in the co
 
 **Subclass-after-super invariant:** a subclass writes/reads its extra fields AFTER calling `super`, in the
 exact same order in both methods. Fence appends `m_GateState`, `m_IsOpened` after the base three ints
-(`fence.c:212-220` save / `:222-255` load). Reorder either side, or write in the subclass before `super`, and
+(`fence.c:246-254` save / `:256-289` load). Reorder either side, or write in the subclass before `super`, and
 every saved base corrupts on the next load.
 
 ## 4. Load reconciliation
@@ -53,9 +53,9 @@ every saved base corrupts on the next load.
 
 ## 5. Version bumps
 
-- Base damage-system version: `GetDamageSystemVersionChange()→111` (`basebuildingbase.c:1238-1241`).
+- Base damage-system version: `GetDamageSystemVersionChange()→111` (`basebuildingbase.c:1133-1136`).
 - Fence gate persistence bumped at **v110** — `Fence.OnStoreLoad` reads a discarded bool for `version < 110`,
-  then the gate fields for current versions (`fence.c:222-255`).
+  then the gate fields for current versions (`fence.c:256-289`).
 
 When you add a persisted field, bump the version and add a legacy read branch so old saves load with the old
 layout and new saves with the new one.
@@ -82,9 +82,9 @@ mechanics) was not opened here — do not assume its persistence follows the sam
 tracing it. `[UNVERIFIED]` the `show_on_init` config field is read by `UpdateConstructionParts` but had no
 observed runtime effect in the traced show/hide paths.
 
-## 8. DayZ 1.30 Exp — Rebuilding is a second stream (not the 93-part cap)
+## 8. DayZ 1.30 — Rebuilding is a second stream (not the 93-part cap)
 
-(until 1.29: the three-int / 93-part model was the only construction persistence). (since 1.30 Exp: it
+(until 1.29: the three-int / 93-part model was the only construction persistence). (since 1.30: it
 still is, **for `BaseBuildingBase` only**.)
 
 Verified unchanged on `BaseBuildingBase`:
@@ -112,10 +112,10 @@ is a **different** save:
 
 - version const `REBUILDING_STORAGE_VERSION = 1` (`Rebuilding.c:3`)
 - ten ints `m_SyncParts1`..`m_SyncParts10` (`:7-16`), netsync-registered on `BuildingBase` (`Building.c:35-44`)
-- `HandleStoreSave` → `SerializeConstructionData`: version then the ten ints (`Rebuilding.c:474-515`)
+- `HandleStoreSave` → `SerializeConstructionData`: version then the ten ints (`Rebuilding.c:473-514`)
 - 2 bits reserved per part (`ConstructionPart.BITWISE_SYNCINFO_SIZE_BASE = 2` at `ConstructionPart.c:6`)
 - capacity [DESIGN]: `BIT_INT_SIZE = 32` (`BitArray.c:4`) × 10 / 2 = **160 part ids**
-- bit 0 = built (`ConstructionPart.c:111-117`); `ConstructionPartRebuild` stores facing in bit 1 (`:985-991`)
+- bit 0 = built (`ConstructionPart.c:111-117`); `ConstructionPartRebuild` stores facing in bit 1 (`:1057-1063`)
 
 Do **not** put Rebuilding parts on a `BaseBuildingBase` entity or write the ten-int blob from a Fence/Watchtower
 subclass. Fence extra fields still go **after** `super.OnStoreSave` (`fence.c:246-254` in 1.30).

@@ -168,7 +168,7 @@ back to it.
 | Skill | Use when |
 |---|---|
 | `dayz-vehicles` | Authoring, importing or debugging a **drivable ground/water vehicle** (car, truck, quad/ATV, motorbike, boat) on the CarScript/Boat base. Owns the full `config.cpp` + `model.cfg` contract (SimulationModule drivetrain, Axles/Wheels, Crew, AnimationSources, `wheel_1_1..2_2`), structural parity vs a vanilla vehicle, and the packaging failures that pass local filepatching but break on a dedicated server (white/untextured, reversed wheel spin). **Invoke before writing any ground-vehicle entity/config.** |
-| `dayz-motorbikes` | **Single-track vehicles (motorbikes / motorcycles)** in DayZ 1.30 Experimental build 1.30.164014. Covers `MotorbikeScript`, `simulation = "motorbike"`, 2-wheel physics (Wheels block without Axles, Brakes split Front/Rear, lean/steering/tipover), kickstand/kickstart, 3rd person camera (ID 32), and 1.30 modular refactor (`VehicleLightsComponent`, `VehicleHornComponent`, `VehicleVFXComponent`). |
+| `dayz-motorbikes` | **Single-track vehicles (motorbikes / motorcycles)** in DayZ 1.30 (stable build 1.30.164200). Covers `MotorbikeScript`, `simulation = "motorbike"`, 2-wheel physics (Wheels block without Axles, Brakes split Front/Rear, lean/steering/tipover), kickstand/kickstart, 3rd person camera (ID 32), and 1.30 modular refactor (`VehicleLightsComponent`, `VehicleHornComponent`, `VehicleVFXComponent`). |
 | `dayz-aviation` | **Planes, seaplanes, and helicopters** via the CarScript-as-aviation pattern. Real aerodynamics in Enforce Script (lift/drag/stall, ISA atmosphere), NaN-safe physics, PID auto-stabilization, flight-control AnimationSources, aviation memory points, script-driven dials, Buoyancy for seaplanes, retractable gear, RPM-band sound. Documents 5 flight-model implementations across 4 authors. |
 | `rip-vehicle-import` | Converting a **racing-game rip** (source-game Grub: `.modelbin`/`.carbin`) into a drivable, textured DayZ CarScript car. A 12-step pipeline + day-1 checklist + winding/glass/interior/material rules distilled from ~30 sessions on the first car. Pairs with `dayz-vehicles`. |
 
@@ -216,7 +216,7 @@ back to it.
 | `dayz-physics-engine` | **Rigid bodies, layers, raycasts, contacts**: `dBody*`/`dGeom*`/`dJoint*`, `PhxInteractionLayers`, `RaycastRV` vs `*Bullet`, `EOnContact`, TransportHit, "player walks through my object". |
 | `dayz-environment-hazards` | **Environmental hazards and weather events**: sandstorms (`sandstormFrequency`, `ScriptedSandstormController`, shelter fade, `DEF_DUST_PARTICLE`), temperature and solar exposure (`ThermalBias`, `HeatStroke`, `IsInShadow`), oil pits (`OilPitArea`), silicosis, irritated eyes, `AGT_AIRBOURNE_SOLID`, `WashHead`, Badlands, and Nasdara. |
 | `dayz-persistence` | **Entity persistence and data safety**: designing, implementing, debugging, or auditing `OnStoreSave`/`OnStoreLoad` streams, CF `ModStorage` and `storageVersion`, format migration/rollback, sidecar JSON, recoverable file replacement, `CombinationLock` stream v143, code lock, `ThermalBiasHandler`, `GAME_STORAGE_VERSION`, and `BunkerBroadcastPersistenceStorage.bin`. |
-| `dayz-underground` | **Underground areas and terrain holes** in DayZ 1.30 Exp (1.30.164014): bunkers, tunnels, caves, `SurfaceIsHole`, `holes.cfg`, `CfgWorlds Holes` (`tiles[]`), Buldozer `MarkUnderground`/`CopyTileCoord`, `cfgundergroundtriggers.json` (`UndergroundTrigger`, `EyeAccommodation`, `EUndergroundPresence`, `INPUT_UDT_UNDERGROUND_SYNC`), and `cfgbunkerbroadcast.json`. |
+| `dayz-underground` | **Underground areas and terrain holes** in DayZ 1.30 (stable 1.30.164200): bunkers, tunnels, caves, `SurfaceIsHole`, `holes.cfg`, `CfgWorlds Holes` (`tiles[]`), Buldozer `MarkUnderground`/`CopyTileCoord`, `cfgundergroundtriggers.json` (`UndergroundTrigger`, `EyeAccommodation`, `EUndergroundPresence`, `INPUT_UDT_UNDERGROUND_SYNC`), and `cfgbunkerbroadcast.json`. |
 
 **Process, QA & tooling** (domain-agnostic — use them across all of the above)
 | Skill | Use when |
@@ -537,12 +537,15 @@ representative in-game matrix. Record evidence and unknowns in
 [`CHANGELOG.md`](CHANGELOG.md). Contribution and privacy requirements are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-**Build coverage (2026-10-01).** The compatibility matrix is pinned to stable
-`1.29.0.163451`. 28 skills also carry sections for **DayZ 1.30 Experimental**
-(build `1.30.164014`), each labelled as such, and `dayz-motorbikes` targets 1.30
-only. 1.30 has not reached stable on this date; when it does, those sections are
-re-checked against the stable build before their labels change. Where each 1.30
-section lives: [`compatibility-matrix.md`](compatibility-matrix.md) §DayZ 1.30 Experimental.
+**Build coverage (2026-10-28).** The per-skill levels of the compatibility matrix are
+pinned to stable `1.29.0.163451`. DayZ 1.30 reached stable on 2026-10-15. 28 skills
+carry 1.30 sections, written on Experimental build `1.30.164014`, and `dayz-motorbikes`
+targets 1.30 only. On 2026-10-28 every vanilla `path:line` citation in the skills was
+re-checked against stable `1.30.164200`: line numbers with no build named are that
+build's ([`skills/_shared/dayz-conventions.md`](skills/_shared/dayz-conventions.md)
+§Vanilla line numbers: which build). Measurements keep the build they were made on.
+Where each 1.30 section lives: [`compatibility-matrix.md`](compatibility-matrix.md)
+§DayZ 1.30.
 
 ---
 

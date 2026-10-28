@@ -12,7 +12,7 @@ where the engine reads mods, and launch `DayZDiag_x64.exe` with `-filePatching` 
 and config edits are picked up without re-binarizing. Three launch modes (offline / server /
 client / all) driven by one orchestrator script and double-click `.bat` wrappers, generated
 per mod into `<Mod>_dev\tools\`.
-(until 1.29: the loop was pack PBO → deploy packed `@Mod` → DayZDiag `-filePatching`.) (since 1.30 Exp [CHANGELOG]: `-mod` may point at an **unpacked** source folder; RV configs load unpacked; new flags `-cacheP3D=0/1` and `-resolveFilePatchingUsingEnfusion=0/1`. Details: [dayz-1-30-test-ingame.md](references/dayz-1-30-test-ingame.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the loop was pack PBO → deploy packed `@Mod` → DayZDiag `-filePatching`.) (since 1.30 [CHANGELOG]: `-mod` may point at an **unpacked** source folder; RV configs load unpacked; new flags `-cacheP3D=0/1` and `-resolveFilePatchingUsingEnfusion=0/1`. Details: [dayz-1-30-test-ingame.md](references/dayz-1-30-test-ingame.md) and ## DayZ 1.30 Exp.)
 
 ## SOURCE OF TRUTH
 
@@ -88,7 +88,7 @@ With the box free of run DayZ processes and explicit user authorization, the pat
 - Recipe: agent writes `.bat` (server/client argv, literal quotes on each value with spaces) and user double-clicks to execute them in interactive session. [EXACT - this skill, SP-077] Read script.log/RPT with `FileShare.ReadWrite`. UI closure, not by PID, except agent's own zombie (then exact `Stop-Process -Id`).
 - [DESIGN] Server argv: `-server "-config=<serverDZ.cfg>" "-profiles=<server-profiles>" "-mission=<mission-abs>" "-mod=<mod-abs-semicolon-list>" -filePatching -port=2302`
 - [DESIGN] Client argv: `"-mod=<mod-abs-semicolon-list>" -connect=127.0.0.1 -port=2302 "-profiles=<client-profiles>" -name=Dev -window -filePatching`
-(since 1.30 Exp [CHANGELOG]) Optional on both: `-cacheP3D=1` (unbinarized `.p3d` sibling cache) and `-resolveFilePatchingUsingEnfusion=1` (requires `-filePatching`; always on in Workbench). `-mod=` may name an unpacked source folder, not only a packed `@Mod`. See `references/dayz-1-30-test-ingame.md`.
+(since 1.30 [CHANGELOG]) Optional on both: `-cacheP3D=1` (unbinarized `.p3d` sibling cache) and `-resolveFilePatchingUsingEnfusion=1` (requires `-filePatching`; always on in Workbench). `-mod=` may name an unpacked source folder, not only a packed `@Mod`. See `references/dayz-1-30-test-ingame.md`.
 
 Three gotchas that bite along this same path and are not from argv (SP-228, measured):
 
@@ -523,7 +523,7 @@ Croco quadbike) IN THE SAME RUN before touching geometry.
 - `WheelHasContact(i)` per wheel - `1` = touching ground, `0` = airborne. Print the
   four as a bitstring (`wc=1111` good; `wc=0000` = the whole vehicle is suspended off
   the ground, a placement/clearance problem, not a sim problem). Vanilla refs:
-  `car.c:297,349,352`.
+  `car.c:286,345,348`.
 
 So: `WheelCountPresent()=0` is the silent wheel-binding blocker (FireGeometry slot
 selection); `WheelCountPresent()=4` with `wc=0000` is geometry sitting too high or
@@ -535,7 +535,7 @@ Spawn with an explicit height flag instead of letting CE drop it:
 - `ECE_KEEPHEIGHT` (`=524288`, "no surface trace") - places at the exact Y you pass,
   no terrain snap. Spawn a known clear height and watch whether it settles.
 - `ECE_PLACE_ON_SURFACE` (`=1060`) - normal surface-trace placement.
-Vanilla refs: `centraleconomy.c:37,27`. If the vehicle is stable under KEEPHEIGHT but
+Vanilla refs: `centraleconomy.c:38,28`. If the vehicle is stable under KEEPHEIGHT but
 bounces/sinks under PLACE_ON_SURFACE, the bug is placement burying the hull (wheel-well
 clearance vs tire radius - audit check SP-023), not the model.
 
@@ -1017,41 +1017,41 @@ them again:
 
 1. **DayZDiag does NOT define DEVELOPER for scripts (DOES define DIAG and DIAG_DEVELOPER)** — measured with
    defines telemetry on connected client. Any vanilla mechanism under `#ifdef DEVELOPER`
-   (e.g. `SetGetInVehicleDebug`/`TryGetInVehicleDebug`, playerbase.c:3270-3295) DOES NOT EXIST in
+   (e.g. `SetGetInVehicleDebug`/`TryGetInVehicleDebug`, playerbase.c:3524-3549) DOES NOT EXIST in
    diag. Gate test code via command line parameter (`CommandlineGetParam`,
-   game.c:660) or via `#ifdef DIAG`, never DEVELOPER.
+   game.c:661) or via `#ifdef DIAG`, never DEVELOPER.
 2. **Automated get-in in MP: `StartCommand_Vehicle` directly from client seats a
    local GHOST** (own=true, HUD active) but server NEVER registers crew (crew0=false,
    consumed=0, ObtainState silent). The route that works: inject real ACTION —
    `ActionManagerClient.PerformActionStart(GetAction(ActionGetInTransport), target, null)`
-   (actionmanagerclient.c:762; in MP enters through ActionStart, synchronized flow mirrored by
+   (actionmanagerclient.c:804; in MP enters through ActionStart, synchronized flow mirrored by
    server). Target componentIndex is obtained iterating `CrewPositionIndex(c)` until
-   it returns desired seat (transport.c:116). Success is observed with `GetCommand_Vehicle()`
+   it returns desired seat (transport.c:182). Success is observed with `GetCommand_Vehicle()`
    on next tick (with retry), not marking done upon injecting. NOTE: `ActionCondition` is
    protected — cannot be pre-validated from outside; manager validates on both sides.
 
    **The framework reconciling this with SP-295** (measured against vanilla tree, 2026-08-18):
    crew membership and vehicle command are TWO distinct things, and only real action
    produces both. Crew is NATIVE engine state, not a script netsync:
-   `Transport` registers a single variable (`m_EngineZoneReceivedHit`, transport.c:73) and
-   `CrewMember`/`CrewDriver` are `proto native` (transport.c:111-128), readable from any
+   `Transport` registers a single variable (`m_EngineZoneReceivedHit`, transport.c:110) and
+   `CrewMember`/`CrewDriver` are `proto native` (transport.c:177-194), readable from any
    client — that is why a client wanting to get in can reject an already occupied seat
-   (actiongetintransport.c:57-60). `HumanCommandVehicle`, on the other hand, is created by
+   (actiongetintransport.c:50-52). `HumanCommandVehicle`, on the other hand, is created by
    `StartCommand_Vehicle` on THE MACHINE that calls it, and across the tree's 2,805 files there are
-   exactly three call-sites: action itself (actiongetintransport.c:91), resumption
-   after unconsciousness via `m_TransportCache` (dayzplayerimplement.c:2376) and a debug under
-   `#ifdef DEVELOPER` (playerbase.c:3287). **None starts the command upon finding out via network
+   exactly three call-sites: action itself (actiongetintransport.c:104), resumption
+   after unconsciousness via `m_TransportCache` (dayzplayerimplement.c:2395) and a debug under
+   `#ifdef DEVELOPER` (playerbase.c:3531). **None starts the command upon finding out via network
    that one is already seated.** From there arise both sides of the same fact: calling
    `StartCommand_Vehicle` directly from client gives command WITHOUT server crew (the ghost
    above); seating someone via script from server gives crew WITHOUT local command, and then
    any `ActionCondition` requiring being seated is NEVER satisfied, because they check
    `GetCommand_Vehicle()` and not `CrewMember` — as done by get-out
-   (actiongetouttransport.c:68-74) and start/stop engine (actionstartengine.c:26-37). Beware of
+   (actiongetouttransport.c:70-76) and start/stop engine (actionstartengine.c:26-37). Beware of
    `IsInVehicle()`: accepts both routes (command OR parent Transport,
-   dayzplayerimplement.c:465-468), so it is useless to distinguish them.
+   dayzplayerimplement.c:468-471), so it is useless to distinguish them.
 3. **A ASLEEP body rejects the injected get-in action** (PARKED sleep gate). If the mod
    sleeps the vehicle at rest, the cell must WAKE IT UP before get-in — simplest:
-   start the engine server-side from test mission (`EngineStart`, car.c:244) AS SOON AS
+   start the engine server-side from test mission (`EngineStart`, car.c:233) AS SOON AS
    spawned, not upon detecting crew. Furthermore, without engine/simulation OwnerState channel does not flow
    (silent ObtainState/RewindState) even if player is seated.
 4. **The real Enforce compile gate is stack STARTUP** (no offline check sees

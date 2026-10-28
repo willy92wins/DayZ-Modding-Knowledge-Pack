@@ -66,7 +66,7 @@ pointer. Firearm test cycles are as expensive as any DayZ rebuild — a prefligh
    `class CfgWeapons`.** `[VERIFIED in-game]` SR2M. Forward-declaring `Mode_FullAuto` INSIDE `CfgWeapons`
    makes an empty stub without `autoFire=1` → the mode is dropped → weapon stuck in single.
    → `cfgweapons-contract.md` §"root-scope Mode_*".
-7. **W-STAGING1 — (desde 1.30 Exp) a firearm script under `4_World/Entities/Firearms/` does NOT imply a
+7. **W-STAGING1 — (desde 1.30) a firearm script under `4_World/Entities/Firearms/` does NOT imply a
    packed `.p3d` or `CfgWeapons` class.** `[VERIFIED-vanilla]` 1.30.164014. `SCARL`, `Luger`, `LeeEnfield`,
    `MP18` (and `P1907_Bayonet`) have scripts + IK registrations; their weapon PBOs have no matching
    model/config. NEVER debinarize them from this experimental client as a parity reference — inherit a
@@ -84,7 +84,7 @@ its **config**, and match: named selections present, memory points shaped the sa
 for its ammo / mags / recoil / sounds / anims. Every preflight item above falls out of this one diff
 instead of error-by-error in-game. → `p3d-selection-contract.md`, `cfgweapons-contract.md`.
 
-(hasta 1.29: that vanilla weapon is always in the matching `weapons_*.pbo`.) (desde 1.30 Exp: **W-STAGING1**
+(hasta 1.29: that vanilla weapon is always in the matching `weapons_*.pbo`.) (desde 1.30: **W-STAGING1**
 — scripts for `SCARL` / `Luger` / `LeeEnfield` / `MP18` are not a licence to unpack those classnames from
 this build. Debinarize `SCARH\ScarH.p3d` (listed in `work\pbo-listings\exp__Addons__weapons_firearms.txt`)
 or another packed peer. Details: `dayz-1-30-weapons.md`.)
@@ -138,7 +138,7 @@ field, or selection, grep it in vanilla (`P:\scripts\4_world\entities\firearms\`
 (inferred, not confirmed). Anchor every new weapon lesson to a real mod with `path:line`, never memory.
 
 (hasta 1.29: pistol stable states were constructed with `PistolAnimState.*` constants —
-`stable-1.29` `Pistol_Base.c:203-212`.) (desde 1.30 Exp: `InitStateMachine()` passes
+`stable-1.29` `Pistol_Base.c:203-212`.) (desde 1.30: `InitStateMachine()` passes
 `GetDischargedPistolAnimState()` / `GetChargedPistolAnimState()` / `GetOpenPistolAnimState()` /
 `GetJammedPistolAnimState()` — `exp\scripts\scripts\4_World\Entities\Firearms\Pistol_Base.c:203-212`.
 Override those getters on an atypical pistol (Luger: charged→`DEFAULT`, jammed→`CLOSED_CHARGED` in
@@ -165,7 +165,7 @@ ballistics, loot logic, scaling that must also work for modded weapons):
   on an attachment event and cache it yourself. (Corrects an earlier version of this entry that claimed the
   map is never populated on a dedicated server.)
 - **Gate on `IsAmmoPile()` when you mean loose rounds, not magazines.** `Object.IsAmmoPile()` returns false
-  by default (`3_game\entities\object.c:577-580`) and `Ammunition_Base` overrides it to true
+  by default (`3_game\entities\object.c:571-574`) and `Ammunition_Base` overrides it to true
   (`4_world\entities\itembase\magazine\ammunitionpiles.c:27-30`) `[VERIFIED-vanilla]`. Detachable magazines
   do NOT declare `iconCartridge`, so any per-cartridge-class logic must reject them first or it silently
   classifies every mag as `None`.
@@ -178,20 +178,20 @@ ballistics, loot logic, scaling that must also work for modded weapons):
   `weapon_magazines.pbo`). This is how the coverage numbers above were established on a machine with no
   unpacked vanilla tree — reach for it before declaring a config claim unverifiable.
 - Cartridge -> ammo type for the damage system: `AmmoTypesAPI.MagazineTypeToAmmoType(magType, out ammoType)`
-  — `P:\scripts\3_game\global\ammotypes.c:14`, used by vanilla in `weapon_base.c:848` `[VERIFIED-vanilla]`.
+  — `P:\scripts\3_game\global\ammotypes.c:26`, used by vanilla in `weapon_base.c:840` `[VERIFIED-vanilla]`.
   Do not hand-roll a `CfgMagazines <t> ammo` lookup.
-  (up to 1.29: those line numbers.) (since 1.30 Exp: `MagazineTypeToAmmoType` is
+  (up to 1.29: those line numbers.) (since 1.30: `MagazineTypeToAmmoType` is
   `exp\scripts\scripts\3_Game\Global\AmmoTypes.c:26`; vanilla `Weapon_Base.c:840`.
   `GetExplosionParticleID` is gone — MUST call `AmmoTypesAPI.GetExplosiveEffectData(ammoName, surfaceName)`
   and read `m_ParticleID` / `m_SoundSetName` on `ExplosiveEffectData`. → `dayz-1-30-weapons.md`.)
 - A cartridge damage profile is readable BEFORE firing:
   `ConfigGetFloat("CfgAmmo " + ammoType + " DamageApplied Health damage")` (also `Blood damage`,
-  `Shock damage`) — `P:\scripts\4_world\entities\dayzplayerimplementfalldamage.c:261-263`
+  `Shock damage`) — `P:\scripts\4_world\entities\dayzplayerimplementfalldamage.c:273-275`
   `[VERIFIED-vanilla]`. This is how a mod caps absurd modded ammo without a whitelist.
 - `iconCartridge` is nominally a UI icon field reused as the cartridge class: confirm per-pile coherence
   against a debinarized config before shipping balance that depends on it. `[UNVERIFIED]`
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 What changes, what breaks, and the migration checklist. Full citations and `[EXACT]` blocks:
 `dayz-1-30-weapons.md`. Recoil curves and Luger/LeeEnfield bone remaps:

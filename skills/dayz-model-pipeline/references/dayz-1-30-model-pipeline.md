@@ -1,17 +1,18 @@
-# DayZ 1.30 Exp — model pipeline deltas (build 1.30.164014)
+# DayZ 1.30 — model pipeline deltas
 
-Companion to `SKILL.md` § DayZ 1.30 Exp. The LOD resolution table, py3d assembly
+Companion to `SKILL.md` § DayZ 1.30. The LOD resolution table, py3d assembly
 path, winding rules, and artist-return preflight (SP-246) still hold. This file
 is the 1.30 engine/config delta for meshes, proxies, houses, and cache.
 
 Line numbers are from files opened under `exp\` (and the official changelog
 transcription). Digest O/F/H line numbers were **not** copied.
+Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## Inventory-attachment proxy position on dedicated server
 
 (until 1.29: if the proxy triangle was missing from the **final** visual LOD, a
 dedicated server could report the attachment at the parent origin / mesh
-center.) (since 1.30 Exp [CHANGELOG]: the server falls back to the **View
+center.) (since 1.30 [CHANGELOG]: the server falls back to the **View
 Geometry LOD** to read the inventory-attachment proxy position.)
 
 Official changelog (`work\changelog-1.30-exp-modding.md:39`):
@@ -30,7 +31,7 @@ fallback — it is engine C++. Do not invent an API for it.
 
 ## `-cacheP3D=0/1` and `.p3dcache` next to unbinarized meshes
 
-(since 1.30 Exp [CHANGELOG], `work\changelog-1.30-exp-modding.md:11`):
+(since 1.30 [CHANGELOG], `work\changelog-1.30-exp-modding.md:11`):
 
 > Added: '-cacheP3D=0/1' command line launch option, creates .p3dcache files
 > next to .p3d files to allow for quicker subsequent launches of the
@@ -46,7 +47,7 @@ Cross-ref launch argv: `dayz-test-ingame` § DayZ 1.30 Exp and
 
 ## `disableSimulation` on house-based entities
 
-(since 1.30 Exp [CHANGELOG], `work\changelog-1.30-exp-modding.md:13`):
+(since 1.30 [CHANGELOG], `work\changelog-1.30-exp-modding.md:13`):
 
 > Added: 'disableSimulation' config parameter to house-based entities to
 > eliminate unnecessary entity ticking impacting client/server performance
@@ -71,7 +72,7 @@ simulation; use `DisableSimulation(true)` only when toggling at runtime.
 
 ## Selection `liquid_source` (wells / liquid interactables)
 
-(since 1.30 Exp) Liquid actions that target a **well object** (not a pond
+(since 1.30) Liquid actions that target a **well object** (not a pond
 surface) look up ViewGeometry components named `liquid_source`:
 
 ```
@@ -97,7 +98,7 @@ point. Pond/sea surfaces go through `CCTLiquid` without this selection.
 
 ## `StaticObjectType` + `CfgNonAIVehicles` `VegetationSounds`
 
-(since 1.30 Exp) New type class. Absent from `stable-1.29`. Loads optional
+(since 1.30) New type class. Absent from `stable-1.29`. Loads optional
 per-object vegetation step sounds from config:
 
 ```
@@ -146,7 +147,7 @@ Digest O attributed `.agr` / 250-bone / `skeletons.anim.xml` claims to
 `skeletons.anim.xml`. Those are the **player/infected Enfusion animation
 graph** (skill `dayz-animation-pipeline`).
 
-(since 1.30 Exp [CHANGELOG], `work\changelog-1.30-exp-modding.md:24, 30-31, 43`):
+(since 1.30 [CHANGELOG], `work\changelog-1.30-exp-modding.md:24, 30-31, 43`):
 animation-graph files use Enfusion config format; the 250 global bone limit is
 removed; most of `skeletons.anim.xml` is unused except the `lod` attribute.
 
@@ -156,7 +157,7 @@ removed; most of `skeletons.anim.xml` is unused except the `lod` attribute.
 
 ## Unpacked-mod / named filesystem (packaging implication)
 
-(since 1.30 Exp [CHANGELOG]: `-mod` may point at a physical folder; RV configs
+(since 1.30 [CHANGELOG]: `-mod` may point at a physical folder; RV configs
 read unpacked; mods get a named filesystem —
 `work\changelog-1.30-exp-modding.md:25-28`.) Iteration of **config.cpp** no
 longer always requires AddonBuilder. Unbinarized `.p3d` still benefit from

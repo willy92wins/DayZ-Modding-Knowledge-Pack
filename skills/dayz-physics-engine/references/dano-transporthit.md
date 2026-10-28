@@ -1,7 +1,7 @@
 # Deep-Dive: Damage System, Hitzones and Armor — DayZ v1.24
 
 > Investigation: 2026-06-06  
-> Source of truth: `<dayz-projects>\scripts\` (vanilla v1.24)  
+> Source of truth: `<dayz-projects>\scripts\` (vanilla v1.24; line numbers re-checked on 1.30.164200, 2026-10-28, and a cite labelled 1.29 is the 1.29 line)  
 > Anti-confabulation: every cited API is verified with Grep/Read in the indicated files.
 
 ---
@@ -51,7 +51,7 @@ Aliases used internally: `DT_CUSTOM`, `DT_FIRE_ARM`, `DT_CLOSE_COMBAT` correspon
 ### 3. ProcessDirectDamage
 
 ```c
-// scripts/3_game/entities/object.c:1134
+// scripts/3_game/entities/object.c:1138
 proto native void ProcessDirectDamage(
     int damageType,          // DamageType enum value
     EntityAI source,         // entity causing the damage
@@ -89,7 +89,7 @@ class DamageSystem
 }
 ```
 
-`ResetAllZones` sets Health, Shock, and Blood to maximum across all DamageSystem zones of an entity (`scripts/3_game/damagesystem.c:139-154`).
+`ResetAllZones` sets Health, Shock, and Blood to maximum across all DamageSystem zones of an entity (`scripts/3_game/damagesystem.c:138-153`).
 
 ### 5. SetHealth / GetHealth / DecreaseHealth / AddHealth
 
@@ -109,15 +109,15 @@ All are `proto native` on `Object` (`scripts/3_game/entities/object.c`):
 | `GetHealthLevel(zone)` | `proto native int` | 0=pristine…4=ruined |
 | `IsDamageDestroyed()` | `proto native bool` | True = health <= 0 |
 
-Referencia: `scripts/3_game/entities/object.c:977-1121`
+Referencia: `scripts/3_game/entities/object.c:981-1125`
 
 Known health types (used in scripts): `"Health"`, `"Blood"`, `"Shock"`.  
-Special zone `"GlobalHealth"` used in PlayerBase for HUD (`scripts/4_world/entities/manbase/playerbase.c:5321-5322`).
+Special zone `"GlobalHealth"` used in PlayerBase for HUD (`scripts/4_world/entities/manbase/playerbase.c:5594-5599`).
 
 ### 6. EEHitBy — full signature and parameters
 
 ```c
-// scripts/3_game/entities/entityai.c:1117
+// scripts/3_game/entities/entityai.c:1143
 void EEHitBy(
     TotalDamageResult damageResult,  // result of C++ damage calculation
     int damageType,                  // DamageType enum
@@ -132,25 +132,25 @@ void EEHitBy(
 
 **Called**: server only. Fires AFTER C++ applies damage.  
 **Inheritance chain**:
-1. `EntityAI.EEHitBy` — invokes `m_OnHitByInvoker` (`entityai.c:1117-1124`)
-2. `ItemBase.EEHitBy` — random damage to cargo/attachments for clothing (`itembase.c:1522-1560`)
-3. `PlayerBase.EEHitBy` — bleeding, shock check, broken legs, unconRefill (`playerbase.c:1224-1347`)
-4. `DayZPlayerImplement.EEHitBy` — reset `m_TransportHitRegistered`, damage/death animations (`dayzplayerimplement.c:1547-1600+`)
+1. `EntityAI.EEHitBy` — invokes `m_OnHitByInvoker` (`entityai.c:1143-1150`)
+2. `ItemBase.EEHitBy` — random damage to cargo/attachments for clothing (`itembase.c:1450-1488`)
+3. `PlayerBase.EEHitBy` — bleeding, shock check, broken legs, unconRefill (`playerbase.c:1255-1380`)
+4. `DayZPlayerImplement.EEHitBy` — reset `m_TransportHitRegistered`, damage/death animations (`dayzplayerimplement.c:1563-1616+`)
 
 ### 7. EEHitByRemote
 
 ```c
-// scripts/3_game/entities/entityai.c:1127
+// scripts/3_game/entities/entityai.c:1153
 void EEHitByRemote(int damageType, EntityAI source, int component,
     string dmgZone, string ammo, vector modelPos)
 ```
 
-Called only on **client that caused the hit**. Without `TotalDamageResult`. Used for local feedback (e.g. melee block sound in PlayerBase `playerbase.c:1349-1358`).
+Called only on **client that caused the hit**. Without `TotalDamageResult`. Used for local feedback (e.g. melee block sound in PlayerBase `playerbase.c:1382-1391`).
 
 ### 8. EEKilled
 
 ```c
-// scripts/3_game/entities/entityai.c:1078
+// scripts/3_game/entities/entityai.c:1104
 void EEKilled(Object killer)
 ```
 
@@ -159,7 +159,7 @@ Called on server when entity is eliminated. Invokes `m_OnKilledInvoker` and anal
 ### 9. EEDelete
 
 ```c
-// scripts/3_game/entities/entityai.c:934
+// scripts/3_game/entities/entityai.c:946
 void EEDelete(EntityAI parent)
 ```
 
@@ -168,14 +168,14 @@ Called when eliminating entity from world (also propagates to inventory).
 ### 10. EEHealthLevelChanged / OnDamageDestroyed
 
 ```c
-// scripts/3_game/entities/entityai.c:1027
+// scripts/3_game/entities/entityai.c:1043
 void EEHealthLevelChanged(int oldLevel, int newLevel, string zone)
 ```
 
 Called when health level changes (0=pristine → 4=ruined). If `newLevel == GameConstants.STATE_RUINED` and `zone == ""` (global zone), calls `OnDamageDestroyed(oldLevel)` and `AttemptDestructionBehaviour(...)`.
 
 ```c
-// scripts/3_game/entities/entityai.c:1047
+// scripts/3_game/entities/entityai.c:1066
 void OnDamageDestroyed(int oldLevel);   // proto (override en clases concretas)
 ```
 
@@ -186,7 +186,7 @@ void OnDamageDestroyed(int oldLevel);   // proto (override en clases concretas)
 ### Trigger: EOnContact in DayZPlayerImplement
 
 ```c
-// scripts/4_world/entities/dayzplayerimplement.c:3814-3829
+// scripts/4_world/entities/dayzplayerimplement.c:3958-3974
 override protected void EOnContact(IEntity other, Contact extra)
 {
     if (!IsAlive()) return;
@@ -204,12 +204,12 @@ override protected void EOnContact(IEntity other, Contact extra)
 ```
 
 **KEY**: `EOnContact` only reacts to `Transport.Cast(other)`. If the impacting entity is NOT a `Transport` (nor inherits from it), the TransportHit flow is NOT activated at all from the player. For LF_RollingStone as `ItemBase`, player does not automatically detect collision with the stone — it is the stone that must call `target.ProcessDirectDamage(...)` directly from its own `EOnContact`.
-(from 1.30 Exp: same Transport-only filter at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3973`.)
+(from 1.30: same Transport-only filter at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3973`.)
 
 ### RegisterTransportHit — análisis línea a línea
 
 ```c
-// scripts/3_game/entities/entityai.c:4086-4157
+// scripts/3_game/entities/entityai.c:4134-4224
 void RegisterTransportHit(Transport transport)
 {
     if (!m_TransportHitRegistered)
@@ -290,11 +290,11 @@ void RegisterTransportHit(Transport transport)
 ```
 
 The generic branch has the lowest threshold (0.1 m/s). Any object inheriting from `Transport` without being `Car` or `Boat` falls here.
-(from 1.30 Exp: `RegisterTransportHit` starts at `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4111`. A Motorbike branch sits between Car and Boat at `:4143-4160` — damage like Car when `GetSpeedometerAbsolute() > 2.0`; corpse impulse is `5.0 * velocity` with Y = 5.0, not 40/60. Generic is the last `else`. See section "DayZ 1.30 Exp" below.)
+(from 1.30: `RegisterTransportHit` starts at `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4134`. A Motorbike branch sits between Car and Boat at `:4166-4183` — damage like Car when `GetSpeedometerAbsolute() > 2.0`; corpse impulse is `5.0 * velocity` with Y = 5.0, not 40/60. Generic is the last `else`. See section "DayZ 1.30" below.)
 
 ### Reset of m_TransportHitRegistered
 
-The flag resets in `DayZPlayerImplement.EEHitBy` (`dayzplayerimplement.c:1551`):
+The flag resets in `DayZPlayerImplement.EEHitBy` (`dayzplayerimplement.c:1567`):
 ```c
 m_TransportHitRegistered = false;
 ```
@@ -313,7 +313,7 @@ The function `ProcessDirectDamage(DT_CUSTOM, source, "", "TransportHit", "0 0 0"
 ### Flow in DayZPlayerImplement.EEHitBy post-TransportHit
 
 ```c
-// dayzplayerimplement.c:1547-1600
+// dayzplayerimplement.c:1563-1616
 override void EEHitBy(..., string ammo, ...)
 {
     super.EEHitBy(...);              // → PlayerBase.EEHitBy (bleeding, shock)
@@ -371,11 +371,11 @@ class MyCar : Transport
 - `componentNames[]`: names of p3d geo-components mapping to this zone.
 - `transferToZonesNames[]` / `transferToZonesCoefs[]`: what percentage of damage transfers to other zones.
 - `transferToGlobalCoef`: fraction going to global health.
-- `fatalInjuryCoef`: if zone reaches 0 health and this coef > 0, object is destroyed [UNVERIFIED in scripts — appears in comments of `actionrepairtent.c:160`].
+- `fatalInjuryCoef`: if zone reaches 0 health and this coef > 0, object is destroyed [UNVERIFIED in scripts — no vanilla script of 1.29 or 1.30 names it; `actionrepairtent.c:157-175` reads only `transferToGlobalCoef`].
 
-**GlobalHealth**: special player zone accessed as `GetHealth("GlobalHealth", "Blood")` used by HUD (playerbase.c:5321). Not a zone defined in player config — it is a C++ aggregate.
+**GlobalHealth**: special player zone accessed as `GetHealth("GlobalHealth", "Blood")` used by HUD (playerbase.c:5599). Not a zone defined in player config — it is a C++ aggregate.
 
-**Health states** (GameConstants, `scripts/3_game/constants.c:851-855`):
+**Health states** (GameConstants, `scripts/3_game/constants.c:909-913`):
 | Constant | Value | Description |
 |-----------|-------|-------------|
 | `STATE_PRISTINE` | 0 | Pristine |
@@ -391,7 +391,7 @@ class MyCar : Transport
 ### GetProtectionLevel (verificado)
 
 ```c
-// scripts/4_world/entities/itembase.c:4094
+// scripts/4_world/entities/itembase.c:4077
 float GetProtectionLevel(int type, bool consider_filter = false, int system = 0)
 ```
 
@@ -403,7 +403,7 @@ Clothing damage absorption is a **100% C++ mechanism** configured via `CfgAmmo`.
 
 1. `ItemBase.EEHitBy` (the EQUIPPED item receives the callback):
    ```c
-   // scripts/4_world/entities/itembase.c:1522-1560
+   // scripts/4_world/entities/itembase.c:1450-1488
    override void EEHitBy(TotalDamageResult damageResult, ...)
    {
        super.EEHitBy(...);
@@ -439,13 +439,13 @@ Zone names used in scripts (verified by usage in playerbase.c, dayzplayerimpleme
 | Zone | Observations |
 |------|---------------|
 | `"Head"` | Head zone (headshot shot) |
-| `"Brain"` | Head sub-zone for headshot kill tracking (`dayzplayerimplement.c:1576`) |
-| `"Torso"` | Torso, component used in fullbody animation (`dayzplayerimplement.c:1496`) |
-| `"LeftArm"` | Bleeding source up (`playerbase.c:542`) |
-| `"RightArm"` | Bleeding source up (`playerbase.c:538`) |
-| `"LeftLeg"` | Legs (broken legs check) (`playerbase.c:1293`) |
-| `"RightLeg"` | Legs (`playerbase.c:1293`) |
-| `"LeftFoot"` | Feet (broken legs check) (`playerbase.c:1293`) |
+| `"Brain"` | Head sub-zone for headshot kill tracking (`dayzplayerimplement.c:1592`) |
+| `"Torso"` | Torso, component used in fullbody animation (`dayzplayerimplement.c:1512`) |
+| `"LeftArm"` | Bleeding source up (`playerbase.c:549`) |
+| `"RightArm"` | Bleeding source up (`playerbase.c:545`) |
+| `"LeftLeg"` | Legs (broken legs check) (`playerbase.c:1324`) |
+| `"RightLeg"` | Legs (`playerbase.c:1324`) |
+| `"LeftFoot"` | Feet (broken legs check) (`playerbase.c:1324`) |
 | `"RightFoot"` | Feet |
 | `""` (empty) | Global zone |
 | `"GlobalHealth"` | C++ aggregate used only for HUD reading |
@@ -498,7 +498,7 @@ class ShockHandler
 ## Hit Animation Flow (DayZPlayerImplement)
 
 ```c
-// dayzplayerimplement.c:1469
+// dayzplayerimplement.c:1485
 bool EvaluateDamageHitAnimation(TotalDamageResult, int pDamageType, ...)
 {
     switch (pDamageType)
@@ -548,7 +548,7 @@ DamageSystem.ExplosionDamage(EntityAI source, Object directHitObject,
     string ammoTypeName, vector worldPos, int damageType);
 ```
 
-Ejemplo de uso (`dayzgame.c:3651`):
+Ejemplo de uso (`dayzgame.c:3781`):
 ```c
 DamageSystem.ExplosionDamage(EntityAI.Cast(source), null,
     "Explosion_40mm_Ammo", pos, DamageType.EXPLOSION);
@@ -558,7 +558,7 @@ When `directHitObject == null`, system applies damage in radius defined in CfgAm
 
 ### DealAbsoluteDmg (script helper)
 ```c
-// scripts/4_world/static/miscgameplayfunctions.c:1597
+// scripts/4_world/static/miscgameplayfunctions.c:1668
 static void DealAbsoluteDmg(ItemBase item, float dmg)
 {
     item.DecreaseHealth(dmg, false);  // false = no auto-delete
@@ -585,9 +585,9 @@ Helper for tools that wear down upon use. Bypasses ammo system.
 
 7. **EEHitBy is SERVER ONLY**: Any logic placed in EEHitBy without `IsServer()` guard will execute server-side only anyway. `EEHitByRemote` is the shooter-client equivalent.
 
-8. **`componentName` in ProcessDirectDamage is not the model component name**: it is the DamageZone name (e.g. "Head", "Engine"). Code comment explicitly clarifies it (`object.c:1128`).
+8. **`componentName` in ProcessDirectDamage is not the model component name**: it is the DamageZone name (e.g. "Head", "Engine"). Code comment explicitly clarifies it (`object.c:1132`).
 
-9. **Boat has 0.5 damage factor** relative to Car at same speed (up to 1.29: `entityai.c:4129`; from 1.30 Exp: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4173` after the Motorbike branch). The generic branch applies the same factor as Car.
+9. **Boat has 0.5 damage factor** relative to Car at same speed (up to 1.29: `entityai.c:4129`; from 1.30: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4196` after the Motorbike branch). The generic branch applies the same factor as Car.
 
 10. **"Brain" zone exists only in headshot death tracking**: It is not a config DamageZone, but a string shooter sends in `dmgZone` when bullet impacts head component. Verifying if configured as real zone is pending.
 
@@ -601,7 +601,7 @@ Helper for tools that wear down upon use. Bypasses ammo system.
 - **`GetProtectionLevel` for ballistic protection**: Function exists but only covers DEF_BIOLOGICAL and DEF_CHEMICAL. Does NOT absorb weapon damage.
 - **Hitzones defined in scripts**: `componentNames` of player DamageZones are in binary CfgVehicles (DayZCharacter), not in decompiled scripts.
 - **`BleedingSourcesManagerServer` / `ShockHandler` as classes accessible directly from exterior mods**: They are private `ref` on PlayerBase — accessible only via `GetBleedingManagerServer()` / (ShockHandler has no public getter).
-- **`fatalInjuryCoef` in scripts**: Appears referenced in comment of `actionrepairtent.c:156` as "hack", but is not read via direct script — it is read by C++.
+- **`fatalInjuryCoef` in scripts**: Appears referenced in comment of `actionrepairtent.c:155` as "hack", but is not read via direct script — it is read by C++.
 
 ---
 
@@ -680,20 +680,20 @@ class CfgAmmo {
 | `scripts/4_world/entities/vehicles/carscript.c` | `OnContact`/`CheckContactCache` del coche (1454-1530), `m_dmgContactCoef` (197-198) |
 | `scripts/3_game/effects/destructioneffects/destructioneffectbase.c` | `DealExplosionDamage`, `HasExplosionDamage` |
 | `scripts/4_world/classes/areadamage/.../areadamagecomponent.c` | `AreaDamageComponent.EvaluateDamageInternal` |
-| `scripts/3_game/constants.c:851-855` | `STATE_PRISTINE`..`STATE_RUINED` |
-| `scripts/4_world/classes/useractionscomponent/actions/actionconstants.c:146-156` | `UADamageApplied` constantes |
-| `scripts/4_world/static/miscgameplayfunctions.c:1597-1599` | `DealAbsoluteDmg` |
+| `scripts/3_game/constants.c:909-913` | `STATE_PRISTINE`..`STATE_RUINED` |
+| `scripts/4_world/classes/useractionscomponent/actions/actionconstants.c:149-159` | `UADamageApplied` constantes |
+| `scripts/4_world/static/miscgameplayfunctions.c:1668-1670` | `DealAbsoluteDmg` |
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 Digest H mapped "fall damage from 5 m health / 3 m shock, linear" onto this file via `SKILL.md:59-62`. That SKILL span is Transport-only `EOnContact`, not fall damage. This section **adds** the 1.30 facts.
 
 (hasta 1.29: `HEALTH_HEIGHT_LOW = 5`, `HEALTH_HEIGHT_HIGH = 14`, `SHOCK_HEIGHT_LOW = 3`, `SHOCK_HEIGHT_HIGH = 12`, `BROKENLEGS_HEIGHT_LOW = 5`, `BROKENLEGS_HEIGHT_HIGH = 9`; `HandleFallDamage` used `Math.InverseLerp`. `stable-1.29/scripts/scripts/4_World/Entities/DayZPlayerImplementFallDamage.c:26-32,97`.)
 
-(desde 1.30 Exp: health 2-12 m, shock 0-8 m, broken legs 3-8 m. `CurveExp` = `Pow(Clamp(InverseLerp(low, high, value),0,1), power)` — health/shock power 2.0, broken-legs 2.5. `Randomize` returns 1.0 unchanged if `pValue == 1`. `exp/scripts/scripts/4_World/Entities/DayZPlayerImplementFallDamage.c:26-33,92-140,160-163`.)
+(desde 1.30: health 2-12 m, shock 0-8 m, broken legs 3-8 m. `CurveExp` = `Pow(Clamp(InverseLerp(low, high, value),0,1), power)` — health/shock power 2.0, broken-legs 2.5. `Randomize` returns 1.0 unchanged if `pValue == 1`. `exp/scripts/scripts/4_World/Entities/DayZPlayerImplementFallDamage.c:26-33,92-140,160-163`.)
 
 ```c
-// [EXACT] exp/scripts/scripts/3_Game/Entities/EntityAI.c:4143
+// [EXACT] exp/scripts/scripts/3_Game/Entities/EntityAI.c:4166
 			else if (Motorbike.CastTo(motorbike, transport))
 			{
 				float motorbikeSpeed = motorbike.GetSpeedometerAbsolute();

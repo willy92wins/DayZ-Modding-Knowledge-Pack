@@ -10,9 +10,9 @@ description: >
   multipliers: dayz-ai-patterns. Not vehicle VFX components: dayz-vehicles.
 ---
 
-# DayZ Environment Hazards (1.30 Exp)
+# DayZ Environment Hazards (1.30)
 
-DayZ 1.30 Experimental (build 1.30.164014) adds native environmental hazards: hybrid engine+script sandstorm (`Weather.GetSandstorm()`, `exp\scripts\scripts\3_Game\Weather.c:210` and `exp\scripts\scripts\3_Game\Sandstorm.c:6-135`), exposure with shelter fade in `ScriptedSandstormController`, heatstroke via `ThermalBiasHandler` accumulator (high heat no longer kills from `HeatComfortMdfr`), eye irritation and silicosis via `AGT_AIRBOURNE_SOLID`, `OilPitArea` oil pits, dust via `SurfaceInfo`, and sunstroke with `IsInShadow`. The Nasdara world (DLC Badlands, `appId = 3816030`) brings sand weather and solar tables, but the PBO in this build is a 6-file stub.
+DayZ 1.30 (written on Experimental build 1.30.164014, re-checked on stable 1.30.164200) adds native environmental hazards: hybrid engine+script sandstorm (`Weather.GetSandstorm()`, `exp\scripts\scripts\3_Game\Weather.c:210` and `exp\scripts\scripts\3_Game\Sandstorm.c:6-135`), exposure with shelter fade in `ScriptedSandstormController`, heatstroke via `ThermalBiasHandler` accumulator (high heat no longer kills from `HeatComfortMdfr`), eye irritation and silicosis via `AGT_AIRBOURNE_SOLID`, `OilPitArea` oil pits, dust via `SurfaceInfo`, and sunstroke with `IsInShadow`. The Nasdara world (DLC Badlands, `appId = 3816030`) brings sand weather and solar tables, but the PBO in this build is a 6-file stub.
 
 All evidence is `source_verified` against extracted text. No behavior is declared `runtime_verified`.
 
@@ -39,7 +39,7 @@ Recommendation: a new environmental hazard inherits the vanilla pattern (`Effect
    	proto native Sandstorm GetSandstorm();
    ```
 2. [EXACT] **World config**: `class Sandstorm` block with SoundSets and `particlePath` in `cfgWorlds` (`exp\dz\DZ\data\config.cpp:968-972`).
-3. [EXACT] **JSON frequency**: `"SandstormData": { "sandstormFrequency": 1.0 }` (`CfgGameplayDataJson.c:433-451`). `0` disables weather-triggered storms; `2` doubles probability on Nasdara (`WorldData.c:427-442`, `Nasdara.c:563-575`).
+3. [EXACT] **JSON frequency**: `"SandstormData": { "sandstormFrequency": 1.0 }` (`CfgGameplayDataJson.c:440-458`). `0` disables weather-triggered storms; `2` doubles probability on Nasdara (`WorldData.c:427-442`, `Nasdara.c:563-575`).
 4. [DESIGN] **WorldData**: if you want automatic storms like Nasdara, copy the `CalculateWind` + `StartSandstorm` pattern (`Nasdara.c:318-322, 561-575`). ChernarusPlus does not start sandstorm in its `WeatherOnBeforeChange`.
 5. [EXACT] **Shelter**: intensity per player is `GetIntensity(head)` attenuated over 1.5 s if underground, interior (roof **and** `IsSoundInsideBuilding`) or `Car` (`ScriptedSandstormController.c:15, 142-178, 213-248, 250-282`). Motorbike and boat do **not** count as shelter.
 6. [EXACT] **PPE**: mask `DEF_DUST_PARTICLE_BREATH` against silicosis; eyewear/mask/NVG `DEF_DUST_PARTICLE_EYES` against irritation (`constants.c:545-550`, `PluginTransmissionAgents.c:414-437`).
@@ -61,13 +61,13 @@ Recommendation: a new environmental hazard inherits the vanilla pattern (`Effect
 
 ### 3. Lethal heat no longer lives in `HeatComfortMdfr`
 - **Symptom**: a 1.29 mod trimming heat damage in `HeatComfortMdfr` stops doing anything (player still dies from `HeatStrokePhase4`).
-- **Cause**: high heat tick calls `thermalBiasHandler.Add(...)` (`HeatComfortMdfr.c:74-111`). Health damage is in `HeatStrokePhase4Mdfr.OnTick` (`HeatStroke.c:308-310`).
+- **Cause**: high heat tick calls `thermalBiasHandler.Add(...)` (`HeatComfortMdfr.c:74-111`). Health damage is in `HeatStrokePhase4Mdfr.OnTick` (`HeatStroke.c:307-309`).
 - **Remedy**: balance `PlayerConstants.THERMAL_BIAS_*` (`PlayerConstants.c:203-210`) or `HeatStroke` phases. Cold still subtracts health in same modifier (`HeatComfortMdfr.c:62-71`).
 
 ### 4. `HeatStrokePhase1` breaks sickness badge
 - **Symptom** [CHANGELOG / confirmed in script]: sickness icons do not reappear.
-- **Cause**: empty `OnActivate` and `OnDeactivate` calls `DecreaseDiseaseCount()` (`HeatStroke.c:68-75`). `ImmuneSystemMdfr` only refreshes `NTF_SICK` when `HasDisease()` changes (`ImmuneSystem.c:44-55`, `PlayerBase.c:1119-1122`).
-- **Remedy**: if modding phase 1, increment counter in activate or do not decrement in deactivate.
+- **Cause**: empty `OnActivate` and `OnDeactivate` calls `DecreaseDiseaseCount()` (`HeatStroke.c:68-75`). Since 1.30.164078 the only increment is phase 2's `OnActivate` and phase 2's `OnDeactivate` no longer decrements (`HeatStroke.c:110-123`), so the counter balances only when phase 2 activates once per phase 1 episode: phase 1 alone nets −1 and each further phase 2 activation nets +1. `ImmuneSystemMdfr` only refreshes `NTF_SICK` when `HasDisease()` changes (`ImmuneSystem.c:44-55`, `PlayerBase.c:1119-1122`).
+- **Remedy**: if modding the phases, keep each `IncreaseDiseaseCount` and its `DecreaseDiseaseCount` in the same phase, for example decrement in phase 2's `OnDeactivate` and drop phase 1's decrement.
 
 ### 5. Respiratory PPE ≠ Eye PPE
 - **Symptom**: eyewear prevents silicosis, or a mask without `DEF_DUST_PARTICLE_EYES` does not prevent squinting.
@@ -107,17 +107,19 @@ Recommendation: a new environmental hazard inherits the vanilla pattern (`Effect
    - **Oil pit**: wait 3–10 s; then 20 HeatDamage/s and `OIL_FIRE1`/`OIL_FIRE2` particles.
 3. **RPT** [UNVERIFIED texts]: search for `ThermalBiasHandler`, `Sandstorm`, `Could not get players sandstorm data`.
 
-## Status of this build (WIP Experimental 1.30.164014)
+## Status in 1.30 stable (re-checked on 1.30.164200)
 
-1. **Nasdara is not playable**: `data_nasdara.pbo` has 6 files (`work\pbo-listing-diff.txt:487`). There is no `.wrp` or navmesh.
-2. **Wash Head with frozen bottle**: `ActionWashHeadItemContinuous` only rejects gasoline (`:32-38`). Matches KNOWN ISSUES from changelog.
-3. **Sickness icons**: bug in `HeatStrokePhase1` + `HasDisease` (invariant 4).
-4. **ChernarusPlus** does not populate `m_TemperatureUnderSunModifier` in `Init` (`ChernarusPlus.c:31-80`); +2/+6/+8 solar table belongs to `NasdaraData` (`Nasdara.c:67-73`). Solar effect in Chernarus stays 0 if map lacks key [DESIGN: empty map lookup].
-5. **Fire particles in OilPitTrigger.UpdateState** are `PlayInWorld` without headless guard on ignition branch (`OilPitTrigger.c:105-116`); stop does use `IsHeadlessOrDedicatedServer` in `DeferredInit`.
+Work-in-progress aspects first seen in the Experimental code (1.30.164014), re-checked on stable 1.30.164200 on 2026-10-28:
+
+1. **Nasdara map files** (changed on 1.30.164200): on 1.30.164014 `data_nasdara.pbo` had 6 files (`work\pbo-listing-diff.txt:487`) and there was no `.wrp` or navmesh for the map. 1.30.164200 installs `nasdara\addons\` with 24 PBOs and `worlds_nasdara.ebo`: `worlds_nasdara_nav.pbo` holds `navmesh.nm`, `worlds_nasdara_ce.pbo` the CE files (34 `.xml`, 4 `.json`, `areaflags.map`), and `data_nasdara.pbo` has 8 files (the same 6 plus `mud_brick_impenetrable.bisurf` and `.rvmat`). No PBO lists a `.wrp`; as with Sakhal (`sakhal\Addons\worlds_sakhal.ebo`), the world is presumably in the encrypted `.ebo`, which was not opened. The 1.30.164200 dedicated server ships the mission `mpmissions\dayzOffline.nasdara`. The map was not loaded in game.
+2. **Wash Head with frozen bottle** (unchanged on 1.30.164200): `ActionWashHeadItemContinuous` only rejects gasoline (`:32-38`). Matches KNOWN ISSUES from changelog.
+3. **Sickness icons** (changed on 1.30.164078, still wrong on 1.30.164200): bug in `HeatStrokePhase1` + `HasDisease` (invariant 4).
+4. **ChernarusPlus** (unchanged on 1.30.164200) does not populate `m_TemperatureUnderSunModifier` in `Init` (`ChernarusPlus.c:31-80`); +2/+6/+8 solar table belongs to `NasdaraData` (`Nasdara.c:67-73`). Solar effect in Chernarus stays 0 if map lacks key [DESIGN: empty map lookup].
+5. **Fire particles in OilPitTrigger.UpdateState** (unchanged on 1.30.164200) are `PlayInWorld` without headless guard on ignition branch (`OilPitTrigger.c:105-116`); stop does use `IsHeadlessOrDedicatedServer` in `DeferredInit`.
 
 ## Cite-then-verify
 
-Citations relative to `E:\DayZ-Exp-Extract\1.30.164014\`. Open file at the line. Digests I/M shifted dozens of citations (e.g. "5 s" shadow, `PluginTransmissionAgents.c:377`, `PlayerBase.c:941`). NEVER copy an `[EXACT]` block from a digest: open it in `exp\`.
+Paths relative to `E:\DayZ-Exp-Extract\1.30.164014\` (the `exp\` prefix). Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Open file at the line. Digests I/M shifted dozens of citations (e.g. "5 s" shadow, `PluginTransmissionAgents.c:377`, `PlayerBase.c:941`). NEVER copy an `[EXACT]` block from a digest: open it in `exp\`.
 
 ## References index
 
@@ -130,7 +132,7 @@ Citations relative to `E:\DayZ-Exp-Extract\1.30.164014\`. Open file at the line.
 ## WHAT THIS DRAFT COULD NOT VERIFY
 
 1. **`SandstormController` C++**: progression, magnitude, and `GetPointOnEdge` live in exe.
-2. **Nasdara terrain**: no `.wrp` in this build.
+2. **Nasdara terrain**: no listed PBO of 1.30.164014 or 1.30.164200 has a `.wrp`; on 1.30.164200 it is presumably inside the encrypted `worlds_nasdara.ebo`, which was not opened.
 3. **`.p3d` / `.ptc` / `.edds` binaries**: existence via listings; emitter curves [UNVERIFIED].
 4. **`PlayerBase.OnStoreSave` caller of `m_ThermalBiasHandler`**: handler writes `m_TemporaryResistanceTime` (`ThermalBiasHandler.c:67-78`) and is constructed in `PlayerBase.c:426`; digest citation `PlayerBase.c:941-950` is volcanic `OnUpdateEffectAreaServer`, not stream. Did not locate player's `OnStoreSave` in open ranges.
 5. **Runtime**: no tick was measured in-game.

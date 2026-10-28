@@ -130,7 +130,7 @@ DayZ's UI does NOT have a centralized theme system. There is no `PrimaryAccentCo
 
 1. **`.layout` files in `P:\gui\layouts\` (100+ files).** Color attributes are baked per-widget as RGBA values. **Modded class doesn't apply** — you'd ship a same-named layout in your mod's `gui/layouts/` to override, which clobbers the entire layout (heavyweight; brittle across DayZ updates).
 2. **Inline ARGB literals in `P:\scripts\5_mission\gui\` (10+ files).** Code like `widget.SetColor(0xFFD70D11)` directly applies a hex color. Override the *containing class's method* (the function that calls `SetColor`) via `modded class`, NOT the constant.
-3. **`Colors` / `FadeColors` constants in `P:\scripts\3_game\colors.c`.** These look like the obvious target, but **`modded class Colors { const int X = ...; }` is a no-op for compile-time constants** — callers already baked the original value at compile time. Re-declaring in a subclass changes nothing. Worse, `COLOR_DAYZ_RED` (the most-named "DayZ red") is referenced in exactly ONE place across vanilla scripts (`mainmenupromo.c:158`), so even a working override would only recolor the main-menu promo banner.
+3. **`Colors` / `FadeColors` constants in `P:\scripts\3_game\colors.c`.** These look like the obvious target, but **`modded class Colors { const int X = ...; }` is a no-op for compile-time constants** — callers already baked the original value at compile time. Re-declaring in a subclass changes nothing. Worse, `COLOR_DAYZ_RED` (the most-named "DayZ red") is referenced in exactly ONE place across vanilla scripts (`mainmenupromo.c:157`), so even a working override would only recolor the main-menu promo banner.
 
 **Implication:** "change all the red UI to blue" is not a one-file task. It requires sweeping `.layout` files (per-widget replacement) AND finding every `SetColor(<red ARGB>)` call in `5_mission/gui/` to override the containing class's method. This is hours of work, not minutes.
 
@@ -326,13 +326,13 @@ dBodyApplyImpulse(obj, impulse);
 
 Verified APIs:
 
-- `P:\scripts\3_game\entities\object.c:462-464` — `CreateDynamicPhysics`,
+- `P:\scripts\3_game\entities\object.c:456-458` — `CreateDynamicPhysics`,
   `EnableDynamicCCD`, `SetDynamicPhysicsLifeTime`.
 - `P:\scripts\3_game\global\dayzphysics.c:1-29` — `PhxInteractionLayers` enum
   (`DYNAMICITEM`, `DYNAMICITEM_NOCHAR`, ...).
 - `P:\scripts\1_core\proto\enphysics.c:64-69, 141` — `dBodyDynamic`,
   `dBodyEnableGravity`, `dBodyApplyImpulse`.
-- `P:\scripts\4_world\entities\itembase.c:4530` — `StopItemDynamicPhysics`
+- `P:\scripts\4_world\entities\itembase.c:4534` — `StopItemDynamicPhysics`
   reduces `SetDynamicPhysicsLifeTime` to `0.01` to "park" the body.
 
 The `SetDynamicPhysicsLifeTime` call is mandatory — without it the engine
@@ -587,6 +587,36 @@ placeholders and one naming pattern recur; none of them resolve inside this pack
 Treat a `[PROJ]` or `*_dev` citation as *provenance* (where the claim was verified and when), not
 as a file you can open. When the cited artefact matters, re-verify against `P:\scripts` or the
 pack's own `references/` and record the new `path:line`.
+
+## Vanilla line numbers: which build (added 2026-10-28)
+
+DayZ 1.30 reached stable on 2026-10-15 (build 1.30.164078); the author's stable install has run
+1.30.164200 since 2026-10-21. On 2026-10-28 every vanilla `path:line` citation in the skills, the
+`knowledge/` notes, `product-spec.md` and `compatibility-matrix.md` was re-checked against
+1.30.164200 and moved with the text it cites (`history/` and `CHANGELOG.md` keep the lines of
+their dates). Read a citation by what is next to it:
+
+| Citation | Its line numbers are from |
+|---|---|
+| no build named (`MotorbikeScript.c:141`, `3_game/global/game.c:1533`) | 1.30.164200 stable |
+| an `exp\` or `exp/` path (`exp\scripts\scripts\4_World\...`) | 1.30.164200 too. `exp\` is the folder of the first 1.30 extraction (1.30.164014 Experimental); the paths kept it, the lines moved |
+| labelled `1.29`, or inside a "hasta 1.29" / "up to 1.29" note | 1.29 stable |
+| labelled with another build (`1.30.164014 Exp`, `1.30.164078`, `v1.24`) | that build. Where a later build changed it, the text says so |
+
+- **Measurements keep their build.** "Measured in game, DayZ 1.30.164014 Exp" says where and
+  when something was observed. The 2026-10-28 re-check moved citations; it did not repeat
+  measurements, so unless the text says otherwise a measurement labelled with an older 1.30
+  build was not re-run on 1.30.164200.
+- **Names.** Since 2026-10-28 the headings of the 1.30 sections say "DayZ 1.30"; the companion
+  files keep their `dayz-1-30-*.md` names because other files link to them. Text that still says
+  "DayZ 1.30 Exp" or "1.30 Exp" (dated notes, prose, router labels) was written while 1.30 was
+  Experimental; its citations were moved like the rest.
+- **Pinned blocks say so.** A block copied from one build (for example the sealed
+  `rip-vehicle-import` family-B cookbook) or verified as a table on one build names that build
+  in its header and keeps its lines.
+- **`config.cpp` text is not byte-stable across extractions.** The 1.30.164200 `P:\scripts\config.cpp`
+  (DayZ Tools extraction) writes `name="x";` with no spaces; the 1.30.164014 extraction wrote
+  `name = "x";`. Compare values, not bytes.
 
 ## AUDIT-TO-FIX TRACKER (added 2026-05-12)
 

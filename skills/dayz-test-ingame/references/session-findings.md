@@ -68,7 +68,7 @@ For the first build→deploy→mount validation of a new mod, before model or ph
 
 1. `CfgPatches`-only stub (`config.cpp` with `class CfgPatches { class <Mod> { requiredAddons[]={"DZ_Data"}; }; }` + `$PBOPREFIX$`), build with `-packonly`.
 2. `dayz-test.ps1 -Mod <Mod> -Source <stub> -Mode server -Build -NoBaseMods` (isolates; stub only requires vanilla).
-3. Mission whose `init.c` is a minimal `MissionServer` that on first `OnUpdate` (one-shot with flag) runs `GetGame().ConfigIsExisting("CfgPatches <Mod>")` and prints `[<MOD>-MOUNT] CfgPatches.<Mod>=0|1`. API form verified in vanilla: `g_Game.ConfigIsExisting(CFG_VEHICLESPATH+" "+type)` in `P:\scripts\4_world\systems\inventory\attachmentsoutofreach.c:89` (path with space).
+3. Mission whose `init.c` is a minimal `MissionServer` that on first `OnUpdate` (one-shot with flag) runs `GetGame().ConfigIsExisting("CfgPatches <Mod>")` and prints `[<MOD>-MOUNT] CfgPatches.<Mod>=0|1`. API form verified in vanilla: `g_Game.ConfigIsExisting(CFG_VEHICLESPATH+" "+type)` in `P:\scripts\4_world\systems\inventory\attachmentsoutofreach.c:82` (path with space).
 4. Poll `script*.log` for `[<MOD>-MOUNT]` + `BankRev -lf` of deployed PBO to list content.
 
 Speed key: an empty `void main()` in `init.c` (replaces vanilla) skips `CreateHive()`/CE, so mission loop starts in seconds instead of minutes (does not load ~20k loot items). Probe needs no client, unlike spawning a `CarScript`. Verified: AC0.1 MercedesAMGLF 2026-06-22, probe at ~50s, server-only headless, runner `dayz-mount-probe.ps1`.
@@ -193,9 +193,9 @@ SUB_BRZ Phase 5 smoke 2026-06-28 (cost ~half a session). Cross-ref LL-168.
   re-register server or redeploy because of that — wait and re-check `bridge_status` (refines eponymous
   row of `dayz-mcp-verify` skill).
 
-## DayZ 1.30 Exp — launch flags (added 2026-09-17, lane P15)
+## DayZ 1.30 — launch flags (added 2026-09-17, lane P15)
 
-(since 1.30 Exp [CHANGELOG]) New launch flags on DayZDiag / Workbench (not observed as strings in this extract; documented in `work\changelog-1.30-exp-modding.md`):
+(since 1.30 [CHANGELOG]) New launch flags on DayZDiag / Workbench (not observed as strings in this extract; documented in `work\changelog-1.30-exp-modding.md`):
 
 - `-mod` accepts an **unpacked** source folder (not only a packed `@Mod` with PBOs).
 - `-cacheP3D=0` / `-cacheP3D=1` — disable / enable P3D cache.
@@ -261,14 +261,14 @@ missing-mod case either (`SKILL.md`, the `-mod=` line check, point 2): the mod s
 same in every run. Window focus, which changed client-side readings in SP-391 (`SKILL.md`), was not logged
 in these runs either.
 
-- Log the eye at every look of every run: `GetCurrentCameraTransform` (`dayzplayer.c:1237`, `:1219`) through
-  the vehicle's `WorldToModel` (`object.c:874`, `:870`). Compare first-person frames only between runs whose
+- Log the eye at every look of every run: `GetCurrentCameraTransform` (`dayzplayer.c:1237`, `:1237`) through
+  the vehicle's `WorldToModel` (`object.c:874`, `:874`). Compare first-person frames only between runs whose
   eyes match, and check offline 1PP geometry (`dayz-vehicles`, SP-248, SP-249) against the eyes the runs
   logged, not one eye per class.
 - Pin the class anyway, to remove one variable; whether the class moves the eye is not established.
   [EXACT][CLAIM-TEST-PIN-CHARACTER-CREATECHARACTER] In a `modded class MissionServer`, override
   `PlayerBase CreateCharacter(PlayerIdentity identity, vector pos, ParamsReadContext ctx, string characterName)`
-  (`missionserver.c:499`, `:486`; both spawn paths of `OnClientNewEvent` call it), set `characterName` from
-  `CommandlineGetParam` (`game.c:661`, `:660`) behind the test flag (`SKILL.md`, "AUTOMATED in-game cell
+  (`missionserver.c:499`, 1.29 `:486`; both spawn paths of `OnClientNewEvent` call it, `:573` and `:589`), set `characterName` from
+  `CommandlineGetParam` (`game.c:661`, 1.29 `:660`) behind the test flag (`SKILL.md`, "AUTOMATED in-game cell
   without pilot", point 1) and call `super`: all 7 runs that passed a class spawned it, and 17 runs without
   it drew 14 classes.

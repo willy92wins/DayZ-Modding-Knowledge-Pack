@@ -1,4 +1,4 @@
-# Terrain holes: evidencia (DayZ 1.30.164014 Exp)
+# Terrain holes: evidencia (DayZ 1.30)
 
 Everything on this page was measured 2026-09-24 comparing installation 1.30.164.014 Exp
 with 1.29 stable. Nothing has been tested in game.

@@ -24,7 +24,7 @@ If a `modded class PlayerBase` touches the native stream, it MUST invoke `super.
 
 ## HeatComfortMdfr → bias (1.30)
 
-Until 1.29 extreme heat could damage health from this modifier. Since 1.30 Exp the **high** heat tick feeds bias; **cold** continues deducting health:
+Until 1.29 extreme heat could damage health from this modifier. Since 1.30 the **high** heat tick feeds bias; **cold** continues deducting health:
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Classes\PlayerModifiers\Modifiers\HeatComfortMdfr.c:74
@@ -63,9 +63,9 @@ IDs: `MDF_HEAT_STROKE1..4` (`eModifiers.c:66-69`). Sync: `MODIFIER_SYNC_HEAT_STR
 | Phase | Active if bias | Verified effects |
 |---|---|---|
 | 1 | `> 0.0` | Drains water 0.35/tick (`:77-81`). `OnActivate` empty; `OnDeactivate` → `DecreaseDiseaseCount()` (`:68-75`). |
-| 2 | `> 0.4` | `SYMPTOM_FEVERBLUR`, stamina `DISEASE_PNEUMONIA`, `IncreaseDiseaseCount`, water 0.5, complaints `SYMPTOM_HOT` (`:110-137`). |
-| 3 | `> 0.6` | Vanilla comment: stays active alongside phase 4 (`:140`). Water 0.75, cyclic vomiting 70 water / 55 energy, `VOMIT_EXHAUSTION` (`:187-230`). Deactivate uses `<` not `<=` (`:165-167`). |
-| 4 | `> 0.85` | Health damage remap 0.01–0.35/tick (`:26-28, 308-310`), `SYMPTOM_FAINT`, uncon 5–10 s every 60–120 s, shock 25 (`:18-22, 266-387`). Extra uncon if `thermalBias > 0.75` (`:371`). |
+| 2 | `> 0.4` | `SYMPTOM_FEVERBLUR`, stamina `DISEASE_PNEUMONIA`, `IncreaseDiseaseCount`, water 0.5, complaints `SYMPTOM_HOT` (`:110-136`). Since 1.30.164078 its `OnDeactivate` no longer calls `DecreaseDiseaseCount()` (`:118-123`; 1.30.164014 did), so phase 1's `OnDeactivate` is the only heat-stroke decrement. |
+| 3 | `> 0.6` | Vanilla comment: stays active alongside phase 4 (`:139`). Water 0.75, cyclic vomiting 70 water / 55 energy, `VOMIT_EXHAUSTION` (`:186-229`). Deactivate uses `<` not `<=` (`:164-166`). |
+| 4 | `> 0.85` | Health damage remap 0.01–0.35/tick (`:26-28, 307-309`), `SYMPTOM_FAINT`, uncon 5–10 s every 60–120 s, shock 25 (`:18-22, 265-386`). Extra uncon if `thermalBias > 0.75` (`:370`). |
 
 ## WashHead and wet clothing
 
@@ -96,6 +96,6 @@ Tabla solar **Nasdara** (`Nasdara.c:67-73`): DAWN 2, MORNING 6, NOON 8, AFTERNOO
 
 ## Motorbike and boat (wind)
 
-`DetermineHeatcomfortBehavior` (`Environment.c:575-627`): `Car` with engine on → comfort 0; `Motorbike` if speed > 20; `Boat` if speed > 15 (`constants.c:792-798`). `SetHeatcomfortDirectly` subtracts comfort with `Easing.EaseInCubic` (`:1369-1444`). `BoatScript.GetHeatComfortOverride` exists (digest M); full file was not reopened here — [UNVERIFIED] default value 0.0 cited by digest M `BoatScript.c:112`.
+`DetermineHeatcomfortBehavior` (`Environment.c:575-627`): `Car` with engine on → comfort 0; `Motorbike` if speed > 20; `Boat` if speed > 15 (`constants.c:792-798`). `SetHeatcomfortDirectly` subtracts comfort with `Easing.EaseInCubic` (`:1369-1444`). `BoatScript.GetHeatComfortOverride` exists (digest M); full file was not reopened here — [UNVERIFIED] default value 0.0 cited by digest M `BoatScript.c:108`.
 
 Digest I cited `Environment.c:371-402` and `:884-942` for this wind: those lines are cargo cache and `GetWetDelta`, not motorbike behavior.

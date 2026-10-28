@@ -49,16 +49,16 @@ or imported (Blender / OBJ) from another game.
 > REDIRECT CAMBIO-1: header family selector and chosen adapter are the sole day-0 path.
 
 **Vehicle type matrix (invariant):** `Car` and `Boat` are SIBLINGS, both directly under `Transport`
-(`car.c:98` / `boat.c:31`) — NOT parent/child. `Transport` owns crew/get-in/flip/fuel; `Car` owns
+(`car.c:87` / `boat.c:28`) — NOT parent/child. `Transport` owns crew/get-in/flip/fuel; `Car` owns
 wheels/brakes/`CarFluid`; `Boat` owns propeller/buoyancy/`BoatFluid`(fuel-only). A truck is a plain
 `CarScript` config with 3 axles + double wheels, NOT a new class. Boats, truck double-wheels, ATV and
 the motorbike gap → `references/vehicle-types-boat-truck.md` (historical: since DayZ 1.30 Exp motorbikes are a vanilla family, see the `dayz-motorbikes` skill).
 
 **DayZ 1.30 Exp (build 1.30.164014) changes the matrix (added 2026-09-16, source_verified on the extraction at `E:\DayZ-Exp-Extract\1.30.164014\exp`):**
 - [EXACT] A third sibling exists: `class Motorbike: Transport` with `simulation = "motorbike"` (`dta\bin\config.cpp:1054-1059`; engine proto `3_Game\Vehicles\Motorbike.c:30`), scripted by `MotorbikeScript` (`4_World\Entities\Vehicles\MotorbikeScript.c:53`), which does NOT inherit `CarScript`. Two-wheel work goes to the `dayz-motorbikes` skill; this atlas stays for cars, trucks, quads and boats, plus the ViewPilot and the first-person view of any family (SP-248, SP-249 and `references/proxies-and-get-in.md`).
-- [EXACT] `CarScript` was refactored around components owned by `Transport`: `VehicleLightsComponent` (`CarScript.c:187, 229-233`), `VehicleHornComponent` and `VehicleVFXComponent` (`CarScript.c:189, 343-368`). The old overrides are marked `[Obsolete]`: `CreateRearLight`/`CreateFrontLight` (`CarScript.c:2937-2945`), `IsVitalCarBattery`/`IsVitalTruckBattery` (`:2811-2817`, replaced by `Transport.NeedElectricitySourceDevice()` at `Transport.c:821`), `CarPartsHealthCheck` (`:2976-2979`, replaced by `Transport.PartsHealthCheck()` at `Transport.c:437` / override at `CarScript.c:2121`). The horn actions are `ActionVehicleHornShort/Long` (`CarScript.c:2319-2320`). Contact data is `VehicleContactData.m_Impulse` (`Transport.c:1144-1148`, used at `CarScript.c:1291-1292`). Wheel classes gained `tyreRoughness`, `tyreLongitudinalFriction`, `tyreLateralFriction` (`DZ\vehicles\wheeled\config.cpp:749-751`; absent in 1.29).
+- [EXACT] `CarScript` was refactored around components owned by `Transport`: `VehicleLightsComponent` (`CarScript.c:187, 229-233`), `VehicleHornComponent` and `VehicleVFXComponent` (`CarScript.c:189, 343-368`). The old overrides are marked `[Obsolete]`: `CreateRearLight`/`CreateFrontLight` (`CarScript.c:2937-2945`), `IsVitalCarBattery`/`IsVitalTruckBattery` (`:2811-2817`, replaced by `Transport.NeedElectricitySourceDevice()` at `Transport.c:830`), `CarPartsHealthCheck` (`:2976-2979`, replaced by `Transport.PartsHealthCheck()` at `Transport.c:440` / override at `CarScript.c:2121`). The horn actions are `ActionVehicleHornShort/Long` (`CarScript.c:2319-2320`). Contact data is `VehicleContactData.m_Impulse` (`Transport.c:1153-1157`, used at `CarScript.c:1291-1292`). Wheel classes gained `tyreRoughness`, `tyreLongitudinalFriction`, `tyreLateralFriction` (`DZ\vehicles\wheeled\config.cpp:749-751`; absent in 1.29).
 - [DESIGN] A 1.29 car mod that overrides any of the obsolete members compiles against the attribute but its override is no longer called; re-verify each override against the 1.30 `CarScript.c` before shipping. Migration checklist and the "1.29 statements that are now false" table: `dayz-motorbikes/references/vehicle-1.30-refactor.md`. Sections of this atlas that predate 1.30 (lights via `CarLightBase`, `CarPartsHealthCheck`, `data[0].impulse`) describe 1.29 and are not yet rewritten.
-- [EXACT] `Transport.GetWeightCoef()` default `1.0` (`Transport.c:475-478`); vanilla `Truck_01_Base` `2.0` (`Truck_01_Base.c:120-123`), `Offroad_02` `1.5` (`Offroad_02.c:133-136`), `Motorbike_01` `0.5` (`Motorbike_01.c:87-90`), `Motorbike_02` `0.75` (`Motorbike_02.c:77-80`). Digest M's claim that `MotorbikeScript.c:646` *returns* `0.25` is false: that line *uses* `GetWeightCoef()`, it does not define it.
+- [EXACT] `Transport.GetWeightCoef()` default `1.0` (`Transport.c:478-481`); vanilla `Truck_01_Base` `2.0` (`Truck_01_Base.c:120-123`), `Offroad_02` `1.5` (`Offroad_02.c:133-136`), `Motorbike_01` `0.5` (`Motorbike_01.c:84-87`), `Motorbike_02` `0.75` (`Motorbike_02.c:74-77`). Digest M's claim that `MotorbikeScript.c:661` *returns* `0.25` is false: that line *uses* `GetWeightCoef()`, it does not define it.
 - [EXACT] `CarScript.HasGangedTailAndBrakeLights()` default `false` (`CarScript.c:468-471`); `true` on Offroad_02 (`Offroad_02.c:68-71`) so reverse/position swaps do not kill the brake selection (`CarScript.c:2061-2094`).
 - [EXACT] Vehicle light toggle is `UAToggleVehicleLights` / `ToggleVehicleLightsActionInput` (`ActionInput.c:849-855`, `ActionSwitchLights.c:16-18`); `UAToggleHeadlight` is headgear (`ActionInput.c:776-782`). `ForceUpdateLightsStart`/`End` are `[Obsolete("1.30: no replacement")]` (`CarScript.c:2805-2809`).
 - [EXACT] Get-in calls `CanGetIn()` then `IsAreaAtDoorFreeDiag` and **does** call `CanReachSeatFromDoors(..., 1.0)` from script (`ActionGetInTransport.c:36,54,64`).
@@ -67,15 +67,15 @@ the motorbike gap → `references/vehicle-types-boat-truck.md` (historical: sinc
 
 
 **Per-tick event asymmetry (invariant, added 2026-07-29, LFHeli OH-1):** `CarScript` has NO
-`EOnSimulate` — its ctor registers only `POSTSIMULATE`/`POSTFRAME` (`carscript.c:325-326`) and ALL
+`EOnSimulate` — its ctor registers only `POSTSIMULATE`/`POSTFRAME` (`carscript.c:207-208`) and ALL
 its per-tick work (engine, fluids, part health, fuel/engine auto-stop, exhaust and wheel FX, much of
 it gated `IsServerOrOwner()` — vanilla runs it on the owner client, but in mods replica-dependent checks (`CheckVitalItem`) must stay server-only (LL-305)) lives in `EOnPostSimulate`
-(`carscript.c:948`). `BoatScript` overrides BOTH (`boatscript.c:347` and `:385`). Consequences on a
+(`carscript.c:807`). `BoatScript` overrides BOTH (`boatscript.c:355` and `:393`). Consequences on a
 car: hook `EOnPostSimulate` for per-tick logic; `super.EOnSimulate` is the empty stub at
 `enentity.c:201-203`, so calling or skipping it does nothing either way — treat any comment claiming
 it "runs engine/fluids twice" as false. Custom solvers that add `SetEventMask(EntityEvent.SIMULATE)`
 and pump it by hand (aviation) → `dayz-aviation` preflight invariants.
-(hasta 1.29: those `carscript.c` line numbers.) (desde 1.30 Exp: `SetEventMask` is `CarScript.c:207-208`; `EOnPostSimulate` is `CarScript.c:807`. Full line-drift table: `references/dayz-1-30-vehicles.md`.)
+(hasta 1.29: those `carscript.c` line numbers.) (desde 1.30: `SetEventMask` is `CarScript.c:207-208`; `EOnPostSimulate` is `CarScript.c:807`. Full line-drift table: `references/dayz-1-30-vehicles.md`.)
 
 **Cockpit screen → live engine map (RTTextureWidget bridge) (invariant, added 2026-08-19, SUB_BRZ RT spike):**
 Any hiddenSelections screen can display the ENGINE's map renderer (what LBmaster's GPS uses) instead
@@ -502,15 +502,15 @@ were not promoted to this checklist in time. Check them up front; full detail be
 **BEFORE copying a donor — verify WHERE the engine is, not how many seats it has (SP-205, origin 2026-08-08, SUB_WRXSTI T8).**
 `sedan_02.c` looks like the vanilla 4-seat sedan control and is **rear-engine**: it closes `CarBattery`
 and `SparkPlug` behind the **trunk** and the `CarRadiator` behind the **hood**
-(`scripts\4_world\entities\vehicles\inheritedcars\sedan_02.c:130-148`), and gates `CanDisplayCargo`
-on the hood (`sedan_02.c:191`). Porting that to a front-engine car leaves the engine parts behind
+(`scripts\4_world\entities\vehicles\inheritedcars\sedan_02.c:142-160`), and gates `CanDisplayCargo`
+on the hood (`sedan_02.c:203`). Porting that to a front-engine car leaves the engine parts behind
 the wrong lid — a bug that only shows in-game. The correct control for front-engine + 4 seats is
 **`civiliansedan.c`**. Rule: before copying a donor, verify WHERE the engine lives, not only how
 many seats it has. Rear seat on that 4-seater (measured vs `civiliansedan_mlod.p3d`; in-game
 confirmation pending WRX live test #1): Memory `pos_cargo1(_dir)`, `pos_cargo2(_dir)`,
 `seat_con_1_2`, `seat_con_2_2`; `GetSeatAnimationType` cases 2/3 → `VEHICLESEAT_PASSENGER_L` /
-`VEHICLESEAT_PASSENGER_R` and **`CrewCanGetThrough` cases 2/3** (`civiliansedan.c:95-107`,
-`:214-244`) — the base returns `false` (`transport.c:493-499`). Distinct `crew_cargo` proxy index
+`VEHICLESEAT_PASSENGER_R` and **`CrewCanGetThrough` cases 2/3** (`civiliansedan.c:119-131`,
+`:226-256`) — the base returns `false` (`transport.c:727-733`). Distinct `crew_cargo` proxy index
 and seat-box lead: invariants 28 and 30.
 
 **Four-seat completion rider (SP-205, added 2026-08-31).** Rear seats also need
@@ -520,7 +520,7 @@ ViewGeometry; `crewcargo1/2` proxies in ViewGeometry and FireGeometry using one
 `actionSel`, `proxyPos`, `getInPos`, and `getInDir`; and the two passenger cases
 in both `GetSeatAnimationType` and `CrewCanGetThrough`. `CarScript` already maps
 all four `seat_*` selections to `seat_con_1_1`, `seat_con_2_1`,
-`seat_con_1_2`, and `seat_con_2_2` (`carscript.c:2674-2689`), so an override of
+`seat_con_1_2`, and `seat_con_2_2` (`carscript.c:2141-2156`), so an override of
 `GetDoorConditionPointFromSelection` that only repeats that table is dead code.
 
 **That base table is the LEFT-HAND-DRIVE mapping (SP-426, added 2026-10-01, WRX STI B-01).**
@@ -621,7 +621,7 @@ and require approximately zero residual before trusting any product comparison.
 
 1. **"Get in" radial needs a real SCRIPT CLASS, not a bare config class.** A `class <Mod>: CarScript`
    with no `.c` runs as bare `CarScript`, which inherits `Transport.CrewCanGetThrough()` → **`false`**
-   (`scripts/3_game/vehicles/transport.c:493`) → the get-in action is filtered out and **never appears,
+   (`scripts/3_game/vehicles/transport.c:727`) → the get-in action is filtered out and **never appears,
    no bone/proxy/componentNN fix helps**. Author `<Mod>_Base extends CarScript` overriding
    `CrewCanGetThrough` + `GetAnimInstance` + `GetSeatAnimationType` (+ `CfgMods` worldScriptModule).
    Verified in-game LFQuad D34 + MercedesAMGLF + SUB_BRZ. → `vehicle-structural-parity.md` "Crew get-in".
@@ -699,10 +699,10 @@ and require approximately zero residual before trusting any product comparison.
    is the gate. → #10(j) + `SUB_BRZ_dev\reviews\2026-07-02-s20-plan-reimport-unico-v2.md`.
 8. **One vital igniter per car — vanilla defaults BOTH SparkPlug AND GlowPlug to vital, so a bare
    `CarScript` car silently demands BOTH.** `CheckOperationalRequirements` sets `NO_IGNITER` if either
-   vital plug is missing (`carscript.c:2004` SparkPlug / `:2011` GlowPlug); every `IsVital*` defaults true
-   (`carscript.c:2734-2762`, `transport.c:303`). A PETROL car (CivilianSedan) keeps SparkPlug vital and
-   overrides `IsVitalGlowPlug()→false` (`civiliansedan.c:363`) + `IsVitalTruckBattery()→false` (`:358`);
-   a DIESEL car (Offroad_02) mirrors it — `IsVitalSparkPlug()→false` (`offroad_02.c:389`). `attachments[]`
+   vital plug is missing (`carscript.c:1776` SparkPlug / `:1783` GlowPlug); every `IsVital*` defaults true
+   (`transport.c:407-420` plugs and fuel tank, `carscript.c:2201-2209` belt and radiator; 1.29 `carscript.c:2734-2762`). A PETROL car (CivilianSedan) keeps SparkPlug vital and
+   overrides `IsVitalGlowPlug()→false` (`civiliansedan.c:370`; on 1.29 also `IsVitalTruckBattery()→false`, 1.29 `:358`, which 1.30 replaced with `GetElectricitySourceDevice()`, `civiliansedan.c:64-69`);
+   a DIESEL car (Offroad_02) mirrors it — `IsVitalSparkPlug()→false` (`offroad_02.c:415`). `attachments[]`
    must declare ONLY the vital plug and `OnDebugSpawn` must attach THAT part. "Engine won't start" with a
    SparkPlug already attached = the un-overridden GlowPlug, **NOT** a removed requirement — `IsVitalGlowPlug→false`
    IS the vanilla petrol pattern (the car still requires its SparkPlug). Bit SUB_BRZ (petrol car defaulted
@@ -710,10 +710,10 @@ and require approximately zero residual before trusting any product comparison.
 
 9. **Engine STARTS then immediately STALLS (eng=1 for one tick → eng=0 rpm=0) with fuel + ALL vital parts
    attached → the car is missing its `Engine` (and `FuelTank`) DamageZone.** `CarScript` stops a running
-   engine EVERY tick when `m_EngineHealth <= 0` (`carscript.c:991`), and `m_EngineHealth =
-   GetHealthLevelValue(GetHealthLevel("Engine"), "Engine")` (`carscript.c:2572-2573`) — a `DamageSystem.
+   engine EVERY tick when `m_EngineHealth <= 0` (`carscript.c:850`), and `m_EngineHealth =
+   GetHealthLevelValue(GetHealthLevel("Engine"), "Engine")` (`carscript.c:2134-2135`) — a `DamageSystem.
    DamageZones` with no `class Engine` resolves "Engine" health to RUINED → perpetual `EngineStop()`. A
-   missing `class FuelTank` compounds it (`carscript.c:1004` ruins the Engine zone when FuelTank reads
+   missing `class FuelTank` compounds it (`carscript.c:861` ruins the Engine zone when FuelTank reads
    RUINED). EVERY vanilla car ships BOTH zones; an imported/regen car declaring only body zones
    (chassis/front/back/roof) LOOKS configured but the engine never sustains. Fix: add `class Engine` +
    `class FuelTank` to `DamageZones` — the proven shape (vanilla/SUB_BRZ) points `componentNames[]` at a
@@ -736,7 +736,7 @@ and require approximately zero residual before trusting any product comparison.
      Nose=−Z is engine data. (Side-finding: the debinarized sedan MLOD is sign-faithful to the ODOL.)
    - Perceived-"forward" chain: the 3PP vehicle camera inherits the SEATED PLAYER's yaw (crew-proxy
      orientation, sim side) + an MS offset — `dayzplayercameravehicles.c:39-49,93-105`
-     (`m_fIgnoreParentYaw` commented out at `:194`), defaults `transport.c:452-463`. Headlights and
+     (`m_fIgnoreParentYaw` set to `0.0` at `:189`; on 1.29 the line was commented out, 1.29 `:194`), defaults `transport.c:652-663`. Headlights and
      hubs play NO role in what the player sees as forward. Traction sign is C++
      (`car.c:199-274` proto native) — inferred −Z from the working sedan; not script-readable.
    - Symptom map: shell visual yaw-180 vs sim ⇒ 1st gear reads as "drives backwards" AND wheel
@@ -838,7 +838,7 @@ and require approximately zero residual before trusting any product comparison.
 15. **Hub level must use the radius of the wheel you actually MOUNT, not the rip's rim.**
     [HYPOTHESIS with numbers → day-1 coherence check; in-game pending] (added 2026-07-07, SUB_BRZ s25)
     SUB_BRZ profile `WHEEL_R=0.3637` (source-game rim) while the mounted wheel is `CivSedanWheel` radius 0.34
-    (`DZ\vehicles\wheeled\config.cpp:4755-4772`) → 2.4 cm hub-vs-radius mismatch, same order as the
+    (`DZ\vehicles\wheeled\config.cpp:4786-4803`) → 2.4 cm hub-vs-radius mismatch, same order as the
     observed damper rest −4.3/−5.6 cm ("wheels slightly up"). Day-1 check: `WHEEL_R == mounted-wheel
     radius` or document why not.
 
@@ -867,7 +867,7 @@ and require approximately zero residual before trusting any product comparison.
      **(a) mass is irrelevant** - gravity and rolling resistance both scale with weight and
      cancel, so "it is too heavy / too light" explains nothing; **(b) vanilla vehicles do not
      hold still through friction, they hold still because they are BRAKED** - every vanilla
-     config carries `Brake.driverless = 0.1` and `Car.c:223` declares
+     config carries `Brake.driverless = 0.1` and `Car.c:212` declares
      `SetBrakesActivateWithoutDriver`, which `actionpushcar.c:95` disables to push a car, so a
      vanilla car with a driver seated and the engine off ALSO rolls downhill; **(c) the
      ground is never flat** - `surface_query` returns the normal, and spots that look level
@@ -897,9 +897,9 @@ and require approximately zero residual before trusting any product comparison.
      another one never gets a material slot, and `SetObjectMaterial(index, ...)` on it is a
      SILENT no-op (measured 2026-09-10, Arma2Quad; closed in game).** The quad's third bulb
      (`light_dashboard`, `hiddenSelections[8]`, which is `SELECTION_ID_DASHBOARD_LIGHT` at
-     `scripts/4_world/entities/vehicles/carscript.c:301`) never lit, while `light_1_1` and
+     `scripts/4_world/entities/vehicles/carscript.c:182`) never lit, while `light_1_1` and
      `light_2_1` lit from the SAME rvmat pair through the SAME call
-     (`carscript.c:2487`). The only difference lived in the model: the bulb's 12 faces were
+     (1.29 `carscript.c:2487`; on 1.30 the same `SetObjectMaterial` call is in `VehicleLightsComponent.SetSelectionMaterial`, `vehiclelightscomponent.c:79`, with the dashboard pair registered at `carscript.c:230-231`). The only difference lived in the model: the bulb's 12 faces were
      also claimed by `camo1`, which is `hiddenSelections[9]`. camo1 won the faces, so index 8
      addressed nothing.
      **The diagnostic is a face-ownership census INSIDE the same file**, listing for every
@@ -921,7 +921,7 @@ and require approximately zero residual before trusting any product comparison.
      only diverge at 9. Confirmation is cheap and does not need the light to work: with the
      lights OFF the bulb switched from the body material to the lights material, which alone
      proves index 8 now reaches those faces.
-     Corollary that removes a suspect: `UpdateLightsServer` is NOT server-only - `carscript.c:2095-2101`
+     Corollary that removes a suspect: `UpdateLightsServer` is NOT server-only - `carscript.c:1853-1859`
      guards only the CLIENT half with `#ifndef SERVER`, so `SetObjectMaterial` runs on the client
      too and replication is never the explanation for a light material that fails to apply.
 
@@ -1021,18 +1021,18 @@ and require approximately zero residual before trusting any product comparison.
 15h. **To change the fuel a vehicle spawns with, override `EEOnCECreate`, not `EEInit`
      (source-verified; a script spawn does NOT reach it - measured, see below).** Vanilla
      `CarScript.EEOnCECreate` fills a random 0-35 % of `GetFluidCapacity(CarFluid.FUEL)`
-     (`scripts/4_world/entities/vehicles/carscript.c:2967-2974`). It runs when the entity is
-     created as new by CE/debug (`scripts/3_game/entities/entityai.c:1385-1388`), while a load
+     (`scripts/4_world/entities/vehicles/carscript.c:2412-2419`). It runs when the entity is
+     created as new by CE/debug (`scripts/3_game/entities/entityai.c:1413-1416`), while a load
      from storage goes through `AfterStoreLoad` (`:1390-1393`) - so a fill there cannot turn into
      free fuel on every restart, which the same code in `EEInit` would. `Fill` ADDS
-     (`scripts/3_game/vehicles/car.c:375-376`), so top up rather than pour the whole capacity into
+     (`scripts/3_game/vehicles/car.c:371-372`), so top up rather than pour the whole capacity into
      a tank that may not be empty:
      `Fill(CarFluid.FUEL, GetFluidCapacity(CarFluid.FUEL) * (1.0 - GetFluidFraction(CarFluid.FUEL)))`.
      `OnDebugSpawn` is a separate path and fills on its own. **Measured 2026-09-11 with a vanilla
      `Hatchback_02` as the control**, which must land in 0-35 % if the path runs: neither a plain
      script spawn (`ECE_PLACE_ON_SURFACE`) nor the debug spawner's own flags
      (`ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_EQUIP_ATTACHMENTS`, the ones
-     `4_World/plugins/pluginbase/plugindeveloper.c:405` uses) fire `EEOnCECreate`: both controls
+     `4_World/plugins/pluginbase/plugindeveloper.c:454` uses) fire `EEOnCECreate`: both controls
      read `fuel_fraction` 0, and so did the modded vehicle. Only a real Central Economy spawn
      exercises the override, so observing it needs a `types.xml` entry plus an event. Without a
      vanilla control in the same run, that zero reads as "my override is broken".
@@ -1043,14 +1043,14 @@ and require approximately zero residual before trusting any product comparison.
     drive-ready kit must `Fill` FUEL + OIL + COOLANT + BRAKE **and** `CreateAttachment("CarRadiator")` (coolant
     needs the radiator). Vanilla `FillUpCarFluids()` does NOT do all of it, and mirroring `OnDebugSpawn` is not
     enough either. It fills exactly FUEL, COOLANT and OIL — **BRAKE is not among them**
-    (`scripts/4_world/entities/vehicles/carscript.c:3191-3196`, read 2026-08-20; a single
+    (`scripts/4_world/entities/vehicles/carscript.c:2561-2566`, read 2026-08-20; a single
     definition in the tree, every other hit is a call, so no subclass overrides it). The
     radiator does not come from it either: that is `SpawnUniversalParts()`
-    (`carscript.c:3141-3145`), gated on `IsVitalRadiator()`, via `CreateInInventory` — which
+    (`carscript.c:2511-2515`), gated on `IsVitalRadiator()`, via `CreateInInventory` — which
     searches `CARGO | ATTACHMENT` and may land in either (`inventory.c:876-893`), so a debug
     spawn does not guarantee an ATTACHED radiator. Fill BRAKE and attach the radiator
     explicitly; a hand-rolled `KitManual` in the mission `init.c` has to do both. `CarFluid` enum = FUEL/OIL/BRAKE/COOLANT
-    (`scripts/3_game/vehicles/car.c:18`); `Fill`/`GetFluidCapacity` at `car.c:376/359`.
+    (on 1.30 an alias of `ETransportFluid`, `scripts/3_game/vehicles/car.c:18`, values at `transport.c:52-57`); `Fill`/`GetFluidCapacity` at `car.c:372/355`.
 
     **How the gap was found (SUB_WRXSTI, 2026-08-19).** This invariant used to name
     `FillUpCarFluids()` as satisfying it. A mod car whose `OnDebugSpawn` calls it and stops — which is the obvious, vanilla-faithful thing to write, and what both SUB_BRZ and
@@ -1096,7 +1096,7 @@ and require approximately zero residual before trusting any product comparison.
 Cross-vehicle durable record (which project won each, links to the three): vault note
 `AI/20_Knowledge/dayz-vehicles-crossproject.md`.
 
-20. **Config inherits a vanilla car but your SCRIPT class does not extend that car's script = SWEEP every parent script override (SP-059).** If the config says `class X: OffroadHatchback` while the script is `class X extends MyBase` (with `MyBase extends CarScript`), the config->script binding does NOT drag in the parent car's script overrides - those live on the vanilla `inheritedcars\<parent>.c`, which your class never inherits. Every method with a hostile default in the base that ALL vanilla cars override then bites: `CrewCanGetThrough` (false in `Transport`, `transport.c:493` -> get-in impossible; see #1), `IsVitalGlowPlug` (true in `CarScript` -> engine won't start; see #8), `GetAnimInstance` / `GetSeatAnimationType` (`Error()` in `Transport`, `transport.c:465,475`), `Get3rdPersonCameraType` (`Error()`, `transport.c:483`). Procedure: diff method-by-method against the parent config's `.c` (`4_world\entities\vehicles\inheritedcars\<parent>.c`) and replicate EVERY runtime-contract override, not just the two pose ones - this is DZ-R7 (sweep the invariant to all call-sites) in config form. Origin: LFHeli R21-008 - `LFHeli_Placeholder: OffroadHatchback` (config) + `extends LFHeli_Base` (script) had no get-in and no engine start after passing two reviews; the first fix restored only the two pose methods.
+20. **Config inherits a vanilla car but your SCRIPT class does not extend that car's script = SWEEP every parent script override (SP-059).** If the config says `class X: OffroadHatchback` while the script is `class X extends MyBase` (with `MyBase extends CarScript`), the config->script binding does NOT drag in the parent car's script overrides - those live on the vanilla `inheritedcars\<parent>.c`, which your class never inherits. Every method with a hostile default in the base that ALL vanilla cars override then bites: `CrewCanGetThrough` (false in `Transport`, `transport.c:727` -> get-in impossible; see #1), `IsVitalGlowPlug` (true in `CarScript` -> engine won't start; see #8), `GetAnimInstance` / `GetSeatAnimationType` (`Error()` in `Transport`, `transport.c:665,685`), `Get3rdPersonCameraType` (`Error()`, `transport.c:701`). Procedure: diff method-by-method against the parent config's `.c` (`4_world\entities\vehicles\inheritedcars\<parent>.c`) and replicate EVERY runtime-contract override, not just the two pose ones - this is DZ-R7 (sweep the invariant to all call-sites) in config form. Origin: LFHeli R21-008 - `LFHeli_Placeholder: OffroadHatchback` (config) + `extends LFHeli_Base` (script) had no get-in and no engine start after passing two reviews; the first fix restored only the two pose methods.
 
 20b. **A working control's skeleton is baked into its ODOL; inherited config must be
      audited by EFFECTIVE value (SP-145, added 2026-08-31).** Shipped controls often
@@ -1142,7 +1142,7 @@ units, headroom accounting and what does NOT discriminate — is in
 
 31. **Seat/crew checks written as a literal front pair go blind the day a car grows a rear row, and report `2/2 100%` while doing it (added 2026-08-16, SUB_WRXSTI).** `verify_forza_car.py` listed `("seat_driver", "seat_codriver")` in the reach ray fan, the componentNN overlap targets and the ViewGeo presence check, plus a hardcoded `/2` denominator in two report strings. On a 2-seat car that IS the whole roster, so the blindness never shows; on a 4-seat car it printed green over two seats it never scanned, one of which was 43% reachable. Derive the roster from the **crew bones** (`crewdriver→seat_driver`, `crewcargo1→seat_cargo1`, …), not from the seat boxes present: deriving from the boxes is blind in the other direction — a car that LOSES a seat box simply has one fewer thing to check and stays green. Same derivation for the `pos_*(_dir)` memory points. Calibrate against the sealed vanilla 4-seater (it measures 4/4 at 100%), which is what turns a 43% into a defect rather than a strict gate.
 
-32. **Two halves of a car that a name-existence gate cannot see: the open-door action reads the DOOR PROXY, and vanilla parity is not a behaviour spec (added 2026-08-16, SUB_WRXSTI).** (a) `ActionCarDoorsOutside.ActionCondition` does `CarDoor.Cast(target.GetObject())` and then `carDoor.GetActionComponentNameList(...)` — the selection names come from the **attached door item's own `.p3d`**, not from the shell (`4_world\classes\useractionscomponent\actions\interact\vehicles\actioncardoorsoutside.c:30-58`, re-read 2026-08-16). If the proxy does not carry `doors_<role>`, `GetAnimSourceFromSelection` returns `""` for every one of its components and the open/close action never appears from outside — no error, no log. Measured placement on both the WRX and the shipped BRZ: the name lives in the proxy's **Geometry and ViewGeometry** LODs; FireGeo carries only `Component01/02`, `dmgzone_*` and `glass_<role>`. Every gate in this project measured the SHELL; nobody had ever opened the six door proxies. When verifying "the doors open", the evidence is the proxy — the shell only proves the model references it and that the animation axis exists. (b) Three behaviours are **correct vanilla ports and still wrong for a mod**: `OnDebugSpawn` drops the parts loose in cargo (`civiliansedan.c:408-430`) so a freshly spawned car needs ten manual attachments before it moves; `CarScript.EEOnCECreate` fills `Math.RandomFloat(0.0, capacity*0.35)` (`carscript.c:2967-2974`) so a CE-spawned car can arrive dry; `CanDisplayCargo` opens the cargo on the boot alone (`civiliansedan.c:162-171`). All three ship a car that loads, drives and looks right, and every structural gate passes them by construction because the criterion is "does it match vanilla". Declare behaviour PER CAR in the profile (`vehicle_script_policy {cargo_access, debug_spawn, ce_spawn_fuel}`) and measure the script against that declaration; derive the attachable roster from the config's own `inventorySlot[]` blocks so a renamed class reds by itself. Rider on the silent one: `CrewCanGetThrough` must compare against `DOORS_CLOSED`, because a torn-off door reports `DOORS_MISSING` — writing the same intent as `!= DOORS_OPEN` reads correctly, passes every structural check, and makes a doorless car unenterable. See LL-279.
+32. **Two halves of a car that a name-existence gate cannot see: the open-door action reads the DOOR PROXY, and vanilla parity is not a behaviour spec (added 2026-08-16, SUB_WRXSTI).** (a) `ActionCarDoorsOutside.ActionCondition` does `CarDoor.Cast(target.GetObject())` and then `carDoor.GetActionComponentNameList(...)` — the selection names come from the **attached door item's own `.p3d`**, not from the shell (`4_world\classes\useractionscomponent\actions\interact\vehicles\actioncardoorsoutside.c:30-58`, re-read 2026-08-16). If the proxy does not carry `doors_<role>`, `GetAnimSourceFromSelection` returns `""` for every one of its components and the open/close action never appears from outside — no error, no log. Measured placement on both the WRX and the shipped BRZ: the name lives in the proxy's **Geometry and ViewGeometry** LODs; FireGeo carries only `Component01/02`, `dmgzone_*` and `glass_<role>`. Every gate in this project measured the SHELL; nobody had ever opened the six door proxies. When verifying "the doors open", the evidence is the proxy — the shell only proves the model references it and that the animation axis exists. (b) Three behaviours are **correct vanilla ports and still wrong for a mod**: `OnDebugSpawn` drops the parts loose in cargo (`civiliansedan.c:415-437`) so a freshly spawned car needs ten manual attachments before it moves; `CarScript.EEOnCECreate` fills `Math.RandomFloat(0.0, capacity*0.35)` (`carscript.c:2412-2419`) so a CE-spawned car can arrive dry; `CanDisplayCargo` opens the cargo on the boot alone (`civiliansedan.c:174-183`). All three ship a car that loads, drives and looks right, and every structural gate passes them by construction because the criterion is "does it match vanilla". Declare behaviour PER CAR in the profile (`vehicle_script_policy {cargo_access, debug_spawn, ce_spawn_fuel}`) and measure the script against that declaration; derive the attachable roster from the config's own `inventorySlot[]` blocks so a renamed class reds by itself. Rider on the silent one: `CrewCanGetThrough` must compare against `DOORS_CLOSED`, because a torn-off door reports `DOORS_MISSING` — writing the same intent as `!= DOORS_OPEN` reads correctly, passes every structural check, and makes a doorless car unenterable. See LL-279.
 
 33. **A gate lane measuring only numbers is blind to proxy color and orientation, and the only instrument seeing them is an eye in front of an ASSEMBLED render (added 2026-08-16, SUB_WRXSTI).** Existing names, preserved faces, matching hashes, and complete seat→door→slot matrices: all of that passes green on a monochrome car with reversed wheels. Measured: WRX arrived in PBO with 64% of its faces in ONE material and entire interior in another (import recorded `material_map: null` and sent 37 named parts — badges, mirrors, exhaust, jambs, skirts, underbody, arms — into the paint bucket), with four wheel proxies written with IDENTITY matrix where vanilla writes TWO mirrored ones, one per side, and with 176 mm vanilla sedan wheel instead of its own. All four defects were found by user within minutes upon first seeing assembled car; none was visible to any gate. Three riders. (a) Render must be ASSEMBLED and with materials: loose grey parts reveal neither wrong color nor inverted rim — a `visual_sheet` drawing grey geometry per part already existed and caught nothing. (b) Human verdict is tied to sha256 of what was reviewed, or it rots: after a rebuild no one can tell whether THIS car or previous was approved, and gate must turn red from stale, not remain green. (c) Calibrate chirality with BRAND TEXT, not intuition: DayZ is left-handed and viewer engines are typically right-handed, so passing coordinates as-is is a reflection, and a mirrored car looks normal until a badge reads backwards. Honest trade-off: this DOES NOT replace in-game testing, it merely makes finding what is seen cheaper.
 
@@ -1159,7 +1159,7 @@ units, headroom accounting and what does NOT discriminate — is in
     value, and say which link you read it from.** The same trap applies to every inherited
     config key, not just `rotationFlags`.
 
-35. **Missing DamageZone `memoryPoints[]` / Memory `dmgzone_*` points do NOT explain collision jerks or driving stutters (added 2026-08-30, LFQuad2).** `[MECHANISM VERIFIED]` The script contact path never reads `memoryPoints[]`. `CarScript.OnContact` caches the first PhysX impulse of the tick (`carscript.c:1454-1478`); `CheckContactCache` applies `ProcessDirectDamage(..., zoneName, "EnviroDmg", "0 0 0", dmg)` (`:1497`, `:1572`). `DamageSystem.GetDamageZoneMap` only `ConfigGetTextArray(... componentNames)` (`damagesystem.c:63-68`). Zero `memoryPoints` hits in `scripts/**/*.c`; the same grep finds them in vehicle configs. Vanilla OffroadHatchback `class Chassis` has `componentNames[]` and no `memoryPoints[]` (`DZ/vehicles/wheeled/config.cpp:1570-1579`). `GetMemoryPointPos("dmgZone_*")` in the ctor (`carscript.c:393-406`) feeds `GetEnginePointPosWS` / `GetFrontPointPosWS` / … (`:496-522`) which have **zero callers**. Geometry is the contact mesh; a working referent can carry `dmgzone_*` only in FireGeometry (+ Memory for config parity). Do not spend an in-game cycle adding Memory `dmgzone_*` as a jerk fix. DISTINCT from #9 (missing `class Engine`/`FuelTank` stalls a started engine). Native `OnContact.zoneName` / `GetDamageZonePos` remain C++-opaque — even if they used memory points, that would change which zone loses HP, not the impulse.
+35. **Missing DamageZone `memoryPoints[]` / Memory `dmgzone_*` points do NOT explain collision jerks or driving stutters (added 2026-08-30, LFQuad2).** `[MECHANISM VERIFIED]` The script contact path never reads `memoryPoints[]`. `Transport.OnContact` caches the first contact of the tick, with the momentum change as its impulse (`transport.c:318-346`; on 1.29 `CarScript.OnContact`, 1.29 `carscript.c:1454-1478`); `CheckContactCache` applies `ProcessDirectDamage(..., zoneName, "EnviroDmg", "0 0 0", dmg)` (`carscript.c:1291`, `:1364`). `DamageSystem.GetDamageZoneMap` only `ConfigGetTextArray(... componentNames)` (`damagesystem.c:63-68`). Zero `memoryPoints` hits in `scripts/**/*.c`; the same grep finds them in vehicle configs. Vanilla OffroadHatchback `class Chassis` has `componentNames[]` and no `memoryPoints[]` (`DZ/vehicles/wheeled/config.cpp:1577-1586`). `m_VFXComponent.ConvertMemPointToPosition("dmgZone_*")`, called from the ctor (`carscript.c:369-375`; 1.29 `GetMemoryPointPos`, 1.29 `carscript.c:393-406`), feeds `GetEnginePointPosWS` / `GetFrontPointPosWS` / … (`:314-340`) which have **zero callers**. Geometry is the contact mesh; a working referent can carry `dmgzone_*` only in FireGeometry (+ Memory for config parity). Do not spend an in-game cycle adding Memory `dmgzone_*` as a jerk fix. DISTINCT from #9 (missing `class Engine`/`FuelTank` stalls a started engine). Native `OnContact.zoneName` / `GetDamageZonePos` remain C++-opaque — even if they used memory points, that would change which zone loses HP, not the impulse.
 
 ## NEW CAR — DAY-1 (run BEFORE the first in-game cycle; retro 2026-07-03)
 
@@ -1508,15 +1508,15 @@ the provenance labels the references already use (`[Landrover ✓]`, `[QuadBike]
 - **Light-selection preflight (LL-237).** Before reassigning a rear lamp, print every light hidden selection's face count and bbox. A lateral selection whose bbox crosses `x=0` owns centre geometry (e.g. `x=-0.12` to `0.65` = the tailgate bar); dozens of faces compressed into ~1 cm (here 44 faces in 0.01 m) are degenerate and draw nothing. Brake and tail must own disjoint faces; if they overlap the later `SetObjectMaterial` wins and the result is indeterminate.
 
 - **The `CarScript` light-selection ABI is positional (SP-178, added 2026-08-31).**
-  `carscript.c:293-301` fixes indices 0/1 front, 2/3 brake, 4/5 reverse, 6/7 rear
+  `carscript.c:174-182` fixes indices 0/1 front, 2/3 brake, 4/5 reverse, 6/7 rear
   position and 8 dashboard. Names are free; list order is not. Indices `>=9` have
   no native `CarScript` light meaning and require the mod's own driver. Indices 2/3
   and 6/7 must resolve to disjoint face sets, or the later `SetObjectMaterial` wins.
 - **With both headlight bulbs active, `*_dir` does not steer the beam.**
   `CarHeadlightBulbsState.BOTH` attaches one aggregated light at the midpoint of
-  `light_left` and `light_right` (`carscript.c:2136-2141`). Measure that midpoint
+  `light_left` and `light_right` (`carscript.c:1892-1896`). Measure that midpoint
   against the centre-line body surface; a point inside the shell traps the beam.
-  Apply the same check to `light_reverse` (`carscript.c:2182`).
+  Apply the same check to `light_reverse` (`carscript.c:1934`).
 
 A car whose lights "do not work" almost never has a broken `.rvmat`. Five distinct causes were
 separated in one session by measurement; each has a cheap discriminator. Run them in this order,
@@ -1563,15 +1563,15 @@ answers what the box cannot.
 ### 3. Engine-off and lights-off on driver exit are TWO different bugs
 
 **Engine** is script and is fixable. `CarScript.OnDriverExit` calls `EngineStop()` when the gear
-is not neutral (`carscript.c:1207-1215`); `Transport.OnDriverExit` is a no-op
-(`3_game/vehicles/transport.c:161`), so an override that does not call `super` loses nothing. Add
-`ShiftTo(GetNeutralGear())` (`car.c:271`, `:262`) or a running engine plus `Brake.driverless`
+is not neutral (`carscript.c:940-948`); `Transport.OnDriverExit` is a no-op
+(`3_game/vehicles/transport.c:227`), so an override that does not call `super` loses nothing. Add
+`ShiftTo(GetNeutralGear())` (`car.c:260`, `:251`) or a running engine plus `Brake.driverless`
 makes the car creep. Measured working: `engine=ON` on client and server, at the event and at
 +500 ms and +2 s.
 
-**Lights are NOT fixable that way.** The native forces `LightIsOn()` false on the CLIENT as soon
+**On 1.29, lights are NOT fixable that way.** The native forces `LightIsOn()` false on the CLIENT as soon
 as the driver seat empties, and vanilla's `m_Headlight` is slaved to it
-(`carscript.c:2116-2156`), so the beam is always destroyed and **re-asserting server-side cannot
+(1.29 `carscript.c:2116-2156`; on 1.30 the front light of `VehicleLightsComponent`, `carscript.c:1874-1908`), so the beam is always destroyed and **re-asserting server-side cannot
 bring it back**. The working pattern decouples the beam from `LightIsOn()`:
 
 1. a synced `bool` intent + an own `CarLightBase` member;
@@ -1584,23 +1584,25 @@ bring it back**. The working pattern decouples the beam from `LightIsOn()`:
 
 To make the parked beam appear promptly, copy vanilla's own line rather than inventing one:
 `ForceUpdateLightsStart(); g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(ForceUpdateLightsEnd, 100, false);`
-(`carscript.c:535-536`; the pair is defined at `:2981` and `:2990`).
+(1.29 `carscript.c:535-536`; the pair is defined at 1.29 `:2981` and `:2990`).
 
 Reference implementation in this tree: `P:\LFQuad\scripts\4_world\entities\vehicles\inherited\LFQuad.c`.
+
+**On 1.30 there is nothing to fix.** Measured on 1.30.164200, `LightIsOn()` stays true on the server and on the client when the driver gets out with the lights on, so the pattern above finds nothing to do; its step 3 no longer compiles (`ToggleHeadlights` was deleted), and `ForceUpdateLightsStart`/`End` are empty `[Obsolete]` declarations (`carscript.c:2805-2809`). See `references/dayz-1-30-vehicles.md` (`CLAIM-VEH-LIGHTS-EXIT-130`).
 
 ### 4. No bulbs mounted = brake and tail never light, and it reads as a failed fix
 
 `m_HeadlightsState` stays `NONE` without HeadlightH7 in the reflector slots, and the rear beams
-are gated on it (`carscript.c:792-813`, `:2177`). Testing brake lights on a car whose bulbs sit in
+are gated on it (`carscript.c:522-543`, `:1929`). Testing brake lights on a car whose bulbs sit in
 the cargo produces a confident false FAIL.
 
 Related and cheap: `OnDebugSpawn` must use **`CreateAttachment`**, not `CreateInInventory`.
-Vanilla's `SpawnUniversalParts` (`carscript.c:3121-3158`) drops everything into cargo, so every
+Vanilla's `SpawnUniversalParts` (`carscript.c:2500-2528`) drops everything into cargo, so every
 test cycle starts with manual assembly and one forgotten bulb poisons the run.
 
 ### 5. Measure the setter against a VANILLA car spawned alongside
 
-`SetObjectMaterial` / `GetObjectMaterial` are `proto native` (`entityai.c:2896-2900`): whether they
+`SetObjectMaterial` / `GetObjectMaterial` are `proto native` (`entityai.c:2881-2885`): whether they
 work is not decidable by reading source. Probing only the car under test cannot separate "our model
 is wrong" from "this build does not apply overrides at all". Spawn a stock `CivilianSedan` next to
 it and run the identical call, into the SAME log:
@@ -1612,9 +1614,9 @@ it and run the identical call, into the SAME log:
 | no  | no  | the environment does not apply overrides; the probe never measured the setter |
 | no  | yes | incoherent, repeat |
 
-Resolve the selection **by name** with `GetHiddenSelectionIndex` (`entityai.c:2792-2798`) and print
+Resolve the selection **by name** with `GetHiddenSelectionIndex` (`entityai.c:2772-2778`) and print
 the resolved index; never hardcode an index onto a vanilla car. If the resolve fails, SKIP — do not
-fall back to 0, which is the front-left light of the CarScript ABI (`carscript.c:293-301`) and
+fall back to 0, which is the front-left light of the CarScript ABI (`carscript.c:174-182`) and
 corrupts both the car and the measurement.
 
 And adjudicate by photo: the `got=` of a readback is the setter's echo, not proof that the engine
@@ -1644,12 +1646,12 @@ null and the render comes out empty. Measured on the two SUB_BRZ doors (s98, in 
 center`); vanilla puts it ~1.07 m from the centre, OUTSIDE the box, on the side to show, and reuses
 the same point on both mirrored doors. Never write `invview = (min+max)/2`; offline gate:
 |invview - bbox centre| > 0.3 m for every part with a preview. With `invview2` present,
-ATTACHMENT/GROUND render view 1 and CARGO/HANDS view 0 (`scripts/3_game/entities/entityai.c:3746-3788`) -
+ATTACHMENT/GROUND render view 1 and CARGO/HANDS view 0 (`scripts/3_game/entities/entityai.c:3769-3811`) -
 design both point sets together or not at all.
 
 ## Get-out desync: one-shot bilateral OnDriverExit probe (SP-276, origen LFHeli LF-001)
 
-- **The ex-owner proxy is frozen until re-registered (LL-306).** With `NetworkMoveStrategy.PHYSICS`, on get-out the former owner falls back to the last proxy snapshot received before possession and receives no further server transform. A client `SetPosition`/teleport or a server pose nudge cannot repair it (client `SetPosition` had no effect at 50 ms; 10 cm server lift had not arrived in 25 s). After a short server-side delay (~500 ms after `OnDriverExit`) and only when every crew seat is empty, rebuild the remote representation with `RemoteObjectTreeDelete/Create` (`scripts/3_game/global/game.c:707-709`; guarded impl `LFHeliCore/scripts/4_world/LFHeli/LFHeli_Base.c:1167-1235`): `3/3` re-entries, `|Δ| 0.12/0.11 m`. Schedule it from the surviving server object and cancel on deletion; a `CallLater` owned by the destroyed client replica cannot complete safely.
+- **The ex-owner proxy is frozen until re-registered (LL-306).** With `NetworkMoveStrategy.PHYSICS`, on get-out the former owner falls back to the last proxy snapshot received before possession and receives no further server transform. A client `SetPosition`/teleport or a server pose nudge cannot repair it (client `SetPosition` had no effect at 50 ms; 10 cm server lift had not arrived in 25 s). After a short server-side delay (~500 ms after `OnDriverExit`) and only when every crew seat is empty, rebuild the remote representation with `RemoteObjectTreeDelete/Create` (`scripts/3_game/global/game.c:708-710`; guarded impl `LFHeliCore/scripts/4_world/LFHeli/LFHeli_Base.c:1167-1235`): `3/3` re-entries, `|Δ| 0.12/0.11 m`. Schedule it from the surviving server object and cancel on deletion; a `CallLater` owned by the destroyed client replica cannot complete safely.
 
 For "invisible/desync on exit" bugs, a one-shot probe in `OnDriverExit` that prints on BOTH
 sides `playerPos`, `heliPos`, `crewEntryWS`, `dPH`, `dPC` adjudicates in one flight what
@@ -1740,7 +1742,7 @@ Measured on dayz-mcp stand (DayZDiag 1.29.163709, CivilianSedan), ABBA G0 sessio
 (origin: real frictions that aborted 3 attempts; evidence in
 `AI/10_Projects/DayZ_MCP/reviews/2026-08-24-g0-veredicto-nocturno.md`):
 
-- **Get-out**: `ActionGetOutTransport.ActionCondition` = `crewIndex >= 0 && CrewCanGetThrough && IsAreaAtDoorFree` (actiongetouttransport.c:68-77; `CCTNone` — target does not participate). A car stopped AGAINST statics leaves door blocked and action in `condition_failed`; stand control surface has no reverse gear (throttle 0..1) — site becomes unrecoverable. Design site with >=150 m clear IN DRIVING DIRECTION and graceful cleanup: deleting fixture with player inside cleanly ejects (4/4 measured).
+- **Get-out**: `ActionGetOutTransport.ActionCondition` = `!IsTransitioning() && crewIndex >= 0 && CrewCanGetThrough && IsAreaAtDoorFreeDiag` (actiongetouttransport.c:70-79; 1.29 had no transition check and `IsAreaAtDoorFree`, 1.29 actiongetouttransport.c:68-77; `CCTNone` — target does not participate). A car stopped AGAINST statics leaves door blocked and action in `condition_failed`; stand control surface has no reverse gear (throttle 0..1) — site becomes unrecoverable. Design site with >=150 m clear IN DRIVING DIRECTION and graceful cleanup: deleting fixture with player inside cleanly ejects (4/4 measured).
 - **Spawn heading**: 4th parameter of `CreateObjectEx` is `RF_*` flags, NOT yaw; vehicle inherits ground orientation at point (~11.6 degrees between two points 40 m apart). No orientation setter via tools: if experiment demands comparable headings, sites are selected empirically (trace samples give actual driven heading).
 - **Positional drivability**: a vehicle can end up FROZEN (2s delta ~0.12 m at throttle 1.0) due to SITE — same binary/config drove 91 m at one point and 0.12 m at another 40 m away. Before blaming config/ownership/code: ABBA of sites (LL-359).
 ## Stand get-out: the real chain and sanctioned teardown (added 2026-08-24 afternoon)
@@ -1750,9 +1752,9 @@ fb-20260824-133301-ecf5). ActionGetOutTransport `condition_failed` on stand fixt
 DOES NOT depend on site (identical across 9 sites, 7 pristine):
 
 - Driver door spawns CLOSED and `CrewCanGetThrough` requires it non-closed
-  (civiliansedan.c:214-222; phase <=0.5 = CLOSED, carscript.c:2801-2811).
+  (civiliansedan.c:226-234; phase <=0.5 = CLOSED, carscript.c:2248-2258).
 - Opening via action DOES NOT work: server half of injected actions is inert
-  (`OnStartServer`/SetAnimationPhase does not materialize, actioncardoors.c:92) - action
+  (`OnStartServer`/SetAnimationPhase does not materialize, actioncardoors.c:91) - action
   STARTS on client (started=1) but phase remains 0.0. Cheap discriminator:
   ActionCloseCarDoors returns condition_failed after "opening" (its condition requires
   phase >0.5 and shares IsAreaAtDoorFree with get-out, which is exculpated).
@@ -1825,7 +1827,7 @@ A port copies what it sees in reference `config.cpp`. These three do not live in
 so they survive intact through any review reading configs:
 
 - **The `refill` anchor.** Without a `refill` selection in Memory and in ViewGeometry, the refuel
-  action **never appears** (`actionfillfuel.c:13,61-70`; `transport.c:75-78,313-315`).
+  action **never appears** (`actionfillfuel.c:13,53-58`; `transport.c:112-115,462-464`).
   Copying the `GetActionDistanceFuel()` override from the reference is not enough: it adjusts the distance of
   an action that, without an anchor, does not exist.
 - **Custom `CfgSoundSets`.** Inheriting the base class leaves the vehicle **mute**: zero engine

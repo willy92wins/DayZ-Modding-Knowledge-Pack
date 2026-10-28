@@ -1,16 +1,17 @@
-# DayZ 1.30 Exp (build 1.30.164014) — firearm entity layer
+# DayZ 1.30 — firearm entity layer
 
 Insertion-only companion to `dayz-weapons`. Digest K named this skill; every `[EXACT]` block below was
 copied from `exp\` after opening the file (digest K reconstructed several paths and signatures — do not
 copy digest snippets). `[VERIFIED-vanilla]` = read on disk in this extract. Anim motion stays with
 `dayz-animation-pipeline`.
+Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## W-STAGING1 — scripts without CfgWeapons / `.p3d` in this build
 
 (until 1.29: any vanilla firearm with a script under `4_World/Entities/Firearms/` also shipped a
 debinarizable `.p3d` + `CfgWeapons` class in the matching weapons PBO.)
 
-(desde 1.30 Exp: four new firearm scripts plus a bayonet compile, register IK, and in two cases have
+(desde 1.30: four new firearm scripts plus a bayonet compile, register IK, and in two cases have
 dedicated bone remaps, but their weapon PBOs do **not** contain the `.p3d` or a `CfgWeapons` /
 `CfgMagazines` class. Debinarize a **shipped** peer instead — SCAR-H for a SCAR-L-shaped rifle, P1/Glock
 for a pistol, CZ527/Mosin for a bolt gun, CZ61/PM73 for an open-bolt SMG.)
@@ -73,7 +74,7 @@ debinarize a SCAR-L body from this experimental PBO.
 (until 1.29: `Pistol_Base.InitStateMachine()` passed `PistolAnimState.*` constants into each stable
 state constructor — `Pistol_Base.c:203-212` in `stable-1.29`.)
 
-(desde 1.30 Exp: the same constructors take `GetDischargedPistolAnimState()` / `GetChargedPistolAnimState()`
+(desde 1.30: the same constructors take `GetDischargedPistolAnimState()` / `GetChargedPistolAnimState()`
 / `GetOpenPistolAnimState()` / `GetJammedPistolAnimState()`. Override those on the pistol class. The
 stable-state classes still return `PistolStableStateID.*` from `GetCurrentStateID()` — they were not
 rewritten into `PistolDischarged` helpers.)
@@ -129,7 +130,7 @@ the FSM graph itself must change.
 (until 1.29: `OpenBolt_Base.SetActions()` only `RemoveAction(FirearmActionLoadBullet)` +
 `FirearmActionLoadBulletQuick` — `stable-1.29` `OpenBolt_Base.c:382-388`.)
 
-(desde 1.30 Exp: it also `AddAction(FirearmActionDetachMagazine)`.)
+(desde 1.30: it also `AddAction(FirearmActionDetachMagazine)`.)
 
 ```
 // [EXACT] exp\scripts\scripts\4_World\Entities\Firearms\OpenBolt_Base.c:382
@@ -187,7 +188,7 @@ into `SetGroundEx` (`stable-1.29` `WeaponManager.c:1362-1365`). 1.30 fills it fr
 					new_il.SetGroundEx( old_mag,  m_player.GetPosition(), dir);
 ```
 
-Cartridge pull in the FSM helper (until 1.29: `LocalAcquireCartridge`; desde 1.30 Exp:
+Cartridge pull in the FSM helper (until 1.29: `LocalAcquireCartridge`; desde 1.30:
 `LocalAcquireCartridgeEx`):
 
 ```
@@ -232,7 +233,7 @@ channel (CfgRecoils) from this script object.
 (until 1.29: `AmmoTypesAPI.GetExplosionParticleID(string ammoName, string surfaceName)` returned `int`
 — `stable-1.29` `AmmoTypes.c:57`. Callers: `DayZGame.c` explosion path.)
 
-(desde 1.30 Exp: that method is gone. `ExplosiveEffectData` + `GetExplosiveEffectData(ammoName, surfaceName)`
+(desde 1.30: that method is gone. `ExplosiveEffectData` + `GetExplosiveEffectData(ammoName, surfaceName)`
 return particle **and** optional sound set. Signature is **two strings in, object out** — not
 `(ammoType, outData)`.)
 
@@ -281,7 +282,7 @@ Vanilla caller (`AmmoEffects.c:49-56`) gets `surfaceType` from `SurfaceGetType3D
 `Init()` maps `Hit_Desert_Sand` / `Hit_Sand` (and snow/ice) per ammo; RGD5/M67 sand entries pass
 `"ExplosionDustEffect_SoundSet"` (`AmmoTypes.c:66-72`).
 
-`MagazineTypeToAmmoType` still exists — (up to 1.29: `AmmoTypes.c:14`) (since 1.30 Exp: `:26`) because
+`MagazineTypeToAmmoType` still exists — (up to 1.29: `AmmoTypes.c:14`) (since 1.30: `:26`) because
 `ExplosiveEffectData` was prepended. Vanilla uses it in `Weapon_Base.c:840` (1.29 cited `:848`).
 
 `ExplosivesBase`: `[Obsolete("1.30: Handled in AmmoTypes instead")]` on

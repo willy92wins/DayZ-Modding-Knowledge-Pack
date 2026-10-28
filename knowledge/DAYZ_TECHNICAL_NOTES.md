@@ -132,7 +132,7 @@ Reference: vanilla `WoodenCrate` in `DZ/gear/camping/config.cpp` lines 10074–1
 ```
 proto native void ThrowPhysically(DayZPlayer player, vector force, bool collideWithCharacters = true);
 ```
-Internally does `CreateDynamicPhysics(ITEM_LARGE)` + `SetDynamicPhysicsLifeTime(...)` + applies force as impulse. It is the vanilla pattern (`miscgameplayfunctions.c:1188/1204/1212`, `plugindeveloper.c`).
+Internally does `CreateDynamicPhysics(ITEM_LARGE)` + `SetDynamicPhysicsLifeTime(...)` + applies force as impulse. It is the vanilla pattern (`miscgameplayfunctions.c:1323/1204/1212`, `plugindeveloper.c`).
 
 ```enforce
 ItemBase debrisEnt = ItemBase.Cast(spawned);
@@ -142,9 +142,9 @@ debrisEnt.ThrowPhysically(null, impulse, false);
 **Related APIs verified in `P:\scripts`:**
 - `1_core\proto\enphysics.c:141` → `proto void dBodyApplyImpulse(notnull IEntity body, vector impulse);` — valid but ONLY on already dynamic body.
 - `1_core\proto\enphysics.c:64-69` → `dBodyActive`, `dBodyDynamic`, `dBodyIsDynamic`, `dBodyEnableGravity`.
-- `3_game\entities\object.c:462-464` → `CreateDynamicPhysics(int interactionLayers)`, `EnableDynamicCCD(bool)`, `SetDynamicPhysicsLifeTime(float)` — `Object` members, manually usable.
+- `3_game\entities\object.c:456-458` → `CreateDynamicPhysics(int interactionLayers)`, `EnableDynamicCCD(bool)`, `SetDynamicPhysicsLifeTime(float)` — `Object` members, manually usable.
 - `3_game\global\dayzphysics.c:1-29` → enum `PhxInteractionLayers { NOCOLLISION, DEFAULT, BUILDING, CHARACTER, VEHICLE, DYNAMICITEM, DYNAMICITEM_NOCHAR, ROADWAY, ... }`. Vanilla uses `DYNAMICITEM` for inventory items.
-- `4_world\entities\itembase.c:4530` → `StopItemDynamicPhysics()` ⇒ `SetDynamicPhysicsLifeTime(0.01)`. Confirms that lifetime keeps dynamics alive.
+- `4_world\entities\itembase.c:4534` → `StopItemDynamicPhysics()` ⇒ `SetDynamicPhysicsLifeTime(0.01)`. Confirms that lifetime keeps dynamics alive.
 
 **Manual pattern** (fine control without `ThrowPhysically`):
 ```enforce
@@ -179,9 +179,9 @@ Cast a `Magazine` primero (cubre mags + ammo piles), fallback a `ItemBase.SetQua
 
 **Firmas verificadas:**
 - `4_world\entities\itembase\magazine\magazine.c:70` → `proto native void ServerSetAmmoCount(int ammoCount);`
-- `3_game\entities\entityai.c:2242` → `bool SetQuantity(float value, bool destroy_config = true, bool destroy_forced = false, bool allow_client = false, bool clamp_to_stack_max = true);`
+- `3_game\entities\entityai.c:2227` → `bool SetQuantity(float value, bool destroy_config = true, bool destroy_forced = false, bool allow_client = false, bool clamp_to_stack_max = true);`
 
-Vanilla uses `ServerSetAmmoCount` in 20+ places (`weapon_base.c:805`, `cfgplayerspawnhandler.c:330,340`, `recipebase.c:314,420`, etc.). Live implementation: `Crate_Wooden.c::ApplyNodeAttributes`.
+Vanilla uses `ServerSetAmmoCount` in 20+ places (`weapon_base.c:797`, `cfgplayerspawnhandler.c:330,340`, `recipebase.c:314,420`, etc.). Live implementation: `Crate_Wooden.c::ApplyNodeAttributes`.
 
 ## Schema migration JSON — ExpansionSettingBase pattern
 **Problem:** I evolve schema (add fields), admin with old JSON lacks those fields. If constructor injects "didactic examples", on Load those examples remain intact → admin sees loot appearing out of nowhere, not knowing why.

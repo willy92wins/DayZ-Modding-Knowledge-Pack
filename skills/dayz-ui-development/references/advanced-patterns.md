@@ -8,8 +8,8 @@
 >
 > 1. **`OnMouseMove(Widget w, int x, int y, int oldx, int oldy)`** (the §6 draggable-window pattern) —
 >    `ScriptedWidgetEventHandler` has **no `OnMouseMove` event** (`enwidgets.c:656-686` lists
->    `OnClick`…`OnEvent`; the only `OnMouseMove*` in the dump is `workbenchapi.c:91`, a Workbench
->    plugin hook, not a widget event). The override is never called → dragging silently does nothing.
+>    `OnClick`…`OnEvent`; no `OnMouseMove*` is left in the 1.30.164200 dump, and the only one on 1.29
+>    was a Workbench plugin hook, not a widget event, 1.29 `workbenchapi.c:91`). The override is never called → dragging silently does nothing.
 >    **Fix:** drive drag from `OnMouseButtonDown` + per-frame `Update()` polling `GetMousePos()`
 >    (the approach `admin-ui-patterns.md §1` actually uses), or use the native `DRAGGABLE` flag +
 >    `OnDrag`/`OnDragging`/`OnDrop` events.
@@ -903,7 +903,7 @@ class AmountInputController extends ScriptView
 | Widget not clickable | `ignorepointer 1` on widget or parent | Remove from interactive widgets; only use on decorative elements |
 | Text overlaps content below | No `RecalculateLayout()` after Show/Hide | Call `RecalculateLayout()` after visibility changes |
 | Button doesn't fire OnClick | Missing `SetHandler(this)` or custom handler | Check handler registration; verify OnClick signature has 4 params |
-| Colors look wrong/dark | The player's HUD_BRIGHTNESS, applied globally by vanilla | Design against it. **Never call `Widget.SetLV(0)`** — `proto static`, it overwrites the player's setting (`dayzgame.c:3778-3782`) |
+| Colors look wrong/dark | The player's HUD_BRIGHTNESS, applied globally by vanilla | Design against it. **Never call `Widget.SetLV(0)`** — `proto static`, it overwrites the player's setting (`dayzgame.c:3910-3914`) |
 | OnMouseLeave never fires | Wrong param count (3 instead of 4) | Use 4 params: `OnMouseLeave(Widget w, Widget enterW, int x, int y)` |
 | Scroll doesn't work | No content widget inside ScrollWidget | Add WrapSpacerWidgetClass or GridSpacerWidgetClass as child |
 | Animation jumps instead of smooth | animPeriod too small (< 100ms) | Use 200-500ms duration with appropriate easing |

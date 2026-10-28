@@ -1,4 +1,4 @@
-# Underground triggers: schema and recipes (DayZ 1.30.164014 Exp)
+# Underground triggers: schema and recipes (DayZ 1.30)
 
 Citations from `exp\scripts\scripts\…`, opened on 2026-09-24. `source_verified` except what is
 marked `[DESIGN]` or unverified.

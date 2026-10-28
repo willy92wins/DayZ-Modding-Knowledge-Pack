@@ -607,7 +607,7 @@ persists data inherits them.
 
 - **`EntityAI.OnStoreSave` writes a runtime-dependent NUMBER of fields.** With an
   energy component it writes nine, without it none
-  (`VANILLA/3_game/entities/entityai.c:2928-2959`). Reading by fixed offset after
+  (`VANILLA/3_game/entities/entityai.c:2917-2948`). Reading by fixed offset after
   `super.OnStoreLoad` therefore desynchronises only for the configurations that
   lack the component -- it will pass every test written against the configuration
   that has it. Audit consequence: any subclass that reads after `super` must read
