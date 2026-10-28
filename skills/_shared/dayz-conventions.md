@@ -607,6 +607,9 @@ their dates). Read a citation by what is next to it:
   when something was observed. The 2026-10-28 re-check moved citations; it did not repeat
   measurements, so unless the text says otherwise a measurement labelled with an older 1.30
   build was not re-run on 1.30.164200.
+- **Claim records keep theirs too.** In `sources/claims.json` a claim's `source_revision` and
+  `evidence_locator` still name the build and the lines it was verified on; the re-check moved
+  only the claim's line range in the skill file.
 - **Names.** Since 2026-10-28 the headings of the 1.30 sections say "DayZ 1.30"; the companion
   files keep their `dayz-1-30-*.md` names because other files link to them. Text that still says
   "DayZ 1.30 Exp" or "1.30 Exp" (dated notes, prose, router labels) was written while 1.30 was

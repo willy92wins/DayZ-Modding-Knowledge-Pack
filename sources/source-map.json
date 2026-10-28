@@ -1564,7 +1564,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "32ad0ba8a5c371e2bf1a7990d1de1535d76d5680a2656916e71310e389224b0b",
+      "output_hash": "46eed8cb7efa6a832e50e8b08d8e995c80668c6401ccba54557243126a46276d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4727,7 +4727,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2ffb8e505b57d1fb908a6951fb5c64ff4fc9ad7fe20a70d6137b7b7c554c74dc",
+      "output_hash": "b9f7c948630fb0750e1ba014918d0a6b6f73ec3a7cbcf141eea57f4b3e4fbcf0",
       "output_path": "skills/_shared/dayz-conventions.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"

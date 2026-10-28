@@ -510,7 +510,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     build named, or with an `exp\` path (the folder of the first 1.30 extraction, 1.30.164014),
     gives the 1.30.164200 line; one labelled `1.29`, or inside a "hasta 1.29" note, the 1.29 line;
     one labelled with another build, that build's line. Measurements keep the build they were made
-    on: the re-check moved citations and repeated no measurement.
+    on, and claim records the build they were verified on: the re-check moved citations and claim
+    line ranges, and repeated no measurement.
   - A citation whose text 1.30 no longer has keeps its 1.29 line and is labelled `1.29` (the 1.29
     `construction.c` in `dayz-basebuilding`, for one). Where the cited code changed in 1.30, the
     text now says what 1.30 does: `CarFluid` is an alias of `ETransportFluid`, the class a ruined
