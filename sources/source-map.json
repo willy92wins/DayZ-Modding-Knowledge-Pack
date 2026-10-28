@@ -1551,10 +1551,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/pr-135-review-3@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fourth review pass of pull request #135 (2026-10-28), after the third adversarial review: the AnimGraph entry adds the transition start time, flags and blend-function names and player_main's Facial group, and names the node types checked on all seven graphs; the infected ragdoll entry presents the corpse swap as an untested proposal.",
+          "license": "MIT",
+          "source_hash": "d70f7584658045d4a350a21b90bbffe781fc55887d104b1f3e1d15a1575c510b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/pr-135-review-4@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "764798ae8a9f05d04701f2abfe4abc4c16c7be1631b6e3e007b078d439adf5b8",
+      "output_hash": "d70f7584658045d4a350a21b90bbffe781fc55887d104b1f3e1d15a1575c510b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6012,10 +6022,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "update/pr-135-review-3@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fourth review pass of pull request #135 (2026-10-28): the checklist item says that the transitions and the Blend, BlendT and Rot nodes were checked on all seven vanilla $AnimGraph 7 graphs.",
+          "license": "MIT",
+          "source_hash": "d99fdbdd91d6a9f5282419ba3f50d2598c0f2f7513efef949bb02c43609a6317",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "update/pr-135-review-4@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aadb8b33dbd14f62a77fba14b6dc98498bb35ff39e6d344312dfca50d0c0252b",
+      "output_hash": "d99fdbdd91d6a9f5282419ba3f50d2598c0f2f7513efef949bb02c43609a6317",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6094,10 +6114,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
           "source_revision": "update/pr-135-review-3@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fourth review pass of pull request #135 (2026-10-28), after the third adversarial review, re-read in the 1.29 stable and 1.30.164014 extractions with animals_bliss: the fifth $Transition field is the start time, copied as is (set on 495 of 1251; Locomotion.agr:1148 -> Locomotion.agf:1380, Interaction.agr:59 -> Interaction.agf:62, Locomotion.agr:170 -> Locomotion.agf:223, Combat.agr:107 -> Combat.agf:113); the sixth is a set of flags (1 PostEval 1, 6 MotionVecBlend 0x30 0, 24 MotionVecBlend 0x3 0) and the seventh a blend-function name (Lin -> Linear, SEnd -> \"Ease Out\"), on all 1105 one-to-one transition pairs; a non-empty $Predictions (126 of 840 Source nodes) is not mapped; player_main.ast names its unnamed group Facial (player_main.ast:441); the Blend (99 of 100), BlendT (155) and Rot (70, 430 bone items) nodes that pair by name follow their rows.",
+          "license": "MIT",
+          "source_hash": "32d48a79fc6e31d3c643dbc5aef27efbd968269c52213c9d9a8d8f00a7d3a0f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "update/pr-135-review-4@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6a83b41d4e291d6c9f7776414a97afa06acb23a2f75ab31f8796b5522e3383ef",
+      "output_hash": "32d48a79fc6e31d3c643dbc5aef27efbd968269c52213c9d9a8d8f00a7d3a0f6",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -11727,6 +11757,16 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "update/pr-135-review@2026-10-28",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fourth review pass of pull request #135 (2026-10-28), after the third adversarial review: the infected ragdoll pitfall presents the corpse swap as a proposal that has not been tested.",
+          "license": "MIT",
+          "source_hash": "b8159ba8f39de50eb1ab25bbd65c5c9c22c3f4dda663e620425315a60b579c43",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "update/pr-135-review-4@2026-10-28",
           "verification_level": "cross_checked"
         }
       ],
@@ -19113,10 +19153,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/pr-135-review-3@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fourth review pass of pull request #135 (2026-10-28): CLAIM-ANIM-AGR-PORT-129-130 adds the transition start time, flags and blend-function names, player_main's Facial group, the unmapped non-empty $Predictions and the Blend, BlendT and Rot node checks.",
+          "license": "MIT",
+          "source_hash": "9af86d40bfc5285bb0cfaf625cf72957b52940b783a9000c30fe3e7c6237b6cf",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/pr-135-review-4@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ae357a98b0d12cb1e522d7fe673e6175ad98fcd24c613176f5568d152efc3252",
+      "output_hash": "9af86d40bfc5285bb0cfaf625cf72957b52940b783a9000c30fe3e7c6237b6cf",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
