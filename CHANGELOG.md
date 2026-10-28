@@ -20,8 +20,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   1.29 ships in `$AnimGraph 7` (with `player_main`, `player_menu` and the Wolf, AmbientLife,
   Herbivores and bear graphs; the `cow_example` and `zombie_commonsamples` samples are
   `$AnimGraph 3` and `2`), which adds the `normtime` state mode, the transition start time (copied
-  as is, also when it is an expression), the node tag that 1.30 keeps as
-  `Tags` (one string per tag, also on a procedural rotation), and the `EditorPos` y flip;
+  as is, also when it is an expression), the transition flags (`PostEval` and `MotionVecBlend`) and
+  blend-function names, the node tag that 1.30 keeps as `Tags` (one string per tag, also on a
+  procedural rotation), the `EditorPos` y flip, and `player_main`'s `Facial` group; the transitions
+  and the Blend, BlendT and Rot nodes were checked on all seven graphs;
   `CLAIM-ANIM-AGR-PORT-129-130`.
 - `dayz-physics-engine` `references/dayz-1-30-ragdoll-and-fall.md`, new section "Infected do not
   ragdoll" (in game 2026-10-16, 1.30.164078): the ragdoll API (`PhysicsSetRagdoll`,
