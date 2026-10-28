@@ -19,15 +19,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (#135). On review the mapping was re-read on the infected graph, one of the seven graphs vanilla
   1.29 ships in `$AnimGraph 7` (with `player_main`, `player_menu` and the Wolf, AmbientLife,
   Herbivores and bear graphs; the `cow_example` and `zombie_commonsamples` samples are
-  `$AnimGraph 3` and `2`), which adds the `normtime` state mode, the node tag that 1.30 keeps as
+  `$AnimGraph 3` and `2`), which adds the `normtime` state mode, the transition start time (copied
+  as is, also when it is an expression), the node tag that 1.30 keeps as
   `Tags` (one string per tag, also on a procedural rotation), and the `EditorPos` y flip;
   `CLAIM-ANIM-AGR-PORT-129-130`.
 - `dayz-physics-engine` `references/dayz-1-30-ragdoll-and-fall.md`, new section "Infected do not
   ragdoll" (in game 2026-10-16, 1.30.164078): the ragdoll API (`PhysicsSetRagdoll`,
   `PhysicsSetSimpleDeath`) is declared on `Human` only, and in the contributor's test neither
   `ragdoll =` in an infected's `enfanimsys` nor player death clips carrying the `Ragdoll` event made
-  the infected ragdoll: the clip played out and the body froze. A corpse swap is the remaining
-  route. `SKILL.md` lists the assumption with its pitfalls. Contributed by @kinkurono-dev (#135),
+  the infected ragdoll: the clip played out and the body froze. The note proposes a corpse swap
+  instead, untested. `SKILL.md` lists the assumption with its pitfalls. Contributed by @kinkurono-dev (#135),
   with their in-game test (`CLAIM-PHYS-INFECTED-NO-RAGDOLL-130`); the declarations and the class
   chain were re-read in 1.30.164014, 1.30.164078 and 1.30.164200
   (`CLAIM-PHYS-RAGDOLL-API-HUMAN-ONLY-130`).
