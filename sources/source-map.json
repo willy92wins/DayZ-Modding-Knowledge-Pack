@@ -1531,10 +1531,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/pr-135-review@2026-10-27",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Second review pass of pull request #135 (2026-10-28), after the adversarial review: the AnimGraph entry names the infected graph as one of the six vanilla $AnimGraph 7 graphs, adds the node tag kept as Tags and says that loading the 1.29 format on 1.30 is untested; the ragdoll entry reports the config and clip result as the contributor's test.",
+          "license": "MIT",
+          "source_hash": "b00753623cd6299b4c17d30215d59b2ce8b8e5bc809715c293a34d02e54c1ae2",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/pr-135-review@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "28a4ebc33cd27727adc49404c97da6f7245cf5766905c774ea6393cdf5670ee6",
+      "output_hash": "b00753623cd6299b4c17d30215d59b2ce8b8e5bc809715c293a34d02e54c1ae2",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5972,10 +5982,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "update/pr-135-review@2026-10-27",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Second review pass of pull request #135 (2026-10-28): the checklist item says that loading a 1.29-format graph on 1.30 is untested, lists the tag field and names the infected graph as one of six vanilla $AnimGraph 7 graphs.",
+          "license": "MIT",
+          "source_hash": "a29041c0561a19de01544caa71449e1fcc544df9b906989c481c072b8f331aad",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "update/pr-135-review@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7a4927666360e691228d5861d030d1fce66338fea601012836227367b066811f",
+      "output_hash": "a29041c0561a19de01544caa71449e1fcc544df9b906989c481c072b8f331aad",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6034,10 +6054,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
           "source_revision": "update/pr-135-review@2026-10-27",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Second review pass of pull request #135 (2026-10-28), after the adversarial review, recounted in the 1.29 stable and 1.30.164014 extractions: vanilla 1.29 ships six $AnimGraph 7 graphs, not one; the second string of a node or $State line is its tag, kept as Tags (Interaction.agr:39 -> Interaction.agf:32-35, Locomotion.agr:3582 -> Locomotion.agf:5065-5068); EditorPos holds for 236 of 236 names used once in the three infected sub-graphs (257 entries, 246 names); .unnamed is also in cow_sample.ast:4 and testWorkspaces/zoW.ast:4; loading the 1.29 format on 1.30 is untested.",
+          "license": "MIT",
+          "source_hash": "4b2d401415b08a98d913d6dae45f98771cd290d35f9a485f1ec9e3c56b31a97a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "update/pr-135-review@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ba62701d4a25d1abe627a48d67fb1f062b72f85a6193cbb5f6ed8bffab18424e",
+      "output_hash": "4b2d401415b08a98d913d6dae45f98771cd290d35f9a485f1ec9e3c56b31a97a",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -11658,10 +11688,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "update/pr-135-review@2026-10-27",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Second review pass of pull request #135 (2026-10-28): the pitfall reports the in-game result as the contributor's test.",
+          "license": "MIT",
+          "source_hash": "1eb0ce61604bdb4bbe6d580472b17a39ff247010ebc2b841eb7e33a425be2719",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "update/pr-135-review@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "34a199208130f4b94d3df53eaf03925ce2317b613c5693767ed3b512688c4118",
+      "output_hash": "1eb0ce61604bdb4bbe6d580472b17a39ff247010ebc2b841eb7e33a425be2719",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -19023,10 +19063,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/pr-135-review@2026-10-27",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Second review pass of pull request #135 (2026-10-28): CLAIM-ANIM-AGR-PORT-129-130 names the six $AnimGraph 7 graphs, the tag mapping, the 236 EditorPos matches, the .unnamed templates and the old-format samples left on 1.30; CLAIM-PHYS-INFECTED-NO-RAGDOLL-130 ends at line 44.",
+          "license": "MIT",
+          "source_hash": "60394101f2a6005d1a461ee1ca9167f02f17c21876c28b38ab500215c382cbfa",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/pr-135-review@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0668c88c10c78723f774eb12ed53df56cca752af47883c586e3eb5b09d15b882",
+      "output_hash": "60394101f2a6005d1a461ee1ca9167f02f17c21876c28b38ab500215c382cbfa",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -34403,10 +34453,20 @@
           "source_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
           "source_revision": "update/pr-135-review@2026-10-27",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Second review pass of pull request #135 (2026-10-28): the config and clip result is reported as the contributor's test, and why a custom .ragdoll might not help is marked inferred.",
+          "license": "MIT",
+          "source_hash": "d34b461323f7a7232bade1e9724752146a0da24916fff6c94259e5f919d77989",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
+          "source_revision": "update/pr-135-review@2026-10-28",
+          "verification_level": "historical"
         }
       ],
       "license": "MIT",
-      "output_hash": "6b6f96828cb34e4057408744a0cff932d4813eea3890c007160ab9069958b412",
+      "output_hash": "d34b461323f7a7232bade1e9724752146a0da24916fff6c94259e5f919d77989",
       "output_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "historical"
