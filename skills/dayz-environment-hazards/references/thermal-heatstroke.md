@@ -96,6 +96,6 @@ Tabla solar **Nasdara** (`Nasdara.c:67-73`): DAWN 2, MORNING 6, NOON 8, AFTERNOO
 
 ## Motorbike and boat (wind)
 
-`DetermineHeatcomfortBehavior` (`Environment.c:575-627`): `Car` with engine on → comfort 0; `Motorbike` if speed > 20; `Boat` if speed > 15 (`constants.c:792-798`). `SetHeatcomfortDirectly` subtracts comfort with `Easing.EaseInCubic` (`:1369-1444`). `BoatScript.GetHeatComfortOverride` exists (digest M); full file was not reopened here — [UNVERIFIED] default value 0.0 cited by digest M `BoatScript.c:108`.
+`DetermineHeatcomfortBehavior` (`Environment.c:575-627`): `Car` with engine on → comfort 0; `Motorbike` if speed > 20; `Boat` if speed > 15 (`constants.c:792-798`). `SetHeatcomfortDirectly` subtracts comfort with `Easing.EaseInCubic` (`Environment.c:1369-1444`). `BoatScript.GetHeatComfortOverride` exists (digest M); full file was not reopened here — [UNVERIFIED] default value 0.0 cited by digest M `BoatScript.c:108`.
 
 Digest I cited `Environment.c:371-402` and `:884-942` for this wind: those lines are cargo cache and `GetWetDelta`, not motorbike behavior.

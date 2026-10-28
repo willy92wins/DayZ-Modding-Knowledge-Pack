@@ -154,7 +154,7 @@ proto static bool EntityOverlapBullet(...) / EntityOverlapSingleBullet(...) / Sp
 Who uses what (verified):
 | Use | API | Geometry/layers | Citation |
 |---|---|---|---|
-| Action cursor (1st pass) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `4_world/classes/useractionscomponent/actiontargets.c:244-249` |
+| Action cursor (1st pass) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `4_world/classes/useractionscomponent/actiontargets.c:245-249` |
 | Action cursor (ground fallback) | `RayCastBullet` | `ROADWAY\|TERRAIN\|WATERLAYER` | `actiontargets.c:383-384` |
 | Melee aiming/hitzone | `RaycastRV` | `ObjIntersectIFire` | `4_world/entities/dayzplayerimplementmeleecombat.c:625` |
 | Melee obstruction | `RayCastBullet` | `BUILDING\|DOOR\|VEHICLE\|ROADWAY\|TERRAIN\|ITEM_SMALL\|ITEM_LARGE\|FENCE` | `dayzplayerimplementmeleecombat.c:674-689` |
@@ -186,9 +186,9 @@ proto native float  GetRelativeVelocityAfter(vector vel);     // :49
 Registro: `SetEventMask(EntityEvent.CONTACT)` → override `event protected void EOnContact(IEntity other, Contact extra)` (`1_core/proto/enentity.c:213`, enum `EntityEvent.CONTACT` en `enentity.c:97`). Constructor no instanciable (privado, `contact.c:11`).
 
 Vanilla patterns:
-- Player: `4_world/entities/dayzplayerimplement.c:174` registers; (up to 1.29: `:3814-3830`; since 1.30: `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3973`) → if `other` is `Transport` and `g_Game.IsServer()` → `RegisterTransportHit(transport)`.
+- Player: `4_world/entities/dayzplayerimplement.c:174` registers; (up to 1.29: `:3822-3835`; since 1.30: `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3971`) → if `other` is `Transport` and `g_Game.IsServer()` → `RegisterTransportHit(transport)`.
 - Infected/animal: `zombiebase.c:50,1030-1043`; `dayzanimal.c:692,942`.
-- `RegisterTransportHit` (up to 1.29: `3_game/entities/entityai.c:4086-4116`; since 1.30: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4134` with a new Motorbike branch at `:4166-4183` before Boat): damage `DT_CUSTOM ... "TransportHit"` with magnitude `GetVelocity(transport).Length()` and, if it dies, `dBodyApplyImpulse(this, 40*velocity)` (Motorbike corpse impulse is `5.0 * velocity`, not 40). ⚠️RELEVANT (same damage+impulse pattern used by stone S2).
+- `RegisterTransportHit` (up to 1.29: `3_game/entities/entityai.c:4089-4156`; since 1.30: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4134` with a new Motorbike branch at `:4166-4183` before Boat): damage `DT_CUSTOM ... "TransportHit"` with magnitude `GetVelocity(transport).Length()` and, if it dies, `dBodyApplyImpulse(this, 40*velocity)` (Motorbike corpse impulse is `5.0 * velocity`, not 40). ⚠️RELEVANT (same damage+impulse pattern used by stone S2).
 - ItemBase: `4_world/entities/itembase.c:1119-1148` — uses `extra.RelativeVelocityBefore.Length()` (via `ProcessImpactSoundEx`, `3_game/entities/inventoryitem.c:200-227`) for impact sound; client plays `#ifndef SERVER`, server sets SyncVar. Does **not** use `Impulse` for force.
 - Vehicles: high-level callback `Transport.OnContact(string zoneName, vector localPos, IEntity other, Contact data)` (`3_game/vehicles/transport.c:318`; 1.29 `CarScript` overrode it, 1.29 `carscript.c:1454-1480`, and on 1.30 cars inherit `Transport.OnContact`, `transport.c:318-346` — damage by own **momentum delta**, not by `data.Impulse`; the 1.29 comment `carscript.c:1453` warns "Can be called very frequently in one frame", on 1.30 it is on `boatscript.c:425`).
 - ItemBase combined trigger+contact style: `easteregg.c:40` (`SetEventMask(CONTACT|TOUCH)`), `fireplace.c:17,55-87` (processes contact in `EOnPostSimulate` with flag, and checks `dBodyIsActive(this)`).
@@ -292,7 +292,7 @@ if (IsDamageDestroyed() && car.GetSpeedometerAbsolute() > 3) {
 }
 ```
 
-**Action cursor** — `actiontargets.c:244-249` (`RaycastRVProxy` + `CollisionFlags.ALLOBJECTS`, default type `ObjIntersectView`); proxies detected with `res.hierLevel > 0` (`:271`). (since 1.30: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; fallback `:383-384`; liquid-without-object utility 0.01 at `:535-537`.)
+**Action cursor** — `actiontargets.c:245-249` (`RaycastRVProxy` + `CollisionFlags.ALLOBJECTS`, default type `ObjIntersectView`); proxies detected with `res.hierLevel > 0` (`:271`). (since 1.30: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; fallback `:383-384`; liquid-without-object utility 0.01 at `:535-537`.)
 
 **Layer matrix query** — `transport.c:790-791` (see 2.6).
 
@@ -383,8 +383,8 @@ DayZPhysics.RayCastBullet(from, to, PhxInteractionLayers.DYNAMICITEM|PhxInteract
 ## 7. Relevance for LF_RollingStone
 
 1. **"Passes through stone" bug**: architectural, not layers. Server-only `dBodyCreateDynamicEx` body will never collide with local client CCT (CCT is simulated client-side). Correct fix = body on client too: either call creation on both sides, or (better) native path `ThrowPhysically/CreateDynamicPhysics` which vanilla already executes on server+owner (`hand_actions.c:77-81`).
-2. **"Push does not appear" bug**: 100% confirmed — `actiontargets.c:244-249` uses `RaycastRVProxy` with `ObjIntersectView`; without View Geometry LOD there is no target. No physics layer fixes it. (since 1.30: same API at `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`.)
-3. **S2 damage/impulse**: `EOnContact → IsServer → ProcessDirectDamage("TransportHit")` pattern is exactly vanilla from `dayzplayerimplement.c:3950-3966` + `entityai.c:4131-4161` — but inverted (in vanilla event is processed by victim, not striker). For stone: player `EOnContact` will not recognize stone as `Transport`; better for **stone** to detect contact and damage player, or register custom damage.
+2. **"Push does not appear" bug**: 100% confirmed — `actiontargets.c:245-249` uses `RaycastRVProxy` with `ObjIntersectView`; without View Geometry LOD there is no target. No physics layer fixes it. (since 1.30: same API at `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`.)
+3. **S2 damage/impulse**: `EOnContact → IsServer → ProcessDirectDamage("TransportHit")` pattern is exactly vanilla from `dayzplayerimplement.c:3958-3971` + `entityai.c:4134-4220` — but inverted (in vanilla event is processed by victim, not striker). For stone: player `EOnContact` will not recognize stone as `Transport`; better for **stone** to detect contact and damage player, or register custom damage.
 4. **Maintain rolling**: `dBodyActive(ALWAYS_ACTIVE)` + low `dBodySetSleepingTreshold` + low `dBodySetDamping`; CCD with `dBodyEnableCCD(maxMotion≈diameter*0.8, inner_radius)`.
 5. **Push**: `dBodyApplyImpulseAt(stone, dir*F, contactPos)` generates natural roll (implicit torque) better than `dBodyApplyImpulse` at origin.
 6. **Runtime layer verification**: log `dGetInteractionLayer(this, PhxInteractionLayers.CHARACTER, dBodyGetInteractionLayer(this))` after creating body (`transport.c:790-791` pattern).

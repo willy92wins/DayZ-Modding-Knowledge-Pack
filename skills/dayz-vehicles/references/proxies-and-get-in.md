@@ -136,8 +136,8 @@ slots - that is why a VPP-spawned vanilla car has no wheels. The moment you move
 baked hull geometry to an attachment, a spawned vehicle shows an empty doorway, and it reads as
 a regression when it is the contract working.
 
-The hook is `OnDebugSpawn()` (`P:\scripts\3_game\entities\entityai.c:3934-3939`, with
-`OnDebugSpawnEx(DebugSpawnParams)` delegating to it). Two source-verified patterns:
+The hook is `OnDebugSpawn()` (`P:\scripts\3_game\entities\entityai.c:3955`, with
+`OnDebugSpawnEx(DebugSpawnParams)` delegating to it at `entityai.c:3937-3939`). Two source-verified patterns:
 
 - explicit `CreateAttachment` per part - `LFQuad.c:176-189`:
   ```c
@@ -153,7 +153,7 @@ The hook is `OnDebugSpawn()` (`P:\scripts\3_game\entities\entityai.c:3934-3939`,
       }
   }
   ```
-- vanilla car, `CreateInInventory` per part - `P:\scripts\4_world\entities\vehicles\inheritedcars\civiliansedan.c:415-437`
+- vanilla car, `CreateInInventory` per part - `P:\scripts\4_world\entities\vehicles\inheritedcars\civiliansedan.c:415-436`
   (`SpawnUniversalParts(); SpawnAdditionalItems(); FillUpCarFluids();` then one call per door/wheel).
 
 The `EntityAI` base implementation is config-driven instead: it reads the type's `attachments[]`

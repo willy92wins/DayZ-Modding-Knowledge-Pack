@@ -13,7 +13,7 @@ description: >
 # DayZ PBO Build Validator
 
 Complete pre-build validation pipeline for DayZ mod addons. Catches configuration errors, missing assets, and structural problems BEFORE packing into PBOs—avoiding in-game crashes and deployment failures.
-(until 1.29: the folder structure, stringtable.csv, include-list, and "Duplicate class names" check below remain the 1.29 contract.) (since 1.30: binarizer also **stops** if a member is defined multiple times in one class; unpacked `-mod` is a diag iteration path, not a shipping substitute. Details: [dayz-1-30-pbo-build.md](references/dayz-1-30-pbo-build.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the folder structure, stringtable.csv, include-list, and "Duplicate class names" check below remain the 1.29 contract.) (since 1.30: binarizer also **stops** if a member is defined multiple times in one class; unpacked `-mod` is a diag iteration path, not a shipping substitute. Details: [dayz-1-30-pbo-build.md](references/dayz-1-30-pbo-build.md) and ## DayZ 1.30.)
 
 ## Overview
 

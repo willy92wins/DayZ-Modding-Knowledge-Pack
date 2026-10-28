@@ -132,9 +132,9 @@ void EEHitBy(
 
 **Called**: server only. Fires AFTER C++ applies damage.  
 **Inheritance chain**:
-1. `EntityAI.EEHitBy` — invokes `m_OnHitByInvoker` (`entityai.c:1143-1150`)
+1. `EntityAI.EEHitBy` — invokes `m_OnHitByInvoker` (`entityai.c:1143-1146`)
 2. `ItemBase.EEHitBy` — random damage to cargo/attachments for clothing (`itembase.c:1450-1488`)
-3. `PlayerBase.EEHitBy` — bleeding, shock check, broken legs, unconRefill (`playerbase.c:1255-1380`)
+3. `PlayerBase.EEHitBy` — bleeding, shock check, broken legs, unconRefill (`playerbase.c:1255-1379`)
 4. `DayZPlayerImplement.EEHitBy` — reset `m_TransportHitRegistered`, damage/death animations (`dayzplayerimplement.c:1563-1616+`)
 
 ### 7. EEHitByRemote
@@ -145,7 +145,7 @@ void EEHitByRemote(int damageType, EntityAI source, int component,
     string dmgZone, string ammo, vector modelPos)
 ```
 
-Called only on **client that caused the hit**. Without `TotalDamageResult`. Used for local feedback (e.g. melee block sound in PlayerBase `playerbase.c:1382-1391`).
+Called only on **client that caused the hit**. Without `TotalDamageResult`. Used for local feedback (e.g. melee block sound in PlayerBase `playerbase.c:1382-1390`).
 
 ### 8. EEKilled
 

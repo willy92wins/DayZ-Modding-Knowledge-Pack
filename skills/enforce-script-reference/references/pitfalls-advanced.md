@@ -226,7 +226,7 @@ modded class PlayerBase
 4. Only ONE `modded class Hologram` can exist across ALL files — multiple declarations conflict
 
     - **`modded class MissionServer` — `OnGameplayDataHandlerLoad` has a vanilla implementation.** It sets `m_RespawnMode`, the debug monitor, and calls `InitialiseWorldData()` (`5_mission\mission\missionserver.c:161-167`). A `modded` override that omits `super` silently breaks world data. The same applies to `OnClientPrepareEvent`, which decides `useDB` from `GetHive()` (`missionserver.c:449-463`): without `super`, character loading breaks.
-    - **CE-safe spawn timing is `GlobalsInit()`, not `OnGameplayDataHandlerLoad`.** The vanilla spawn and the comment *«CE being initialized before spawning them»* live inside `GlobalsInit()` (`3_game\dayzgame.c:1160`, opens with `if (GetCEApi())`, spawn at `:1173-1174`), queued separately at `:1096`. The Mission hook runs much earlier: `CfgGameplayHandler.LoadData()` is line 86 of `MissionServer.OnInit` (`:83-92`). Citing `dayzgame.c:1173-1174` to justify a spawn in `OnGameplayDataHandlerLoad` is a misattributed citation. The derived rule is not "always spawn late" — vanilla spawns Underground carriers in `OnInit` (`missionserver.c:89`) because they do not touch the CE. Spawn where vanilla spawns the family you are creating: items / `ItemBase` with CE lifetime go through the ObjectSpawner route.
+    - **CE-safe spawn timing is `GlobalsInit()`, not `OnGameplayDataHandlerLoad`.** The vanilla spawn and the comment *«CE being initialized before spawning them»* live inside `GlobalsInit()` (`3_game\dayzgame.c:1160`, opens with `if (GetCEApi())`, spawn at `:1173-1174`), queued separately at `:1096`. The Mission hook runs much earlier: `MissionServer.OnInit` calls `CfgGameplayHandler.LoadData()` at `missionserver.c:88` (`OnInit` from `:85`, carriers at `:91`). Citing `dayzgame.c:1173-1174` to justify a spawn in `OnGameplayDataHandlerLoad` is a misattributed citation. The derived rule is not "always spawn late" — vanilla spawns Underground carriers in `OnInit` (`missionserver.c:91`) because they do not touch the CE. Spawn where vanilla spawns the family you are creating: items / `ItemBase` with CE lifetime go through the ObjectSpawner route.
 
 ### A variable named like a type (`map`) fails the whole module (SP-317)
 
@@ -649,17 +649,17 @@ This file did not document `OnCEUpdate` at line 87 (that row is `FileHandle`; di
 - (through 1.29: hand guards auto-passed `e.m_IsJuncture || e.m_IsRemote`). (since 1.30: only `e.m_IsRemote` — `Hand_Guards.c:299,325,351`. New `HandGuardIsNotSurrendered` `:405` returns `!m_Player.IsSurrendered()`.)
 - (through 1.29: `UA_AM_PENDING` was 14). (since 1.30: `UA_AM_INIT = 14` inserted; `PENDING=15`, `ACCEPTED=16`, `REJECTED=17` — `constants.c:508-511`. Never hardcode the integers.)
 - (through 1.29: `TakeEntityToCargo` / `AsAttachment` family). (since 1.30: `[Obsolete]` `Inventory.c:1345-1386` → Target* variants.)
-- (through 1.29: `ActionFillBottleBase` in `RegisterActions`). (since 1.30: `[Obsolete]` `ActionFillBottleBase.c:28-29`; constructor inserts `ActionObtainLiquidBase` `:156`.)
+- (through 1.29: `ActionFillBottleBase` in `RegisterActions`). (since 1.30: `[Obsolete]` `ActionFillBottleBase.c:28-29`; constructor inserts `ActionObtainLiquidBase` `ActionConstructor.c:156`.)
 - `ProcessInputData` override is silent in retail (DIAG + debug flag only) — `DayZPlayerInventory.c:668-687`.
 - `World.Is3rdPersonDisabled()` `[Obsolete]` (`World.c:291`). `GetNoiseReductionByWeather` was **not** deleted (digest O false); both Weather methods exist and are `[Obsolete]` (`Weather.c:407`, `:454`).
 
 ### Looping `CombineItems`: an emptied stack is deleted only on the next frame (added 2026-09-19)
 
-`ItemBase.CombineItems` empties the donor with `AddQuantity(-used)`, which goes through `SetQuantity`. For items with `varQuantityDestroyOnMin = 1` (e.g. `Rag`), `SetQuantity` at the minimum calls `this.Delete()` (`4_world\entities\itembase.c:3333-3342`). `EntityAI.Delete()` only sets `m_PendingDelete` (`3_game\entities\entityai.c:779-783`), and `Object.Delete()` queues `ObjectDelete` for the next frame (`3_game\entities\object.c:82-85`). Until then the emptied stack is still a cargo child with quantity 0, and `CanBeCombined` (`itembase.c:2141-2201`) has no pending-delete check: an empty stack is "not full", so it is a valid target.
+`ItemBase.CombineItems` empties the donor with `AddQuantity(-used)`, which goes through `SetQuantity`. For items with `varQuantityDestroyOnMin = 1` (e.g. `Rag`), `SetQuantity` at the minimum calls `this.Delete()` (`4_world\entities\itembase.c:3333-3342`). `EntityAI.Delete()` only sets `m_PendingDelete` (`3_game\entities\entityai.c:779-782`), and `Object.Delete()` queues `ObjectDelete` for the next frame (`3_game\entities\object.c:82-85`). Until then the emptied stack is still a cargo child with quantity 0, and `CanBeCombined` (`itembase.c:2141-2201`) has no pending-delete check: an empty stack is "not full", so it is a valid target.
 
 Any loop that performs several merges in one call (auto-stack, stack-all, loot consolidation) can therefore pick the emptied stack as a later target and move live quantity into it. Everything merged into it disappears on the next frame. Rag stacks 2/2/5: A←B (B=0, pending), A←C (A full, C=3), B←C (C=0) → 9 rags become 6.
 
-[EXACT][CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE] Before each target and donor, skip entities already queued for deletion (`IsSetForDeletion`, `entityai.c:812-815`), and empty ammunition piles:
+[EXACT][CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE] Before each target and donor, skip entities already queued for deletion (`IsSetForDeletion`, `entityai.c:812-814`), and empty ammunition piles:
 
 ```c
 if (!item || item.IsSetForDeletion())

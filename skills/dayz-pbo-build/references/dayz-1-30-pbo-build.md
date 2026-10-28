@@ -1,6 +1,6 @@
 # DayZ 1.30 — PBO / binarizer deltas
 
-Companion to `SKILL.md` § DayZ 1.30 Exp. Folder structure, stringtable.csv,
+Companion to `SKILL.md` § DayZ 1.30. Folder structure, stringtable.csv,
 include-list, and ODOL non-determinism still hold. This file is the 1.30
 binarizer contract.
 

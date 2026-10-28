@@ -58,7 +58,7 @@ Not extracted under `exp\` (`.anm`). Existence only: `work/pbo-listings/exp__Add
 
 (hasta 1.29: `SurvivorBase` `class Skinning` included `class Lard { item = "Lard"; ... }` at `stable-1.29/characters_data/DZ/characters/data/config.cpp:133-138`.)
 
-(desde 1.30: `Skinning` on `SurvivorBase` is Steaks / Guts / Bones / BloodInfectionSettings only — `exp/characters_data/DZ/characters/data/config.cpp:121-147`. No `Lard` class. Digest line `PlayerBase:337` is the pre-DeRap config.bin number; the extracted file puts this on `SurvivorBase`.)
+(desde 1.30: `Skinning` on `SurvivorBase` is Steaks / Guts / Bones / BloodInfectionSettings only — `exp/characters_data/DZ/characters/data/config.cpp:120-147`. No `Lard` class. Digest line `PlayerBase:337` is the pre-DeRap config.bin number; the extracted file puts this on `SurvivorBase`.)
 
 ## Surrender (no dummy item)
 

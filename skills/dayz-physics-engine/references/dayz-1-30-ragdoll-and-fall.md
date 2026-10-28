@@ -21,7 +21,7 @@ the `SurvivorBase` config bind.
 ### Infected do not ragdoll (in-game test reported by the contributor, 2026-10-16, 1.30.164078)
 
 [EXACT][CLAIM-PHYS-RAGDOLL-API-HUMAN-ONLY-130] The ragdoll API is on `Human` only: `PhysicsSetSimpleDeath` /
-`PhysicsSetRagdoll` / `PhysicsIsRagdoll` are declared in `scripts/3_Game/human.c:1449,1451-1452`, inside
+`PhysicsSetRagdoll` / `PhysicsIsRagdoll` are declared in `scripts/3_Game/human.c:1451-1452`, inside
 `class Human : Man` (`human.c:1359`). Infected inherit `DayZInfected` -> `DayZCreatureAI` ->
 `DayZCreature` -> `EntityAI` (`3_Game/Entities/DayZInfected.c:104`, `3_Game/Entities/DayZAnimal.c:24,191`), so
 none of those calls exist on an infected and a script call will not compile. The lines are the same in

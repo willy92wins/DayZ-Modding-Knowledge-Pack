@@ -12,7 +12,7 @@ where the engine reads mods, and launch `DayZDiag_x64.exe` with `-filePatching` 
 and config edits are picked up without re-binarizing. Three launch modes (offline / server /
 client / all) driven by one orchestrator script and double-click `.bat` wrappers, generated
 per mod into `<Mod>_dev\tools\`.
-(until 1.29: the loop was pack PBO → deploy packed `@Mod` → DayZDiag `-filePatching`.) (since 1.30 [CHANGELOG]: `-mod` may point at an **unpacked** source folder; RV configs load unpacked; new flags `-cacheP3D=0/1` and `-resolveFilePatchingUsingEnfusion=0/1`. Details: [dayz-1-30-test-ingame.md](references/dayz-1-30-test-ingame.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the loop was pack PBO → deploy packed `@Mod` → DayZDiag `-filePatching`.) (since 1.30 [CHANGELOG]: `-mod` may point at an **unpacked** source folder; RV configs load unpacked; new flags `-cacheP3D=0/1` and `-resolveFilePatchingUsingEnfusion=0/1`. Details: [dayz-1-30-test-ingame.md](references/dayz-1-30-test-ingame.md) and ## DayZ 1.30.)
 
 ## SOURCE OF TRUTH
 
@@ -816,7 +816,7 @@ shell dies for this reason, not because the host is broken.
 - Never start Steam, or write or delete its registry keys, from the app's shells: that is what
   creates or freezes the copy, and only an offline edit of the app's hive with the app closed removes
   it (dayz-mcp's `tools/clear-app-steam-shadow.ps1`). Background in
-  `references/dayz-1-30-test-ingame.md`, "Launching the 1.30 Exp DayZDiag directly", point 2.
+  `references/dayz-1-30-test-ingame.md`, "Launching the 1.30 DayZDiag directly", point 2.
   [EXACT] (measured, LL-510 / SP-420 / LL-516)
 
 **2. The request JSON must not carry a UTF-8 BOM.** `Out-File -Encoding utf8` in Windows PowerShell

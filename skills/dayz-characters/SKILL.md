@@ -119,7 +119,7 @@ py3d transmits the per-vertex weights faithfully (the cross-side fix and the S7 
 ### ⚠️ A ZED'S canonical bind is `hermit_newbindpose.xob` (95-bone SUBSET), NOT the player skeleton [✓ verified vanilla 2026-06-28]
 
 Infected do NOT skin against the player rig. `ZombieBase` (and thus `ZombieMaleBase`, which your custom
-infected inherits) carries an `enfanimsys` block — verified `DZ\characters\zombies\config.cpp:71-77`:
+infected inherits) carries an `enfanimsys` block — verified `DZ\characters\zombies\config.cpp:50-57`:
 `graphname=…\infected\infected_main\infected.agr`, `defaultinstance=…infected_main.asi`,
 `skeletonName="hermit_newbindpose.xob"`, `meshObject="…\z_hermit_m.xob"`. **`hermit_newbindpose.xob` is the
 zed's bind pose, and it is a reduced subset.** Counting `<bone>` in `DZ\anims\cfg\skeletons.anim.xml`
@@ -484,7 +484,7 @@ Case LFInfectedBig (AI zombie ~1.2x): correct shape at rest, limbs over-extend w
 ("Vietnam flashback" at shoulders/arms). Verified diagnosis chain:
 
 1. **A ZED's bind is `hermit_newbindpose.xob` (95 bones), not the player's** — `enfanimsys` block of
-   `ZombieBase` (DZ\characters\zombies\config.cpp:71-78). Quick triage: diff the mesh's WEIGHTED
+   `ZombieBase` (DZ\characters\zombies\config.cpp:50-57). Quick triage: diff the mesh's WEIGHTED
    bones against those 95 (parse `DZ\anims\cfg\skeletons.anim.xml`). BUT **0% weight outside the 95
    does NOT mean the deform is solved**: LFInfectedBig had all 42 weighted bones inside → the deform
    was NOT missing bones nor Hoxdolum's facial fix, it was **mesh-vs-skeleton proportion** (bone

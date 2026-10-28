@@ -135,7 +135,7 @@ For a new creature, **copy the formula from the vanilla animal closest in propor
 
 ## ASI — `$animsetinstance` structure [VERIFIED-vanilla]
 
-ASIs map `StateName.SubName.Phase` → `{GUID}path.anm`. They form a parent chain (one base `.asi` + children that override). Example from `DZ/anims/workspaces/player/player_main/player_main_rifle.asi:1-6`:
+ASIs map `StateName.SubName.Phase` → `{GUID}path.anm`. They form a parent chain (one base `.asi` + children that override). Example from the 1.29 `DZ/anims/workspaces/player/player_main/player_main_rifle.asi:1-6`:
 
 ```
 $animsetinstance {
@@ -250,7 +250,7 @@ A measured instance of that warning (2026-09-24, dedicated server, DayZ 1.30.164
 
 Some community tutorials say "reload is an additive animation: only torso/shoulders, the rest is handled by another layer". Vanilla does not confirm this:
 
-- `CMD_Modifier_Additive` (in `player_main.agr:47` and applied in `locomotion.agr:3959-3976`) drives **sickness/cough/sneeze** state modifiers (`SickSneezeStanceSTM`, `SickCoughStanceSTM`). Nothing about reload.
+- `CMD_Modifier_Additive` (in 1.29 `player_main.agr:48` and applied in `locomotion.agr:3959-3976`) drives **sickness/cough/sneeze** state modifiers (`SickSneezeStanceSTM`, `SickCoughStanceSTM`). Nothing about reload.
 - Reloads use dedicated commands without an additive flag: `CMD_Reload_Magazine`, `CMD_Reload_BoltAction`, `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`, `CMD_Reload_Clip`.
 - There is no `AnimNodeAdditive` or `TagAdditive` for reload in the player animgraph.
 
@@ -260,7 +260,7 @@ The tutorial may be describing authoring convention in Blender (only animate tor
 
 Tutorials say "to load the Player Animation Editor in Workbench you have to edit the player graph and remove an event table line". Mechanism confirmed:
 
-- **Compiled workspace** `DZ/anims/workspaces/player/player_main/player_main.aw:136` contains:
+- **Compiled workspace** (1.29) `DZ/anims/workspaces/player/player_main/player_main.aw:137` contains:
   ```
   #eventtable "{3037156104937B91}DZ/anims/workspaces/player/Player_EventTable.ae"
   ```
@@ -282,8 +282,8 @@ Building the whole graph offline and discovering the bug on first spawn is the r
 
 See `references/player-skeleton.md` for the full bone catalog. The two creature-critical bones referenced by anim graphs:
 
-- `EntityPosition` (`skeletons.anim.xml:4`, `movement="true"`) — the bone the engine reads for predicted entity displacement. Animal graphs reference it explicitly, e.g. wolf uses `"PredictionTurn" "EntityPosition"`.
-- `LookAt` (`skeletons.anim.xml:18`) — head/look tracking. The name is literally `LookAt`, not `Pin Look At` or `PinLookAt`.
+- `EntityPosition` (`skeletons.anim.xml:5`, `movement="true"`) — the bone the engine reads for predicted entity displacement. Animal graphs reference it explicitly, e.g. wolf uses `"PredictionTurn" "EntityPosition"`.
+- `LookAt` (`skeletons.anim.xml:17`) — head/look tracking. The name is literally `LookAt`, not `Pin Look At` or `PinLookAt`.
 
 ## Animation tags and HumanAnimInterface.IsTag (added 2026-09-16, DayZ 1.30) [EXACT]
 

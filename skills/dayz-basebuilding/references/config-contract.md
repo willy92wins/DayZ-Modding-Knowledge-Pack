@@ -11,13 +11,13 @@ hold `m_PartTypeData` + built/sync state. Field names in the `Construction{}` bl
 
 ## 1. The entity class
 
-Base class (`config.cpp:25`):
+Base class (`config.cpp:39`):
 
 ```cpp
 class BaseBuildingBase: Inventory_Base { weight=100000; itemSize[]={50,50}; disallowSwapCollisions="true"; };
 ```
 
-A concrete entity, e.g. `class Fence: BaseBuildingBase` (`config.cpp:3252-3282`):
+A concrete entity, e.g. `class Fence: BaseBuildingBase` (`config.cpp:2062-2079`):
 
 - `scope=2; model="\DZ\gear\camping\fence.p3d"; carveNavmesh=1; physLayer="item_large";`
 - `createProxyPhysicsOnInit="false";` + `createdProxiesOnInit[]={"Deployed"};` — the `Deployed` proxy is
@@ -27,14 +27,14 @@ A concrete entity, e.g. `class Fence: BaseBuildingBase` (`config.cpp:3252-3282`)
 
 | Field | Meaning | Reader |
 |---|---|---|
-| `attachments[]` | every material and attachment slot the entity accepts | `GetAttachmentSlots()` reads `CfgVehicles <type> attachments` — `basebuildingbase.c:847-854`; declared `config.cpp:4362-4373` |
-| `hybridAttachments[]` | attachments whose health mirrors a damage zone of the same name | `CheckForHybridAttachments` `basebuildingbase.c:1121-1131`; read in ctor `:53-57`; declared `config.cpp:3270` |
-| `mountables[]` | attachments that get proxy physics toggled (barbed wire) | read in ctor `:58-62`; `UpdateAttachmentPhysics` early-returns if a slot is NOT in `mountables` `:785-786`; declared `config.cpp:3277` |
+| `attachments[]` | every material and attachment slot the entity accepts | `GetAttachmentSlots()` reads `CfgVehicles <type> attachments` — `basebuildingbase.c:847-854`; declared `config.cpp:2683` |
+| `hybridAttachments[]` | attachments whose health mirrors a damage zone of the same name | `CheckForHybridAttachments` `basebuildingbase.c:1121-1131`; read in ctor `:53-57`; declared `config.cpp:2077` |
+| `mountables[]` | attachments that get proxy physics toggled (barbed wire) | read in ctor `:58-62`; `UpdateAttachmentPhysics` early-returns if a slot is NOT in `mountables` `:785-786`; declared `config.cpp:2078` |
 
 ## 3. The `Construction{}` block field-by-field
 
 Two-level nesting: `Construction { class <main_part> { class <part> {...} } }`. Example
-`Construction > wall > base` (`config.cpp:4527-4551`) and `wall > wall_base_down` (`:4553-4585`).
+`Construction > wall > base` (`config.cpp:2776-2797`) and `wall > wall_base_down` (`:2798-2823`).
 
 | Field | Type / meaning | Reader `path:line` |
 |---|---|---|
@@ -71,7 +71,7 @@ Each `Material1..N` child under a part (1.29 `construction.c:632-693, 758-766`):
 
 If the `Materials` block is absent, `HasMaterials` returns true (no material required).
 
-## 4. `GUIInventoryAttachmentsProps` (`config.cpp:4374-4415`)
+## 4. `GUIInventoryAttachmentsProps` (`config.cpp:2684-2710`)
 
 Groups attachment slots into inventory categories (Base / Attachments / Material). Each child has
 `attachmentSlots[]`, `selection` (the model selection the category maps to), `icon`, `name`. Read by
@@ -91,7 +91,7 @@ Readers: `ConstructionPartTypeData.InitActionMasks` (`ConstructionPartTyped.c:95
 
 ## 6. DamageZones ↔ part mapping
 
-The entity's `class DamageSystem { class GlobalHealth ...; class DamageZones {...} }` (`config.cpp:3283+`).
+The entity's `class DamageSystem { class GlobalHealth ...; class DamageZones {...} }` (`config.cpp:2080+`).
 **Damage-zone names MUST match part names lowercased** — `EEHealthLevelChanged` lowercases the zone name and
 looks up the part by it (`ConstructionBase.c:353-369`; 1.29 `basebuildingbase.c:507-517`). A zone whose name does not match a part will not
 trigger that part's destruction on ruin.
@@ -114,16 +114,16 @@ Fill `m_PartName` and optional `m_AdditionalExcludes` (vanilla inserts the playe
 
 Config field readers moved:
 
-| Field | 1.29 reader (kept as map) | 1.30 Exp reader (verified) |
+| Field | 1.29 reader (kept as map) | 1.30 reader (verified) |
 |---|---|---|
 | `name` / `id` / `is_base` / `is_gate` | `UpdateConstructionParts` `construction.c:256-264` | `ConstructionPartTypeData.InitBasicStrings` `ConstructionPartTyped.c:75-86` |
-| `required_parts[]` | `HasRequiredPart` `construction.c:415-418` | still `HasRequiredPart` but on `ConstructionBase.c:723`; data from `InitRequiredParts` `:88-93` |
+| `required_parts[]` | `HasRequiredPart` `construction.c:415-418` | still `HasRequiredPart` but on `ConstructionBase.c:723`; data from `InitRequiredParts` `ConstructionPartTyped.c:88-93` |
 | `conflicted_parts[]` | `HasConflictPart` `construction.c:441-443` | `ConstructionBase.c:745`; data from `InitConflictedParts` |
 | `build_action_type` | `construction.c:959, 966-1003` | `InitActionMasks` `ConstructionPartTyped.c:95-107` |
 | `Materials` | `construction.c:632-693` | `InitPartMaterials` `ConstructionPartTyped.c:109+` |
 
 `UpdateConstructionParts` on `ConstructionBase.c:518-549` no longer walks config children; it iterates
-`ConstructionDataTypeHolder.GetConstructionPartTypeDataArray()` (`ConstructionPartTypedHolder.c:10-63`).
+`ConstructionDataTypeHolder.GetConstructionPartTypeDataArray()` (`ConstructionPartTypedHolder.c:115`, filled by `InitPartsTypeDataHolder` at `:10-63`).
 
 New optional config keys consumed by type data (rebuild-oriented, unused by vanilla Fence): `custom_part_type`,
 `StaticsSupportData`, `can_decay` / `can_decay_general` (`ConstructionPartTyped.c:34-69`). [DESIGN] A player

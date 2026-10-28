@@ -54,7 +54,7 @@ In DayZ 1.30, all car wheel classes (`HatchbackWheel`, `CivSedanWheel`, `Offroad
 - `tyreLongitudinalFriction = 0.85 - 1.5;` (`2.5` in `Truck_01_WheelDouble`, `config.cpp:6152`): longitudinal grip during acceleration and braking. On ruined wheels it drops to `0.25 - 0.35`.
 - `tyreLateralFriction = 0.95 - 1.8;` (`2.8` in `Truck_01_WheelDouble`, `config.cpp:6153`): lateral skid resistance. On ruined rims it rises to `4.95` across all wheels; that this mimics metal on asphalt is an interpretation [UNVERIFIED].
 
-> **Cars only.** These ranges come from `vehicles_wheeled`; motorbike wheels (`exp\vehicles_singletrack\DZ\vehicles\singletrack\config.cpp`) do not follow them: `tyreType = 1` (`:165, 195, 542, 571`); pristine `tyreLateralFriction` 3.0-7.0 (`:171, 201, 547, 576`) and ruined 0.5 (`:183, 213, 558, 587`), meaning it drops when ruined rather than rising; pristine `tyreLongitudinalFriction` 0.85-1.8 (`:170, 200, 546, 575`) and ruined 0.5 (`:182, 212, 557, 586`); Motorbike_02 wheels do not declare `tyreRoughness` (`:531-588`). For a bike, start from `:155-214` (Motorbike_01) or `:531-588` (Motorbike_02).
+> **Cars only.** These ranges come from `vehicles_wheeled`; motorbike wheels (`exp\vehicles_singletrack\DZ\vehicles\singletrack\config.cpp`) do not follow them: `tyreType = 1` (`:165, 195, 546, 575`); pristine `tyreLateralFriction` 3.0-7.0 (`:171, 201, 551, 580`) and ruined 0.5 (`:183, 213, 562, 591`), meaning it drops when ruined rather than rising; pristine `tyreLongitudinalFriction` 0.85-1.8 (`:170, 200, 550, 579`) and ruined 0.5 (`:182, 212, 561, 590`); Motorbike_02 wheels do not declare `tyreRoughness` (`:535-592`). For a bike, start from `:155-214` (Motorbike_01) or `:535-592` (Motorbike_02).
 
 ---
 

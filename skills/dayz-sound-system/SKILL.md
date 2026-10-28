@@ -128,15 +128,15 @@ override void InitItemSounds()
 }
 ```
 2. Fire from server: `StartItemSoundServer(SoundConstants.ITEM_DEPLOY)` /
-   `StopItemSoundServer(SoundConstants.ITEM_DEPLOY_LOOP)` (`itembase.c:4440-4507`).
+   `StopItemSoundServer(SoundConstants.ITEM_DEPLOY_LOOP)` (`itembase.c:4440-4506`).
 3. Client side is automatic. On 1.30 the server queues every sound started in a frame and sends them
-   in one `RPC_ITEM_SOUND_PLAY` (`itembase.c:4440-4484`), a stop goes as `RPC_ITEM_SOUND_STOP`
-   (`:4499-4507`), and `ItemBase.OnRPC` plays them on the client (`:2800-2829`). On 1.29
+   in one `RPC_ITEM_SOUND_PLAY` (`itembase.c:4440-4482`), a stop goes as `RPC_ITEM_SOUND_STOP`
+   (`:4499-4506`), and `ItemBase.OnRPC` plays them on the client (`:2800-2828`). On 1.29
    `OnVariablesSynchronized` dispatched `m_SoundSyncPlay/m_SoundSyncStop` to
    `PlayItemSoundClient/StopItemSoundClient` (1.29 `itembase.c:3319-3332`); on 1.30 that path runs only
-   in a class whose `OnVariablesSynchronized` calls `LegacyItemSoundSync()` (`:3297-3314`).
+   in a class whose `OnVariablesSynchronized` calls `LegacyItemSoundSync()` (`:3297-3312`).
 
-Limits: int IDs up to `ITEM_SOUNDS_MAX = 63` (`3_game/constants.c:415-435`). On 1.29 only ONE play + ONE
+Limits: int IDs up to `ITEM_SOUNDS_MAX = 63` (`3_game/constants.c:423-464`). On 1.29 only ONE play + ONE
 stop could be in flight per sync tick (`4_world/classes/soundhandlers/itemsoundhandler.c:19-20`), and the
 sync vars were cleared ~100 ms later via CallLater; on 1.30 the queue sends several sounds in one RPC, and
 the handler's comment, unchanged, describes only the legacy path.
@@ -183,7 +183,7 @@ daytime, shooting, coast, waterDepth, overcast, fog, snowfall, caveSmall, caveBi
 | `GetGame().CreateSoundOnObject(...)` returns EffectSound | Returns `SoundOnVehicle` entity (`game.c:692`; class `3_game/entities/soundonvehicle.c:1-4`) — legacy, prefer SEffectManager |
 | `DynamicMusicPlayer.PlayTrack("...")` | Private; public API is `SetCategory(...)` + `RegisterDynamicLocation` (`dynamicmusicplayer.c:511,289`) |
 | `OnSoundEvent` override on ItemBase | Does not exist — use ItemSoundHandler or PlaySoundSet manually |
-| Several simultaneous synced sounds via StartItemSoundServer | One play + one stop per sync by protocol (`itemsoundhandler.c:19-20`) |
+| Several simultaneous synced sounds via StartItemSoundServer | Up to 1.29, one play + one stop per sync, one sync variable each (1.29 `itembase.c:4472-4475`, `:4493-4494`). Since 1.30 the sounds started in one frame go in one `RPC_ITEM_SOUND_PLAY` (`itembase.c:4440-4452`, `:4468-4482`); the handler comment (`itemsoundhandler.c:19-20`) still states the old limit |
 | Per-sound master volume API | Only `SetVolumeRelative(0..1)` per wave; shader `volume` is fixed config |
 | samples[] with file extension | Engine infers `.ogg` — paths go extension-less (all prior-art configs) |
 

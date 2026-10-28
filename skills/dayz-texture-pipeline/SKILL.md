@@ -324,7 +324,7 @@ That they are distinct arrays is not inference: `weapon_base.c:62` declares
 **30 vanilla call-sites of the simple API, ZERO** use `GetHiddenSelectionIndex` — they use fixed
 ordinals (`SIMPLE_SELECTION_MELEE_RIFLE = 0` … `SHOULDER_MELEE = 3`, `dayzplayer.c:1173-1176`),
 member indices (`weapon_base.c:383,2128,2136`), or dedicated getters (`GetHairIndex()`,
-`GetBeardIndex()`, `playerbase.c:9405-9407`).
+`GetBeardIndex()`, `playerbase.c:9407-9409`).
 
 **And there is indeed a correct way to get simple index: Bohemia wrote it.** The equivalent of
 `GetHiddenSelectionIndex` for this space is not a function, it is reading array and searching within.

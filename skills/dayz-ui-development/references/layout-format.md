@@ -104,6 +104,26 @@ How this was established: bug-ledger B12
 regex could not tokenize these forms. This is **offline syntax**, not
 an in-game measurement.
 
+### Widget names: in the header, or a `Name` line
+
+[VERIFIED file-format, 2026-10-28] Most vanilla layouts put a widget's name in its header:
+`FrameWidgetClass FrameWidget {` (`day_z_ingamemenu.layout:1`). A few leave it out of the header,
+which then holds the class alone or the class and a GUID string, and give the name as the widget's
+first property: `FrameWidgetClass {` then `Name "HudFrameWidget"`, and
+`RichTextWidgetClass "{00000000E4E67D3A}" {` then `Name "DefaultActionWidget"`
+(`day_z_hud.layout:1-2`, `:11-12`). Vanilla ships both forms in one build, so the game reads both.
+On 1.30.164200, 10 of the 227 vanilla layouts have GUID headers: `day_z_hud.layout` and nine
+console, Xbox, debug and editor layouts. 1.30.164014 has the same nine, and 1.29 none of its 216.
+`day_z_hud.layout` changed form in 1.30.164200 and kept the rest of each widget, so each named
+widget gained a line (292 of its 295) and the file went from 5,176 lines on 1.30.164014 to 5,468;
+the citations of it in this skill give the 1.30.164200 line. The other vanilla layouts this skill
+cites are the same files on 1.29, 1.30.164014 and 1.30.164200.
+
+The pack parser takes the token after the class as the name, so on a layout in the second form it
+reports the GUID string, or an empty name, and keeps the real name as a `Name` attribute
+(`tools/dayz-ui-lab/dayz_ui_lab/parse.py`, `Parser.parse_widget`; run on `day_z_hud.layout` of
+both builds on 2026-10-28).
+
 ---
 
 ## Complete Widget Class Catalog
@@ -150,9 +170,9 @@ an in-game measurement.
 | `MultilineTextWidgetClass` | 351 | Multi-line static text (word-wraps; distinct from MultilineEditBox) |
 | `TextListboxWidgetClass` | 133 | Row/column list (AddItem/GetSelectedRow API in SKILL.md table) |
 | `WindowWidgetClass` | 66 | Titled window chrome |
-| `ItemPreviewWidgetClass` | 65 | 3D item render; script API `SetItem(EntityAI)/SetView(idx)` — `gameplay.c:286-302` |
+| `ItemPreviewWidgetClass` | 65 | 3D item render; script API `SetItem(EntityAI)/SetView(idx)` — `gameplay.c:286-301` |
 | `ThreeStateCheckboxWidgetClass` | 10 | CheckBox variant |
-| `PlayerPreviewWidgetClass` | 5 | 3D player render; `SetPlayer(DayZPlayer)` — `gameplay.c:305-313` |
+| `PlayerPreviewWidgetClass` | 5 | 3D player render; `SetPlayer(DayZPlayer)` — `gameplay.c:305-312` |
 | `PasswordEditBoxWidgetClass` | 1 | EditBox with masked input |
 
 Attributes the property reference below omits (corpus counts): `priority` (1,440 — layout-side

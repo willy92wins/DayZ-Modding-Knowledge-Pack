@@ -349,7 +349,7 @@ Official mechanism for triggering sounds from server and synchronizing them to c
        // ... hasta ITEM_SOUNDS_MAX = 63
    }
    ```
-   [scripts\3_game\constants.c:415-435] [scripts\4_world\entities\itembase.c:116]
+   [scripts\3_game\constants.c:423-464] [scripts\4_world\entities\itembase.c:116]
 
 2. **Registrar soundsets** en `InitItemSounds()`:
    ```
@@ -558,7 +558,7 @@ Available controllers (documented in proto comment):
 (since 1.30: that row remains true for `Object.PlaySoundSet`. Handlers also use `IsHeadlessOrDedicatedServer()`. Do not use `GetNoiseReductionByWeather()` in new code.)
 
 | Public `DynamicMusicPlayer.PlayTrack(string)` | The `PlayTrack` method is **private**. Public API is `SetCategory`. [dynamicmusicplayer.c:511] |
-| Multiple simultaneous sounds with `StartItemSoundServer` | Only 1 play + 1 stop synchronizable at a time by network protocol design. [itemsoundhandler.c:19-20] |
+| Multiple simultaneous sounds with `StartItemSoundServer` | Up to 1.29, only 1 play + 1 stop synchronizable at a time, one sync variable each (1.29 `itembase.c:4472-4475`, `:4493-4494`). Since 1.30 the server queues every sound started in a frame and sends them in one `RPC_ITEM_SOUND_PLAY` [itembase.c:4440-4452, 4468-4482]; each stop is its own `RPC_ITEM_SOUND_STOP` [itembase.c:4499-4506]. The handler comment that states the limit was not updated [itemsoundhandler.c:19-20]. |
 
 ---
 

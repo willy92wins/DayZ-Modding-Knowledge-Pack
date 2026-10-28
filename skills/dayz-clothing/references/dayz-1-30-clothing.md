@@ -99,7 +99,7 @@ NBC slot. Gloves follow the same pattern; digest L omitted them.)
 	};
 ```
 
-`Slot_NBCPants` (`:3148-3153`) and `Slot_NBCBoots` (`:3154-3159`) follow the same four-field shape.
+`Slot_NBCPants` (`:3139-3144`) and `Slot_NBCBoots` (`:3145-3150`) follow the same four-field shape.
 
 ## NBCBag on backpacks — not universal
 

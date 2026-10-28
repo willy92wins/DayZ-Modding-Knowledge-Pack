@@ -1,6 +1,6 @@
 # DayZ 1.30 — MCP / script-console tooling
 
-Companion to `SKILL.md` § DayZ 1.30 Exp. The managed `dayz_test_run` /
+Companion to `SKILL.md` § DayZ 1.30. The managed `dayz_test_run` /
 `dayz_test_stop` lifecycle and Mode=all capture rule still hold.
 
 ## `ScriptConsoleTabRegistry` (inject a Diag console tab)

@@ -184,7 +184,7 @@ ballistics, loot logic, scaling that must also work for modded weapons):
 - Cartridge -> ammo type for the damage system: `AmmoTypesAPI.MagazineTypeToAmmoType(magType, out ammoType)`
   — `P:\scripts\3_game\global\ammotypes.c:26`, used by vanilla in `weapon_base.c:840` `[VERIFIED-vanilla]`.
   Do not hand-roll a `CfgMagazines <t> ammo` lookup.
-  (up to 1.29: those line numbers.) (since 1.30: `MagazineTypeToAmmoType` is
+  (up to 1.29: `ammotypes.c:14`, used in `weapon_base.c:848`.) (since 1.30: `MagazineTypeToAmmoType` is
   `exp\scripts\scripts\3_Game\Global\AmmoTypes.c:26`; vanilla `Weapon_Base.c:840`.
   `GetExplosionParticleID` is gone — MUST call `AmmoTypesAPI.GetExplosiveEffectData(ammoName, surfaceName)`
   and read `m_ParticleID` / `m_SoundSetName` on `ExplosiveEffectData`. → `dayz-1-30-weapons.md`.)

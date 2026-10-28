@@ -591,10 +591,12 @@ pack's own `references/` and record the new `path:line`.
 ## Vanilla line numbers: which build (added 2026-10-28)
 
 DayZ 1.30 reached stable on 2026-10-15 (build 1.30.164078); the author's stable install has run
-1.30.164200 since 2026-10-21. On 2026-10-28 every vanilla `path:line` citation in the skills, the
-`knowledge/` notes, `product-spec.md` and `compatibility-matrix.md` was re-checked against
-1.30.164200 and moved with the text it cites (`history/` and `CHANGELOG.md` keep the lines of
-their dates). Read a citation by what is next to it:
+1.30.164200 since 2026-10-21. On 2026-10-28 every vanilla script citation (a `.c` file, or
+`scripts\config.cpp`) in the skills, the `knowledge/` notes, `product-spec.md` and
+`compatibility-matrix.md` was re-checked against 1.30.164200 and moved with the text it cites,
+where some build has that text (`history/` and `CHANGELOG.md` keep the lines of their dates).
+Citations of the game's data files were re-checked where the re-check could tell what they cite
+(see "Data files" below). Read a citation by what is next to it:
 
 | Citation | Its line numbers are from |
 |---|---|
@@ -602,6 +604,7 @@ their dates). Read a citation by what is next to it:
 | an `exp\` or `exp/` path (`exp\scripts\scripts\4_World\...`) | 1.30.164200 too. `exp\` is the folder of the first 1.30 extraction (1.30.164014 Experimental); the paths kept it, the lines moved |
 | labelled `1.29`, or inside a "hasta 1.29" / "up to 1.29" note | 1.29 stable |
 | labelled with another build (`1.30.164014 Exp`, `1.30.164078`, `v1.24`) | that build. Where a later build changed it, the text says so |
+| a file only 1.29 has: the `.agr` sub-graphs (`Combat.agr`, `Locomotion.agr`, `Vehicles.agr`), which 1.30 replaced with `.agf` files | 1.29 stable |
 
 - **Measurements keep their build.** "Measured in game, DayZ 1.30.164014 Exp" says where and
   when something was observed. The 2026-10-28 re-check moved citations; it did not repeat
@@ -617,9 +620,22 @@ their dates). Read a citation by what is next to it:
 - **Pinned blocks say so.** A block copied from one build (for example the sealed
   `rip-vehicle-import` family-B cookbook) or verified as a table on one build names that build
   in its header and keeps its lines.
-- **`config.cpp` text is not byte-stable across extractions.** The 1.30.164200 `P:\scripts\config.cpp`
-  (DayZ Tools extraction) writes `name="x";` with no spaces; the 1.30.164014 extraction wrote
-  `name = "x";`. Compare values, not bytes.
+- **Data files.** A `scripts\config.cpp` line is the one in DayZ Tools' `P:\scripts\` extraction,
+  which writes `name="x";`. The other configs were re-checked in `config.bin` files unpacked with
+  mikero's DeRap, which writes `name = "x";` and puts a class on other lines than other
+  extractions do, so look for the class or key named next to the number, and compare values, not
+  bytes. Layout, styles, XML and animation files are text, with the same lines in any extraction
+  of one build (`day_z_hud.layout` changed form in 1.30.164200: see
+  `dayz-ui-development/references/layout-format.md`). The re-check matched to their lines the data
+  citations whose text names what the cited line holds, in the files it extracted, and found 31
+  more cited files unchanged since 1.30.164014 (13 layouts, 11 animation files, the three
+  `cfgeconomycore.xml` and, but for their DeRap header, four configs), so their 1.30.164014 lines
+  hold. Three kinds may still give the line of the tree they were written against, which can be
+  an older build's even with no build named or an `exp\` path: config citations that fit neither
+  DeRap tree, 1.29 or 1.30.164200 (the `P:\DZ\` ones, and others such as
+  `wheeled\config.cpp:18382`, past the end of the file); citations of files it did not extract or
+  could not read as text, such as the binarized `.rvmat`; and citations with nothing named next to
+  the number.
 
 ## AUDIT-TO-FIX TRACKER (added 2026-05-12)
 

@@ -17,7 +17,7 @@ description: >
 # DayZ MCP verify — auto-test in-game vía tools MCP
 
 ## GATE 0 — ask WHO is driving, before touching anything (added 2026-08-07)
-(until 1.29: managed `dayz_test_run` / `dayz_test_stop` and Mode=all capture still hold.) (since 1.30: Diag Script Console tabs register via `ScriptConsoleTabRegistry`; `IsHeadless()` names roboclients; SP `PerformActionStart` no-ops while pending. Details: [dayz-1-30-mcp-verify.md](references/dayz-1-30-mcp-verify.md) and ## DayZ 1.30 Exp.)
+(until 1.29: managed `dayz_test_run` / `dayz_test_stop` and Mode=all capture still hold.) (since 1.30: Diag Script Console tabs register via `ScriptConsoleTabRegistry`; `IsHeadless()` names roboclients; SP `PerformActionStart` no-ops while pending. Details: [dayz-1-30-mcp-verify.md](references/dayz-1-30-mcp-verify.md) and ## DayZ 1.30.)
 
 **Before the first `dayz-mcp` tool in a verification run, ask the user whether
 they are driving or the MCP is.** Neither is assumed. A single question per run, not per
@@ -356,13 +356,13 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   targeting casts `RaycastRVProxy` from the camera, 5 m, with the default `ObjIntersectView`
   (`4_world/classes/useractionscomponent/actiontargets.c:241-249`, `3_game/global/dayzphysics.c:88`),
   and at a camera pitch of −45° or lower it also takes the objects of a 30°, 3 m cone and scores them
-  by their distance to that ray, with no hit on them needed (`actiontargets.c:341-342`, `:507-508`,
-  `:796-801`). The take action's target condition then checks only the distance to the object's
+  by their distance to that ray, with no hit on them needed (`actiontargets.c:324-325`, `:531-532`,
+  `:795-801`). The take action's target condition then checks only the distance to the object's
   position: `ActionTakeItemToHands` uses `CCTObject`
   (`4_world/classes/useractionscomponent/actions/interact/actiontakeitemtohands.c:13`,
-  `4_world/classes/useractionscomponent/targetconditionscomponents/cctobject.c:10-25`), and its other
+  `4_world/classes/useractionscomponent/targetconditionscomponents/cctobject.c:10-24`), and its other
   conditions (takeable, not being placed or deleted, attachment state, room in the hands, and since 1.30 a
-  code lock the player cannot detach; `actiontakeitemtohands.c:31-47`)
+  code lock the player cannot detach; `actiontakeitemtohands.c:31-46`)
   do not look at collision either. `action_use`
   builds its world target from the nearest object of the class, with `componentIndex -1` and the
   object's position as the cursor hit, and casts no ray (`MCPClientBridge.c:3769`, `:3783`,
@@ -1256,7 +1256,7 @@ routes) [EXACT][CLAIM-MCPV-WORN-MANNEQUIN]:
   living-infected 3108 plus `ECE_NOPERSISTENCY_WORLD`) behind a player standing still walked away.
   Spawned 2.4 m in front of the player, it attacked after a short `player_move` (jog, 1.2 s), wind-up
   and swings, again and again. Godmode does not hide the player from AI: in diag
-  `m_CanBeTargetedDebug` starts true (`4_World/Entities/ManBase/PlayerBase.c:402`, 1.29).
+  `m_CanBeTargetedDebug` starts true (`4_World/Entities/ManBase/PlayerBase.c:401`, 1.29).
 - **In this run, infected spawned without AI did not stay healthy.** With `flags=8389668` three of
   them idled in place, but about 12 minutes later one custom and one vanilla `ZmbM_SoldierNormal` read
   `health01 = 0` in `telemetry_read(mode="object_at")` and lay on the ground, the third read 0.75. No

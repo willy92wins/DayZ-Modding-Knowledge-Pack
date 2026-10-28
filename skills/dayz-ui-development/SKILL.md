@@ -201,7 +201,7 @@ Every rule below caused a real crash or visual failure in production.
 
 2. **`FrameWidgetClass`/`PanelWidgetClass` are INVISIBLE** (unless a `style` gives Panel a 9-slice
    — see styles-format.md).
-   *(hasta 1.29: For visible backgrounds use ImageWidgetClass with ignorepointer 1 and stretch 1; desde 1.30: vanilla systematically uses styled `PanelWidgetClass` (`style ActionWidget` in `dayzwidgets.styles:3700`) with parametric gradient slices across all interaction prompts in `day_z_hud.layout:2294, 2477, 2755, 3033, 3311`, replacing `ImageWidgetClass` with `linear_gradient.edds` / `card_drop.edds`).*
+   *(hasta 1.29: For visible backgrounds use ImageWidgetClass with ignorepointer 1 and stretch 1; desde 1.30: vanilla systematically uses styled `PanelWidgetClass` (`style ActionWidget` in `dayzwidgets.styles:3700`) with parametric gradient slices across all interaction prompts in `day_z_hud.layout:2424, 2617, 2910, 3203, 3431`, replacing `ImageWidgetClass` with `linear_gradient.edds` / `card_drop.edds`).*
    ⚠️ **Breaking change 1.30:** `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` or `"item"` returns `null` in 1.30 (causing Null Pointer Exception when calling `LoadImageFile`/`SetColor`). Migrate to `PanelWidget.Cast(...)` or generic `Widget`.
    For procedural textures: In script `LoadImageFile(0, "#(argb,8,8,3)color(1,1,1,1,CO)")` then
    `SetColor(ARGB(...))`. ⚠️ The procedural texture FAILED on DayZ 1.29 ("Bad texture name" /
@@ -1065,11 +1065,11 @@ SimpleGroup's panels, hot-loaded and captured natively at 1920x1080, 1280x720 an
   declared translucent washes do not exist: pre-mix the wash into an opaque token, or SetColor at
   runtime. (Texture-less ImageWidget does paint a flat opaque fill — twice confirmed.)
   A `PanelWidgetClass` with `style rover_sim_colorable` (WhitePixel in all nine slices,
-  `dayzwidgets.styles:3223-3246`) does honour the alpha: `color 0 0 0 0` drew nothing and
+  `dayzwidgets.styles:3284-3307`) does honour the alpha: `color 0 0 0 0` drew nothing and
   `1 0 0 1` a red fill (SimpleGroup, 2026-09-28; partial alphas not measured). A
   `ButtonWidgetClass` with a `color` and no `style` drew no fill at all, while the same frame's
   `style Colorable` button did (`style Default` draws nothing in Normal either:
-  `dayzwidgets.styles:1593-1604`). Vanilla's pause-menu buttons are an invisible
+  `dayzwidgets.styles:1597-1608`). Vanilla's pause-menu buttons are an invisible
   `ButtonWidget` over a child `<name>_panel` the script tints, plus a `<name>_label`
   (`day_z_ingamemenu.layout:122-158`, `ingamemenu.c:365-415`).
 
@@ -1152,7 +1152,7 @@ captures `capture_20260829_003222_408` / `_003807_235`.
    there; +10-15% margin over width measured at 1080p.
 3. **Typographic hierarchy in default font-only mode = sized faces**:
    `gui/fonts/Metron12/14/16` and `MetronBook12/14` exist and vanilla uses them
-   (`day_z_hud.layout:1965` Metron14). Unnumbered faces ("Metron",
+   (`day_z_hud.layout:2077` Metron14). Unnumbered faces ("Metron",
    "MetronBook") take their size from the box (TEXT SIZING LAWS), so with them the
    hierarchy is the box heights. Sized bitmap faces keep their pixel size at every
    resolution; text that must scale with the panel wants an SDF face with
@@ -1254,7 +1254,7 @@ mode blend
 
 Without them, the canonical symptom is an opaque black rectangle the size of the widget with the
 art still visible inside. This was isolated by an in-game A/B and matches the vanilla projected
-crosshair (`VANILLA/gui/layouts/day_z_hud.layout:2263-2264`). Add this check during layout authoring
+crosshair (`VANILLA/gui/layouts/day_z_hud.layout:2392-2393`). Add this check during layout authoring
 and again at delivery. For a strip or tape that must be clipped by its parent, the real attribute is
 `clipchildren 1` (`day_z_hud.layout:595`), not `clipping`.
 
@@ -1719,7 +1719,7 @@ To resume them, having the display turned on is enough: load `$profile:uiprobe.l
 ### What changes in DayZ 1.30
 
 1. **Widget type mutation in the interaction HUD (`day_z_hud.layout`)**:
-   - `item` (`day_z_hud.layout:2294`), `interact` (:2477), `continuous_interact` (:2755), `single` (:3033), `continuous` (:3311), `ia_interact` (:4083), `ia_continuous_interact` (:4306) mutated from `ImageWidgetClass` to `PanelWidgetClass`.
+   - `item` (`day_z_hud.layout:2424`), `interact` (:2617), `continuous_interact` (:2910), `single` (:3203), `continuous` (:3431), `ia_interact` (:4314), `ia_continuous_interact` (:4549) mutated from `ImageWidgetClass` to `PanelWidgetClass`.
    - They adopt the new style `style ActionWidget` (`looknfeel/dayzwidgets.styles:3700`), which renders a parametric 9-slice frame using `ActionWidgetGradient*` textures from the `dayz_gui` imageset.
 2. **Modular action information and construction system on cursor (`ActionTargetsCursor.c`)**:
    - `ActionTargetsCursor` incorporates a decoupled supplementary panel pipeline (`TargetActionInfoPanelBase` and `ConstructionActionInfoPanel` in `ActionInfoPanels.c:82`) over `new_ui/hud/action_info_spacer.layout:1`.
@@ -1743,7 +1743,7 @@ To resume them, having the display turned on is enough: load `$profile:uiprobe.l
 
 | Breakage | Severity | Technical cause | How to migrate |
 |---|---|---|---|
-| `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` returns `null` | **CRITICAL** | Interaction widgets changed from `ImageWidgetClass` to `PanelWidgetClass` in `day_z_hud.layout:2294, 2477...` | Migrate variables and casting to `PanelWidget.Cast(...)` or `Widget`. For custom backgrounds use `w.SetStyle(...)` or modify the `ActionWidget` style. |
+| `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` returns `null` | **CRITICAL** | Interaction widgets changed from `ImageWidgetClass` to `PanelWidgetClass` in `day_z_hud.layout:2424, 2617...` | Migrate variables and casting to `PanelWidget.Cast(...)` or `Widget`. For custom backgrounds use `w.SetStyle(...)` or modify the `ActionWidget` style. |
 | Compilation warnings from obsolete Xbox methods | **MEDIUM** | `SetInteractXboxIcon` etc. marked `[Obsolete]` in `ActionTargetsCursor.c:1368` | Replace with `SetControllerIcon(widgetName, inputName)` (`ActionTargetsCursor.c:146`). |
 | Slot modifications do not affect new cursor/HUD icons | **MEDIUM** | `SlotsIcon` is no longer the monolithic base class; `SlotsIconBase` was extracted and `GenericIconBase` was created | Mod/extend `SlotsIconBase` for slot logic or `GenericIconBase` for generic icons. |
 | Assumption of `WorldToScreen` availability in previews | **LOW** | Ticket T181406 is not exposed in Enforce Script (`gameplay.c:276-314`) | Do not attempt to invoke `WorldToScreen`/`ScreenToWorld` on `ItemPreviewWidget`/`PlayerPreviewWidget` from script. |

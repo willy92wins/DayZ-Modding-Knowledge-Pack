@@ -112,7 +112,7 @@ Use only the sections relevant to the task, in addition to the common contract a
   - **Handlebar IK:** Hand grip choreography uses continuous two-bone IK solvers (`AnimSrcNodeIK2` / `AnimSrcNodeIK2Target` in `Vehicles.agf`) attached to vehicle steering pivots.
   - **Rider dynamics:** Rider torso, spine, and head lean curves are driven by dynamic inputs: `VehicleSteering`, `VehicleThrottle`, and `VehicleSuspension` (in `Vehicles.agf`).
   - **Transition queries:** Script queries transitions cleanly via `HumanCommandVehicle.IsTransitioning()` (`// [EXACT] exp\scripts\scripts\3_Game\human.c:735-738`), checking `IsGettingIn()`, `IsGettingOut()`, or `IsSwitchSeat()`.
-  - **Crash and ejection:** Rider fall/crash ejection currently delegates to unconsciousness (`eModifiers.MDF_UNCONSCIOUSNESS` in `// [EXACT] exp\scripts\scripts\4_World\Entities\DayZPlayerImplement.c:2454`) pending full ragdoll command support.
+  - **Crash and ejection:** Rider fall/crash ejection currently delegates to unconsciousness (`eModifiers.MDF_UNCONSCIOUSNESS` in `// [EXACT] exp\scripts\scripts\4_World\Entities\DayZPlayerImplement.c:2454-2458`) pending full ragdoll command support.
 
 ## Mechanical object or prop
 

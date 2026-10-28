@@ -48,7 +48,7 @@ class Rebuilding : ConstructionBase
 ```
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:23-27
+// [EXACT] exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:23-26
 	override protected ConstructionBasic CreateConstructionComponent()
 	{
 		m_Construction = new Rebuilding(this);
@@ -261,7 +261,7 @@ Default `CalculateBitMaskOnBuild` sets only bit 0 at `offset` (`ConstructionPart
 	}
 ```
 
-Support graph: `ConstructionPartStaticsSupportData` parses `StaticsSupportData { SupportProviders / SupportRequirements }` (`ConstructionStatics.c:1-26`). `ConstructionBase.SupportRemovalCheck` defaults to true (`:826-830`); Rebuilding overrides it. [DESIGN] Do not treat `required_parts[]` as the only structural gate on rebuildable houses.
+Support graph: `ConstructionPartStaticsSupportData` parses `StaticsSupportData { SupportProviders / SupportRequirements }` (`ConstructionStatics.c:1-26`). `ConstructionBase.SupportRemovalCheck` defaults to true (`ConstructionBase.c:826-830`); Rebuilding overrides it. [DESIGN] Do not treat `required_parts[]` as the only structural gate on rebuildable houses.
 
 ## 5. Masonry items and `TOOL_BRICKLAYING`
 

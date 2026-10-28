@@ -37,8 +37,8 @@ Master table of actual spellings versus what the videos say. **Always use the ri
 |---|---|---|
 | `discrete = 1` / `discrete = 0` | `isDiscrete = 1` / `isDiscrete = 0` | `BuildingModels/model.cfg`, `Crate/model.cfg` |
 | "rigid body vs weight deformation" | Mechanical (no interpolation) vs organic/smooth | `dayz-model-pipeline/references/animations.md:16` |
-| "Entity Position" (with space) | `EntityPosition` (PascalCase, one word) | `DZ/anims/cfg/skeletons.anim.xml:4` |
-| "Pin Look At" / "Look At" | `LookAt` (PascalCase, one word). `Pin` does not exist in vanilla | `DZ/anims/cfg/skeletons.anim.xml:18` |
+| "Entity Position" (with space) | `EntityPosition` (PascalCase, one word) | `DZ/anims/cfg/skeletons.anim.xml:5` |
+| "Pin Look At" / "Look At" | `LookAt` (PascalCase, one word). `Pin` does not exist in vanilla | `DZ/anims/cfg/skeletons.anim.xml:17` |
 | "right hand dummy" | `RightHand_Dummy` (with underscore, helper in lod=2) | `DZ/anims/cfg/skeletons.anim.xml:100,115,525` |
 | "left hand mag tracking" bones | `LeftHand_Dummy` exists; there are NO magazine bones in production skeleton | `DZ/anims/cfg/skeletons.anim.xml:74` + absence in player skeleton |
 | `cmd death` (lowercase, with space) | `CMD_Death` (UPPER_SNAKE with `CMD_` prefix) | `DZ/animals/animations/!graph_files/ambientlife/ambientlife_graph.agr` |
@@ -47,7 +47,7 @@ Master table of actual spellings versus what the videos say. **Always use the ri
 | `cmd success` | `CMD_AttackSuccess` (`CMD_Success` alone does NOT exist) | same |
 | `skeletonAnims.xml` / `skeletonanim.xml` | `skeletons.anim.xml` (literal, with dots) | `DZ/anims/cfg/skeletons.anim.xml` |
 | "weapon cocked" (state ID) | `FireCocked` (state) — state path is `WeaponOperations.<rig>.FireCocked` | `SurvivorAnims/animgraph/player_main/combat.agr:795` |
-| "mag remove" (state ID) | `ReloadMagazineDetach` — state path `WeaponOperations.<rig>.ReloadMagazineDetach` | `.../weapons/player_main_1911.asi:21` |
+| "mag remove" (state ID) | `ReloadMagazineDetach` — state path `WeaponOperations.<rig>.ReloadMagazineDetach` | `.../weapons/player_main_1911.asi:52` |
 
 **Any identifier from the video** that does not appear confirmed in this table or below with actual `path:line`, **must be grepped in `P:\` before being used**. The videos are a useful source but systematically imprecise in casing and separators.
 
@@ -75,13 +75,13 @@ Blender (rig + skeleton + animaciones)
 
 Creatures (and the player) use two skeleton bones that the engine natively understands:
 
-- **`EntityPosition`** [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:4`]
+- **`EntityPosition`** [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:5`]
   - `<bone name="EntityPosition" index="0" movement="true" lod="0" />`
   - Bone that the engine uses for entity prediction/displacement. Appears in player skeleton and is referenced from animal animgraphs — wolf uses `"PredictionTurn" "EntityPosition"` (in `wolf_maingraph.agr`).
   - `movement="true"` is what marks the bone as actual movement driver.
   - For flying creatures tricks are used because DayZ does not natively support flight [VERIFIED-source, hunterz688 vol.1].
 
-- **`LookAt`** [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:18`]
+- **`LookAt`** [VERIFIED-vanilla `DZ/anims/cfg/skeletons.anim.xml:17`]
   - `<bone name="LookAt" index="18" lod="0" />`
   - **`Pin` does NOT exist in vanilla** — the video gets it wrong. The bone is just `LookAt`.
   - Used by AI / engine to aim look at target.
@@ -288,7 +288,7 @@ The actual names (with paths). General pattern: `WeaponOperations.<RigKey>.<Stat
 | Video said | Actual | Example path | Source |
 |---|---|---|---|
 | "weapon cocked" / "Cocked" | `FireCocked` | `WeaponOperations.ErcRas.FireCocked` → `p_erc_empty_cocked_1911_ras.anm` | `.../weapons/player_main_1911.asi:10` |
-| "mag remove" | `ReloadMagazineDetach` | `WeaponOperations.ErcRas.ReloadMagazineDetach` → `p_erc_reload_mag_remove_1911_ras.anm` | `.../weapons/player_main_1911.asi:21` |
+| "mag remove" | `ReloadMagazineDetach` | `WeaponOperations.ErcRas.ReloadMagazineDetach` → `p_erc_reload_mag_remove_1911_ras.anm` | `.../weapons/player_main_1911.asi:52-53` |
 | "bullet in chamber" | **DOES NOT exist as state name** | — | — |
 
 **Chambering** is done via commands (not state names): `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`. The video confused the command with a state.
@@ -301,7 +301,7 @@ The actual names (with paths). General pattern: `WeaponOperations.<RigKey>.<Stat
 
 ### 3.4 Animation Editor (Workbench) — [VERIFIED-vanilla, mecanismo aclarado]
 
-Actual mechanism: the `#eventtable` line only exists in the **compiled** workspace (`DZ/anims/workspaces/player/player_main/player_main.aw:136`):
+Actual mechanism: the `#eventtable` line only exists in the **compiled** workspace (1.29 `DZ/anims/workspaces/player/player_main/player_main.aw:137`):
 
 ```
 #eventtable "{3037156104937B91}DZ/anims/workspaces/player/Player_EventTable.ae"
@@ -331,7 +331,7 @@ The video claim "30 fps default" remains **unconfirmed and unrefuted** without a
 The vol.3 video claims that "reload is additive animation: only torso/shoulders downward". **Vanilla does not back this up.**
 
 What does exist [VERIFIED-vanilla]:
-- `CMD_Modifier_Additive` (in `player_main.agr:47` and used in `locomotion.agr:3959-3976`) controls **character state modifiers**: `SickSneezeStanceSTM`, `SickCoughStanceSTM`. Cough, sneeze, fever. Nothing related to reload.
+- `CMD_Modifier_Additive` (in 1.29 `player_main.agr:48` and used in `locomotion.agr:3959-3976`) controls **character state modifiers**: `SickSneezeStanceSTM`, `SickCoughStanceSTM`. Cough, sneeze, fever. Nothing related to reload.
 - Vanilla reloads use **dedicated commands without additive flag**: `CMD_Reload_Magazine`, `CMD_Reload_BoltAction`, `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`, `CMD_Reload_Clip`.
 - There is no `AnimNodeAdditive` node or `TagAdditive` tag for reloads in the player animgraph.
 

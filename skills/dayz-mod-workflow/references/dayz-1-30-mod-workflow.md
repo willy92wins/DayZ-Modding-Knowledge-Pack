@@ -1,6 +1,6 @@
 # DayZ 1.30 — implementation-workflow deltas
 
-Companion to `SKILL.md` § DayZ 1.30 Exp. The six-layer debug hierarchy, offline
+Companion to `SKILL.md` § DayZ 1.30. The six-layer debug hierarchy, offline
 gates, and SyncVar rules still hold. This file is the 1.30 contract delta for
 actions, CE rootclasses, `cfggameplay.json`, the underground trigger editor,
 and NV type switches.

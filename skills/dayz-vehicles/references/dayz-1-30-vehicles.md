@@ -56,7 +56,7 @@ The live light entity is `VehicleLightBase : SpotLightBase` (`VehicleLightBase.c
 `ActionSwitchLights` now uses `ToggleVehicleLightsActionInput` and `transport.LightToggle()`:
 
 ```c
-// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\Vehicles\ActionSwitchLights.c:16-19
+// [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\Vehicles\ActionSwitchLights.c:16-18
 	override typename GetInputType()
 	{
 		return ToggleVehicleLightsActionInput;
@@ -232,7 +232,7 @@ enum BoatFluid : ETransportFluid {}
 		speedGeoms[] = {"geotohide"};
 ```
 
-`Motorbike_02` uses `0.27` (`config.cpp:729-730`). The C++ filter itself is not in Enforce [UNVERIFIED]. Cars/trucks in this extraction were not found declaring the pair [UNVERIFIED] — copy the motorbike pattern only if a high-speed geom snag is measured.
+`Motorbike_02` uses `0.27` (`config.cpp:736-737`). The C++ filter itself is not in Enforce [UNVERIFIED]. Cars/trucks in this extraction were not found declaring the pair [UNVERIFIED] — copy the motorbike pattern only if a high-speed geom snag is measured.
 
 ## 8. Wreck cisterns as `Well`
 

@@ -502,23 +502,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - The pack is consolidated for DayZ 1.30 stable. 1.30 reached stable on 2026-10-15 (1.30.164078),
   and the owner's stable install has run 1.30.164200 since 2026-10-21. On 2026-10-28 every vanilla
-  `path:line` citation in the skills, the `knowledge/` notes, `product-spec.md` and
-  `compatibility-matrix.md` was re-checked against 1.30.164200 and moved with the text it cites;
-  `history/` and this changelog keep the lines of their dates. The claims on those lines move with
-  them, and `sources/source-map.json` is resealed.
+  script citation (a `.c` file, or `scripts\config.cpp`) in the skills, the `knowledge/` notes,
+  `product-spec.md` and `compatibility-matrix.md` was re-checked against 1.30.164200 and moved with
+  the text it cites, where some build has that text; `history/` and this changelog keep the lines
+  of their dates. Citations of the game's data files were re-checked where the re-check could
+  read the cited file on 1.30.164200; "Data files" in `_shared/dayz-conventions.md` says how, and
+  which may still give an older tree's line. The claims on those lines move with them, and
+  `sources/source-map.json` is resealed.
   - `_shared/dayz-conventions.md` gains "Vanilla line numbers: which build". A citation with no
     build named, or with an `exp\` path (the folder of the first 1.30 extraction, 1.30.164014),
-    gives the 1.30.164200 line; one labelled `1.29`, or inside a "hasta 1.29" note, the 1.29 line;
-    one labelled with another build, that build's line. Measurements keep the build they were made
-    on, and claim records the build they were verified on: the re-check moved citations and claim
-    line ranges, and repeated no measurement.
+    gives the 1.30.164200 line; one labelled `1.29`, or inside a "hasta 1.29" note, or of a file
+    only 1.29 has (the `.agr` sub-graphs), the 1.29 line; one labelled with another build, that
+    build's line. Measurements keep the build they were made on, and claim records the build they
+    were verified on: the re-check moved citations and claim line ranges, and repeated no
+    measurement.
   - A citation whose text 1.30 no longer has keeps its 1.29 line and is labelled `1.29` (the 1.29
     `construction.c` in `dayz-basebuilding`, for one). Where the cited code changed in 1.30, the
     text now says what 1.30 does: `CarFluid` is an alias of `ETransportFluid`, the class a ruined
     wheel becomes is derived from its name, `THERMAL_BIAS` takes index 11 of the player stats, the
     camera reads its look limits from the native `GetLookLimits`, the item sounds started in one
-    frame go in one RPC, and the 1.29 fix for lights left on after the driver gets out finds nothing
-    to fix on 1.30.
+    frame go in one RPC, `LocalTakeEntityAsAttachmentEx` is obsolete and `Man` no longer overrides
+    it, and the 1.29 fix for lights left on after the driver gets out finds nothing to fix on 1.30.
   - The headings of the 1.30 sections say "DayZ 1.30", not "DayZ 1.30 Exp"; the companion files
     keep their `dayz-1-30-*.md` names, which other files link to. The README's build coverage and
     the compatibility matrix say what was re-checked on 1.30 stable; the matrix levels are still the
@@ -549,6 +553,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     class" holds for 1.30.164014 only. `references/dayz-1-30-weapons.md` lists their classes: two
     config parents are not the script ones (`SCARL_Base` and `MP18_Base` inherit `Rifle_Base`).
     Spawning them in game was not tried.
+  - `dayz-ui-development`: `day_z_hud.layout` gives its widgets' names in `Name` lines instead of
+    their headers, so it grew from 5,176 lines on 1.30.164014 to 5,468 and its citations moved
+    (1.30.164078's layouts were not checked). `references/layout-format.md` describes both forms,
+    says which vanilla layouts use each, and how the pack parser reads the `Name` form.
 
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164200 stable
   (`DayZDiag_x64.exe` 1.30.164.200). On that tree it failed only on the tree's digest: the
@@ -633,13 +641,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   fallback of the action cursor at `actiontargets.c:324-325` (not `:329-331`) and
   `res.hierLevel > 0` at `:271` (not `:249`), and `dayz-animation-pipeline`
   `references/anim-graph.md` gives the `.unnamed` group at `zoW.ast:4` (not `:643`) and lists the
-  `Facial` group of `player_main.ast` with the other migrated names. Ranges that began or ended one
+  `Facial` group of `player_main.ast` with the other migrated names. `dayz-vehicles`
+  `references/proxies-and-get-in.md` gives the `OnDebugSpawn` hook at `entityai.c:3955` and the
+  `OnDebugSpawnEx` that calls it at `:3937-3939`. Data citations too: `skeletons.anim.xml` has
+  `EntityPosition` at `:5` and `LookAt` at `:17` (not `:4` and `:18`) and the bones marked
+  `To Be removed` at `:293-302` (`dayz-animation-pipeline` and
+  `knowledge/vault-notes/dayz-animations-creatures-weapons.md`), and the 1.29 `player_main.aw` and
+  `player_main.agr` have `#eventtable` at `:137` and `CMD_Modifier_Additive` at `:48` (not `:136`
+  and `:47`). Config lines counted in another extraction now give the DeRap line of 1.30.164200
+  where the re-check reached them: the `Fence` blocks in `dayz-basebuilding`
+  `references/config-contract.md`, `CivSedanWheel` in `dayz-vehicles` `SKILL.md`, the zombies'
+  `enfanimsys` in `dayz-characters` `SKILL.md` and the two `reloadAction` lines of
+  `DZ\data\config.cpp` in `dayz-animation-pipeline`. Ranges that began or ended one
   line off on their own build now cover the code they cite: `OnDebugSpawn` in `civiliansedan.c`
   (`dayz-vehicles` `references/proxies-and-get-in.md`), `GetTime` in `game.c` and
   `IsSetForDeletion` in `entityai.c` (`enforce-script-reference` `SKILL.md` and
   `references/pitfalls-advanced.md`), and `GetQuantityMax` in `ItemBase.c` (`dayz-basebuilding`
   `SKILL.md`). Citations whose text no build has, such as the `enwidgets.c` lines of
   `dayz-ui-development` `references/LFPG_UI_KnowledgeBase_v3.md`, are left as they were.
+- `dayz-realistic-animation-director` `SKILL.md` said that 1.30 removed `SurrenderDummyItem`. The
+  class is still there, marked obsolete (`surrenderdummyitem.c:1-2`): 1.30 no longer puts it in the
+  hands, and only the obsolete `CheckEmoteLockedState` reads it (`EmoteManager.c:1211-1214`).
 
 - Citations of files this pack does not ship now say so. `_shared/dayz-conventions.md` gains
   "Citation placeholders: `[PROJ]`, `[SKILLS]`, `<project>_dev/...`": what each token means, and

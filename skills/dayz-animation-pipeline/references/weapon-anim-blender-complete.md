@@ -2,7 +2,7 @@
 >
 > 1. **{GUID} keys: DO NOT strip them.** The body of this doc says ~4x to remove the {GUID} serial keys from copied .asi files ("DayZ does not need them"). That is WRONG - verified against vanilla DZ/anims/workspaces/player/player_main/weapons/player_main_akm.asi: every line carries a {GUID} prefix (#template, #parent, #ikpose, and all 27 .anm value lines). Keep them / let Workbench generate them. Hand-authoring bare paths risks silent resolution failure. [VERIFIED vanilla]
 > 2. The companion *-CRITIC.md lists the remaining must-verify items (ikpose_* config keys, the 3-frame weapon-states convention, the "filepatching does not reload .anm" claim, the reloadAction legacy class) - each with the exact primary source to check before relying on it.
-> 3. Verified-correct and safe to rely on: the conflict-free-across-mods finding for weapon anims via the ASI route (the one-anim-mod wall applies only to player-GRAPH-replacing mods), the AddItemInHandsProfileIK 5-arg signature (dayzplayer.c:243), and the 42 WeaponOperations.* names (player_main.ast:1236-1280).
+> 3. Verified-correct and safe to rely on: the conflict-free-across-mods finding for weapon anims via the ASI route (the one-anim-mod wall applies only to player-GRAPH-replacing mods), the AddItemInHandsProfileIK 5-arg signature (dayzplayer.c:243), and the 42 WeaponOperations.* names (1.29 player_main.ast:1236-1280).
 
 ---
 
@@ -249,7 +249,7 @@ The three weapon conditions — the **only** ones — are:
 - Use **"visual location/rotation"** keying when a bone is constraint-driven.
 - **The "additive" framing is an AUTHORING convention, not a graph node.** Reloads in vanilla use dedicated `CMD_Reload_*` commands without an additive flag (`CMD_Modifier_Additive` drives sickness/cough/sneeze, not reload). "Reload is additive (shoulders down)" means *only animate torso/arms and export selected-bones-only additive*. (`anim-graph.md:127-135`.)
 
-**Naming caveat:** `ReloadMagazineDetach` maps to a `*_mag_remove_*.anm`, but that vanilla anim does **NOT** actually remove a magazine — it is the **hand-from-hip return motion** (`[verify]`, transcript single-source). `FireCocked` = fire while cocked. "Bullet in chamber" is not a state; chambering is command-driven. (`player_main_1911.asi:21`; transcript.)
+**Naming caveat:** `ReloadMagazineDetach` maps to a `*_mag_remove_*.anm`, but that vanilla anim does **NOT** actually remove a magazine — it is the **hand-from-hip return motion** (`[verify]`, transcript single-source). `FireCocked` = fire while cocked. "Bullet in chamber" is not a state; chambering is command-driven. (`player_main_1911.asi:52-53`; transcript.)
 
 ### 4.6 Magazine attach/detach tracking (no mag bone)
 
@@ -361,7 +361,7 @@ For a `.txo`: same mechanism — right-click → "Register resource and import",
 
 The Workbench Animation Editor was historically crash-prone (`status access violation` on new group; `Error openning workspace`; `no TXA file found` editing vanilla `DZ\Anims`). Budget for editor instability. (`feedback.bistudio.com/T134639`.)
 
-To inspect (never ship) vanilla states: open a **copy** of `player_main.aw`, delete the `#eventtable` line (`player_main.aw:136` of 138), open in the editor, double-click Master Control in Sheets, right-click → set node default running / run master control, Play; use Debug Controls to fire `fire`, `chambering`, `reloads`. **Never ship a debinarized/edited vanilla `.aw`/`.p3d`/`.anm`** — that is against BI Workshop rules and gets you removed. (`player_main.aw:136`; transcript; `anim-graph.md:137-147`.)
+To inspect (never ship) vanilla states: open a **copy** of `player_main.aw`, delete the `#eventtable` line (1.29 `player_main.aw:137` of 139), open in the editor, double-click Master Control in Sheets, right-click → set node default running / run master control, Play; use Debug Controls to fire `fire`, `chambering`, `reloads`. **Never ship a debinarized/edited vanilla `.aw`/`.p3d`/`.anm`** — that is against BI Workshop rules and gets you removed. (1.29 `player_main.aw:137`; transcript; `anim-graph.md:137-147`.)
 
 ---
 
@@ -396,16 +396,16 @@ $animsetinstance {
 
 ### 7.3 State vocabulary
 
-State paths are `WeaponOperations.<RigKey>.<StateName>`. Only **TWO RigKeys** exist in vanilla: **`ErcRas`** (erect) and **`PneRas`** (prone), both carrying the `Ras` (rail-accessory / raised soft-aim) suffix. **There is no crouch RigKey** — crouch reuses `ErcRas`; stance is handled by the graph stance STM. Do not invent `WeaponOperations.CroRas`. (`player_main.ast:1228-1235`; grep over 80 weapon ASIs: 642 `ErcRas` / 638 `PneRas`, no others.)
+State paths are `WeaponOperations.<RigKey>.<StateName>`. Only **TWO RigKeys** exist in vanilla: **`ErcRas`** (erect) and **`PneRas`** (prone), both carrying the `Ras` (rail-accessory / raised soft-aim) suffix. **There is no crouch RigKey** — crouch reuses `ErcRas`; stance is handled by the graph stance STM. Do not invent `WeaponOperations.CroRas`. (1.29 `player_main.ast:1228-1235`; grep over 80 weapon ASIs: 642 `ErcRas` / 638 `PneRas`, no others.)
 
-The complete vanilla `WeaponOperations` set is the **42 `$anims`** in `player_main.ast:1236-1280`:
+The complete vanilla `WeaponOperations` set is the **42 `$anims`** in 1.29 `player_main.ast:1236-1280`:
 `ChamberingBulletL/R`, `ChamberingCancel`, `ChamberingFast_Closed/Open`, `ChamberingIn`, `ChamberingLook`, `ChamberingLoop(+1/_Closed_Bullet/_Closed_NoBullet/_Open_Bullet/_Open_NoBullet)`, `ChamberingOut`, `Chambering_Closed(_Uncocked)`, `Chambering_NoBulletL/R`, `Chambering_Open`, `Fire`, `FireCocked`, `FireEmptyAutomatic`, `FireJam`, `FireLast`, `FireUncocked`, `Jamming`, `'Jamming Cancel'` (literal space), `'Jamming Check'`, `Obstruction`, `ReloadAction_Closed(_Uncocked)/_Open`, `ReloadBoltAction2`, `ReloadClipInBullet/InNoBullet/Out/Pose`, `ReloadMagBullet`, `ReloadMagNoBullet`, `ReloadMagazineDetach`, `ReloadNoMagBullet`, `ReloadNoMagNoBullet`.
 
-Keys are **exact, dotted, case-sensitive, stance-segmented**. A typo/missing key silently falls back to the vanilla anim (or breaks that operation). Note the literal space in `'Jamming Cancel'`. (`player_main.ast:1236-1280`; `JD_Demo_SVD.asi:23,32`.)
+Keys are **exact, dotted, case-sensitive, stance-segmented**. A typo/missing key silently falls back to the vanilla anim (or breaks that operation). Note the literal space in `'Jamming Cancel'`. (`player_main.ast:1218-1261`; `JD_Demo_SVD.asi:23,32`.)
 
 ### 7.4 The `.ast` template (schema — copy, don't hand-author)
 
-The `.ast` declares **27 `$groupType` blocks**; `WeaponOperations` is groupType #27 with `#ngroupnames 2` (`ErcRas,PneRas`) / `#nanims 42`. It is the schema that **legalizes** which state names an `.asi` may populate. The full grammar is undocumented — **copy-edit from the closest vanilla `.ast`**. (`player_main.ast:1-2,1228-1281`.)
+The `.ast` declares **27 `$groupType` blocks**; `WeaponOperations` is groupType #27 with `#ngroupnames 2` (`ErcRas,PneRas`) / `#nanims 42`. It is the schema that **legalizes** which state names an `.asi` may populate. The full grammar is undocumented — **copy-edit from the closest vanilla `.ast`**. (1.29 `player_main.ast:1-2,1228-1281`.)
 
 ### 7.5 Enforce Script registration (REQUIRED)
 
@@ -755,7 +755,7 @@ Source: `DayZATool.exe --extract-anim` on each vanilla `.anm` under `DZ/anims/an
 
 ### CORRECTION — ikpose frame count ("ikpose = 1 frame") [VERIFIED-vanilla]
 
-The weapon IK grip pose (`ik/weapons/<wpn>.anm`) is **ONE distinct static pose**. The vanilla file ships `frame_count=2` @30fps, but **frame 1 is a byte-exact duplicate of frame 0 for every bone/channel** (verified by `dupcheck.py` on `ik_akm.seanim`). So "1 frame" is correct in intent; the literal file carries 2 (write a duplicate if the tool requires ≥2). IK poses are shared/registered once and reused across weapons — the AKM `.asi` reuses izh18's pose (`player_main_akm.asi:5` → `.../ik/weapons/izh18.anm`).
+The weapon IK grip pose (`ik/weapons/<wpn>.anm`) is **ONE distinct static pose**. The vanilla file ships `frame_count=2` @30fps, but **frame 1 is a byte-exact duplicate of frame 0 for every bone/channel** (verified by `dupcheck.py` on `ik_akm.seanim`). So "1 frame" is correct in intent; the literal file carries 2 (write a duplicate if the tool requires ≥2). IK poses are shared/registered once and reused across weapons — the AKM `.asi` reuses izh18's pose (`player_main_akm.asi:6` → `.../ik/weapons/izh18.anm`).
 
 ### ikpose_* config keys — VERIFIED and LOCATION CORRECTED [VERIFIED-vanilla]
 
@@ -778,7 +778,7 @@ The Discord source was INCOMPLETE — it omitted the two `*_diro` keys (`ikpose_
 `reloadAction` is a LEGACY `CfgWeapons` property (Arma/old-DayZ lineage) that named a reload action in `CfgMovesMaleSdr`. In DayZ Standalone it is **NOT** the mechanism that drives reloads: the `.asi`/`.ast` graph binds clips by graph-node names (`WeaponOperations.ErcRas.ReloadMagBullet`, `ReloadMagazineDetach`, `Chambering_Closed`, …), independent of `reloadAction`.
 
 - Not required: ALL vanilla rifles omit it. AK74 (`DZ/weapons/firearms/ak74/config.cpp`, full read) and vanilla SVD (`DZ/weapons/firearms/svd/config.cpp`) define neither `reloadAction` nor `shotAction`. [VERIFIED-vanilla]
-- It survives in exactly TWO vanilla configs: a crossbow (`reloadAction="ReloadBow"`) and the AT launcher (`reloadAction="ManActReloadAT"`) at `DZ/data/config.cpp:4574` and `:4738`. [VERIFIED-vanilla]
+- It survives in exactly TWO vanilla configs: a crossbow (`reloadAction="ReloadBow"`) and the AT launcher (`reloadAction="ManActReloadAT"`) at `DZ/data/config.cpp:3500` and `:3584`. [VERIFIED-vanilla]
 - No vanilla Enforce `.c` reads `reloadAction`/`GetReloadAction` (grep over the tree, *.c → 0). [VERIFIED-vanilla]
 - The JD demo SVD still SETS `reloadAction="ReloadSVD"` (`JDsAnimationDemo/Firearms/SVD/config.cpp:41`), but that string resolves to NO class in unpacked vanilla and the demo animates fine via its `.asi`. [VERIFIED]
 - Community searches (DayZ Wiki Changelog) report `reloadAction`/`shotAction`/`drySound`/`disarmAction` etc. were removed as obsolete ~1.25-1.26. [verify — Fandom/wobo 403, exact line/version not read]
@@ -806,10 +806,10 @@ Claim "filepatching does NOT reload `.anm` → repack the PBO each iteration" is
 
 ### Other gap items moved to VERIFIED [VERIFIED-vanilla]
 
-- **WeaponOperations group**: exactly `#ngroupnames 2` (`ErcRas`, `PneRas`) and `#nanims 42`; 42 names match incl. literal-space `Jamming Cancel`/`Jamming Check`. **No `CroRas` in WeaponOperations** (CroRas lives only in OTHER groupTypes, lines 401-780); no modeswitch op. Do NOT invent `WeaponOperations.CroRas`. (`player_main.ast:1228-1281`)
+- **WeaponOperations group**: exactly `#ngroupnames 2` (`ErcRas`, `PneRas`) and `#nanims 42`; 42 names match incl. literal-space `Jamming Cancel`/`Jamming Check`. **No `CroRas` in WeaponOperations** (CroRas lives only in OTHER groupTypes, lines 401-780); no modeswitch op. Do NOT invent `WeaponOperations.CroRas`. (1.29 `player_main.ast:1228-1281`)
 - **Weapon bone set**: `Weapon_Root` (legacy), `Weapon_Bullet`, `Weapon_Trigger`, `Weapon_Magazine`, `Weapon_Bolt`, `Weapon_Bone_01..06` (exactly 6 configurable), plus `RightHand_Dummy`/`LeftHand_Dummy`. (`DZ/Anims/cfg/skeletons.anim.xml:74-116,254-264`)
 - **CfgPatches**: `DZ_Anims_Anm_Player` and `DZ_Anims_Cfg` are real vanilla classes; the demo's `Animations/config.cpp` `requiredAddons[]` includes `DZ_Anims_Anm_Player`. (`DZ/anims/anm/player/config.cpp:3`; `DZ/anims/cfg/config.cpp:3`; `JDsAnimationDemo/Animations/config.cpp:8-10`)
-- **{GUID} keys — DO NOT strip**: vanilla `.asi` carry `{GUID}` prefixes on `#template`/`#parent`/`#ikpose` and every `.anm` value (`player_main_akm.asi:2-5`, `player_main.asi:2`); only the hand-authored demo `.asi` omit them — Workbench regenerates GUIDs on import. Hand-authoring bare paths risks silent resolution failure. Keep them / let Workbench generate them.
+- **{GUID} keys — DO NOT strip**: vanilla `.asi` carry `{GUID}` prefixes on `#template`/`#parent`/`#ikpose` and every `.anm` value (1.29 `player_main_akm.asi:2-5`, `player_main.asi:2`); only the hand-authored demo `.asi` omit them — Workbench regenerates GUIDs on import. Hand-authoring bare paths risks silent resolution failure. Keep them / let Workbench generate them.
 ## [2026-07-06] VERIFIED CORRECTIONS — action anims (SP-042..SP-046, A6_SR2M) + headless .txa import (SP-035)
 
 ### SP-042 — §4.9 "per-grip animation swap" cites an UNANSWERED question; the suggested code is invalid [VERIFIED-vanilla `dayzplayer.c:225-252`]

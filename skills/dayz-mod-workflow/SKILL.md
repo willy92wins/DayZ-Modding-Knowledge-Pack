@@ -19,7 +19,7 @@ description: >
 Process skill for implementing and fixing DayZ mods. Does not contain domain
 knowledge (that lives in domain skills). Ensures domain knowledge is correctly
 applied and gaps are detected before they become bugs.
-(until 1.29: the six-layer debug hierarchy, SyncVar rules, and E01–E20 catalog below remain the 1.29 contract.) (since 1.30: client start also gates on `CanBeStarted()`; vanilla water uses `CCTLiquid`; CE adds `MotorbikeScript`/`HouseDestructible`; `cfggameplay.json` gained lock/sandstorm keys. Details: [dayz-1-30-mod-workflow.md](references/dayz-1-30-mod-workflow.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the six-layer debug hierarchy, SyncVar rules, and E01–E20 catalog below remain the 1.29 contract.) (since 1.30: client start also gates on `CanBeStarted()`; vanilla water uses `CCTLiquid`; CE adds `MotorbikeScript`/`HouseDestructible`; `cfggameplay.json` gained lock/sandstorm keys. Details: [dayz-1-30-mod-workflow.md](references/dayz-1-30-mod-workflow.md) and ## DayZ 1.30.)
 
 ---
 
@@ -456,7 +456,7 @@ be re-created.
 
 | Tool | Build | Use |
 |---|---|---|
-| `Shape.Create*` / `Debug.Draw*` | ALL builds (retail too) | 3D overlay: spheres/lines/bbox/matrix. `ShapeFlags.ONCE` auto-destroys — never keep that pointer (`endebug.c:133`) |
+| `Shape.Create*` / `Debug.Draw*` | ALL builds (retail too) | 3D overlay: spheres/lines/bbox/matrix. `ShapeFlags.ONCE` auto-destroys — never keep that pointer (`endebug.c:132`) |
 | `DbgUI.Begin/Text/Check/SliderFloat/Button/PlotLive` | all builds; call every frame in OnUpdate | live tuning panels (`1_core/proto/dbgui.c:59-126`) |
 | `DiagMenu` (WIN+ALT in-game) | `DIAG_DEVELOPER` only | register via `modded class PluginDiagMenu` overriding `RegisterModdedDiagsIDs()` (ids via `GetModdedDiagID()`) + `RegisterModdedDiags()`; hard limit 512 IDs (`plugindiagmenumodding.c:52`); wrap mod code in `#ifdef DIAG_DEVELOPER` or it silently no-ops |
 | `EnProfiler` | diag/developer builds | `SetModule(EnProfilerModule.WORLD)` -> `Enable(true)` -> `Dump()` to RPT (`1_core/proto/enprofiler.c`); proto natives are not tracked individually (:70) |

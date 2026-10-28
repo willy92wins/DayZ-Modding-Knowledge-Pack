@@ -108,7 +108,7 @@ From `3_game/tools/uiscriptedmenu.c`:
   elsewhere must self-clean**.
 - `IngameHud.Init` resolves ~31 sub-widgets by name (+~35 generated in InitBadgesAndNotifiers)
   (`ingamehud.c:143-243`) — **the widget names AND types in day_z_hud.layout are load-bearing API**.
-  *(up to 1.29: the interaction widgets `item`, `interact`, `continuous_interact`, `single`, `continuous` were `ImageWidgetClass` loading textures such as `card_drop.edds` or `linear_gradient.edds`; since 1.30: `exp\gui\gui\layouts\day_z_hud.layout:2294, 2477, 2755, 3033, 3311` mutated to `PanelWidgetClass` with `style ActionWidget` in `exp\gui\gui\looknfeel\dayzwidgets.styles:3700`).*
+  *(up to 1.29: the interaction widgets `item`, `interact`, `continuous_interact`, `single`, `continuous` were `ImageWidgetClass` loading textures such as `card_drop.edds` or `linear_gradient.edds`; since 1.30: `exp\gui\gui\layouts\day_z_hud.layout:2424, 2617, 2910, 3203, 3431` mutated to `PanelWidgetClass` with `style ActionWidget` in `exp\gui\gui\looknfeel\dayzwidgets.styles:3700`).*
   ⚠️ **Critical breaking change 1.30:** Any script doing `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` or `"item"` will invariably get `null` (Null Pointer Exception when invoking LoadImageFile/SetColor). Migrate to `PanelWidget.Cast(...)` or `Widget`.
 - Safest modded extension points: (1) `modded class IngameHud` override `Init(Widget hud_panel)` →
   super, then add widgets inside the HudPanel subtree; (2) `modded class MissionGameplay` override

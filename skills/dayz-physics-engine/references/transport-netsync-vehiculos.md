@@ -194,7 +194,7 @@ ItemBase extends EntityAI                  ← NO es Pawn
 **`Pawn`** is the native type treated by the engine as a "possessed" or controlled entity with continuous network movement. Class `Pawn` has:
 
 - `GetOwnerStateType()` → returns `PawnOwnerState` — contains position/velocities in a compressed snapshot for desync correction — `pawn.c:238`
-- `GetMoveType()` → returns `PawnMove` — movement packet sent each tick — `pawn.c:246`
+- `GetMoveType()` → returns `PawnMove` — movement packet sent each tick — `pawn.c:247`
 - `GetNetworkMoveStrategy()` → returns active strategy (`NONE`, `LATEST`, `PHYSICS`) — `pawn.c:218`
 
 **Transport** sobreescribe estos tipos:
@@ -358,7 +358,7 @@ All vanilla cars (OffroadHatchback, Truck_02, Van_01, etc.) instantiate `Univers
 7. **`Synchronize()`** — call manually when the vehicle transitions from static to active state, to force snapshot.
 8. **`CarContactData` uses `momentumDelta` as "impulse"** — it is not `data.Impulse` from the Contact struct in the main calculation; it is `GetMomentum() - m_MomentumPrevTick`.
 9. **`FEATURE_NETWORK_RECONCILIATION` is defined** — transport.c:65-69 shows that if NOT defined, Transport inherits directly from EntityAI. In v1.24 it is active.
-10. **Driverless cars**: `SetBrakesActivateWithoutDriver(true)` — car.c:211. If the driver loses control, `OnUpdate` applies brake=0.5.
+10. **Driverless cars**: `SetBrakesActivateWithoutDriver(true)` — car.c:212. If the driver loses control, `OnUpdate` applies brake=0.5.
 
 ---
 
@@ -367,7 +367,7 @@ All vanilla cars (OffroadHatchback, Truck_02, Van_01, etc.) instantiate `Univers
 - **`CarScript` with `SimulationModule` via script**: FALSE. `SimulationModule` is strictly config (CfgVehicles). There is no way to create wheel/axle physics parameters via Enforce Script code.
 - **Custom Transport without model with sim module**: FALSE. You need a P3D model with appropriate geometry (PhysX collision, LODs, memory points) registered in config.
 - **`GetCrewIndex()`**: DOES NOT EXIST under that name. Correct method is `CrewPositionIndex(int componentIdx)` (transport.c:182) or `CrewMemberIndex(Human player)` (transport.c:186).
-- **`EFluidType` enum for vehicles**: DOES NOT EXIST under that name. It is `CarFluid` (car.c:17) and `BoatFluid` (boat.c:13). `EFluidType` may exist for other systems (water, fireplace) but not for cars.
+- **`EFluidType` enum for vehicles**: DOES NOT EXIST under that name. It is `CarFluid` (car.c:18) and `BoatFluid` (boat.c:13). `EFluidType` may exist for other systems (water, fireplace) but not for cars.
 - **`EOnSimulate` in CarScript**: NOT overridden in any car script class. Physics simulation is 100% native.
 - **`HelicopterScript` with full physics**: `HelicopterScript.EOnPostSimulate` is empty — helicopterscript.c:11-13. All flight is native in `HelicopterAuto`.
 - **BoatScript inherits from BoatScript**: Confirm — `BoatScript extends Boat` (boatscript.c:41), and `Boat extends Transport` (boat.c:28). Class `BoatScript` DOES exist (contrary to what some assume).

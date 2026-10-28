@@ -211,7 +211,7 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
 Digests F and M do not list this skill in SKILL IMPACT. A plane/heli that inherits `CarScript` still inherits the 1.30 vehicle-light/horn/battery/event-mask contract. Native `HelicopterScript` remains a stub. Line numbers against `P:\scripts\...\carscript.c` in this file are 1.29.
 
 ## Helicopters
-Open `references/dayz-1-30-aviation.md` for the re-verified 1.30 cites (`CarScript.c:207-208`, `:807`, `:940-948`; `Transport.c:227`; `ForceUpdateLights*` Obsolete at `:2805-2809`), wreck-script note, and migration checklist. Headlight example in `references/effects-and-lights.md` is marked (hasta 1.29) `CarLightBase` / (desde 1.30) `VehicleLightBase`. Ground-vehicle table: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
+Open `references/dayz-1-30-aviation.md` for the re-verified 1.30 cites (`CarScript.c:207-208`, `:807`, `:940-948`; `Transport.c:227`; `ForceUpdateLights*` Obsolete at `CarScript.c:2805-2809`), wreck-script note, and migration checklist. Headlight example in `references/effects-and-lights.md` is marked (hasta 1.29) `CarLightBase` / (desde 1.30) `VehicleLightBase`. Ground-vehicle table: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
 
 The remainder of the 1.29/phase-1 atlas body (LM_Planes patterns, aerodynamics, combat, OnDriverExit recipe, camera input) is unchanged. Reconstruct the full insertion-only SKILL.md by applying `SKILL.md.diff` onto `work/refs/skills/dayz-aviation/SKILL.md` (905 base lines, same order). The diff also inserts the `dayz-1-30-aviation.md` row in the reference-loading table and the OnDriverExit line-drift notes.
 A **real rotary-wing flight model is documented from FOUR author/teams across five aircraft** (plus

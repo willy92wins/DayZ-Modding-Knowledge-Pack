@@ -35,9 +35,9 @@ only when the task needs that depth:
    admin-tool selection, regardless of any physics body. Truth #2 still holds in 1.30. (desde 1.30:
    liquid surfaces with no object are also scored action targets at utility 0.01 —
    `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:535-537`; `ActionTarget` ctor takes `surfaceName` at `:125-138`.)
-   *(Qualified 2026-10-03, read in the 1.29 source, not measured; 1.30 not checked: at a camera pitch of −45° or
+   *(Qualified 2026-10-03, read in the 1.29 source, not measured; re-read on 1.30.164200 on 2026-10-28, same code: at a camera pitch of −45° or
    lower, targeting also takes the objects of a 30°, 3 m cone and scores them by their distance to the cursor ray,
-   with no hit on them needed (`4_world/classes/useractionscomponent/actiontargets.c:341-342`, `:507-508`, `:796-801`), so an item on
+   with no hit on them needed (`4_world/classes/useractionscomponent/actiontargets.c:324-325`, `:531-532`, `:795-801`), so an item on
    the ground can become a target without any View Geometry hit. See `dayz-mcp-verify`, "Picking an item up proves
    nothing about its collision".)*
 3. **`dSetInteractionLayer` is GLOBAL.** It edits the world's layer↔layer interaction matrix
@@ -201,11 +201,11 @@ by naming (inference — internal assignment not script-visible).
 
 ### Player CCT (`3_game/human.c`)
 
-`PhysicsIsFalling` (up to 1.29: :1397; from 1.30: `exp/scripts/scripts/3_Game/human.c:1428`, comment `:1426-1427` "returns true if the ragdoll is moving greater than 1m/s"), `PhysicsGetFloorEntity` (up to 1.29: :1400; from 1.30: :1431), `PhysicsGetLinkedEntity` :1403,
-`PhysicsGetVelocity` :1410, `PhysicsEnableGravity` :1412, `PhysicsSetSolid` :1414-1415,
+`PhysicsIsFalling` (up to 1.29: :1397; from 1.30: `exp/scripts/scripts/3_Game/human.c:1428`, comment `:1426-1427` "returns true if the ragdoll is moving greater than 1m/s"), `PhysicsGetFloorEntity` (up to 1.29: :1400; from 1.30: :1431), `PhysicsGetLinkedEntity` :1434,
+`PhysicsGetVelocity` :1441, `PhysicsEnableGravity` :1443, `PhysicsSetSolid` :1446,
 `PhysicsSetRagdoll` (up to 1.29: :1418 comment at `stable-1.29/scripts/scripts/3_Game/human.c:1417-1418`; from 1.30: `:1451`, catalogued as old death-state system),
 `PhysicsSetSimpleDeath` (from 1.30: `:1449`), `PhysicsIsRagdoll` (from 1.30: `:1452`; also `HumanCommandUnconscious.IsRagdoll` at `:647`),
-`CheckFreeSpace` :1354, `CollisionMoveTest` :1357, `LinkToLocalSpaceOf` :1361.
+`CheckFreeSpace` :1381, `CollisionMoveTest` :1387, `LinkToLocalSpaceOf` :1391.
 
 **Lifting the player from a `HumanCommandScript` needs the controller's gravity off** (measured in game, DayZDiag 1.30.164014 Exp, LFSkateboard test R1c, 2026-10-06, server and one client on one machine) [EXACT][CLAIM-PHYS-SCRIPTCMD-GRAVITY-130]. A skateboard ride command integrated its own ollie (`dy = vy·dt − ½g·dt²` each tick, vy 2.69 m/s at take-off) and passed `dy` as the y of `PrePhys_SetTranslation`, which is local space (`exp/scripts/scripts/3_Game/human.c:1313`). In `PostPhysUpdate` it compared `PostPhys_GetPosition` with the integrated height and, past 3 cm, pinned the height with `PostPhys_SetPosition` on every air tick (world space, `human.c:1325-1327`).
 - *Gravity on, the default:* the body did not rise. The first air tick ended 0.088 m under the integrated height on the server and on the owner client, which is that tick's whole 0.084 m step lost. 0.2 s into the flight, with the pin already on, the server read the body 1 cm under its take-off height, where the integration asked for about +0.34 m.
@@ -272,8 +272,8 @@ override void EOnContact(IEntity other, Contact extra)
 }
 ```
 `damageCoef` IS the velocity: real damage = base damage of ammo `"TransportHit"` × coef
-(`entityai.c:4086-4116`; desde 1.30: `RegisterTransportHit` at `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4134`, Motorbike branch `:4166-4183`). The ammo lives in binary game data, not scripts. Vanilla resets its
-one-hit guard in the victim's `EEHitBy` (`dayzplayerimplement.c:1567`; desde 1.30: `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:1567`). Corpse launch only:
+(1.29 `entityai.c:4089-4156`; desde 1.30: `RegisterTransportHit` at `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4134`, Motorbike branch `:4166-4183`). The ammo lives in binary game data, not scripts. Vanilla resets its
+one-hit guard in the victim's `EEHitBy` (1.29 `dayzplayerimplement.c:1551`; desde 1.30: `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:1567`). Corpse launch only:
 `impulse = 40 * velocity; impulse[1] = 60; dBodyApplyImpulse(victim, impulse);` gated by
 `IsDamageDestroyed()` (truth #9). Full pipeline: `references/dano-transporthit.md`.
 
@@ -358,7 +358,7 @@ Origin: LFSlidingFloor spike B, in-game test 2026-06-10 (script logs with comple
 - **SERVER-SIDE DOES SIMULATE**: with (1) DisableSimulation(false) before toggle (parity with death flow, dayzplayerimplement.c:735), (2) pre-wake `dBodyActive(p, ActiveState.ACTIVE)` + `dBodyDynamic(p, true)`, (3) `dBodyApplyImpulse(p, V*masa)` — dBodyGetMass returned actual player mass (87.5 kg) and impulse caught on first try (without need for SetVelocity). Body slid 77.6 m at 4-6.7 m/s following terrain (including uphills — extremely low effective friction).
 - **OWNER CLIENT DOES NOT**: local avatar never ragdolls — remains standing and controllable (client-authoritative movement). Total server-owner desync. Live-ragdoll is only viable end-to-end with custom position sync (see LL-138).
 - Toggle `PhysicsSetRagdoll(false)` does NOT rubber-band: entity stays exactly where body ended up (pos pre == post, verified).
-- **DANGER get-up**: `StartCommand_Unconscious(0)` + `WakeUp` at 0.5 s left player server-side 40 m UNDER terrain, with void fall, real uncon and death. Vanilla anti-wake-early protection is 2 s (up to 1.29: playerbase.c:3169-3172; 1.29 real: `stable-1.29/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3184` `m_UnconsciousTime > 2`). (from 1.30: the 2 s guard remains at `exp/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3420` AND vanilla additionally refuses wake-up while falling: `if (false == PhysicsIsFalling(false))` before `hcu.WakeUp()` at `:3423-3431`. Custom 0.5 s wake paths that skip this still risk burying the body.)
+- **DANGER get-up**: `StartCommand_Unconscious(0)` + `WakeUp` at 0.5 s left player server-side 40 m UNDER terrain, with void fall, real uncon and death. Vanilla anti-wake-early protection is 2 s (up to 1.29: `stable-1.29/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3184` `m_UnconsciousTime > 2`). (from 1.30: the 2 s guard remains at `exp/scripts/scripts/4_World/Entities/ManBase/PlayerBase.c:3420` AND vanilla additionally refuses wake-up while falling: `if (false == PhysicsIsFalling(false))` before `hcu.WakeUp()` at `:3423-3431`. Custom 0.5 s wake paths that skip this still risk burying the body.)
 
 ## Script bodies on vanilla items — BenchRE empirical evidence (added 2026-08-26)
 

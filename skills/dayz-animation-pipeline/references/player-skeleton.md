@@ -139,7 +139,7 @@ Lod 2 — mostly relevant for character mods and cutscenes, not gameplay animati
 
 ## Legacy / to-be-removed [DO NOT USE]
 
-These bones appear in `player_testing.xob` (test skeleton) marked literally `<!--To Be removed-->` (`skeletons.anim.xml:296-300`). They are not part of the production skeleton:
+These bones appear in `player_testing.xob` (test skeleton) marked literally `<!--To Be removed-->` (`skeletons.anim.xml:293-302`). They are not part of the production skeleton:
 
 - `Bullet`, `Trigger`, `Magazine`, `Bolt`
 - `Bullets_Magazine`, `Bullets_holder`, `Bullets_on_holder`

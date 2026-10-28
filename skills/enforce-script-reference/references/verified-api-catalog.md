@@ -461,6 +461,6 @@ This catalog never listed `TakeEntityToCargo` / `World.Is3rdPersonDisabled` / `W
 - `array<T>.Slice(int from, int to)` inclusive-`to` (`EnScript.c:720-727`). Digest O `:33-40` is `ClassName` docs.
 - `typename.EnumFlagsToString` / `Enum.EnumFlagsToString` (`EnConvert.c:593`, `:683`).
 - `class DoOnce` (`3_Game\DoOnce.c:1`); `DayZPlayer.IsFirstRenderFrame()` (`dayzplayer.c:1186-1189`); `Entity.DisableSimulation` / `GetIsSimulationDisabled` (`Entity.c:3-6`).
-- `GAME_STORAGE_VERSION = 144` (`Game.c:5`; 1.29 was `142` at the same line). `OnCEIterate` replaces `OnCEUpdate` (`EntityAI.c:3904`, `:4893-4894`).
+- `GAME_STORAGE_VERSION = 144` (`Game.c:5`; 1.29 was `142` at the same line). `OnCEIterate` replaces `OnCEUpdate` (`EntityAI.c:3904`, `:4924-4925`).
 
 Full `[EXACT]` bodies: `references/dayz-1-30-enforce-script.md`.

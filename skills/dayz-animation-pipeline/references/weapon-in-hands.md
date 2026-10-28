@@ -199,7 +199,7 @@ Do NOT conflate the three artifact kinds (verified frame data, see `references/w
 
 | Artifact | What it is | Vanilla AKM | Where referenced |
 |---|---|---|---|
-| **IK pose** (`#ikpose`, `ik/weapons/<wpn>.anm`) | ONE distinct static hand/finger placement on the gun | 2 frames @30fps but frame 1 = byte-exact dup of frame 0 (= 1 pose); AKM reuses izh18's pose (`player_main_akm.asi:5`) | `.asi` `#ikpose`; 4th arg of `AddItemInHandsProfileIK` |
+| **IK pose** (`#ikpose`, `ik/weapons/<wpn>.anm`) | ONE distinct static hand/finger placement on the gun | 2 frames @30fps but frame 1 = byte-exact dup of frame 0 (= 1 pose); AKM reuses izh18's pose (`player_main_akm.asi:6`) | `.asi` `#ikpose`; 4th arg of `AddItemInHandsProfileIK` |
 | **Weapon-states** (`w_<wpn>_states.anm`) | bolt/bullet driver of only the `Weapon_*` bones | 2 distinct frames @30fps (`Weapon_Bolt` slides, `Weapon_Bullet` ejects) — NOT a fixed 3; Workbench trims to 2–4 keys/channel | 5th arg of `AddItemInHandsProfileIK`; `SetInitState` reads it |
 | **Action anims** (reload/fire/chamber/jam) | additive deltas (≈shoulders-down) blended on idle | mag-remove 22f, full swap 55f, reloadAction 44f, chambering 107f, fire 11f, jam 230f — all @30fps | `.asi` `$animations` map |
 

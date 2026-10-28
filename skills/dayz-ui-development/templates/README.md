@@ -135,7 +135,7 @@ on it.
 body fills white and the label disappears.
 
 **Cause.** `ButtonWidget/EmptyHighlight` `Focus` `Center="WhitePixel"`
-(`dayzwidgets.styles:2232`). Default label is white. Without a body `color`
+(`dayzwidgets.styles:2236`). Default label is white. Without a body `color`
 the pixel stays white.
 
 **Fix in these templates.** `color 1 0 0 1` (body, not `"text color"`) +

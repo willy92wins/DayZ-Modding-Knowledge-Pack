@@ -958,7 +958,7 @@ Seated position AND orientation come from the **crew-proxy triangle** (`crewdriv
 ### Builder fix (so future cars never hit this)
 source-game/regen builders create crew proxies via `add_proxy(..., scale=0.1)` -> tiny ambiguous triangles, and may paint seats over the collision grid. Change crew-proxy creation to emit the **canonical triangle (edges ~1.0/2.0, 3 distinct angles)** with the model-correct frame, in BOTH ViewGeo and FireGeo, and build seats as **2 dedicated clean cubes** (one ComponentNN each) from the start.
 
-> Origen: LFQuad "Bloque A — Crew" D34 (`30_Sessions/2026-06-05-LFQuad-crew-resuelto-postura.md`, in-game confirmed) + MercedesAMGLF get-in/seated-pose (2026-06-27). Cross-ref: `CrewPositionIndex` transport.c:182, `ActionGetInTransport.ActionCondition` actiongetintransport.c:45-66, `CanReachSeatFromDoors` carscript.c:2177. The earlier "codriver needs crew proxies in FireGeo" diagnosis was REFUTED — the cause is collision-component cleanliness + canonical proxy, not FireGeo presence.
+> Origen: LFQuad "Bloque A — Crew" D34 (`30_Sessions/2026-06-05-LFQuad-crew-resuelto-postura.md`, in-game confirmed) + MercedesAMGLF get-in/seated-pose (2026-06-27). Cross-ref: `CrewPositionIndex` transport.c:182, `ActionGetInTransport.ActionCondition` actiongetintransport.c:45-65, `CanReachSeatFromDoors` carscript.c:2177. The earlier "codriver needs crew proxies in FireGeo" diagnosis was REFUTED — the cause is collision-component cleanliness + canonical proxy, not FireGeo presence.
 
 > **VALUE CORRECTED 2026-08-18 — the flag is `0x0000003F`, not `0x02000000`.**
 > Measured directly on the sealed vanilla control with py3d 1.4.0:
