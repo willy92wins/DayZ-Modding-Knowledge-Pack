@@ -6124,10 +6124,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
           "source_revision": "update/pr-135-review-4@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fifth review pass of pull request #135 (2026-10-28), after the fourth adversarial review: the BlendT row copies the blend function instead of fixing it to S (S2 on player_main MoveHeadLookPoseBlend), and the Blend that does not pair by name is VehicleAccelerationB, a BlendT on 1.30.",
+          "license": "MIT",
+          "source_hash": "3985083cc8d48c5c2db4e213ba8d4afd4e01318910308a28ebe36554584d70d2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "update/pr-135-review-5@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "32d48a79fc6e31d3c643dbc5aef27efbd968269c52213c9d9a8d8f00a7d3a0f6",
+      "output_hash": "3985083cc8d48c5c2db4e213ba8d4afd4e01318910308a28ebe36554584d70d2",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -19163,10 +19173,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/pr-135-review-4@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fifth review pass of pull request #135 (2026-10-28): CLAIM-ANIM-AGR-PORT-129-130 adds the BlendT blend function and names the Blend that becomes a BlendT on 1.30.",
+          "license": "MIT",
+          "source_hash": "d6fa7b31f5d6bcded3866a8707c4061a29e7847658cf17e4505df9a314a8a6bb",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/pr-135-review-5@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9af86d40bfc5285bb0cfaf625cf72957b52940b783a9000c30fe3e7c6237b6cf",
+      "output_hash": "d6fa7b31f5d6bcded3866a8707c4061a29e7847658cf17e4505df9a314a8a6bb",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
