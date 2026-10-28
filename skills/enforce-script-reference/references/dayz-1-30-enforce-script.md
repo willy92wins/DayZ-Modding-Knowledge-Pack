@@ -145,7 +145,7 @@ the logger printed no move line):
   which marks it only when the copy lands on the ground, not when the player's cargo takes it
   (`CreateCopyOfItemInInventory`, `:6856`). `Magazine`'s own `SplitItemToInventoryLocation` and
   `SplitItem` (`Magazine.c:231`, `:256`) do not call `SetResultOfSplit`. The server's item-manipulation
-  handler calls them from `PlayerBase` (`:6640-6725`).
+  handler calls them from `PlayerBase` (`PlayerBase.c:6640-6725`).
 - Measured with a `modded class ItemBase` that wraps `CombineItems`, a `modded class Ammunition_Base`
   that wraps `CombineItems` (`Magazine` itself cannot be modded) and both reading the receiver's quantity
   before and after super: 10 rounds of `Ammo_762x39` stacked from the hands onto a pile in a crate, and 5
@@ -295,7 +295,7 @@ class ActionFillBottleBase: ActionContinuousBase
 	static ref map<typename, ref TActionAnimOverrideMap> m_EntityActionOverrides = new map<typename, ref TActionAnimOverrideMap>; 
 ```
 
-`OverrideActionAnimation(typename action, int commandUID, int stanceMask = -1, int commandUIDProne = -1)` at `:4781`. `AnimatedActionBase.GetCommandOverride` looks up item type then **target object type** (`:284-290`). Until 1.29 this lived on `ItemBase.m_ItemActionOverrides` — that name is gone.
+`OverrideActionAnimation(typename action, int commandUID, int stanceMask = -1, int commandUIDProne = -1)` at `:4781`. `AnimatedActionBase.GetCommandOverride` looks up item type then **target object type** (`AnimatedActionBase.c:284-290`). Until 1.29 this lived on `ItemBase.m_ItemActionOverrides` — that name is gone.
 
 ### 7.5 CCT: `CCTLiquid`, `CCTCursorInherited`, head distance
 

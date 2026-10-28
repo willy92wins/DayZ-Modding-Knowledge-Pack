@@ -58,7 +58,7 @@ fields per instance). (since 1.30: the field is `protected ref ConstructionBasic
 (`basebuildingbase.c:15`); `CreateConstructionComponent()` does `new Construction(this)` (`:871-875`);
 `GetConstruction()` is `Construction.Cast(m_Construction)` (`:883-886`). Config is cached once per
 `EntityType` in `ConstructionPartTypeData` and attached via `SetPartTypeData` (`ConstructionPart.c:401-407`;
-`ConstructionBase.UpdateConstructionParts` `:518-549`).)
+`ConstructionBase.UpdateConstructionParts` `ConstructionBase.c:518-549`).)
 
 1. **Craft the kit.** A `RecipeBase` (`craftfencekit.c:1`) consumes materials → a `KitBase: ItemBase`
    (`kitbase.c:1`, `IsBasebuildingKit()→true` `:5`).
@@ -71,7 +71,7 @@ fields per instance). (since 1.30: the field is `protected ref ConstructionBasic
    `base` part (`is_base=1`). Building it sets `HasBase()=true`, spawns a construction kit back, and toggles
    the `"Deployed"` proxy/animation (`OnPartBuiltServer` `basebuildingbase.c:554-560`; `InitVisuals` `:677-691`).
 4. **Build part.** `ActionBuildPart` (`actionbuildpart.c:33`) with a tool in hand → `OnFinishProgressServer`
-   (`:112-130`) re-checks collision + `CanBuildPart` → `construction.BuildPartServer(...)` (1.29 `construction.c:75-95`):
+   (`:150-204`) re-checks collision + `CanBuildPart` → `construction.BuildPartServer(...)` (1.29 `construction.c:75-95`):
    reset damage-zone health, `TakeMaterialsServer`, register the part in the sync bitmask, show physics+visual,
    regen navmesh.
    (until 1.29: `BuildPartServer(player, part_name, action_id)`). (since 1.30: `ActionBuildPart` calls
@@ -84,7 +84,7 @@ fields per instance). (since 1.30: the field is `protected ref ConstructionBasic
    **base** part destroys the whole construction (`basebuildingbase.c:615-619`).
    (until 1.29: `DismantlePartServer`). (since 1.30: `DismantlePartServerEx` (`ConstructionBase.c:191`);
    obsolete wrapper `:1759-1765`. `HasDependentPart` now lives on `ConstructionBase` `:813`.)
-7. **Fold.** With no base and no attachments (`CanFoldBaseBuildingObject` `:962-970`),
+7. **Fold.** With no base and no attachments (`CanFoldBaseBuildingObject` `basebuildingbase.c:962-970`),
    `ActionFoldBaseBuildingObject` converts back to a kit in hands (`FoldBaseBuildingObject` `:972-978`).
 
 ## THE Construction{} CONFIG BLOCK (the single most-reused artifact)
@@ -154,9 +154,9 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   `varQuantityMax`.** For a splitable item, `GetTargetQuantityMax` asks `InventorySlots.GetStackMaxForSlotId`
   first and only falls back to `varStackMax`, then to `varQuantityMax` (`itembase.c:3453-3472`). Vanilla
   declares the cap per slot in `scripts\config.cpp`: `Material_WoodenPlanks` and `Material_MetalSheets` are
-  `stackMax=20` (`:2266-2281`), `Material_Nails` is `99` (`:2260-2264`). A NON-splitable item skips that
+  `stackMax=20` (`:2285-2300`), `Material_Nails` is `99` (`:2279-2283`). A NON-splitable item skips that
   branch entirely and lands on `varQuantityMax` — `MetalWire` declares no quantity and neither of its slots
-  declares `stackMax` (`:2290-2296`, `:2349-2355`), so it is one wire per slot. Reading the item class instead
+  declares `stackMax` (`:2309-2315`, `:2508-2514`), so it is one wire per slot. Reading the item class instead
   overstates plank capacity 5× (100 vs 20) and makes any recipe above the slot cap silently unbuildable: the
   player fills the slot and never reaches the threshold, so the build action simply never appears. Derive
   slots per material as `ceil(default_qty / slot stackMax)` and get that number from `CfgSlots`, not from the

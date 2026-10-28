@@ -38,7 +38,7 @@ time (`optionsmenu.c:41-55`).
 
 `MissionBase.CreateScriptedMenu` (`5_mission/mission/missionbase.c:198-354`) is the single factory
 switch mapping 42 `MENU_*` ids → classes, with **SetID applied ONCE, AFTER the switch**
-(`:327-330: if (menu) { menu.SetID(id); } return menu;`). Copyable modded registration:
+(`:348-353: if (menu) { menu.SetID(id); } return menu;`). Copyable modded registration:
 
 ```c
 modded class MissionGameplay
@@ -76,35 +76,35 @@ From `3_game/tools/uiscriptedmenu.c`:
   `UIScriptedWindow.GetActiveWindows()`); skipping super silently breaks scripted windows (e.g. the
   MissionLoader window, `uimanager.c:193`).
 - **IsHandlingPlayerDeathEvent()** returns true by default → menu force-`Close()`s on death
-  (:603-611); override to false to survive.
-- Submenus: `EnterScriptedMenu(id)` from the current menu sets it as parent (:11-12;
+  (`uiscriptedmenu.c:603-611`); override to false to survive.
+- Submenus: `EnterScriptedMenu(id)` from the current menu sets it as parent (`uiscriptedmenu.c:11-12`;
   `ingamemenu.c:251-254`); `UIManager.Back()` pops (:uimanager.c:62-75).
 - Console-only: `SetWidgetAnimAlpha(w)` + base `Update()` gives the pulsing selected-element
-  animation on PLATFORM_CONSOLE (:155-159, 195-228).
+  animation on PLATFORM_CONSOLE (`uiscriptedmenu.c:155-159, 195-228`).
 
 ## 4. Two instantiation strategies (pick per menu weight)
 
 - **(A) create-per-open** — `EnterScriptedMenu(MENU_X, parentMenu)`; vanilla pause menu:
   `missiongameplay.c:1322` + `AddActiveInputExcludes({"menu"})` + INVENTORY restriction (:1328-1329);
-  closed via `Continue()` → RemoveActiveInputExcludes + `CloseMenu(MENU_INGAME)` (:1297-1312).
+  closed via `Continue()` → RemoveActiveInputExcludes + `CloseMenu(MENU_INGAME)` (:1334-1349).
   For cheap dialogs.
 - **(B) create-ONCE + show/hide** — vanilla inventory: `InitInventory()` creates once via
-  `CreateScriptedMenu(MENU_INVENTORY, null)` (:208-214); `ShowInventory()` re-shows the SAME cached
-  instance via `ShowScriptedMenu(m_InventoryMenu, null)` (:1153-1172); `HideInventory()` →
-  HideScriptedMenu (:1174-1184). Keeps the Init()-built widget tree alive across opens — copy for
+  `CreateScriptedMenu(MENU_INVENTORY, null)` (:217-223); `ShowInventory()` re-shows the SAME cached
+  instance via `ShowScriptedMenu(m_InventoryMenu, null)` (:1190-1209); `HideInventory()` →
+  HideScriptedMenu (:1211-1221). Keeps the Init()-built widget tree alive across opens — copy for
   heavyweight menus (inventory rebuilds a whole container tree in Init).
 - Key-open pattern = input polling in Mission OnUpdate: `GetUApi().GetInputByID(UAGear).LocalPress()`
-  → ShowInventory (:501-512); `UAUIMenu` → Pause (:691-697).
+  → ShowInventory (:510-521); `UAUIMenu` → Pause (:700-706).
 - Vanilla input-exclude group names used in missiongameplay.c: `"menu"`, `"inventory"`,
   `"radialmenu"`, `"loopedactions"`, `"map"`.
 
 ## 5. HUD ownership chain + extension points
 
 - `MissionGameplay` ctor creates `m_Hud = new IngameHud` (`missiongameplay.c:73`); `OnInit()` loads
-  ONE layout `day_z_hud.layout` (:125), hides it (:127; shown at :488 only when player exists, is
+  ONE layout `day_z_hud.layout` (:132), hides it (:134; shown at :497 only when player exists, is
   ALIVE and conscious), then Inits each subsystem with a NAMED SUBTREE: Chat→`ChatFrameWidget`
-  (:129), ActionMenu→`ActionsPanel` (:131), IngameHud→`HudPanel` (:133), mic/voice/chat-channel
-  panels (:136-158). `OnMissionFinish` deletes the root (:266) — **modded HUD widgets parented
+  (:136), ActionMenu→`ActionsPanel` (:138), IngameHud→`HudPanel` (:140), mic/voice/chat-channel
+  panels (:143-165). `OnMissionFinish` deletes the root (:275) — **modded HUD widgets parented
   elsewhere must self-clean**.
 - `IngameHud.Init` resolves ~31 sub-widgets by name (+~35 generated in InitBadgesAndNotifiers)
   (`ingamehud.c:143-243`) — **the widget names AND types in day_z_hud.layout are load-bearing API**.
@@ -113,14 +113,14 @@ From `3_game/tools/uiscriptedmenu.c`:
 - Safest modded extension points: (1) `modded class IngameHud` override `Init(Widget hud_panel)` →
   super, then add widgets inside the HudPanel subtree; (2) `modded class MissionGameplay` override
   `OnInit` → super, then `CreateWidgets(your.layout)` as a SIBLING root — the same pattern vanilla
-  uses for HudDebug (:168).
+  uses for HudDebug (:175).
 - **Show/hide HUD groups = flag system, not ad-hoc Show()**: `IngameHudVisibility`
   (`gui/ingamehudvisibility.c`) maps an `EHudContextFlags` bitmask (HUD_DISABLE=1, HUD_HIDE=2,
   VEHICLE_DISABLE=4, DRIVER=8, VEHICLE=16, MENU_OPEN=32, NO_BADGE=64, QUICKBAR_DISABLE=128,
   QUICKBAR_HIDE=256, QUICKBAR_GLOBAL=512, INVENTORY_OPEN=1024, UNCONSCIOUS=2048; :15-29) to element
   lists (`LinkElementsToFlags` :69-87); `SetContextFlag(flag,state)` refreshes only affected elements
   (:90-102). Public API = thin wrappers: `ShowHudUI→MENU_OPEN` (`ingamehud.c:909-912`),
-  `ShowQuickbarUI→QUICKBAR_DISABLE` (:888-891), `ShowHudPlayer→HUD_HIDE` (:900-903), etc.
+  `ShowQuickbarUI→QUICKBAR_DISABLE` (:891-894), `ShowHudPlayer→HUD_HIDE` (:903-906), etc.
   Menus hide the HUD via `mission.GetHud().ShowHudUI(false)+ShowQuickbarUI(false)`
   (`ingamemenu.c:135-147`). **For "hide my custom HUD when X", extend
   `modded IngameHudVisibility.LinkElementsToFlags`** — do not roll a parallel system.
@@ -167,7 +167,7 @@ From `3_game/tools/uiscriptedmenu.c`:
   (`enwidgets.c:698/702`; 87 call sites). **`SetActiveWindow` has ZERO vanilla call sites** (proto
   only, :695; `SetModal` :700 likewise unused) — do not design around it.
 - Conventions: mouse-first menus clear or root the focus in Init (`mainmenu.c:113 SetFocus(null)`;
-  optionsmenu sets `SetFocus(layoutRoot)` on PC, :98); console menus focus the default button
+  optionsmenu sets `SetFocus(layoutRoot)` on PC, `optionsmenu.c:98`); console menus focus the default button
   (`respawndialogue.c:27`, `ingamemenuxbox.c:961-979 UpdateMenuFocus()`); EditBox menus focus the box
   on show (`chatinputmenu.c:58`).
 - Hover and focus share ONE highlight path: OnMouseEnter/OnMouseLeave AND OnFocus/OnFocusLost all

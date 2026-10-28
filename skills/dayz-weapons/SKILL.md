@@ -209,7 +209,7 @@ What changes, what breaks, and the migration checklist. Full citations and `[EXA
   1.30.164200 ships them in `nasdara\addons\weapons_nasdara.pbo`.
 - Pistol FSM anim IDs are virtual getters on `Pistol_Base` (`Pistol_Base.c:611-629`, wired at `:203-212`).
 - `OpenBolt_Base.SetActions()` adds `FirearmActionDetachMagazine` (`OpenBolt_Base.c:388`).
-- `Weapon_Base.EEItemDetached` calls `ValidateAndRepair()` when the detached item is a magazine (`:1121`).
+- `Weapon_Base.EEItemDetached` calls `ValidateAndRepair()` when the detached item is a magazine (`Weapon_Base.c:1121`).
 - Explosion FX: `ExplosiveEffectData` + `GetExplosiveEffectData(string, string)` replace
   `GetExplosionParticleID`. `ExplosivesBase.SetParticleExplosion` / `AddExplosionEffectForSurface` are
   `[Obsolete("1.30: Handled in AmmoTypes instead")]`.

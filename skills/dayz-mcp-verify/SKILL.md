@@ -397,7 +397,7 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   `Inventory_Base` probe about 10 degrees (a side-face reading moved 0.22 m across 1.2 m of the face);
   `rotation=64` spawned the same box with its faces on the world axes (equal readings at both
   offsets), on flat concrete. `scripts/3_game/ce/centraleconomy.c` gives 64 two names, `RF_IGNORE`
-  ("object will spawn as model was created", :56) and `RF_RANDOMROT` (:62); the result agrees with
+  ("object will spawn as model was created", :57) and `RF_RANDOMROT` (:63); the result agrees with
   the first comment and does not settle how the engine reads the value. Before trusting face
   coordinates, check the pose: two parallel rays at one height on a vertical face catch a yaw
   (unequal readings) but not a tilt, so also read `scene_raycast(method="bullet")` normals on two

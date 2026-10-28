@@ -412,7 +412,7 @@ budget_max = XZ * (VerticalLayers + 1)
 
 `PI2` is `2*pi`, so the source's `2 * PI2 * ringRadius` remains the intentional doubled
 circumference. The center emitter is the leading `1`. Small areas take separate one-ring/center
-branches in `effectarea.c:361-374`; use those branches directly rather than this large-area formula.
+branches in `effectarea.c:348-386`; use those branches directly rather than this large-area formula.
 As a check, `Radius=500`, `OuterOffset=20`, `InnerPartDist=70`, and `VerticalLayers=1` give
 `N=7`, `d=69.286`, `XZ=346`, and `budget_max=692`.
 

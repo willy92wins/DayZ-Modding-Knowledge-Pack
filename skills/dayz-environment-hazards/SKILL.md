@@ -12,7 +12,7 @@ description: >
 
 # DayZ Environment Hazards (1.30)
 
-DayZ 1.30 (written on Experimental build 1.30.164014, re-checked on stable 1.30.164200) adds native environmental hazards: hybrid engine+script sandstorm (`Weather.GetSandstorm()`, `exp\scripts\scripts\3_Game\Weather.c:210` and `exp\scripts\scripts\3_Game\Sandstorm.c:6-135`), exposure with shelter fade in `ScriptedSandstormController`, heatstroke via `ThermalBiasHandler` accumulator (high heat no longer kills from `HeatComfortMdfr`), eye irritation and silicosis via `AGT_AIRBOURNE_SOLID`, `OilPitArea` oil pits, dust via `SurfaceInfo`, and sunstroke with `IsInShadow`. The Nasdara world (DLC Badlands, `appId = 3816030`) brings sand weather and solar tables, but the PBO in this build is a 6-file stub.
+DayZ 1.30 (written on Experimental build 1.30.164014, re-checked on stable 1.30.164200) adds native environmental hazards: hybrid engine+script sandstorm (`Weather.GetSandstorm()`, `exp\scripts\scripts\3_Game\Weather.c:210` and `exp\scripts\scripts\3_Game\Sandstorm.c:6-135`), exposure with shelter fade in `ScriptedSandstormController`, heatstroke via `ThermalBiasHandler` accumulator (high heat no longer kills from `HeatComfortMdfr`), eye irritation and silicosis via `AGT_AIRBOURNE_SOLID`, `OilPitArea` oil pits, dust via `SurfaceInfo`, and sunstroke with `IsInShadow`. The Nasdara world (DLC Badlands, `appId = 3816030`) brings sand weather and solar tables, but on 1.30.164014 `data_nasdara.pbo` was a 6-file stub (what 1.30.164200 installs: "Status in 1.30 stable", item 1).
 
 All evidence is `source_verified` against extracted text. No behavior is declared `runtime_verified`.
 
@@ -72,7 +72,7 @@ Recommendation: a new environmental hazard inherits the vanilla pattern (`Effect
 ### 5. Respiratory PPE ≠ Eye PPE
 - **Symptom**: eyewear prevents silicosis, or a mask without `DEF_DUST_PARTICLE_EYES` does not prevent squinting.
 - **Cause**: `AGT_AIRBOURNE_SOLID` uses MASK for `SILICOSIS` and EYEWEAR|MASK|NVG for `EYES_IRRITATION` (`PluginTransmissionAgents.c:414-437`). Squint checks `DEF_DUST_PARTICLE_EYES` (`SquintState.c:25-39`).
-- **Remedy**: declare both defenses in item config. Cache depth = 2 (`GetProtectionLevelCachedEquipment` `:577-582`).
+- **Remedy**: declare both defenses in item config. Cache depth = 2 (`GetProtectionLevelCachedEquipment` `PluginTransmissionAgents.c:577-582`).
 
 ### 6. `OnCEUpdate` is no longer the `EffectArea` tick
 - **Symptom**: custom area does not resize particles / does not iterate.

@@ -873,7 +873,7 @@ jitter must satisfy all of these safeguards:
 2. **[VERIFIED by source] The vanilla super implementation above `CarScript` is empty:**
    `Transport.OnDriverExit(Human) {}` (`transport.c:227`). In the vanilla chain, omitting `super`
    loses only the gear-triggered stop. Battery and plug detach handling (`carscript.c:556,572`),
-   fluids (`:989-992`), unconscious/dead handling (`:1893,1904`) and vitals (`:2523`) live in other
+   fluids (`:848-851`), unconscious/dead handling (`:1665,1676`) and vitals (`:853-854`) live in other
    callbacks.
 3. **[DESIGN; in-game gate pending]** For the invariant "engine ON implies the fixed gear is
    re-engaged by `OnInput`", the minimal override is:

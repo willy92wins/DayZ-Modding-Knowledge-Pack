@@ -942,7 +942,7 @@ active in the PC/RELEASE build), overriding it from a mod yields
 — no crash, no useful RPT line.
 
 Verified case: `5_mission\gui\inventorynew\inventory.c:1307` is
-`#ifdef PLATFORM_CONSOLE` and `:1314` is
+`#ifdef PLATFORM_CONSOLE` and `:1308` is
 `protected string GetConsoleToolbarText(int mask)`. On a PC build that method does
 not exist, so `override string GetConsoleToolbarText(...)` is a loading freeze.
 

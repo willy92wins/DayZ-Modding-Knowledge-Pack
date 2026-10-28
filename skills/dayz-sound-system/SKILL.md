@@ -102,7 +102,7 @@ but were not verifiable in local source — inherit a vanilla set rather than ha
 - Play: `g_Game.GetSoundScene().Play3D(so, sob)` / `Play2D(...)` (:53-79; access `game.c:735`).
 - `AbstractWave` handle: `Play/Stop/Loop(bool)/SetVolumeRelative(0..1)/SetFadeInFactor/
   SetFadeOutFactor/SetDoppler/GetLength/GetCurrPosition` + `GetEvents()` ScriptInvokers
-  (Started/Stopped/Loaded/HeaderLoaded/Ended) (:146-230). `SetFrequency` takes a pitch factor,
+  (Started/Stopped/Loaded/HeaderLoaded/Ended) (`3_game/sound.c:146-230`). `SetFrequency` takes a pitch factor,
   not Hz (recipe A2).
 - `EffectSound` (high-level wrapper): `SetSoundSet/SetSoundLoop/SetSoundFadeIn/Out/SetSoundVolume/
   SoundPlay/SoundStop/IsSoundPlaying` + its own invokers — what `PlaySoundSet` returns.

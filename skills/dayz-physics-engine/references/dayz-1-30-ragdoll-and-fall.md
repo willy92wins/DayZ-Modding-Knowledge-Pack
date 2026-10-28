@@ -228,7 +228,7 @@ Truth #2 is still true. Line drift only:
 
 - `RaycastRVProxy` (desde 1.30): `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255` (`RaycastRVParams` still defaults
   `ObjIntersectView` at `exp/scripts/scripts/3_Game/global/dayzphysics.c:88`).
-- Ground fallback `RayCastBullet` + `ROADWAY|TERRAIN|WATERLAYER`: `:383-384`.
+- Ground fallback `RayCastBullet` + `ROADWAY|TERRAIN|WATERLAYER`: `ActionTargets.c:383-384`.
 - Liquid surface with no object: utility 0.01 at `:535-537`. `ActionTarget` ctor
   `surfaceName` / `GetSurfaceLiquidType()` at `:125-138` and `:184-187`.
 

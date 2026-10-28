@@ -1023,7 +1023,7 @@ and require approximately zero residual before trusting any product comparison.
      `CarScript.EEOnCECreate` fills a random 0-35 % of `GetFluidCapacity(CarFluid.FUEL)`
      (`scripts/4_world/entities/vehicles/carscript.c:2412-2419`). It runs when the entity is
      created as new by CE/debug (`scripts/3_game/entities/entityai.c:1413-1416`), while a load
-     from storage goes through `AfterStoreLoad` (`:1390-1393`) - so a fill there cannot turn into
+     from storage goes through `AfterStoreLoad` (`:1418-1421`) - so a fill there cannot turn into
      free fuel on every restart, which the same code in `EEInit` would. `Fill` ADDS
      (`scripts/3_game/vehicles/car.c:371-372`), so top up rather than pour the whole capacity into
      a tank that may not be empty:

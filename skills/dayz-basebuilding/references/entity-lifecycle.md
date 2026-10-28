@@ -32,7 +32,7 @@ m_Construction` (`basebuildingbase.c:15`). `ConstructionInit()` is on `EntityAI`
 and calls `CreateConstructionComponent()` (`:3474`). `BaseBuildingBase` overrides that to
 `m_Construction = new Construction(this)` (`basebuildingbase.c:871-875`). `UpdateConstructionParts` is on
 `ConstructionBase.c:518-549` and fills parts from `ConstructionDataTypeHolder`, not by walking config on the
-instance. `GetConstruction()` is `Construction.Cast(m_Construction)` (`:883-886`).)
+instance. `GetConstruction()` is `Construction.Cast(m_Construction)` (`basebuildingbase.c:883-886`).)
 
 ## 3. Base part
 
@@ -45,7 +45,7 @@ builds the `base` part (`is_base=1`). Building the base sets `HasBase()=true`, s
 
 1. `ActionBuildPart` (`actionbuildpart.c:33`) with a tool in hand. Collision is re-checked server-side in
    `ActionConditionContinue` / `OnFinishProgressServer` via `IsCollidingEx` (`actionbuildpart.c:123-148, 150-167`).
-2. `OnFinishProgressServer` (`:112-130`) re-validates `CanBuildPart` (the "redundant at this point?" comment
+2. On 1.29, `OnFinishProgressServer` (`actionbuildpart.c:112-130`) re-validates `CanBuildPart` (the "redundant at this point" comment
    at `:123`) then calls `construction.BuildPartServer(player, part_name, AT_BUILD_PART)` (1.29 `construction.c:75-95`).
    (until 1.29: `BuildPartServer`). (since 1.30: `construction.BuildPartServerEx(action_data.m_Player, partName, AT_BUILD_PART)`
    after `IsCollidingEx(checkData)` (`actionbuildpart.c:157-170`). `Construction.BuildPartServerEx` still
@@ -66,14 +66,16 @@ builds the `base` part (`is_base=1`). Building the base sets `HasBase()=true`, s
   HasMaterials && (!use_tool || CanUseToolToBuildPart) && !MaterialIsRuined`.
   (since 1.30: `CanBuildPart` / `CanBuildPartEx` on `ConstructionBase.c:584-601`; failure bits in
   `EConstructionInfoCategories` (`ConstructionConstants.c:1-11`).)
-- `CanDismantlePart` (`:468-476`): `IsPartConstructed && !HasDependentPart && CanUseToolToDismantlePart`.
-- `CanDestroyPart` (`:566-574`): `IsPartConstructed && !HasDependentPart` (no tool/material gate — triggered
+- `CanDismantlePart` (1.29 `construction.c:468-476`): `IsPartConstructed && !HasDependentPart && CanUseToolToDismantlePart`;
+  since 1.30 it also requires `SupportRemovalCheck` (`ConstructionBase.c:780-810`).
+- `CanDestroyPart` (1.29 `construction.c:566-574`; since 1.30 also `SupportRemovalCheck`,
+  `ConstructionBase.c:1063-1069`): `IsPartConstructed && !HasDependentPart` (no tool/material gate — triggered
   by damage, 1.29 `basebuildingbase.c:510-518`; 1.30 `ConstructionBase.c:353-369`).
 
 ## 5. Upgrade
 
 Just building further parts whose `required_parts[]` are satisfied (`HasRequiredPart` `ConstructionBase.c:723-736`)
-and whose `conflicted_parts[]` are not built (`HasConflictPart` `:438-455`). E.g. `wall_wood_down` requires
+and whose `conflicted_parts[]` are not built (`HasConflictPart` `:745-767`). E.g. `wall_wood_down` requires
 `wall_base_down` and conflicts with `wall_metal_down`. Radial variants: multiple buildable parts under one
 selection produce N action variants — `ActionBuildPart` uses `m_VariantID`; `ConstructionActionData.OnUpdateActions`
 sets the variant count (`constructionactiondata.c:187`), and its `OnUpdateActions` (`:163-199`) calls
@@ -97,10 +99,10 @@ sets the variant count (`constructionactiondata.c:187`), and its `OnUpdateAction
 
 - `OnStoreSave` (`basebuildingbase.c:420-430`): writes `m_SyncParts01`, `02`, `03`, then `m_HasBase`.
   A subclass appends its extra fields AFTER `super` (Fence adds `m_GateState`, `m_IsOpened` — `fence.c:246-254`).
-- `OnStoreLoad` (`:432-464`): reads the three ints then `m_HasBase`, each with a `return false` on read
+- `OnStoreLoad` (`basebuildingbase.c:432-464`): reads the three ints then `m_HasBase`, each with a `return false` on read
   failure (default-then-abort). Subclass reads AFTER `super` in the same order (`fence.c:256-289`, with a
   `version<110` legacy branch).
-- `AfterStoreLoad` (`:466-474`) → `SetPartsAfterStoreLoad()` (`:476-487`) → `SetPartsFromSyncData()`: rebuilds
+- `AfterStoreLoad` (`basebuildingbase.c:466-474`) → `SetPartsAfterStoreLoad()` (`:476-487`) → `SetPartsFromSyncData()`: rebuilds
   each part's built flag from the bitmask, sets base state from the base part, re-syncs. Guarded by
   `m_FixDamageSystemInit` (the damage-system migration path uses `EEOnAfterLoad` + a 500ms deferred call
   instead, `:505-513`).

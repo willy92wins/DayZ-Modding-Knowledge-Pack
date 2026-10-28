@@ -102,7 +102,7 @@ proto native bool dBodyIsSet(notnull IEntity ent);                              
 ```
 - `PhysicsGeomDef(string name, dGeom geom, string materialName, int layerMask)` + public `Frame[4]`,
   `ParentNode` (`1_core/physics/physicsgeomdef.c:9-26`).
-- Geoms: `dGeomCreateBox(size)` :186, `dGeomCreateSphere(radius)` :189, `dGeomCreateCapsule` :192,
+- Geoms: `dGeomCreateBox(size)` `1_core/proto/enphysics.c:186`, `dGeomCreateSphere(radius)` :189, `dGeomCreateCapsule` :192,
   `dGeomCreateCylinder` :195, `dGeomDestroy` :198.
 - `dBodyCreateDynamic/Static` (no `Ex`) exist only under `#ifdef GAME_TEMPLATE`
   (`2_gamelib/entities/scriptmodel.c:31,35`) — they do not compile in DayZ. The wrapper

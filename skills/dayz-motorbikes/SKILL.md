@@ -142,7 +142,7 @@ Each rule must be strictly followed to prevent critical failures in the entity:
 - **Cause**: Each contact produces two quantities on the server (`CheckContactCache`, `MotorbikeScript.c:1267-1372`, called inside `if (g_Game.IsServer())` at `:758-773`): vehicle damage `dmg = |impulso × m_VehicleContactDamageCoef|` (`:1278`) and the crew damage base `crewDmgBase = |impulso / masa × 500 × m_CrewContactDamageCoef|` (`:1279`, calculates as if the motorbike weighed 500 kg). Threshold tiers are decided with `dmg`; only the last damages the crew, and there death depends on `crewDmgBase` (`DamageCrew`, `:1375-1427`).
 - **Citation**: `exp\scripts\scripts\4_World\Entities\Vehicles\MotorbikeScript.c:1278-1279, 1316-1365, 1384-1398` and `exp\scripts\scripts\3_Game\constants.c:898-901`.
 - **Tiers according to vehicle `dmg` (`constants.c:898-901`)**:
-  - `dmg < 10` (`MOTORBIKES_CONTACT_DMG_MIN`): ignored (`:1316-1317`).
+  - `dmg < 10` (`MOTORBIKES_CONTACT_DMG_MIN`): ignored (`MotorbikeScript.c:1316-1317`).
   - `10 ≤ dmg < 25` (`MOTORBIKES_CONTACT_DMG_THRESHOLD_SMALL`): damage to zone without transfer (`NO_TRANSFER`) and light crash sound (`:1325-1335`).
   - `25 ≤ dmg < 40` (`MOTORBIKES_CONTACT_DMG_THRESHOLD_MID`): `FallOver()` and light sound; crew takes no damage (`:1336-1346`).
   - `dmg ≥ 40`: `DamageCrew(crewDmgBase)`, `FallOver()` and heavy sound (`:1347-1359`).

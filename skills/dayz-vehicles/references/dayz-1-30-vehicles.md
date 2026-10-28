@@ -260,7 +260,7 @@ The core SKILL.md cited these symbols at their 1.29 lines; it now cites the 1.30
 | `CarScript.EOnPostSimulate` | `carscript.c:948` | `CarScript.c:807` |
 | `CarScript.OnDriverExit` gear-stop | `carscript.c:1207-1215` | `CarScript.c:940-948` |
 | `Transport.OnDriverExit` empty body | `transport.c:161` | `Transport.c:227` |
-| `ForceUpdateLightsStart`/`End` | `:535-536`, `:2981/:2990` | `[Obsolete]` at `CarScript.c:2805-2809`; no replacement |
+| `ForceUpdateLightsStart`/`End` | `carscript.c:535-536`, `:2981/:2990` | `[Obsolete]` at `CarScript.c:2805-2809`; no replacement |
 
 ## 11. Wheels: a `_Ruined` twin and the 1.30 tyre fields
 

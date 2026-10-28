@@ -681,6 +681,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `SKILL.md` said that `EntityAI.OnStoreSave` writes nine energy fields. It writes eight, on 1.29 as
   on 1.30 (`entityai.c:2917-2948`), and the stream simulator in `tests/persistence/` now writes
   eight too.
+- Short citations (a line number with no file) that the re-check missed, because they were left at
+  an older build's line or sat under a citation of another file, now give the 1.30.164200 line or
+  name their file: `dayz-ui-development` `references/vanilla-menus-map.md` (the menu factory, the
+  pause and inventory menus, the HUD and its flags, and four lines under a citation of another
+  file),
+  `dayz-basebuilding` (`SKILL.md`, `references/entity-lifecycle.md` and
+  `references/persistence-audit.md`), `dayz-aviation`, `dayz-vehicles` (`SKILL.md` and
+  `references/dayz-1-30-vehicles.md`), `dayz-motorbikes`, `dayz-weapons`, `dayz-sound-system`,
+  `dayz-physics-engine` (`SKILL.md`, `references/fisica-engine-deep-dive.md` and
+  `references/dayz-1-30-ragdoll-and-fall.md`), `enforce-script-reference` (`SKILL.md` and
+  `references/dayz-1-30-enforce-script.md`), `dayz-environment-hazards` (`SKILL.md` and
+  `references/sources.md`), `dayz-mcp-verify` and `dayz-underground`
+  `references/underground-triggers.md`. Where 1.30 moved the code, the citation follows it:
+  `dayz-aviation` cites the vital-parts check that 1.30 runs through
+  `Transport.CheckVitalItemCallback`, not the obsolete `CarScript.CheckVitalItem`;
+  `dayz-basebuilding` `references/entity-lifecycle.md` says that 1.30's `CanDismantlePart` and
+  `CanDestroyPart` also require `SupportRemovalCheck`, and gives as 1.29 the `OnFinishProgressServer`
+  with the "redundant at this point" comment; `dayz-basebuilding` `SKILL.md` gives the slot caps of
+  `scripts\config.cpp` at their 1.30.164200 lines. `dayz-particles` `SKILL.md` cites the whole
+  small-area branch of `effectarea.c` (`:348-386`), and `dayz-environment-hazards` `SKILL.md` says
+  that the six-file Nasdara PBO was that of 1.30.164014.
 
 - Citations of files this pack does not ship now say so. `_shared/dayz-conventions.md` gains
   "Citation placeholders: `[PROJ]`, `[SKILLS]`, `<project>_dev/...`": what each token means, and

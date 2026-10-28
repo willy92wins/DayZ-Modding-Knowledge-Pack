@@ -43,13 +43,13 @@ every saved base corrupts on the next load.
 
 ## 4. Load reconciliation
 
-- `AfterStoreLoad` (`:466-474`) → `SetPartsAfterStoreLoad()` (`:476-487`) → `SetPartsFromSyncData()`: rebuilds
+- `AfterStoreLoad` (`basebuildingbase.c:466-474`) → `SetPartsAfterStoreLoad()` (`:476-487`) → `SetPartsFromSyncData()`: rebuilds
   each part's built flag from the bitmask, sets base state from the base part, re-syncs.
 - Guarded by `m_FixDamageSystemInit` — the damage-system migration path uses `EEOnAfterLoad` + a 500ms
-  deferred call instead (`:530-538`).
-- `SetPartFromSyncData` (`:276-315`) is the core: per part, compares "built in sync bitmask" vs "built flag",
+  deferred call instead (`:505-513`).
+- `SetPartFromSyncData` (`:265-304`) is the core: per part, compares "built in sync bitmask" vs "built flag",
   adds/removes constructed parts, shows/hides physics, toggles the `Deployed` proxy for the base, and
-  **failsafe-relocks attached materials** (`:314`, "failsafe for corrupted sync/storage data").
+  **failsafe-relocks attached materials** (`:303`, "failsafe for corrupted sync/storage data").
 
 ## 5. Version bumps
 
