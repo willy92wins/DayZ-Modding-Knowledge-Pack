@@ -27,7 +27,7 @@ the `SurvivorBase` config bind.
 none of those calls exist on an infected and a script call will not compile. The lines are the same in
 1.30.164014, 1.30.164078 and 1.30.164200.
 
-Config and clips do not work around it. [TESTED by the contributor] claim: CLAIM-PHYS-INFECTED-NO-RAGDOLL-130. A custom infected (`z_hermit_m.xob`, own
+Config and clips did not work around it in the contributor's test. [TESTED by the contributor] claim: CLAIM-PHYS-INFECTED-NO-RAGDOLL-130. A custom infected (`z_hermit_m.xob`, own
 1.30 graph) was given `ragdoll = "DZ/characters/bodies/human.ragdoll";` in both `enfanimsys`
 blocks, and its death states were pointed at vanilla player death `.anm` clips that embed the
 `Ragdoll` event (`p_erc_death01_F` etc.). Both test kills ran `DayZInfectedCommandDeathModdable`,
@@ -35,8 +35,9 @@ played the full clip and froze in the last pose. There was no limp body and no R
 
 - RPT logs no `Initializing ragdoll` line at default verbosity, not even for a player death. The
   absence of that line proves nothing either way; only the in-game result does.
-- A custom `.ragdoll` for the infected `.xob` is untested, but it is unlikely to help: the infected
-  death command ignores the clip event, so a working definition would still never be activated.
+- A custom `.ragdoll` for the infected `.xob` is untested. [INFERRED] It may not help: in the test
+  the infected death command played clips that carry the `Ragdoll` event and no ragdoll started, so
+  a working definition might never be activated either.
 - [DESIGN] The remaining route is a corpse swap. On server death, delete the infected, spawn a
   `PlayerBase` survivor at the same transform, move the clothing, gear and weapon onto it, then
   kill it so the player death path ragdolls it. The head and hands become a vanilla survivor's.
