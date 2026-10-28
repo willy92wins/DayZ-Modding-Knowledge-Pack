@@ -95,7 +95,7 @@ Extensions:
 
 ## 5. The 'Colorable' mechanism (why script SetColor works on styled widgets)
 
-`ButtonWidget/Colorable` (`dayzwidgets.styles:2163-2219`): `Color="0"` + `Center Item = "WhitePixel"`
+`ButtonWidget/Colorable` (`dayzwidgets.styles:2167-2223`): `Color="0"` + `Center Item = "WhitePixel"`
 (a 1×1 white region, `rover_imageset.imageset:11-14`) in **all 5 states** → the widget renders a
 white pixel that script `SetColor(ARGB)` then tints. **This is the verified mechanism behind the
 skill fact "ButtonWidget.SetColor() works directly, no LoadImageFile needed"** — it holds for styles
@@ -128,7 +128,7 @@ Highlights per type (full inventory in the styles file itself):
 - Styles exist for XComboBox/SmartPanel/Html/ThreeStateCheckbox/graph widgets too — the 4 graph
   widgets are the only types with styles but zero vanilla layout instantiation.
 
-### The `ActionWidget` Style for `PanelWidget` (Added in DayZ 1.30 Exp)
+### The `ActionWidget` Style for `PanelWidget` (Added in DayZ 1.30)
 
 In DayZ 1.30 Exp (`exp\gui\gui\looknfeel\dayzwidgets.styles:3700-3723`), a new style `ActionWidget`
 was introduced for `PanelWidget`:
@@ -163,7 +163,7 @@ was introduced for `PanelWidget`:
 
 **What it does:** It builds a parametric 9-slice gradient frame around interaction widgets using cut slices
 from the `dayz_gui` imageset (`ActionWidgetGradient*`).
-In `exp\gui\gui\layouts\day_z_hud.layout:2294, 2477`, this replaces the legacy 1.29 pattern where interaction prompts
+In `exp\gui\gui\layouts\day_z_hud.layout:2424, 2617`, this replaces the legacy 1.29 pattern where interaction prompts
 were `ImageWidgetClass` loading `linear_gradient.edds` or `card_drop.edds`.
 In 1.30, interaction widgets (`item`, `interact`, `continuous_interact`, `single`, `continuous`) are `PanelWidgetClass`
 styled with `style ActionWidget`.

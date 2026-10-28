@@ -19,7 +19,7 @@ materials, animations, and all config files — using Python and Blender headles
 Primary path uses Blender for pro-grade geometry (bevel, subdiv, booleans, Smart UV,
 AO baking, auto LODs via decimate) + py3d for .p3d assembly. Fallback path uses
 py3d only for quick prototyping without Blender.
-(until 1.29: the LOD table, Rule 14 visual-LOD proxies, and AddonBuilder packing loop below remain the 1.29 contract.) (since 1.30 Exp: inventory-attachment proxies also need ViewGeometry on dedicated server; wells need ViewGeometry `liquid_source`; `-cacheP3D` for unbinarized meshes; `disableSimulation` on static houses. Details: [dayz-1-30-model-pipeline.md](references/dayz-1-30-model-pipeline.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the LOD table, Rule 14 visual-LOD proxies, and AddonBuilder packing loop below remain the 1.29 contract.) (since 1.30: inventory-attachment proxies also need ViewGeometry on dedicated server; wells need ViewGeometry `liquid_source`; `-cacheP3D` for unbinarized meshes; `disableSimulation` on static houses. Details: [dayz-1-30-model-pipeline.md](references/dayz-1-30-model-pipeline.md) and ## DayZ 1.30.)
 
 
 ## Artist-return .p3d preflight (SP-246)
@@ -226,7 +226,7 @@ For cases where the user imports a model and needs to tag parts interactively:
     - Never assume either case. Winding gates cannot see a mirror (the old recipe passes all of them): check chirality on an asymmetric feature — text, a logo, a one-sided part — in game, or compare the binarized ODOL against a vanilla model through the same reader.
 13. *(Merged into Rule 12 — the Blender/FBX map is the det=-1 reflection with negated normals, and a GLB/glTF brought through Blender takes the same one. Aligned 2026-10-03: this note ended "GLB remains a separate case.")*
 14. **Attachments require proxy system (3 parts)** — for items to render visually when attached: (a) proxy face + selection in visual LODs of the parent p3d, (b) a proxy p3d referenced by the selection, (c) `CfgNonAIVehicles` entry mapping `inventorySlot` to the proxy model. Missing any part = attachment is logically present but invisible. See `memory-and-selections.md` and `config-and-packing.md`.
-(until 1.29: visual LODs of the parent were sufficient for the server to read proxy position.) (since 1.30 Exp [CHANGELOG]: duplicate the proxy triangle in **ViewGeometry** so a dedicated server does not fall back to the parent origin — `work\changelog-1.30-exp-modding.md:39`. See `references/dayz-1-30-model-pipeline.md`.)
+(until 1.29: visual LODs of the parent were sufficient for the server to read proxy position.) (since 1.30 [CHANGELOG]: duplicate the proxy triangle in **ViewGeometry** so a dedicated server does not fall back to the parent origin — `work\changelog-1.30-exp-modding.md:39`. See `references/dayz-1-30-model-pipeline.md`.)
 15. **Proxy selections use special naming** — `proxy:addon_path\proxy_model.p3d.NNN` where NNN is a 3-digit index starting at 001. The face assigned to this selection defines position and orientation of the rendered attachment.
 16. **`autocenter=0` named property required on EVERY collision LOD** — not just Geometry. Without it on FireGeometry / ViewGeometry / Roadway / Hitpoints / LandContact, the engine recenters that LOD's mesh based on its bbox center, displacing the collision mesh from the visual mesh by half-height (typically 20-25cm Y). Empirical symptoms: bullets pass through, hologram raycast falls through to ground when stacking, action cursor doesn't register the object. Detection: `lod.properties.get("autocenter") != "0"` on any collision LOD. Fix: `lod.properties["autocenter"] = "0"` on all collision LODs, then write back. Vanilla reference: LFPG `gate_and.p3d` has `autocenter=0` on Geometry, ViewGeometry, FireGeometry uniformly.
 17. **Every face in collision LODs needs a penetration `.rvmat`** — assign `face.material = "dz\\data\\data\\penetration\\<surface>.rvmat"` (e.g. `wood_desk` for wood, `metalplate` for metal, `plastic` for plastic). The .rvmat references a `.bisurf` that defines ballistic properties (penetration thickness, deflection, damage). Without this assignment, ObjIntersectFire raycasts hit the geometry but the engine cannot resolve a surface — bullets pass through, no footstep sound. Vanilla: `wooden_case` has every collision-LOD face assigned to `wood_desk.rvmat`. Detection: `(face.material or "").strip() == ""` on any collision LOD face is a fail.
@@ -887,7 +887,7 @@ block — never by a filename that only encodes someone's intent. A name is a cl
 provenance; a count is evidence. It is cheap enough that there is no reason to skip it, and the
 failure it prevents is redoing work that was already correct.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 The LOD resolution table, Rules 12–20, artist-return preflight (SP-246), and the py3d
 assembly path still hold. What 1.30 changes for this skill is engine/config contract
@@ -896,7 +896,7 @@ blocks: [dayz-1-30-model-pipeline.md](references/dayz-1-30-model-pipeline.md).
 
 ### What changes
 
-- **Inventory-attachment proxy on dedicated server.** (until 1.29: missing proxy in the final visual LOD could make the server report the parent origin.) (since 1.30 Exp [CHANGELOG]: server reads the View Geometry LOD.) Duplicate the proxy triangle in ViewGeometry.
+- **Inventory-attachment proxy on dedicated server.** (until 1.29: missing proxy in the final visual LOD could make the server report the parent origin.) (since 1.30 [CHANGELOG]: server reads the View Geometry LOD.) Duplicate the proxy triangle in ViewGeometry.
 - **`-cacheP3D=0/1`.** Sibling `.p3dcache` next to unbinarized `.p3d` for faster Game/Buldozer relaunches ([CHANGELOG]).
 - **`disableSimulation` on house-based entities.** Config key [CHANGELOG]; script natives `Entity.DisableSimulation` / `GetIsSimulationDisabled` in `exp\scripts\scripts\3_Game\Entities\Entity.c:3-6`. Config assignment not found in extracted configs (`[UNVERIFIED]`).
 - **`liquid_source`.** ViewGeometry selection for well/pump liquid actions (`UAMisc.LIQUID_SOURCE_SELECTION` in `ActionConstants.c:180`).

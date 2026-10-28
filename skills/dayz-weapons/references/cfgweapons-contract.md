@@ -22,7 +22,7 @@ Weapon (native)
 Verified: `boltactionrifle_base.c:5` `class BoltActionRifle_Base extends Weapon_Base`;
 `pistol_base.c:149` `class Pistol_Base extends Weapon_Base`. Do not assume a common `Rifle_Base` parent.
 
-(desde 1.30 Exp, still `[VERIFIED-vanilla]` on this extract — extra script branches, same `Weapon_Base`
+(desde 1.30, still `[VERIFIED-vanilla]` on this extract — extra script branches, same `Weapon_Base`
 root. Full staging warning: `dayz-1-30-weapons.md`.)
 
 - `RifleBoltLock_Base extends Rifle_Base` — `rifleboltlock_base.c:119`. `SCARH_Base : RifleBoltLock_Base`
@@ -138,7 +138,7 @@ The firearm hierarchy is not linear (above) and per-mode blocks vary by base. Gr
 `P:\scripts\4_world\entities\firearms\` or in the des-rapificado config before writing it; keep the
 `[VERIFIED in-game]` / `[VERIFIED-vanilla]` / `[UNVERIFIED]` labels.
 
-## DayZ 1.30 Exp (build 1.30.164014) — config / script contract deltas
+## DayZ 1.30 — config / script contract deltas
 
 Entity-side only. Details and `[EXACT]` blocks: `dayz-1-30-weapons.md`.
 

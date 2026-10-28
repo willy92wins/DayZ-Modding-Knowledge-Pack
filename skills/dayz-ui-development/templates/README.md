@@ -107,8 +107,8 @@ the panel is not on screen. Text floats over the world.
 | Style | Type it belongs to | What `Normal` draws |
 |---|---|---|
 | `Colorable` | `WindowWidget` (`gui/layouts/dialog.layout:16`) | WhitePixel (window) |
-| `ColorablePanel` | `PanelWidget` (`dayzwidgets.styles:3327`) | `Center=""` — nothing |
-| `rover_sim_colorable` | `PanelWidget` (`dayzwidgets.styles:3223`) | `Center="WhitePixel"` |
+| `ColorablePanel` | `PanelWidget` (`dayzwidgets.styles:3388`) | `Center=""` — nothing |
+| `rover_sim_colorable` | `PanelWidget` (`dayzwidgets.styles:3284`) | `Center="WhitePixel"` |
 
 Vanilla uses `rover_sim_colorable` on panels **577 times**. `ColorablePanel`
 exists and is the wrong guess. Existence is not enough; open
@@ -135,7 +135,7 @@ on it.
 body fills white and the label disappears.
 
 **Cause.** `ButtonWidget/EmptyHighlight` `Focus` `Center="WhitePixel"`
-(`dayzwidgets.styles:2232`). Default label is white. Without a body `color`
+(`dayzwidgets.styles:2236`). Default label is white. Without a body `color`
 the pixel stays white.
 
 **Fix in these templates.** `color 1 0 0 1` (body, not `"text color"`) +

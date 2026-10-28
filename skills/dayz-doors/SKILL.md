@@ -25,7 +25,7 @@ The moving **selection** and interactive **source** may differ. This is the key 
 
 Read [door-model-cfg-and-config.md](references/door-model-cfg-and-config.md) before editing model.cfg or config.cpp. Read [lods-and-object-builder.md](references/lods-and-object-builder.md) before editing the P3D. Read [worked-examples.md](references/worked-examples.md) when choosing a pattern. The three patterns are the examples of novoGOD's door tutorial *Doors_Buttons_Lesson*; it carries no license, so the Pack does not ship its files, and the references describe them and cite them by path and line.
 
-(until 1.29: a building door's lock state was the engine native pair `LockDoor` / `UnlockDoor`, operated with a lockpick through `ActionLockDoors` / `ActionUnlockDoors` and `CanDoorBeOpened(int doorIndex, bool checkIfLocked = false)`.) (since 1.30 Exp: that native path still exists, but `BuildingBase` also accepts inventory locks on slots `Att_CombinationLock` and `Att_CodeLock`, bound per door by `AdditionalDoorInfo`. Vanilla `ActionOpenDoors` now calls `CanDoorBeOpened(notnull DoorManipulationParams params)` and `DoorsDirectionalCheck`. See [Door open conditions and locks](references/door-model-cfg-and-config.md#door-open-conditions-and-locks-dayz-130-exp) and [Building locks](references/worked-examples.md#building-locks-dayz-130-exp).)
+(until 1.29: a building door's lock state was the engine native pair `LockDoor` / `UnlockDoor`, operated with a lockpick through `ActionLockDoors` / `ActionUnlockDoors` and `CanDoorBeOpened(int doorIndex, bool checkIfLocked = false)`.) (since 1.30: that native path still exists, but `BuildingBase` also accepts inventory locks on slots `Att_CombinationLock` and `Att_CodeLock`, bound per door by `AdditionalDoorInfo`. Vanilla `ActionOpenDoors` now calls `CanDoorBeOpened(notnull DoorManipulationParams params)` and `DoorsDirectionalCheck`. See [Door open conditions and locks](references/door-model-cfg-and-config.md#door-open-conditions-and-locks-dayz-130) and [Building locks](references/worked-examples.md#building-locks-dayz-130).)
 
 ## Workflow
 
@@ -45,7 +45,7 @@ Follow the debug order: config load -> entity spawn -> action location -> animat
 | Door plus moving handle | Simple Door | Door and handle share source **door1**; handle is a child of **door1** and finishes at phase **0.15**. |
 | Door controlled by a static button | Door with Button | Only **door1** is a bone; animation source and Doors component are **door1_open** at the button. |
 | Door plus moving handle and lever | Expert Mode | Door, handle, and lever share **door1_open**; handle follows door, lever follows nothing. |
-| Building door that accepts a combination lock or code lock (since 1.30 Exp) | Building lock attachments | Keep the **class Doors** mapping above; add per-door `relatedInventorySlots[]` / `lockCompatibilityBitMask` plus entity slots `Att_CombinationLock` / `Att_CodeLock`. |
+| Building door that accepts a combination lock or code lock (since 1.30) | Building lock attachments | Keep the **class Doors** mapping above; add per-door `relatedInventorySlots[]` / `lockCompatibilityBitMask` plus entity slots `Att_CombinationLock` / `Att_CodeLock`. |
 
 ## New door from scratch checklist
 
@@ -61,8 +61,8 @@ Follow the debug order: config load -> entity spawn -> action location -> animat
 - [ ] **CfgPatches.requiredAddons[]** includes **"DZ_Data"**.
 - [ ] The object inherits from **HouseNoDestruct**.
 - [ ] **class Doors** maps each intended source through **component**.
-- [ ] (since 1.30 Exp, if the door should take a padlock or code lock) entity `attachments[]` include `Att_CombinationLock` and/or `Att_CodeLock`; the matching **class Doors** entry sets `relatedInventorySlots[]`; Memory has slot selections `att_combinationlock` / `att_codelock` and any `interactPositionPoint` / `interactDirPoint` pair.
-- [ ] (since 1.30 Exp) any script override of door-open conditions targets `CanDoorBeOpened(notnull DoorManipulationParams params)`, not only the `int` wrapper.
+- [ ] (since 1.30, if the door should take a padlock or code lock) entity `attachments[]` include `Att_CombinationLock` and/or `Att_CodeLock`; the matching **class Doors** entry sets `relatedInventorySlots[]`; Memory has slot selections `att_combinationlock` / `att_codelock` and any `interactPositionPoint` / `interactDirPoint` pair.
+- [ ] (since 1.30) any script override of door-open conditions targets `CanDoorBeOpened(notnull DoorManipulationParams params)`, not only the `int` wrapper.
 - [ ] Door sound names are verified in **DZ\sounds\hpp\config.cpp**.
 - [ ] **DamageSystem** has GlobalHealth, GlobalArmor, and appropriate DamageZones.
 - [ ] In-game tests cover action position, motion, sounds, physical LODs, damage, spawn state, and RPT logs.
@@ -77,8 +77,8 @@ Follow the debug order: config load -> entity spawn -> action location -> animat
 - **initOpened** is a spawn probability: `rand < initOpened` spawns the door opened (0 = always closed, 0.5 ~= half). Verified vs BI Doors_on_buildings wiki.
 - Keep skeleton names unique. The tutorial warns that duplicate skeleton names can crash a server.
 - The tutorial's Expert Mode example has a source-to-Doors anomaly; read its warning in [worked-examples.md](references/worked-examples.md) before reusing the pattern.
-- (until 1.29: `LockDoor` / `UnlockDoor` plus lockpick was the only building-door lock path.) (since 1.30 Exp: a locked `DigitalCodeLock` or `CombinationLock` on a related slot also makes `BuildingBase.CanDoorBeOpened` return false. Lockpick is skipped when an external lock is already on that door. Combination unlock is a separate action `ActionCombinationLockUnlock` after the dials match.)
-- (since 1.30 Exp) `EBuildingLockType` is still lockpick / ship-container keys. Combination and code locks are **inventory attachments**, not extra enum bits. Do not invent `COMBINATION_LOCK = 2` / `CODE_LOCK = 4`.
+- (until 1.29: `LockDoor` / `UnlockDoor` plus lockpick was the only building-door lock path.) (since 1.30: a locked `DigitalCodeLock` or `CombinationLock` on a related slot also makes `BuildingBase.CanDoorBeOpened` return false. Lockpick is skipped when an external lock is already on that door. Combination unlock is a separate action `ActionCombinationLockUnlock` after the dials match.)
+- (since 1.30) `EBuildingLockType` is still lockpick / ship-container keys. Combination and code locks are **inventory attachments**, not extra enum bits. Do not invent `COMBINATION_LOCK = 2` / `CODE_LOCK = 4`.
 - **Vanilla house furniture is PROXY geometry inside the building's ODOL, not a placed object.** Fridges and wardrobes inside houses are not instances of `StaticObj_Furniture_*`: the model path appears as a proxy inside ~25 house ODOLs of `DZ/structures` (1,546+ `kitchen\fridge\fridge` placements in `dayzOffline.chernarusplus\mapgrouppos.xml`, lower bound), so neither a `modded` override of `StaticObj_Furniture_fridge` nor `CF_ObjectManager.HideMapObject` reaches them. [EXACT][CLAIM-FURNITURE-FRIDGE-CLASS] The trap: `StaticObj_Furniture_fridge : HouseNoDestruct` exists with `scope=1` and no `Doors` subclass (`DZ/structures/furniture/config.cpp:565-569`, DayZ 1.30.164014 Exp) — the class existing does not make house fridges instances of it. Before designing doors for furniture, grep the extracted `DZ/structures` P3Ds for the model path as a proxy (use `.` and not `\` as path separator: in shell tooling the escaped backslash collapses and even the control stops matching) and count placements in the world WRP.
 - **Measured way to make house furniture interactive (DayZDiag 1.29.163709, 2026-09-24): replace the model by path.** [EXACT] A normal mod PBO whose `$PBOPREFIX$` is `DZ\structures\furniture\kitchen\fridge` and which ships its own `fridge.p3d` (ODOL, with a fresh memory point) overrides the vanilla model for script-created instances AND for the proxies inside houses: `MemoryPointExists` true on server and client on the overridden class, vanilla geometry on the control class, and the replacement geometry visible sticking out of the house roofs. Open question: whether the house Geometry/View LODs carry the furniture proxy (vertical `RaycastRVProxy` sweeps, Geom and View, over 7 houses never hit the 16 m marker).
 
@@ -110,7 +110,7 @@ invariant #22 carries the attachment ViewGeometry rule. Applying building `class
 vehicle will not produce a working radial, even though both mechanisms use names such as `source`,
 `component`, and `axis`.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 ### What changes
 
@@ -120,7 +120,7 @@ vehicle will not produce a working radial, even though both mechanisms use names
 - **New item `DigitalCodeLock`.** Script class in `CodeLock.c`; logic in `CodeLockComponent`; UI layout `gui/layouts/day_z_digital_lock.layout`. Needs `Battery9V` in slot `BatteryD`. PIN length 4–6. Two brute-force stages via `CfgGameplayHandler.GetExternalLockProtectionCountStageOne/Two` and `GetExternalLockProtectionTime` / `GetExternalLockProtectionResetTime`. (`exp/scripts/scripts/4_World/Entities/ItemBase/CodeLock.c:1-41`, `exp/scripts/scripts/4_World/Classes/CodeLockComponent.c:4-73,468-479`)
 - **`CombinationLock` two-sided + unlock action.** Dials no longer drop the lock by themselves; `ActionCombinationLockUnlock` runs after the combination matches. Persistence writes `m_CombinationInside` at vanilla stream **version 143**. (`exp/scripts/scripts/4_World/Entities/ItemBase/CombinationLock.c:32-65,128-177`, `exp/scripts/scripts/4_World/Classes/UserActionsComponent/Actions/SingleUse/ActionCombinationLockUnlock.c:1-7`)
 - **Bunker doors.** `Bunker.CanDoorBeOpened` uses `MemPointDirectionalCheck` on `{doorType}_action` / `{doorType}_inside`. Main door auto-closes after `DOOR_AUTOCLOSE_TIME = 12` and re-locks the `DigitalCodeLock_Bunker`. (`exp/scripts/scripts/4_World/Entities/Building/Bunker.c:3,47-61,73-89`)
-- **Rebuildable house doors.** `Rebuilding` drives `doorConstructionPhysicsSource` on open/close start. (`exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:440-464`)
+- **Rebuildable house doors.** `Rebuilding` drives `doorConstructionPhysicsSource` on open/close start. (`exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:439-463`)
 - **[CHANGELOG]** House-based `disableSimulation` (natives `DisableSimulation` / `GetIsSimulationDisabled` on `Entity`) and a fix for inventory attachments on buildings created at load time. (`exp/scripts/scripts/3_Game/Entities/Entity.c:3-6`, `work/changelog-1.30-exp-modding.md:13,36`)
 
 ### What breaks for a 1.29 door mod
@@ -128,7 +128,7 @@ vehicle will not produce a working radial, even though both mechanisms use names
 | Break | Severity | Migration |
 |---|---|---|
 | Override of `CanDoorBeOpened(int, bool)` is skipped by vanilla Open | **HIGH** | Override `CanDoorBeOpened(notnull DoorManipulationParams params)` and call `super`. The `int` wrapper still exists (`Building.c:160-167`) but `ActionOpenDoors` no longer calls it (`ActionOpenDoors.c:39-52`). Vanilla `Land_WarheadStorage_Main` still overrides the `int` form (`Land_WarheadStorage_Main.c:352`) — do not copy that as the 1.30 pattern. |
-| Door opens from the wrong side, or Open never appears | **MEDIUM** | Add Memory points named in `interactPositionPoint` / `interactDirPoint`, or omit both (empty names make `MemPointDirectionalCheck` return true). (`MiscGameplayFunctions.c:911-936`, `Building.c` 4_World `:335-342`) |
+| Door opens from the wrong side, or Open never appears | **MEDIUM** | Add Memory points named in `interactPositionPoint` / `interactDirPoint`, or omit both (empty names make `MemPointDirectionalCheck` return true). (`MiscGameplayFunctions.c:944-969`, `Building.c` 4_World `:335-342`) |
 | Lockpick still offered on a padlocked door | **MEDIUM** | Set `relatedInventorySlots[]` on that Doors entry so `ActionLockDoors` / `ActionUnlockDoors` see the external lock. (`ActionLockDoors.c:40-57`) |
 | Custom combination-lock auto-unlock on last dial | **MEDIUM** | Fire `ActionCombinationLockUnlock` after the dials match. Persist `m_CombinationInside` when `version >= 143`. |
 | Code lock / combination lock never attaches to a custom building | **HIGH** | Declare the slots on the entity, proxy selections `att_codelock` / `att_combinationlock`, and `relatedInventorySlots[]` on the door. `ActionAttachToConstruction` looks up the slot from `AdditionalDoorInfo`. (`ActionAttachToConstruction.c:151-174`) |
@@ -144,6 +144,6 @@ vehicle will not produce a working radial, even though both mechanisms use names
 
 ### 1.30 references in this skill
 
-- [Door open conditions and locks](references/door-model-cfg-and-config.md#door-open-conditions-and-locks-dayz-130-exp)
-- [Building lock integration examples](references/worked-examples.md#building-locks-dayz-130-exp)
-- [1.30 Memory points and lock slot selections](references/lods-and-object-builder.md#dayz-130-exp-memory-points-and-lock-slots)
+- [Door open conditions and locks](references/door-model-cfg-and-config.md#door-open-conditions-and-locks-dayz-130)
+- [Building lock integration examples](references/worked-examples.md#building-locks-dayz-130)
+- [1.30 Memory points and lock slot selections](references/lods-and-object-builder.md#dayz-130-memory-points-and-lock-slots)

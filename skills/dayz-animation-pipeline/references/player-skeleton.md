@@ -139,7 +139,7 @@ Lod 2 — mostly relevant for character mods and cutscenes, not gameplay animati
 
 ## Legacy / to-be-removed [DO NOT USE]
 
-These bones appear in `player_testing.xob` (test skeleton) marked literally `<!--To Be removed-->` (`skeletons.anim.xml:296-300`). They are not part of the production skeleton:
+These bones appear in `player_testing.xob` (test skeleton) marked literally `<!--To Be removed-->` (`skeletons.anim.xml:293-302`). They are not part of the production skeleton:
 
 - `Bullet`, `Trigger`, `Magazine`, `Bolt`
 - `Bullets_Magazine`, `Bullets_holder`, `Bullets_on_holder`
@@ -162,7 +162,7 @@ Workflow when bringing the skeleton into Blender to author a new `.txa` or `.anm
 - `references/skeletal-anm-enfusion.md` — the `.anm` route from authoring to runtime.
 - `references/blender-authoring.md` — bone-name discipline + headless Blender export pattern.
 
-## DayZ 1.30 Exp: Bone Indexing & skeletons.anim.xml Deprecation [EXACT]
+## DayZ 1.30: Bone Indexing & skeletons.anim.xml Deprecation [EXACT]
 
 In DayZ 1.30 Exp (build 1.30.164014), the global skeleton architecture underwent fundamental changes:
 

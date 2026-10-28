@@ -19,7 +19,7 @@ not binary. Custom particles can be created programmatically without Workbench.
 
 All particles are CLIENT-ONLY. Server controls state via SyncVars; client
 creates/destroys particles in response.
-(until 1.29: this was the documented PlayOnObject contract; wrecks gated with `!g_Game.IsDedicatedServer()`. `SEffectManager.CreateParticleServer` already existed for trees/fishing/traps.) (since 1.30 Exp: local PlayOnObject is still client-only, but ceiling dust and other synced effecters spawn on the server via `CreateParticleServer`; vanilla wrecks, FireplaceBase, and `ParticleManager.GetInstance()` now gate with `!g_Game.IsHeadlessOrDedicatedServer()`. Details: `references/dayz-1-30-particles.md`.)
+(until 1.29: this was the documented PlayOnObject contract; wrecks gated with `!g_Game.IsDedicatedServer()`. `SEffectManager.CreateParticleServer` already existed for trees/fishing/traps.) (since 1.30: local PlayOnObject is still client-only, but ceiling dust and other synced effecters spawn on the server via `CreateParticleServer`; vanilla wrecks, FireplaceBase, and `ParticleManager.GetInstance()` now gate with `!g_Game.IsHeadlessOrDedicatedServer()`. Details: `references/dayz-1-30-particles.md`.)
 
 ## EFFECT-AREA PREFLIGHT (added 2026-08-31)
 
@@ -70,7 +70,7 @@ BillboardingType (Full), CenterY (-1=bottom, 0=center), StretchMultiplier
 **Motion:** Velocity, VelocityRND, AirResistance, AirResistanceRND,
 GravityMultiply, GravityMultiplyRND, Wind (0-1), Spring, Restitution,
 VelAngle (0/1), VelAffect (0-1)
-(since 1.30 Exp: after play, `EffectParticle.ParticleParamsOverride(ParticleParamsOverrideData)` can retune `EmitorParam.LIFETIME` / `VELOCITY` / `SIZE` / `AIR_RESISTANCE` from script — used by vehicle dust and wheel contact. See `references/dayz-1-30-particles.md`.)
+(since 1.30: after play, `EffectParticle.ParticleParamsOverride(ParticleParamsOverrideData)` can retune `EmitorParam.LIFETIME` / `VELOCITY` / `SIZE` / `AIR_RESISTANCE` from script — used by vehicle dust and wheel contact. See `references/dayz-1-30-particles.md`.)
 
 **Lifetime:** LifeTime (seconds), LifeTimeRND, EffectTime (cycle duration),
 Repeat (0=one-shot auto-deletes, 1=loop MUST stop manually)
@@ -104,7 +104,7 @@ Particle {
 }
 ```
 
-(until 1.29: particle `.emat` shaders documented here are `Particle` and `ParticleSprite`.) (since 1.30 Exp: weather VFX also ship postprocess `.emat` that are **not** particle materials — sandstorm uses shader `SnowEffect` in `exp\graphics\graphics\Materials\postprocess\sandstorm.emat:1`. Do not treat that file as a `.ptc` material.)
+(until 1.29: particle `.emat` shaders documented here are `Particle` and `ParticleSprite`.) (since 1.30: weather VFX also ship postprocess `.emat` that are **not** particle materials — sandstorm uses shader `SnowEffect` in `exp\graphics\graphics\Materials\postprocess\sandstorm.emat:1`. Do not treat that file as a `.ptc` material.)
 
 ### Shader: `ParticleSprite` (steam, flares, glow billboards)
 ```
@@ -175,14 +175,14 @@ StopParticleFlags: `NONE = 0` (no-op; default `StopParticle()` already does grad
 ### 3. `ParticleManager` pool (ParticleManager.c)
 Global instance via `ParticleManager.GetInstance()` — 10000 pool, client only,
 returns null on dedicated server. Pre-allocates+reuses ParticleSource objects.
-(until 1.29: GetInstance skipped create when `IsDedicatedServer()`.) (since 1.30 Exp: skipped when `IsHeadlessOrDedicatedServer()` — headless clients also get null. `exp\scripts\scripts\3_Game\Particles\ParticleManager\ParticleManager.c:65`.)
+(until 1.29: GetInstance skipped create when `IsDedicatedServer()`.) (since 1.30: skipped when `IsHeadlessOrDedicatedServer()` — headless clients also get null. `exp\scripts\scripts\3_Game\Particles\ParticleManager\ParticleManager.c:65`.)
 Mods can also `new ParticleManager(settings)` to instantiate their own pools
 (the test framework does this); GetInstance() is the global, not a hard singleton.
 
 ### Wrapper: `SEffectManager`
 PowerGenerator pattern: `SEffectManager.PlayOnObject(effect, parent, pos, ori)`.
 Cleanup: `SEffectManager.DestroyEffect(m_Smoke)`.
-(since 1.30 Exp: synced spawn uses `SEffectManager.CreateParticleServer(pos, EffecterParameters)` — ceiling dust: `DustEffectCeilingHandlerSynced`. `exp\scripts\scripts\3_Game\EffectManager.c:586`.)
+(since 1.30: synced spawn uses `SEffectManager.CreateParticleServer(pos, EffecterParameters)` — ceiling dust: `DustEffectCeilingHandlerSynced`. `exp\scripts\scripts\3_Game\EffectManager.c:586`.)
 
 Full API signatures: `references/script-api-reference.md`
 
@@ -270,7 +270,7 @@ ONLY via SEffectManager.DestroyEffect().
 
 **Pattern E** — Runtime parameter tuning: SetParameter for AIR_RESISTANCE,
 ScaleParticleParamFromOriginal for SIZE.
-(since 1.30 Exp: vehicle VFX use `ParticleParamsOverride(ParticleParamsOverrideData)` instead of ad-hoc SetParameter after Play.)
+(since 1.30: vehicle VFX use `ParticleParamsOverride(ParticleParamsOverrideData)` instead of ad-hoc SetParameter after Play.)
 
 **Cleanup contract**: EVERY device with looping particles MUST clean up in
 EEDelete + LFPG_OnWiresCut + destructor.
@@ -280,14 +280,14 @@ EEDelete + LFPG_OnWiresCut + destructor.
 ## PITFALLS AND HARD RULES
 
 1. **Particles are CLIENT-ONLY.** Wrap in `#ifndef SERVER`.
-   (until 1.29: PlayOnObject gated with `!IsDedicatedServer()`.) (since 1.30 Exp: vanilla uses `!g_Game.IsHeadlessOrDedicatedServer()` so headless clients also skip VFX. Server-spawned effecters use `CreateParticleServer`, not PlayOnObject.)
+   (until 1.29: PlayOnObject gated with `!IsDedicatedServer()`.) (since 1.30: vanilla uses `!g_Game.IsHeadlessOrDedicatedServer()` so headless clients also skip VFX. Server-spawned effecters use `CreateParticleServer`, not PlayOnObject.)
 2. **Looping particles (Repeat 1) NEVER end.** MUST Stop() + null ref.
 3. **Stop() is gradual.** Use StopParticleFlags.IMMEDIATE for instant removal.
 4. **ObjectDelete(particle)** valid for ParticleSource with DisableAutoDestroy().
 5. **Render distance ~200m.** Engine limit, no workaround.
 6. **Duplicate filenames** across mods: use unique prefixes (`lfpg_`).
 7. **ParticleManager.GetInstance()** returns null on server. Always null-check.
-   (since 1.30 Exp: also null on headless clients — `IsHeadlessOrDedicatedServer()`.)
+   (since 1.30: also null on headless clients — `IsHeadlessOrDedicatedServer()`.)
    Guards 1 and 7 are complementary, not redundant: `#ifndef SERVER` (pitfall 1) is
    compile-time exclusion for whole client-only blocks; the null-check (this pitfall)
    is runtime safety for code compiled on both sides (a diag/SP client-server build has
@@ -307,7 +307,7 @@ EEDelete + LFPG_OnWiresCut + destructor.
 ## VANILLA PARTICLE CATALOG — KEY CATEGORIES
 
 Full catalog: `references/vanilla-particle-catalog.md` (276 entries; version-dependent).
-(since 1.30 Exp: new constants include tandoor fireplace, desert/mud-brick impacts, ceiling dust, vehicle dust, oil-pit fire, sand grenade explosions — listed in that catalog's 1.30 section.)
+(since 1.30: new constants include tandoor fireplace, desert/mud-brick impacts, ceiling dust, vehicle dust, oil-pit fire, sand grenade explosions — listed in that catalog's 1.30 section.)
 
 ### Electricity
 `POWER_GENERATOR_SMOKE` (1 emitter, loop), `BARBED_WIRE_SPARKS` (1 emitter, one-shot)
@@ -325,7 +325,7 @@ Full catalog: `references/vanilla-particle-catalog.md` (276 entries; version-dep
 ### Environment
 `ENV_SWARMING_FLIES`, `SMOKING_HELI_WRECK`, `HOTPSRING_WATERVAPOR`,
 `GEYSER_NORMAL`, `GEYSER_STRONG`, `VOLCANO`
-(since 1.30 Exp: `OIL_FIRE1`/`OIL_FIRE2`, `DUST_GROUND`/`DUST_CLOUD`/`DUST_VEHICLE`, `CEILING_WOOD`. Weather sandstorm also references `Graphics/Particles/sandstorm/sandstorm`.)
+(since 1.30: `OIL_FIRE1`/`OIL_FIRE2`, `DUST_GROUND`/`DUST_CLOUD`/`DUST_VEHICLE`, `CEILING_WOOD`. Weather sandstorm also references `Graphics/Particles/sandstorm/sandstorm`.)
 
 ---
 
@@ -348,10 +348,10 @@ Run these gates **before** choosing a large contaminated-area radius.
 ### Hard particle budget
 
 Each effect area has a hard cap of 1,000 emitters: `const int PARTICLES_MAX = 1000`
-(`VANILLA/scripts/4_world/classes/contaminatedarea/effectarea.c:84`), enforced while
-`SpawnParticles` fills the area (`:421`). Exceeding it does not shrink the damage radius. The area
+(`VANILLA/scripts/4_world/classes/contaminatedarea/effectarea.c:85`), enforced while
+`SpawnParticles` fills the area (`:425`). Exceeding it does not shrink the damage radius. The area
 can remain lethal beyond the visible particle core and logs
-`Not enough particles in pool for EffectArea` (`:440`). A valid JSON and a booting server do not
+`Not enough particles in pool for EffectArea` (`:444`). A valid JSON and a booting server do not
 prove that the perimeter is visible.
 
 For the static `FillWithParticles` route, budget first with:
@@ -361,7 +361,7 @@ N = ceil((Radius + OuterOffset - InnerPartDist/2) / InnerPartDist)
 emitters ~= 6.283 * N^2 * (VerticalLayers + 1)
 ```
 
-Vanilla computes `circumference = 2 * Math.PI2 * ringRadius` (`effectarea.c:389`) while
+Vanilla computes `circumference = 2 * Math.PI2 * ringRadius` (`effectarea.c:390`) while
 `Math.PI2` is already 6.28318530717958 (`VANILLA/scripts/1_core/proto/enmath.c:13`). That quirk
 uses approximately `4*pi*r`, twice the ordinary circumference. Budgeting with `2*pi*r` therefore
 under-counts. Increasing `InnerPartDist` lowers the ring count `N`; it does not reduce the emitter
@@ -375,18 +375,18 @@ For static areas, only `InnerPartDist` and `OuterOffset` feed this route
 
 The trigger is a finite cylinder, built by
 `SetCollisionCylinderTwoWay(radius, -(NegHeight + c), PosHeight - c)` with
-`c = (PosHeight - NegHeight) * 0.5` (`effectarea.c:495-497`). Particle placement is culled against
-the same band after snapping to terrain (`:413,421`). Choose `PosHeight` and `NegHeight` from the
+`c = (PosHeight - NegHeight) * 0.5` (`effectarea.c:499-501`). Particle placement is culled against
+the same band after snapping to terrain (`:414-417`, `:425`; 1.29 `:413,421`). Choose `PosHeight` and `NegHeight` from the
 actual elevation range inside the radius, not from a small vanilla zone. Underground spaces also
-count: particles snap to `SurfaceY` and are never spawned below terrain, so a bunker can be lethal
+count: on 1.29 particles snap to `SurfaceY` and are never spawned below terrain, so a bunker can be lethal
 inside the cylinder while showing no gas. That can be deliberate, but it must not be accidental.
-(until 1.29: `SpawnParticles` wrote `partPos[1] = g_Game.SurfaceY(...)`.) (since 1.30 Exp: it prefers `g_Game.SurfaceRoadY` when the particle is above the road surface — bridges/roads. `exp\scripts\scripts\4_World\Classes\ContaminatedArea\EffectArea.c:414-417`. Tick hook is `OnCEIterate`, not `OnCEUpdate`.)
+(until 1.29: `SpawnParticles` wrote `partPos[1] = g_Game.SurfaceY(...)`.) (since 1.30: a particle starts at the area's centre height and is lowered to `g_Game.SurfaceRoadY` only when it is above the road surface — bridges/roads — so an area centred below the surface keeps its particles at that height. `exp\scripts\scripts\4_World\Classes\ContaminatedArea\EffectArea.c:414-417`. Tick hook is `OnCEIterate`, not `OnCEUpdate`.)
 
 ### Safe positions and schema
 
 `SafePositions` is global, not attached to one area. `GetClosestSafePos` searches the whole array in
-2D (`VANILLA/scripts/4_world/static/miscgameplayfunctions.c:1698,1717`) during the early-presence
-rescue path (`:1692`; caller `areaexposure.c:44`). After any radius change, measure every safe
+2D (`VANILLA/scripts/4_world/static/miscgameplayfunctions.c:1769,1788`) during the early-presence
+rescue path (`:1763`; caller `areaexposure.c:44`). After any radius change, measure every safe
 position against every area; a rescue point inside another cylinder can teleport a reconnecting
 player from gas to gas.
 
@@ -412,18 +412,18 @@ budget_max = XZ * (VerticalLayers + 1)
 
 `PI2` is `2*pi`, so the source's `2 * PI2 * ringRadius` remains the intentional doubled
 circumference. The center emitter is the leading `1`. Small areas take separate one-ring/center
-branches in `effectarea.c:360-373`; use those branches directly rather than this large-area formula.
+branches in `effectarea.c:348-386`; use those branches directly rather than this large-area formula.
 As a check, `Radius=500`, `OuterOffset=20`, `InnerPartDist=70`, and `VerticalLayers=1` give
 `N=7`, `d=69.286`, `XZ=346`, and `budget_max=692`.
 
 Reaching `PARTICLES_MAX` truncates additional visual emitters in `SpawnParticles`
-(`effectarea.c:411-426`) but does **not** itself log `Not enough particles in pool`. That error is in
+(`effectarea.c:412-430`) but does **not** itself log `Not enough particles in pool`. That error is in
 `InsertParticles` and means `ParticleManager` returned fewer objects than the count requested
-(`:429-447`). Do not use the RPT message as the cap gate. Vertical culling can reduce the actual
+(`:433-451`). Do not use the RPT message as the cap gate. Vertical culling can reduce the actual
 count, but an approximation that under-counts cannot authorize a radius; calculate the upper budget
 and confirm the visible perimeter in game.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 Full detail: `references/dayz-1-30-particles.md`. Surface-dust / ceiling-dust / VehicleVFX / sandstorm `.ptc` path live there.
 
@@ -453,6 +453,6 @@ Full detail: `references/dayz-1-30-particles.md`. Surface-dust / ceiling-dust / 
 
 ### 1.30 references in this skill
 - [DayZ 1.30 particles](references/dayz-1-30-particles.md)
-- [Script API 1.30](references/script-api-reference.md#dayz-130-exp-surfaceinfo-vehicle-vfx-synced-spawn)
-- [Vanilla catalog 1.30 constants](references/vanilla-particle-catalog.md#dayz-130-exp-new-particlelist-constants)
+- [Script API 1.30](references/script-api-reference.md#dayz-130-surfaceinfo-vehicle-vfx-synced-spawn)
+- [Vanilla catalog 1.30 constants](references/vanilla-particle-catalog.md#dayz-130-new-particlelist-constants)
 - [PlayOnObject client gate](references/answeroverflow-2026-05-17.md)

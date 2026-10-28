@@ -40,7 +40,7 @@ FrameWidgetClass FormRow {
 			vexactpos 0
 			hexactsize 0
 			vexactsize 0
-			// EditBoxWidget/Default: gui/looknfeel/dayzwidgets.styles:1239.
+			// EditBoxWidget/Default: gui/looknfeel/dayzwidgets.styles:1243.
 			// Normal Center="" (no fill). Focus Center=area_focus (the ring).
 			// Top named EditBox style in vanilla (26x). mcp_dialog Edit0:94
 			// (not distributed).

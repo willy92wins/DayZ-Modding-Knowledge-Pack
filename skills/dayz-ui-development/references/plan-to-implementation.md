@@ -65,7 +65,7 @@ changes.
 Two things move color away from what you authored:
 - Global LV darkening — which is the PLAYER's HUD brightness, not an engine constant. There is
   no fix to apply: `SetLV`/`SetTextLV` are `proto static` (`enwidgets.c:114-117`) and vanilla
-  drives them from `EDayZProfilesOptions.HUD_BRIGHTNESS` (`dayzgame.c:3778-3787`), so calling
+  drives them from `EDayZProfilesOptions.HUD_BRIGHTNESS` (`dayzgame.c:3910-3919`), so calling
   them from a mod overwrites the player's choice. Author honest ARGB, verify at a dimmed HUD,
   and do NOT pre-boost values either.
 - Most mods set final colors in **script** via `SetColor(ARGB)` AFTER `CreateWidgets`, not in the
@@ -373,9 +373,9 @@ Menu lifecycle (see also SKILL.md / expansion-mvc):
   to a `modded ... CreateScriptedMenu(int id)` switch that calls `menu.SetID(id)` on the NEW instance;
   a common bug puts `SetID` in the wrong branch, leaving `MENU_UNKNOWN`); `ShowScriptedMenu(menu,
   parent)` shows an already-constructed instance. `scripts/3_game/tools/uimanager.c`,
-  `dayzgame.c:1380-1386`, `missionbase.c:185-239`, `uiscriptedmenu.c:136-153`.
+  `dayzgame.c:1415-1421`, `missionbase.c:185-239`, `uiscriptedmenu.c:136-153`.
   Community: https://www.answeroverflow.com/m/1018294147649634408
-- Vanilla MenuID range is 1..46 (`scripts/3_game/constants.c:170-215`, `MENU_ANY`..
+- Vanilla MenuID range is 1..46 (`scripts/3_game/constants.c:176-221`, `MENU_ANY`..
   `MENU_CONNECTION_DIALOGUE`); pick an arbitrary high int for custom menus (e.g. 98765).
 - `UIScriptedMenu.OnShow()` auto-calls `LockControls()` and `OnHide()` auto-`UnlockControls()` — per
   device `ChangeGameFocus(±1, INPUT_DEVICE_MOUSE/KEYBOARD/GAMEPAD)` + cursor. Overriding OnShow/OnHide

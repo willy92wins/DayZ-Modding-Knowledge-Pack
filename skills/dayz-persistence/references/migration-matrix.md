@@ -104,7 +104,7 @@ correctness.
 - Mod payload compatibility is independent from the DayZ build.
 - Seven deliberate byte mutations change seven verdicts.
 
-## DayZ 1.30 Exp (build 1.30.164014) — worked cells
+## DayZ 1.30 — worked cells
 
 The seven cells above stay normative for **mod** formats. Vanilla 1.30 does
 not implement all seven for every new field. Classify each 1.29→1.30 input
@@ -119,7 +119,7 @@ explicitly; do not infer a migrate from a version bump alone.
 | `PlayerBase` saved on 1.30 MP | `known-version` | `ok` | one float after arrow manager | complete | `ThermalBiasHandler.c:67-77`. |
 | `DigitalCodeLock` on a 1.29 world | `fresh` | `ok` | `0` | defaults | class did not exist; no legacy record. |
 | `BaseBuildingBase` 1.29 fence | `known-version` | `ok` | three ints + bool after `super` | complete | suffix unchanged (`BaseBuildingBase.c:420-429`). |
-| `Rebuilding` stored version `< REBUILDING_STORAGE_VERSION` | vanilla rejects as invalid | `reject` | `0` applied after the version int fails the `<` check | intact | `Rebuilding.c:519-525`. |
+| `Rebuilding` stored version `< REBUILDING_STORAGE_VERSION` | vanilla rejects as invalid | `reject` | `0` applied after the version int fails the `<` check | intact | `Rebuilding.c:518-524`. |
 | `Rebuilding` stored version `>` current | vanilla **accepts** | (violates this matrix's `future-version` cell) | ten ints | applied | `[DESIGN]` do not copy. `m_LastStorageVersion < REBUILDING_STORAGE_VERSION` only. |
 | Missing `$mission:BunkerBroadcastPersistenceStorage.bin` | `fresh` | `ok` | `0` | scheduler/handler defaults | `Load()` returns `false` when `Open` fails (`BunkerBroadcastHandler.c:56-68`); constructor still installs empty objects (`:29-34`). |
 | Present bunker `.bin` | `known-version` **without a header** | vanilla returns `true` after `Open` even if `Read` fails | whole objects or partial | applied | `file.Read` bool ignored (`:61-65`; `Serializer.c:58`). Classify as vanilla exception, not a model. Schema change has no `legacy`/`future` branch. |

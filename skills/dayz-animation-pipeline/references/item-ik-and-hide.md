@@ -43,7 +43,7 @@ When to use: early-stage mod, no animator, item proportions close to a vanilla e
 pType.AddItemInHandsProfileIK("CLab_CocaTray", "dz/anims/workspaces/player/player_main/props/player_main_2h_pot.asi", pBehavior, "dz/anims/anm/player/ik/vehicles/BatteryTruck.anm");
 ```
 
-That is the truck battery's ikpose (vanilla `TruckBattery`, `dayzplayercfgbase.c:843` in the unpacked `P:\scripts`, `:866` in 1.30.164014 Exp; wrists at +29.4 and −28.0 cm from the origin on X) with the pot's animation set, a pairing vanilla also makes for `GiftBox_Small` (`:1000`, `:1040` in 1.30 Exp: the pot's `.asi` with the cauldron's ikpose). The hands took the tray by its short ends in the battery's natural pose, and the pot's pour stayed. Before that, the pot's own ikpose put the hands through the tray, and an own ikpose with `RightHand_Dummy` turned about the wrong SEAnim axis broke the pose (frames and axes: `player-skeleton.md` §The frame an ikpose keys its helpers in). The grip was chosen in game among six vanilla ikposes, one test subclass of the item per grip, the method `weapon-in-hands.md` §Testing ikpose / grip variants uses for weapons. To shortlist candidates by size, the wrist's distance from the item's origin (`|t|` of the `RightHand_Dummy` key, measured offline 2026-10-03): pot 16.9 cm, cauldron 16.3, car battery 18.4, truck battery 31.0, car radiator 36.9.
+That is the truck battery's ikpose (vanilla `TruckBattery`, `dayzplayercfgbase.c:867` in the unpacked `P:\scripts`, `:866` in 1.30.164014 Exp; wrists at +29.4 and −28.0 cm from the origin on X) with the pot's animation set, a pairing vanilla also makes for `GiftBox_Small` (`:1042`, `:1040` in 1.30 Exp: the pot's `.asi` with the cauldron's ikpose). The hands took the tray by its short ends in the battery's natural pose, and the pot's pour stayed. Before that, the pot's own ikpose put the hands through the tray, and an own ikpose with `RightHand_Dummy` turned about the wrong SEAnim axis broke the pose (frames and axes: `player-skeleton.md` §The frame an ikpose keys its helpers in). The grip was chosen in game among six vanilla ikposes, one test subclass of the item per grip, the method `weapon-in-hands.md` §Testing ikpose / grip variants uses for weapons. To shortlist candidates by size, the wrist's distance from the item's origin (`|t|` of the `RightHand_Dummy` key, measured offline 2026-10-03): pot 16.9 cm, cauldron 16.3, car battery 18.4, truck battery 31.0, car radiator 36.9.
 
 ## Pattern B — hide-on-attach (animation source of type `hide`)
 
@@ -105,7 +105,7 @@ class CfgSkeletons { class MyItemSkeleton { skeletonInherit=""; isDiscrete=0;
 only the texture selections.
 
 script (item side) -- APIs verified vs vanilla (see `enforce-script-reference` ->
-`verified-api-catalog.md`; entityai.c:3356/3365, inventoryitem.c OnWasAttached):
+`verified-api-catalog.md`; entityai.c:3355/3364, inventoryitem.c OnWasAttached):
 ```c
 void MyItem()  // constructor: default to the ground model
 {
@@ -131,7 +131,7 @@ script APIs are verified; the exact `AnimationSource`/`initPhase` wiring is `[ve
 against the vanilla flag config before shipping. Selections must exist in Resolution + View
 Geometry (and Geometry if the attached model needs collision).
 
-## Pattern D — Dynamic Animation Instance Switching (DayZ 1.30 Exp) [EXACT]
+## Pattern D — Dynamic Animation Instance Switching (DayZ 1.30) [EXACT]
 
 In DayZ 1.30 Exp, Bohemia introduced native Enforce Script methods to dynamically switch the player character's animation instance (`.asi`) at runtime without needing to swap physical items in hands.
 
@@ -159,7 +159,7 @@ In DayZ 1.30 Exp, Bohemia introduced native Enforce Script methods to dynamicall
 ### Resetting to Unarmed Hands via "Empty" Profile
 To return the player character cleanly to the default unarmed state, DayZ 1.30 Exp registers an `"Empty"` hands profile in `DayZPlayerCfgBase.c`:
 ```c
-// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1535-1538
+// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1546-1549
 	//! Empty profile to be able to switch back to this using SetAnimationInstanceByName
 	{
 		pType.AddItemInHandsProfileIK("Empty", "dz/anims/workspaces/player/player_main/player_main.asi", emptyHanded, "");
@@ -168,7 +168,7 @@ To return the player character cleanly to the default unarmed state, DayZ 1.30 E
 The profile only makes that instance loaded: vanilla switches back by the `.asi` path, `SetAnimationInstanceByName("dz/anims/workspaces/player/player_main/player_main.asi", 1)` (`4_World/Entities/ManBase/PlayerBase.c:2107`), and a mod's child `.asi` registered the same way was switched to by its path (2026-09-28, `vehicle-rider-ik-pose.md` §Per-vehicle pose without a graph change). [UNVERIFIED] Passing the profile name `"Empty"` instead of a path has not been tried.
 
 ### Native Surrender System (No Dummy Item)
-In 1.29 and earlier, the surrender emote (`HandsUp`) required spawning an invisible `SurrenderDummyItem` in hands. In 1.30 Exp nothing goes into the hands any more, but the dummy item's profile is still registered so that `player_main_surrender.asi` is preloaded (`DayZPlayerCfgBase.c:1530-1533`, preload at `:1642`), and `PlayerBase` switches to it with `SetAnimationInstanceByName`:
+In 1.29 and earlier, the surrender emote (`HandsUp`) required spawning an invisible `SurrenderDummyItem` in hands. In 1.30 Exp nothing goes into the hands any more, but the dummy item's profile is still registered so that `player_main_surrender.asi` is preloaded (`DayZPlayerCfgBase.c:1541-1544`, preload at `:1653`), and `PlayerBase` switches to it with `SetAnimationInstanceByName`:
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\PlayerBase.c:2081-2090
 	protected void OnStartTransitionToSurrender()
@@ -182,8 +182,8 @@ In 1.29 and earlier, the surrender emote (`HandsUp`) required spawning an invisi
 		m_SurrenderTransitionTimer = m_SurrenderAnimationTransitionTime;
 	}
 ```
-State is controlled via `player.SetSurrenderState(bool)` (`PlayerBase.c:2116`) and queried via `player.IsSurrendered()` (`Man.c:66`), completely eliminating dummy item desyncs.
+State is controlled via `player.SetSurrenderState(bool)` (`PlayerBase.c:2116`) and queried via `player.IsSurrendered()` (`Man.c:67`), completely eliminating dummy item desyncs.
 
 ## Syncing an object's pose to a continuous action (SP-442, added 2026-09-28)
 
-(pot-emptying, 7 measured runs, client-server deltas within ±3 ms; measured in game, DayZ 1.30.164014 Exp) [EXACT]: probe first — a test `modded class` of the action logging the `OnStart*`/loop events, every `HumanCommandActionCallback.GetState()` change (`3_game/human.c:349-360`) and one sample per 0.1 s from `OnUpdateClient`/`OnUpdateServer` (both run every frame, `actionbase.c:1251` and `:1267`), each sample carrying the object's `GetAnimationPhase`. A `user` source has ONE `animPeriod` for both directions: if out and back take different times, drive the return with per-frame client targets. Two writers (the owning client locally and the server replicated) coexist only if they write the same target: the server writes start and end, the owning client carries intermediate states. State timings alone do not suffice: the engine starts the final segment 0.03-0.05 s after the loop and plays it 5-10% faster than at 30 fps, and the curve inside a segment is not linear — moving the object inside the animation removes the problem instead of softening it. Even with states matched to the millisecond, the non-anchor hand follows the vanilla graph curve.
+(pot-emptying, 7 measured runs, client-server deltas within ±3 ms; measured in game, DayZ 1.30.164014 Exp) [EXACT]: probe first — a test `modded class` of the action logging the `OnStart*`/loop events, every `HumanCommandActionCallback.GetState()` change (`3_game/human.c:369-380`) and one sample per 0.1 s from `OnUpdateClient`/`OnUpdateServer` (both run every frame, `actionbase.c:1356` and `:1372`), each sample carrying the object's `GetAnimationPhase`. A `user` source has ONE `animPeriod` for both directions: if out and back take different times, drive the return with per-frame client targets. Two writers (the owning client locally and the server replicated) coexist only if they write the same target: the server writes start and end, the owning client carries intermediate states. State timings alone do not suffice: the engine starts the final segment 0.03-0.05 s after the loop and plays it 5-10% faster than at 30 fps, and the curve inside a segment is not linear — moving the object inside the animation removes the problem instead of softening it. Even with states matched to the millisecond, the non-anchor hand follows the vanilla graph curve.

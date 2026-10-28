@@ -104,6 +104,30 @@ How this was established: bug-ledger B12
 regex could not tokenize these forms. This is **offline syntax**, not
 an in-game measurement.
 
+### Widget names: in the header, or a `Name` line
+
+[VERIFIED file-format, 2026-10-28] Most vanilla layouts put a widget's name in its header:
+`FrameWidgetClass FrameWidget {` (`day_z_ingamemenu.layout:1`). A few leave it out of the header,
+which then holds the class alone or the class and a GUID string, and give the name as the widget's
+first property: `FrameWidgetClass {` then `Name "HudFrameWidget"`, and
+`RichTextWidgetClass "{00000000E4E67D3A}" {` then `Name "DefaultActionWidget"`
+(`day_z_hud.layout:1-2`, `:11-12`). Vanilla ships both forms in one build, so the game reads both.
+On 1.30.164200, 10 of the 227 vanilla layouts have GUID headers: `day_z_hud.layout` and nine
+console, Xbox, debug and editor layouts. 1.30.164014 has the same nine, and 1.29 none of its 216.
+`day_z_hud.layout` changed form in 1.30.164200: each of its 292 widgets gives its name on a
+`Name` line (its other three blocks are `ScriptParamsClass`, with no name), so the file went from
+5,176 lines on 1.30.164014 to 5,468, and the citations of it in this skill give the 1.30.164200
+line. Other lines changed with it: 115 colors, positions and sizes are rounded to three decimals,
+and the 12 images whose names hold `mtl_down` have `mode blend` where they had `mode additive`.
+The other vanilla layouts this skill cites are the same files on 1.30.164014 and 1.30.164200, and
+on 1.29 where 1.29 has them (it has neither `action_info_spacer.layout` nor
+`SimpleIconTemplate.layout`).
+
+The pack parser takes the token after the class as the name, so on a layout in the second form it
+reports the GUID string, or an empty name, and keeps the real name as a `Name` attribute
+(`tools/dayz-ui-lab/dayz_ui_lab/parse.py`, `Parser.parse_widget`; run on `day_z_hud.layout` of
+both builds on 2026-10-28).
+
 ---
 
 ## Complete Widget Class Catalog
@@ -150,9 +174,9 @@ an in-game measurement.
 | `MultilineTextWidgetClass` | 351 | Multi-line static text (word-wraps; distinct from MultilineEditBox) |
 | `TextListboxWidgetClass` | 133 | Row/column list (AddItem/GetSelectedRow API in SKILL.md table) |
 | `WindowWidgetClass` | 66 | Titled window chrome |
-| `ItemPreviewWidgetClass` | 65 | 3D item render; script API `SetItem(EntityAI)/SetView(idx)` — `gameplay.c:276-288` |
+| `ItemPreviewWidgetClass` | 65 | 3D item render; script API `SetItem(EntityAI)/SetView(idx)` — `gameplay.c:286-301` |
 | `ThreeStateCheckboxWidgetClass` | 10 | CheckBox variant |
-| `PlayerPreviewWidgetClass` | 5 | 3D player render; `SetPlayer(DayZPlayer)` — `gameplay.c:300-312` |
+| `PlayerPreviewWidgetClass` | 5 | 3D player render; `SetPlayer(DayZPlayer)` — `gameplay.c:305-312` |
 | `PasswordEditBoxWidgetClass` | 1 | EditBox with masked input |
 
 Attributes the property reference below omits (corpus counts): `priority` (1,440 — layout-side
@@ -679,7 +703,7 @@ ImageWidgetClass ClickBlocker {
    call `SetLV`.** *(Corrected twice. 2026-07-03 retired "boost colors 30%+". 2026-08-22 retired
    its replacement, `SetLV(0)` at init: those setters are `proto static`/global
    (`enwidgets.c:114-117`) and vanilla drives them from `EDayZProfilesOptions.HUD_BRIGHTNESS`
-   (`dayzgame.c:3778-3787`), so calling them from a mod overwrites the player's setting.)*
+   (`dayzgame.c:3910-3919`), so calling them from a mod overwrites the player's setting.)*
    Author ARGB honestly, pick colors that survive a dimmed HUD, and verify at a non-zero
    brightness. Saturated colors were barely affected; grays and pastels were the ones darkened.
    See SKILL.md COLOR SYSTEM.

@@ -1,10 +1,10 @@
-# DayZ 1.30 Exp — Construction hierarchy, Rebuilding, masonry, Fence code lock
+# DayZ 1.30 — Construction hierarchy, Rebuilding, masonry, Fence code lock
 
-Authored 2026-09-16 (P08) from `exp\scripts\scripts\` (build 1.30.164014). Digest J is the map; every block below was copied from the file named in the `[EXACT]` header. Line numbers in the digest were frequently wrong.
+Authored 2026-09-16 (P08) from `exp\scripts\scripts\` (build 1.30.164014). Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Digest J is the map; every block below was copied from the file named in the `[EXACT]` header. Line numbers in the digest were frequently wrong.
 
 ## 1. Type hierarchy
 
-`ConstructionBasic` in `3_Game` is a **stub** (`Construction_Basic.c:2-37`) — it does **not** contain `GetParent()` / `IsPartConstructed()` / `HasBase()`. Those live on `ConstructionBase` in `4_World`.
+`ConstructionBasic` in `3_Game` is a **stub** (`Construction_Basic.c:2-43`) — it does **not** contain `GetParent()` / `IsPartConstructed()` / `HasBase()`. Those live on `ConstructionBase` in `4_World`.
 
 ```c
 // [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:30
@@ -21,7 +21,7 @@ class Construction : ConstructionBase
 class Rebuilding : ConstructionBase
 ```
 
-`EntityAI.CreateConstructionComponent()` returns null (`EntityAI.c:3451-3455`). `ConstructionInit()` (`:3441-3448`) only inits when the override returns a component.
+`EntityAI.CreateConstructionComponent()` returns null (`EntityAI.c:3474-3478`). `ConstructionInit()` (`:3464-3471`) only inits when the override returns a component.
 
 ```c
 // [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/BaseBuildingBase.c:15
@@ -60,7 +60,7 @@ class Rebuilding : ConstructionBase
 
 ## 2. `ConstructionPartTypeData` vs `ConstructionPart`
 
-(until 1.29: each `ConstructionPart` stored config fields and `UpdateConstructionParts` re-read config on the instance). (since 1.30 Exp: type data is held on `EntityType` via `ConstructionDataTypeHolder`.)
+(until 1.29: each `ConstructionPart` stored config fields and `UpdateConstructionParts` re-read config on the instance). (since 1.30: type data is held on `EntityType` via `ConstructionDataTypeHolder`.)
 
 `ConstructionDataTypeHolderBasic` in `3_Game` is also a stub (`ConstructionTypeData_Basic.c:2-5`). The real holder is `ConstructionDataTypeHolder` (`ConstructionPartTypedHolder.c:2`).
 
@@ -86,7 +86,7 @@ class ConstructionPart
 Digest J claimed a new ctor `ConstructionPart(notnull ConstructionPartTypeData)`. That ctor is **not** in the file. Type data is assigned after spawn:
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/BaseBuilding/ConstructionPart.c:383-389
+// [EXACT] exp/scripts/scripts/4_World/Classes/BaseBuilding/ConstructionPart.c:401-407
 	void SetPartTypeData(ConstructionPartTypeData ptd)
 	{
 		if (!m_PartTypeData)
@@ -96,14 +96,14 @@ Digest J claimed a new ctor `ConstructionPart(notnull ConstructionPartTypeData)`
 	}
 ```
 
-`UpdateConstructionParts` (`ConstructionBase.c:495-532`) reads `entityType.GetConstructionDataHolderBasic()`, spawns the part, then `part.SetPartTypeData(typeData)`. Config field readers (`name`, `id`, `is_base`, `is_gate`, `required_parts`, `build_action_type`, …) now live on `ConstructionPartTypeData.InitPartTypeData` (`ConstructionPartTyped.c:42-67,72-104`).
+`UpdateConstructionParts` (`ConstructionBase.c:518-549`) reads `entityType.GetConstructionDataHolderBasic()`, spawns the part, then `part.SetPartTypeData(typeData)`. Config field readers (`name`, `id`, `is_base`, `is_gate`, `required_parts`, `build_action_type`, …) now live on `ConstructionPartTypeData.InitPartTypeData` (`ConstructionPartTyped.c:45-70,75-107`).
 
-`SetRequestBuiltState` is `[Obsolete("1.30: Use 'SetBuiltState' directly")]` (`ConstructionPart.c:492-500`). The 1.29 SKILL triage row about SP skipping the local set still describes the obsolete body.
+`SetRequestBuiltState` is `[Obsolete("1.30: Use 'SetBuiltState' directly")]` (`ConstructionPart.c:510-518`). The 1.29 SKILL triage row about SP skipping the local set still describes the obsolete body.
 
 ## 3. `*ServerEx` and collision
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1688-1702
+// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1751-1765
 	[Obsolete("call BuildPartServerEx instead")]
 	void BuildPartServer(notnull Man player, string part_name, int action_id)
 	{
@@ -122,7 +122,7 @@ Digest J claimed a new ctor `ConstructionPart(notnull ConstructionPartTypeData)`
 ```
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:174-179
+// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:180-185
 	void BuildPartServerEx(Man player, string part_name, int action_id)
 	{
 		if (LogManager.IsBaseBuildingLogEnable()) bsbDebugPrint("[bsb] Construction BuildPartServerEx | " + part_name);
@@ -131,7 +131,7 @@ Digest J claimed a new ctor `ConstructionPart(notnull ConstructionPartTypeData)`
 	}
 ```
 
-Note: `player` **can be null** (comment at `:172`). `Construction` then calls `m_Parent.OnPartBuiltServer` (`Construction.c:52-68`). Vanilla `ActionBuildPart` already calls Ex:
+Note: `player` **can be null** (comment at `:178`). `Construction` then calls `m_Parent.OnPartBuiltServer` (`Construction.c:52-68`). Vanilla `ActionBuildPart` already calls Ex:
 
 ```c
 // [EXACT] exp/scripts/scripts/4_World/Classes/UserActionsComponent/Actions/Continuous/ActionBuildPart.c:167-170
@@ -144,13 +144,13 @@ Note: `player` **can be null** (comment at `:172`). `Construction` then calls `m
 `IsCollidingEx` takes a `CollisionCheckData`, not a string:
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1471-1472
+// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1527-1528
 	bool IsCollidingEx(CollisionCheckData check_data)
 	{
 ```
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1896-1910
+// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1965-1979
 class CollisionCheckData
 {
 	ref array<Object> m_AdditionalExcludes;
@@ -171,13 +171,13 @@ class CollisionCheckData
 Collision-trigger helpers still exist, marked obsolete with **no replacement**:
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1742-1743
+// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1805-1806
 	[Obsolete("no replacement")]
 	void CreateCollisionTrigger(string part_name, vector min_max[2], vector center)
 ```
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1770-1781
+// [EXACT] exp/scripts/scripts/4_World/Classes/ConstructionBase.c:1833-1844
 	[Obsolete("no replacement")]
 	void DestroyCollisionTrigger()
 	{
@@ -192,7 +192,7 @@ Collision-trigger helpers still exist, marked obsolete with **no replacement**:
 	bool IsTriggerColliding()
 ```
 
-`m_ConstructionBoxTrigger` is tagged `//! Deprecated` (`ConstructionBase.c:1789`).
+`m_ConstructionBoxTrigger` is tagged `//! Deprecated` (`ConstructionBase.c:1852`).
 
 ## 4. Rebuilding persistence (map buildings only)
 
@@ -219,7 +219,7 @@ class Rebuilding : ConstructionBase
 ```
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:502-515
+// [EXACT] exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:501-514
 	protected void SerializeConstructionData(ParamsWriteContext ctx)
 	{
 		ctx.Write(REBUILDING_STORAGE_VERSION);
@@ -239,10 +239,10 @@ class Rebuilding : ConstructionBase
 Packing math [DESIGN]:
 - `BIT_INT_SIZE = 32` (`3_Game/tools/BitArray.c:4`)
 - `GetSyncDataSize()` returns `BITWISE_SYNCINFO_SIZE_BASE = 2` (`ConstructionPart.c:6,65-68`)
-- `adjustedID = (partId - 1) * GetSyncDataSize()`; `syncIntIdx = adjustedID / BIT_INT_SIZE` (`Rebuilding.c:147-149`)
+- `adjustedID = (partId - 1) * GetSyncDataSize()`; `syncIntIdx = adjustedID / BIT_INT_SIZE` (`Rebuilding.c:146-148`)
 - 10 ints × 32 bits / 2 bits/part = 160 part ids (1..160)
 
-Default `CalculateBitMaskOnBuild` sets only bit 0 at `offset` (`ConstructionPart.c:111-117`). `ConstructionPartRebuild` also ORs facing into bit 1 (`:985-991`). Digest J's 00=ruin / 01=built / 10=destroyed mapping was not in those methods — [UNVERIFIED] as a three-state ruin encoding.
+Default `CalculateBitMaskOnBuild` sets only bit 0 at `offset` (`ConstructionPart.c:111-117`). `ConstructionPartRebuild` also ORs facing into bit 1 (`:1057-1063`). Digest J's 00=ruin / 01=built / 10=destroyed mapping was not in those methods — [UNVERIFIED] as a three-state ruin encoding.
 
 `BaseBuildingBase.OnStoreSave` is unchanged (still 1 bit per part, ids 1..93):
 
@@ -261,7 +261,7 @@ Default `CalculateBitMaskOnBuild` sets only bit 0 at `offset` (`ConstructionPart
 	}
 ```
 
-Support graph: `ConstructionPartStaticsSupportData` parses `StaticsSupportData { SupportProviders / SupportRequirements }` (`ConstructionStatics.c:1-26`). `ConstructionBase.SupportRemovalCheck` defaults to true (`:771-775`); Rebuilding overrides it. [DESIGN] Do not treat `required_parts[]` as the only structural gate on rebuildable houses.
+Support graph: `ConstructionPartStaticsSupportData` parses `StaticsSupportData { SupportProviders / SupportRequirements }` (`ConstructionStatics.c:1-26`). `ConstructionBase.SupportRemovalCheck` defaults to true (`ConstructionBase.c:826-830`); Rebuilding overrides it. [DESIGN] Do not treat `required_parts[]` as the only structural gate on rebuildable houses.
 
 ## 5. Masonry items and `TOOL_BRICKLAYING`
 
@@ -429,14 +429,14 @@ Any `CfgVehicles` class with a `Construction` subclass gets its component when t
 
 | Key | Reader | What the code shows |
 |---|---|---|
-| `custom_part_type` | `ConstructionPartTypedHolder.c:34` | script class for the part's type data (e.g. the `ConstructionPartRebuild*Typed` classes) |
-| `can_part_decay`, `part_decay_threshold`, `part_decay_rate` | `:199`, `:205`, `:212` | per-part decay. Global switch `disableBaseDecay` (`3_Game/CfgGameplayDataJson.c:60`, `CfgGameplayHandler.c:172`, used by `ConstructionBasic.CanConstructionDecay`, `3_Game/Systems/Construction_Basic.c:31-34`) |
-| `insider_minMaxs` | `:159` | inner box, next to `collision_data` (`:148`) |
-| `item_falling_data` | `:188` | read; its effect was not traced |
-| `essential_attachments` | `:228` | read; its effect was not traced |
-| `related_GUI_categories` | `:239` | ties the part to inventory GUI categories |
-| `damage_hands_on_build` | `:250` | read; its effect was not traced |
-| `is_utility`, `utility_build` | `:259`, `:265` | read; their effect was not traced |
+| `custom_part_type` | `ConstructionPartTypedHolder.c:35` | script class for the part's type data (e.g. the `ConstructionPartRebuild*Typed` classes) |
+| `can_part_decay`, `part_decay_threshold`, `part_decay_rate` | `:202`, `:208`, `:215` | per-part decay. Global switch `disableBaseDecay` (`3_Game/CfgGameplayDataJson.c:60`, `CfgGameplayHandler.c:172`, used by `ConstructionBasic.CanConstructionDecay`, `3_Game/Systems/Construction_Basic.c:37-40`) |
+| `insider_minMaxs` | `:162` | inner box, next to `collision_data` (`:151`) |
+| `item_falling_data` | `:191` | read; its effect was not traced |
+| `essential_attachments` | `:231` | read; its effect was not traced |
+| `related_GUI_categories` | `:242` | ties the part to inventory GUI categories |
+| `damage_hands_on_build` | `:253` | read; its effect was not traced |
+| `is_utility`, `toggle_utility_part_update` | `:262`, `:269` | read; their effect was not traced. 1.30.164014 read a text array `utility_build` instead (`:265` on that build); 1.30.164200 replaced it with this int |
 | `EffectsData` > `soundEffectPositions`, `particleEffectPositions` | `4_World/Classes/Rebuilding/ConstructionEffects.c:19,26-28,37` | memory points for build effects |
 | `StaticsSupportData` > `SupportProviders` / `SupportRequirements` > `<child>` > `supportCategory` (string, hashed), `supportStrength` (int) | `4_World/Classes/Rebuilding/ConstructionStatics.c:13,26,37-38,45,56-57` | structural support: what a part provides and needs, by category |
 | `Materials` > `<material>` > `skipOnRepair`, `skipOnDismantle` | `4_World/Classes/BaseBuilding/ConstructionMaterials.c:31-32` | material not needed to repair / not refunded on dismantle (next to `type`, `slot_name`, `quantity`, `lockable`, `:26-30`) |
@@ -445,7 +445,7 @@ Any `CfgVehicles` class with a `Construction` subclass gets its component when t
 
 `BuildingBase` declares the slots `Att_CombinationLock` and `Att_CodeLock` (`Building.c:10-11`). A door cannot hold both (`HasConflictingDoorAttachment`, `:224-228`, `:344`), and `CanDoorBeOpened` is overridden (`:307`). The per-door slot wiring was not traced further here.
 
-### 9.4 What 1.30 Exp ships and what it does not
+### 9.4 What 1.30 ships and what it does not
 
 - **Script classes.** The Nasdara houses (`4_World/Entities/Building/Rebuildable/House_*.c`) and `Land_IrrigationTunnel_Entrance_01 : BuildingSuper` (`IrrigationTunnel_Entrance.c:1-11`, whose debug spawn puts a `WoodenStick` and a `Rope` in its inventory).
 - **No configs or models.** On 2026-09-24, no unencrypted PBO config of the Exp install defined `Land_House_2M1`, `Land_IrrigationTunnel_Entrance_01`, `wall1_wood` or `rubble_rubble1`. `nasdara\addons\data_nasdara.pbo` carries only the DLC `CfgMods` entry and a `mud_brick` surface.

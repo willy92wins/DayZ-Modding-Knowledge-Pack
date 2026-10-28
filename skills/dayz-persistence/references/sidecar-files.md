@@ -133,10 +133,10 @@ record. It is never a promotion or deletion criterion.
 - The digest sidecar is created before `.tmp` cleanup.
 - Valid and truncated orphan candidates take different deterministic actions.
 - No orphan decision uses mtime.
-- (desde 1.30 Exp) A `$mission:` `FileSerializer` overwrite is not this
+- (desde 1.30) A `$mission:` `FileSerializer` overwrite is not this
   contract. See the bunker exception below.
 
-## DayZ 1.30 Exp: `$mission:BunkerBroadcastPersistenceStorage.bin`
+## DayZ 1.30: `$mission:BunkerBroadcastPersistenceStorage.bin`
 
 Vanilla 1.30 adds a mission-level binary that is **not** a sidecar in this
 contract's sense: no version header, no JSON, no `.tmp`/`.bak`, no post-write
@@ -160,7 +160,7 @@ replace in this file cannot be implemented on `$mission:` with those
 primitives.
 
 (hasta 1.29: this file did not exist.)
-(desde 1.30 Exp: the bunker scheduler persists across mission restarts in
+(desde 1.30: the bunker scheduler persists across mission restarts in
 that `.bin`. It does not touch the character/world entity stream.)
 
 [DESIGN] Do not copy this as a persistence template. If a mod needs

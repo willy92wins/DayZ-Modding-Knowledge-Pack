@@ -1,12 +1,12 @@
-# DayZ 1.30 Exp — vanilla AI noise, infected cower, animal groups
+# DayZ 1.30 — vanilla AI noise, infected cower, animal groups
 
-Citations re-opened under `exp\` (build 1.30.164014). Expansion eAI scripts are **not** in this extract; this file is vanilla infected / animal / NoiseSystem.
+Citations re-opened under `exp\` (build 1.30.164014). Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Expansion eAI scripts are **not** in this extract; this file is vanilla infected / animal / NoiseSystem.
 
 ## Native environment noise reduction
 
 (hasta 1.29: `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())` was multiplied into `AddNoise` from player steps and several other emitters.)
 
-(since 1.30 Exp: the engine applies weather/sandstorm/sea reduction natively. Script query:)
+(since 1.30: the engine applies weather/sandstorm/sea reduction natively. Script query:)
 
 ```c
 // [EXACT] exp\scripts\scripts\3_Game\Noise.c:12
@@ -90,7 +90,7 @@ Replacement that also sees sandstorm (still `[Obsolete]`, not the AI source of t
 
 (hasta 1.29: `rainToNoiseMultiplier` and `seaToNoiseMultiplier` only — `stable-1.29\dz\DZ\data\aiconfigs\config.cpp:21-23`.)
 
-(desde 1.30 Exp:)
+(desde 1.30:)
 
 ```cpp
 // [EXACT] exp\dz\DZ\data\aiconfigs\config.cpp:19

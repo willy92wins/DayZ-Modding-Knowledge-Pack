@@ -17,7 +17,7 @@ description: >
 # DayZ MCP verify — auto-test in-game vía tools MCP
 
 ## GATE 0 — ask WHO is driving, before touching anything (added 2026-08-07)
-(until 1.29: managed `dayz_test_run` / `dayz_test_stop` and Mode=all capture still hold.) (since 1.30 Exp: Diag Script Console tabs register via `ScriptConsoleTabRegistry`; `IsHeadless()` names roboclients; SP `PerformActionStart` no-ops while pending. Details: [dayz-1-30-mcp-verify.md](references/dayz-1-30-mcp-verify.md) and ## DayZ 1.30 Exp.)
+(until 1.29: managed `dayz_test_run` / `dayz_test_stop` and Mode=all capture still hold.) (since 1.30: Diag Script Console tabs register via `ScriptConsoleTabRegistry`; `IsHeadless()` names roboclients; SP `PerformActionStart` no-ops while pending. Details: [dayz-1-30-mcp-verify.md](references/dayz-1-30-mcp-verify.md).)
 
 **Before the first `dayz-mcp` tool in a verification run, ask the user whether
 they are driving or the MCP is.** Neither is assumed. A single question per run, not per
@@ -354,15 +354,15 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
 - **Picking an item up proves nothing about its collision** (added 2026-10-03; vanilla 1.29 and
   bridge source read, the pickup seen in the same run) [EXACT][CLAIM-MCPV-PICKUP-NO-RAY]. Vanilla
   targeting casts `RaycastRVProxy` from the camera, 5 m, with the default `ObjIntersectView`
-  (`4_world/classes/useractionscomponent/actiontargets.c:211-219`, `3_game/global/dayzphysics.c:88`),
+  (`4_world/classes/useractionscomponent/actiontargets.c:241-255`, `3_game/global/dayzphysics.c:88`),
   and at a camera pitch of −45° or lower it also takes the objects of a 30°, 3 m cone and scores them
-  by their distance to that ray, with no hit on them needed (`actiontargets.c:286-287`, `:444-445`,
-  `:730-735`). The take action's target condition then checks only the distance to the object's
+  by their distance to that ray, with no hit on them needed (`actiontargets.c:324-325`, `:531-532`,
+  `:843-848`). The take action's target condition then checks only the distance to the object's
   position: `ActionTakeItemToHands` uses `CCTObject`
   (`4_world/classes/useractionscomponent/actions/interact/actiontakeitemtohands.c:13`,
-  `4_world/classes/useractionscomponent/targetconditionscomponents/cctobject.c:10-22`), and its other
-  conditions (takeable, not being placed or deleted, attachment state, room in the hands;
-  `actiontakeitemtohands.c:31-41`)
+  `4_world/classes/useractionscomponent/targetconditionscomponents/cctobject.c:10-24`), and its other
+  conditions (takeable, not being placed or deleted, attachment state, room in the hands, and since 1.30 a
+  code lock the player cannot detach; `actiontakeitemtohands.c:31-46`)
   do not look at collision either. `action_use`
   builds its world target from the nearest object of the class, with `componentIndex -1` and the
   object's position as the cursor hit, and casts no ray (`MCPClientBridge.c:3769`, `:3783`,
@@ -397,7 +397,7 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   `Inventory_Base` probe about 10 degrees (a side-face reading moved 0.22 m across 1.2 m of the face);
   `rotation=64` spawned the same box with its faces on the world axes (equal readings at both
   offsets), on flat concrete. `scripts/3_game/ce/centraleconomy.c` gives 64 two names, `RF_IGNORE`
-  ("object will spawn as model was created", :56) and `RF_RANDOMROT` (:62); the result agrees with
+  ("object will spawn as model was created", :57) and `RF_RANDOMROT` (:63); the result agrees with
   the first comment and does not settle how the engine reads the value. Before trusting face
   coordinates, check the pose: two parallel rays at one height on a vertical face catch a yaw
   (unequal readings) but not a tilt, so also read `scene_raycast(method="bullet")` normals on two
@@ -510,10 +510,10 @@ modded class MissionGameplay
 ```
 
 Key takeaways:
-- 3rd-person aim pose depends SOLELY on `IsRaised()` (`dayzplayerimplement.c:1726`, AimingModel) →
+- 3rd-person aim pose depends SOLELY on `IsRaised()` (`dayzplayerimplement.c:1742`, AimingModel) →
   sustained raise is enough. DO NOT call `SetIronsights()`: forces ironsight camera which fights MCP
   free-cam, and server-side left weapon untextured.
-- `WeaponADS()` (`human.c:86`) is INPUT flag without script override (`human.c:234-255`) → always 0
+- `WeaponADS()` (`human.c:86`) is INPUT flag without script override (`human.c:253-274`) → always 0
   even if ADS works. Success signal = `IsRaised()` / client log, NOT `WeaponADS()`.
 - Keep `OverrideRaise(ENABLED)` server-side (init.c) as well so server agrees.
 - Judge grip by hand at NATIVE resolution (crop orbit frame), never rescaled
@@ -564,7 +564,7 @@ Key takeaways:
 - **`class Doors` (`Building`) doors do NOT open by MCP without `door_index`** (measured 2026-09-07, LFSecure I-0/I-4, PBO L4):
   `action_use(ActionOpenDoors, classname=<door>)` returns `condition_failed` even with the player 1.4 m away,
   because the bridge builds the `ActionTarget` with `componentIndex=-1` and `Building.GetDoorIndex(-1)` (native,
-  `3_game/entities/building.c:17`, "index of the door based on the view geometry component index") resolves no
+  `3_game/entities/building.c:28`, "index of the door based on the view geometry component index") resolves no
   door. `object_anim(source=<door source>, phase=1.0)` answers `phase=1`, but the engine's door controller returns
   it to its "wanted" phase (re-read `phase=0`) and `IsDoorOpen(index)` stays false, so every action that needs an
   open door also returns `condition_failed`. Without `door_index`, opening/closing, sound and sync were a MANUAL
@@ -1188,7 +1188,7 @@ one `vehicle_trace` per episode) with the dayz-mcp build before `d065b0e`.
    `object_delete` is persisted by the server and comes back in every new run.
    `object_delete(object_id)` cannot reach it: the id belonged to the dead run. Create bench
    fixtures with `flags=8389668`:
-   [EXACT][CLAIM-MCPV-FIXTURE-NOPERSIST] `ECE_PLACE_ON_SURFACE` (1060) | `ECE_NOPERSISTENCY_WORLD` (8388608), `scripts/3_game/ce/centraleconomy.c:30,37`.
+   [EXACT][CLAIM-MCPV-FIXTURE-NOPERSIST] `ECE_PLACE_ON_SURFACE` (1060) | `ECE_NOPERSISTENCY_WORLD` (8388608), `scripts/3_game/ce/centraleconomy.c:31,38`.
 2. **`vehicle_get_in_client(pos)` answered `ok` while seating the player in that orphan**, 2 m
    away, instead of the car just created at 0 m, in two episodes. Only the trace's `car_type`
    showed it. Two cars of the same class in range make `vehicle_prepare_fixture` return
@@ -1256,7 +1256,7 @@ routes) [EXACT][CLAIM-MCPV-WORN-MANNEQUIN]:
   living-infected 3108 plus `ECE_NOPERSISTENCY_WORLD`) behind a player standing still walked away.
   Spawned 2.4 m in front of the player, it attacked after a short `player_move` (jog, 1.2 s), wind-up
   and swings, again and again. Godmode does not hide the player from AI: in diag
-  `m_CanBeTargetedDebug` starts true (`4_World/Entities/ManBase/PlayerBase.c:402`, 1.29).
+  `m_CanBeTargetedDebug` starts true (`4_World/Entities/ManBase/PlayerBase.c:401`, 1.29).
 - **In this run, infected spawned without AI did not stay healthy.** With `flags=8389668` three of
   them idled in place, but about 12 minutes later one custom and one vanilla `ZmbM_SoldierNormal` read
   `health01 = 0` in `telemetry_read(mode="object_at")` and lay on the ground, the third read 0.75. No

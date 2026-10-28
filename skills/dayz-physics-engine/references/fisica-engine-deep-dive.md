@@ -119,7 +119,7 @@ Joints (`enphysics.c:212-270`): `dJointCreateHinge/Hinge2/Slider/BallSocket/Fixe
 Semantics (verified by usage):
 - **Global matrix**: `dSetInteractionLayer(world, mask1, mask2, enable)` activates/deactivates interaction between layers for ENTIRE world (1st parameter = entity to obtain world; `physicsworld.c:14-21` documents it as "Modifies interaction matrix of interaction layers"). Confirms project gotcha.
 - **Per body**: `dBodySetInteractionLayer(ent, mask)` assigns which layers that body belongs to; per individual geometry with `dBodySetGeomInteractionLayer`.
-- **Matrix query**: vanilla pattern in `3_game/vehicles/transport.c:556-557`:
+- **Matrix query**: vanilla pattern in `3_game/vehicles/transport.c:790-791`:
 ```c
 int layer = dBodyGetInteractionLayer(o);
 bool interacts = dGetInteractionLayer(this, PhxInteractionLayers.CHARACTER, layer);
@@ -154,16 +154,16 @@ proto static bool EntityOverlapBullet(...) / EntityOverlapSingleBullet(...) / Sp
 Who uses what (verified):
 | Use | API | Geometry/layers | Citation |
 |---|---|---|---|
-| Action cursor (1st pass) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `4_world/classes/useractionscomponent/actiontargets.c:214-219` |
-| Action cursor (ground fallback) | `RayCastBullet` | `ROADWAY\|TERRAIN\|WATERLAYER` | `actiontargets.c:329-331` |
-| Melee aiming/hitzone | `RaycastRV` | `ObjIntersectIFire` | `4_world/entities/dayzplayerimplementmeleecombat.c:623` |
-| Melee obstruction | `RayCastBullet` | `BUILDING\|DOOR\|VEHICLE\|ROADWAY\|TERRAIN\|ITEM_SMALL\|ITEM_LARGE\|FENCE` | `dayzplayerimplementmeleecombat.c:671-686` |
+| Action cursor (1st pass) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `4_world/classes/useractionscomponent/actiontargets.c:245-255` |
+| Action cursor (ground fallback) | `RayCastBullet` | `ROADWAY\|TERRAIN\|WATERLAYER` | `actiontargets.c:383-384` |
+| Melee aiming/hitzone | `RaycastRV` | `ObjIntersectIFire` | `4_world/entities/dayzplayerimplementmeleecombat.c:625` |
+| Melee obstruction | `RayCastBullet` | `BUILDING\|DOOR\|VEHICLE\|ROADWAY\|TERRAIN\|ITEM_SMALL\|ITEM_LARGE\|FENCE` | `dayzplayerimplementmeleecombat.c:674-689` |
 | Weapon lift | member mask `hit_mask` with `...\|AI` | — | `4_world/entities/firearms/weapon_base.c:75` |
-| Under roof? (Environment) | `RayCastBullet` vertical 25 m | `ITEM_LARGE\|BUILDING\|VEHICLE` | `4_world/classes/environment/environment.c:406-408` |
-| Admin spawn on crosshair | `RayCastBullet` | `BUILDING\|DOOR\|VEHICLE\|ROADWAY\|TERRAIN\|CHARACTER\|AI\|RAGDOLL\|RAGDOLL_NO_CHARACTER` | `4_world/plugins/pluginbase/plugindeveloper.c:474-475` |
+| Under roof? (Environment) | `RayCastBullet` vertical 25 m | `ITEM_LARGE\|BUILDING\|VEHICLE` | `4_world/classes/environment/environment.c:650-654` |
+| Admin spawn on crosshair | `RayCastBullet` | `BUILDING\|DOOR\|VEHICLE\|ROADWAY\|TERRAIN\|CHARACTER\|AI\|RAGDOLL\|RAGDOLL_NO_CHARACTER` | `4_world/plugins/pluginbase/plugindeveloper.c:523-524` |
 | Action cursor (1st pass, 1.30 Exp) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255` |
 | Action cursor (ground fallback, 1.30 Exp) | `RayCastBullet` | `ROADWAY\|TERRAIN\|WATERLAYER` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:383-384` |
-| Action cursor (liquid surface without object, 1.30 Exp) | scoring | utility 0.01 if `SurfaceInfo.GetLiquidType() != LIQUID_NONE` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:532-534` |
+| Action cursor (liquid surface without object, 1.30 Exp) | scoring | utility 0.01 if `SurfaceInfo.GetLiquidType() != LIQUID_NONE` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:535-537` |
 
 ### 2.8 Contacts and events
 
@@ -186,12 +186,12 @@ proto native float  GetRelativeVelocityAfter(vector vel);     // :49
 Registro: `SetEventMask(EntityEvent.CONTACT)` → override `event protected void EOnContact(IEntity other, Contact extra)` (`1_core/proto/enentity.c:213`, enum `EntityEvent.CONTACT` en `enentity.c:97`). Constructor no instanciable (privado, `contact.c:11`).
 
 Vanilla patterns:
-- Player: `4_world/entities/dayzplayerimplement.c:172` registers; (up to 1.29: `:3814-3830`; since 1.30 Exp: `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3973`) → if `other` is `Transport` and `g_Game.IsServer()` → `RegisterTransportHit(transport)`.
-- Infected/animal: `zombiebase.c:50,1018-1031`; `dayzanimal.c:692,942`.
-- `RegisterTransportHit` (up to 1.29: `3_game/entities/entityai.c:4086-4116`; since 1.30 Exp: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4111` with a new Motorbike branch at `:4143-4160` before Boat): damage `DT_CUSTOM ... "TransportHit"` with magnitude `GetVelocity(transport).Length()` and, if it dies, `dBodyApplyImpulse(this, 40*velocity)` (Motorbike corpse impulse is `5.0 * velocity`, not 40). ⚠️RELEVANT (same damage+impulse pattern used by stone S2).
-- ItemBase: `4_world/entities/itembase.c:1194-1220` — uses `extra.RelativeVelocityBefore.Length()` (via `ProcessImpactSoundEx`, `3_game/entities/inventoryitem.c:198-225`) for impact sound; client plays `#ifndef SERVER`, server sets SyncVar. Does **not** use `Impulse` for force.
-- Vehicles: high-level callback `Transport.OnContact(string zoneName, vector localPos, IEntity other, Contact data)` (`3_game/vehicles/transport.c:252`, override in `carscript.c:1454-1480` — damage by own **momentum delta**, not by `data.Impulse`; comment `:1453` warns "Can be called very frequently in one frame").
-- ItemBase combined trigger+contact style: `easteregg.c:40` (`SetEventMask(CONTACT|TOUCH)`), `fireplace.c:17,55-76` (processes contact in `EOnPostSimulate` with flag, and checks `dBodyIsActive(this)`).
+- Player: `4_world/entities/dayzplayerimplement.c:174` registers; (up to 1.29: `:3822-3835`; since 1.30: `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:3958-3971`) → if `other` is `Transport` and `g_Game.IsServer()` → `RegisterTransportHit(transport)`.
+- Infected/animal: `zombiebase.c:50,1030-1043`; `dayzanimal.c:692,942`.
+- `RegisterTransportHit` (up to 1.29: `3_game/entities/entityai.c:4089-4156`; since 1.30: `exp/scripts/scripts/3_Game/Entities/EntityAI.c:4134` with a new Motorbike branch at `:4166-4183` before Boat): damage `DT_CUSTOM ... "TransportHit"` with magnitude `GetVelocity(transport).Length()` and, if it dies, `dBodyApplyImpulse(this, 40*velocity)` (Motorbike corpse impulse is `5.0 * velocity`, not 40). ⚠️RELEVANT (same damage+impulse pattern used by stone S2).
+- ItemBase: `4_world/entities/itembase.c:1119-1148` — uses `extra.RelativeVelocityBefore.Length()` (via `ProcessImpactSoundEx`, `3_game/entities/inventoryitem.c:200-227`) for impact sound; client plays `#ifndef SERVER`, server sets SyncVar. Does **not** use `Impulse` for force.
+- Vehicles: high-level callback `Transport.OnContact(string zoneName, vector localPos, IEntity other, Contact data)` (`3_game/vehicles/transport.c:318`; 1.29 `CarScript` overrode it, 1.29 `carscript.c:1454-1480`, and on 1.30 cars inherit `Transport.OnContact`, `transport.c:318-346` — damage by own **momentum delta**, not by `data.Impulse`; the 1.29 comment `carscript.c:1453` warns "Can be called very frequently in one frame", on 1.30 it is on `boatscript.c:425`).
+- ItemBase combined trigger+contact style: `easteregg.c:40` (`SetEventMask(CONTACT|TOUCH)`), `fireplace.c:17,55-87` (processes contact in `EOnPostSimulate` with flag, and checks `dBodyIsActive(this)`).
 
 ### 2.9 Native path for dynamic items (drop/throw) ⚠️RELEVANT (plan S3)
 
@@ -213,11 +213,11 @@ if ( player.GetInstanceType() != DayZPlayerInstanceType.INSTANCETYPE_REMOTE )
     item.ThrowPhysically(player, throwEvent.GetForce());
 ```
 → executes on **server and on owner client** (not on remotes): dynamic simulation exists on both; remotes receive result via network [internal replication mechanism not visible in scripts — NOT VERIFIED].
-2. **Emptying inventory/containers**: `MiscGameplayFunctions.ThrowEntityFromInventory` (`4_world/static/miscgameplayfunctions.c:1164-1220`) calls `entityIB.ThrowPhysically(null, force, false)` (without collision against characters) and, for non-ItemBase entities, `dBodyApplyImpulse(entity, force)` (`:1218`).
-3. **Admin spawn with physics**: `plugindeveloper.c:381,504` — `item.ThrowPhysically(null, "0 0 0")` server-side to activate falling physics.
-4. **Shutdown**: `ItemBase.StopItemDynamicPhysics()` → `SetDynamicPhysicsLifeTime(0.01)` (`4_world/entities/itembase.c:4530-4534`) — drop dynamic physics has a *lifetime* managed by engine; setting it to 0.01 kills it instantly. Flag `m_ItemBeingDroppedPhys` (`itembase.c:71`).
+2. **Emptying inventory/containers**: `MiscGameplayFunctions.ThrowEntityFromInventory` (`4_world/static/miscgameplayfunctions.c:1299-1355`) calls `entityIB.ThrowPhysically(null, force, false)` (without collision against characters) and, for non-ItemBase entities, `dBodyApplyImpulse(entity, force)` (`:1353`).
+3. **Admin spawn with physics**: `plugindeveloper.c:430,553` — `item.ThrowPhysically(null, "0 0 0")` server-side to activate falling physics.
+4. **Shutdown**: `ItemBase.StopItemDynamicPhysics()` → `SetDynamicPhysicsLifeTime(0.01)` (`4_world/entities/itembase.c:4534-4538`) — drop dynamic physics has a *lifetime* managed by engine; setting it to 0.01 kills it instantly. Flag `m_ItemBeingDroppedPhys` (`itembase.c:59`).
 5. `CreateDynamicPhysics(layers)` **is never called from vanilla script** (grep: only declaration) — engine invokes it inside `ThrowPhysically` [INFERENCE]; exposed for mods.
-6. Re-configuration hook: `override void OnCreatePhysics()` → `RefreshPhysics()` (`itembase.c:1222-1227`); real implementations in `tentbase.c:160-172`, `fireplace.c`, `hescobox.c`, `kitbase.c`, `batterycharger.c`.
+6. Re-configuration hook: `override void OnCreatePhysics()` → `RefreshPhysics()` (`itembase.c:1150-1155`); real implementations in `tentbase.c:162-174`, `fireplace.c`, `hescobox.c`, `kitbase.c`, `batterycharger.c`.
 
 Layers `DYNAMICITEM` vs `DYNAMICITEM_NOCHAR` (`dayzphysics.c:9-10`): the pair corresponds to `collideWithCharacters` parameter of `ThrowPhysically` and to `EnableCollisionsWithCharacter` [INFERENCE by naming and signature; internal assignment NOT VERIFIED].
 
@@ -239,22 +239,22 @@ proto native bool    CheckFreeSpace(vector localDir, float distance, bool useHea
 proto       float    CollisionMoveTest(vector dir, vector offset, float xzScale, IEntity ignoreEntity, out IEntity hitEntity, out vector hitPosition, out vector hitNormal); // :1357
 proto native void    LinkToLocalSpaceOf(notnull IEntity child, vector pLocalSpaceMatrix[4]); // :1361
 ```
-(since 1.30 Exp: `PhysicsIsFalling` :1428 also true if ragdoll moves > 1 m/s; `PhysicsSetSimpleDeath` :1448-1449 is the "old" death-state system that previously was `PhysicsSetRagdoll`; `PhysicsSetRagdoll` :1451 no longer carries the 1.29 RAGDOLL-layer comment; `PhysicsIsRagdoll()` :1452; `HumanCommandUnconscious.IsRagdoll()` :647. Death branch calls `PhysicsSetSimpleDeath(true)` at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:745`. CheckFreeSpace :1381, CollisionMoveTest :1387, LinkToLocalSpaceOf :1391.)
-- CCT belongs to `CHARACTER` layer [strong INFERENCE: `transport.c:557` queries `dGetInteractionLayer(this, PhxInteractionLayers.CHARACTER, layer)` to determine what blocks player].
-- Vanilla manipulates it: `dayzplayerimplement.c:32` (`PhysicsEnableGravity(true)` upon leaving unconscious-fall), `:658` (`PhysicsSetSolid(true)`).
+(since 1.30: `PhysicsIsFalling` :1428 also true if ragdoll moves > 1 m/s; `PhysicsSetSimpleDeath` :1448-1449 is the "old" death-state system that previously was `PhysicsSetRagdoll`; `PhysicsSetRagdoll` :1451 no longer carries the 1.29 RAGDOLL-layer comment; `PhysicsIsRagdoll()` :1452; `HumanCommandUnconscious.IsRagdoll()` :647. Death branch calls `PhysicsSetSimpleDeath(true)` at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:745`. CheckFreeSpace :1381, CollisionMoveTest :1387, LinkToLocalSpaceOf :1391.)
+- CCT belongs to `CHARACTER` layer [strong INFERENCE: `transport.c:791` queries `dGetInteractionLayer(this, PhxInteractionLayers.CHARACTER, layer)` to determine what blocks player].
+- Vanilla manipulates it: `dayzplayerimplement.c:32` (`PhysicsEnableGravity(true)` upon leaving unconscious-fall), `:661` (`PhysicsSetSolid(true)`).
 - ⚠️RELEVANT: for player NOT to pass through stone, stone body must (a) exist on the machine simulating CCT (player local client) and (b) be in a layer with active interaction against `CHARACTER` (e.g. `DYNAMICITEM`).
 
 ### 2.11 Surfaces
 
-- `SurfaceProperties` opaque (`1_core/physics/surfaceproperties.c:9-15`); useful subclass `SurfaceInfo` (`3_game/surfaceinfo.c:8-51`): `GetByName/GetByFile` (O(n), `:16,:22`), `GetName/GetEntryName/GetSurfaceType`, `GetRoughness/GetDustness/GetBulletPenetrability/GetThickness/GetDeflection/GetTransparency/GetAudability`, `IsLiquid/IsStairs/IsPassthrough/IsSolid`, `GetSoundEnv/GetImpact`, `GetLiquidType`, `GetStepParticleId/GetWheelParticleId`. Comment `:4`: defined in `CfgSurfaces` **or in object's `.bisurf`**; lifetime managed by engine ("don't store handles").
-- Detection API in `CGame` (`3_game/global/game.c`): `GetSurface(SurfaceDetectionParameters, SurfaceDetectionResult)` (`:1160`), `SurfaceY` (`:1162`), `SurfaceRoadY/3D` (`:1163-1164`), `SurfaceGetType/3D` (`:1166-1168`), `SurfaceUnderObject/Ex/ByBone` (`:1169-1171`), `SurfaceGetNormal` (`:1173`), sea/waves (`:1174-1187`). Config helpers: `IsSurfaceDigable/IsSurfaceFertile` read `CfgSurfaces <surface> isDigable/isFertile` (`:1229-1243`).
-- Item impact: `DayZPhysics.GetHitSurfaceAndLiquid` used in `inventoryitem.c:168-176`.
+- `SurfaceProperties` opaque (`1_core/physics/surfaceproperties.c:9-15`); useful subclass `SurfaceInfo` (`3_game/surfaceinfo.c:8-71`): `GetByName/GetByFile` (O(n), `:16,:22`), `GetName/GetEntryName/GetSurfaceType`, `GetRoughness/GetDustness/GetBulletPenetrability/GetThickness/GetDeflection/GetTransparency/GetAudability`, `IsLiquid/IsStairs/IsPassthrough/IsSolid`, `GetSoundEnv/GetImpact`, `GetLiquidType`, `GetStepParticleId/GetWheelParticleId`. Comment `:4`: defined in `CfgSurfaces` **or in object's `.bisurf`**; lifetime managed by engine ("don't store handles").
+- Detection API in `CGame` (`3_game/global/game.c`): `GetSurface(SurfaceDetectionParameters, SurfaceDetectionResult)` (`:1169`), `SurfaceY` (`:1176`), `SurfaceRoadY/3D` (`:1177-1178`), `SurfaceGetType/3D` (`:1180-1183`), `SurfaceUnderObject/Ex/ByBone` (`:1184-1186`), `SurfaceGetNormal` (`:1188`), sea/waves (`:1189-1202`). Config helpers: `IsSurfaceDigable/IsSurfaceFertile` read `CfgSurfaces <surface> isDigable/isFertile` (`:1246-1260`).
+- Item impact: `DayZPhysics.GetHitSurfaceAndLiquid` used in `inventoryitem.c:170-178`.
 - **Surface PhysX friction/restitution are NOT exposed to script** — `SurfaceInfo` lacks friction getters; physics material is assigned by string when creating geometry (`PhysicsGeomDef.MaterialName`, e.g. `"material/default"`).
 
 ### 2.12 Engine → client synchronization
 
-- `Transport` has `proto native void Synchronize()` — "Synchronizes car's state in case the simulation is not running" (`3_game/vehicles/transport.c:108-109`). With `FEATURE_NETWORK_RECONCILIATION`, `Transport extends Pawn` (`transport.c:53`) with states `TransportOwnerState/TransportMove` (transform + linear/angular velocities, `transport.c:11-50`) — move replication with replay (`3_game/entities/pawn.c:20-24`: "full state synchronization... triggering a replay on the owner").
-- `EntityAI`: SyncVars via `RegisterNetSyncVariable{Bool,Int,Float,Object}` + `SetSynchDirty` (`3_game/entities/entityai.c:2843-3068`); position does NOT enter there.
+- `Transport` has `proto native void Synchronize()` — "Synchronizes car's state in case the simulation is not running" (`3_game/vehicles/transport.c:171-172`). With `FEATURE_NETWORK_RECONCILIATION`, `Transport extends Pawn` (`transport.c:66`) with states `TransportOwnerState/TransportMove` (transform + linear/angular velocities, `transport.c:11-50`) — move replication with replay (`3_game/entities/pawn.c:20-24`: "full state synchronization... triggering a replay on the owner").
+- `EntityAI`: SyncVars via `RegisterNetSyncVariable{Bool,Int,Float,Object}` + `SetSynchDirty` (`3_game/entities/entityai.c:2866-3091`); position does NOT enter there.
 - Thrown ItemBase: physics runs on server + owner client (2.9.1); for final position on remotes inventory flow (`LocationSyncMoveEntity`, `hand_actions.c:74`) and native item replication handle it [internal detail NOT VERIFIED in scripts].
 - For ad-hoc `dBodyCreateDynamicEx` bodies on ItemBase there is NO transform sync script code: if client sees it move (project empirical 2026-05-21), it is native entity position replication, not simulation → on client there is no body → player passes through it. Consistent with current bug.
 
@@ -281,7 +281,7 @@ if ( player.GetInstanceType() != DayZPlayerInstanceType.INSTANCETYPE_REMOTE )
     item.ThrowPhysically(player, throwEvent.GetForce());
 ```
 
-**Damage + impulse upon dying from vehicle contact** — `entityai.c:4098-4116`:
+**Damage + impulse upon dying from vehicle contact** — `entityai.c:4144-4161`:
 ```c
 if (car.GetSpeedometerAbsolute() > 2)
     ProcessDirectDamage(DT_CUSTOM, transport, "", "TransportHit", "0 0 0", damage);
@@ -292,11 +292,11 @@ if (IsDamageDestroyed() && car.GetSpeedometerAbsolute() > 3) {
 }
 ```
 
-**Action cursor** — `actiontargets.c:214-219` (`RaycastRVProxy` + `CollisionFlags.ALLOBJECTS`, default type `ObjIntersectView`); proxies detected with `res.hierLevel > 0` (`:249`). (since 1.30 Exp: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; fallback `:383-384`; liquid-without-object utility 0.01 at `:532-534`.)
+**Action cursor** — `actiontargets.c:245-255` (`RaycastRVProxy` + `CollisionFlags.ALLOBJECTS`, default type `ObjIntersectView`); proxies detected with `res.hierLevel > 0` (`:271`). (since 1.30: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; fallback `:383-384`; liquid-without-object utility 0.01 at `:535-537`.)
 
-**Layer matrix query** — `transport.c:556-557` (see 2.6).
+**Layer matrix query** — `transport.c:790-791` (see 2.6).
 
-**Impact velocity for effects** — `inventoryitem.c:200`: `float impactVelocity = extra.RelativeVelocityBefore.Length();` with `< 0.3` threshold ignored and 0.33 s throttle.
+**Impact velocity for effects** — `inventoryitem.c:202`: `float impactVelocity = extra.RelativeVelocityBefore.Length();` with `< 0.3` threshold ignored and 0.33 s throttle.
 
 ---
 
@@ -305,10 +305,10 @@ if (IsDamageDestroyed() && car.GetSpeedometerAbsolute() > 3) {
 1. `dSetInteractionLayer` modifies the **global matrix** of the world (layer↔layer), not a body; the 1st parameter only serves to resolve the world (`physicsworld.c:14-21`). Disabling `CHARACTER×DYNAMICITEM` affects ALL dynamic items on the server.
 2. `Contact` is `sealed` with private constructor/destructor (`contact.c:11-12`) — cannot be instantiated or inherited; only received.
 3. `EOnContact` only fires with `SetEventMask(EntityEvent.CONTACT)` active and active body; fireplace also checks `dBodyIsActive(this)` (`fireplace.c:62`). On passive receiver (player vs vehicle) it fires player event even if active body is the car.
-4. `Transport.OnContact` (per damage-zone) "Can be called very frequently in one frame" (`carscript.c:1453`) — buffer it (vanilla uses `m_ContactCache`).
+4. `OnContact` (per damage-zone) "Can be called very frequently in one frame" (1.29 `carscript.c:1453`; on 1.30 the warning is on `boatscript.c:425`, and cars inherit `Transport.OnContact`, `transport.c:318-346`) — buffer it (vanilla uses `m_ContactCache`).
 5. `ObjIntersect*` constants are NOT defined in scripts (engine builtins); reliable values only from comment `dayzphysics.c:66-71`.
 6. `dBodyCreateDynamic/dBodyCreateStatic` (without `Ex`) only exist in `GAME_TEMPLATE` code — in DayZ they do not compile; use `Physics.CreateDynamic` (wrapper, `physics.c:189`) or `dBodyCreateDynamicEx`.
-7. Cursor (`RaycastRVProxy` with `ObjIntersectView`) sees **View Geometry**: without View Geometry LOD in .p3d there is no action target even if rigid body exists (body lives in Bullet world, which cursor does not query except for ground fallback `RayCastBullet` with `ROADWAY|TERRAIN|WATERLAYER`, `actiontargets.c:329`). ⚠️RELEVANT: explains "Push does not appear" bug. (since 1.30 Exp: `RaycastRVProxy` at `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; fallback `:383-384`. Truth still holds.)
+7. Cursor (`RaycastRVProxy` with `ObjIntersectView`) sees **View Geometry**: without View Geometry LOD in .p3d there is no action target even if rigid body exists (body lives in Bullet world, which cursor does not query except for ground fallback `RayCastBullet` with `ROADWAY|TERRAIN|WATERLAYER`, `actiontargets.c:383-384`). ⚠️RELEVANT: explains "Push does not appear" bug. (since 1.30: `RaycastRVProxy` at `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; fallback `:383-384`. Truth still holds.)
 8. `dBodySetAngularVelocity` is rotation along x/y/z axes (rad/s), "not yaw/pitch/roll" (`enphysics.c:163`).
 9. `SetDynamicPhysicsLifeTime` implies that drop physics is **temporary by design**: engine removes it after lifetime passes; an object that must roll indefinitely needs to prevent/renew that timeout (or not rely on drop path). [Exact semantics of default value NOT VERIFIED.]
 10. `GetVelocity/SetVelocity` are global functions (work for Man and bodies); do not look for `dBodyGetVelocity` — it does not exist.
@@ -328,8 +328,8 @@ if (IsDamageDestroyed() && car.GetSpeedometerAbsolute() > 3) {
 | `AddForce` (Unity style) | 0 matches; it is `dBodyApplyForce*`. |
 | `SetMaxLinearVelocity` / `SetMaxAngularVelocity` | 0 matches; no velocity clamp per body (do it by hand in `EOnSimulate`). |
 | `PhxRaycast*` | 0 matches; physics world functions are `*Bullet` in `DayZPhysics`. |
-| Script call to `CreateDynamicPhysics` in vanilla | 0 uses (only declaration `object.c:462`) — available for mods, no vanilla reference pattern. (since 1.30 Exp: declaration at `exp/scripts/scripts/3_Game/Entities/Object.c:456`.) |
-| Mass setter via config at runtime | `dBodySetMass` exists, but there is no physical "SetWeight"; ItemBase `m_ConfigWeight` is for sound/inventory (`itembase.c:1199`). |
+| Script call to `CreateDynamicPhysics` in vanilla | 0 uses (only declaration `object.c:456`) — available for mods, no vanilla reference pattern. (since 1.30: declaration at `exp/scripts/scripts/3_Game/Entities/Object.c:456`.) |
+| Mass setter via config at runtime | `dBodySetMass` exists, but there is no physical "SetWeight"; the config weight is for sound/inventory: on 1.30 a field of the entity type, `EntityAIType.m_ConfigWeight` (`entityaitype.c:18`), read by the impact sound (`itembase.c:1125`); 1.29 read it on the item, 1.29 `itembase.c:1199`. |
 
 ---
 
@@ -368,7 +368,7 @@ override void EOnContact(IEntity other, Contact extra)
     if (g_Game.IsServer() && v > 4 && other.IsInherited(DayZPlayer)) { /* ProcessDirectDamage + dBodyApplyImpulse al player NO (CCT) → daño */ }
 }
 ```
-Note: a living player (CCT) is not pushed with `dBodyApplyImpulse`; vanilla only does so on corpses/ragdoll (`entityai.c:4111-4115`).
+Note: a living player (CCT) is not pushed with `dBodyApplyImpulse`; vanilla only does so on corpses/ragdoll (`entityai.c:4158-4164`).
 
 **D. Disable the collision between two specific entities**: `dBlock b = dBodyCollisionBlock(entA, entB);` ... `dBodyRemoveBlock(world, b);` (`enphysics.c:116-117`) — more surgical than touching global matrix.
 
@@ -383,12 +383,12 @@ DayZPhysics.RayCastBullet(from, to, PhxInteractionLayers.DYNAMICITEM|PhxInteract
 ## 7. Relevance for LF_RollingStone
 
 1. **"Passes through stone" bug**: architectural, not layers. Server-only `dBodyCreateDynamicEx` body will never collide with local client CCT (CCT is simulated client-side). Correct fix = body on client too: either call creation on both sides, or (better) native path `ThrowPhysically/CreateDynamicPhysics` which vanilla already executes on server+owner (`hand_actions.c:77-81`).
-2. **"Push does not appear" bug**: 100% confirmed — `actiontargets.c:214-219` uses `RaycastRVProxy` with `ObjIntersectView`; without View Geometry LOD there is no target. No physics layer fixes it. (since 1.30 Exp: same API at `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`.)
-3. **S2 damage/impulse**: `EOnContact → IsServer → ProcessDirectDamage("TransportHit")` pattern is exactly vanilla from `dayzplayerimplement.c:3814-3830` + `entityai.c:4086-4116` — but inverted (in vanilla event is processed by victim, not striker). For stone: player `EOnContact` will not recognize stone as `Transport`; better for **stone** to detect contact and damage player, or register custom damage.
+2. **"Push does not appear" bug**: 100% confirmed — `actiontargets.c:245-255` uses `RaycastRVProxy` with `ObjIntersectView`; without View Geometry LOD there is no target. No physics layer fixes it. (since 1.30: same API at `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`.)
+3. **S2 damage/impulse**: `EOnContact → IsServer → ProcessDirectDamage("TransportHit")` pattern is exactly vanilla from `dayzplayerimplement.c:3958-3971` + `entityai.c:4134-4220` — but inverted (in vanilla event is processed by victim, not striker). For stone: player `EOnContact` will not recognize stone as `Transport`; better for **stone** to detect contact and damage player, or register custom damage.
 4. **Maintain rolling**: `dBodyActive(ALWAYS_ACTIVE)` + low `dBodySetSleepingTreshold` + low `dBodySetDamping`; CCD with `dBodyEnableCCD(maxMotion≈diameter*0.8, inner_radius)`.
 5. **Push**: `dBodyApplyImpulseAt(stone, dir*F, contactPos)` generates natural roll (implicit torque) better than `dBodyApplyImpulse` at origin.
-6. **Runtime layer verification**: log `dGetInteractionLayer(this, PhxInteractionLayers.CHARACTER, dBodyGetInteractionLayer(this))` after creating body (`transport.c:556-557` pattern).
-7. **If migrating to native path**: watch `SetDynamicPhysicsLifeTime` (drop physics expires; `StopItemDynamicPhysics` kills it with 0.01 — `itembase.c:4530-4534`) and `EnableCollisionsWithCharacter(true)`.
+6. **Runtime layer verification**: log `dGetInteractionLayer(this, PhxInteractionLayers.CHARACTER, dBodyGetInteractionLayer(this))` after creating body (`transport.c:790-791` pattern).
+7. **If migrating to native path**: watch `SetDynamicPhysicsLifeTime` (drop physics expires; `StopItemDynamicPhysics` kills it with 0.01 — `itembase.c:4534-4538`) and `EnableCollisionsWithCharacter(true)`.
 
 ---
 
@@ -407,6 +407,6 @@ Verificadas en repo local (v1.24):
 
 No web used (0 fetches); all content comes from local vanilla source.
 
-## 9. DayZ 1.30 Exp (build 1.30.164014)
+## 9. DayZ 1.30
 
 Line-drift and new player-physics APIs above. Full `.ragdoll` / `RagdollDef`, `PhysicsSetSimpleDeath`, unconscious `PhysicsIsFalling` wake guard, and fall-damage `CurveExp` live in `dayz-1-30-ragdoll-and-fall.md`. TransportHit Motorbike branch + fall-damage thresholds: `dano-transporthit.md`.

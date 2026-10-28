@@ -32,7 +32,7 @@ data-critical audit are delegated to the skills in the table below.
 The whole system is ~6 script files + 1 config block. All `path:line` citations here point at real vanilla
 source under `P:\scripts\` (= `<dayz-projects>\scripts\`) and
 `DZ\gear\camping\config.cpp`. Verify against those before writing any class name or field.
-(until 1.29: that ~6-file count). (since 1.30 Exp: `ConstructionBasic` in `3_Game`, `ConstructionBase` /
+(until 1.29: that ~6-file count). (since 1.30: `ConstructionBasic` in `3_Game`, `ConstructionBase` /
 `Construction` / `Rebuilding` in `4_World`, plus `ConstructionPartTypeData` on `EntityType`. Full map in
 `references/dayz-1-30-construction-rebuilding.md`.)
 
@@ -43,22 +43,22 @@ The four-class quartet and who owns what:
 | Class | Role | Where |
 |---|---|---|
 | `BaseBuildingBase: ItemBase` | the persisted world entity; owns one `ref Construction`, the sync ints, events, physics, area damage | `basebuildingbase.c:2` |
-| `Construction` | per-instance controller; holds `map<string, ref ConstructionPart>` keyed by part config-class name; does ALL config lookups live | `construction.c:11` |
-| `ConstructionPart` | runtime record of one part (name, `m_Id` bit index, built/base/gate flags, required parts) | `constructionpart.c:1` |
+| `Construction` | (until 1.29:) per-instance controller; holds `map<string, ref ConstructionPart>` keyed by part config-class name; does ALL config lookups live | 1.29 `construction.c:11` |
+| `ConstructionPart` | runtime record of one part (name, `m_Id` bit index, built/base/gate flags, required parts) | `constructionpart.c:3` |
 | `ConstructionActionData` | per-player scratch state on `PlayerBase`; caches which parts are buildable under the cursor, drives radial action variants | `constructionactiondata.c:1` |
-| `ConstructionBasic` | (since 1.30 Exp:) 3_Game stub + `EntityAI` hooks `CreateConstructionComponent()` / `GetConstructionBasic()` | `Construction_Basic.c:2`; `EntityAI.c:3441-3479` |
-| `ConstructionBase : ConstructionBasic` | (since 1.30 Exp:) shared 4_World controller; `BuildPartServerEx` / `DismantlePartServerEx` / `IsCollidingEx` | `ConstructionBase.c:30,174,185,1471` |
-| `Rebuilding : ConstructionBase` | (since 1.30 Exp:) map-building restoration on `BuildingBase`; ten `m_SyncParts*` ints | `Rebuilding.c:1`; `Building.c:23-26` |
-| `ConstructionPartTypeData` | (since 1.30 Exp:) type-level cached `Construction{}` fields; instance `ConstructionPart` holds mutable state | `ConstructionPartTyped.c:2` |
+| `ConstructionBasic` | (since 1.30:) 3_Game stub + `EntityAI` hooks `CreateConstructionComponent()` / `GetConstructionBasic()` | `Construction_Basic.c:2`; `EntityAI.c:3464-3502` |
+| `ConstructionBase : ConstructionBasic` | (since 1.30:) shared 4_World controller; `BuildPartServerEx` / `DismantlePartServerEx` / `IsCollidingEx` | `ConstructionBase.c:30,180,191,1527` |
+| `Rebuilding : ConstructionBase` | (since 1.30:) map-building restoration on `BuildingBase`; ten `m_SyncParts*` ints | `Rebuilding.c:1`; `Building.c:23-26` |
+| `ConstructionPartTypeData` | (since 1.30:) type-level cached `Construction{}` fields; instance `ConstructionPart` holds mutable state | `ConstructionPartTyped.c:2` |
 
 `Construction` is NOT itself persisted — it is rebuilt from config on every load and its part states are
 restored from the sync bitmask (see PERSISTENCE). End-to-end flow:
 (until 1.29: `BaseBuildingBase` owned `ref Construction m_Construction` and `ConstructionPart` stored config
-fields per instance). (since 1.30 Exp: the field is `protected ref ConstructionBasic m_Construction`
+fields per instance). (since 1.30: the field is `protected ref ConstructionBasic m_Construction`
 (`basebuildingbase.c:15`); `CreateConstructionComponent()` does `new Construction(this)` (`:871-875`);
 `GetConstruction()` is `Construction.Cast(m_Construction)` (`:883-886`). Config is cached once per
-`EntityType` in `ConstructionPartTypeData` and attached via `SetPartTypeData` (`ConstructionPart.c:383-389`;
-`ConstructionBase.UpdateConstructionParts` `:495-532`).)
+`EntityType` in `ConstructionPartTypeData` and attached via `SetPartTypeData` (`ConstructionPart.c:401-407`;
+`ConstructionBase.UpdateConstructionParts` `ConstructionBase.c:518-549`).)
 
 1. **Craft the kit.** A `RecipeBase` (`craftfencekit.c:1`) consumes materials → a `KitBase: ItemBase`
    (`kitbase.c:1`, `IsBasebuildingKit()→true` `:5`).
@@ -69,23 +69,23 @@ fields per instance). (since 1.30 Exp: the field is `protected ref ConstructionB
    (`actiondeployobject.c:230-234`).
 3. **Base part.** The spawned entity has NO parts built. Player attaches the base material then builds the
    `base` part (`is_base=1`). Building it sets `HasBase()=true`, spawns a construction kit back, and toggles
-   the `"Deployed"` proxy/animation (`OnPartBuiltServer` `basebuildingbase.c:592-598`; `InitVisuals` `:770-784`).
-4. **Build part.** `ActionBuildPart` (`actionbuildpart.c:25`) with a tool in hand → `OnFinishProgressServer`
-   (`:112-130`) re-checks collision + `CanBuildPart` → `construction.BuildPartServer(...)` (`construction.c:75-95`):
+   the `"Deployed"` proxy/animation (`OnPartBuiltServer` `basebuildingbase.c:554-560`; `InitVisuals` `:677-691`).
+4. **Build part.** `ActionBuildPart` (`actionbuildpart.c:33`) with a tool in hand → `OnFinishProgressServer`
+   (`:150-204`) re-checks collision + `CanBuildPart` → `construction.BuildPartServer(...)` (1.29 `construction.c:75-95`):
    reset damage-zone health, `TakeMaterialsServer`, register the part in the sync bitmask, show physics+visual,
    regen navmesh.
-   (until 1.29: `BuildPartServer(player, part_name, action_id)`). (since 1.30 Exp: `ActionBuildPart` calls
+   (until 1.29: `BuildPartServer(player, part_name, action_id)`). (since 1.30: `ActionBuildPart` calls
    `BuildPartServerEx` (`actionbuildpart.c:170`); the old method is `[Obsolete("call BuildPartServerEx instead")]`
-   and forwards (`ConstructionBase.c:1688-1694`). Override `BuildPartServerEx`, not the obsolete wrapper.)
+   and forwards (`ConstructionBase.c:1751-1757`). Override `BuildPartServerEx`, not the obsolete wrapper.)
 5. **Upgrade** = building further parts whose `required_parts[]` are satisfied (`HasRequiredPart`
-   `construction.c:412-435`) and whose `conflicted_parts[]` are not built (`HasConflictPart` `:438-455`).
-6. **Dismantle.** `ActionDismantlePart` (`actiondismantlepart.c:26`) → `DismantlePartServer` (`:98-118`)
-   refunds materials. Blocked if the part `HasDependentPart` (`construction.c:479-496`). Dismantling the
-   **base** part destroys the whole construction (`basebuildingbase.c:653-657`).
-   (until 1.29: `DismantlePartServer`). (since 1.30 Exp: `DismantlePartServerEx` (`ConstructionBase.c:185`);
-   obsolete wrapper `:1696-1702`. `HasDependentPart` now lives on `ConstructionBase` `:758`.)
-7. **Fold.** With no base and no attachments (`CanFoldBaseBuildingObject` `:1067-1075`),
-   `ActionFoldBaseBuildingObject` converts back to a kit in hands (`FoldBaseBuildingObject` `:1077-1083`).
+   `ConstructionBase.c:723-736`) and whose `conflicted_parts[]` are not built (`HasConflictPart` `:752-767`).
+6. **Dismantle.** `ActionDismantlePart` (`actiondismantlepart.c:23`) → `DismantlePartServer` (1.29 `construction.c:98-118`)
+   refunds materials. Blocked if the part `HasDependentPart` (`ConstructionBase.c:813-824`). Dismantling the
+   **base** part destroys the whole construction (`basebuildingbase.c:615-619`).
+   (until 1.29: `DismantlePartServer`). (since 1.30: `DismantlePartServerEx` (`ConstructionBase.c:191`);
+   obsolete wrapper `:1759-1765`. `HasDependentPart` now lives on `ConstructionBase` `:813`.)
+7. **Fold.** With no base and no attachments (`CanFoldBaseBuildingObject` `basebuildingbase.c:962-970`),
+   `ActionFoldBaseBuildingObject` converts back to a kit in hands (`FoldBaseBuildingObject` `:972-978`).
 
 ## THE Construction{} CONFIG BLOCK (the single most-reused artifact)
 
@@ -130,33 +130,33 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
 
 - **`id` MUST be unique and in 1..93** across the whole `Construction{}` block. The id is a bit index into
   three 31-bit sync ints; a duplicate or out-of-range id collides in the bitmask and corrupts part state
-  (`RegisterPartForSync` `basebuildingbase.c:148-175`). This caps a single entity at 93 distinct parts.
-  (until 1.29: that 93-part cap was the only packing). (since 1.30 Exp: it still holds for every
+  (`RegisterPartForSync` `basebuildingbase.c:137-164`). This caps a single entity at 93 distinct parts.
+  (until 1.29: that 93-part cap was the only packing). (since 1.30: it still holds for every
   `BaseBuildingBase` — `RegisterPartForSync` is unchanged (`basebuildingbase.c:137-164`) and `OnStoreSave`
   still writes `m_SyncParts01/02/03` then `m_HasBase` (`:420-430`). `Rebuilding` on `BuildingBase` is a
   different stream: ten ints `m_SyncParts1`..`10`, 2 bits per part, `REBUILDING_STORAGE_VERSION = 1`
-  (`Rebuilding.c:3,7-16,502-515`). Do not mix the two caps.)
+  (`Rebuilding.c:3,7-16,501-514`). Do not mix the two caps.)
 - **Damage-zone name MUST equal the part name, lowercased.** `EEHealthLevelChanged` lowercases the zone and
-  looks up the part by that name (`basebuildingbase.c:507-517`); a mismatch means damage never destroys the part.
-- **`Fence.OpenFence()` does not consult the combination lock.** `CanOpenFence()` requires `HasHinges() && !IsOpened() && !IsLocked()` (`fence.c:427-434`). `IsLocked()` is a closed `CombinationLock` (`fence.c:115-124`). `OpenFence()` skips that check, plays the gate animations and calls `SetOpenedState(true)` (`fence.c:447-465`). A script that calls `OpenFence()` directly opens a locked fence. Test `!IsLocked()` or call `CanOpenFence()` first. `CanCloseFence()` does not require the lock to be open (`fence.c:437-444`). Source-verified 2026-09-28 against `P:\scripts\4_world\entities\itembase\basebuildingbase\fence.c`.
+  looks up the part by that name (`ConstructionBase.c:353-369`; 1.29 `basebuildingbase.c:507-517`); a mismatch means damage never destroys the part.
+- **`Fence.OpenFence()` does not consult the combination lock.** `CanOpenFence()` requires `HasHinges() && !IsOpened() && !IsLocked()` (`fence.c:472-477`). `IsLocked()` is a closed `CombinationLock` or, since 1.30, a locked `DigitalCodeLock` (`fence.c:127-142`). `OpenFence()` skips that check, plays the gate animations and calls `SetOpenedState(true)` (`fence.c:488-506`). A script that calls `OpenFence()` directly opens a locked fence. Test `!IsLocked()` or call `CanOpenFence()` first. `CanCloseFence()` does not require the lock to be open (`fence.c:480-486`). Source-verified 2026-09-28 against `P:\scripts\4_world\entities\itembase\basebuildingbase\fence.c`.
 - **`OnStoreSave`/`OnStoreLoad` order is strict.** Save writes `m_SyncParts01`, `02`, `03`, then `m_HasBase`
   (`basebuildingbase.c:420-430`); load reads them in the same order (`:432-464`). A subclass writes/reads its
   extra fields AFTER calling `super`, in the exact same order both ways (Fence appends gate state after the
-  three ints — `fence.c:212-220` / `:222-255`). Reordering silently corrupts every saved base.
+  three ints — `fence.c:246-254` / `:256-289`). Reordering silently corrupts every saved base.
 - **Every `part_name` MUST be both an AnimationSource in config AND a selection in the `.p3d`.** Show/hide is
-  `SetAnimationPhase(part_name, 0/1)` (`construction.c:578-588`, phase 0 = visible); the base uses the
+  `SetAnimationPhase(part_name, 0/1)` (`constructionpart.c:480-489`, phase 0 = visible); the base uses the
   `"Deployed"` proxy instead. A missing selection/memory point → the part builds but has no visual or no collision.
 - **Action-type ints** (`_constants.c:6-8`): `AT_BUILD_PART=193`, `AT_DISMANTLE_PART=195`, `AT_DESTROY_PART=209`.
   Passed into `BuildPartServer`/`DismantlePartServer`/`DestroyPartServer` and synced so clients play the right SFX.
-  (since 1.30 Exp: pass them into `BuildPartServerEx` / `DismantlePartServerEx`. Tool masks now include
+  (since 1.30: pass them into `BuildPartServerEx` / `DismantlePartServerEx`. Tool masks now include
   `EConstructionTools.TOOL_BRICKLAYING = 256` (`ConstructionConstants.c:25`).)
 - **How much of a material fits in one slot is decided by the SLOT's `stackMax`, NOT by the item's
   `varQuantityMax`.** For a splitable item, `GetTargetQuantityMax` asks `InventorySlots.GetStackMaxForSlotId`
-  first and only falls back to `varStackMax`, then to `varQuantityMax` (`itembase.c:3473-3490`). Vanilla
+  first and only falls back to `varStackMax`, then to `varQuantityMax` (`itembase.c:3453-3472`). Vanilla
   declares the cap per slot in `scripts\config.cpp`: `Material_WoodenPlanks` and `Material_MetalSheets` are
-  `stackMax=20` (`:2266-2281`), `Material_Nails` is `99` (`:2260-2264`). A NON-splitable item skips that
+  `stackMax=20` (`:2285-2300`), `Material_Nails` is `99` (`:2279-2283`). A NON-splitable item skips that
   branch entirely and lands on `varQuantityMax` — `MetalWire` declares no quantity and neither of its slots
-  declares `stackMax` (`:2290-2296`, `:2349-2355`), so it is one wire per slot. Reading the item class instead
+  declares `stackMax` (`:2309-2315`, `:2508-2514`), so it is one wire per slot. Reading the item class instead
   overstates plank capacity 5× (100 vs 20) and makes any recipe above the slot cap silently unbuildable: the
   player fills the slot and never reaches the threshold, so the build action simply never appears. Derive
   slots per material as `ceil(default_qty / slot stackMax)` and get that number from `CfgSlots`, not from the
@@ -164,7 +164,7 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   written. Origin: caught by an independent plan review after the item-class reading had already been written
   into a spec — the item's ceiling exists, it just is not the one that governs.
 
-- **The same fallback sets a crop's harvest yield: raising its `varStackMax` changes the vanilla yield** (DayZ 1.30.164014 Exp) [EXACT][CLAIM-HARVEST-YIELD-STACKMAX-130]: `PlantBase.Harvest` creates each crop pile with `SetQuantity(GetQuantityMax())` (`4_World/Entities/GardenBase/PlantBase.c:575-576`), and for a splitable item `GetQuantityMax` resolves to `varStackMax` when the slot declares no stack max (`4_World/Entities/ItemBase.c:3436-3469`). `SetQuantity` clamps to `[min, max]` (`4_World/Entities/ItemBase.c:3353`), so a scripted yield above the stack size was silently clipped until the mod replaced the harvest quantity.
+- **The same fallback sets a crop's harvest yield: raising its `varStackMax` changes the vanilla yield** (DayZ 1.30.164014 Exp) [EXACT][CLAIM-HARVEST-YIELD-STACKMAX-130]: `PlantBase.Harvest` creates each crop pile with `SetQuantity(GetQuantityMax())` (`4_World/Entities/GardenBase/PlantBase.c:575-576`), and for a splitable item `GetQuantityMax` resolves to `varStackMax` when the slot declares no stack max (`4_World/Entities/ItemBase.c:3439-3472`). `SetQuantity` clamps to `[min, max]` (`4_World/Entities/ItemBase.c:3356`), so a scripted yield above the stack size was silently clipped until the mod replaced the harvest quantity.
 
 - **A green/red placement hologram needs TWO declarations, and neither is the one the name
   suggests.** `Hologram.RefreshVisual` tints by calling `SetObjectTexture`/`SetObjectMaterial` on a
@@ -182,9 +182,9 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   in-game cycle, plus a review finding that was raised, retired as a likely false positive, and
   turned out to be true.
 - **`itemBehaviour` does NOT choose the in-hands carry pose.** The int drives behaviour rules and the
-  deploy command (`itembase.c:65`: `0 = heavy, 1 = onehanded, 2 = twohanded`), but the pose comes
+  deploy command (`itembasetype.c:33`: `0 = heavy, 1 = onehanded, 2 = twohanded`), but the pose comes
   from **class registration in the anim graph**. Vanilla registers every heavy object explicitly —
-  barrel at `dayzplayercfgbase.c:817`, wooden crate at `:830` — through
+  barrel at `dayzplayercfgbase.c:841`, wooden crate at `:854` — through
   `ModItemRegisterCallbacks.RegisterHeavy` (`:305,:317`) calling `AddItemInHandsProfileIK(class, …
   player_main_heavy.asi, pBehavior, … .anm)`. With no registration the item falls back to the
   `Inventory_Base` one-handed default and is carried in one hand no matter what `itemBehaviour` says.
@@ -193,7 +193,7 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   a mod that ships a different shape: a cabinet is `0` like the barrel, not `2` like a small kit box. `SetActions` adds
   `ActionTogglePlaceObject` + `ActionPlaceObject` only in the deployable subclass (`container_base.c:32,48-54`),
   which is what `Barrel_ColorBase` inherits from (`barrel_colorbase.c:1`). A storage entity extending
-  `Container_Base` gets no placement at all, and `IsDeployable()` is `false` by default (`itembase.c:4380-4383`).
+  `Container_Base` gets no placement at all, and `IsDeployable()` is `false` by default (`itembase.c:4352-4355`).
   Adding the two actions to the single class that needs them is cheaper than reparenting a shared base and
   cannot regress its siblings. The ghost material comes from `hologramMaterial` + `hologramMaterialPath`
   (`hologram.c:1554-1557`) plus the suffixes `_deployable.rvmat` / `_undeployable.rvmat` (`:14-16`); declare
@@ -215,17 +215,17 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
 ## PERSISTENCE — one synced bitmask is BOTH netsync AND save (data-critical)
 
 Part-built state is NOT stored per part; it is packed into three 31-bit ints `m_SyncParts01/02/03`
-(`basebuildingbase.c:12-14`), which serve as both the netsync representation and the persistence format.
+(`basebuildingbase.c:10-12`), which serve as both the netsync representation and the persistence format.
 Part `id` 1..31 → SyncParts01, 32..62 → SyncParts02, 63..93 → SyncParts03. On load,
 `SetPartsFromSyncData` rebuilds each part's built flag from the bitmask and reconciles physics/visuals
-(`SetPartFromSyncData` `:276-315`, which also failsafe-relocks attached materials against corrupted data).
+(`SetPartFromSyncData` `:265-304`, which also failsafe-relocks attached materials against corrupted data).
 
 **R9 gate:** any mod that adds parts, changes the bitmask packing or the `id` ranges, or touches
 `OnStoreSave`/`OnStoreLoad` ordering is modifying player progression — a bug means lost bases after a
 restart. Delegate to `rigorous-data-audit` (R9) BEFORE declaring release-safe. Full detail, the 93-part
 cap, the version bumps (`GetDamageSystemVersionChange()→111`; Fence gate persistence bumped at v110) and
 the hand-off checklist are in `references/persistence-audit.md`.
-(since 1.30 Exp: `BaseBuildingBase` packing is unchanged. `Rebuilding` is a second, versioned stream on
+(since 1.30: `BaseBuildingBase` packing is unchanged. `Rebuilding` is a second, versioned stream on
 map buildings — see `references/persistence-audit.md` §8 and `references/dayz-1-30-construction-rebuilding.md`.
 `CombinationLock` on a Fence now also writes `m_CombinationInside` at vanilla stream **v143**
 (`CombinationLock.c:128-136,169-177`) — a subclass `OnStoreLoad` that skips that branch desyncs the item.)
@@ -237,18 +237,18 @@ map buildings — see `references/persistence-audit.md` §8 and `references/dayz
 | **Base won't save / parts reset on server restart** | `OnStoreSave`/`OnStoreLoad` order broke, or a subclass wrote fields before `super` / in a different order | PERSISTENCE; `references/persistence-audit.md` |
 | **A built part doesn't show (visual missing)** | `part_name` is not an AnimationSource in config or not a selection in the `.p3d` | PREFLIGHT show/hide; `dayz-animation-pipeline`, `dayz-model-pipeline` |
 | **A built part has no collision** | missing per-part proxy memory/selection, or (base) missing `"Deployed"` proxy | `dayz-model-pipeline` (+ `dayz-p3d-audit`) |
-| **Part state corrupts / two parts toggle together** | duplicate or out-of-range `id` in `Construction{}` (bitmask collision) | PREFLIGHT id≤93; `RegisterPartForSync` `basebuildingbase.c:148-175` |
-| **Damage never destroys a part** | damage-zone name ≠ part name lowercased | PREFLIGHT zone==part; `basebuildingbase.c:507-517` |
-| **The build action never appears** | tool's `build_action_type` doesn't AND-match the part's, or `CanBuildPart` fails (missing/ruined material, required part, conflict) | `construction.c:296-304, 959-1003` |
-| **Dismantle is blocked** | the part `HasDependentPart` (something built depends on it) | `construction.c:479-496` |
-| **"built but not shown until sync" in single-player** | `ConstructionPart.SetRequestBuiltState` skips the local set in SP and waits for sync | `constructionpart.c:56-63` |
+| **Part state corrupts / two parts toggle together** | duplicate or out-of-range `id` in `Construction{}` (bitmask collision) | PREFLIGHT id≤93; `RegisterPartForSync` `basebuildingbase.c:137-164` |
+| **Damage never destroys a part** | damage-zone name ≠ part name lowercased | PREFLIGHT zone==part; `ConstructionBase.c:353-369` |
+| **The build action never appears** | tool's `build_action_type` doesn't AND-match the part's, or `CanBuildPart` fails (missing/ruined material, required part, conflict) | `ConstructionBase.c:584-611, 1442-1479` |
+| **Dismantle is blocked** | the part `HasDependentPart` (something built depends on it) | `ConstructionBase.c:813-824` |
+| **"built but not shown until sync" in single-player** | `ConstructionPart.SetRequestBuiltState` skips the local set in SP and waits for sync | `constructionpart.c:511-518` |
 | **Placement / hologram won't confirm** | height check or collision fails on the hologram | `actiondeployobject.c:42-75`; `references/entity-lifecycle.md` |
-| **Perf hitch when building** | `UpdatePhysics()` is a "massive performance hit" per the code's own warning | `basebuildingbase.c:838` — avoid frequent calls |
-| **Override of `BuildPartServer` never runs (1.30)** | vanilla actions now call `BuildPartServerEx` | `actionbuildpart.c:170`; `ConstructionBase.c:1688-1694` |
-| **Compile error on `CreateCollisionTrigger` (1.30)** | methods still exist but are `[Obsolete("no replacement")]`; collision is `IsCollidingEx(CollisionCheckData)` | `ConstructionBase.c:1471,1742-1787` |
-| **Rebuilt house / well part resets** | mixed up `BaseBuildingBase` 3-int save with `Rebuilding` 10-int `HandleStoreSave` | `Rebuilding.c:474-515`; `Building.c:23-45` |
+| **Perf hitch when building** | `UpdatePhysics()` is a "massive performance hit" per the code's own warning | `basebuildingbase.c:745` — avoid frequent calls |
+| **Override of `BuildPartServer` never runs (1.30)** | vanilla actions now call `BuildPartServerEx` | `actionbuildpart.c:170`; `ConstructionBase.c:1751-1757` |
+| **Compile error on `CreateCollisionTrigger` (1.30)** | methods still exist but are `[Obsolete("no replacement")]`; collision is `IsCollidingEx(CollisionCheckData)` | `ConstructionBase.c:1527,1805-1850` |
+| **Rebuilt house / well part resets** | mixed up `BaseBuildingBase` 3-int save with `Rebuilding` 10-int `HandleStoreSave` | `Rebuilding.c:473-514`; `Building.c:23-45` |
 | **Fence code lock ignored** | slot is `Att_CodeLock`; getter is `Fence.GetCodeLock()` | `fence.c:20,26,161-165` |
-| **Powered opener opens a locked fence** | caller used `OpenFence()` and skipped `CanOpenFence()` / `IsLocked()` | `fence.c:115-124,427-465` |
+| **Powered opener opens a locked fence** | caller used `OpenFence()` and skipped `CanOpenFence()` / `IsLocked()` | `fence.c:127-142,472-528` |
 
 Do NOT build new features on `ActionPlugIntoFence` — it is DEPRECATED (`actionplugintofence.c:1`).
 
@@ -295,18 +295,18 @@ the full entry (symptom, origin, evidence) lives there. Do not remove citation: 
 
 - **LL-042** — Create an eponymous script class for each placeable config class and inherit from kit/static base providing `SetActions`, `IsDeployable`, and the kit↔static link. Verify both halves before diagnosing hologram or textures.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 Digest J (`work/out2/digest-J-construction-locks-bunker.md` §§1,3–5). Every class/method below was re-opened under `exp\scripts\scripts\`. Digest line numbers were often wrong; citations here are from the files.
 
 ### What changes
 
-- **Hierarchy.** `EntityAI.CreateConstructionComponent()` (`EntityAI.c:3451`) returns null by default. `BaseBuildingBase` overrides it to `new Construction(this)` (`basebuildingbase.c:871-875`). `BuildingBase` overrides it to `new Rebuilding(this)` (`Building.c:23-26`). Field type on both is `protected ref ConstructionBasic m_Construction`.
-- **Static vs instance.** `ConstructionPartTypeData` caches `Construction{}` on `EntityType` (`ConstructionPartTyped.c:2-67`). `ConstructionPart` keeps `m_PartTypeData`, `m_LocalSyncBitMask`, `m_IsBuilt` (`ConstructionPart.c:9-12`). The old multi-arg constructor is empty (`:14-16`); instances are `ToType().Spawn()` then `SetPartTypeData` (`ConstructionBase.c:514-520`).
-- **`*ServerEx`.** `BuildPartServer` / `DismantlePartServer` / `IsColliding` are `[Obsolete]` wrappers on `ConstructionBase` (`:1688-1740`). Live path: `BuildPartServerEx` / `DismantlePartServerEx` / `IsCollidingEx(CollisionCheckData)` (`:174,185,1471`). Digest J's `IsCollidingEx(string, Object, bool, bool)` signature is **not** in the file.
-- **Collision triggers.** `CreateCollisionTrigger` / `DestroyCollisionTrigger` / `IsTriggerColliding` are **not deleted**. They are `[Obsolete("no replacement")]` (`ConstructionBase.c:1742-1787`). Calling them still compiles; do not build new code on them.
+- **Hierarchy.** `EntityAI.CreateConstructionComponent()` (`EntityAI.c:3474`) returns null by default. `BaseBuildingBase` overrides it to `new Construction(this)` (`basebuildingbase.c:871-875`). `BuildingBase` overrides it to `new Rebuilding(this)` (`Building.c:23-26`). Field type on both is `protected ref ConstructionBasic m_Construction`.
+- **Static vs instance.** `ConstructionPartTypeData` caches `Construction{}` on `EntityType` (`ConstructionPartTyped.c:2-70`). `ConstructionPart` keeps `m_PartTypeData`, `m_LocalSyncBitMask`, `m_IsBuilt` (`ConstructionPart.c:9-12`). The old multi-arg constructor is empty (`:14-16`); instances are `ToType().Spawn()` then `SetPartTypeData` (`ConstructionBase.c:532-539`).
+- **`*ServerEx`.** `BuildPartServer` / `DismantlePartServer` / `IsColliding` are `[Obsolete]` wrappers on `ConstructionBase` (`:1751-1803`). Live path: `BuildPartServerEx` / `DismantlePartServerEx` / `IsCollidingEx(CollisionCheckData)` (`:180,191,1527`). Digest J's `IsCollidingEx(string, Object, bool, bool)` signature is **not** in the file.
+- **Collision triggers.** `CreateCollisionTrigger` / `DestroyCollisionTrigger` / `IsTriggerColliding` are **not deleted**. They are `[Obsolete("no replacement")]` (`ConstructionBase.c:1805-1850`). Calling them still compiles; do not build new code on them.
 - **`ConstructionActionData.SetSlotId` / `GetSlotId`.** Not deleted. `[Obsolete("1.30: Unsafe, overridden ActionData used in-system instead")]` (`constructionactiondata.c:617-627`).
-- **Rebuilding (map buildings, not player fences).** `BuildingBase` registers `m_Construction.m_SyncParts1`..`10` (`Building.c:29-45`). Packing: `BIT_INT_SIZE = 32` (`BitArray.c:4`) × 10 ints / `BITWISE_SYNCINFO_SIZE_BASE = 2` (`ConstructionPart.c:6`) = **160 part ids**. Persist via `HandleStoreSave` → `SerializeConstructionData` (`Rebuilding.c:474-515`). Default build mask sets bit 0; `ConstructionPartRebuild` also stores facing in bit 1 (`:985-991`). Digest J's 00/01/10 "ruined" table was **not** found in those methods.
+- **Rebuilding (map buildings, not player fences).** `BuildingBase` registers `m_Construction.m_SyncParts1`..`10` (`Building.c:29-45`). Packing: `BIT_INT_SIZE = 32` (`BitArray.c:4`) × 10 ints / `BITWISE_SYNCINFO_SIZE_BASE = 2` (`ConstructionPart.c:6`) = **160 part ids**. Persist via `HandleStoreSave` → `SerializeConstructionData` (`Rebuilding.c:473-514`). Default build mask sets bit 0; `ConstructionPartRebuild` also stores facing in bit 1 (`ConstructionPart.c:1057-1063`). Digest J's 00/01/10 "ruined" table was **not** found in those methods.
 - **Masonry loop.** `PileOfBricks` + `ActionPickUpBricks.YIELD = 3` (`ActionPickUpBricks.c:16-18`). `MortarMix` mixes at water/well (`MortarMix.c:6-7`) into `MortarMix_Opened`. `BrickTrowel` adds `ActionBuildPart` (`BrickTrowel.c:1-7`); build anim `CMD_ACTIONFB_BRICKTROWEL` (`actionbuildpart.c:260-262`). Tool mask enum `TOOL_BRICKLAYING = 256` (`ConstructionConstants.c:25`). `[UNVERIFIED]` `CfgVehicles BrickTrowel build_action_type` — class not in extracted configs.
 - **Fence locks.** `Fence` has `ATTACHMENT_CODE_LOCK = "Att_CodeLock"` and `GetCodeLock()` (`fence.c:20,26,161-165`) beside the existing combination lock. Dialing a combo lock no longer unlocks it: `ActionCombinationLockUnlock` (`CombinationLock.c:686`).
 - **Material enum moved.** `ConstructionMaterialType` now lives on `ConstructionBase.c:2-12` and adds `MATERIAL_BRICK = 6`, `MATERIAL_RUBBLE = 7`.
@@ -318,7 +318,7 @@ Digest J (`work/out2/digest-J-construction-locks-bunker.md` §§1,3–5). Every 
 ### What breaks (1.29 mods)
 
 1. Override of `BuildPartServer` / `DismantlePartServer` is skipped if vanilla calls `*Ex`. Migrate the override.
-2. New code that called `CreateCollisionTrigger` still compiles but is obsolete with **no replacement** — use `IsCollidingEx(CollisionCheckData)` (`ConstructionBase.c:1471,1896-1910`).
+2. New code that called `CreateCollisionTrigger` still compiles but is obsolete with **no replacement** — use `IsCollidingEx(CollisionCheckData)` (`ConstructionBase.c:1527,1965-1979`).
 3. Direct typed access to `m_Construction` as `Construction` fails: field is `ConstructionBasic` and `protected`. Use `GetConstruction()` or `GetConstructionBasic()`.
 4. Instantiating `ConstructionPart` with the old constructor does not fill type data. Spawn + `SetPartTypeData`.
 5. Fence combo-lock automation that assumed "last dial = unlocked" needs `ActionCombinationLockUnlock`.

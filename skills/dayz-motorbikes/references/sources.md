@@ -1,4 +1,4 @@
-# Sources and Extraction Evidence (DayZ 1.30 Exp)
+# Sources and Extraction Evidence (DayZ 1.30)
 
 This document details the extraction environment, analyzed builds, primary sources, and the exact line count of each file cited in the `dayz-motorbikes` skill and its references.
 
@@ -10,6 +10,7 @@ This document details the extraction environment, analyzed builds, primary sourc
 - **Extraction tool**: Mikero tools; `config.cpp` files are `config.bin` debinarized with DeRap ("Dos Tools Dll version 10.13", header of `exp\vehicles_singletrack\DZ\vehicles\singletrack\config.cpp:1-6`)
 - **Stable comparison version**: DayZ 1.29 Stable (`stable-1.29\` folder)
 - **Evidence level**: `source_verified` (claims are verified in Enforce Script `.c` source code, `.cpp` configs, and `.agf` graph, except those marked `[UNVERIFIED]`; none is assumed `runtime_verified` until tested on server).
+- **Re-check on 1.30 stable (2026-10-28)**: the skill's line numbers are now those of stable build `1.30.164200`, read in a sibling extraction of that build; the paths keep the `exp\` prefix of this one. The line counts and section ranges in this file stay `1.30.164014`'s; what differs on `1.30.164200` is in §7 below.
 
 ## Critical Note on Vehicle and Motorbike SoundSets
 
@@ -106,3 +107,18 @@ Diff citations in this technical documentation use the exact path with a single 
 - `work\diffs\scripts\4_World_Classes_UserActionsComponent_ActionInput.c.diff` (323 lines)
 - `work\diffs\configs\vehicles_wheeled.config.diff` (785 lines)
 - There is no diff for `vehicles_singletrack`: `stable-1.29\vehicles_singletrack` contains no files (the PBO is new in 1.30).
+
+### 7. Line counts on 1.30.164200 (2026-10-28)
+Only the files below have a different length on stable `1.30.164200`; every other count in §1-§5 is the same on that build.
+
+| File in extraction (`exp\`) | 1.30.164014 | 1.30.164200 |
+|---|---|---|
+| `exp\scripts\scripts\3_Game\Vehicles\Transport.c` | 1205 | 1214 |
+| `exp\scripts\scripts\4_World\Entities\Vehicles\MotorbikeScript.c` | 1765 | 1780 |
+| `exp\scripts\scripts\4_World\Entities\Vehicles\InheritedMotorbikes\Motorbike_01.c` | 171 | 168 |
+| `exp\scripts\scripts\4_World\Entities\Vehicles\InheritedMotorbikes\Motorbike_02.c` | 142 | 139 |
+| `exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCameraVehicles.c` | 470 | 473 |
+| `exp\vehicles_singletrack\DZ\vehicles\singletrack\config.cpp` | 1099 | 1106 |
+| `exp\sounds_hpp\DZ\sounds\hpp\config.cpp` | 183928 | 184740 |
+
+In that `sounds_hpp` file, `CfgSoundShaders` is `1454-60051` and `CfgSoundSets` is `60052-99723`; the `Motorbike_0*` SoundShaders are at `59340-60011` and the SoundSets at `98961-99696`. Each group has one class more than on `1.30.164014`, because `Motorbike_02_Engine_Ext_Broken` became `Motorbike_02_Engine_Ext_Broken_High` and `Motorbike_02_Engine_Ext_Broken_Low`. `exp\sounds_vehicles\DZ\sounds\vehicles\config.cpp` still has 31 lines and only `CfgPatches`.

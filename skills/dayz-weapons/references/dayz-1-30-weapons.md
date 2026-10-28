@@ -1,21 +1,23 @@
-# DayZ 1.30 Exp (build 1.30.164014) — firearm entity layer
+# DayZ 1.30 — firearm entity layer
 
 Insertion-only companion to `dayz-weapons`. Digest K named this skill; every `[EXACT]` block below was
 copied from `exp\` after opening the file (digest K reconstructed several paths and signatures — do not
 copy digest snippets). `[VERIFIED-vanilla]` = read on disk in this extract. Anim motion stays with
 `dayz-animation-pipeline`.
+Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
-## W-STAGING1 — scripts without CfgWeapons / `.p3d` in this build
+## W-STAGING1 — scripts without CfgWeapons / `.p3d` on 1.30.164014
 
 (until 1.29: any vanilla firearm with a script under `4_World/Entities/Firearms/` also shipped a
 debinarizable `.p3d` + `CfgWeapons` class in the matching weapons PBO.)
 
-(desde 1.30 Exp: four new firearm scripts plus a bayonet compile, register IK, and in two cases have
-dedicated bone remaps, but their weapon PBOs do **not** contain the `.p3d` or a `CfgWeapons` /
-`CfgMagazines` class. Debinarize a **shipped** peer instead — SCAR-H for a SCAR-L-shaped rifle, P1/Glock
-for a pistol, CZ527/Mosin for a bolt gun, CZ61/PM73 for an open-bolt SMG.)
+(desde 1.30: four new firearm scripts plus a bayonet compile, register IK, and in two cases have
+dedicated bone remaps. On 1.30.164014 their weapon PBOs had no `.p3d` or `CfgWeapons` / `CfgMagazines`
+class for them, and that build had no Nasdara weapons PBO: debinarize a **shipped** peer instead —
+SCAR-H for a SCAR-L-shaped rifle, P1/Glock for a pistol, CZ527/Mosin for a bolt gun, CZ61/PM73 for an
+open-bolt SMG. 1.30.164200 ships them in the Nasdara weapons PBO: see below the table.)
 
-| Script class | Script path | Script parent | CfgWeapons / `.p3d` in this build |
+| Script class | Script path | Script parent | CfgWeapons / `.p3d` on 1.30.164014 |
 |---|---|---|---|
 | `SCARL_Base` | `exp\scripts\scripts\4_World\Entities\Firearms\AutomaticRifle\SCARL.c:1` | `SCARH_Base` (not `RifleBoltFree_Base`) | No `SCARL` class under `exp\weapons_firearms\`; no SCARL `.p3d` in `work\pbo-listings\exp__Addons__weapons_firearms.txt`. Shipped peer: `SCARH\ScarH.p3d` + `class SCARH_Base: Rifle_Base` in `exp\weapons_firearms\DZ\weapons\firearms\SCARH\config.cpp:40`. |
 | `Luger_Base` | `...\Firearms\Pistol\Luger.c:1` | `Pistol_Base` | No Luger folder / class under `exp\weapons_pistols\`; no luger `.p3d` in `exp__Addons__weapons_pistols.txt`. |
@@ -24,9 +26,32 @@ for a pistol, CZ527/Mosin for a bolt gun, CZ61/PM73 for an open-bolt SMG.)
 | `P1907_Bayonet` | `...\ItemBase\Inventory_Base\P1907_Bayonet.c:1` | `Inventory_Base` | Bayonet script only; no matching melee/attachment PBO class found in this extract. |
 
 Magazine script stubs exist (`Mag_Luger_8Rnd`, `Mag_LeeEnfield_10Rnd`, `Mag_MP18_Drum32Rnd` in
-`exp\scripts\scripts\4_World\Entities\ItemBase\Magazine\Magazines.c:65-67`) but
+`exp\scripts\scripts\4_World\Entities\ItemBase\Magazine\Magazines.c:65-67`). On 1.30.164014
 `exp\weapon_magazines\DZ\weapons\attachments\magazine\config.cpp` has **no** matching `CfgMagazines`
-classes. Do not put these classnames in `types.xml` or trader lists for this build.
+classes: do not put these classnames in `types.xml` or trader lists on that build.
+
+**On 1.30.164200** the four weapons, their magazines and the bayonet ship in
+`nasdara\addons\weapons_nasdara.pbo` (prefix `DZ\weapons_takistan`), not in `weapons_firearms` or
+`weapons_pistols`, each weapon with its `.p3d` and a `config.bin` in its own folder. Classes as read in
+the derapified configs of the 1.30.164200 extraction (`data\nasdara__weapons_nasdara\DZ\weapons_takistan\`;
+paths below are relative to it):
+
+| Classes (scope 2) | Config parent | Config | Model |
+|---|---|---|---|
+| `SCARL`, `SCARL_Black: SCARL` | `SCARL_Base: Rifle_Base` (scope 0); its script parent is `SCARH_Base` | `firearms\SCARL\config.cpp:40`, `:202`, `:222` | `firearms\SCARL\ScarL.p3d` |
+| `LeeEnfield` | `LeeEnfield_Base: BoltActionRifle_ExternalMagazine_Base` (scope 0) | `firearms\leeEnfield\config.cpp:41`, `:154` | `firearms\leeEnfield\leeEnfield.p3d` |
+| `MP18` | `MP18_Base: Rifle_Base` (scope 0); its script parent is `OpenBolt_Base` | `firearms\mp18\config.cpp:40`, `:161` | `firearms\mp18\mp18.p3d` |
+| `Luger` | `Luger_Base: Pistol_Base` (scope 0) | `pistols\Luger\config.cpp:40`, `:134` | `pistols\Luger\Luger.p3d` |
+| `Mag_Luger_8Rnd` (8 rounds), `Mag_MP18_Drum32Rnd` (32), `Mag_LeeEnfield_10Rnd` (10) | `Magazine_Base`, in `CfgMagazines` | `attachments\magazine\config.cpp:38`, `:130`, `:234` | `attachments\magazine\magazine_*.p3d` |
+| `P1907_Bayonet` | `Inventory_Base`, in `cfgVehicles`; `inventorySlot[]` `weaponBayonetLeeEnfield` and `Knife` | `attachments\muzzle\config.cpp:36` | `attachments\muzzle\bayonet_p1907.p3d` |
+
+`Luger_Base` and `MP18_Base` take the same two magazines, the Luger box and the MP18 drum
+(`pistols\Luger\config.cpp:55`, `firearms\mp18\config.cpp:54`), and `LeeEnfield` takes the bayonet
+(`attachments[]`, `firearms\leeEnfield\config.cpp:160`). The vanilla `dayzOffline.nasdara` `types.xml`
+of the 1.30.164200 server gives every one of these classes a nominal above 0 except `SCARL_Black`
+(`Luger` 55, `SCARL` 4); Chernarus and Sakhal list them all at 0, Livonia all at 0 but `SCARL_Black`
+(4). None of them was spawned in game for this pack. For a parity diff on 1.30.164200, debinarize the
+model you inherit from this PBO.
 
 IK / reload `.anm` **are** packed (entity side only records the registration path; motion is anim-skill):
 
@@ -73,7 +98,7 @@ debinarize a SCAR-L body from this experimental PBO.
 (until 1.29: `Pistol_Base.InitStateMachine()` passed `PistolAnimState.*` constants into each stable
 state constructor — `Pistol_Base.c:203-212` in `stable-1.29`.)
 
-(desde 1.30 Exp: the same constructors take `GetDischargedPistolAnimState()` / `GetChargedPistolAnimState()`
+(desde 1.30: the same constructors take `GetDischargedPistolAnimState()` / `GetChargedPistolAnimState()`
 / `GetOpenPistolAnimState()` / `GetJammedPistolAnimState()`. Override those on the pistol class. The
 stable-state classes still return `PistolStableStateID.*` from `GetCurrentStateID()` — they were not
 rewritten into `PistolDischarged` helpers.)
@@ -129,7 +154,7 @@ the FSM graph itself must change.
 (until 1.29: `OpenBolt_Base.SetActions()` only `RemoveAction(FirearmActionLoadBullet)` +
 `FirearmActionLoadBulletQuick` — `stable-1.29` `OpenBolt_Base.c:382-388`.)
 
-(desde 1.30 Exp: it also `AddAction(FirearmActionDetachMagazine)`.)
+(desde 1.30: it also `AddAction(FirearmActionDetachMagazine)`.)
 
 ```
 // [EXACT] exp\scripts\scripts\4_World\Entities\Firearms\OpenBolt_Base.c:382
@@ -187,7 +212,7 @@ into `SetGroundEx` (`stable-1.29` `WeaponManager.c:1362-1365`). 1.30 fills it fr
 					new_il.SetGroundEx( old_mag,  m_player.GetPosition(), dir);
 ```
 
-Cartridge pull in the FSM helper (until 1.29: `LocalAcquireCartridge`; desde 1.30 Exp:
+Cartridge pull in the FSM helper (until 1.29: `LocalAcquireCartridge`; desde 1.30:
 `LocalAcquireCartridgeEx`):
 
 ```
@@ -232,7 +257,7 @@ channel (CfgRecoils) from this script object.
 (until 1.29: `AmmoTypesAPI.GetExplosionParticleID(string ammoName, string surfaceName)` returned `int`
 — `stable-1.29` `AmmoTypes.c:57`. Callers: `DayZGame.c` explosion path.)
 
-(desde 1.30 Exp: that method is gone. `ExplosiveEffectData` + `GetExplosiveEffectData(ammoName, surfaceName)`
+(desde 1.30: that method is gone. `ExplosiveEffectData` + `GetExplosiveEffectData(ammoName, surfaceName)`
 return particle **and** optional sound set. Signature is **two strings in, object out** — not
 `(ammoType, outData)`.)
 
@@ -281,7 +306,7 @@ Vanilla caller (`AmmoEffects.c:49-56`) gets `surfaceType` from `SurfaceGetType3D
 `Init()` maps `Hit_Desert_Sand` / `Hit_Sand` (and snow/ice) per ammo; RGD5/M67 sand entries pass
 `"ExplosionDustEffect_SoundSet"` (`AmmoTypes.c:66-72`).
 
-`MagazineTypeToAmmoType` still exists — (up to 1.29: `AmmoTypes.c:14`) (since 1.30 Exp: `:26`) because
+`MagazineTypeToAmmoType` still exists — (up to 1.29: `AmmoTypes.c:14`) (since 1.30: `:26`) because
 `ExplosiveEffectData` was prepended. Vanilla uses it in `Weapon_Base.c:840` (1.29 cited `:848`).
 
 `ExplosivesBase`: `[Obsolete("1.30: Handled in AmmoTypes instead")]` on
@@ -294,8 +319,9 @@ and `InitSpecificsExplosionEffectForSurface` (`:380-384`). Put `particle = "..."
 
 `Mag_MP18_Drum32Rnd` is not an empty stub. It drives AnimationSource `"drum"`, stops the anim at 12
 rounds (`m_AmmoOffset = 12`), plays `wpn_mp18_drum_mag_SoundSet` at memory point `"drum_sound"`, and
-persists `m_LastAnimPhase` from save version `>= 144` (`Magazines.c:67-121`). Still no `CfgMagazines`
-entry in this build — W-STAGING1 applies.
+persists `m_LastAnimPhase` from save version `>= 144` (`Magazines.c:67-121`). 1.30.164014 has no
+`CfgMagazines` entry for it (W-STAGING1); on 1.30.164200 it is `attachments\magazine\config.cpp:130` of
+`weapons_nasdara.pbo`, 32 rounds.
 
 ## Changelog T189758 vs scripts
 

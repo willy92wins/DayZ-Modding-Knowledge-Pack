@@ -4,7 +4,7 @@ Complete list of the 276 particles catalogued from `ParticleList.c`. NOTE: the v
 Access via `ParticleList.CONSTANT_NAME` in Enforce Script.
 All .ptc files live under `graphics/particles/` unless a subfolder is shown.
 
-(since 1.30 Exp: new constants are listed at the bottom under [DayZ 1.30 Exp new ParticleList constants](#dayz-130-exp-new-particlelist-constants). The 276-count above is the pre-1.30 catalog, not a live count.)
+(since 1.30: new constants are listed at the bottom under [DayZ 1.30 new ParticleList constants](#dayz-130-new-particlelist-constants). The 276-count above is the pre-1.30 catalog, not a live count.)
 
 ## Example how to register particles from a mod
 
@@ -567,7 +567,7 @@ All .ptc files live under `graphics/particles/` unless a subfolder is shown.
 | Constant | .ptc filename |
 |---|---|
 
-## DayZ 1.30 Exp new ParticleList constants
+## DayZ 1.30 new ParticleList constants
 
 Tables below are **additions**. Existing rows above stay valid. Verified in `exp\scripts\scripts\3_Game\Particles\ParticleList.c`; absent from 1.29 `ParticleList.c` unless noted.
 

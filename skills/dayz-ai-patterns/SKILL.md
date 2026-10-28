@@ -62,7 +62,7 @@ Do not scatter `DisableSimulation` calls across logic — let the FSM state own 
 
 Full detail: `references/eai-fsm-combat.md` — PC-5.
 
-### Vanilla infected mind-state: `MINDSTATE_COWER` (since 1.30 Exp)
+### Vanilla infected mind-state: `MINDSTATE_COWER` (since 1.30)
 
 This is **not** Expansion eAI. Vanilla `DayZInfected` gained `DayZInfectedConstants.MINDSTATE_COWER` after `MINDSTATE_FIGHT` (`exp\scripts\scripts\3_Game\Entities\DayZInfected.c:18`). `ZombieBase` syncs `m_MindState` with range `-1..5` (`ZombieBase.c:54`). On the sandstorm cower state the infected holds the calm idle pose (`SetIdleState(0)`); native AI already stopped movement (`ZombieBase.c:474-478`). `[EXACT]` blocks: `references/dayz-1-30-ai.md`.
 
@@ -218,7 +218,7 @@ Full detail: `references/eai-pathfinding-groups.md` — PC-18.
 
 ---
 
-## Animal & Group AI Templates (vanilla, since 1.30 Exp)
+## Animal & Group AI Templates (vanilla, since 1.30)
 
 Nasdara ships native group-behaviour templates in `GroupBehaviourTemplates` (`exp\nasdara__data_nasdara\DZ\data_takistan\aiconfigs\config.cpp:14-132`). These are **not** Expansion eAI FSMs.
 
@@ -238,7 +238,7 @@ Nasdara ships native group-behaviour templates in `GroupBehaviourTemplates` (`ex
 
 ## NoiseSystem — feeding noise the AI can hear (added 2026-06-06)
 
-Source-verified vs vanilla v1.24 (`3_game/noise.c:1-23`):
+Source-verified vs vanilla v1.24 and re-checked on 1.30.164200 (`3_game/noise.c:1-26`; 1.29 `:1-23`):
 
 - Server-side API: `g_Game.GetNoiseSystem().AddNoise(entity, params, mult)` /
   `AddNoisePos(entity, pos, params, mult)` / `AddNoiseTarget(pos, lifetimeSec, params, mult)`.
@@ -246,8 +246,8 @@ Source-verified vs vanilla v1.24 (`3_game/noise.c:1-23`):
   position with no entity attached (distraction devices, impacts).
 - `NoiseParams.Load("CfgNoises_entry")` or `LoadFromPath(path)`.
 - (hasta 1.29: Rain/wind reduce effective noise: `NoiseAIEvaluate.GetNoiseReduction(g_Game.GetWeather())`
-  (player steps use it, `dayzplayerimplement.c:3204-3208`).)
-  (desde 1.30 Exp: weather dampening is native. Query the factor the AI uses with
+  (player steps use it, 1.29 `dayzplayerimplement.c:3344-3346`).)
+  (desde 1.30: weather dampening is native. Query the factor the AI uses with
   `NoiseSystem.GetEnvironmentNoiseReduction(vector pos)` — `exp\scripts\scripts\3_Game\Noise.c:13`.
   `NoiseAIEvaluate.GetNoiseReduction` and `Weather.GetNoiseReductionByWeather` are `[Obsolete]`
   (`SensesAIEvaluate.c:92-93`, `Weather.c:454-455`). Player steps no longer pass a weather multiplier:
@@ -259,7 +259,7 @@ Source-verified vs vanilla v1.24 (`3_game/noise.c:1-23`):
 - Weapon shots are config-side: `class NoiseShoot { strength = 82; type = "shot"; }` in the weapon
   config (real mod example: IMPWMODPart2 MCXSpear `config.cpp:73-77`).
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 What changes, what breaks, and the migration checklist. `[EXACT]` blocks: `references/dayz-1-30-ai.md`.
 

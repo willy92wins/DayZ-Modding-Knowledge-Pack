@@ -22,8 +22,8 @@ crash, segfault, or silent failure in production.
 
 Before treating any vanilla Enforce API as callable, verify it is not trapped inside an `#ifdef` whose macro is never defined in the tree. Gate: `grep -rn "#ifdef <MACRO>\|#define <MACRO>" scripts/` — if only `#ifdef` hits appear, the code is DEAD in this build and the symbol does not exist.
 
-Canonical case: `ActionManagerClient.PerformAction(int user_action_id, ActionTarget, ItemBase, Param)` at `actionmanagerclient.c:756` is a correct citation, but sits inside `#ifdef BOT` (opens `:754`, closes `:760`). `BOT` appears in the entire vanilla tree only as `#ifdef`, never as `#define` → the symbol does not exist in retail or diag. The real public entry point for dispatching an action by script is `PerformActionStart(ActionBase, ActionTarget, ItemBase, Param)` at `:762`, outside the block.
-(hasta 1.29: those line numbers). (desde 1.30 Exp: `#ifdef BOT` is `ActionManagerClient.c:796-802`, `PerformAction` is `:798`, public `PerformActionStart` is `:804`. SP `PerformActionStart` ignores re-entry when pending/current exist; `GetActionState()` can return `UA_AM_INIT` while pending. Cite-then-verify still applies — `BOT` still has no `#define`. Bodies: `references/dayz-1-30-enforce-script.md`.)
+Canonical case: `ActionManagerClient.PerformAction(int user_action_id, ActionTarget, ItemBase, Param)` at `actionmanagerclient.c:798` is a correct citation, but sits inside `#ifdef BOT` (opens `:796`, closes `:802`). `BOT` appears in the entire vanilla tree only as `#ifdef`, never as `#define` → the symbol does not exist in retail or diag. The real public entry point for dispatching an action by script is `PerformActionStart(ActionBase, ActionTarget, ItemBase, Param)` at `:804`, outside the block.
+(hasta 1.29: those line numbers). (desde 1.30: `#ifdef BOT` is `ActionManagerClient.c:796-802`, `PerformAction` is `:798`, public `PerformActionStart` is `:804`. SP `PerformActionStart` ignores re-entry when pending/current exist; `GetActionState()` can return `UA_AM_INIT` while pending. Cite-then-verify still applies — `BOT` still has no `#define`. Bodies: `references/dayz-1-30-enforce-script.md`.)
 
 The same gate applies to `proto native` declarations: **a correct citation does not prove the function is linked.** `GetFPS` is declared `proto native int GetFPS();` at `scripts/1_core/proto/proto.c:147` (same line in 1.29 stable and 1.30.164014 Exp), yet in DayZDiag 1.29 every call throws `Virtual Machine Exception — Function 'GetFPS' not linked` (measured 2026-09-14). A `proto native` line in the tree proves the declaration exists, not that the engine registered a native behind it: probe-call a `proto native` API once from a throwaway script before building logic on it. [EXACT]
 
@@ -33,7 +33,7 @@ The same gate applies to `proto native` declarations: **a correct citation does 
 
 Before persisting or ordering data across restarts, verify both the clock and the identity source:
 
-- `CGame.GetTime()` is mission time in milliseconds (`3_game\global\game.c:1508-1510`). It resets on every boot. Use it for durations inside one session, never for a durable timestamp or cross-restart ordering.
+- `CGame.GetTime()` is mission time in milliseconds (`3_game\global\game.c:1533-1534`). It resets on every boot. Use it for durations inside one session, never for a durable timestamp or cross-restart ordering.
 - Build wall-clock timestamps from `GetYearMonthDayUTC` and `GetHourMinuteSecondUTC` (`1_core\proto\ensystem.c:100,76`). Store all UTC components needed by the ordering contract.
 - `PlayerIdentity.GetId()` is the hashed identity intended for databases and logs (`3_game\gameplay.c:367-368`). `GetPlainId()` is explicitly not for databases or logs (`:369-370`), and `GetPlayerId()` is a reusable session ID (`:371-372`). Neither is a durable ownership key.
 
@@ -44,7 +44,7 @@ Before persisting or ordering data across restarts, verify both the clock and th
 3. **`foreach` WORKS** — `foreach (Type var : array)` and `foreach (key, value : map)`. Avoid foreach on expressions returning temporary collections (may NPE)
 4. **`+=` / `-=` WORK** — `x += y;` is equivalent to `x = x + y;` (verified LBmaster production)
 5. **String literals as function params WORK** — `MyFunc("hello", "world")` is fine (verified LBmaster production)
-6. **Multiline expressions — SCOPE RESTRICTED** — production compiles HAVE broken on multi-line BOOLEAN operators (`&&`/`||` split across lines: LF_VStorage F-NEW-1, HUD_Mod) and on multi-line string `+` continuation (bone-dump Print, dayz-animation-pipeline `references/weapon-in-hands.md:239`). Keep boolean conditions and string builds on ONE line, or split into single-line statements (`ln = ln + ...;`) — this is legacy ENF-R11g (see rule map below). Multi-line function ARGUMENT lists: [IN-GAME CONFIRMED, DayZDiag 1.29.163451, SP-127] a call whose argument list spans multiple physical lines kills the entire file and its module (`Can't compile "Mission" script module!` → server does not start). The error is reported on the line of the NEXT argument, not the opening line; the cascade (`Syntax error` line 1, `Unexpected scope` line 2) mimics file corruption. Vanilla contains some multi-line argument lists (`P:\scripts\3_game\worlddata.c:143-146` `Math.Lerp(`, `3_game\client\notifications\notificationsystem.c:307-311` `new NotificationData(`), so the safe scope is not fully characterized. Offline gate: any line ending in `(` or `,` (after stripping comments and trailing whitespace) is a risk — `tools/dayz-ui-lab/tests/test_probe.py::test_probe_mission_keeps_every_call_argument_list_on_one_line` (7 offenders in the failing file, 0 in the fixed). A mod that fails to compile passes any test asserting on source TEXT: the three tests covering this probe were green while the engine rejected the file entirely.
+6. **Multiline expressions — SCOPE RESTRICTED** — production compiles HAVE broken on multi-line BOOLEAN operators (`&&`/`||` split across lines: LF_VStorage F-NEW-1, HUD_Mod) and on multi-line string `+` continuation (bone-dump Print, dayz-animation-pipeline `references/weapon-in-hands.md:239`). Keep boolean conditions and string builds on ONE line, or split into single-line statements (`ln = ln + ...;`) — this is legacy ENF-R11g (see rule map below). Multi-line function ARGUMENT lists: [IN-GAME CONFIRMED, DayZDiag 1.29.163451, SP-127] a call whose argument list spans multiple physical lines kills the entire file and its module (`Can't compile "Mission" script module!` → server does not start). The error is reported on the line of the NEXT argument, not the opening line; the cascade (`Syntax error` line 1, `Unexpected scope` line 2) mimics file corruption. Vanilla contains some multi-line argument lists (`P:\scripts\3_game\worlddata.c:153-156` `Math.Lerp(`, `3_game\client\notifications\notificationsystem.c:307-311` `new NotificationData(`), so the safe scope is not fully characterized. Offline gate: any line ending in `(` or `,` (after stripping comments and trailing whitespace) is a risk — `tools/dayz-ui-lab/tests/test_probe.py::test_probe_mission_keeps_every_call_argument_list_on_one_line` (7 offenders in the failing file, 0 in the fixed). A mod that fails to compile passes any test asserting on source TEXT: the three tests covering this probe were green while the engine rejected the file entirely.
 7. **NO same variable name in sibling `if`/`else` scopes** — hoist before conditionals
 8. **NO `new array`/`map`/`Param` inside periodic ticks** — use `m_` fields, `.Clear()` each tick
 9. **Explicit typing always; `m_` prefix on all member fields**
@@ -94,7 +94,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 19. **`GetGame().IsServer()` returns TRUE on client during load** — use `IsDedicatedServer()`
 20. **`GetGame().IsClient()` is NOT reliably true on the client during load (inferred from rule 19, which is the primary-source-verified one; treat as unreliable, do not assume an exact value)** — use `!IsDedicatedServer()`
     - Scope of 19-20: LOAD/INIT time (constructors, module init, OnInit). In post-load callbacks (OnRPC, EOnContact, per-tick), `GetGame().IsServer()` / `IsClient()` are safe and are the standard vanilla pattern
-(hasta 1.29: inventory net path was `DayZPlayerInventory.ProcessInputData`). (desde 1.30 Exp: retail does **not** call `ProcessInputData` — that call site is `#ifdef DIAG_DEVELOPER` plus `PluginInventoryDebug.IsOldProcessInputDataEnable()`. Live split: `ValidateInventoryCommandServer` / `ExecuteInventoryCommandServer` / `ExecuteInventoryCommandClient` / `ExecuteInventoryCommandRemote`, plus `INPUT_UDT_INVENTORY_CHECK` / `OnInventoryCheck`. See `references/dayz-1-30-enforce-script.md`.)
+(hasta 1.29: inventory net path was `DayZPlayerInventory.ProcessInputData`). (desde 1.30: retail does **not** call `ProcessInputData` — that call site is `#ifdef DIAG_DEVELOPER` plus `PluginInventoryDebug.IsOldProcessInputDataEnable()`. Live split: `ValidateInventoryCommandServer` / `ExecuteInventoryCommandServer` / `ExecuteInventoryCommandClient` / `ExecuteInventoryCommandRemote`, plus `INPUT_UDT_INVENTORY_CHECK` / `OnInventoryCheck`. See `references/dayz-1-30-enforce-script.md`.)
 
 ### Timer Rules
 
@@ -130,7 +130,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 31. **Use `IsKindOf()` not `GetType() ==` for tool checks** — `GetType()` exact match fails on inherited/modded variants; `IsKindOf()` checks full inheritance chain
 32. **Match client-side and server-side tool checks** — if ActionCondition uses `IsKindOf`, the server RPC handler must also use `IsKindOf`, not `GetType() !=`
 33. **`RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)`** — prevents item pickup/drag on placed objects; combine with `IsTakeable()` returning false and `CanPutInCargo()` returning false
-34. **Cursor component → selection membership goes through the engine's name list, in LOWER CASE** — `GetActionComponentNameList(idx, list, "")` (`object.c:198`) returned `component14`, `component19`, `door1` for a runtime `House` (LFSecure room, in-game 2026-09-09): names are lower-cased and the cursor index is 0-based while Object Builder auto-names are 1-based (`comp 13 → component14`, `comp 18 → component19`, `comp 8 → door1`). `IsActionComponentPartOfSelection(idx, "Component14", LOD.NAME_VIEW)` never matched, so three actions (bed, sink, exit) were dead for a whole test cycle with no error anywhere. Compare `list.Get(i)` after `ToLower()` against lower-case names in the default geometry, and while diagnosing log `idx` + the name list once per distinct index.
+34. **Cursor component → selection membership goes through the engine's name list, in LOWER CASE** — `GetActionComponentNameList(idx, list, "")` (`object.c:192`) returned `component14`, `component19`, `door1` for a runtime `House` (LFSecure room, in-game 2026-09-09): names are lower-cased and the cursor index is 0-based while Object Builder auto-names are 1-based (`comp 13 → component14`, `comp 18 → component19`, `comp 8 → door1`). `IsActionComponentPartOfSelection(idx, "Component14", LOD.NAME_VIEW)` never matched, so three actions (bed, sink, exit) were dead for a whole test cycle with no error anywhere. Compare `list.Get(i)` after `ToLower()` against lower-case names in the default geometry, and while diagnosing log `idx` + the name list once per distinct index.
 40. **A custom liquid container derived from `Bottle_Base` inherits the whole vanilla liquid action set — decide every one** — [EXACT][CLAIM-ENF-BOTTLE-LIQUID-ACTIONS] `SetActions` adds 14 liquid actions in 1.29 (`bottle_base.c:354-372`) and 16 in 1.30.164014 Exp (`bottle_base.c:356-376`); each is a way in or out. The fill action takes gasoline from a pump (`m_AllowedLiquidMask = LIQUID_GROUP_DRINKWATER | LIQUID_GASOLINE`, `actionfillbottlebase.c:41-44`), and with your container as TARGET, drain and pour belong to the HELD item (`actiondrainliquid.c:33-42`, `actionpourliquid.c:33-42`): removing them in the container's own `SetActions` hides nothing — close them with a `modded` action's `ActionCondition` on `target.GetObject()`, or gate the liquid itself by overriding `GetLiquidContainerMask()`, the only input of `Liquid.CanFillContainer` (`liquid.c:248`). The vanilla continuous pour can stop short of full (960 of 1000 ml measured once in a local DayZDiag game): a rule that demands exact fullness needs tolerance or completion in `OnEndServer` (`actionbase.c:1409`).
 41. **`ActionEmptyBottleBase` overrides `OnStartAnimationLoop`/`OnEndAnimationLoop` without `super`** (`actionemptybottlebase.c:70-78`) — [EXACT][CLAIM-ENF-EMPTYBOTTLE-LOOP-OVERRIDE] in its subclasses the protected `OnStartAnimationLoopServer/Client` and `OnEndAnimationLoop*` variants of `ActionContinuousBase` (`actioncontinuousbase.c:272-286`, they set `m_WasActionStarted`) never run, with no error. Hook the public loop callbacks instead (called on both sides, `actioncontinuousbase.c:197-242`) and act only on the server; `OnEndServer` (`actionbase.c:1409`) also runs after an interrupt and is the safe reset point.
 
@@ -144,7 +144,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 36. **`inputs.xml` root tag must be `<modded_inputs>`** — NOT `<modinfo>` (common mistake); structure: `<actions>` declares input names, `<preset>` assigns default keys
 37. **`config.cpp` must reference inputs file** — add `inputs = "ModName\\inputs.xml";` in CfgMods (backslash path)
 37b. **An `<exclude>` that includes `inventory` SILENTLY KILLS MOUSE-LOOK** — `inventory` pulls in
-    `aiming` (`P:/bin/specific.xml:243`->`:245`), and `aiming` IS exactly `UAAimLeft/UAAimRight/`
+    `aiming` (`P:/bin/specific.xml:242`->`:244`), and `aiming` IS exactly `UAAimLeft/UAAimRight/`
     `UAAimUp/UAAimDown` (`:149-154`). Any custom camera, sight or scripted view that suppresses
     `inventory` while active reads **0.0** from every look axis, with no error anywhere. The
     symptom that identifies it: the camera answers WASD (raw `KeyState` bypasses excludes) but
@@ -154,7 +154,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
     Measured 2026-08-19 (LFHeli FLIR): the two halves are independent, so fixing one alone
     changes nothing.
     **And there is a THIRD lock most people re-arm on purpose:** `menu` also includes
-    `inventory` (`specific.xml:258`->`:259`), so keeping `menu` in the exclude set "as a safe
+    `inventory` (`specific.xml:277`->`:278`), so keeping `menu` in the exclude set "as a safe
     fallback" restores the exact suppression you just removed from your private group. Same
     session, same mod: the private group was cleaned of `inventory` and the mouse stayed dead
     for another two build cycles because `menu` was still in the array. If a sight needs the
@@ -166,11 +166,12 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
     pawn but NOT the vehicle command: the player is left frozen while every cleanup log line
     reports success. Rebuild it as vanilla does after unconsciousness:
     `StartCommand_Vehicle(transport, CrewMemberIndex(p), GetSeatAnimationType(idx), true)`
-    (`dayzplayerimplement.c:2372-2377`; proto `human.c:1492`). Pair it with `ResetGameFocus()`
+    (`dayzplayerimplement.c:2391-2396`; proto `human.c:1526`). Pair it with `ResetGameFocus()`
     beside the `ChangeGameFocus(-1)` (`cameratoolsmenu.c:797-800`) — `HasGameFocus` is true only
-    at exactly 0 (`input.c:29-34`). And vanilla picks the camera from `m_Camera3rdPerson`
-    (`dayzplayerimplement.c:2849-2868`), so a sight must force 1pp via `SetIsInThirdPerson(false)`
-    (`:305`) and restore the previous value on exit, or entering in 3rd person leaves the operator
+    at exactly 0 (`input.c:29-34`). And in a vehicle vanilla picks the camera from
+    `m_Camera3rdPerson` whenever the server allows third person (`dayzplayerimplement.c:2891-2914`;
+    1.29 `:2849-2868`), so a sight must force 1pp via `SetIsInThirdPerson(false)`
+    (`:308`) and restore the previous value on exit, or entering in 3rd person leaves the operator
     outside the aircraft.
     **MEASURED OUTCOME 2026-08-19 — the rebuild is NECESSARY BUT NOT SUFFICIENT.** With the
     vehicle command rebuilt, the probe read `vehCmd=true seat1=true parent=true inVeh=true`
@@ -181,20 +182,20 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 37d. **A sight or turret on a SEATED player should never unpossess at all** — instead of
     `SelectPlayer(null)` + `SelectSpectator`, mod vanilla's own vehicle camera and write its
     transform. `CameraHandler` returns `DayZPlayerCameras.DAYZCAMERA_1ST_VEHICLE` (=30,
-    `dayzplayercameras.c:18`, registered `:60`) while the sight is up, and
+    `dayzplayercameras.c:18`, registered `:61`) while the sight is up, and
     `modded class DayZPlayerCamera1stPersonVehicle` (`dayzplayercameravehicles.c:4`) overrides
     `OnUpdate` to fill `pOutResult.m_CameraTM` — built world-space with
     `Math3D.DirectionAndUpMatrix(dir, hullTM[1], camWorld)`, then converted to PLAYER space
     with `Math3D.MatrixInvMultiply4(playerTM, camWorld, camLocal)`, plus `m_fUseHeading = 0`
     so the operator's head heading does not drag the view, and `StdFovUpdate`
-    (`dayzplayercamera_base.c:316`) for FOV (zoom = `m_fFovMultiplier`). Working reference on
+    (`dayzplayercamera_base.c:327`) for FOV (zoom = `m_fFovMultiplier`). Working reference on
     disk: `kt_roadkill_armed/scripts/4_World/KT_TurretCamera.c:177-220`. The pawn is never
     released, so there is nothing to restore: HIC stays enabled, no focus lock, and no input
     exclude is needed at all — which also removes 37b's whole failure class. Verified
     2026-08-19 (LFHeli FLIR) after the `SelectSpectator` route cost four build cycles.
     Blocking the get-out while the sight is up is then one condition:
     `modded class ActionGetOutTransport { override bool ActionCondition(...) }`
-    (`actiongetouttransport.c:68`), not an input exclude.
+    (`actiongetouttransport.c:70`), not an input exclude.
 38. **Three input detection patterns exist, all valid:**
     - Simple: `g_Game.GetInput().LocalPress("UAMyAction", false)` — one-line check
     - Direct: `GetUApi().GetInputByName("UAMyAction").LocalPress()` — per-frame
@@ -248,7 +249,7 @@ Pick the reference file matching your need:
 | Vanilla deep-dive additions | `references/vanilla-deep-dive.md` | Source-verified v1.24 facts: recipes/crafting, ComponentEnergyManager, action system, damage pipeline, player internals/sync |
 | Weapon fire modes | `references/weapon-firemodes.md` | Fire-mode inheritance (single/burst/full-auto), `Mode_*` root-scope forward-decl trap (SP-031) |
 | Server-side performance | `references/server-performance.md` | Budget-per-frame scheduler, FPS-adaptive interval + rolling average, staggered/modulo-gated scan, exponential backoff, `#ifdef SERVER` vs `IsServer`/`IsDedicatedServer`, ScriptInvoker bus vs polling |
-| DayZ 1.30 Exp Enforce contract | `references/dayz-1-30-enforce-script.md` | `OnCEIterate`, inventory Validate/Execute* + `OnInventoryCheck`, obsolete `TakeEntityToCargo`/`TakeEntityAsAttachment`, hand FSM guards, `ItemBaseType` / `GUIInventoryAttachmentsProps`, `CanBeStarted` / `ActionObtainLiquidBase` / CCT liquid, `vector.Cross` / `array.Slice` / `DoOnce` / `GetThirdPersonViewMode` / `GetNoiseReductionByWeatherEx`, `GAME_STORAGE_VERSION = 144` |
+| DayZ 1.30 Exp Enforce contract | `references/dayz-1-30-enforce-script.md` | `OnCEIterate`, inventory Validate/Execute* + `OnInventoryCheck`, obsolete `TakeEntityToCargo`/`TakeEntityAsAttachment`, hand FSM guards, `ItemBaseType` / `GUIInventoryAttachmentsProps`, `CanBeStarted` / `ActionObtainLiquidBase` / CCT liquid, `vector.Cross` (gone in 1.30.164200) / `array.Slice` / `DoOnce` / `GetThirdPersonViewMode` / `GetNoiseReductionByWeatherEx`, `GAME_STORAGE_VERSION = 144` |
 | UI / layout / Dabs / widgets | skill `dayz-ui-development` (canonical, HEAD-verified) | Full UI, layout and Dabs MVC work lives there; this skill keeps only hard rules 34-35 (layout-path crash, ScriptViewMenu guard) and CfgMods `inputs` |
 
 ---
@@ -499,25 +500,25 @@ if (!entity)
 
 ### AI creature spawn — ECE flags (SP-048)
 
-Production spawn of AI creatures = `GetGame().CreateObjectEx(type, pos, ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_EQUIP_ATTACHMENTS[|ECE_NOPERSISTENCY_WORLD])`. `ECE_INITAI` (=2048, `centraleconomy.c:17`) is what initializes the AI — without it the creature spawns inert. `ECE_NOPERSISTENCY_WORLD` (=8388608, `centraleconomy.c:30`) lets a restart clean it up. Vanilla patterns: `playerbase.c:6491` (SpawnAI), `plugindayzinfecteddebug.c:367`. ANTI-TRAP: the CEApi force-spawn methods (SpawnEntity/SpawnLoot/SpawnDE/SpawnSingleEntity, `centraleconomy.c:335-471`) are DEVELOPER/DIAG ONLY — not a contract on DayZServer_x64 release (same pattern as ExecuteEnforceScript, `game.c:776`). [VERIFIED in-game PRODUCTION 2026-07-02, GameMaster H0-SPIKE-1] Cross-ref: skill `dayz-characters` (custom infected runtime spawn).
+Production spawn of AI creatures = `GetGame().CreateObjectEx(type, pos, ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_EQUIP_ATTACHMENTS[|ECE_NOPERSISTENCY_WORLD])`. `ECE_INITAI` (=2048, `centraleconomy.c:18`) is what initializes the AI — without it the creature spawns inert. `ECE_NOPERSISTENCY_WORLD` (=8388608, `centraleconomy.c:31`) lets a restart clean it up. Vanilla patterns: `playerbase.c:6810` (SpawnAI), `plugindayzinfecteddebug.c:367`. ANTI-TRAP: the CEApi force-spawn methods (SpawnEntity/SpawnLoot/SpawnDE/SpawnSingleEntity, `centraleconomy.c:336-472`) are DEVELOPER/DIAG ONLY — not a contract on DayZServer_x64 release (same pattern as ExecuteEnforceScript, `game.c:777`). [VERIFIED in-game PRODUCTION 2026-07-02, GameMaster H0-SPIKE-1] Cross-ref: skill `dayz-characters` (custom infected runtime spawn).
 
 
 ### Client-local preview entity (CLB) — ECE_LOCAL pattern (SP-181)
 
-The client CAN create local-only entities with `CreateObjectEx(cls, pos, ECE_LOCAL|ECE_CREATEPHYSICS|ECE_TRACE)` (`ECE_LOCAL`=1073741824, `centraleconomy.c:24`). Return is non-null, `HasNetworkID()==false`, invisible to the server (`GetObjectsAtPosition` authoritative = 0 hits in 144/144 scans), deletable with `ObjectDelete` without residue. Verified for ItemBase, containers, weapons (CfgWeapons), clothing, CarScript complete, and **SurvivorM_* (Man)**. Without `ECE_LOCAL` the client returns null (control reproduced). Post-spawn neutralization: `dBodyDestroy(obj)` + `EntityAI.Cast(obj).DisableSimulation(true)` + `SetAllowDamage(false)` — NOTE: `DisableSimulation` is declared in Entity (`entity.c:3`), NOT in Object; cast first or you get compile error `Undefined function Object.DisableSimulation`. [VERIFIED IN-GAME 2026-08-06, 12+ reps, 2 map locations, spike S1 LF-COM]
+The client CAN create local-only entities with `CreateObjectEx(cls, pos, ECE_LOCAL|ECE_CREATEPHYSICS|ECE_TRACE)` (`ECE_LOCAL`=1073741824, `centraleconomy.c:25`). Return is non-null, `HasNetworkID()==false`, invisible to the server (`GetObjectsAtPosition` authoritative = 0 hits in 144/144 scans), deletable with `ObjectDelete` without residue. Verified for ItemBase, containers, weapons (CfgWeapons), clothing, CarScript complete, and **SurvivorM_* (Man)**. Without `ECE_LOCAL` the client returns null (control reproduced). Post-spawn neutralization: `dBodyDestroy(obj)` + `EntityAI.Cast(obj).DisableSimulation(true)` + `SetAllowDamage(false)` — NOTE: `DisableSimulation` is declared in Entity (`entity.c:3`), NOT in Object; cast first or you get compile error `Undefined function Object.DisableSimulation`. [VERIFIED IN-GAME 2026-08-06, 12+ reps, 2 map locations, spike S1 LF-COM]
 
-**TRAP — creatures:** `DayZAnimal`/infected DO create with `ECE_LOCAL`, but (a) the neutralization sequence above on a freshly created creature = native client crash (RPT stack in the caller), and (b) left un-neutralized, their local simulation crashes at ~1–2 s (fault, no script stack). Consistent with the `DZ_LightAI`/`Man` exclusion from the script-console preview (`scriptconsoleitemstab.c:691`) — the `Man` half of that exclusion does NOT apply (SurvivorM works).
+**TRAP — creatures:** `DayZAnimal`/infected DO create with `ECE_LOCAL`, but (a) the neutralization sequence above on a freshly created creature = native client crash (RPT stack in the caller), and (b) left un-neutralized, their local simulation crashes at ~1–2 s (fault, no script stack). Consistent with the `DZ_LightAI`/`Man` exclusion from the script-console preview (`scriptconsoleitemstab.c:692`) — the `Man` half of that exclusion does NOT apply (SurvivorM works).
 
 **TRAP — camera:** after creating and deleting a `staticcamera` script in mission (`CreateObject("staticcamera", pos, true)` + `SetActive(true/false)` + `ObjectDelete`), `Camera.GetCurrentCamera()` is POISONED: native crash with identical fault bytes both in the same tick and 1 s later (2 repros). The activate/restore/delete cycle itself is safe (`restored=1` verified); verify the restore visually (capture), never via that getter. SP-064 family.
 
 ### Client-local 3D segments (cables, ropes, beams) — scaled `SetTransform` basis (SP-441, added 2026-09-28)
 
-[EXACT] One client-local `HouseNoDestruct` (`DZ/data/config.cpp:2464`) per segment, created with `CreateObjectEx(type, pos, ECE_LOCAL)` (`game.c:703`, `centraleconomy.c:25`), is a client-only static that is still an `EntityAI`. [EXACT] `SetTransform(m)` (`enentity.c:356`) with a NON-orthonormal basis scales the render on that axis: basis = (side*thickness, up*thickness, dir*length) and `m[3]` = segment midpoint turns a 1 m cylinder over +Z into a cable segment of the wanted length and thickness; `GetTransform` returns the scaled basis and `GetScale()` stays 1 (`enentity.c:447-448`) (measured in game, DayZDiag 1.29). [EXACT] `GetBounds` returns zeros on these objects — take the model box from `Object.ClippingInfo(minMax)` (`object.c:358`). [EXACT] `SetObjectTexture(0, "#(argb,8,8,3)color(r,g,b,1,CO)")` (`entityai.c:2858`) recolours a selection ONLY if `model.cfg` declares `sections[] = {"camo"}` for that p3d; without that entry the face texture always shows (measured in game, DayZDiag 1.29). [DESIGN] Use a purpose-built unit segment model (vanilla props have arbitrary pivots) and spread creation over frames: a four-digit burst of segments visibly stalls one frame.
+[EXACT] One client-local `HouseNoDestruct` (`DZ/data/config.cpp:2464`) per segment, created with `CreateObjectEx(type, pos, ECE_LOCAL)` (`game.c:703`, `centraleconomy.c:25`), is a client-only static that is still an `EntityAI`. [EXACT] `SetTransform(m)` (`enentity.c:356`) with a NON-orthonormal basis scales the render on that axis: basis = (side*thickness, up*thickness, dir*length) and `m[3]` = segment midpoint turns a 1 m cylinder over +Z into a cable segment of the wanted length and thickness; `GetTransform` returns the scaled basis and `GetScale()` stays 1 (`enentity.c:447-448`) (measured in game, DayZDiag 1.29). [EXACT] `GetBounds` returns zeros on these objects — take the model box from `Object.ClippingInfo(minMax)` (`object.c:358`). [EXACT] `SetObjectTexture(0, "#(argb,8,8,3)color(r,g,b,1,CO)")` (`entityai.c:2881`) recolours a selection ONLY if `model.cfg` declares `sections[] = {"camo"}` for that p3d; without that entry the face texture always shows (measured in game, DayZDiag 1.29). [DESIGN] Use a purpose-built unit segment model (vanilla props have arbitrary pivots) and spread creation over frames: a four-digit burst of segments visibly stalls one frame.
 
 
 ### Infected alive from script — full ECE flag set (SP-287)
 
-`GetGame().CreateObjectEx(type, pos, ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_CREATEPHYSICS)` (= 3108; `3_game/ce/centraleconomy.c:9-38`: CREATEPHYSICS 1024, INITAI 2048, PLACE_ON_SURFACE 1060). Without `ECE_INITAI` it is a statue; with all three it walks and attacks (12.7 m in ~16 s, player health 0.695→0.483 — delete as soon as measured). **Surface placement of the AI is DEFERRED**: `GetPosition()` immediately after creation returns the REQUESTED y (0), not the surface y; if you need an honest coordinate, resolve `SurfaceY` BEFORE creating.
+`GetGame().CreateObjectEx(type, pos, ECE_PLACE_ON_SURFACE|ECE_INITAI|ECE_CREATEPHYSICS)` (= 3108; `3_game/ce/centraleconomy.c:9-39`: CREATEPHYSICS 1024, INITAI 2048, PLACE_ON_SURFACE 1060). Without `ECE_INITAI` it is a statue; with all three it walks and attacks (12.7 m in ~16 s, player health 0.695→0.483 — delete as soon as measured). **Surface placement of the AI is DEFERRED**: `GetPosition()` immediately after creation returns the REQUESTED y (0), not the surface y; if you need an honest coordinate, resolve `SurfaceY` BEFORE creating.
 
 ### Placement/ground raycasts — `RaycastRVProxy` does NOT flag terrain with `entry` and `dir` is NOT a unit normal (SP-LFS-1, added 2026-09-07)
 
@@ -550,15 +551,15 @@ and at any other angle the ghost's box collides with the wall it is supposed to 
 action" symptom). `LFPG_HologramMod.c:542,711` inherits this; its floor/wall/ceiling split works only because
 camera pitch correlates with the surface aimed at. For a physics normal use
 `DayZPhysics.RayCastBullet(beg, end, PhxInteractionLayers.BUILDING, ignoreObj, hitObject, hitPos, hitNormal,
-hitFraction)` (`dayzphysics.c:211`; layers `dayzphysics.c:14-40`; vanilla users `environment.c:408`,
-`actiontargets.c:330`, `undergroundhandlerclient.c:146`), keep the fire-geometry ray for identity and `entry`,
+hitFraction)` (`dayzphysics.c:211`; layers `dayzphysics.c:14-40`; vanilla users `environment.c:654`,
+`actiontargets.c:384`, `undergroundhandlerclient.c:147`), keep the fire-geometry ray for identity and `entry`,
 accept the normal only when both contacts lie within ~15 cm, and log which source the pose used (`src phx|ray`).
 The physics path shipped in LFSecure R6 and was NOT yet exercised in-game; its fallback (face the camera) is the
 behaviour accepted in V1/R5. Verification: `dir`/`contactDir` claims = runtime_verified; `RayCastBullet` = source_verified.
 
 ### Ambient temperature falls with ABSOLUTE height — elevated structures freeze players (SP-LFS-5, added 2026-09-10)
 
-`WorldData.GetBaseEnvTemperatureAtPosition(vector pos)` (`3_game/worlddata.c:217-221`) subtracts `pos[1] * m_TemperaturePerHeightReductionModifier` (0.02 °C/m, `:78`) using the absolute Y, and `GetBaseEnvTemperatureAtObject` delegates to it (`:212-215`; used by `Environment` for players, `ItemBase` for items, fireplaces). A room at 3900 m is ~78 °C colder than ground level: the player died of hypothermia within minutes (LFSecure, 2026-09-10). Fix measured in-game («temperatura normal en la sala»):
+`WorldData.GetBaseEnvTemperatureAtPosition(vector pos)` (`3_game/worlddata.c:227-231`) subtracts `pos[1] * m_TemperaturePerHeightReductionModifier` (0.02 °C/m, `:87`) using the absolute Y, and `GetBaseEnvTemperatureAtObject` delegates to it (`:222-225`; used by `Environment` for players, `ItemBase` for items, fireplaces). A room at 3900 m is ~78 °C colder than ground level: the player died of hypothermia within minutes (LFSecure, 2026-09-10). Fix measured in-game («temperatura normal en la sala»):
 
 ```c
 modded class WorldData
@@ -583,17 +584,17 @@ Restrict the condition to your own structure (class name check from 3_Game via `
 
 [EXACT][CLAIM-ENF-COOKWITHEQUIPMENT-HUB] The gas stove (`portablegasstove.c:216-222`) and every `FireplaceBase` cooking path — cooking stand (`fireplacebase.c:1898-1902`), direct slots, and the common wrapper (`fireplacebase.c:2153-2159`) — converge on `Cooking.CookWithEquipment`. The second argument is NOT a time (on the stove it is 0.5 x consumed energy); the cadence is `Cooking.m_UpdateTime`, set by the caller (`cooking.c:37-42`; fireplaces use 3 s) (DayZ 1.30.164014 Exp). Intercept it for your class in one `modded class Cooking` and advance your own process by `m_UpdateTime`; return `IsCookware() == true` so the stove and the fireplace register the item.
 
-[EXACT] Attachment gates follow CONFIG inheritance, not script classes: a cookware under `Edible_Base` (every `Bottle_Base`, `DZ/data/config.cpp:2794`) gets the frying-pan rule on `Fireplace` — oven only (`fireplace.c:100-106`) — and closed-lid-only on `BarrelHoles_ColorBase` (`barrelholes_colorbase.c:160-166`); only cookware OUTSIDE `Edible_Base` falls through to `return true` (`fireplace.c:124`) and needs those two gates patched. To restrict which liquid can enter the container, override `GetLiquidContainerMask()` (`itembase.c:830`): its only consumer is `Liquid.CanFillContainer` (`liquid.c:248`).
+[EXACT] Attachment gates follow CONFIG inheritance, not script classes: a cookware under `Edible_Base` (every `Bottle_Base`, `DZ/data/config.cpp:2794`) gets the frying-pan rule on `Fireplace` — oven only (`fireplace.c:111-117`) — and closed-lid-only on `BarrelHoles_ColorBase` (`barrelholes_colorbase.c:160-166`); only cookware OUTSIDE `Edible_Base` falls through to `return true` (`fireplace.c:135`) and needs those two gates patched. To restrict which liquid can enter the container, override `GetLiquidContainerMask()` (`itembase.c:830`): its only consumer is `Liquid.CanFillContainer` (`liquid.c:248`).
 
 [DESIGN] Do not let vanilla cooking run on a custom container: `ProcessItemToCook` burns non-cookware cargo by `PARAM_BURN_DAMAGE_COEF * 100` = 5 health per tick and boils off `LIQUID_VAPOR_QUANTITY` per tick (`cooking.c:94-105`).
 
-[EXACT] **A cooling `FireplaceBase` cooks its cookware twice per tick** (SP-439): while cooling it cooks the registered cookware (any `IsCookware` item in any slot, `fireplacebase.c:334-340`) and then every direct slot in the same tick (`fireplacebase.c:2059-2081`): an `IsCookware` on `DirectCookingA/B/C` passes twice through `Cooking.CookWithEquipment` per tick while the fire dies (the vanilla frying pan included). [DESIGN] Credit cooking time as `min(dt, real time since the item's last step)` so an item alternating between two fires cannot bank time.
+[EXACT] **A cooling `FireplaceBase` cooks its cookware twice per tick** (SP-439): while cooling it cooks the registered cookware (any `IsCookware` item in any slot, `fireplacebase.c:334-341`) and then every direct slot in the same tick (`fireplacebase.c:2059-2081`): an `IsCookware` on `DirectCookingA/B/C` passes twice through `Cooking.CookWithEquipment` per tick while the fire dies (the vanilla frying pan included). [DESIGN] Credit cooking time as `min(dt, real time since the item's last step)` so an item alternating between two fires cannot bank time.
 
 ### Custom player camera: a small id, registered in `RegisterCameras` (LFSkateboard, added 2026-10-24)
 
 [EXACT][CLAIM-ENF-CAMERA-CREATOR-ID-130] A ride camera registered with `RegisterCameraCreator` under id 1171, from a `modded class DayZPlayerCameras` whose override of the static `RegisterCameras` calls `super` first, crashed the dedicated server at startup (DayZDiag 1.30.164014 Exp server, LFSkateboard, 2026-10-07): ACCESS_VIOLATION, with that override on the script stack under vanilla's `DayZPlayerTypeCreate` (`4_world/entities/manbase/dayzplayer/dayzplayercfgbase.c:27`). With id 17 the same camera works in game. Vanilla's ids are 1-14 and 30-32 (`4_world/entities/manbase/dayzplayer/dayzplayercameras.c:3-16` and `:18-20`, each registered with its class at `:46-63`); 32, the motorbike's third-person camera, is new in 1.30, and 1.29 has 1-14, 30 and 31. The id ceiling was not measured: take a free id in the gap 15-29 (LFTurret's P0 used 15).
 
-Register the creator in that override, after `super`, and not from `ModItemRegisterCallbacks.RegisterCustom`, where LFSkateboard's did not survive. [EXACT][CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER] Vanilla's order explains it: `DayZPlayerTypeUtils.DayZPlayerTypeCreate` registers the item types (`DayZPlayerTypeRegisterItems`, `dayzplayercfgbase.c:21`), then the sounds (`:24`), then the cameras (`DayZPlayerCameras.RegisterCameras`, `:27`), and `RegisterCameras` (`dayzplayercameras.c:38`) begins by calling `ResetCameraCreators` on the player type (`:40`). `RegisterCustom` (`dayzplayercfgbase.c:329`) is called inside `DayZPlayerTypeRegisterItems` (`:334`, the call at `:1570`), so a creator it registers is reset before the cameras are registered. `DayZPlayerTypeInitMovement` (`:10-14`) calls `DayZPlayerTypeRegisterItems` too; when the engine calls it is not visible in script. Lines of 1.30.164.200; 1.29 has the same code, with the `RegisterCustom` call at `:1480` and `RegisterCameras` at `dayzplayercameras.c:37`, its reset at `:39`.
+Register the creator in that override, after `super`, and not from `ModItemRegisterCallbacks.RegisterCustom`, where LFSkateboard's did not survive. [EXACT][CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER] Vanilla's order explains it: `DayZPlayerTypeUtils.DayZPlayerTypeCreate` registers the item types (`DayZPlayerTypeRegisterItems`, `dayzplayercfgbase.c:21`), then the sounds (`:24`), then the cameras (`DayZPlayerCameras.RegisterCameras`, `:27`), and `RegisterCameras` (`dayzplayercameras.c:38`) begins by calling `ResetCameraCreators` on the player type (`:40`). `RegisterCustom` (`dayzplayercfgbase.c:329`) is called inside `DayZPlayerTypeRegisterItems` (`:334`, the call at `:1570`), so a creator it registers is reset before the cameras are registered. `DayZPlayerTypeInitMovement` (`:10-14`) calls `DayZPlayerTypeRegisterItems` too; when the engine calls it is not visible in script. Lines of 1.30.164.200; 1.29 has the same code, with the `RegisterCustom` call at `:1487` and `RegisterCameras` at `dayzplayercameras.c:37`, its reset at `:39`.
 
 ### Safe Inventory Operations
 ```
@@ -610,9 +611,9 @@ if (!item)
 
 **Code-review check (first):** inventory `Take*`/`LocalTake*` return ≠ success — gate is identity `FindAttachment(slot) == item`.
 
-**Live player: LOCAL take returns `true` unconditionally.** On a LIVE player/survivor, `LocalTakeEntityAsAttachmentEx` does NOT execute `entityai.c:2007` — `Man` overrides it (`man.c:503-518`) → `HumanInventory.TakeEntityAsAttachmentEx` (`humaninventory.c:308-331`; item on GROUND falls through to `super` GameInventory) → `DayZPlayerInventory.TakeToDst` (`dayzplayerinventory.c:1898`), whose `case InventoryMode.LOCAL:` does `LocationSyncMoveEntity(src,dst); return true` **unconditionally** (`:1978-1980`), gated by `IsAlive()` (= `!IsDamageDestroyed`, `object.c:523-526` — a freshly spawned survivor is always alive). Corollary: on live players that return cannot be treated as a failure signal; citing the EntityAI base as the live receiver's semantics is the same failure as LL-222.
+**Live player: LOCAL take returns `true` unconditionally.** On 1.29, on a LIVE player/survivor, `LocalTakeEntityAsAttachmentEx` does NOT execute the EntityAI base (1.29 `entityai.c:2012-2015`) — `Man` overrides it (1.29 `man.c:503-518`) → `HumanInventory.TakeEntityAsAttachmentEx` (1.29 `humaninventory.c:308-331`; item on GROUND falls through to `super` GameInventory) → `DayZPlayerInventory.TakeToDst` (1.29 `dayzplayerinventory.c:1904`), whose `case InventoryMode.LOCAL:` does `LocationSyncMoveEntity(src,dst); return true` **unconditionally** (1.29 `:1984-1986`), gated by `IsAlive()` (= `!IsDamageDestroyed`, 1.29 `object.c:523-526` — a freshly spawned survivor is always alive). (since 1.30: `LocalTakeEntityAsAttachmentEx` is `[Obsolete]` in favour of `LocalTakeEntityToTargetAttachmentEx` (`entityai.c:4880-4884`) and `Man` no longer overrides it; the `LOCAL` case of `DayZPlayerInventory.TakeToDst` (`dayzplayerinventory.c:3728`) still moves and returns `true` (`:3808-3810`), but the 1.30 path from the call to it was not traced.) Corollary: on live players that return cannot be treated as a failure signal; citing the EntityAI base as the live receiver's semantics is the same failure as LL-222.
 
-**Occupied destination slot = silent false success.** `GameInventory.TakeEntityAsTargetAttachmentEx` does `CombineItemsClient(item)` and `return true` WITHOUT attaching the new item (`inventory.c:1143-1155`) — the slot keeps the old item (same-type swap is invisible to `GetType()`).
+**Occupied destination slot = silent false success.** `GameInventory.TakeEntityAsTargetAttachmentEx` does `CombineItemsClient(item)` and `return true` WITHOUT attaching the new item (`inventory.c:1106-1118`) — the slot keeps the old item (same-type swap is invisible to `GetType()`).
 
 **Correct gate is identity, not the return.** `FindAttachment(slot) == item` by entity IDENTITY + `return_liar` telemetry when return is true and find ≠ item. `CanAddAttachmentEx` returns bool only, no reason (`inventory.c:246`). Slots via `InventorySlots.*` constants (engine-prepopulated from CfgSlots, `inventoryslots.c:7`), not strings (`GetSlotIdFromString` looks up `Slot_<name>`; config uses Title case — `Slot_Body name="Body"`, `scripts\config.cpp:90-94`; runtime lookup case unverified). [CODE-VERIFIED 2026-08-06, LF-COM R22b GRK2-002/006/008]. In-game confirmation expected in S2/M0 — mark here if S2 confirms. Cross-ref: skill `dayz-characters` (script-equip NPCs/survivors).
 
@@ -666,9 +667,9 @@ Moved to `references/pitfalls-advanced.md` (appended section) — EnScript style
 | **Attachment slot not accepting items** | Vanilla inventorySlot is string, mod uses `+=` | Bohemia T148506: `+=` on string inventorySlot fails silently; redeclare as `inventorySlot[] = {"vanilla_slot", "custom_slot"}` |
 | **Item fits in slot but quantity limited** | Vanilla `varQuantityMax` lower than needed | Override `varQuantityMax` in config.cpp: `class Stone: Inventory_Base { varQuantityMax = 16.0; }` |
 | **Placed item can be picked up by dragging** | Only `IsTakeable()` overridden | Also need `RemoveAction(ActionTakeItem)` + `RemoveAction(ActionTakeItemToHands)` in SetActions + `CanPutInCargo()` returning false |
-| **SetObjectTexture has no effect** | hiddenSelections not declared in config, or selection name mismatch with P3D model | Verify `hiddenSelections[]` in config matches named selections in P3D exactly (case sensitive). Check with `GetHiddenSelectionsTextures()` → `TStringArray` (`hiddenselectionsdata.c:28`, override `entityai.c:2811`) — empty = no selections. ⚠️ **There is no `GetObjectTextures()`** (plural): 0 hits across 2805 vanilla `.c` files, measured 2026-08-22, and calling a method that does not exist fails the WHOLE script at compile — see the `SetObjectTextureGlobal` row below |
+| **SetObjectTexture has no effect** | hiddenSelections not declared in config, or selection name mismatch with P3D model | Verify `hiddenSelections[]` in config matches named selections in P3D exactly (case sensitive). Check with `GetHiddenSelectionsTextures()` → `TStringArray` (`hiddenselectionsdata.c:28`, override `entityai.c:2796`) — empty = no selections. ⚠️ **There is no `GetObjectTextures()`** (plural): 0 hits across 2805 vanilla `.c` files, measured 2026-08-22, and calling a method that does not exist fails the WHOLE script at compile — see the `SetObjectTextureGlobal` row below |
 | **SetObjectTexture wrong slot** | Using wrong index | Index = position in `hiddenSelections[]` array (0-based), NOT the selection name. Barrel has 1 selection at index 0 |
-| **Returned texture path differs from config** | Engine normalizes paths | The getter is per-index: `proto native owned string GetObjectTexture(int index);` (`entityai.c:2897`; material twin `GetObjectMaterial(int)` at `:2900`). Config reads `"\dz\gear\..."`, the engine returns `"dz\gear\..."` with no leading backslash, so save/restore off the getter, not off a hardcoded config path. ⚠️ **This normalization claim needs re-checking**: it was written against `GetObjectTextures()`, which does not exist, so it cannot have come from that call |
+| **Returned texture path differs from config** | Engine normalizes paths | The getter is per-index: `proto native owned string GetObjectTexture(int index);` (`entityai.c:2882`; material twin `GetObjectMaterial(int)` at `:2885`). Config reads `"\dz\gear\..."`, the engine returns `"dz\gear\..."` with no leading backslash, so save/restore off the getter, not off a hardcoded config path. ⚠️ **This normalization claim needs re-checking**: it was written against `GetObjectTextures()`, which does not exist, so it cannot have come from that call |
 | **Custom barrel/container missing functionality** | Script extends ItemBase instead of vanilla script class | Extend `Barrel_ColorBase` (not `ItemBase`) for barrels. Always extend the vanilla SCRIPT class that matches the config parent. Needs `requiredAddons` = addon of config parent (e.g. `DZ_Gear_Containers`) |
 | **Procedural texture ignored** | Feature may not exist in DayZ SA | Check RPT: "unknown procedural" = stripped. "class/extension not found" = parser exists. color() most likely to work. text(), r2t(), ui(), extension() = test first |
 | **SetObjectTextureGlobal may not compile** | Method may not exist in DayZ SA | Do NOT call `SetObjectTextureGlobal` without confirming it exists — if absent, entire script fails to compile. Use `SetObjectTexture` and verify sync in multiplayer instead |
@@ -707,7 +708,7 @@ couples to the upstream enum value — document the literal with a path:line to 
 ### Get-in: single mount point per seat; bilateral via dual entry components
 The seat is decided by the looked-at component (`Transport.CrewPositionIndex(componentIndex)`);
 the action is gated by `CanReachSeatFromDoors(selection, fromPos)`, looped over multiple door
-selections (`actiongetintransport.c:49-91`). The mount uses a SINGLE getInPos per seat
+selections (`actiongetintransport.c:45-68`). The mount uses a SINGLE getInPos per seat
 (`pos_driver`) + a one-sided get-in anim. For "enter from either side", give the seat two entry
 components/door selections mapping to the same crew index → the action is reachable from both
 sides; a truly mirrored mount, though, needs a mirrored get-in animation.
@@ -734,11 +735,11 @@ starts. Vanilla shows the pattern: `offroadhatchback.c` overrides `IsVitalTruckB
 
 Five measured facts (LFHeli LF-007 / LF-001; evidence `evidence-2026-08-17/cell-exit3-{06,08,09,10}/`; verified-apis §Red/vitales/sondas 2026-08-17 tarde; LL-305/306):
 
-1. **`CheckVitalItem` false `EngineStop` on the owner.** `CarScript.EOnPostSimulate` (`carscript.c:986-997`) calls `CheckVitalItem` (`:2513-2524`) with `IsServerOrOwner()` every `CARS_FLUIDS_TICK=1` s. On the OWNER this reads the local inventory replica and calls `EngineStop()` if the vital item is absent. With parts created by script after spawn, a late replica stops a healthy engine ~1 s after sitting (measured with stack). Remedy: `override protected void CheckVitalItem(bool,int)` as a no-op outside the server.
+1. **`CheckVitalItem` false `EngineStop` on the owner.** `CarScript.EOnPostSimulate` (1.29 `carscript.c:986-997`) calls `CheckVitalItem` (1.29 `:2513-2524`) with `IsServerOrOwner()` every `CARS_FLUIDS_TICK=1` s. On the OWNER this reads the local inventory replica and calls `EngineStop()` if the vital item is absent. With parts created by script after spawn, a late replica stops a healthy engine ~1 s after sitting (measured with stack). Remedy: `override protected void CheckVitalItem(bool,int)` as a no-op outside the server. On 1.30 the tick calls `Transport.CheckVitalItemCallback(..., this, "EngineStop")` instead (`carscript.c:839-854`, `transport.c:423-438`) and `CheckVitalItem` is `[Obsolete]` and never called (`carscript.c:2951-2974`), so that override does nothing there: override `CheckVitalItemCallback` the same way (read in the source, not measured on 1.30).
 
-2. **`SetPosition` on a client-side proxy Pawn (PHYSICS) does not apply, not even one frame.** The ex-owner's proxy stays at the last pre-possession snapshot and never receives the transform (a 10 cm server-side movement did not arrive in 25 s). Fix on server with empty crew: `GetGame().RemoteObjectTreeDelete(obj)` + `GetGame().RemoteObjectTreeCreate(obj)` (`game.c:707/709`; vanilla pattern `replaceitemwithnewlambdabase.c:117-123`). All clients rebuild the replica in the authoritative pose; the client script instance is destroyed (its `CallLater`s die).
+2. **`SetPosition` on a client-side proxy Pawn (PHYSICS) does not apply, not even one frame.** The ex-owner's proxy stays at the last pre-possession snapshot and never receives the transform (a 10 cm server-side movement did not arrive in 25 s). Fix on server with empty crew: `GetGame().RemoteObjectTreeDelete(obj)` + `GetGame().RemoteObjectTreeCreate(obj)` (`game.c:708/709`; vanilla pattern `replaceitemwithnewlambdabase.c:117-123`). All clients rebuild the replica in the authoritative pose; the client script instance is destroyed (its `CallLater`s die).
 
-3. **`Object.GetHealth01(zone,type)` (`object.c:997`) is not callable on client.** Throws `Virtual Machine Exception ... cannot be called on client` (non-fatal, returns 0).
+3. **`Object.GetHealth01(zone,type)` (`object.c:1001`) is not callable on client.** Throws `Virtual Machine Exception ... cannot be called on client` (non-fatal, returns 0).
 
 4. **The script log truncates EVERY `Print` line at 255 characters**, not only `DumpStackString(out string)` (`endebug.c:50`): measured 2026-09-09, 172 of 193 LFSecure diagnostic lines cut at exactly 255, losing the fields that mattered. Write diagnostics as several short lines sharing an event tag (`Hologram#12 wall …`, `Hologram#12 ground …`), clip variable-length fields, and print stacks line by line.
 
@@ -832,14 +833,14 @@ Evidence: `LFHeli_dev/reviews/evidence-2026-08-17/flir-autotest-0{1,2}/`, `LFHel
 
 ### `HumanCommandVehicle` is client-local — the get-in ACTION creates it, not crew replication (SP-295)
 
-`PlayerBase.GetCommand_Vehicle()` returns the LOCAL `HumanCommandVehicle`. In the entire `scripts\` tree there are exactly **four** `StartCommand_Vehicle` call-sites: the proto (`3_game\human.c:1492`), the get-in action (`4_world\classes\useractionscomponent\actions\interact\actiongetintransport.c:91`), the unconscious-recovery path from LOCAL cache (`4_world\entities\dayzplayerimplement.c:2376`, `fromUnconscious=true`), and a `#ifdef DEVELOPER` path (`4_world\entities\manbase\playerbase.c:3287`). **No path creates the command from replicated crew.** `CommandHandler` only CONSUMES an existing command (`dayzplayerimplement.c:2350-2365`); it does not create one.
+`PlayerBase.GetCommand_Vehicle()` returns the LOCAL `HumanCommandVehicle`. In the entire `scripts\` tree there are exactly **four** `StartCommand_Vehicle` call-sites: the proto (`3_game\human.c:1526`), the get-in action (`4_world\classes\useractionscomponent\actions\interact\actiongetintransport.c:104`), the unconscious-recovery path from LOCAL cache (`4_world\entities\dayzplayerimplement.c:2395`, `fromUnconscious=true`), and a `#ifdef DEVELOPER` path (`4_world\entities\manbase\playerbase.c:3541`). **No path creates the command from replicated crew.** `CommandHandler` only CONSUMES an existing command (`dayzplayerimplement.c:2369-2384`); it does not create one.
 
-The creator on the owner is `ActionGetInTransport.Start()` (`actiongetintransport.c:82-98`), which is **not** under `#ifdef SERVER` and calls `GetDayZGame().GetBacklit().OnEnterCar()` (`:96`) — presentation code, i.e. it runs on the client. The client's action manager invokes it on the ACK (`actionmanagerclient.c:80`, branch `UA_AM_ACCEPTED`).
+The creator on the owner is `ActionGetInTransport.Start()` (`actiongetintransport.c:71-111`), which is **not** under `#ifdef SERVER` and calls `GetDayZGame().GetBacklit().OnEnterCar()` (`:109`) — presentation code, i.e. it runs on the client. The client's action manager invokes it on the ACK (`actionmanagerclient.c:86`, branch `UA_AM_ACCEPTED`).
 
 **Consequence for mod code:** any client-side action gated by "I am seated" (vanilla pattern: `GetCommand_Vehicle()` then `GetTransport()`, as in `actionstartengine.c`) behaves differently depending on HOW the player got seated. A human who used the normal get-in action passes the gate; an occupant placed by server script has the crew replicated (`CrewMember(n) == player` is true on the client) **and yet** `GetCommand_Vehicle()` is null, so the action is never offered.
 
-**Consequence for autotests (dayz-test-ingame):** an autotest that seats the player from the server and then fires the subsystem RPC **bridges the real gate** and reports green on a human path that may be broken. Measured: the OH-1 FLIR was unopenable by hand for months while the autotest passed, because it emitted the RPC directly. Remedy: the client half of the autotest calls its own `StartCommand_Vehicle` even when the seat already appears occupied, and does not probe until `GetCommand_Vehicle().GetTransport() == <vehicle>`. The gate probe must evaluate `ActionBase.Can(player, target, item)` (public, `actionbase.c:912`), **never** `ActionCondition`, which is `protected` — calling it from outside breaks compilation of the World module (the client does not start; the server stays up because it does not compile client-only classes).
-(hasta 1.29: `ActionBase.Can` public at `actionbase.c:912`). (desde 1.30 Exp: 3-arg `Can(PlayerBase, ActionTarget, ItemBase)` is at `ActionBase.c:968`; 4-arg overload still below. The rule "probe `Can`, never `ActionCondition`" is unchanged. `UA_AM_INIT = 14` shifted later `UA_AM_*` values — do not hardcode the integers.)
+**Consequence for autotests (dayz-test-ingame):** an autotest that seats the player from the server and then fires the subsystem RPC **bridges the real gate** and reports green on a human path that may be broken. Measured: the OH-1 FLIR was unopenable by hand for months while the autotest passed, because it emitted the RPC directly. Remedy: the client half of the autotest calls its own `StartCommand_Vehicle` even when the seat already appears occupied, and does not probe until `GetCommand_Vehicle().GetTransport() == <vehicle>`. The gate probe must evaluate `ActionBase.Can(player, target, item)` (public, `actionbase.c:968`), **never** `ActionCondition`, which is `protected` — calling it from outside breaks compilation of the World module (the client does not start; the server stays up because it does not compile client-only classes).
+(hasta 1.29: `ActionBase.Can` public at `actionbase.c:912`). (desde 1.30: 3-arg `Can(PlayerBase, ActionTarget, ItemBase)` is at `ActionBase.c:968`; 4-arg overload still below. The rule "probe `Can`, never `ActionCondition`" is unchanged. `UA_AM_INIT = 14` shifted later `UA_AM_*` values — do not hardcode the integers.)
 
 Evidence: `LFHeli_dev\reviews\evidence-2026-08-18\flir-actiongate-01\` — probe `[LFHELI-FLIR-F0] action gate can=false cond=false vehCmd=false natEng=false syncEng=true` with `seat fixed (client) crew=1` and no `seat commanded (client)` in the same log.
 
@@ -861,7 +862,7 @@ Native getters that walk the world camera - `Game.GetCurrentCameraPosition/Direc
 
 Rule: in any client-side handler that touches camera / world / player-derived APIs, gate fail-closed on readiness BEFORE the first native call - `GetGame() && GetGame().GetPlayer()` (local player null = preload / not in-game). Same discriminator the vehicle handlers already use (`ResolveOwnedCar`: `if (!GetGame().GetPlayer()) return null`). Prefer a single gate in the dispatcher (covers the whole command class, R7) plus a defensive guard at the getter site if it has call-sites that do not re-enter the dispatch (e.g. an async job's report).
 
-Cross-ref: `## ENTITY LIFECYCLE QUICK REFERENCE`, IsServer/IsClient side-checks, and the CallLater 4.5h rule (Timer Rules) - same lifecycle-timing family. Origin: DayZ_MCP BUG-041, minidump in `MCPClientBridge::BuildCameraResult`, repro 2026-07-11; in-game gate PASSED 2026-07-12 (a `camera_get` reaching the client bridge during preload returns `client_not_in_game`, dump_delta=0). The cited signatures (`game.c:730-731`, `camera.c`) are from the DayZ_MCP project tree; the base-vanilla scripts bundled here predate those symbols, so the durable, version-independent part is the readiness gate, not the exact signature.
+Cross-ref: `## ENTITY LIFECYCLE QUICK REFERENCE`, IsServer/IsClient side-checks, and the CallLater 4.5h rule (Timer Rules) - same lifecycle-timing family. Origin: DayZ_MCP BUG-041, minidump in `MCPClientBridge::BuildCameraResult`, repro 2026-07-11; in-game gate PASSED 2026-07-12 (a `camera_get` reaching the client bridge during preload returns `client_not_in_game`, dump_delta=0). The cited signatures (`game.c:731-732`, `camera.c`) are from the DayZ_MCP project tree; the base-vanilla scripts bundled here predate those symbols, so the durable, version-independent part is the readiness gate, not the exact signature.
 
 ## Math has no Math.Exp - exponential idiom is Math.Pow(Math.EULER, x) (SP-058, added 2026-07-14)
 
@@ -940,8 +941,8 @@ active in the PC/RELEASE build), overriding it from a mod yields
 `no function to override in base class` and the client hangs on the loading screen
 — no crash, no useful RPT line.
 
-Verified case: `5_mission\gui\inventorynew\inventory.c:1313` is
-`#ifdef PLATFORM_CONSOLE` and `:1314` is
+Verified case: `5_mission\gui\inventorynew\inventory.c:1307` is
+`#ifdef PLATFORM_CONSOLE` and `:1308` is
 `protected string GetConsoleToolbarText(int mask)`. On a PC build that method does
 not exist, so `override string GetConsoleToolbarText(...)` is a loading freeze.
 
@@ -974,7 +975,7 @@ Decision split:
   is useless here, because the engine/mission instantiates the vanilla name.
 - **Add a NEW action** -> `extends ActionBase` + `modded ActionConstructor` to
   `RegisterActions` + `AddAction` in the item's `SetActions()`.
-(hasta 1.29: that triad was the whole contract). (desde 1.30 Exp: still required, and incomplete: also register the **replacement** if vanilla dropped the old class — `ActionFillBottleBase` is `[Obsolete]` and is **not** in `RegisterActions`; live class is `ActionObtainLiquidBase`. Info-only actions use `InitInfoData` + `CanBeStarted()==false` (manager will not `ActionStart`). Liquid CCT is `CCTLiquid`. Animation overrides live on `EntityAI.m_EntityActionOverrides`. Details: `references/dayz-1-30-enforce-script.md`.)
+(hasta 1.29: that triad was the whole contract). (desde 1.30: still required, and incomplete: also register the **replacement** if vanilla dropped the old class — `ActionFillBottleBase` is `[Obsolete]` and is **not** in `RegisterActions`; live class is `ActionObtainLiquidBase`. Info-only actions use `InitInfoData` + `CanBeStarted()==false` (manager will not `ActionStart`). Liquid CCT is `CCTLiquid`. Animation overrides live on `EntityAI.m_EntityActionOverrides`. Details: `references/dayz-1-30-enforce-script.md`.)
 
 Blast radius: `modded` on a `*Base` class applies to EVERY descendant at once.
 That is the right tool when a blanket change is the goal, and the wrong one when
@@ -992,7 +993,7 @@ compiles, so one live counterexample is conclusive.
 ```c
 a = (int)h << 24;                                   // proto.c:312, h is float (:310)
 float rand_float = (float)random_int / (float)max_range;     // enmath.c:110
-ctx.Write((int)GetIsFrozen());                      // entityai.c:3207
+ctx.Write((int)GetIsFrozen());                      // entityai.c:3206
 int row= (int)Math.Floor( x / ITEMS_IN_ROW );       // vicinityslotscontainer.c:262
 ```
 
@@ -1005,7 +1006,7 @@ float→int. `class float` (`enconvert.c:109-116`) has only `ToString`.
 strings outside any `#ifdef`:
 
 ```c
-text += "Disabled: " + GetIsSimulationDisabled() + "\n";   // entityai.c:3301
+text += "Disabled: " + GetIsSimulationDisabled() + "\n";   // entityai.c:3300
 ```
 
 with `proto native bool GetIsSimulationDisabled();` at `entity.c:6`. If that did
@@ -1061,7 +1062,7 @@ desc = desc + " wet=" + top.GetWet().ToString();
 ```
 
 **2. `out` is a reserved keyword** (the `out` parameters, e.g.
-`GetPlayers(out array<Man> players)` in `P:/scripts/3_game/global/game.c:947`). Using it as a local
+`GetPlayers(out array<Man> players)` in `P:/scripts/3_game/global/game.c:945`). Using it as a local
 variable name yields **`Broken expression (missing ';'?)`**, which does not mention the identifier or
 suggest that the name is the problem.
 
@@ -1088,11 +1089,11 @@ run: here the log itself printed the received path, and there it could be seen w
 
 The same single-backslash trap repeats at mod scale, and script path literals belong in the audit: [EXACT] vanilla script literals write texture paths escaped and without a leading backslash (`"dz\\gear\\navigation\\data\\GPS_%1_ca.paa"`, `scripts/4_world/entities/itembase/gear/navigation/gpsreceiver.c:4`) (DayZ 1.30.164014 Exp); one mod shipped 64 `"\ModName\data\....rvmat"` literals with SINGLE backslashes in the source across 24 `.c` files — all of them its LEDs (measured, LFPowerGrid). [DESIGN] Recipe: grep the mod's `.c` files for string literals that carry a lone backslash inside a path, and print in the log the path the engine actually receives.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 Bodies, `[EXACT]` blocks, and the full migration list: `references/dayz-1-30-enforce-script.md`.
 
-**What changes.** CE tick is `OnCEIterate(float currentTime, float elapsedTime)` (`OnCEUpdate` `[Obsolete]`). Inventory net path is `ValidateInventoryCommandServer` + `ExecuteInventoryCommandServer/Client/Remote` (retail does not call `ProcessInputData`) plus `INPUT_UDT_INVENTORY_CHECK` / `OnInventoryCheck`. `TakeEntityToCargo*` / `TakeEntityAsAttachment*` are `[Obsolete]` → Target* variants. Hand guards no longer auto-pass `m_IsJuncture`; `HandGuardIsNotSurrendered` blocks surrendered players. `ItemBaseType` caches `headSelectionsToHide`, `varWetMax`, `GUIInventoryAttachmentsProps` groups. Actions: `CanBeStarted` / `SortActions` / `IsTargetInfoAction`; `ActionFillBottleBase` → `ActionObtainLiquidBase` + `CCTLiquid`; `EntityAI.OverrideActionAnimation`. Engine: `World.GetThirdPersonViewMode()`, `Weather.GetNoiseReductionByWeatherEx`, `vector.Cross`, `array.Slice`, `EnumFlagsToString`, `DoOnce`, `DayZPlayer.IsFirstRenderFrame`, `Entity.DisableSimulation`. `GAME_STORAGE_VERSION = 144`.
+**What changes.** CE tick is `OnCEIterate(float currentTime, float elapsedTime)` (`OnCEUpdate` `[Obsolete]`). Inventory net path is `ValidateInventoryCommandServer` + `ExecuteInventoryCommandServer/Client/Remote` (retail does not call `ProcessInputData`) plus `INPUT_UDT_INVENTORY_CHECK` / `OnInventoryCheck`. `TakeEntityToCargo*` / `TakeEntityAsAttachment*` are `[Obsolete]` → Target* variants. Hand guards no longer auto-pass `m_IsJuncture`; `HandGuardIsNotSurrendered` blocks surrendered players. `ItemBaseType` caches `headSelectionsToHide`, `varWetMax`, `GUIInventoryAttachmentsProps` groups. Actions: `CanBeStarted` / `SortActions` / `IsTargetInfoAction`; `ActionFillBottleBase` → `ActionObtainLiquidBase` + `CCTLiquid`; `EntityAI.OverrideActionAnimation`. Engine: `World.GetThirdPersonViewMode()`, `Weather.GetNoiseReductionByWeatherEx`, `array.Slice`, `EnumFlagsToString`, `DoOnce`, `DayZPlayer.IsFirstRenderFrame`, `Entity.DisableSimulation`; `vector.Cross`, a script method in 1.30.164014 Exp and 1.30.164078, is gone in 1.30.164200 (inline its body). `GAME_STORAGE_VERSION = 144`.
 
 **What breaks.** A 1.29 `override OnCEUpdate`, `modded ProcessInputData`, `AddAction(ActionFillBottleBase)`, `ItemBase.m_ItemActionOverrides`, hardcoded `UA_AM_*` ints, or `Is3rdPersonDisabled()` as a bool. Recipe replace no longer overwrites result health. Fill/drink CCT copied from `CCTWaterSurfaceEx` misses vanilla liquid.
 

@@ -38,7 +38,7 @@ FrameWidgetClass ScrollListRoot {
 					vexactpos 0
 					hexactsize 0
 					vexactsize 0
-					// ScrollWidget/blank: dayzwidgets.styles:3881. Normal Center="".
+					// ScrollWidget/blank: dayzwidgets.styles:3966. Normal Center="".
 					// Paints nothing; it is the most-used Scroll style (19x). The
 					// bar comes from "Scrollbar V", not from this skin.
 					style blank

@@ -1,6 +1,6 @@
-# DayZ 1.30 Exp — sound, NoiseSystem, music, radios
+# DayZ 1.30 — sound, NoiseSystem, music, radios
 
-Citations re-opened under `exp\` (build 1.30.164014). Do not copy digest `[EXACT]` blocks; line numbers below are from the files opened here.
+Citations re-opened under `exp\` (build 1.30.164014). Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Do not copy digest `[EXACT]` blocks; line numbers below are from the files opened here.
 
 ## Server / headless guards
 
@@ -16,7 +16,7 @@ Citations re-opened under `exp\` (build 1.30.164014). Do not copy digest `[EXACT
 
 (hasta 1.29: that was the only documented guard.)
 
-(desde 1.30 Exp: handlers that must not run on headless clients use the new proto.)
+(desde 1.30: handlers that must not run on headless clients use the new proto.)
 
 ```c
 // [EXACT] exp\scripts\scripts\3_Game\Global\Game.c:1132
@@ -90,7 +90,7 @@ Registered in `PlayerSoundEventHandler.c:99`. Vanilla trigger from silicosis: `S
 
 `RegisterDynamicLocation` is **still** on `DynamicMusicPlayer.c:289` (the 1.24 cite in the skill is not stale for that method).
 
-(desde 1.30 Exp: each world constructs its own registry.)
+(desde 1.30: each world constructs its own registry.)
 
 ```c
 // [EXACT] exp\scripts\scripts\5_Mission\mission\missionBase.c:130
@@ -103,7 +103,7 @@ Registered in `PlayerSoundEventHandler.c:99`. Vanilla trigger from silicosis: `S
 Nasdara static boxes use `RegisterTrackLocationStaticMultiRectangle` (`DynamicMusicPlayerRegistry.c:224-244`, calls at `DynamicMusicPlayerRegistryNasdara.c:39-67`). 15 time-of-day tracks (DAY/DUSK/DAWN/NIGHT), not hourly (`:71-93`).
 
 ```c
-// [EXACT] exp\scripts\scripts\3_Game\Systems\DynamicMusicPlayer\DynamicMusicPlayer.c:1053
+// [EXACT] exp\scripts\scripts\3_Game\Systems\DynamicMusicPlayer\DynamicMusicPlayer.c:1054
 class DynamicMusicPlayerTimeOfDay : WorldDataDaytime
 {
 	//! translates WorldDataDaytime -> DynamicMusicPlayerTimeOfDay
@@ -124,7 +124,7 @@ class DynamicMusicPlayerTimeOfDay : WorldDataDaytime
 ## Transmitter bunker static
 
 ```c
-// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase\TransmitterBase.c:4
+// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase\TransmitterBase.c:5
 	string SOUND_RADIO_TURNED_ON 		= "";
 	string SOUND_BUNKER_STATIC_NOISE 	= "";
 ```

@@ -23,17 +23,17 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
 ## Preflight invariants (check before first boot) (added 2026-07-10, LFHeli phase-1)
 
 - **`EOnSimulate` does NOT fire on a CarScript child by default.** Vanilla `CarScript` registers only
-  `POSTSIMULATE`/`POSTFRAME` (`P:\scripts\4_world\entities\vehicles\carscript.c:325-326`, verified
+  `POSTSIMULATE`/`POSTFRAME` (`P:\scripts\4_world\entities\vehicles\carscript.c:207-208`, verified
   2026-07-10). Any aviation flight loop living in `EOnSimulate` must add
   `SetEventMask(EntityEvent.SIMULATE)` in the class ctor — RFFS does exactly this (`RFFSHeli_Core.c:180-181`).
-  (up to 1.29: `carscript.c:325-326`.) (since 1.30 Exp: `CarScript.c:207-208`. Re-open `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c`. Detail: `references/dayz-1-30-aviation.md`.)
+  (up to 1.29: `carscript.c:325-326`.) (since 1.30: `CarScript.c:207-208`. Re-open `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c`. Detail: `references/dayz-1-30-aviation.md`.)
   Symptom if missed: mod compiles, spawns, idles normally — and the flight model silently never runs.
 - **`super.EOnSimulate` is an EMPTY STUB — CarScript's real per-tick work lives in `EOnPostSimulate`**
   (added 2026-07-29, LFHeli OH-1 B3). `CarScript` has no `EOnSimulate` override at all: `super`
   resolves to the empty body at `P:\scripts\1_core\proto\enentity.c:201-203`. Engine, fluids,
   part-health checks, fuel/engine auto-stop and exhaust/wheel FX all live in
-  `CarScript.EOnPostSimulate` (`P:\scripts\4_world\entities\vehicles\carscript.c:948`), much of it
-  (up to 1.29: `:948`.) (since 1.30 Exp: `CarScript.c:807`.)
+  `CarScript.EOnPostSimulate` (`P:\scripts\4_world\entities\vehicles\carscript.c:807`), much of it
+  (up to 1.29: `:948`.) (since 1.30: `CarScript.c:807`.)
   gated `IsServerOrOwner()` — so it is MEANT to run on the owner client. Consequences: (a) skipping
   `super.EOnSimulate` protects nothing, and any comment claiming it "would run engine/fluids twice"
   is false; (b) if you pump the solver manually because the native event went quiet, pump BOTH
@@ -54,12 +54,12 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
 - **Native `Helicopter`/`HelicopterScript` is a STUB** — empty `EOnPostSimulate` + empty engine hooks
   (`P:\scripts\4_world\entities\vehicles\helicopterscript.c:1-35`, verified 2026-07-10). Do not inherit
   from it expecting flight behavior; use CarScript-as-aviation (below).
-  (up to 1.29 and since 1.30 Exp: still a stub. Re-verified `exp\scripts\scripts\4_World\Entities\Vehicles\HelicopterScript.c:4-13` — ctor only `POSTSIMULATE`, empty `EOnPostSimulate`. Do not switch a flying CarScript child onto it.)
+  (up to 1.29 and since 1.30: still a stub. Re-verified `exp\scripts\scripts\4_World\Entities\Vehicles\HelicopterScript.c:4-13` — ctor only `POSTSIMULATE`, empty `EOnPostSimulate`. Do not switch a flying CarScript child onto it.)
 - **Custom flight inputs are silent-fail wiring** (added 2026-07-12, LFHeli W4). A `UA*` action name
   typo'd anywhere in the chain (`inputs.xml` declaration ↔ `SyncedValue("...")` call ↔ stringtable
   `loc=` key) compiles clean and reads 0 forever — the channel is dead with zero errors. Verify the
   names 1:1 character-by-character across the three files BEFORE the first boot. `SyncedValue` returns
-  `<0,1>` per action (`P:\scripts\3_game\inputapi\uainput.c:106-110`); opposing actions compose to one
+  `<0,1>` per action (`P:\scripts\3_game\inputapi\uainput.c:116-120`); opposing actions compose to one
   [-1,1] channel, read server-side via `CrewMember(0).GetInputInterface()` (`man.c:19` — the
   SIB/RFFS/MH6 pattern). Register via `CfgMods.<Mod>.inputs = "<Mod>/inputs.xml"`; `loc=` keys resolve
   from the mod-root `stringtable.csv`.
@@ -143,7 +143,7 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   this said "the MCP `vehicle_prepare_fixture` conditioning is hardcoded to one car (`MCPBridge.c:835`), so a
   custom test vehicle should self-condition via `EEInit -> CallLater(OnDebugSpawn)`"; `dayz-mcp-verify`,
   2026-07-18 section, has the evidence.)*
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 - **CarScript-as-aviation runs under `NetworkMoveStrategy.PHYSICS` in 1.29 — client fluidity needs the
   full Pawn pipeline, NOT a mirror** (added 2026-07-14, LFHeli, verified in-game). A CarScript child in
@@ -163,7 +163,7 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
        authority only)", the state it rewinds is `TransportOwnerState` transform/velocity/buoyancy
        (`transport.c:11-23`), and vanilla NEVER calls it - one occurrence in the whole tree, the declaration.
        Get-out pose is `HumanCommandVehicle.GetOutVehicle()`/`JumpOutVehicle()` (`actiongetouttransport.c:161-177`),
-       and `Transport.Synchronize()` (`transport.c:108-109`) only syncs car state while the sim is not running -
+       and `Transport.Synchronize()` (`transport.c:171-172`) only syncs car state while the sim is not running -
        vanilla calls it on attach/detach only.
   Probe `GetNetworkMoveStrategy()` client-side before choosing the network model. (LFHeli 2026-07-14;
   Codex research + R22, plan `2026-07-14-lfheli-physics-pawn-final.md`.)
@@ -211,7 +211,7 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
 Digests F and M do not list this skill in SKILL IMPACT. A plane/heli that inherits `CarScript` still inherits the 1.30 vehicle-light/horn/battery/event-mask contract. Native `HelicopterScript` remains a stub. Line numbers against `P:\scripts\...\carscript.c` in this file are 1.29.
 
 ## Helicopters
-Open `references/dayz-1-30-aviation.md` for the re-verified 1.30 cites (`CarScript.c:207-208`, `:807`, `:940-948`; `Transport.c:224`; `ForceUpdateLights*` Obsolete at `:2805-2809`), wreck-script note, and migration checklist. Headlight example in `references/effects-and-lights.md` is marked (hasta 1.29) `CarLightBase` / (desde 1.30 Exp) `VehicleLightBase`. Ground-vehicle table: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
+Open `references/dayz-1-30-aviation.md` for the re-verified 1.30 cites (`CarScript.c:207-208`, `:807`, `:940-948`; `Transport.c:227`; `ForceUpdateLights*` Obsolete at `CarScript.c:2805-2809`), wreck-script note, and migration checklist. Headlight example in `references/effects-and-lights.md` is marked (hasta 1.29) `CarLightBase` / (desde 1.30) `VehicleLightBase`. Ground-vehicle table: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
 
 The remainder of the 1.29/phase-1 atlas body (LM_Planes patterns, aerodynamics, combat, OnDriverExit recipe, camera input) is unchanged. Reconstruct the full insertion-only SKILL.md by applying `SKILL.md.diff` onto `work/refs/skills/dayz-aviation/SKILL.md` (905 base lines, same order). The diff also inserts the `dayz-1-30-aviation.md` row in the reference-loading table and the OnDriverExit line-drift notes.
 A **real rotary-wing flight model is documented from FOUR author/teams across five aircraft** (plus
@@ -277,9 +277,9 @@ force-based integrator on disk.
        That gate is a DRIVER/OWNER frame, not a passenger one: the vanilla condition also demands a local
        `GetCommand_Vehicle()` and `CrewDriver() == player` (`actionstartengine.c:26-37`,
        `actionstopengine.c:16-33`), and the driver becomes the pawn owner on sitting down
-       (`playerbase.c:4266-4280` `identity.Possess(pawn)` - itself inside `#ifdef FEATURE_NETWORK_RECONCILIATION`).
-       Vanilla only trusts `EngineIsOn()` for simulation behind `IsServerOrOwner()` (`carscript.c:3222`) and
-       reaches non-owners through the netsynced `m_CarEngineSoundState` instead (`carscript.c:355`, `:724-725`).
+       (`playerbase.c:4561-4577` `identity.Possess(pawn)` - itself inside `#ifdef FEATURE_NETWORK_RECONCILIATION`).
+       Vanilla only trusts `EngineIsOn()` for simulation behind `IsServerOrOwner()` (`carscript.c:2592`) and
+       reaches non-owners through the netsynced `m_CarEngineSoundState` instead (`carscript.c:285`, `:446-447`).
        So do not read `EngineIsOn()` as the authority bit on a machine that does not own the pawn.
 - **Config framework**: RFFS uses a **typed named JSON** framework (server-wide `MasterConfig` + per-heli
   `HeliConfig`, `get*` accessors, `JsonFileLoader<T>` with auto-create + version-migrate) — the safest
@@ -823,10 +823,10 @@ the terrain behind it. This is a ceiling, not a tuning problem: no parameter of
 `PPERequester_*`/`PPEGlow` will ever separate a warm body from cold ground.
 
 **The mechanism that works is per-entity texture + material swap.** Scan with
-`GetObjectsAtPosition(pos, radius, objects, cargos)` (`game.c:922`), filter to living entities,
+`GetObjectsAtPosition(pos, radius, objects, cargos)` (`game.c:923`), filter to living entities,
 optionally raycast for line of sight (`RayCastBullet`, `dayzphysics.c:211`), then per hidden
 selection call `SetObjectTexture(i, tex)` / `SetObjectMaterial(i, mat)` — **both on `EntityAI`,
-NOT on `Object`** (`entityai.c:2896-2900`; `GetObjectTexture`/`GetObjectMaterial` alongside, which
+NOT on `Object`** (`entityai.c:2881-2885`; `GetObjectTexture`/`GetObjectMaterial` alongside, which
 is how you save the originals). Colour comes from the rvmat `emmisive[]` with `diffuse[] = {0,0,0,1}`
 plus the swapped texture, so tiering by creature type needs BOTH pieces. Working reference on disk:
 `ThermalScripts/4_World/Thermal.c` (apply/restore :120-270, driver :424-560, tracking :700-860).
@@ -871,9 +871,9 @@ jitter must satisfy all of these safeguards:
    without logging an error. Everything gated by `EngineIsOn()` can then close through
    `OnEngineStop` as well, including cameras, FLIR sessions and HUD state.
 2. **[VERIFIED by source] The vanilla super implementation above `CarScript` is empty:**
-   `Transport.OnDriverExit(Human) {}` (`transport.c:161`). In the vanilla chain, omitting `super`
-   loses only the gear-triggered stop. Battery and plug detach handling (`carscript.c:826,845`),
-   fluids (`:989-992`), unconscious/dead handling (`:1893,1904`) and vitals (`:2523`) live in other
+   `Transport.OnDriverExit(Human) {}` (`transport.c:227`). In the vanilla chain, omitting `super`
+   loses only the gear-triggered stop. Battery and plug detach handling (`carscript.c:556,572`),
+   fluids (`:848-851`), unconscious/dead handling (`:1665,1676`) and vitals (`:853-854`) live in other
    callbacks.
 3. **[DESIGN; in-game gate pending]** For the invariant "engine ON implies the fixed gear is
    re-engaged by `OnInput`", the minimal override is:
@@ -905,7 +905,7 @@ jitter must satisfy all of these safeguards:
 3. **[VERIFIED in-game] Interrupt before excluding.** Installing an exclude while a continuous
    action is active can hide its release and leave `ActionManager` permanently in progress, after
    which no actions are offered until relog or interrupt. Before the exclude, call the vanilla
-   client path `ActionManagerClient.RequestInterruptAction()` (`actionmanagerclient.c:1280`).
+   client path `ActionManagerClient.RequestInterruptAction()` (`actionmanagerclient.c:1341`).
 4. **[VERIFIED] All `UAInput` reads are gated during an exclude and return zero.** Raw
    `KeyState(KeyCode.KC_X)` (`ensystem.c:291`) and `GetMouseState` still work, but `KeyState` reads
    the physical key and ignores rebinding. Use it only as a coarse escape path; read the live

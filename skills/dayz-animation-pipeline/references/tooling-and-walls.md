@@ -62,7 +62,7 @@ The tool table lists `jdfnc24/DayZAnimationPluginDemo` (original) which needs **
 
 For a playable-character weapon animation use Route A (`.txa` via the DayZAnimationPlugin → Workbench compiles `.anm`), as the JD demo and community do. SEAnim/DayZATool (Route B) is a fallback — its extracted rig is a reference, NOT a clean round-trip (community: extracted rigs "always wrong" for empties/IK-helper bones). RTM is the #1 wrong turn — never use it for a player weapon anim.
 
-## DayZ 1.30 Exp Tooling and Architectural Updates [EXACT]
+## DayZ 1.30 Tooling and Architectural Updates [EXACT]
 
 ### Workbench Animation & Ragdoll Editors (Enfusion 2021)
 - **Live Editing Support [CHANGELOG]**: The Animation Editor in Workbench 1.30 supports Live Editing against a running game client (`changelog:48, 62`), enabling hot-reloading of animation states.

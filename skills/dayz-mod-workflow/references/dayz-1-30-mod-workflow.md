@@ -1,16 +1,16 @@
-# DayZ 1.30 Exp — implementation-workflow deltas (build 1.30.164014)
+# DayZ 1.30 — implementation-workflow deltas
 
-Companion to `SKILL.md` § DayZ 1.30 Exp. The six-layer debug hierarchy, offline
+Companion to the `since 1.30` note at the top of `SKILL.md`. The six-layer debug hierarchy, offline
 gates, and SyncVar rules still hold. This file is the 1.30 contract delta for
 actions, CE rootclasses, `cfggameplay.json`, the underground trigger editor,
 and NV type switches.
 
-Line numbers are from files opened under `exp\`.
+Line numbers are from files opened under `exp\`. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## Action pipeline: `CanBeStarted` + `CCTLiquid`
 
 (until 1.29: `Can()` → CCT → CCI → `ActionCondition` was treated as the full
-client start gate; a listed action was assumed startable.) (since 1.30 Exp:
+client start gate; a listed action was assumed startable.) (since 1.30:
 the widget can still **show** an action whose `CanBeStarted()` is false; the
 client manager does not call `ActionStart`.)
 
@@ -81,7 +81,7 @@ vanilla action that `ActionConstructor` no longer registers.
 
 ## CE rootclasses: `MotorbikeScript` and `HouseDestructible`
 
-(since 1.30 Exp) `cfgeconomycore.xml` on Chernarus / Livonia / Sakhal adds two
+(since 1.30) `cfgeconomycore.xml` on Chernarus / Livonia / Sakhal adds two
 rootclasses. Digest O cited `:8-9`; the opened file places them at `:17-18`:
 
 ```
@@ -101,7 +101,7 @@ motorbikes; omitting `HouseDestructible` drops destructible-house CE coverage.
 
 ## `cfggameplay.json` new members
 
-(since 1.30 Exp) `CfgGameplayJson` gained `ExternalLockData` and
+(since 1.30) `CfgGameplayJson` gained `ExternalLockData` and
 `SandstormData`; `ITEM_GeneralData` gained `disableBaseDecay`;
 `ITEM_VehicleData` gained wheel detach/damage flags.
 
@@ -120,7 +120,7 @@ motorbikes; omitting `HouseDestructible` drops destructible-house CE coverage.
 ```
 
 ```
-// [EXACT] exp\scripts\scripts\3_Game\CfgGameplayDataJson.c:58-63
+// [EXACT] exp\scripts\scripts\3_Game\CfgGameplayDataJson.c:59-63
 	bool disableBaseDamage;
 	bool disableBaseDecay;
 	bool disableContainerDamage;
@@ -129,7 +129,7 @@ motorbikes; omitting `HouseDestructible` drops destructible-house CE coverage.
 ```
 
 ```
-// [EXACT] exp\scripts\scripts\3_Game\CfgGameplayDataJson.c:407-411
+// [EXACT] exp\scripts\scripts\3_Game\CfgGameplayDataJson.c:414-418
 	float boatDecayMultiplier = 1;
 	bool canDetachAttachedCarWheels = true;
 	bool canDamageAttachedCarWheels = true;
@@ -137,9 +137,9 @@ motorbikes; omitting `HouseDestructible` drops destructible-house CE coverage.
 	bool canDamageAttachedBikeWheels = true;
 ```
 
-`ITEM_ExternalLockData` (`:427-430`): `protectionCountStageOne`,
+`ITEM_ExternalLockData` (`:434-437`): `protectionCountStageOne`,
 `protectionCountStageTwo`, `protectionTime`, plus `protectionResetTime` at
-`:430`. `ITEM_SandstormData` (`:451`): `sandstormFrequency`.
+`:437`. `ITEM_SandstormData` (`:458`): `sandstormFrequency`.
 
 Note: `InitServer` has `disableBaseDecay` **commented out**
 (`CfgGameplayDataJson.c:48`) — the JSON member exists; the server.cfg int
@@ -147,7 +147,7 @@ bridge is not wired in this build.
 
 ## Underground trigger editor (`PluginUndergroundTriggerManager`)
 
-(since 1.30 Exp) Diag-only in-game editor (`#ifdef DIAG_DEVELOPER`), class
+(since 1.30) Diag-only in-game editor (`#ifdef DIAG_DEVELOPER`), class
 starts at
 `exp\scripts\scripts\4_World\Plugins\PluginBase\PluginUndergroundTriggerManager.c:1-3`.
 Keybinds (verified):
@@ -169,10 +169,13 @@ objects, the underground presence sync and terrain holes are in `dayz-undergroun
 
 (until 1.29: `NVTypes` ended at optics/pumpkin night variants.) (since 1.30
 Exp: underground + sandstorm variants; a `switch` over the enum that is not
-exhaustive will miss them.)
+exhaustive will miss them.) 1.30.164200 stable added `NV_OPTICS_UNDERGROUND_DAY`
+and `NV_OPTICS_UNDERGROUND_SANDSTORM_DAY` in the middle of the list, so every value
+after `NV_OPTICS_UNDERGROUND` has a different number than on 1.30.164014 Exp and
+1.30.164078: never store or compare an `NVTypes` as an `int`.
 
 ```
-// [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCamera_Base.c:54-78
+// [EXACT] scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCamera_Base.c:54-80 (1.30.164200)
 enum NVTypes
 {
 	NONE = 0,
@@ -189,9 +192,11 @@ enum NVTypes
 	
 	// ---- Optics condition variants ----
 	NV_OPTICS_UNDERGROUND,
+	NV_OPTICS_UNDERGROUND_DAY,
 	NV_OPTICS_SANDSTORM_DAY,
 	NV_OPTICS_SANDSTORM_NIGHT,
 	NV_OPTICS_UNDERGROUND_SANDSTORM,
+	NV_OPTICS_UNDERGROUND_SANDSTORM_DAY,
 	
 	// ---- Glasses/goggles condition variants ----
 	NV_GOGGLES_DAY,
@@ -206,7 +211,7 @@ enum NVTypes
 
 ## Headless vs dedicated guards
 
-(since 1.30 Exp) `CGame` exposes `IsHeadless()` and
+(since 1.30) `CGame` exposes `IsHeadless()` and
 `IsHeadlessOrDedicatedServer()` — **not** in 1.29 `Game.c`.
 
 ```
@@ -226,7 +231,7 @@ enum NVTypes
 ```
 
 (until 1.29: server-only particle/sound skips used `IsDedicatedServer()` /
-`IsServer()`.) (since 1.30 Exp: vanilla skips client FX with
+`IsServer()`.) (since 1.30: vanilla skips client FX with
 `!g_Game.IsHeadlessOrDedicatedServer()` so roboclients are treated like
 servers.) Workflow: E18 still forbids `IsServer()`/`IsClient()` as the
 client/server **guard**; for "skip VFX" prefer the new combined helper so

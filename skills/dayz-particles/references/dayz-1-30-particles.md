@@ -1,10 +1,10 @@
-# DayZ 1.30 Exp — Particles, dust, vehicle VFX, sandstorm
+# DayZ 1.30 — Particles, dust, vehicle VFX, sandstorm
 
-Verified against extracted 1.30 Exp scripts (`exp\scripts\scripts\`) and `exp\graphics\graphics\Materials\postprocess\sandstorm.emat`. Binary `.ptc` bodies are not in `exp\`; file existence is from `work\pbo-listings\exp__dta__graphics.txt`.
+Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Verified against extracted 1.30 Exp scripts (`exp\scripts\scripts\`) and `exp\graphics\graphics\Materials\postprocess\sandstorm.emat`. Binary `.ptc` bodies are not in `exp\`; file existence is from `work\pbo-listings\exp__dta__graphics.txt`.
 
 ## Client gate: `IsHeadlessOrDedicatedServer`
 
-(until 1.29: wrecks and FireplaceBase used `!g_Game.IsDedicatedServer()`.) (since 1.30 Exp: vanilla PlayOnObject / PlayInWorld / GetInstance skip **headless clients as well as dedicated servers**.)
+(until 1.29: wrecks and FireplaceBase used `!g_Game.IsDedicatedServer()`.) (since 1.30: vanilla PlayOnObject / PlayInWorld / GetInstance skip **headless clients as well as dedicated servers**.)
 
 `Game.IsHeadlessOrDedicatedServer` is proto native (`exp\scripts\scripts\3_Game\Global\Game.c:1136`). Comment at `:1132-1135`: combines `IsDedicatedServer` and `IsHeadless`, and includes headed servers (`-headlessMode=0`).
 
@@ -70,7 +70,7 @@ The local path (`DustEffectCeilingHandlerLocal`) still uses `SEffectManager.Play
 
 ## SurfaceInfo particle IDs
 
-(until 1.29: `Surface.GetStepsParticleID(string)` / `GetWheelParticleID(string)` were the documented lookups.) (since 1.30 Exp: those wrappers are `[Obsolete]`.)
+(until 1.29: `Surface.GetStepsParticleID(string)` / `GetWheelParticleID(string)` were the documented lookups.) (since 1.30: those wrappers are `[Obsolete]`.)
 
 ```
 // [EXACT] exp\scripts\scripts\4_World\Static\Surface.c:64
@@ -131,7 +131,7 @@ class ParticleParamsOverrideData
 
 ## EffectArea tick and snap
 
-(until 1.29: `EffectArea.OnCEUpdate()` and `partPos[1] = g_Game.SurfaceY(...)`.) (since 1.30 Exp:)
+(until 1.29: `EffectArea.OnCEUpdate()` and `partPos[1] = g_Game.SurfaceY(...)`.) (since 1.30:)
 
 ```
 // [EXACT] exp\scripts\scripts\4_World\Classes\ContaminatedArea\EffectArea.c:190

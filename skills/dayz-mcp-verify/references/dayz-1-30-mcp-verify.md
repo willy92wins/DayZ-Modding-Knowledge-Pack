@@ -1,12 +1,12 @@
-# DayZ 1.30 Exp — MCP / script-console tooling (build 1.30.164014)
+# DayZ 1.30 — MCP / script-console tooling
 
-Companion to `SKILL.md` § DayZ 1.30 Exp. The managed `dayz_test_run` /
+Companion to the `since 1.30` note at the top of `SKILL.md`. The managed `dayz_test_run` /
 `dayz_test_stop` lifecycle and Mode=all capture rule still hold.
 
 ## `ScriptConsoleTabRegistry` (inject a Diag console tab)
 
 (until 1.29: adding a Script Console tab meant editing / replacing
-`ScriptConsole.c`.) (since 1.30 Exp: tabs register through
+`ScriptConsole.c`.) (since 1.30: tabs register through
 `ScriptConsoleTabRegistry.Register`.)
 
 ```
@@ -42,7 +42,7 @@ before treating the order as contract.
 
 ## Headless vs rendered MCP
 
-(since 1.30 Exp) `IsHeadless()` / `IsHeadlessOrDedicatedServer()` exist on
+(since 1.30) `IsHeadless()` / `IsHeadlessOrDedicatedServer()` exist on
 `CGame` (`exp\scripts\scripts\3_Game\Global\Game.c:1130-1136`). This skill
 already forbids `-Mode server` for capture (no window). Roboclients are
 headless: they poll neither a client_peer suitable for `capture_screenshot`

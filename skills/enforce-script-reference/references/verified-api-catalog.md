@@ -279,7 +279,7 @@ GetGame().ConfigGetIntArray(cfgPathItem, itemSize);
 [EXACT][CLAIM-ENF-CONFIGISEXISTING-TRAILING-SPACE] A trailing space after the class name
 (`"CfgVehicles " + className + " "`) still finds the class: measured on DayZDiag 1.29.163709, a currency
 catalog checked that way passed with its four real classes. Vanilla builds the path without it
-(`VANILLA/4_world/systems/inventory/attachmentsoutofreach.c:89`), and so should new code. Not tested: a class
+(`VANILLA/4_world/systems/inventory/attachmentsoutofreach.c:82`), and so should new code. Not tested: a class
 that does not exist, with the trailing space, so a false positive through that path is not ruled out.
 
 ### String Operations (Enforce limitations)
@@ -370,8 +370,8 @@ override void OnWasDetached(EntityAI parent, int slot_id)
     // ...
 }
 // Verified: overrides in
-//   P:\scripts\4_world\entities\core\inherited\inventoryitem.c:81,149,293,948
-//   P:\scripts\4_world\entities\core\inherited\itemoptics.c:258,271
+//   P:\scripts\4_world\entities\core\inherited\inventoryitem.c:82,150,502,542,1093
+//   P:\scripts\4_world\entities\core\inherited\itemoptics.c:287,300
 //   P:\scripts\4_world\entities\explosivesbase\plastic_explosive.c:148,160
 ```
 
@@ -379,7 +379,7 @@ override void OnWasDetached(EntityAI parent, int slot_id)
 ```
 ShowSelection(string selection_name);   // make a named selection visible
 HideSelection(string selection_name);   // hide it
-// Verified: P:\scripts\3_game\entities\entityai.c:3356 (ShowSelection), :3365 (HideSelection)
+// Verified: P:\scripts\3_game\entities\entityai.c:3364 (ShowSelection), :3355 (HideSelection)
 // Override example: P:\scripts\4_world\entities\itembase\inventory_base\huntingoptic.c:34,44
 ```
 
@@ -431,7 +431,7 @@ Result: `[""]` — one empty element, no exception, no empty list. Looks like a 
 
 ### Hidden-selection texture and material getters (SP-210, added 2026-08-31)
 
-There is no Enforce method named `GetObjectTextures()` (plural). Runtime texture and material state is singular and index-based: `GetObjectTexture(int)` / `GetObjectMaterial(int)` (`3_game\entities\entityai.c:2895-2900`). Iterate from zero to `GetHiddenSelections().Count() - 1` when a per-selection snapshot is required.
+There is no Enforce method named `GetObjectTextures()` (plural). Runtime texture and material state is singular and index-based: `GetObjectTexture(int)` / `GetObjectMaterial(int)` (`3_game\entities\entityai.c:2882-2885`). Iterate from zero to `GetHiddenSelections().Count() - 1` when a per-selection snapshot is required.
 
 The config-array getters are `GetHiddenSelectionsTextures()` and `GetHiddenSelectionsMaterials()` (`3_game\entities\object.c:125-140`). For the embedded material list of a vobject, use `GetObjectMaterials(vobject, out string[])` (`1_core\proto\envisual.c:6-27`). Do not invent a plural runtime getter; an undefined call prevents the whole script module from compiling.
 
@@ -450,17 +450,17 @@ A reflection-based fixture is valid only when it is fail-closed:
 
 A failed write is not harmless. When `SetClassVar` returns `0`, abort the oracle and quarantine the subject; do not continue using it or send it through its normal deletion path. In the measured ref-collection probe, eight failed writes were followed by 48 null-pointer exceptions during deletion, while a no-reflection control had zero and retained valid elements. The internal mechanism is undetermined; do not claim a specific partial mutation.
 
-## DayZ 1.30 Exp — engine / inventory catalog
+## DayZ 1.30 — engine / inventory catalog
 
 This catalog never listed `TakeEntityToCargo` / `World.Is3rdPersonDisabled` / `Weather.GetNoiseReductionByWeather` / "vector has no Cross" (digest E/O mapped those claims here; they were not in the 1.29 text). 1.30 additions, re-opened:
 
-- (hasta 1.29: `TakeEntityToCargo` / `TakeEntityToCargoEx` / `TakeEntityAsAttachment` / `TakeEntityAsAttachmentEx`). (desde 1.30 Exp: all four `[Obsolete]` at `Inventory.c:1345-1386`. Use `TakeEntityToTargetCargo` `:1077`, `TakeEntityToTargetCargoEx` `:1084`, `TakeEntityAsTargetAttachmentEx` `:1100`, `TakeEntityAsTargetAttachment` `:1142`.)
-- (hasta 1.29: `World.Is3rdPersonDisabled()` bool). (desde 1.30 Exp: `[Obsolete]`; `GetThirdPersonViewMode()` returns `ThirdPersonMode` {`DISABLED`,`ENABLED`,`VEHICLES_ONLY`} — `World.c:177`, `:291-305`. Digest O `:49-50` is moon/sun, not this API.)
-- (hasta 1.29: `Weather.GetNoiseReductionByWeather()`). (desde 1.30 Exp: **not deleted**. `[Obsolete]` → `GetNoiseReductionByWeatherEx(notnull Object object)` at `Weather.c:407-408`, itself `[Obsolete]` "Kept for HUD and old mods" because AI damping is native AIParams. Vanilla still calls Ex: `SensesAIEvaluate.c:23`.)
-- `vector.Cross(vector v)` is native (`EnConvert.c:239-246`). Digest O `:29-36` is `int.MAX`/`MIN`.
+- (hasta 1.29: `TakeEntityToCargo` / `TakeEntityToCargoEx` / `TakeEntityAsAttachment` / `TakeEntityAsAttachmentEx`). (desde 1.30: all four `[Obsolete]` at `Inventory.c:1345-1386`. Use `TakeEntityToTargetCargo` `:1077`, `TakeEntityToTargetCargoEx` `:1084`, `TakeEntityAsTargetAttachmentEx` `:1100`, `TakeEntityAsTargetAttachment` `:1142`.)
+- (hasta 1.29: `World.Is3rdPersonDisabled()` bool). (desde 1.30: `[Obsolete]`; `GetThirdPersonViewMode()` returns `ThirdPersonMode` {`DISABLED`,`ENABLED`,`VEHICLES_ONLY`} — `World.c:177`, `:291-305`. Digest O `:49-50` is moon/sun, not this API.)
+- (hasta 1.29: `Weather.GetNoiseReductionByWeather()`). (desde 1.30: **not deleted**. `[Obsolete]` → `GetNoiseReductionByWeatherEx(notnull Object object)` at `Weather.c:407-408`, itself `[Obsolete]` "Kept for HUD and old mods" because AI damping is native AIParams. Vanilla still calls Ex: `SensesAIEvaluate.c:23`.)
+- `vector.Cross(vector v)` was a script method in 1.30.164014 Exp and 1.30.164078 (`EnConvert.c:239-246`); 1.30.164200 stable removed it. Digest O `:29-36` is `int.MAX`/`MIN`.
 - `array<T>.Slice(int from, int to)` inclusive-`to` (`EnScript.c:720-727`). Digest O `:33-40` is `ClassName` docs.
-- `typename.EnumFlagsToString` / `Enum.EnumFlagsToString` (`EnConvert.c:614`, `:704`).
+- `typename.EnumFlagsToString` / `Enum.EnumFlagsToString` (`EnConvert.c:593`, `:683`).
 - `class DoOnce` (`3_Game\DoOnce.c:1`); `DayZPlayer.IsFirstRenderFrame()` (`dayzplayer.c:1186-1189`); `Entity.DisableSimulation` / `GetIsSimulationDisabled` (`Entity.c:3-6`).
-- `GAME_STORAGE_VERSION = 144` (`Game.c:5`; 1.29 was `142` at the same line). `OnCEIterate` replaces `OnCEUpdate` (`EntityAI.c:3881`, `:4893-4894`).
+- `GAME_STORAGE_VERSION = 144` (`Game.c:5`; 1.29 was `142` at the same line). `OnCEIterate` replaces `OnCEUpdate` (`EntityAI.c:3904`, `:4924-4925`).
 
 Full `[EXACT]` bodies: `references/dayz-1-30-enforce-script.md`.

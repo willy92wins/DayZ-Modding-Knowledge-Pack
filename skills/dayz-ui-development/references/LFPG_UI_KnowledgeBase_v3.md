@@ -110,7 +110,7 @@ All V1-V34 are retained except:
 | A3 | GetScreenSize returns 0 in constructor | **FALSE** — Dabs TooltipView uses it post-constructor | TooltipView.c:51 |
 | A4 | Widget.Unlink() destroys widget | **CONFIRMED** — enwidgets.c comment + ScriptView destructor | enwidgets.c:173 |
 | A5 | GetGame().IsServer() true on client during load | Not UI-relevant | — |
-| A6 | DayZ colors 30-50% darker | **RETRACTED 2026-08-22** — not engine default, it is the player's `HUD_BRIGHTNESS`, which vanilla applies with those same two calls. `Widget.SetLV(0)` from a mod overrides the setting. Saturated barely affected, grays/pastels very darkened: that remains true. See §6. | `enwidgets.c:114-117` + `dayzgame.c:3778-3787` |
+| A6 | DayZ colors 30-50% darker | **RETRACTED 2026-08-22** — not engine default, it is the player's `HUD_BRIGHTNESS`, which vanilla applies with those same two calls. `Widget.SetLV(0)` from a mod overrides the setting. Saturated barely affected, grays/pastels very darkened: that remains true. See §6. | `enwidgets.c:114-117` + `dayzgame.c:3910-3919` |
 | A7 | UIScaler ComputeScale | **PENDING E12** — multi-resolution visual test | — |
 | A8 | Invalid SoundSets | **CONFIRMED** — commented as TODO | Production |
 | A9 | UpdateInventoryMenu | Not UI-relevant | — |
@@ -143,8 +143,9 @@ The sorter bug was FindAnyWidget returning incorrect refs inside ButtonWidget.
 > **Retraction.** The measurement below is correct; the recipe deduced from it, is not.
 > `SetLV`/`SetTextLV` are `proto static` and global (`enwidgets.c:114-117`), and vanilla uses them
 > to apply the brightness chosen by the player: `SetHudBrightness()` is literally those
-> two calls (`dayzgame.c:3778-3782`), fed from
-> `EDayZProfilesOptions.HUD_BRIGHTNESS` (`:3784-3787`) in `OnInitialize()` (`:2075`).
+> two calls (`dayzgame.c:3910-3914`), fed from
+> `EDayZProfilesOptions.HUD_BRIGHTNESS` through `GetHUDBrightnessSetting()` (`:3916-3919`) in
+> `OnInitialize()` (`:2109-2114`).
 > Calling them in a mod's init **overrides the user's preference** across the entire HUD, including
 > vanilla. And what the test measured was not an engine constant: it was the
 > `HUD_BRIGHTNESS` of that machine. The LFHeli HUD removed both calls and the UI gates

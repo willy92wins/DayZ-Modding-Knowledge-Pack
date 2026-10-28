@@ -337,7 +337,7 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
 
 Evidence aliases used in plans:
 
-- `VANILLA/3_game/entities/entityai.c:2908-2925,2965-2989` — contract
+- `VANILLA/3_game/entities/entityai.c:2893-2910,2954-2978` — contract
   `OnStoreSave`/`OnStoreLoad`.
 - `VANILLA/3_game/tools/jsonfileloader.c:7-40,99-105` — `LoadFile` and
   deprecation of `JsonLoadFile`.

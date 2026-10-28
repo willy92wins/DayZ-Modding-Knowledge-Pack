@@ -335,9 +335,9 @@ class IndicatorFuel
 **radians** while the rest of the file is in degrees: `30` ends up being 1718
 degrees.
 
-**Source units**: `speed` is **km/h** — `scripts/3_game/vehicles/car.c:113`
+**Source units**: `speed` is **km/h** — `scripts/3_game/vehicles/car.c:102`
 declares `proto native float GetSpeedometer()` and
-`4_World/classes/useractionscomponent/actions/interact/actiongetouttransport.c:33`
+`4_World/classes/useractionscomponent/actions/interact/actiongetouttransport.c:34`
 documents unit when comparing against `GetSpeedometerAbsolute()`. `rpm` comes
 normalized 0..1 over `rpmMax` (in LFQuad3 the last point of `torqueCurve`
 is 6400; dial prints up to 6000, so `maxValue 1.0` is 6.4 printed
@@ -1140,8 +1140,8 @@ informational, because decimated LODs of a base model ship with some face having
 smoothed normal against its cross (LFQuad2, LOD 1-3: 5-7 faces each).
 
 **And in-game, inspect cluster also at NIGHT** or with dash lights turned on
-(`dashboardMatOn`, material that `DashboardShineOn` applies to `light_dashboard`,
-`carscript.c:2481-2497`): normal defect only surfaces in low light. Winding defect is
+(`dashboardMatOn`, the material of the `DashboardOn` selection that 1.30 registers on `light_dashboard`,
+`carscript.c:230-231`; on 1.29 `DashboardShineOn` applied it, 1.29 `carscript.c:2481-2497`): normal defect only surfaces in low light. Winding defect is
 visible at any hour, but only when inspecting THAT specific part: global verdict does not break it down.
 
 **And winding instrument has its own failure mode: radial metric does not decide on

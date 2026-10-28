@@ -23,13 +23,13 @@
 
 | # | Invariant | Earned in | Detail in skill |
 |---|---|---|---|
-| 1 | Radial get-in needs **script class** `extends CarScript` overriding `CrewCanGetThrough` (a bare `class X: CarScript` inherits `Transport.CrewCanGetThrough()=false`, `transport.c:493` → action is filtered out and never appears) | LFQuad D34 → re-suffered SUB_BRZ + Mercedes | `vehicle-structural-parity.md` "Crew get-in" |
+| 1 | Radial get-in needs **script class** `extends CarScript` overriding `CrewCanGetThrough` (a bare `class X: CarScript` inherits `Transport.CrewCanGetThrough()=false`, `transport.c:727` → action is filtered out and never appears) | LFQuad D34 → re-suffered SUB_BRZ + Mercedes | `vehicle-structural-parity.md` "Crew get-in" |
 | 2 | Script module must **load** (`CfgMods files[]` without backslash / without `.p3d` path yielding `*.p3d.p3d`) or class never binds — silent failure | SUB_BRZ / Mercedes | SKILL §"Script binding" |
 | 3 | Geometry LOD needs named property **`class=vehicle`** or wheels do not simulate (`WheelCountPresent()==0`, no RPT error) | LFQuad 2026-05-27 (SP-027) | `vehicle-structural-parity.md` |
 | 4 | Seats and hubs must have **`componentNN` (dual-tag)** or they are invisible collision islands → spawn blocker / no seat | SUB_BRZ s7 | "componentNN DUAL-TAG" |
 | 5 | Crew/wheel proxies in **ViewGeo AND FireGeo**; proxy triangle = engine identity frame `R=((-1,0,0),(0,0,1),(0,1,0))` model-space (NOT `rotation=None` from py3d) | Mercedes (body-proxys) | parity + `rip-import.md` |
 | 6 | Wheel `angle1` sign: **measure axis in `.p3d` BEFORE** setting it (offline check predicts inverted rotation without in-game) | LFQuad shipping | `build-packaging-and-debug.md` §2-3 |
-| 7 | **One vital plug per car**: vanilla makes SparkPlug AND GlowPlug vital by default (bare `CarScript` requires both, `carscript.c:2004/2011`); petrol overrides `IsVitalGlowPlug()->false` (`civiliansedan.c:363`), diesel `IsVitalSparkPlug()->false` (`offroad_02.c:389`); declare only the vital one in `attachments[]` + attach in `OnDebugSpawn`. "Does not start" with SparkPlug inserted = GlowPlug not overridden, NOT a removed requirement | SUB_BRZ 2026-06-28 | SKILL #8 + `vehicle-config-and-modelcfg.md` sec 15 |
+| 7 | **One vital plug per car**: vanilla makes SparkPlug AND GlowPlug vital by default (bare `CarScript` requires both, `carscript.c:1776/2011`); petrol overrides `IsVitalGlowPlug()->false` (`civiliansedan.c:370`), diesel `IsVitalSparkPlug()->false` (`offroad_02.c:415`); declare only the vital one in `attachments[]` + attach in `OnDebugSpawn`. "Does not start" with SparkPlug inserted = GlowPlug not overridden, NOT a removed requirement | SUB_BRZ 2026-06-28 | SKILL #8 + `vehicle-config-and-modelcfg.md` sec 15 |
 
 ## Why this note exists (the process lesson)
 

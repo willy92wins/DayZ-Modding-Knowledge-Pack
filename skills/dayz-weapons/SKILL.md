@@ -66,11 +66,14 @@ pointer. Firearm test cycles are as expensive as any DayZ rebuild — a prefligh
    `class CfgWeapons`.** `[VERIFIED in-game]` SR2M. Forward-declaring `Mode_FullAuto` INSIDE `CfgWeapons`
    makes an empty stub without `autoFire=1` → the mode is dropped → weapon stuck in single.
    → `cfgweapons-contract.md` §"root-scope Mode_*".
-7. **W-STAGING1 — (desde 1.30 Exp) a firearm script under `4_World/Entities/Firearms/` does NOT imply a
-   packed `.p3d` or `CfgWeapons` class.** `[VERIFIED-vanilla]` 1.30.164014. `SCARL`, `Luger`, `LeeEnfield`,
-   `MP18` (and `P1907_Bayonet`) have scripts + IK registrations; their weapon PBOs have no matching
-   model/config. NEVER debinarize them from this experimental client as a parity reference — inherit a
-   shipped peer (`SCARH` / a 1.29 pistol / CZ527 / CZ61). → `dayz-1-30-weapons.md`.
+7. **W-STAGING1 — (desde 1.30) a firearm script under `4_World/Entities/Firearms/` does NOT imply a
+   `.p3d` or `CfgWeapons` class in the matching `weapons_*.pbo`.** `[VERIFIED-vanilla]` 1.30.164014 and
+   1.30.164200. On 1.30.164014 `SCARL`, `Luger`, `LeeEnfield`, `MP18` (and `P1907_Bayonet`) had scripts +
+   IK registrations; their weapon PBOs had no matching model/config, and that build had no Nasdara weapons
+   PBO. NEVER debinarize them from that experimental client as a parity reference — inherit a shipped peer
+   (`SCARH` / a 1.29 pistol / CZ527 / CZ61). On 1.30.164200 they ship in `nasdara\addons\weapons_nasdara.pbo`,
+   not in `weapons_firearms` / `weapons_pistols`, and a config parent is not always the script parent
+   (`SCARL_Base: Rifle_Base` in config, `: SCARH_Base` in script). → `dayz-1-30-weapons.md`.
 
 **Memory-point sanity** (each was a real AI-mesh bug on MK47): `usti hlavne`/`konec hlavne` share Y and
 Z (level bore); `bolt_axis` parallel to bore; eject direction within ~25° of the reference; `eye` height
@@ -84,10 +87,11 @@ its **config**, and match: named selections present, memory points shaped the sa
 for its ammo / mags / recoil / sounds / anims. Every preflight item above falls out of this one diff
 instead of error-by-error in-game. → `p3d-selection-contract.md`, `cfgweapons-contract.md`.
 
-(hasta 1.29: that vanilla weapon is always in the matching `weapons_*.pbo`.) (desde 1.30 Exp: **W-STAGING1**
-— scripts for `SCARL` / `Luger` / `LeeEnfield` / `MP18` are not a licence to unpack those classnames from
-this build. Debinarize `SCARH\ScarH.p3d` (listed in `work\pbo-listings\exp__Addons__weapons_firearms.txt`)
-or another packed peer. Details: `dayz-1-30-weapons.md`.)
+(hasta 1.29: that vanilla weapon is always in the matching `weapons_*.pbo`.) (desde 1.30: **W-STAGING1**
+— on 1.30.164014 the scripts for `SCARL` / `Luger` / `LeeEnfield` / `MP18` are not a licence to unpack
+those classnames: debinarize `SCARH\ScarH.p3d` (listed in `work\pbo-listings\exp__Addons__weapons_firearms.txt`)
+or another packed peer. On 1.30.164200 their own models are in `weapons_nasdara.pbo`. Details:
+`dayz-1-30-weapons.md`.)
 
 ## QUICK TRIAGE
 
@@ -104,7 +108,7 @@ or another packed peer. Details: `dayz-1-30-weapons.md`.)
 | Optics / attachment slot won't accept X | `attachments[]` slot name vs the attachment's `inventorySlot`; mount-gated optics | `cfgweapons-contract.md` §attachments |
 | **Grip / hands / ADS / rider pose wrong** | NOT this skill — anim | `dayz-animation-pipeline` → `weapon-in-hands.md` |
 | **Bolt-slide / reload / fire / jam-unjam MOTION** | NOT this skill — anim (`.anm`/`.asi` authoring) | `dayz-animation-pipeline` → `weapon-anim-*` |
-| Spawn/class missing for SCARL/Luger/LeeEnfield/MP18 (1.30 Exp) | W-STAGING1 — script+IK present, no CfgWeapons / `.p3d` in weapon PBOs | `dayz-1-30-weapons.md` |
+| Spawn/class missing for SCARL/Luger/LeeEnfield/MP18 (1.30.164014) | W-STAGING1 — script+IK present, no CfgWeapons / `.p3d` in that build's weapon PBOs; 1.30.164200 ships them in `weapons_nasdara.pbo` | `dayz-1-30-weapons.md` |
 | Compile fail on `GetExplosionParticleID` (1.30 Exp) | API replaced by `AmmoTypesAPI.GetExplosiveEffectData(ammo, surface)` | `dayz-1-30-weapons.md` §ammo |
 | Pistol slide/toggle anim IDs wrong (1.30 Exp) | override `Get*PistolAnimState()`; do not fork the pistol FSM classes | `dayz-1-30-weapons.md` §pistol |
 
@@ -138,7 +142,7 @@ field, or selection, grep it in vanilla (`P:\scripts\4_world\entities\firearms\`
 (inferred, not confirmed). Anchor every new weapon lesson to a real mod with `path:line`, never memory.
 
 (hasta 1.29: pistol stable states were constructed with `PistolAnimState.*` constants —
-`stable-1.29` `Pistol_Base.c:203-212`.) (desde 1.30 Exp: `InitStateMachine()` passes
+`stable-1.29` `Pistol_Base.c:203-212`.) (desde 1.30: `InitStateMachine()` passes
 `GetDischargedPistolAnimState()` / `GetChargedPistolAnimState()` / `GetOpenPistolAnimState()` /
 `GetJammedPistolAnimState()` — `exp\scripts\scripts\4_World\Entities\Firearms\Pistol_Base.c:203-212`.
 Override those getters on an atypical pistol (Luger: charged→`DEFAULT`, jammed→`CLOSED_CHARGED` in
@@ -165,7 +169,7 @@ ballistics, loot logic, scaling that must also work for modded weapons):
   on an attachment event and cache it yourself. (Corrects an earlier version of this entry that claimed the
   map is never populated on a dedicated server.)
 - **Gate on `IsAmmoPile()` when you mean loose rounds, not magazines.** `Object.IsAmmoPile()` returns false
-  by default (`3_game\entities\object.c:577-580`) and `Ammunition_Base` overrides it to true
+  by default (`3_game\entities\object.c:571-574`) and `Ammunition_Base` overrides it to true
   (`4_world\entities\itembase\magazine\ammunitionpiles.c:27-30`) `[VERIFIED-vanilla]`. Detachable magazines
   do NOT declare `iconCartridge`, so any per-cartridge-class logic must reject them first or it silently
   classifies every mag as `None`.
@@ -178,20 +182,20 @@ ballistics, loot logic, scaling that must also work for modded weapons):
   `weapon_magazines.pbo`). This is how the coverage numbers above were established on a machine with no
   unpacked vanilla tree — reach for it before declaring a config claim unverifiable.
 - Cartridge -> ammo type for the damage system: `AmmoTypesAPI.MagazineTypeToAmmoType(magType, out ammoType)`
-  — `P:\scripts\3_game\global\ammotypes.c:14`, used by vanilla in `weapon_base.c:848` `[VERIFIED-vanilla]`.
+  — `P:\scripts\3_game\global\ammotypes.c:26`, used by vanilla in `weapon_base.c:840` `[VERIFIED-vanilla]`.
   Do not hand-roll a `CfgMagazines <t> ammo` lookup.
-  (up to 1.29: those line numbers.) (since 1.30 Exp: `MagazineTypeToAmmoType` is
+  (up to 1.29: `ammotypes.c:14`, used in `weapon_base.c:848`.) (since 1.30: `MagazineTypeToAmmoType` is
   `exp\scripts\scripts\3_Game\Global\AmmoTypes.c:26`; vanilla `Weapon_Base.c:840`.
   `GetExplosionParticleID` is gone — MUST call `AmmoTypesAPI.GetExplosiveEffectData(ammoName, surfaceName)`
   and read `m_ParticleID` / `m_SoundSetName` on `ExplosiveEffectData`. → `dayz-1-30-weapons.md`.)
 - A cartridge damage profile is readable BEFORE firing:
   `ConfigGetFloat("CfgAmmo " + ammoType + " DamageApplied Health damage")` (also `Blood damage`,
-  `Shock damage`) — `P:\scripts\4_world\entities\dayzplayerimplementfalldamage.c:261-263`
+  `Shock damage`) — `P:\scripts\4_world\entities\dayzplayerimplementfalldamage.c:273-275`
   `[VERIFIED-vanilla]`. This is how a mod caps absurd modded ammo without a whitelist.
 - `iconCartridge` is nominally a UI icon field reused as the cartridge class: confirm per-pile coherence
   against a debinarized config before shipping balance that depends on it. `[UNVERIFIED]`
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 What changes, what breaks, and the migration checklist. Full citations and `[EXACT]` blocks:
 `dayz-1-30-weapons.md`. Recoil curves and Luger/LeeEnfield bone remaps:
@@ -201,10 +205,11 @@ What changes, what breaks, and the migration checklist. Full citations and `[EXA
 
 - Four firearm scripts (`SCARL_Base : SCARH_Base`, `Luger_Base`, `LeeEnfield_Base`, `MP18_Base`) plus
   `P1907_Bayonet` and mag stubs — scripts and (for Luger/LeeEnfield) extra `AddItemBoneRemap` arrays;
-  IK `.asi`/`.anm` packed; **no** `CfgWeapons` / weapon `.p3d` in this experimental PBO set (W-STAGING1).
+  IK `.asi`/`.anm` packed; **no** `CfgWeapons` / weapon `.p3d` in the 1.30.164014 PBO set (W-STAGING1).
+  1.30.164200 ships them in `nasdara\addons\weapons_nasdara.pbo`.
 - Pistol FSM anim IDs are virtual getters on `Pistol_Base` (`Pistol_Base.c:611-629`, wired at `:203-212`).
 - `OpenBolt_Base.SetActions()` adds `FirearmActionDetachMagazine` (`OpenBolt_Base.c:388`).
-- `Weapon_Base.EEItemDetached` calls `ValidateAndRepair()` when the detached item is a magazine (`:1121`).
+- `Weapon_Base.EEItemDetached` calls `ValidateAndRepair()` when the detached item is a magazine (`Weapon_Base.c:1121`).
 - Explosion FX: `ExplosiveEffectData` + `GetExplosiveEffectData(string, string)` replace
   `GetExplosionParticleID`. `ExplosivesBase.SetParticleExplosion` / `AddExplosionEffectForSurface` are
   `[Obsolete("1.30: Handled in AmmoTypes instead")]`.
@@ -216,8 +221,9 @@ What changes, what breaks, and the migration checklist. Full citations and `[EXA
 1. Compile error if you still call `AmmoTypesAPI.GetExplosionParticleID`.
 2. Reload never starts if `TestAttachMagazine` is too strict/wrong on a custom muzzle.
 3. Open-bolt mag-detach workarounds fight the new `AddAction(FirearmActionDetachMagazine)`.
-4. Spawning `SCARL` / `Luger` / `LeeEnfield` / `MP18` / `Mag_Luger_8Rnd` / `Mag_MP18_Drum32Rnd` from
-   types/traders fails — no config class. `[CHANGELOG]` `SoundHitType` / `GetSoundHitType()` are **not**
+4. On 1.30.164014, spawning `SCARL` / `Luger` / `LeeEnfield` / `MP18` / `Mag_Luger_8Rnd` / `Mag_MP18_Drum32Rnd`
+   from types/traders fails — no config class. On 1.30.164200 the classes are in `weapons_nasdara.pbo`, and
+   the vanilla Nasdara `types.xml` spawns them. `[CHANGELOG]` `SoundHitType` / `GetSoundHitType()` are **not**
    in Enforce `SurfaceInfo.c` on this build (T189758); do not call them from weapon scripts.
 
 **Migration checklist**
@@ -227,5 +233,6 @@ What changes, what breaks, and the migration checklist. Full citations and `[EXA
 - [ ] Atypical pistols: override `Get*PistolAnimState()`, keep the stock pistol FSM.
 - [ ] Confirm `TestAttachMagazine` for custom mag/bolt states.
 - [ ] Use `LocalAcquireCartridgeEx` in custom chamber helpers.
-- [ ] Parity-first: debinarize a **packed** peer, not the 1.30 staged classnames.
-- [ ] Do not add staged classnames to `types.xml` until Bohemia ships CfgWeapons + `.p3d`.
+- [ ] Parity-first: debinarize a **packed** model; on 1.30.164014 that is a peer, not the staged classnames.
+- [ ] On 1.30.164014, do not add the staged classnames to `types.xml`: that build has no CfgWeapons or
+      `.p3d` for them (1.30.164200 ships both).

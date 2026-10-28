@@ -9,7 +9,7 @@ WHICH vanilla menu to copy from, and the contracts that make copied code behave.
 
 | Menu | Class file | Layout loaded |
 |---|---|---|
-| MainMenu | `5_mission/gui/newui/mainmenu/mainmenu.c:55` | `new_ui/main_menu.layout` (consoles: `mainmenuconsoles.c:47/49`) |
+| MainMenu | `5_mission/gui/newui/mainmenu/mainmenu.c:59` | `new_ui/main_menu.layout` (consoles: `mainmenuconsoles.c:47/49`) |
 | InGameMenu (ESC) | `gui/ingamemenu.c:38` | `day_z_ingamemenu.layout` (Xbox: `ingamemenuxbox.c:131/133`) |
 | InventoryMenu | `gui/inventorymenu.c:34` — **no CreateWidgets**: `layoutRoot = m_Inventory.GetMainWidget()` | via `WidgetLayoutName` registry: `inventory_new/{narrow\|medium\|wide\|xbox}/day_z_inventory_new.layout` |
 | OptionsMenu | `gui/newui/options/optionsmenu.c:42-51` | `new_ui/options/{msstore\|xbox\|ps\|pc}/options_menu.layout` |
@@ -20,15 +20,15 @@ WHICH vanilla menu to copy from, and the contracts that make copied code behave.
 | GesturesMenu (radial) | `gesturesmenu.c:197` | `radial_menu/radial_gestures/day_z_gestures.layout` |
 | RadialQuickbar | `radialquickbarmenu.c:171` | `radial_menu/radial_quickbar/radial_quickbar_menu.layout` |
 | ChatInput | `chat/chatinputmenu.c:16` | `day_z_chat_input.layout` |
-| LogoutMenu | `logoutmenu.c:47` | `day_z_logout_dialog.layout` |
+| LogoutMenu | `logoutmenu.c:48` | `day_z_logout_dialog.layout` |
 | RespawnDialogue | `respawndialogue.c:21` | `day_z_respawn_dialogue.layout` |
 | NoteMenu | `notemenu.c:90` | `day_z_inventory_note.layout` |
 | BookMenu | `bookmenu.c:13` | `day_z_book.layout` |
 | InspectMenuNew | `inspectmenunew.c:33` | `inventory_new/day_z_inventory_new_inspect.layout` |
 | Loading / Startup | `loadingmenu.c:13` / `startupmenu.c:13` | `loading.layout` / `startup.layout` |
 | Tutorials / Credits | `newui/mainmenu/tutorialsmenu.c:27/29` / `newui/credits/creditsmenu.c:33` | `new_ui/tutorials/...` / `new_ui/credits/credits_menu.layout` |
-| ScriptConsole (diag) | `scriptconsole.c:124` | `script_console/script_console.layout` |
-| **HUD root (not a menu)** | `mission/missiongameplay.c:125` | `day_z_hud.layout` |
+| ScriptConsole (diag) | `scriptconsole.c:203` | `script_console/script_console.layout` |
+| **HUD root (not a menu)** | `mission/missiongameplay.c:132` | `day_z_hud.layout` |
 
 Platform pattern: `#ifdef PLATFORM_CONSOLE` guards (charactercreation/serverbrowser/tutorials) or the
 full `PLATFORM_MSSTORE → PLATFORM_XBOX → PLATFORM_PS4 → PLATFORM_WINDOWS` cascade at CreateWidgets
@@ -36,9 +36,9 @@ time (`optionsmenu.c:41-55`).
 
 ## 2. Registering a modded menu ID (the vanilla-mirroring recipe)
 
-`MissionBase.CreateScriptedMenu` (`5_mission/mission/missionbase.c:185-333`) is the single factory
+`MissionBase.CreateScriptedMenu` (`5_mission/mission/missionbase.c:198-354`) is the single factory
 switch mapping 42 `MENU_*` ids → classes, with **SetID applied ONCE, AFTER the switch**
-(`:327-330: if (menu) { menu.SetID(id); } return menu;`). Copyable modded registration:
+(`:348-353: if (menu) { menu.SetID(id); } return menu;`). Copyable modded registration:
 
 ```c
 modded class MissionGameplay
@@ -76,59 +76,59 @@ From `3_game/tools/uiscriptedmenu.c`:
   `UIScriptedWindow.GetActiveWindows()`); skipping super silently breaks scripted windows (e.g. the
   MissionLoader window, `uimanager.c:193`).
 - **IsHandlingPlayerDeathEvent()** returns true by default → menu force-`Close()`s on death
-  (:603-611); override to false to survive.
-- Submenus: `EnterScriptedMenu(id)` from the current menu sets it as parent (:11-12;
+  (`uiscriptedmenu.c:603-611`); override to false to survive.
+- Submenus: `EnterScriptedMenu(id)` from the current menu sets it as parent (`uiscriptedmenu.c:11-12`;
   `ingamemenu.c:251-254`); `UIManager.Back()` pops (:uimanager.c:62-75).
 - Console-only: `SetWidgetAnimAlpha(w)` + base `Update()` gives the pulsing selected-element
-  animation on PLATFORM_CONSOLE (:155-159, 195-228).
+  animation on PLATFORM_CONSOLE (`uiscriptedmenu.c:155-159, 195-228`).
 
 ## 4. Two instantiation strategies (pick per menu weight)
 
 - **(A) create-per-open** — `EnterScriptedMenu(MENU_X, parentMenu)`; vanilla pause menu:
-  `missiongameplay.c:1285` + `AddActiveInputExcludes({"menu"})` + INVENTORY restriction (:1291-1292);
-  closed via `Continue()` → RemoveActiveInputExcludes + `CloseMenu(MENU_INGAME)` (:1297-1312).
+  `missiongameplay.c:1322` + `AddActiveInputExcludes({"menu"})` + INVENTORY restriction (:1328-1329);
+  closed via `Continue()` → RemoveActiveInputExcludes + `CloseMenu(MENU_INGAME)` (:1334-1349).
   For cheap dialogs.
 - **(B) create-ONCE + show/hide** — vanilla inventory: `InitInventory()` creates once via
-  `CreateScriptedMenu(MENU_INVENTORY, null)` (:208-214); `ShowInventory()` re-shows the SAME cached
-  instance via `ShowScriptedMenu(m_InventoryMenu, null)` (:1153-1172); `HideInventory()` →
-  HideScriptedMenu (:1174-1184). Keeps the Init()-built widget tree alive across opens — copy for
+  `CreateScriptedMenu(MENU_INVENTORY, null)` (:217-223); `ShowInventory()` re-shows the SAME cached
+  instance via `ShowScriptedMenu(m_InventoryMenu, null)` (:1190-1209); `HideInventory()` →
+  HideScriptedMenu (:1211-1221). Keeps the Init()-built widget tree alive across opens — copy for
   heavyweight menus (inventory rebuilds a whole container tree in Init).
 - Key-open pattern = input polling in Mission OnUpdate: `GetUApi().GetInputByID(UAGear).LocalPress()`
-  → ShowInventory (:501-512); `UAUIMenu` → Pause (:691-697).
+  → ShowInventory (:510-521); `UAUIMenu` → Pause (:700-706).
 - Vanilla input-exclude group names used in missiongameplay.c: `"menu"`, `"inventory"`,
   `"radialmenu"`, `"loopedactions"`, `"map"`.
 
 ## 5. HUD ownership chain + extension points
 
-- `MissionGameplay` ctor creates `m_Hud = new IngameHud` (`missiongameplay.c:67`); `OnInit()` loads
-  ONE layout `day_z_hud.layout` (:125), hides it (:127; shown at :488 only when player exists, is
+- `MissionGameplay` ctor creates `m_Hud = new IngameHud` (`missiongameplay.c:73`); `OnInit()` loads
+  ONE layout `day_z_hud.layout` (:132), hides it (:134; shown at :497 only when player exists, is
   ALIVE and conscious), then Inits each subsystem with a NAMED SUBTREE: Chat→`ChatFrameWidget`
-  (:129), ActionMenu→`ActionsPanel` (:131), IngameHud→`HudPanel` (:133), mic/voice/chat-channel
-  panels (:136-158). `OnMissionFinish` deletes the root (:266) — **modded HUD widgets parented
+  (:136), ActionMenu→`ActionsPanel` (:138), IngameHud→`HudPanel` (:140), mic/voice/chat-channel
+  panels (:143-165). `OnMissionFinish` deletes the root (:275) — **modded HUD widgets parented
   elsewhere must self-clean**.
 - `IngameHud.Init` resolves ~31 sub-widgets by name (+~35 generated in InitBadgesAndNotifiers)
-  (`ingamehud.c:143-240`) — **the widget names AND types in day_z_hud.layout are load-bearing API**.
-  *(up to 1.29: the interaction widgets `item`, `interact`, `continuous_interact`, `single`, `continuous` were `ImageWidgetClass` loading textures such as `card_drop.edds` or `linear_gradient.edds`; since 1.30 Exp: `exp\gui\gui\layouts\day_z_hud.layout:2294, 2477, 2755, 3033, 3311` mutated to `PanelWidgetClass` with `style ActionWidget` in `exp\gui\gui\looknfeel\dayzwidgets.styles:3700`).*
+  (`ingamehud.c:143-243`) — **the widget names AND types in day_z_hud.layout are load-bearing API**.
+  *(up to 1.29: the interaction widgets `item`, `interact`, `continuous_interact`, `single`, `continuous` were `ImageWidgetClass` loading textures such as `card_drop.edds` or `linear_gradient.edds`; since 1.30: `exp\gui\gui\layouts\day_z_hud.layout:2424, 2617, 2910, 3203, 3431` mutated to `PanelWidgetClass` with `style ActionWidget` in `exp\gui\gui\looknfeel\dayzwidgets.styles:3700`).*
   ⚠️ **Critical breaking change 1.30:** Any script doing `ImageWidget.Cast(m_Root.FindAnyWidget("interact"))` or `"item"` will invariably get `null` (Null Pointer Exception when invoking LoadImageFile/SetColor). Migrate to `PanelWidget.Cast(...)` or `Widget`.
 - Safest modded extension points: (1) `modded class IngameHud` override `Init(Widget hud_panel)` →
   super, then add widgets inside the HudPanel subtree; (2) `modded class MissionGameplay` override
   `OnInit` → super, then `CreateWidgets(your.layout)` as a SIBLING root — the same pattern vanilla
-  uses for HudDebug (:168).
+  uses for HudDebug (:175).
 - **Show/hide HUD groups = flag system, not ad-hoc Show()**: `IngameHudVisibility`
   (`gui/ingamehudvisibility.c`) maps an `EHudContextFlags` bitmask (HUD_DISABLE=1, HUD_HIDE=2,
   VEHICLE_DISABLE=4, DRIVER=8, VEHICLE=16, MENU_OPEN=32, NO_BADGE=64, QUICKBAR_DISABLE=128,
   QUICKBAR_HIDE=256, QUICKBAR_GLOBAL=512, INVENTORY_OPEN=1024, UNCONSCIOUS=2048; :15-29) to element
   lists (`LinkElementsToFlags` :69-87); `SetContextFlag(flag,state)` refreshes only affected elements
-  (:90-102). Public API = thin wrappers: `ShowHudUI→MENU_OPEN` (`ingamehud.c:906-909`),
-  `ShowQuickbarUI→QUICKBAR_DISABLE` (:888-891), `ShowHudPlayer→HUD_HIDE` (:900-903), etc.
+  (:90-102). Public API = thin wrappers: `ShowHudUI→MENU_OPEN` (`ingamehud.c:909-912`),
+  `ShowQuickbarUI→QUICKBAR_DISABLE` (:891-894), `ShowHudPlayer→HUD_HIDE` (:903-906), etc.
   Menus hide the HUD via `mission.GetHud().ShowHudUI(false)+ShowQuickbarUI(false)`
   (`ingamemenu.c:135-147`). **For "hide my custom HUD when X", extend
   `modded IngameHudVisibility.LinkElementsToFlags`** — do not roll a parallel system.
 - Vehicle HUD plug-in: `IngameHud.Init` builds `map<string, VehicleHudBase>`
   (`'VehicleTypeCar'→CarHud`) each loading its own layout into the widget named `VehicleHUDPanels`
-  (`ingamehud.c:173-186`).
+  (`ingamehud.c:173-189`).
 - Sibling overlays NOT inside IngameHud (map for extending them): watermark `gui/watermark.c:10`;
-  debug monitor `gui/debugmonitor.c:25`; player tag `ingamehud.c:1102`
+  debug monitor `gui/debugmonitor.c:28`; player tag `ingamehud.c:1105`
   (`new_ui/hud/hud_player_tag.layout`, lazy); chat lines `chat/chatline.c:25`.
 - **Modular Action Info Panels on Cursor (DayZ 1.30 Exp)**: `ActionTargetsCursor.c:152-176, 1268-1292`
   incorporates modular supplemental info panels (`TargetActionInfoPanelBase`, `ConstructionActionInfoPanel`
@@ -145,9 +145,9 @@ From `3_game/tools/uiscriptedmenu.c`:
   block: ctor takes parent holder → overridable `SetLayoutName()` → `CreateWidgets(m_LayoutName,
   null, false)` → `parent.GetMainWidget().AddChild(...)` (:89-121); dtor deletes root (:123-127).
   `Container extends LayoutHolder` adds `array<ref LayoutHolder> m_Body` + focused-container/column
-  state for gamepad nav (`containers/container.c:1-80`) + `Insert(holder, pos)` (:1201).
+  state for gamepad nav (`containers/container.c:1-80`) + `Insert(holder, pos)` (:1197).
 - **Decoupling of `SlotsIconBase` (DayZ 1.30 Exp)**:
-  *(up to 1.29: `SlotsIcon.c` was the monolithic base class for inventory slots; since 1.30 Exp: `exp\scripts\scripts\5_Mission\GUI\InventoryNew\ContainedItems\SlotsIconBase.c:1` absorbed 744 lines of generic logic, reducing `SlotsIcon.c:1` to 217 lines dedicated to mouse event registration).*
+  *(up to 1.29: `SlotsIcon.c` was the monolithic base class for inventory slots; since 1.30: `exp\scripts\scripts\5_Mission\GUI\InventoryNew\ContainedItems\SlotsIconBase.c:1` absorbed 744 lines of generic logic, reducing `SlotsIcon.c:1` to 217 lines dedicated to mouse event registration).*
   `SlotsIconBase` manages state widgets (`m_CursorWidget`, `m_ColWidget`, `m_MountedWidget`,
   `m_OutOfReachWidget`, `m_ReservedWidget`, `m_SelectedPanel`, `m_EmptySelectedPanel`, `m_MicromanagedPanel`),
   dimensions, item flags, and preview rendering (`m_ItemPreview`).
@@ -159,24 +159,24 @@ From `3_game/tools/uiscriptedmenu.c`:
   `class WidgetLayoutName` (`3_game/gui/widgetlayoutname.c:1-51`) with narrow/medium/wide/xbox
   variants for the components that need them — vanilla's own layout registry (same idea as the
   LBmaster LayoutManager pattern, const-based and width-class-aware). Not universal: a few paths are
-  hardcoded inline (tooltips `itemmanager.c:54-58`, `ammo_icon` `icon.c:1522`).
+  hardcoded inline (tooltips `itemmanager.c:54-58`, `ammo_icon` `icon.c:1521`).
 
 ## 7. Focus & gamepad (corrects earlier hint)
 
 - The ONLY focus API vanilla calls is the global pair `SetFocus(Widget)/GetFocus()`
   (`enwidgets.c:698/702`; 87 call sites). **`SetActiveWindow` has ZERO vanilla call sites** (proto
   only, :695; `SetModal` :700 likewise unused) — do not design around it.
-- Conventions: mouse-first menus clear or root the focus in Init (`mainmenu.c:109 SetFocus(null)`;
-  optionsmenu sets `SetFocus(layoutRoot)` on PC, :98); console menus focus the default button
+- Conventions: mouse-first menus clear or root the focus in Init (`mainmenu.c:113 SetFocus(null)`;
+  optionsmenu sets `SetFocus(layoutRoot)` on PC, `optionsmenu.c:98`); console menus focus the default button
   (`respawndialogue.c:27`, `ingamemenuxbox.c:961-979 UpdateMenuFocus()`); EditBox menus focus the box
   on show (`chatinputmenu.c:58`).
 - Hover and focus share ONE highlight path: OnMouseEnter/OnMouseLeave AND OnFocus/OnFocusLost all
-  route to ColorHighlight/ColorNormal gated by an `IsFocusable(w)` whitelist (`mainmenu.c:275-350`).
+  route to ColorHighlight/ColorNormal gated by an `IsFocusable(w)` whitelist (`mainmenu.c:303-378`).
 - Device hot-swap: subscribe `g_Game.GetMission().GetOnInputDeviceChanged().Insert(fn)`
   (+ GetOnInputPresetChanged) — 23 vanilla files do this and **Remove in destructor**
   (`mapmenu.c:41-47,162-163`).
 - **Universal gamepad icons vs obsolete Xbox methods (DayZ 1.30 Exp)**:
-  *(up to 1.29: `ActionTargetsCursor.c` used Xbox-specific methods such as `SetInteractXboxIcon`, `SetContinuousInteractXboxIcon`, `SetSingleXboxIcon`, `SetContinuousXboxIcon`, and `SetXboxIcon`; since 1.30 Exp: `exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:1368-1377` marks them as `[Obsolete("no replacement")]`).*
+  *(up to 1.29: `ActionTargetsCursor.c` used Xbox-specific methods such as `SetInteractXboxIcon`, `SetContinuousInteractXboxIcon`, `SetSingleXboxIcon`, `SetContinuousXboxIcon`, and `SetXboxIcon`; since 1.30: `exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:1368-1377` marks them as `[Obsolete("no replacement")]`).*
   Gamepad support is now cross-platform and unified via `SetControllerIcon(string pWidgetName, string pInputName)`
   (`exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:146-150`), which injects dynamic RichText glyphs
   for Xbox, PlayStation, or PC controllers via `InputUtils.GetRichtextButtonIconFromInputAction(pInputName, "", EUAINPUT_DEVICE_CONTROLLER)`.
@@ -201,7 +201,7 @@ From `3_game/tools/uiscriptedmenu.c`:
   common for transitions that destroy the current menu; not an absolute rule (OnClick_Options enters
   the options menu synchronously, :253).
 - **Widget-tree dumper for "half my UI is missing"**: `MissionBase.DumpCurrentUILayout()`
-  (`missionbase.c:357-377`) recursively Prints every widget of the current menu as
+  (`missionbase.c:378-398`) recursively Prints every widget of the current menu as
   `name (TypeName) [invisible]` with TOTAL/INVISIBLE/VISIBLE counts — call it from any diag hook
   instead of writing your own walker.
 - **WidgetEventHandler singleton** (`gui/widgeteventhandler.c`): lets ANY class receive widget events

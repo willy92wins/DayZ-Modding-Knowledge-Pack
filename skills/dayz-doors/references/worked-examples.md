@@ -8,7 +8,7 @@
 - [Expert Mode](#expert-mode-door-plus-handle-plus-lever)
 - [Cross-pattern diff](#cross-pattern-diff)
 - [Source discrepancies](#source-discrepancies)
-- [Building locks (DayZ 1.30 Exp)](#building-locks-dayz-130-exp)
+- [Building locks (DayZ 1.30)](#building-locks-dayz-130)
 
 ## Where these examples come from
 
@@ -156,9 +156,9 @@ No pattern introduces **AnimationSources** or script calls; those belong to **da
 - The tutorial's **Doors_Buttons_Lesson/Expert_Mode/config.cpp:31-38** has neither sound.
 - ? No in-game test established the exact purpose/behavior of the duplicate Expert Lever Doors entry.
 
-## Building locks (DayZ 1.30 Exp)
+## Building locks (DayZ 1.30)
 
-The three tutorial buildings above have no lock slots. (until 1.29: a world-building door locked only through engine `LockDoor` / `UnlockDoor` and lockpick.) (since 1.30 Exp: `House` is `BuildingBase`, which accepts `CombinationLock` and `DigitalCodeLock` as attachments and binds them per door through `AdditionalDoorInfo`.)
+The three tutorial buildings above have no lock slots. (until 1.29: a world-building door locked only through engine `LockDoor` / `UnlockDoor` and lockpick.) (since 1.30: `House` is `BuildingBase`, which accepts `CombinationLock` and `DigitalCodeLock` as attachments and binds them per door through `AdditionalDoorInfo`.)
 
 Player-built fence (gate) already lists both slots at **entity** level — not inside **class Doors** — in extracted camping config:
 
@@ -180,7 +180,7 @@ class BuildingBase : Building
 `CfgSlots` selections the P3D Memory/proxy must match:
 
 ```cpp
-// [EXACT] exp/scripts/scripts/config.cpp:2325
+// [EXACT] exp/scripts/scripts/config.cpp:2316
 	class Slot_Att_CombinationLock
 	{
 		name = "Att_CombinationLock";
@@ -191,15 +191,18 @@ class BuildingBase : Building
 ```
 
 ```cpp
-// [EXACT] exp/scripts/scripts/config.cpp:2777
+// [EXACT] exp/scripts/scripts/config.cpp:2768
 	class Slot_Att_CodeLock
 	{
 		name = "Att_CodeLock";
-		displayName = "#STR_CodeLock0";
+		displayName = "#STR_CfgVehicles_codelock0";
 		selection = "att_codelock";
 		ghostIcon = "set:dayz_inventory image:digitallock";
 	};
 ```
+
+On 1.30.164014 and 1.30.164078 this `displayName` was `"#STR_CodeLock0"`; 1.30.164200 renamed the string on every
+`Slot_Att_CodeLock*` slot.
 
 ### `AdditionalDoorInfo` on each `class Doors` child
 
@@ -293,7 +296,7 @@ class AdditionalDoorInfo
 
 ### Combination lock: two faces and explicit unlock
 
-(until 1.29: matching the last dial unlocked/detached the lock.) (since 1.30 Exp: matching dials is not enough; `ActionCombinationLockUnlock` must run. Inside and outside combinations are separate.)
+(until 1.29: matching the last dial unlocked/detached the lock.) (since 1.30: matching dials is not enough; `ActionCombinationLockUnlock` must run. Inside and outside combinations are separate.)
 
 ```c
 // [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/CombinationLock.c:25
@@ -360,7 +363,7 @@ enum CodeLockStage
 }
 ```
 
-Brute-force thresholds: `CfgGameplayHandler.GetExternalLockProtectionCountStageOne`, `GetExternalLockProtectionCountStageTwo`, `GetExternalLockProtectionTime`, `GetExternalLockProtectionResetTime` (`CfgGameplayHandler.c:498-515`, `CodeLockComponent.c:66-67,468-479`). There is **no** `GetExternalLockProtectionTimeStageOne` in this dump.
+Brute-force thresholds: `CfgGameplayHandler.GetExternalLockProtectionCountStageOne`, `GetExternalLockProtectionCountStageTwo`, `GetExternalLockProtectionTime`, `GetExternalLockProtectionResetTime` (`CfgGameplayHandler.c:513-530`, `CodeLockComponent.c:66-67,468-479`). There is **no** `GetExternalLockProtectionTimeStageOne` in this dump.
 
 Component persist order: `m_LockPIN` (string), `m_IsLocked` (bool), `m_DoorIndex` (int) (`CodeLockComponent.c:257-262`).
 
@@ -392,7 +395,7 @@ Component persist order: `m_LockPIN` (string), `m_IsLocked` (bool), `m_DoorIndex
 
 ### Rebuildable house doors
 
-`Rebuilding.OnConstructionDoorOpenStart` / `OnConstructionDoorCloseStart` set `doorConstructionPhysicsSource` phase 1.0 / 0.0 (`Rebuilding.c:440-464`). Put `doorConstructionPart` and `doorConstructionPhysicsSource` on the Doors child if the door is a rebuildable construction part.
+`Rebuilding.OnConstructionDoorOpenStart` / `OnConstructionDoorCloseStart` set `doorConstructionPhysicsSource` phase 1.0 / 0.0 (`Rebuilding.c:439-463`). Put `doorConstructionPart` and `doorConstructionPhysicsSource` on the Doors child if the door is a rebuildable construction part.
 
 ### Script override trap
 
