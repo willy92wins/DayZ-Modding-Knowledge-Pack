@@ -1541,10 +1541,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/pr-135-review@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Third review pass of pull request #135 (2026-10-28), after the second adversarial review: the AnimGraph entry names the infected graph as one of seven vanilla $AnimGraph 7 graphs (the bear graph added) and says that 1.30 keeps the node tag as one string per tag, also on a procedural rotation.",
+          "license": "MIT",
+          "source_hash": "dd764909879b1dea9c507e8a423dc5cbc027ffc1b055c1c661934d7091ad5d19",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/pr-135-review-3@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b00753623cd6299b4c17d30215d59b2ce8b8e5bc809715c293a34d02e54c1ae2",
+      "output_hash": "dd764909879b1dea9c507e8a423dc5cbc027ffc1b055c1c661934d7091ad5d19",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5992,10 +6002,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "update/pr-135-review@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Third review pass of pull request #135 (2026-10-28): the checklist item names the infected graph as one of seven vanilla $AnimGraph 7 graphs, says that tags map one string per tag and that the mapping does not cover every vanilla node type.",
+          "license": "MIT",
+          "source_hash": "aadb8b33dbd14f62a77fba14b6dc98498bb35ff39e6d344312dfca50d0c0252b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "update/pr-135-review-3@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a29041c0561a19de01544caa71449e1fcc544df9b906989c481c072b8f331aad",
+      "output_hash": "aadb8b33dbd14f62a77fba14b6dc98498bb35ff39e6d344312dfca50d0c0252b",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6064,10 +6084,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
           "source_revision": "update/pr-135-review@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Third review pass of pull request #135 (2026-10-28), after the second adversarial review, recounted in the 1.29 stable and 1.30.164014 extractions with animals_bliss: vanilla 1.29 ships seven $AnimGraph 7 graphs, the bear (animals_bliss .../bear/Bear_Graph.agr, ursus_arctos/config.cpp:724) being the seventh; the 1.29 'bear - Copy (2)' folder is named by no config and not counted. A tag field can hold several tags separated by spaces, written as one string each (Locomotion.agr:1193, :2483 -> Locomotion.agf:1610-1613, :3712-3715); the Rot row carries Tags (Bear_MainGraph.agr:2907 'TagPhysicsOn' -> Bear_MainGraph.agf:4241-4244). Census: State 260/1452, GroupSelect 3/641, Rot 1/70 tagged, Blend 0/100, BlendT 0/155; the table does not map every node type. The infected ragdoll sentence is limited to the contributor's test.",
+          "license": "MIT",
+          "source_hash": "cbdb15eff8fda8144899d4d876f9bc8b75bd8d986cd11c2475db4a16023d3da7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
+          "source_revision": "update/pr-135-review-3@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4b2d401415b08a98d913d6dae45f98771cd290d35f9a485f1ec9e3c56b31a97a",
+      "output_hash": "cbdb15eff8fda8144899d4d876f9bc8b75bd8d986cd11c2475db4a16023d3da7",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -19073,10 +19103,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/pr-135-review@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Third review pass of pull request #135 (2026-10-28): CLAIM-ANIM-AGR-PORT-129-130 names the seven $AnimGraph 7 graphs with the bear, the multi-tag split, the Rot tag and the recounted census.",
+          "license": "MIT",
+          "source_hash": "752646509a57bf65b8b18caf5bc1895a603ea635fe08349fb2620ad737adfb27",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/pr-135-review-3@2026-10-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "60394101f2a6005d1a461ee1ca9167f02f17c21876c28b38ab500215c382cbfa",
+      "output_hash": "752646509a57bf65b8b18caf5bc1895a603ea635fe08349fb2620ad737adfb27",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

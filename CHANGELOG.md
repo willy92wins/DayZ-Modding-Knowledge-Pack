@@ -16,11 +16,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   them hit or death clips), and your own files take GUIDs derived from a stable seed so a
   regeneration is byte-identical. `SKILL.md` adds a checklist item to port a custom creature graph
   from it (whether 1.30 still loads the 1.29 format is untested). Contributed by @kinkurono-dev
-  (#135). On review the mapping was re-read on the infected graph, one of the six graphs vanilla
-  1.29 ships in `$AnimGraph 7` (with `player_main`, `player_menu` and the Wolf, AmbientLife and
-  Herbivores graphs; the `cow_example` and `zombie_commonsamples` samples are `$AnimGraph 3` and
-  `2`), which adds the `normtime` state mode, the node tag that 1.30 keeps as `Tags`, and the
-  `EditorPos` y flip; `CLAIM-ANIM-AGR-PORT-129-130`.
+  (#135). On review the mapping was re-read on the infected graph, one of the seven graphs vanilla
+  1.29 ships in `$AnimGraph 7` (with `player_main`, `player_menu` and the Wolf, AmbientLife,
+  Herbivores and bear graphs; the `cow_example` and `zombie_commonsamples` samples are
+  `$AnimGraph 3` and `2`), which adds the `normtime` state mode, the node tag that 1.30 keeps as
+  `Tags` (one string per tag, also on a procedural rotation), and the `EditorPos` y flip;
+  `CLAIM-ANIM-AGR-PORT-129-130`.
 - `dayz-physics-engine` `references/dayz-1-30-ragdoll-and-fall.md`, new section "Infected do not
   ragdoll" (in game 2026-10-16, 1.30.164078): the ragdoll API (`PhysicsSetRagdoll`,
   `PhysicsSetSimpleDeath`) is declared on `Human` only, and in the contributor's test neither
