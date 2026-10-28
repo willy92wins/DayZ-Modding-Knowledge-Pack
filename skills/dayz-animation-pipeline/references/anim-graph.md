@@ -49,7 +49,7 @@ Source: `SurvivorAnims/animgraph/player_main/{combat,locomotion,player_main}.agr
 | `CMD_Reload_Chambering` | chamber a round |
 | `CMD_Reload_ChamberingFast` | fast chambering variant |
 | `CMD_Reload_Clip` | clip reload |
-| `CMD_Modifier_Additive` | **state modifier** for sickness/cough/sneeze (`locomotion.agr:3959-3976`). **NOT for reload** — see the refutation below |
+| `CMD_Modifier_Additive` | **state modifier** for sickness/cough/sneeze (`locomotion.agr:3935-3962`). **NOT for reload** — see the refutation below |
 
 ### New Player Commands in DayZ 1.30 [EXACT]
 
@@ -250,7 +250,7 @@ A measured instance of that warning (2026-09-24, dedicated server, DayZ 1.30.164
 
 Some community tutorials say "reload is an additive animation: only torso/shoulders, the rest is handled by another layer". Vanilla does not confirm this:
 
-- `CMD_Modifier_Additive` (in 1.29 `player_main.agr:48` and applied in `locomotion.agr:3959-3976`) drives **sickness/cough/sneeze** state modifiers (`SickSneezeStanceSTM`, `SickCoughStanceSTM`). Nothing about reload.
+- `CMD_Modifier_Additive` (in 1.29 `player_main.agr:48` and applied in `locomotion.agr:3935-3948`) drives **sickness/cough/sneeze** state modifiers (`SickSneezeStanceSTM`, `SickCoughStanceSTM`). Nothing about reload.
 - Reloads use dedicated commands without an additive flag: `CMD_Reload_Magazine`, `CMD_Reload_BoltAction`, `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`, `CMD_Reload_Clip`.
 - There is no `AnimNodeAdditive` or `TagAdditive` for reload in the player animgraph.
 

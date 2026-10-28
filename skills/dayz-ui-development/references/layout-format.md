@@ -114,10 +114,14 @@ first property: `FrameWidgetClass {` then `Name "HudFrameWidget"`, and
 (`day_z_hud.layout:1-2`, `:11-12`). Vanilla ships both forms in one build, so the game reads both.
 On 1.30.164200, 10 of the 227 vanilla layouts have GUID headers: `day_z_hud.layout` and nine
 console, Xbox, debug and editor layouts. 1.30.164014 has the same nine, and 1.29 none of its 216.
-`day_z_hud.layout` changed form in 1.30.164200 and kept the rest of each widget, so each named
-widget gained a line (292 of its 295) and the file went from 5,176 lines on 1.30.164014 to 5,468;
-the citations of it in this skill give the 1.30.164200 line. The other vanilla layouts this skill
-cites are the same files on 1.29, 1.30.164014 and 1.30.164200.
+`day_z_hud.layout` changed form in 1.30.164200: each of its 292 widgets gives its name on a
+`Name` line (its other three blocks are `ScriptParamsClass`, with no name), so the file went from
+5,176 lines on 1.30.164014 to 5,468, and the citations of it in this skill give the 1.30.164200
+line. Other lines changed with it: 115 colors, positions and sizes are rounded to three decimals,
+and the 12 images whose names hold `mtl_down` have `mode blend` where they had `mode additive`.
+The other vanilla layouts this skill cites are the same files on 1.30.164014 and 1.30.164200, and
+on 1.29 where 1.29 has them (it has neither `action_info_spacer.layout` nor
+`SimpleIconTemplate.layout`).
 
 The pack parser takes the token after the class as the name, so on a layout in the second form it
 reports the GUID string, or an empty name, and keeps the real name as a `Name` attribute

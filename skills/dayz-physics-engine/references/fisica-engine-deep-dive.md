@@ -154,7 +154,7 @@ proto static bool EntityOverlapBullet(...) / EntityOverlapSingleBullet(...) / Sp
 Who uses what (verified):
 | Use | API | Geometry/layers | Citation |
 |---|---|---|---|
-| Action cursor (1st pass) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `4_world/classes/useractionscomponent/actiontargets.c:245-249` |
+| Action cursor (1st pass) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `4_world/classes/useractionscomponent/actiontargets.c:245-255` |
 | Action cursor (ground fallback) | `RayCastBullet` | `ROADWAY\|TERRAIN\|WATERLAYER` | `actiontargets.c:383-384` |
 | Melee aiming/hitzone | `RaycastRV` | `ObjIntersectIFire` | `4_world/entities/dayzplayerimplementmeleecombat.c:625` |
 | Melee obstruction | `RayCastBullet` | `BUILDING\|DOOR\|VEHICLE\|ROADWAY\|TERRAIN\|ITEM_SMALL\|ITEM_LARGE\|FENCE` | `dayzplayerimplementmeleecombat.c:674-689` |
@@ -292,7 +292,7 @@ if (IsDamageDestroyed() && car.GetSpeedometerAbsolute() > 3) {
 }
 ```
 
-**Action cursor** — `actiontargets.c:245-249` (`RaycastRVProxy` + `CollisionFlags.ALLOBJECTS`, default type `ObjIntersectView`); proxies detected with `res.hierLevel > 0` (`:271`). (since 1.30: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; fallback `:383-384`; liquid-without-object utility 0.01 at `:535-537`.)
+**Action cursor** — `actiontargets.c:245-255` (`RaycastRVProxy` + `CollisionFlags.ALLOBJECTS`, default type `ObjIntersectView`); proxies detected with `res.hierLevel > 0` (`:271`). (since 1.30: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`; fallback `:383-384`; liquid-without-object utility 0.01 at `:535-537`.)
 
 **Layer matrix query** — `transport.c:790-791` (see 2.6).
 
@@ -383,7 +383,7 @@ DayZPhysics.RayCastBullet(from, to, PhxInteractionLayers.DYNAMICITEM|PhxInteract
 ## 7. Relevance for LF_RollingStone
 
 1. **"Passes through stone" bug**: architectural, not layers. Server-only `dBodyCreateDynamicEx` body will never collide with local client CCT (CCT is simulated client-side). Correct fix = body on client too: either call creation on both sides, or (better) native path `ThrowPhysically/CreateDynamicPhysics` which vanilla already executes on server+owner (`hand_actions.c:77-81`).
-2. **"Push does not appear" bug**: 100% confirmed — `actiontargets.c:245-249` uses `RaycastRVProxy` with `ObjIntersectView`; without View Geometry LOD there is no target. No physics layer fixes it. (since 1.30: same API at `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`.)
+2. **"Push does not appear" bug**: 100% confirmed — `actiontargets.c:245-255` uses `RaycastRVProxy` with `ObjIntersectView`; without View Geometry LOD there is no target. No physics layer fixes it. (since 1.30: same API at `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255`.)
 3. **S2 damage/impulse**: `EOnContact → IsServer → ProcessDirectDamage("TransportHit")` pattern is exactly vanilla from `dayzplayerimplement.c:3958-3971` + `entityai.c:4134-4220` — but inverted (in vanilla event is processed by victim, not striker). For stone: player `EOnContact` will not recognize stone as `Transport`; better for **stone** to detect contact and damage player, or register custom damage.
 4. **Maintain rolling**: `dBodyActive(ALWAYS_ACTIVE)` + low `dBodySetSleepingTreshold` + low `dBodySetDamping`; CCD with `dBodyEnableCCD(maxMotion≈diameter*0.8, inner_radius)`.
 5. **Push**: `dBodyApplyImpulseAt(stone, dir*F, contactPos)` generates natural roll (implicit torque) better than `dBodyApplyImpulse` at origin.

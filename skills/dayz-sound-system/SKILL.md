@@ -136,7 +136,7 @@ override void InitItemSounds()
    `PlayItemSoundClient/StopItemSoundClient` (1.29 `itembase.c:3319-3332`); on 1.30 that path runs only
    in a class whose `OnVariablesSynchronized` calls `LegacyItemSoundSync()` (`:3297-3312`).
 
-Limits: int IDs up to `ITEM_SOUNDS_MAX = 63` (`3_game/constants.c:423-464`). On 1.29 only ONE play + ONE
+Limits: int IDs up to `ITEM_SOUNDS_MAX = 63` (`4_world/entities/itembase.c:116`; the vanilla IDs are in `3_game/constants.c:422-464`). On 1.29 only ONE play + ONE
 stop could be in flight per sync tick (`4_world/classes/soundhandlers/itemsoundhandler.c:19-20`), and the
 sync vars were cleared ~100 ms later via CallLater; on 1.30 the queue sends several sounds in one RPC, and
 the handler's comment, unchanged, describes only the legacy path.

@@ -11,7 +11,7 @@ Migration of a 1.29 *car* mod also lives in `dayz-motorbikes/references/vehicle-
 | Transport children | `Car` + `Boat` | third sibling `Motorbike` (`simulation = "motorbike"`) | `exp\bin\bin\config.cpp:1054-1059`, `Motorbike.c:30` |
 | Headlights | subclass `CarLightBase` + `CreateFrontLight`/`CreateRearLight` | `VehicleLightBase` + `VehicleLightProfileBase` registered on `m_LightsComponent` | `VehicleLightBase.c:1`, `CivilianSedanFrontLight.c:1`, `Offroad_02.c:21-22` |
 | Battery vital | `IsVitalCarBattery` / `IsVitalTruckBattery` | `NeedElectricitySourceDevice` / `GetElectricitySourceDevice` / `GetElectricitySourceDeviceType` | `Transport.c:830-842`, `CarScript.c:2811-2817` |
-| Horn actions | `ActionCarHornShort`/`Long` | `ActionVehicleHornShort`/`Long`; `CarHorn*ActionInput` are empty aliases | `CarScript.c:2319-2320`, `ActionCarHorn.c:1,69-70,213-214`, `ActionInput.c:757-758` |
+| Horn actions | `ActionCarHornShort`/`Long` | `ActionVehicleHornShort`/`Long`; `CarHorn*ActionInput` are empty aliases | `CarScript.c:2319-2320`, `ActionCarHorn.c:1,69-70,213-214`, `ActionInput.c:757-758,773-774` |
 | Light toggle input | `UAToggleHeadlight` (`ToggleLightsActionInput`) | vehicle lights use `UAToggleVehicleLights` (`ToggleVehicleLightsActionInput`) | `ActionSwitchLights.c:16-18`, `ActionInput.c:776-782,849-855`, `bin\constants.xml:90-91` |
 | Forced light refresh | `ForceUpdateLightsStart`/`End` | `[Obsolete("1.30: no replacement")]` — delete the calls | `CarScript.c:2805-2809` |
 | Headlight toggle | `CarScript.ToggleHeadlights()`, called by `ActionSwitchLights` | **deleted**, with no `[Obsolete]` stub; the action calls the native `Transport.LightToggle()` | 1.29 `CarScript.c:2088`; 1.30.164200 `transport.c:239`, `actionswitchlights.c:64` |
@@ -137,7 +137,7 @@ The 1.29 way, overriding `IsVitalCarBattery` or `IsVitalTruckBattery`, still com
 
 ## 3. Horn
 
-`CarScript.SetActions()` registers `ActionVehicleHornShort`/`Long` (`CarScript.c:2313-2321`). `ActionCarHornShort`/`Long` are `[Obsolete("replaced by ActionVehicleHornShort/Long")]` (`ActionCarHorn.c:69-70,213-214`). Empty aliases `CarHornShortActionInput : VehicleHornShortActionInput {}` (`ActionInput.c:757-758`) exist so old typenames still compile; logic lives on the VehicleHorn* parent. Register sounds on `m_HornComponent` in the ctor (`Offroad_02.c:33` pattern; trucks at `Truck_01_Base.c:25-26`).
+`CarScript.SetActions()` registers `ActionVehicleHornShort`/`Long` (`CarScript.c:2313-2321`). `ActionCarHornShort`/`Long` are `[Obsolete("replaced by ActionVehicleHornShort/Long")]` (`ActionCarHorn.c:69-70,213-214`). Empty aliases `CarHornShortActionInput : VehicleHornShortActionInput {}` (`ActionInput.c:757-758,773-774`) exist so old typenames still compile; logic lives on the VehicleHorn* parent. Register sounds on `m_HornComponent` in the ctor (`Offroad_02.c:33` pattern; trucks at `Truck_01_Base.c:25-26`).
 
 ## 4. `GetWeightCoef` and `HasGangedTailAndBrakeLights`
 

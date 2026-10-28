@@ -533,8 +533,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `dayz-mod-workflow`: `NVTypes` gains `NV_OPTICS_UNDERGROUND_DAY` and
     `NV_OPTICS_UNDERGROUND_SANDSTORM_DAY` in the middle of the list, so every value after
     `NV_OPTICS_UNDERGROUND` has a new number.
-  - `dayz-doors`: the code lock's `displayName` is `#STR_CfgVehicles_codelock0`, not
-    `#STR_CodeLock0`.
+  - `dayz-doors`: the `Slot_Att_CodeLock*` slots' `displayName` is `#STR_CfgVehicles_codelock0`,
+    not `#STR_CodeLock0`.
   - `dayz-basebuilding`: a construction part reads the int `toggle_utility_part_update` where
     1.30.164014 read the text array `utility_build`.
   - `dayz-motorbikes`: both vanilla bikes declare their front and brake reflector materials,
@@ -555,8 +555,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     Spawning them in game was not tried.
   - `dayz-ui-development`: `day_z_hud.layout` gives its widgets' names in `Name` lines instead of
     their headers, so it grew from 5,176 lines on 1.30.164014 to 5,468 and its citations moved
-    (1.30.164078's layouts were not checked). `references/layout-format.md` describes both forms,
-    says which vanilla layouts use each, and how the pack parser reads the `Name` form.
+    (1.30.164078's layouts were not checked). It also rounds 115 colors, positions and sizes to
+    three decimals, and its 12 `mtl_down` images have `mode blend` where they had `mode additive`.
+    `references/layout-format.md` describes both forms, says which vanilla layouts use each, and
+    how the pack parser reads the `Name` form.
 
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164200 stable
   (`DayZDiag_x64.exe` 1.30.164.200). On that tree it failed only on the tree's digest: the
@@ -637,28 +639,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Citations that matched their text on no build, found by the re-check, now point at it:
-  `dayz-physics-engine` `SKILL.md` and `references/fisica-engine-deep-dive.md` give the 1.29 ground
-  fallback of the action cursor at `actiontargets.c:324-325` (not `:329-331`) and
-  `res.hierLevel > 0` at `:271` (not `:249`), and `dayz-animation-pipeline`
-  `references/anim-graph.md` gives the `.unnamed` group at `zoW.ast:4` (not `:643`) and lists the
-  `Facial` group of `player_main.ast` with the other migrated names. `dayz-vehicles`
-  `references/proxies-and-get-in.md` gives the `OnDebugSpawn` hook at `entityai.c:3955` and the
-  `OnDebugSpawnEx` that calls it at `:3937-3939`. Data citations too: `skeletons.anim.xml` has
-  `EntityPosition` at `:5` and `LookAt` at `:17` (not `:4` and `:18`) and the bones marked
-  `To Be removed` at `:293-302` (`dayz-animation-pipeline` and
+  `dayz-physics-engine` `SKILL.md` gives the 1.29 ground fallback of the action cursor at
+  `actiontargets.c:324-325` (not `:329-331`), and `references/fisica-engine-deep-dive.md` the
+  1.30.164200 one at `:383-384` (not `:329-331`) and `res.hierLevel > 0` at `:271` (not `:249`);
+  `dayz-animation-pipeline` `references/anim-graph.md` gives the `.unnamed` group at `zoW.ast:4`
+  (not `:643`) and lists the `Facial` group of `player_main.ast` with the other migrated names.
+  `dayz-vehicles` `references/proxies-and-get-in.md` gives the `OnDebugSpawn` hook at
+  `entityai.c:3955` and the `OnDebugSpawnEx` that calls it at `:3937-3939`. Data citations too:
+  `skeletons.anim.xml` has `EntityPosition` at `:5` and `LookAt` at `:17` (not `:4` and `:18`) and
+  the bones marked `To Be removed` at `:293-302` (`dayz-animation-pipeline` and
   `knowledge/vault-notes/dayz-animations-creatures-weapons.md`), and the 1.29 `player_main.aw` and
   `player_main.agr` have `#eventtable` at `:137` and `CMD_Modifier_Additive` at `:48` (not `:136`
   and `:47`). Config lines counted in another extraction now give the DeRap line of 1.30.164200
   where the re-check reached them: the `Fence` blocks in `dayz-basebuilding`
   `references/config-contract.md`, `CivSedanWheel` in `dayz-vehicles` `SKILL.md`, the zombies'
   `enfanimsys` in `dayz-characters` `SKILL.md` and the two `reloadAction` lines of
-  `DZ\data\config.cpp` in `dayz-animation-pipeline`. Ranges that began or ended one
-  line off on their own build now cover the code they cite: `OnDebugSpawn` in `civiliansedan.c`
-  (`dayz-vehicles` `references/proxies-and-get-in.md`), `GetTime` in `game.c` and
-  `IsSetForDeletion` in `entityai.c` (`enforce-script-reference` `SKILL.md` and
-  `references/pitfalls-advanced.md`), and `GetQuantityMax` in `ItemBase.c` (`dayz-basebuilding`
-  `SKILL.md`). Citations whose text no build has, such as the `enwidgets.c` lines of
-  `dayz-ui-development` `references/LFPG_UI_KnowledgeBase_v3.md`, are left as they were.
+  `DZ\data\config.cpp` in `dayz-animation-pipeline`. Ranges that began or ended one line off on
+  their own build now cover the code they cite: `OnDebugSpawn` in `civiliansedan.c` (`dayz-vehicles`
+  `references/proxies-and-get-in.md`), `GetTime` in `game.c` and `IsSetForDeletion` in `entityai.c`
+  (`enforce-script-reference` `SKILL.md` and `references/pitfalls-advanced.md`), and
+  `GetQuantityMax` in `ItemBase.c` (`dayz-basebuilding` `SKILL.md`). Ranges that stopped short of
+  what they cite now take it in: `PhysicsSetSimpleDeath` with the ragdoll API in `human.c`
+  (`dayz-physics-engine` `references/dayz-1-30-ragdoll-and-fall.md`), the cursor's `RaycastRVProxy`
+  call in `actiontargets.c` (`references/fisica-engine-deep-dive.md` and `dayz-mcp-verify`
+  `SKILL.md`) and the long horn alias in `actioninput.c` (`dayz-vehicles`). `ITEM_SOUNDS_MAX` is
+  cited where `itembase.c` declares it (`dayz-sound-system` `SKILL.md`), and `CMD_Modifier_Additive`
+  where the 1.29 `Locomotion.agr` applies it (`dayz-animation-pipeline` `references/anim-graph.md`
+  and the vault note). Nine pointers to a "DayZ 1.30 Exp" section that `dayz-mcp-verify`,
+  `dayz-mod-workflow`, `dayz-pbo-build` and `dayz-test-ingame` do not have now point at the 1.30
+  note at the top of each skill and its companion file. Citations whose text no build has, such as
+  the `enwidgets.c` lines of `dayz-ui-development` `references/LFPG_UI_KnowledgeBase_v3.md`, are
+  left as they were.
 - `dayz-realistic-animation-director` `SKILL.md` said that 1.30 removed `SurrenderDummyItem`. The
   class is still there, marked obsolete (`surrenderdummyitem.c:1-2`): 1.30 no longer puts it in the
   hands, and only the obsolete `CheckEmoteLockedState` reads it (`EmoteManager.c:1211-1214`).

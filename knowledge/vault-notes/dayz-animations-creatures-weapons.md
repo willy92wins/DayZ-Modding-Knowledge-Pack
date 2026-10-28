@@ -331,7 +331,7 @@ The video claim "30 fps default" remains **unconfirmed and unrefuted** without a
 The vol.3 video claims that "reload is additive animation: only torso/shoulders downward". **Vanilla does not back this up.**
 
 What does exist [VERIFIED-vanilla]:
-- `CMD_Modifier_Additive` (in 1.29 `player_main.agr:48` and used in `locomotion.agr:3959-3976`) controls **character state modifiers**: `SickSneezeStanceSTM`, `SickCoughStanceSTM`. Cough, sneeze, fever. Nothing related to reload.
+- `CMD_Modifier_Additive` (in 1.29 `player_main.agr:48` and used in `locomotion.agr:3935-3948`) controls **character state modifiers**: `SickSneezeStanceSTM`, `SickCoughStanceSTM`. Cough, sneeze, fever. Nothing related to reload.
 - Vanilla reloads use **dedicated commands without additive flag**: `CMD_Reload_Magazine`, `CMD_Reload_BoltAction`, `CMD_Reload_Chambering`, `CMD_Reload_ChamberingFast`, `CMD_Reload_Clip`.
 - There is no `AnimNodeAdditive` node or `TagAdditive` tag for reloads in the player animgraph.
 

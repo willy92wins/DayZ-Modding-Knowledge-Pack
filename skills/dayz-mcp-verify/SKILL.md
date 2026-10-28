@@ -17,7 +17,7 @@ description: >
 # DayZ MCP verify — auto-test in-game vía tools MCP
 
 ## GATE 0 — ask WHO is driving, before touching anything (added 2026-08-07)
-(until 1.29: managed `dayz_test_run` / `dayz_test_stop` and Mode=all capture still hold.) (since 1.30: Diag Script Console tabs register via `ScriptConsoleTabRegistry`; `IsHeadless()` names roboclients; SP `PerformActionStart` no-ops while pending. Details: [dayz-1-30-mcp-verify.md](references/dayz-1-30-mcp-verify.md) and ## DayZ 1.30.)
+(until 1.29: managed `dayz_test_run` / `dayz_test_stop` and Mode=all capture still hold.) (since 1.30: Diag Script Console tabs register via `ScriptConsoleTabRegistry`; `IsHeadless()` names roboclients; SP `PerformActionStart` no-ops while pending. Details: [dayz-1-30-mcp-verify.md](references/dayz-1-30-mcp-verify.md).)
 
 **Before the first `dayz-mcp` tool in a verification run, ask the user whether
 they are driving or the MCP is.** Neither is assumed. A single question per run, not per
@@ -354,7 +354,7 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
 - **Picking an item up proves nothing about its collision** (added 2026-10-03; vanilla 1.29 and
   bridge source read, the pickup seen in the same run) [EXACT][CLAIM-MCPV-PICKUP-NO-RAY]. Vanilla
   targeting casts `RaycastRVProxy` from the camera, 5 m, with the default `ObjIntersectView`
-  (`4_world/classes/useractionscomponent/actiontargets.c:241-249`, `3_game/global/dayzphysics.c:88`),
+  (`4_world/classes/useractionscomponent/actiontargets.c:241-255`, `3_game/global/dayzphysics.c:88`),
   and at a camera pitch of −45° or lower it also takes the objects of a 30°, 3 m cone and scores them
   by their distance to that ray, with no hit on them needed (`actiontargets.c:324-325`, `:531-532`,
   `:795-801`). The take action's target condition then checks only the distance to the object's

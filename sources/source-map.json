@@ -1564,7 +1564,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a02f47141b0e7835de7d15fe292ec9541a3165a527035d27f4b928f4814bd029",
+      "output_hash": "49cbfc70de850fb639f49917196924d61644847da06701f0e7a63f2b9bd5dad3",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2868,7 +2868,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fde318fd5b3ec58d66d33b1b6dbfacdc5ca0598f5936816aabf81c100a4831a6",
+      "output_hash": "bade9e2264eff7ae9421ad0e055f79daf2e710dd415fe2643f985fdfc63637ae",
       "output_path": "knowledge/vault-notes/dayz-animations-creatures-weapons.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -6137,7 +6137,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5e154893fc394fceb50774c3dbddd00ba8b66455e3514dd3e030815fae807c70",
+      "output_hash": "f59f47176f85f7a34a418d434e0ed35cc0567fe6607d48ddc04fd2ee943e215f",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -8975,7 +8975,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "91aced791ed63468a63470810d46c8ccbef831b0b93ecfdf85fa3ad4ae314670",
+      "output_hash": "f9f7f856d89a19a7b18b0766ab2359ca5293279c3e99f2cb2057bd825cddb4f9",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -9233,7 +9233,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5789b1ac887ce89dd6a98443d90b0df958dff4f756454fd55b572531c098527c",
+      "output_hash": "dfaba41b9bb1993106035236b628f5d5d3d8a41e9e4dcf6e6c4b7a10ca9b18a2",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -11259,7 +11259,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f954dd4504f97856b4abb8b239be84e15ba93dfd5b2a51320cc21ae92e9efadd",
+      "output_hash": "4c3e56163bab7ba7abb0719a3fd40ab8ed630b4b7739db6bb64ad83a3483b0a2",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -11845,7 +11845,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b0df3b10f27028d09e06a141b75bce922957e59d5621bad5126db8e2c0b0e237",
+      "output_hash": "182d99d32d07b4e39cb3d740de188f6ed7b0bdd51e285ca61bba7bd963296d5d",
       "output_path": "skills/dayz-physics-engine/references/fisica-engine-deep-dive.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -12629,7 +12629,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f9b8da8168fb927366af24dd3fbaf0840afbcc7f551e30781133fe12e7beb344",
+      "output_hash": "bcb243fd4c37c43fb65d87693176c8d9d9e4a8d99b7909ecb091d5b58fc94070",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -12853,7 +12853,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f23d816f86400d57d9be1552fac0f8433377b043c8c2bfbe905209ad5cb12fe5",
+      "output_hash": "4ead64c74b1964e699845648e209e85cfcdf596f4c577751f63dcd11278781a0",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -13911,7 +13911,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "de42b82436e0300964635de9f1649b3acb6544d83394676709e2aa21eb037025",
+      "output_hash": "97972eb40f84caab018fcd92006ef3ec3cf7fa8d21d20d9ca1521ba965593abc",
       "output_path": "skills/dayz-ui-development/references/layout-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -15893,7 +15893,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7a7192b3848b6dbb8fcdb992c6c0402311a83c3ee1b6de68925ce2f6713b5633",
+      "output_hash": "028ee5b87110e566508199d716f47ba86c7879db23f2f616e9f47e4b26e4a2c6",
       "output_path": "skills/dayz-vehicles/references/vehicle-types-boat-truck.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -34096,7 +34096,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b2550d3422605c4eddf9eef2cfecff65cd79561b2611709c1740e5b70d3f1b55",
+      "output_hash": "fcda6edabb6de6fa188fee5749e03cc4cf5eb76b85d74d63de44452f054e6adb",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
@@ -34138,7 +34138,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2f1e2d73e124ebe486414e056c3fc8c6b4c0da2dfe623ea13e44a59b6afeec95",
+      "output_hash": "1dba0fe2da6d76baf09040e8787daa9505a6e885b4ee42013c821c41c1311957",
       "output_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "historical"
@@ -34170,7 +34170,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f8bb3fb2bc8570d6b9fa2375339a86cb3548567a15d9f8b1983fd6836fa31c31",
+      "output_hash": "12dc2a8005bc28771776c823c141634046684906850f1a2b9ee09928fe4f7f57",
       "output_path": "skills/dayz-model-pipeline/references/dayz-1-30-model-pipeline.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "historical"
@@ -34502,7 +34502,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "15d4405f867e78dd91911e9474b3c5af3e01d8d701c13c5c8b74c9829a9bec70",
+      "output_hash": "4ddb622e27dd554b255aa1b7f1240ad6a35aef903ca814708cd85d3f65a00b74",
       "output_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "historical"
@@ -34576,7 +34576,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6fb14745ba427a34fe55b1335f38b6dec1ad7c66eca3bd950b64ba265d05cb6c",
+      "output_hash": "89794db2dbd58a4e395bc13064bb22e42aa050390560d4b14128599ca3461aa4",
       "output_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "historical"
@@ -34660,7 +34660,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e4f30a2afa0f399fa2099540aa2abfd556231408045346032e4a1dcc759bddf8",
+      "output_hash": "7b1b3867d10ac8df272dff3aadcb717fbcdd655c8dde924393918367b5e1e084",
       "output_path": "skills/dayz-test-ingame/references/dayz-1-30-test-ingame.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "historical"
@@ -34754,7 +34754,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6576d66a9d77b8033cf952a61692551e9a700f555be0f325d11c1add90a01bd0",
+      "output_hash": "7caf7b157526cfa88d9298b4cda6da1298ebb65a85d924f10fe7644e0cfe5825",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"

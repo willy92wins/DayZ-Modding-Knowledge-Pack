@@ -85,7 +85,7 @@ new class (see §4).
   ActionCloseCarDoorsOutside, ActionGetInTransport, ActionSwitchLights,
   ActionCarHornShort/Long, ActionPushCar` — 1.29 `carscript.c:2871-2880`.
   (hasta 1.29: `ActionCarHornShort/Long` as listed.)
-  (desde 1.30: `CarScript.SetActions()` at `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c:2313-2321` adds `ActionVehicleHornShort`/`ActionVehicleHornLong`. `ActionCarHornShort`/`Long` are `[Obsolete]` (`ActionCarHorn.c:69-70,213-214`). Empty aliases `CarHornShortActionInput : VehicleHornShortActionInput {}` at `ActionInput.c:757-758`.)
+  (desde 1.30: `CarScript.SetActions()` at `exp\scripts\scripts\4_World\Entities\Vehicles\CarScript.c:2313-2321` adds `ActionVehicleHornShort`/`ActionVehicleHornLong`. `ActionCarHornShort`/`Long` are `[Obsolete]` (`ActionCarHorn.c:69-70,213-214`). Empty aliases `CarHornShortActionInput : VehicleHornShortActionInput {}` at `ActionInput.c:757-758,773-774`.)
 
 ---
 

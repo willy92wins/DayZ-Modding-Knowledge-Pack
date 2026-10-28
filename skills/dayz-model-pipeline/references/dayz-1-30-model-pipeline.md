@@ -42,7 +42,7 @@ yet AddonBuilder-binarized). The cache files are siblings of the `.p3d`; they
 are not packed into a shipping PBO. Binary `.p3d` / `.p3dcache` are not in
 `exp\`; existence of the flag is changelog-only.
 
-Cross-ref launch argv: `dayz-test-ingame` § DayZ 1.30 and
+Cross-ref launch argv: the `since 1.30` note at the top of `dayz-test-ingame` `SKILL.md` and
 `dayz-test-ingame/references/dayz-1-30-test-ingame.md`.
 
 ## `disableSimulation` on house-based entities
