@@ -85,8 +85,7 @@ construction handle.)
 
 Energy field count is unchanged versus 1.29: eight typed writes when `m_EM`
 exists (`GetEnergy`, `IsPassive`, `IsSwitchedOn`, `IsPlugged`, four persistent-ID
-ints) then `SaveVariables` at `:2951`. The SKILL.md "nine fields" wording is
-the 1.29 phrasing; 1.30 did not add a ninth energy field.
+ints) then `SaveVariables` at `:2951`.
 
 `LoadVariables` remains behind `version >= 140` (`EntityAI.c:3053-3058`).
 

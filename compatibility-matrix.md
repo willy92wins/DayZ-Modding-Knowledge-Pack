@@ -50,13 +50,17 @@ does not re-verify it.** The evidence level of each 1.30 statement is the one it
 section records (`[EXACT]` with a `path:line` for source checks, "measured in game"
 for runtime ones).
 
-**Re-check on 1.30 stable (2026-10-28).** Every vanilla `path:line` citation in the
-skills (the 1.30 sections and the rest) was checked against `1.30.164200` and moved
-with the text it cites; the `[EXACT]` blocks that quote vanilla script were compared
-with that build; the status lists of `dayz-motorbikes` and `dayz-environment-hazards`
-were read again on it. Measurements were not repeated: something measured in game on
-`1.30.164014` is evidence for that build. How to tell which build a citation's lines
-come from: `skills/_shared/dayz-conventions.md` §Vanilla line numbers: which build.
+**Re-check on 1.30 stable (2026-10-28).** Every vanilla script citation (a `.c` file,
+or `scripts\config.cpp`) in the skills (the 1.30 sections and the rest) was checked
+against `1.30.164200` and moved with the text it cites, where some build has that
+text. Citations of the game's data files were re-checked where the re-check could
+read the cited file on `1.30.164200`; "Data files" in
+`skills/_shared/dayz-conventions.md` says which may still give an older tree's line.
+The `[EXACT]` blocks that quote vanilla script were compared with that build; the
+status lists of `dayz-motorbikes` and `dayz-environment-hazards` were read again on
+it. Measurements were not repeated: something measured in game on `1.30.164014` is
+evidence for that build. How to tell which build a citation's lines come from:
+`skills/_shared/dayz-conventions.md` §Vanilla line numbers: which build.
 
 | Skill | Where the 1.30 content lives |
 |---|---|

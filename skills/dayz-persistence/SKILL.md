@@ -34,7 +34,7 @@ order and type, propagate `super`, stage reads, and return `false` on any failed
 
 The hook version is the DayZ build from `g_Game.SaveVersion()`, not the mod's
 schema version (`VANILLA/3_game/global/game.c:435`). The base stream has variable
-width: the optional energy component writes nine fields or none, so a fixed
+width: the optional energy component writes eight fields or none, so a fixed
 offset after `super` is a latent alignment bug
 (`VANILLA/3_game/entities/entityai.c:2917-2948`). If the mod is removed, no
 remaining code re-emits its appended bytes.

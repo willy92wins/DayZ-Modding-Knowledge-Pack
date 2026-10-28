@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 MAGIC = b"VSTR"
 HEADER_SIZE = 8
-ENERGY_FIELD_COUNT = 9
+ENERGY_FIELD_COUNT = 8
 
 
 @dataclass
@@ -125,7 +125,7 @@ def save_entity(
     child_value: int,
 ) -> bytes:
     if energy_fields is not None and len(energy_fields) != ENERGY_FIELD_COUNT:
-        raise ValueError("the optional component writes exactly nine fields")
+        raise ValueError("the optional component writes exactly eight fields")
     writer = StreamWriter(version)
     if energy_fields is not None:
         for value in energy_fields:

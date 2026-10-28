@@ -1564,7 +1564,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "49cbfc70de850fb639f49917196924d61644847da06701f0e7a63f2b9bd5dad3",
+      "output_hash": "a4683b8ed1d9a9e6c20103c24520ed2cba4ea5430d667722717ce95cbab8328f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -1918,7 +1918,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6e90af512c78d65bf4fc5cba1c0e1cdb0168629fa79e0d4c764f1fcf23f99348",
+      "output_hash": "8e1c84952add396e4d15905217a1b7fb0cba3853d5316022149f314a42edfb1a",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -2084,7 +2084,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8df87558e57e12402128f542e315e99afdfffcb20d7eceb0acb1dc6de8257acd",
+      "output_hash": "d5a2aa9016e5d655ab6e78a89eceb0ec1fce9c35ec033f501d3ebf7e9390dbeb",
       "output_path": "compatibility-matrix.md",
       "routing_artifact_id": "root/compatibility-matrix",
       "verification_level": "cross_checked"
@@ -6137,7 +6137,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f59f47176f85f7a34a418d434e0ed35cc0567fe6607d48ddc04fd2ee943e215f",
+      "output_hash": "7f428f94dadf736820703a3ada71913f20a6fb4fa661b0722d5a5c2067c36564",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -8673,7 +8673,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a82cb9cc45b4ec30bbe4dd1de90d9676a06cb163dfe866712f4a5662b071d6d7",
+      "output_hash": "6e6d797b53761a8e7ccf0afc8668a4b968ca3b4523df8661a3eecbd9f8751d2f",
       "output_path": "skills/dayz-feature-spec/references/spec-template.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -8975,7 +8975,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f9f7f856d89a19a7b18b0766ab2359ca5293279c3e99f2cb2057bd825cddb4f9",
+      "output_hash": "f4b8f0c0733b9913c6171ee414ae7532e37aaa8df06c10093eda983e5b1b00c1",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -11511,7 +11511,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cffa29c9d342dab220f5622fe57040d397beaefbd6431c0f1e1807369265fa3b",
+      "output_hash": "0f3257b91dfc63eb2873a64e18ed3d3c60eaa84a6c9805a58c4e607d74736902",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -11599,7 +11599,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "da1b277a12f909e9dbdbb6e78600c09f86df717cbde44c55934e145c496b1165",
+      "output_hash": "476bf7b8d825b231acea2ded23a4363548eed78fd5fa3850fd870c0a2dd9ae07",
       "output_path": "skills/dayz-persistence/references/vanilla-stream.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -11781,7 +11781,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "162512067ec867f5928c9698e90f7b7432f65666a3338c868b64ca98c8b0a2c0",
+      "output_hash": "496145e5768a0b349b5307cbcf8bd70c803c128916a4bdaaa482c81032ce0eab",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -12275,7 +12275,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9cee2e7e91cd7841f009f553af74d581ba304d1438dd572d8a1239d7f069d1db",
+      "output_hash": "50ee3590c8536f30fdb2500c9a106d3c7ac060e8934282bd88586b7cc9318ac8",
       "output_path": "skills/dayz-realistic-animation-director/references/domain-gates.md",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
@@ -16371,7 +16371,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5de5d4013d7bb933f2550f5e37efbcd25c18d605f1ca3c7337cd773dc06a72b2",
+      "output_hash": "d0602b787a4065c77374301f70dbb4512e18a74983f00f6cbca96b3ec9d28df8",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -16875,7 +16875,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "47e4cf991dfa318c7a7b5d66ea89b8793d9bb22cea7a0cb157ebc750a370e4f6",
+      "output_hash": "450d8b7e763d61a20e8c84b5dcdcfbaf316de9a949f7e15c7ee400e1cd412c7c",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -20032,7 +20032,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e752d37b4d74d19957c7527f3ece513cb75d2dc94f45d013b27003bccda3a3e6",
+      "output_hash": "3ba0f3112607baef8e819002cc353e2c8150719fbe219b95a78732f3d0d4d68a",
       "output_path": "tests/persistence/persistence_stream.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -20170,7 +20170,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2d051727e66be32c1c68bde7a760624544ed1ec295a52e017e83f270a1158c8c",
+      "output_hash": "43be6e474498c6067d453a4bd726b598b962e2d41b0427ee1aeec9bf5d60d197",
       "output_path": "tests/persistence/test_persistence_stream.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -34524,7 +34524,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5f8d13be5f9c5e354bf61228317a75853770028565fc4393a92705c6238babc2",
+      "output_hash": "8cafd90b7d7be11a1388b83e738ad809f4f760c8be6aa22d32509687b971a353",
       "output_path": "skills/dayz-persistence/references/dayz-1-30-persistence.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "historical"

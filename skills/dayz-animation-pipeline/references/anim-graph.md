@@ -447,7 +447,7 @@ DayZ 1.30 Exp introduces several native proto methods for script-side animation 
 
 ## DayZ 1.30: Refactor of Surrender (Hands Up) System [EXACT]
 
-DayZ 1.30 Exp completely eliminates `SurrenderDummyItem`. Surrender state transitions are handled natively:
+DayZ 1.30 no longer puts `SurrenderDummyItem` in the hands: the class remains, marked obsolete (`surrenderdummyitem.c:1-2`), and only the obsolete `CheckEmoteLockedState` checks for it there (`EmoteManager.c:1211-1214`). Surrender state transitions are handled natively:
 - `m_Player.SetSurrenderState(bool)` (`exp\scripts\scripts\4_World\Entities\ManBase\PlayerBase.c:2116-2125`)
 - `m_Player.IsSurrendered()` (`exp\scripts\scripts\3_Game\Entities\Man.c:67`)
 - `SetAnimationInstanceByName("dz/anims/workspaces/player/player_main/player_main_surrender.asi", 1)` (`PlayerBase.c:2088`)

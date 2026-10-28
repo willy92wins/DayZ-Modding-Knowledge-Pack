@@ -56,7 +56,7 @@ temperature read at `:492`. `ModifiersManager.OnStoreLoad` is at
 
 ## Variable-width super trap
 
-`EntityAI.OnStoreSave` conditionally writes nine energy-component fields when
+`EntityAI.OnStoreSave` conditionally writes eight energy-component fields when
 `m_EM` exists and writes none when it does not
 (`VANILLA/3_game/entities/entityai.c:2917-2948`). Therefore the base prefix width
 is a runtime property.

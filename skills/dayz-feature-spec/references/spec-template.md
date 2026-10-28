@@ -50,7 +50,7 @@ Every symbol the next phase or consumer reads. Each MUST be verified `path:line`
 | Consumer | Symbol it reads | Kind | Verify status |
 |---|---|---|---|
 | model.cfg | `bolt` | selection | `Model.p3d` LOD0 selection `[UNVERIFIED]` |
-| config.cpp | `DamageZones.Engine` | class | `carscript.c:2134` |
+| config.cpp | `DamageZones.Engine` | class | `DZ\vehicles\wheeled\config.cpp:1263-1277` (`OffroadHatchback`) |
 | config.cpp | `hiddenSelection[0]` | texture slot | `[UNVERIFIED]` |
 | stringtable | `STR_MYMOD_ACTION` | key | `stringtable.csv:12` |
 

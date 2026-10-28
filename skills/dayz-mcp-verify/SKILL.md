@@ -357,7 +357,7 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   (`4_world/classes/useractionscomponent/actiontargets.c:241-255`, `3_game/global/dayzphysics.c:88`),
   and at a camera pitch of −45° or lower it also takes the objects of a 30°, 3 m cone and scores them
   by their distance to that ray, with no hit on them needed (`actiontargets.c:324-325`, `:531-532`,
-  `:795-801`). The take action's target condition then checks only the distance to the object's
+  `:843-848`). The take action's target condition then checks only the distance to the object's
   position: `ActionTakeItemToHands` uses `CCTObject`
   (`4_world/classes/useractionscomponent/actions/interact/actiontakeitemtohands.c:13`,
   `4_world/classes/useractionscomponent/targetconditionscomponents/cctobject.c:10-24`), and its other

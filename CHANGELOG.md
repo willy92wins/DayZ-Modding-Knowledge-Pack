@@ -665,14 +665,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `SKILL.md`) and the long horn alias in `actioninput.c` (`dayz-vehicles`). `ITEM_SOUNDS_MAX` is
   cited where `itembase.c` declares it (`dayz-sound-system` `SKILL.md`), and `CMD_Modifier_Additive`
   where the 1.29 `Locomotion.agr` applies it (`dayz-animation-pipeline` `references/anim-graph.md`
-  and the vault note). Nine pointers to a "DayZ 1.30 Exp" section that `dayz-mcp-verify`,
-  `dayz-mod-workflow`, `dayz-pbo-build` and `dayz-test-ingame` do not have now point at the 1.30
-  note at the top of each skill and its companion file. Citations whose text no build has, such as
-  the `enwidgets.c` lines of `dayz-ui-development` `references/LFPG_UI_KnowledgeBase_v3.md`, are
-  left as they were.
-- `dayz-realistic-animation-director` `SKILL.md` said that 1.30 removed `SurrenderDummyItem`. The
-  class is still there, marked obsolete (`surrenderdummyitem.c:1-2`): 1.30 no longer puts it in the
-  hands, and only the obsolete `CheckEmoteLockedState` reads it (`EmoteManager.c:1211-1214`).
+  and the vault note). The size of the cursor's cone is cited where `actiontargets.c` declares it
+  (`dayz-mcp-verify` and `dayz-physics-engine` `SKILL.md`, which cited its `DrawDebugRay`), and
+  `dayz-feature-spec` `references/spec-template.md` cites the `DamageZones.Engine` that the wheeled
+  config declares for `OffroadHatchback`, not a script line that reads it. Nine pointers to a "DayZ
+  1.30 Exp" section that `dayz-mcp-verify`, `dayz-mod-workflow`, `dayz-pbo-build` and
+  `dayz-test-ingame` do not have now point at the 1.30 note at the top of each skill and its
+  companion file. Citations whose text no build has, such as the `enwidgets.c` lines of
+  `dayz-ui-development` `references/LFPG_UI_KnowledgeBase_v3.md`, are left as they were.
+- `dayz-realistic-animation-director` (`SKILL.md` and `references/domain-gates.md`) and
+  `dayz-animation-pipeline` `references/anim-graph.md` said that 1.30 removed `SurrenderDummyItem`.
+  The class is still there, marked obsolete (`surrenderdummyitem.c:1-2`): 1.30 no longer puts it in
+  the hands, and only the obsolete `CheckEmoteLockedState` reads it (`EmoteManager.c:1211-1214`).
+- `dayz-persistence` (`SKILL.md` and `references/vanilla-stream.md`) and `rigorous-data-audit`
+  `SKILL.md` said that `EntityAI.OnStoreSave` writes nine energy fields. It writes eight, on 1.29 as
+  on 1.30 (`entityai.c:2917-2948`), and the stream simulator in `tests/persistence/` now writes
+  eight too.
 
 - Citations of files this pack does not ship now say so. `_shared/dayz-conventions.md` gains
   "Citation placeholders: `[PROJ]`, `[SKILLS]`, `<project>_dev/...`": what each token means, and

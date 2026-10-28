@@ -606,7 +606,7 @@ persists data inherits them.
   comment claiming an atomic replace as a finding, not as documentation.
 
 - **`EntityAI.OnStoreSave` writes a runtime-dependent NUMBER of fields.** With an
-  energy component it writes nine, without it none
+  energy component it writes eight, without it none
   (`VANILLA/3_game/entities/entityai.c:2917-2948`). Reading by fixed offset after
   `super.OnStoreLoad` therefore desynchronises only for the configurations that
   lack the component -- it will pass every test written against the configuration
