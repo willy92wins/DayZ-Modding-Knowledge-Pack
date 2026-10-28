@@ -1554,7 +1554,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "dd764909879b1dea9c507e8a423dc5cbc027ffc1b055c1c661934d7091ad5d19",
+      "output_hash": "764798ae8a9f05d04701f2abfe4abc4c16c7be1631b6e3e007b078d439adf5b8",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6097,7 +6097,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cbdb15eff8fda8144899d4d876f9bc8b75bd8d986cd11c2475db4a16023d3da7",
+      "output_hash": "6a83b41d4e291d6c9f7776414a97afa06acb23a2f75ab31f8796b5522e3383ef",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -11731,7 +11731,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1eb0ce61604bdb4bbe6d580472b17a39ff247010ebc2b841eb7e33a425be2719",
+      "output_hash": "b8159ba8f39de50eb1ab25bbd65c5c9c22c3f4dda663e620425315a60b579c43",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -19116,7 +19116,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "752646509a57bf65b8b18caf5bc1895a603ea635fe08349fb2620ad737adfb27",
+      "output_hash": "ae357a98b0d12cb1e522d7fe673e6175ad98fcd24c613176f5568d152efc3252",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
