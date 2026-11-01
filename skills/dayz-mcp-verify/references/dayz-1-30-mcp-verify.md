@@ -221,17 +221,22 @@ survived (runs `0761a892` and `9cb9a5ee`). Eject first, then delete, in any tool
 [EXACT][CLAIM-MCPV-DELETE-CLIENT-SEAT-130] The server only sees its own crew. A player seated with
 `vehicle_get_in_client` alone sits in the car on the client and not in the server's crew, so the
 #300 eject finds nobody, the car goes, and the client's `HumanCommandVehicle` is left pointing at
-a deleted car: native `ACCESS_VIOLATION` on the client (dayz-mcp #302). The fix (dayz-mcp PR #309,
-not yet tested in game when this was written) reads the client's seat telemetry before deleting a
-car and refuses with `vehicle_seat_unverified`, `deleted=0`, whenever the seat cannot be verified:
-unreadable status in embedded mode, an absent or stale client, or unreadable telemetry. Treat that
-answer as a refusal, not a transient error: get the player out on the client, then retry.
+a deleted car: native `ACCESS_VIOLATION` on the client (dayz-mcp #302). The fix, dayz-mcp PR #309
+(merged, squash `cbea6034`; no in-game test of it is on record), reads the client's seat telemetry
+before deleting a car. When the client reports the player seated, `object_delete` refuses with
+`vehicle_client_seated`, `deleted=0`: this is the main #302 case. When the seat cannot be verified
+(unreadable status in embedded mode, an absent or stale client, unreadable telemetry, and also in
+live mode with admin), it refuses with `vehicle_seat_unverified`, `deleted=0`. Treat either answer
+as a refusal, not a transient error: get the player out on the client, then retry.
 
-[EXACT][CLAIM-MCPV-CLEAN-REBUILDS-PBO-130] Until dayz-mcp #301 is merged, `dayz_test_run` with
-`clean=true` rebuilds the bridge PBO from `default_source` even with `build=false`: a quad run
-started on PBO `3DA69CD1` came up on `52F9A9E5` (run `43b9f3cb`). After every launch, read the
-sha256 of the live PBO on the server and the client and compare it with the build you meant to
-test; put it back and check it again when the run is done.
+[EXACT][CLAIM-MCPV-CLEAN-REBUILDS-PBO-130] dayz-mcp issue #301 reports that the `dayz-test-v1`
+launcher rebuilds the bridge PBO from `default_source` on every launch, even with `build=false`.
+The confirmed cause is narrower: `effective_build = build or clean` (`dayz_test_request.py:538`,
+same rule at `server.py:6130`), so `clean=true` always forces the build whatever `build` says.
+Until #301 is fixed, after every launch read the sha256 of the live PBO on the server and the
+client and compare it with the build you meant to test; put it back and check it again when the
+run is done. (The quad run `43b9f3cb`, PBO `3DA69CD1` to `52F9A9E5`, is not verifiable from the
+issue.) The `-serverMod=` guidance is dayz-mcp #296, not #301.
 
 [EXACT][CLAIM-MCPV-PROVENANCE-NO-WMI] On a Windows box where `Get-CimInstance Win32_Process`
 answers access denied, a provenance check that reads command lines through WMI fails before any

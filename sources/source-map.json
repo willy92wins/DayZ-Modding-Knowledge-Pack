@@ -19198,7 +19198,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-01: CLAIM-MCPV-DELETE-OCCUPIED-130, CLAIM-MCPV-DELETE-CLIENT-SEAT-130, CLAIM-MCPV-CLEAN-REBUILDS-PBO-130 and CLAIM-MCPV-PROVENANCE-NO-WMI on dayz-1-30-mcp-verify.md.",
           "license": "MIT",
-          "source_hash": "10dd83168498cfc3478726fdd23b1042c4cd286ca6ff8092c3defc7744d4b13b",
+          "source_hash": "e1303508f59fa8cfa2b762b543de4ce1250eab69ecf7ab0664624bc6b357f2f3",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "update/mcp-ll-298-302-301-1101@2026-11-01",
@@ -19206,7 +19206,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "10dd83168498cfc3478726fdd23b1042c4cd286ca6ff8092c3defc7744d4b13b",
+      "output_hash": "e1303508f59fa8cfa2b762b543de4ce1250eab69ecf7ab0664624bc6b357f2f3",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -34118,7 +34118,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-01: new section with four claims from the dayz-mcp fronts #298/#300 (eject before delete), #302/#309 (client seat gate, vehicle_seat_unverified), #301 (clean=true rebuilds the PBO; hash the live PBO after launch) and provenance without WMI.",
           "license": "MIT",
-          "source_hash": "7b0447ca1c6b92b4b64d838bcff27ec5137d4f90d2be634f6b7d9d483f77e03b",
+          "source_hash": "f33866cd04efe6d5a2ff802763a5579fe2b26069104cdbfddc4568a7b9a9831d",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "update/mcp-ll-298-302-301-1101@2026-11-01",
@@ -34126,7 +34126,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7b0447ca1c6b92b4b64d838bcff27ec5137d4f90d2be634f6b7d9d483f77e03b",
+      "output_hash": "f33866cd04efe6d5a2ff802763a5579fe2b26069104cdbfddc4568a7b9a9831d",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
