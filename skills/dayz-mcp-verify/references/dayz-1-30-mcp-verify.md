@@ -206,3 +206,36 @@ box (DayZDiag 1.30.164200 of the stable install) with a second 1.29 quad, Arma2Q
   `Module: World` line and listed only `_client` files in `scanned` (ticket
   `fb-20261026-203149-33c3`). Check `scanned.files`, or the defines of the returned line
   (`SERVER`), before taking it for the server's.
+
+## Deleting vehicles and checking what a run loaded: lessons from #298, #300, #301 and #302 (2026-11-01)
+
+[EXACT][CLAIM-MCPV-DELETE-OCCUPIED-130] On 1.30.164200, deleting a car with a player in a crew
+seat brings the game down: `ObjectDelete` on an occupied car crashed the server (runs `0ac3f9dd`
+and `7eddedd4` on dayz-mcp main `f4bec4a4`), and on the client the vanilla `CarHud.RefreshVehicleHud`
+hit a NULL in `CarScript.EngineGetRPM` (`carhud.c:104`) until the client stopped polling. LBAdmin
+works around the same bug. dayz-mcp #300 (`c7f09b7d`) ejects every occupant, on every crew
+position, before `ObjectDelete` in `object_delete`, `scene_clear` and the loadout cleanup, and
+answers `vehicle_eject_failed` without deleting when a seat cannot be emptied. With it the server
+survived (runs `0761a892` and `9cb9a5ee`). Eject first, then delete, in any tool or test you write.
+
+[EXACT][CLAIM-MCPV-DELETE-CLIENT-SEAT-130] The server only sees its own crew. A player seated with
+`vehicle_get_in_client` alone sits in the car on the client and not in the server's crew, so the
+#300 eject finds nobody, the car goes, and the client's `HumanCommandVehicle` is left pointing at
+a deleted car: native `ACCESS_VIOLATION` on the client (dayz-mcp #302). The fix (dayz-mcp PR #309,
+not yet tested in game when this was written) reads the client's seat telemetry before deleting a
+car and refuses with `vehicle_seat_unverified`, `deleted=0`, whenever the seat cannot be verified:
+unreadable status in embedded mode, an absent or stale client, or unreadable telemetry. Treat that
+answer as a refusal, not a transient error: get the player out on the client, then retry.
+
+[EXACT][CLAIM-MCPV-CLEAN-REBUILDS-PBO-130] Until dayz-mcp #301 is merged, `dayz_test_run` with
+`clean=true` rebuilds the bridge PBO from `default_source` even with `build=false`: a quad run
+started on PBO `3DA69CD1` came up on `52F9A9E5` (run `43b9f3cb`). After every launch, read the
+sha256 of the live PBO on the server and the client and compare it with the build you meant to
+test; put it back and check it again when the run is done.
+
+[EXACT][CLAIM-MCPV-PROVENANCE-NO-WMI] On a Windows box where `Get-CimInstance Win32_Process`
+answers access denied, a provenance check that reads command lines through WMI fails before any
+test step runs (run `43b9f3cb`). Measure without WMI: `Get-Process` for the DayZDiag processes,
+and the command line DayZ writes at the top of each RPT for the `-mod=` and `-serverMod=` lists
+(the retry, run `0a98badc`, passed that way).
+
