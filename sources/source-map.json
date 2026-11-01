@@ -1561,10 +1561,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/pr-135-review-4@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-01: Added entry for the dayz-mcp-verify section on deleting vehicles and checking what a run loaded (#298/#300, #302/#309, #301, provenance without WMI).",
+          "license": "MIT",
+          "source_hash": "6abdbdfe8d6822d640cb44d0c0a3f6c609764ce8e4cdf404ac3493d9fa351d41",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/mcp-ll-298-302-301-1101@2026-11-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d70f7584658045d4a350a21b90bbffe781fc55887d104b1f3e1d15a1575c510b",
+      "output_hash": "6abdbdfe8d6822d640cb44d0c0a3f6c609764ce8e4cdf404ac3493d9fa351d41",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19183,10 +19193,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/pr-135-review-5@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-01: CLAIM-MCPV-DELETE-OCCUPIED-130, CLAIM-MCPV-DELETE-CLIENT-SEAT-130, CLAIM-MCPV-CLEAN-REBUILDS-PBO-130 and CLAIM-MCPV-PROVENANCE-NO-WMI on dayz-1-30-mcp-verify.md.",
+          "license": "MIT",
+          "source_hash": "e1303508f59fa8cfa2b762b543de4ce1250eab69ecf7ab0664624bc6b357f2f3",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/mcp-ll-298-302-301-1101@2026-11-01",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d6fa7b31f5d6bcded3866a8707c4061a29e7847658cf17e4505df9a314a8a6bb",
+      "output_hash": "e1303508f59fa8cfa2b762b543de4ce1250eab69ecf7ab0664624bc6b357f2f3",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -34093,10 +34113,20 @@
           "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
           "source_revision": "update/dayz-130-arma2quad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-01: new section with four claims from the dayz-mcp fronts #298/#300 (eject before delete), #302/#309 (client seat gate, vehicle_seat_unverified), #301 (clean=true rebuilds the PBO; hash the live PBO after launch) and provenance without WMI.",
+          "license": "MIT",
+          "source_hash": "f33866cd04efe6d5a2ff802763a5579fe2b26069104cdbfddc4568a7b9a9831d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
+          "source_revision": "update/mcp-ll-298-302-301-1101@2026-11-01",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "81779583815cc0051dba1784a19832ad6d209ad8c156ff69db6a1682c2ded26a",
+      "output_hash": "f33866cd04efe6d5a2ff802763a5579fe2b26069104cdbfddc4568a7b9a9831d",
       "output_path": "skills/dayz-mcp-verify/references/dayz-1-30-mcp-verify.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "historical"
