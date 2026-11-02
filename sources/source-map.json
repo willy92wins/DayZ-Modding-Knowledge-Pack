@@ -1561,10 +1561,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/pr-135-review-4@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02: Unreleased > Added entry for the dayz-texture-pipeline change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ac2fd8e63f23059f85195171cac71a8408c0736ef5e8f8c25a078fb5b021a45e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "claude/h2r-2810-texturas@2026-11-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d70f7584658045d4a350a21b90bbffe781fc55887d104b1f3e1d15a1575c510b",
+      "output_hash": "ac2fd8e63f23059f85195171cac71a8408c0736ef5e8f8c25a078fb5b021a45e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13182,10 +13192,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "pbr-to-specular-review1@2026-10-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (the owner's H2R texture pass, 2026-10-26 to 2026-10-28): rule 4 extends to map levels with a pointer to the vanilla calibration; reference guide line for map-conventions; LL-570, LL-571 and LL-572 in the promoted rules. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "37e527133ba875d62dd58e6903ac9fb9bda49ba4872c814a5fd86cb38ae4d772",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "claude/h2r-2810-texturas@2026-11-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cc510648a38bb3fc4ac71b2474da2facf6cb96fc0e2cab968ff0a67d7fbfc35c",
+      "output_hash": "37e527133ba875d62dd58e6903ac9fb9bda49ba4872c814a5fd86cb38ae4d772",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -13296,10 +13316,20 @@
           "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "pbr-to-specular-review1@2026-10-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (the owner's H2R texture pass): pointer under the SMDI starting points; new subsections \"Calibrating against a vanilla asset of the same family\" (CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION, CLAIM-TEX-MOTORBIKE02-BODY-RVMAT) and the DXT block staircase (CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND, LL-570). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9d72d8157af1da6ddb10e5e397c105c69608cb87fcefa8b29cf689a6ee9c0976",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
+          "source_revision": "claude/h2r-2810-texturas@2026-11-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c267273080bf0a9b98bdcb859ac20d40a12203eb3605ab7467dc16ef497ca5f2",
+      "output_hash": "9d72d8157af1da6ddb10e5e397c105c69608cb87fcefa8b29cf689a6ee9c0976",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -13362,10 +13392,20 @@
           "source_path": "dayz-texture-pipeline/references/rvmat-cookbook.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (the owner's H2R texture pass): new subsection \"Stage7: choose the env map by the specular of the parts that use it\" (CLAIM-TEX-ENV-GROUND-TINT, LL-571). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2f153fb843e093d1bd0f20e407928108badc6fce59fb7b529ce398cfb08cb73b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/rvmat-cookbook.md",
+          "source_revision": "claude/h2r-2810-texturas@2026-11-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "cfce1cbec31ce7b1607ef4af4cfec911a3bcee816ad1b69a6e2f292a2c29d939",
+      "output_hash": "2f153fb843e093d1bd0f20e407928108badc6fce59fb7b529ce398cfb08cb73b",
       "output_path": "skills/dayz-texture-pipeline/references/rvmat-cookbook.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -13426,10 +13466,20 @@
           "source_path": "skills/dayz-texture-pipeline/references/vehicle-materials-and-color-variants.md",
           "source_revision": "kp-update-wp-vmod@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (the owner's H2R texture pass): new subsection \"A worn variant generated by code\" (LL-572). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5046f463c18bd583b68439f44444f1696696d47d1aeca8f05249907b82668d2f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/references/vehicle-materials-and-color-variants.md",
+          "source_revision": "claude/h2r-2810-texturas@2026-11-02",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "445649c9d039857a1c7a594746cde1683f73ef5fa53ab3d075b52dc46c32c966",
+      "output_hash": "5046f463c18bd583b68439f44444f1696696d47d1aeca8f05249907b82668d2f",
       "output_path": "skills/dayz-texture-pipeline/references/vehicle-materials-and-color-variants.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -19183,10 +19233,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/pr-135-review-5@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02: four new dayz-texture-pipeline claims and the moved ranges of the existing claims in the files it touches. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9d459ecd6886c429147375097e2c536d76ee4aeb89f17b698ad24028e9dce26c",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "claude/h2r-2810-texturas@2026-11-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d6fa7b31f5d6bcded3866a8707c4061a29e7847658cf17e4505df9a314a8a6bb",
+      "output_hash": "9d459ecd6886c429147375097e2c536d76ee4aeb89f17b698ad24028e9dce26c",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

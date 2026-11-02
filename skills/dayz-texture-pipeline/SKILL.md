@@ -22,6 +22,9 @@ Use this skill to design, edit, validate, and package DayZ texture/material work
    **Packing `[MECHANISM VERIFIED]` (vanilla `hatchback_02`/`sedan_02` `_nohq` mip 128 raw, 2026-08-30; same layout on two LFQuad2 maps the same night):** shipped `_nohq` is DXT5nm, not RGB-in-DXT5. Stored `(R,G,B,A)=(0,Y,Z,X)` with `TAGG SWIZ 05 04 02 03`; **X lives in alpha**. `ImageToPAA` with a `_nohq` filename deswizzles to RGB `(X,Y,Z)`. Measure amplitude/relief on that PNG, never on the raw DXT block. Do not infer packing from the suffix: read the current file **and** a vanilla `_nohq`.
    **Sign if height comes from albedo luminance:** dark pixels are valleys. A dark seam that comes out as a ridge is an inverted mold. Confirm with a 1D sweep across a known dark line (entering a horizontal groove: R>128; leaving: R<128; use G for a vertical sweep). Recalibrate Sobel gain per atlas — copying a strength that worked at another resolution or contrast overshoots. An exaggerated normal looks worse than a weak one. Detail: `references/map-conventions.md`.
 4. Copy the closest vanilla `.rvmat` category first. Do not invent absolute stage constants when vanilla examples diverge by asset class.
+   The same holds for map levels (added 2026-11-02): measure `_smdi`, `_as` and `_co` of the closest vanilla asset of
+   the same family before choosing values. The generic SMDI table is far brighter than vanilla vehicle paint
+   (`references/map-conventions.md` §Calibrating against a vanilla asset of the same family).
 5. Mark templates as `[DESIGN]` until adapted to the real addon paths, selections, UV sets, and verified vanilla reference.
 6. **UI textures (loading screens, menu backgrounds, map images): NEVER change the tone curve on the strength of an offline model — the engine's transfer function must be MEASURED from a screenshot first** (added 2026-08-21, rewritten same day after the first version shipped a regression).
    - **What is measured**: a mod running in production carried a full `sRGB→linear` decode on its source. An offline model built from a vault note ("1.29 washes UI by +35% luma, contrast 76→58", Bohemia T198202) said this was a ~4x overshoot, so it was replaced with a gentle photographic curve. **In-game the result was much brighter than before** — the user's report, the only real datum in the whole exercise. Working backwards, `linear→sRGB` on the old texture predicts a render of 132.31 against a source median of 132.51: an exact cancellation. So the engine plausibly treats the UI `.paa` as LINEAR data and encodes it for display, making `sRGB→linear` on the source the correct inverse and the note's "+35%" model wrong or measured on something else.
@@ -71,7 +74,7 @@ Then replace every placeholder with verified real paths.
 
 ## Reference loading guide
 
-- `references/map-conventions.md`: texture suffixes, normal map orientation, SMDI packing, metallic→specular (G) conversion, export notes.
+- `references/map-conventions.md`: texture suffixes, normal map orientation, SMDI packing, metallic→specular (G) conversion, calibration against vanilla, the DXT block staircase of a per-material change, export notes.
 - `references/rvmat-cookbook.md`: Super, flat, emissive, glass, penetration, and common stage patterns.
 - `references/config-and-damage.md`: `hiddenSelectionsTextures[]`, `hiddenSelectionsMaterials[]`, `healthLevels[]`, vehicle light material swaps.
 - `references/multi-rvmat-section-texturing.md`: enriched Multi shader reference with RGB+black mask mapping and UV requirements.
@@ -152,6 +155,9 @@ complete entry lives there. Do not remove citation: the index detects promotion 
 
 - **LL-066** — In Blender 5.1 use `RENDERED` + EEVEE + light for materials and capture `VIEW_3D` area, not full window. For Multi, keep UV2/`tex1` and reproduce blend by mask; on Windows without `python-lzo`, decode `.paa` with `lzokay` and viewer shim.
 - **LL-368** — DATA maps (normal, AO, curvature, displacement, ID, masks): `colorspace_settings.name = 'Non-Color'`, `Standard` view / `None` look / exposure 0 / gamma 1, and then reread written file against intended buffer (max error within quantization step). Without that round-trip defect is delivered.
+- **LL-570** — In a per-material change on a baked atlas, a logo or decal under clear coat takes the class of the paint around it; then measure the border ring with each neighbour of the same UV island. A 2-4 texel rim that kept its old value is the DXT block staircase (`references/map-conventions.md`).
+- **LL-571** — Choose the Stage7 env map by the specular of the parts that use it, and measure its ground half first: `env_land_optic_co` tints high-G silver olive, `env_land_chrome_co` stays neutral (`references/rvmat-cookbook.md`).
+- **LL-572** — Procedural wear: 3D value noise in object space and random scratch segments with a fixed seed, never sine thresholds; look at the atlas at 1:1 before a run (`references/vehicle-materials-and-color-variants.md`).
 
 ## Ambient-shadow maps and borrowed RVMATs (added 2026-08-31)
 

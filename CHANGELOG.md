@@ -7,6 +7,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-texture-pipeline`: what the H2R texture pass measured against the vanilla Motorbike_02 (2026-10-26
+  to 2026-10-28). `references/map-conventions.md` gains "Calibrating against a vanilla asset of the same family":
+  the vanilla `motorbike_02_body` maps per surface class (paint `_smdi` G median 7, where the generic table, which now
+  points there, says 70-130 for painted metal), the body rvmat, face texels only and a named statistic. It also gains
+  the DXT block staircase that a per-material change leaves inside one UV island (LL-570).
+  `references/rvmat-cookbook.md` gains how to choose the Stage7 env map by specular, with the ground and sky colours
+  of six vanilla env maps (LL-571). `references/vehicle-materials-and-color-variants.md` gains procedural wear
+  without sines (LL-572). `SKILL.md`: rule 4 extends to map levels, and three promoted lessons.
+  `CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION`, `CLAIM-TEX-MOTORBIKE02-BODY-RVMAT`,
+  `CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND`, `CLAIM-TEX-ENV-GROUND-TINT`.
 - `dayz-animation-pipeline` `references/anim-graph.md`, new section "Porting a 1.29 `$AnimGraph 7`
   graph to 1.30 — field-by-field mapping" (DayZ 1.30.164078 stable, 2026-10-15): the 1.30 file set
   (`.agr` as `AnimSrcGraph`, `.agf` as `AnimSrcGraphFile`, `.ast` as `AnimSetTemplateSource`,

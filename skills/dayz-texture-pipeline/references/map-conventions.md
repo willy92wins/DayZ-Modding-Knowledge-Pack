@@ -185,6 +185,10 @@ Material starting points:
 | glass/chrome | 255 | 180-255 | 180-255 | Also needs appropriate shader/fresnel/env. |
 | wood | 255 | 20-70 | 30-90 | Usually low specular and broad roughness. |
 
+These rows are generic starting points, not measured vanilla values. Vanilla vehicle paint measures far lower in G
+(median 7 on the `motorbike_02` body): calibrate against a vanilla asset of the same family before trusting a row
+(§Calibrating against a vanilla asset of the same family, below).
+
 Evidence:
 
 - BI Super shader channel description: https://community.bistudio.com/wiki/Super_shader
@@ -259,6 +263,62 @@ That matches the packing table above. What reading the script shows:
   so on a Q16 build force `-depth 8`. [DESIGN] Not run here (no ImageMagick on this machine). `Pack_SMDI.bat` passes
   no `-depth`, so a 16-bit source run through a Q16 build can give a 16-bit `_SMDI`, depending on the output format.
 - Same licence rule: cite, do not vendor.
+
+### Calibrating against a vanilla asset of the same family (added 2026-11-02)
+
+[EXACT][CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION] Measured on DayZ 1.30.164014 (`vehicles_singletrack.pbo`): the
+vanilla `DZ\vehicles\singletrack\Motorbike_02\data\motorbike_02_body_red_co.paa`, `_smdi.paa` and `_as.paa`, mip 0
+decoded with ImageToPAA, against a mod's motorbike body atlas that its owner judged worse than the vanilla in gloss and
+colour, seen side by side in game (2026-10-26). The vanilla classes are split by the `_co` colour.
+
+| | Vanilla `motorbike_02_body` | Mod atlas before calibration |
+| --- | --- | --- |
+| `_co` luminance p10 / p50 / p90 | 24 / 55 / 94 | 30 / 41 / 112 |
+| `_smdi` G (specular) p50 / p90 | 4 / 101 | 30 / 121 |
+| `_smdi` B (gloss) p50 / p90 | 49 / 156 | 107 / 152 |
+| `_as` G median | 120 | 154 |
+
+| Vanilla class (by `_co`) | Luminance | `_smdi` G p50 / p90 | `_smdi` B p50 / p90 | `_as` G |
+| --- | ---: | --- | --- | ---: |
+| red paint | 82 | 7 / 53 | 57 / 77 | 138 |
+| light metal (luminance > 110, saturation < 0.15) | 142 | 28 / 243 | 50 / 148 | 207 |
+| mid grey (luminance 60-110) | 76 | 49 / 174 | 47 / 159 | 183 |
+| dark (luminance < 35) | 23 | 0 / 13 | 41 / 206 | 57 |
+
+- Vanilla keeps the specular low almost everywhere, paint included, and spends it on chrome and edges (the p90
+  column). The generic "worn painted metal" row above (G 70-130) is 10 to 19 times the vanilla paint median.
+- Vanilla has a marked ambient shadow and real blacks; the mod's blacks were grey (luminance 38-43 against 23).
+- Name the statistic and the domain. Measure on face texels only, masked by the LOD0 UV: a factor computed over faces
+  plus padding left one class at luminance 48 against a target of 28. On the vanilla dark class the `_as` G mean is
+  56.6 and the median 8.
+
+- [EXACT][CLAIM-TEX-MOTORBIKE02-BODY-RVMAT] The rvmat was not the difference: the mod used the same environment map.
+  The vanilla body material (`DZ\vehicles\singletrack\Motorbike_02\data\motorbike_02_body.rvmat`, DayZ
+  1.30.164014) has `specular[]={1.1,1.1,1.1,1}` and `specularPower=160` (`:14-15`), Stage6
+  `#(ai,128,1,1)fresnel(0.53,0.22)` (`:80`) and Stage7 `dz\data\data\env_land_optic_co.paa` (`:92`).
+
+[DESIGN] Procedure: decode the shipped PAAs of the closest vanilla asset of the same family (a motorbike for a
+motorbike) and of the mod, not the PNG sources; set G and B per surface class with the vanilla figure beside each; then
+look in game next to the vanilla asset under the same light. One mod's classes after this calibration (G / B): matte
+3 / 41, satin 7 / 57, clear coat 7 / 77, rough cast 28 / 50, machined 100 / 159, mirror 205 / 237. The agent saw them
+in game, with the env map change of `rvmat-cookbook.md` §Stage7; the owner had not judged them yet.
+
+### A per-material change on a baked atlas leaves a DXT block staircase next to a material it skips (added 2026-11-02, LL-570)
+
+[EXACT][CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND] A per-material `_smdi` recalibration raised a fuel tank's mirror paint
+from about G/B 100/190 to 205/237 and left without a class the logo panel that shares its UV island. The mod's step
+that keeps the old value in every 4×4 DXT block holding texels of another material (so that DXT1 does not mix two
+islands) then left at G≈100 74 % of the mirror texels within 2 px of the logo, and 33 % of those 2-4 px away. In game
+(2026-10-28): a sawtooth line under the logo seen up close, and a two-tone tank, matte bands around the logo and a
+mirror centre. With the logo given the class of the paint around it, the stale rim measured 0 % and the tank read one
+tone in game; the close-up of the sawtooth was not looked at again in game.
+
+- A decal or logo under clear coat takes the class of the paint around it, not "no class".
+- Before accepting a per-material change, measure by distance to the border with each neighbour in the same island:
+  the share of border texels that did not change while the interior did. A rim of 2-4 texels that kept the old value
+  is the staircase.
+- Keeping whole DXT blocks is right against a foreign island. Inside one island, between two materials of the same
+  surface, it is what makes the step.
 
 ## Export and path rules
 
