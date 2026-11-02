@@ -136,7 +136,9 @@ all other verbs green (classic false-red). What was verified in `MCPClientBridge
 
 [EXACT][CLAIM-MCPV-REAL-GETIN-ACTION-130] R3 and R4 do not show what a player sees.
 `query_get_in_condition` evaluates the gates of `ActionGetInTransport.ActionCondition` for the
-component it is given, not for the one under the player's cursor, and `vehicle_enter` /
+component it is given, not for the one under the player's cursor; it also skips `CanGetIn()` and
+calls `IsAreaAtDoorFree` where the action calls `IsAreaAtDoorFreeDiag`, so its `available=1` is
+partial. `vehicle_enter` /
 `vehicle_get_in_client` seat the player without the action. Arma2Quad v1.0.1 was seated that way
 in its 2026-10-26 tests; on 2026-10-28 its right side turned out to have no get-in action for
 either seat (`CLAIM-VEH-GETIN-ONE-SIDED-130` in `dayz-vehicles`). The rung that matches the player,
@@ -145,7 +147,9 @@ run from both sides and for each seat:
 1. Seat component: `scene_raycast(intersect="view")` straight down onto the top of the seat
    (Arma2Quad: 16 driver, 18 co-driver). A horizontal ray at seat height hit the rear fender
    (component 31) first.
-2. Stand within 1 m of the seat's door condition point and `player_look_at` the top of the seat.
+2. R2 leaves the `camera_set("lookat")` script camera on, and while it is active `player_look_at`
+   returns `script_camera` (`MCPClientBridge.c:6758`): send `restore_gameplay` and wait for its
+   response first. Then stand within 1 m of the seat's door condition point and `player_look_at` the top of the seat.
    The aim converged up to about 42 degrees off the body heading; targets at 60 and 76 degrees
    ended in `deadline` and the view went back to the body heading, which `player_teleport` does not
    change (`fb-20261028-165641-c616`). Place the player so the seat lies within about 40 degrees of
@@ -155,7 +159,10 @@ run from both sides and for each seat:
    prompt sits under the vehicle's name (`Entrar [MANTENER]` in a Spanish client).
 4. `action_use("ActionGetInTransport", classname=<type>, component_index=<from action_cursor>,
    cursor_pos=<from action_cursor>)`, then `vehicle_telemetry`: PASS when `seated=1` on the expected
-   seat. `action_use("ActionGetOutTransport", target="self")` got the player off again.
+   seat. Without `pos`, `action_use` picks the nearest matching object, not the one under the cursor
+   (`MCPClientBridge.c:4094`): pass `pos`/`radius` tied to the object `action_cursor` observed and
+   check that the seated vehicle is that instance, or keep a single instance of the type in range.
+   `action_use("ActionGetOutTransport", target="self")` got the player off again.
 
 A build whose scripts did not load shows here as well: `telemetry_read object_at` reports
 `class_name="CarScript"` instead of the mod's script class, the cursor shows only the vehicle's
@@ -184,8 +191,8 @@ which was the v1.0.0 PBO (`World` 2343 files on 1.30.164200, against 2348 with v
 | `first_block="crew_can_get_through"` | R3 | **bare `class X: CarScript`** inherits `Transport.CrewCanGetThrough()=false`: `rip-import.md:430-451`; fix = `extends CarScript` with `CrewCanGetThrough`+`GetSeatAnimationType`+`GetAnimInstance` override + `worldScriptModule` in `CfgMods` (doors NOT required, `:449-451`) |
 | `first_block="area_blocked"` (gate 6b) | R3 | `IsAreaAtDoorFree` false → door area obstruction / door selection |
 | `first_block="unreachable"` (gate 7) | R3 | `CanReachSeatFromDoors` false → seat↔door geometry, or **car too far from player** (move adjacent before concluding model fix) |
-| `action_cursor` slot empty while R3 is `available=1` | R3b | the cursor is on another component (fender, body): aim at the top of the seat and compare `cursor.target.component_index` with the seat's component |
-| R3 `unreachable` from one side only | R3b | the door condition points sit on one side: `dayz-vehicles` `references/dayz-1-30-vehicles.md` `CLAIM-VEH-GETIN-ONE-SIDED-130` |
+| `action_cursor` slot empty while R3 is `available=1` | R3b | partial diagnosis: R3 skips `CanGetIn()` and uses `IsAreaAtDoorFree`, the action checks `CanGetIn()` + `IsAreaAtDoorFreeDiag` (e.g. a fallen motorbike, `motorbikescript.c:225`). Candidate, not proven cause: the cursor is on another component (fender, body): aim at the top of the seat and compare `cursor.target.component_index` with the seat's component |
+| R3 `unreachable` from one side only | R3b | candidate: the door condition points sit on one side (seen on Arma2Quad at the tested positions only): `dayz-vehicles` `references/dayz-1-30-vehicles.md` `CLAIM-VEH-GETIN-ONE-SIDED-130` |
 | `telemetry_read` `class_name="CarScript"` and R3 `crew_can_get_through` | R3 | the mod's scripts did not load: compare `Module: World; loaded Nx files` with a run without the mod (`dayz-vehicles` `CLAIM-VEH-SCRIPT-PATH-SLASH-130`) |
 | `first_block="occupied"` / `"item_heavy"` / `"already_in_vehicle"` | R3 | harness state, NOT model bug: clean re-spawn / drop heavy item from hands / exit vehicle first |
 | `first_block="no_component"` (`partial=1`) | R3 | passed `component=-1`: obtain real `component` from a `scene_raycast`; without it diagnosis is PARTIAL, NEVER PASS |

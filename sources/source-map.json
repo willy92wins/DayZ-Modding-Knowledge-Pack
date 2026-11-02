@@ -9049,7 +9049,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): rung R3b, the player's own get-in action, with CLAIM-MCPV-REAL-GETIN-ACTION-130, and three rows of the failure map. Authored by Claude (Anthropic) from the Arma2Quad get-in checks of 2026-10-28 on the stable 1.30.164200 DayZDiag.",
           "license": "MIT",
-          "source_hash": "749418ce1716a1a12eed88ab12013fd2cb0187f512a36a6bca4cc5f9186a33da",
+          "source_hash": "d117080f18f9c87f9cbe18222b21046975e22c0aa6ad52ae854b8b7bb7eb1997",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
           "source_revision": "update/dayz-130-getin-action@2026-11-02",
@@ -9057,7 +9057,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "749418ce1716a1a12eed88ab12013fd2cb0187f512a36a6bca4cc5f9186a33da",
+      "output_hash": "d117080f18f9c87f9cbe18222b21046975e22c0aa6ad52ae854b8b7bb7eb1997",
       "output_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -34786,7 +34786,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): section 5 gains CLAIM-VEH-GETIN-ONE-SIDED-130. Authored by Claude (Anthropic) from the Arma2Quad get-in checks of 2026-10-28 on the stable 1.30.164200 DayZDiag.",
           "license": "MIT",
-          "source_hash": "526f935b6ffa15f515859255c1ed83a88de017f60664690952ca0e2f58418f65",
+          "source_hash": "f98031a74930118a316dca19bdd9853e0eb4bf28cbc3c31e0ca0a6e19023de7a",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
           "source_revision": "update/dayz-130-getin-action@2026-11-02",
@@ -34794,7 +34794,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "526f935b6ffa15f515859255c1ed83a88de017f60664690952ca0e2f58418f65",
+      "output_hash": "f98031a74930118a316dca19bdd9853e0eb4bf28cbc3c31e0ca0a6e19023de7a",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"
