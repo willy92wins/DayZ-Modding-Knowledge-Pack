@@ -124,9 +124,8 @@ Example vanilla glass:
 
 ### Stage7: choose the env map by the specular of the parts that use it (added 2026-11-02, LL-571)
 
-[EXACT][CLAIM-TEX-ENV-GROUND-TINT] On a high-specular part the env map is seen almost directly. Mean RGB of the lower
-(ground) and upper (sky) halves of vanilla env maps, mip 0 of the 256² files in `P:\DZ\data\data`, decoded with
-ImageToPAA (2026-11-02):
+[EXACT][CLAIM-TEX-ENV-GROUND-TINT] Mean RGB of the lower (ground) and upper (sky) halves of vanilla env maps, mip 0 of the
+256² files in `P:\DZ\data\data`, decoded with ImageToPAA (2026-11-02):
 
 | Env map | Ground half | Sky half |
 | --- | --- | --- |
@@ -137,16 +136,16 @@ ImageToPAA (2026-11-02):
 | `env_mirror_co` | 123 / 127 / 114 | 171 / 180 / 193 |
 | `env_land_plastic_co` | 127 / 127 / 127 | 192 / 194 / 198 |
 
-The vanilla Motorbike_02 body uses `env_land_optic_co` with its paint at `_smdi` G median 7
-(`map-conventions.md` §Calibrating against a vanilla asset of the same family), so the env barely shows. A mod body
-kept that env with a silver paint at G/B 205/237: in game its side panels and tank read olive. With
-`env_land_chrome_co` in the body rvmat the silver read neutral in game (2026-10-28); the damage and light materials
-built from the base rvmat inherited it.
+[EXACT][CLAIM-TEX-ENV-SILVER-OLIVE-INGAME] The vanilla Motorbike_02 body uses `env_land_optic_co`, with its red paint at
+`_smdi` G median 5 (`map-conventions.md` §Calibrating against a vanilla asset of the same family). A mod body kept that env
+with a silver paint raised to G/B 205/237: in game (2026-10-28) its side panels and tank read olive. With
+`env_land_chrome_co` in the body rvmat the silver read neutral in game; the damage and light materials built from the base
+rvmat inherited it.
 
-- Pick the env by the specular of the parts that use it, not by copying the vanilla asset's.
-- For mirror, chrome or silver with a high G, a neutral env (`env_land_chrome_co`, which `dayz-model-pipeline` also
-  gives chrome).
-- Measure the ground half of a candidate env before using it.
+[DESIGN]
+- If your G stays near the vanilla asset's, keep its env. If you raise G toward mirror, measure the ground half of the env
+  first instead of inheriting `env_land_optic_co` because the vanilla asset uses it.
+- For mirror, chrome or silver with a high G, a neutral env such as `env_land_chrome_co`.
 
 ## Penetration materials
 
