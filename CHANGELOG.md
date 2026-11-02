@@ -7,6 +7,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-texture-pipeline`: what the H2R texture pass measured against the vanilla Motorbike_02 (2026-10-26
+  to 2026-11-02). `references/map-conventions.md` gains "Calibrating against a vanilla asset of the same family": compare
+  `_smdi` levels only under matching rvmat constants; the vanilla `motorbike_02_body` rvmat; its maps by surface class
+  against a mod atlas before calibration, with domain and statistic stated (red paint `_smdi` G median 5, where the
+  generic table, which now points there, says 70-130 for painted metal). It also gains the DXT block staircase that a
+  per-material change leaves inside one UV island (LL-570). `references/rvmat-cookbook.md` gains how to choose the Stage7
+  env map by specular, with the ground and sky colours of six vanilla env maps (LL-571).
+  `references/vehicle-materials-and-color-variants.md` gains procedural wear without sines (LL-572). `SKILL.md`: rule 4
+  extends to map levels, and three promoted lessons. `CLAIM-TEX-MOTORBIKE02-BODY-RVMAT`,
+  `CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION`, `CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND`, `CLAIM-TEX-DXT-STAIRCASE-INGAME`,
+  `CLAIM-TEX-ENV-GROUND-TINT`, `CLAIM-TEX-ENV-SILVER-OLIVE-INGAME`. Cross-family review: Grok 4.7 (round 1, NEEDS-WORK,
+  13 findings, applied).
 - `dayz-mcp-verify` `references/acceptance-ladder.md`: rung R3b, the player's own get-in
   action, with `CLAIM-MCPV-REAL-GETIN-ACTION-130` (stable DayZDiag 1.30.164200, 2026-10-28, Arma2Quad).
   `query_get_in_condition` and the seating verbs do not go through the action under the cursor;
