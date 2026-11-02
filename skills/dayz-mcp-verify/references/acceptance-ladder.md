@@ -102,6 +102,7 @@ smoke ends (entity spawns + is seen) and reaches "drives and turns to the correc
 | **R2 solid+oriented render** | `scene_raycast(from,to)` (N points) + `camera_set(cam_mode:"lookat")`+`capture_screenshot` (N angles) | solid rays where they should hit + visual without holes/inverted faces, oriented, plausible scale | hole from one angle / solid from opposite → **per-part winding**. Rotated/mirrored car → **orient transform**. Bad size → **scale**. Floating/rotated ~90° part → **proxy frame** |
 | **R2.5 restore-gameplay** | (lookat does NOT disable sim; see below) | live sim+controls before driving; **freecam FORBIDDEN in this ladder** | if R4/R5 do not respond with seated+owner+engine → suspect freecam/sim, NOT drivetrain |
 | **R3 get-in available** | `scene_raycast` (ring) → `component` → `query_get_in_condition(pos, component)` | **DRIVER** seat (`component_crew_index==0`) is `available=1` (`first_block=""`). A car with only PASSENGER available is NOT drivable by a human → R3 FAIL | the `first_block` of DRIVER ("Failure→fix mapping" table). Soft: does NOT block R4/R5 |
+| **R3b real action (HUD)** | `scene_raycast` (down onto the seat) → `player_teleport` + `player_look_at` → `action_cursor` → `action_use("ActionGetInTransport", component_index, cursor_pos)` → `vehicle_telemetry` | cursor slot `ActionGetInTransport` on the seat's component, then `seated=1`: **from both sides, for each seat** (see R3b below) | slot empty while R3 is `available=1` → cursor on another component or on the wrong side; R3 `unreachable` on one side only → one-sided door condition point |
 | **R4 seated (MCP)** | `vehicle_get_in_client(pos)` | `seated=1`, `is_owner=1`, `vehicle_fixture_ready=1` | `not_seated`/`seat_failed` → reachability / seat anim / crew bone. Hard for R5/R6 |
 | **R5 drives** | `engine_set("start")` → `vehicle_control(throttle:1, hold_ttl_s:12)` → [do not re-call] → `vehicle_telemetry` → `vehicle_release` | `pos_delta>1.0` m + `speedo_max>0` + `engine_on_server` + `is_owner` (movement by gravity/inertia does NOT count) | `pos_delta≈0` with engine+owner → AMBIGUOUS: **MANDATORY re-test on clear ground** before mapping fix (`needs_clear_ground_retest`); if still ~0 with revving engine → **wheel sim (FireGeo)** / drivetrain |
 | **R6 wheels/direction** | `vehicle_control(steer:-1)` + `vehicle_telemetry` sampling (+ optional `camera_set` lookat) | car curves to COMMANDED side — but left/right sign is UNCALIBRATED: orchestrator reports `signed_cross`, confirm vs vanilla ref car before concluding | curves to opposite side / mirrored wheels → **model.cfg wheel `angle` sign** / **naming `wheel_X_Y`** |
@@ -131,6 +132,43 @@ all other verbs green (classic false-red). What was verified in `MCPClientBridge
   input). **NEVER `cam_mode="free"` between R2 and R5.** If R5 does not move with `seated=1`+`is_owner=1`+
   `engine_on`, first suspect is a freecam-disabled sim (R2.5 violation), not drivetrain.
 
+### R3b — the player's own get-in action (measured 2026-10-28)
+
+[EXACT][CLAIM-MCPV-REAL-GETIN-ACTION-130] R3 and R4 do not show what a player sees.
+`query_get_in_condition` evaluates the gates of `ActionGetInTransport.ActionCondition` for the
+component it is given, not for the one under the player's cursor; it also skips `CanGetIn()` and
+calls `IsAreaAtDoorFree` where the action calls `IsAreaAtDoorFreeDiag`, so its `available=1` is
+partial. `vehicle_enter` /
+`vehicle_get_in_client` seat the player without the action. Arma2Quad v1.0.1 was seated that way
+in its 2026-10-26 tests; on 2026-10-28 its right side turned out to have no get-in action for
+either seat (`CLAIM-VEH-GETIN-ONE-SIDED-130` in `dayz-vehicles`). The rung that matches the player,
+run from both sides and for each seat:
+
+1. Seat component: `scene_raycast(intersect="view")` straight down onto the top of the seat
+   (Arma2Quad: 16 driver, 18 co-driver). A horizontal ray at seat height hit the rear fender
+   (component 31) first.
+2. R2 leaves the `camera_set("lookat")` script camera on, and while it is active `player_look_at`
+   returns `script_camera` (`MCPClientBridge.c:6758`): send `restore_gameplay` and wait for its
+   response first. Then stand within 1 m of the seat's door condition point and `player_look_at` the top of the seat.
+   The aim converged up to about 42 degrees off the body heading; targets at 60 and 76 degrees
+   ended in `deadline` and the view went back to the body heading, which `player_teleport` does not
+   change (`fb-20261028-165641-c616`). Place the player so the seat lies within about 40 degrees of
+   the current heading, for example behind-left or behind-right of a vehicle that faces the same way.
+3. `action_cursor`: PASS when `cursor.slots.continuous_primary.action_class` is
+   `ActionGetInTransport` and `cursor.target.component_index` is the seat's component. On screen the
+   prompt sits under the vehicle's name (`Entrar [MANTENER]` in a Spanish client).
+4. `action_use("ActionGetInTransport", classname=<type>, component_index=<from action_cursor>,
+   cursor_pos=<from action_cursor>)`, then `vehicle_telemetry`: PASS when `seated=1` on the expected
+   seat. Without `pos`, `action_use` picks the nearest matching object, not the one under the cursor
+   (`MCPClientBridge.c:4094`): pass `pos`/`radius` tied to the object `action_cursor` observed and
+   check that the seated vehicle is that instance, or keep a single instance of the type in range.
+   `action_use("ActionGetOutTransport", target="self")` got the player off again.
+
+A build whose scripts did not load shows here as well: `telemetry_read object_at` reports
+`class_name="CarScript"` instead of the mod's script class, the cursor shows only the vehicle's
+name, and R3 stops at `crew_can_get_through`. Seen with the Arma2Quad Workshop copy of 2026-10-27,
+which was the v1.0.0 PBO (`World` 2343 files on 1.30.164200, against 2348 with v1.0.1).
+
 ### Barandillas anti-verde-falso (innegociables)
 1. **Failure outside known taxonomy → STOP and escalate.** Do not blindly rebuild. The ladder maps
    known symptoms; a new symptom is a sign that something needs to be understood, not of iterating at random.
@@ -153,6 +191,9 @@ all other verbs green (classic false-red). What was verified in `MCPClientBridge
 | `first_block="crew_can_get_through"` | R3 | **bare `class X: CarScript`** inherits `Transport.CrewCanGetThrough()=false`: `rip-import.md:430-451`; fix = `extends CarScript` with `CrewCanGetThrough`+`GetSeatAnimationType`+`GetAnimInstance` override + `worldScriptModule` in `CfgMods` (doors NOT required, `:449-451`) |
 | `first_block="area_blocked"` (gate 6b) | R3 | `IsAreaAtDoorFree` false → door area obstruction / door selection |
 | `first_block="unreachable"` (gate 7) | R3 | `CanReachSeatFromDoors` false → seat↔door geometry, or **car too far from player** (move adjacent before concluding model fix) |
+| `action_cursor` slot empty while R3 is `available=1` | R3b | partial diagnosis: R3 skips `CanGetIn()` and uses `IsAreaAtDoorFree`, the action checks `CanGetIn()` + `IsAreaAtDoorFreeDiag` (e.g. a fallen motorbike, `motorbikescript.c:225`). Candidate, not proven cause: the cursor is on another component (fender, body): aim at the top of the seat and compare `cursor.target.component_index` with the seat's component |
+| R3 `unreachable` from one side only | R3b | candidate: the door condition points sit on one side (seen on Arma2Quad at the tested positions only): `dayz-vehicles` `references/dayz-1-30-vehicles.md` `CLAIM-VEH-GETIN-ONE-SIDED-130` |
+| `telemetry_read` `class_name="CarScript"` and R3 `crew_can_get_through` | R3 | the mod's scripts did not load: compare `Module: World; loaded Nx files` with a run without the mod (`dayz-vehicles` `CLAIM-VEH-SCRIPT-PATH-SLASH-130`) |
 | `first_block="occupied"` / `"item_heavy"` / `"already_in_vehicle"` | R3 | harness state, NOT model bug: clean re-spawn / drop heavy item from hands / exit vehicle first |
 | `first_block="no_component"` (`partial=1`) | R3 | passed `component=-1`: obtain real `component` from a `scene_raycast`; without it diagnosis is PARTIAL, NEVER PASS |
 | `vehicle_get_in_client` `not_seated`/`seat_failed` | R4 | get-in latency (increase `prep_deadline`) / crew bone-selection / seat anim type — `vehicle-config-and-modelcfg.md` (crew proxy = selection in geometry **AND** bone in `CfgSkeletons`, both or get-in breaks) |
