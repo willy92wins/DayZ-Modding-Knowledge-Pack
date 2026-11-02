@@ -2721,7 +2721,7 @@
     {
       "artifact_id": "file/skills/dayz-texture-pipeline/references/map-conventions.md",
       "claim_id": "CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION",
-      "evidence_locator": "Offline 2026-11-02, re-measured for review round 1: DayZ 1.30.164014 Exp extraction of vehicles_singletrack.pbo, DZ/vehicles/singletrack/Motorbike_02/data/motorbike_02_body_{red_co,smdi,as}.paa (2048x2048) and the owner's H2R body M atlas before the T pass (data/m2610/h2r_{co,smdi,as}.paa, 4096x4096, regenerated 2026-10-28 by the same M switches as the atlas shipped on 2026-10-27), decoded with DayZ Tools ImageToPAA (mip 0); _smdi and _as resampled bilinearly to the _co size; domain _co largest channel > 6 (vanilla 4,193,793 of 4,194,304 texels; mod 13,937,876 of 16,777,216); luminance Rec. 601; class masks as in the table. Over all texels the mod reads _smdi G 30/121, B 107/152, _as G median 154; the vanilla is unchanged. A first measurement on 2026-10-27 (domain and luminance formula not recorded) gave the same global G and B and G p50 7 for a red-paint class; superseded by this one. The owner's judgement: project log, 2026-10-26, side by side in game. Padding case: the T pass report of the same project (T1 metrics before and after the face-only fix).",
+      "evidence_locator": "Offline 2026-11-02, re-measured for review round 1: DayZ 1.30.164014 Exp extraction of vehicles_singletrack.pbo, DZ/vehicles/singletrack/Motorbike_02/data/motorbike_02_body_{red_co,smdi,as}.paa (2048x2048) and the owner's H2R body M atlas before the T pass (data/m2610/h2r_{co,smdi,as}.paa, 4096x4096, regenerated 2026-10-28 by the same M switches as the atlas shipped on 2026-10-27), decoded with DayZ Tools ImageToPAA (mip 0); _smdi and _as resampled bilinearly to the _co size; domain _co largest channel > 6 (vanilla 4,193,793 of 4,194,304 texels; mod 13,937,876 of 16,777,216); luminance Rec. 601; class masks as in the table. Over all texels the mod reads _smdi G 30/121, B 107/152, _as G median 154; the vanilla is unchanged. A first measurement on 2026-10-27 (domain and luminance formula not recorded) gave the same global G and B and G p50 7 for a red-paint class; superseded by this one. The owner's judgement: project log, 2026-10-26, side by side in game. Padding case: the T pass report of the same project (T1 metrics before and after the face-only fix). The project log and the T pass report are not versioned: the owner's judgement and the padding case are the project's account, not part of the offline measurement.",
       "license": "MIT",
       "line_end": 305,
       "line_start": 278,
@@ -2734,7 +2734,7 @@
     {
       "artifact_id": "file/skills/dayz-texture-pipeline/references/map-conventions.md",
       "claim_id": "CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND",
-      "evidence_locator": "The owner's H2R project, 2026-10-28, offline: the T pass atlas decoded with ImageToPAA; mirror-paint texels of the tank binned by distance to the logo panel of the same UV island: 74 % of those within 2 px and 33 % of those at 2-4 px kept G about 100 while the interior moved to 205/237; after giving the logo the class of the surrounding paint, 0 % stale. The protecting step is the project's own mask that restores whole 4x4 DXT blocks containing texels of another material.",
+      "evidence_locator": "The owner's H2R project, 2026-10-28, offline: the T pass atlas decoded with ImageToPAA; mirror-paint texels of the tank binned by distance to the logo panel of the same UV island: 74 % of those within 2 px and 33 % of those at 2-4 px kept G about 100 while the interior moved to 205/237; after giving the logo the class of the surrounding paint, 0 % stale. The protecting step is the project's own mask that restores whole 4x4 DXT blocks containing texels of another material. No script, mask, report or capture for this is versioned or hashed; the figures are the project's own account.",
       "license": "MIT",
       "line_end": 321,
       "line_start": 317,
@@ -2742,12 +2742,12 @@
       "promotion_artifact_id": "skill/dayz-texture-pipeline",
       "source_id": "pack-r21-authored",
       "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
-      "verification_level": "offline_tested"
+      "verification_level": "historical"
     },
     {
       "artifact_id": "file/skills/dayz-texture-pipeline/references/map-conventions.md",
       "claim_id": "CLAIM-TEX-DXT-STAIRCASE-INGAME",
-      "evidence_locator": "The owner's H2R project in DayZDiag, 2026-10-28: before the fix (LFH2R kit 9ea9acf2) the sawtooth line under the logo up close and the two-tone tank; after it (kit 8dc2d476) the tank one tone from the top view. The close-up frame of the run after the fix came out degraded (world without textures in its first seconds) and was not repeated.",
+      "evidence_locator": "The owner's H2R project in DayZDiag, 2026-10-28: before the fix (LFH2R kit 9ea9acf2) the sawtooth line under the logo up close and the two-tone tank; after it (kit 8dc2d476) the tank one tone from the top view. The close-up frame of the run after the fix came out degraded (world without textures in its first seconds) and was not repeated. No script, mask, report or capture for this is versioned or hashed; the figures are the project's own account.",
       "license": "MIT",
       "line_end": 325,
       "line_start": 323,
@@ -2755,7 +2755,7 @@
       "promotion_artifact_id": "skill/dayz-texture-pipeline",
       "source_id": "pack-r21-authored",
       "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
-      "verification_level": "runtime_verified"
+      "verification_level": "historical"
     },
     {
       "artifact_id": "file/skills/dayz-texture-pipeline/references/rvmat-cookbook.md",
@@ -2773,7 +2773,7 @@
     {
       "artifact_id": "file/skills/dayz-texture-pipeline/references/rvmat-cookbook.md",
       "claim_id": "CLAIM-TEX-ENV-SILVER-OLIVE-INGAME",
-      "evidence_locator": "The owner's H2R project in DayZDiag, 2026-10-27/28: with the T pass silver paint (_smdi G/B 205/237) and env_land_optic_co in the body rvmat (LFH2R kit 67e8d279) the side panels and tank read olive; with env_land_chrome_co (kit 9ea9acf2) they read neutral. The damage and light rvmats are generated from the base body rvmat by the build, so they carry the same Stage7.",
+      "evidence_locator": "The owner's H2R project in DayZDiag, 2026-10-27/28: with the T pass silver paint (_smdi G/B 205/237) and env_land_optic_co in the body rvmat (LFH2R kit 67e8d279) the side panels and tank read olive; with env_land_chrome_co (kit 9ea9acf2) they read neutral. The damage and light rvmats are generated from the base body rvmat by the build, so they carry the same Stage7. No script, mask, report or capture for this is versioned or hashed; the figures are the project's own account.",
       "license": "MIT",
       "line_end": 143,
       "line_start": 139,
@@ -2781,7 +2781,7 @@
       "promotion_artifact_id": "skill/dayz-texture-pipeline",
       "source_id": "pack-r21-authored",
       "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
-      "verification_level": "runtime_verified"
+      "verification_level": "historical"
     }
   ],
   "schema_version": 1

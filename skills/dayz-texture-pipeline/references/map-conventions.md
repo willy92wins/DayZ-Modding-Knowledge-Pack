@@ -272,8 +272,8 @@ rvmat's `specular[]`, `specularPower`, fresnel and env, so the same G can read d
 [EXACT][CLAIM-TEX-MOTORBIKE02-BODY-RVMAT] The vanilla body material
 (`DZ\vehicles\singletrack\Motorbike_02\data\motorbike_02_body.rvmat`, DayZ 1.30.164014) has
 `specular[]={1.1,1.1,1.1,1}` and `specularPower=160` (`:14-15`), Stage6 `#(ai,128,1,1)fresnel(0.53,0.22)` (`:80`) and
-Stage7 `dz\data\data\env_land_optic_co.paa` (`:92`). The mod body measured below already used those four values, so its
-difference from the vanilla had to come from the maps.
+Stage7 `dz\data\data\env_land_optic_co.paa` (`:92`). The mod body measured below already used those four values. [INFERRED] The maps are then the likely
+cause of its difference from the vanilla; other material inputs, normals and viewing conditions were not compared.
 
 [EXACT][CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION] Measured on 2026-11-02: the vanilla `motorbike_02_body_red_co.paa`,
 `_smdi.paa` and `_as.paa` (DayZ 1.30.164014, `vehicles_singletrack.pbo`) against the body atlas of a mod motorbike before
@@ -329,8 +329,8 @@ the close-up of the sawtooth was not looked at again in game (that run's frame w
 - Before accepting a per-material change, measure by distance to the border with each neighbour in the same island: the
   share of border texels that did not change while the interior did. A rim of 2-4 texels that kept the old value is the
   staircase.
-- Keeping whole DXT blocks is right against a foreign island. The measured step was inside one island, between the mirror
-  paint and the logo left without a class.
+- Keeping whole DXT blocks next to a foreign island is this pipeline's tradeoff, not a general rule: it also restores the recalibrated island's texels in shared blocks, and DXT1 shares one palette per 4x4 block anyway. Check the border
+  of both islands and tell restored values apart from compression artifacts. The measured step was inside one island, between the mirror paint and the logo left without a class.
 
 ## Export and path rules
 
