@@ -1566,15 +1566,25 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-02: Unreleased > Added entry for the dayz-texture-pipeline change. Review round 1 (Grok 4.7 by grok-cli, read-only, NEEDS-WORK, 13 findings) applied: figures re-measured on 2026-11-02 with domain and statistic stated, the mod's calibrated classes removed (not judged by their owner yet), in-game observations in their own runtime claims, overclaims narrowed. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "b1937142d125d561544f4a0ef76a79d326ce96adc4e6ab2f12cc707370d30372",
+          "source_hash": "e8c62f404eba224b13f20ab14109a59ce88463ac7e1fb4d13c487528d7db66b2",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): one Added entry for rung R3b in dayz-mcp-verify and CLAIM-VEH-GETIN-ONE-SIDED-130 in dayz-vehicles.",
+          "license": "MIT",
+          "source_hash": "bb4e0896ef7dd302a75ffce97a37c43f6f89e710d945070b42e68f9abf2ef31f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-getin-action@2026-11-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b1937142d125d561544f4a0ef76a79d326ce96adc4e6ab2f12cc707370d30372",
+      "output_hash": "e8c62f404eba224b13f20ab14109a59ce88463ac7e1fb4d13c487528d7db66b2",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9044,10 +9054,20 @@
           "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): rung R3b, the player's own get-in action, with CLAIM-MCPV-REAL-GETIN-ACTION-130, and three rows of the failure map. Authored by Claude (Anthropic) from the Arma2Quad get-in checks of 2026-10-28 on the stable 1.30.164200 DayZDiag.",
+          "license": "MIT",
+          "source_hash": "d117080f18f9c87f9cbe18222b21046975e22c0aa6ad52ae854b8b7bb7eb1997",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
+          "source_revision": "update/dayz-130-getin-action@2026-11-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "7e4b042dd6fe2ad26b42896167336f58daaf613f83e41711defbeb681c630747",
+      "output_hash": "d117080f18f9c87f9cbe18222b21046975e22c0aa6ad52ae854b8b7bb7eb1997",
       "output_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -19238,15 +19258,25 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-02: six new dayz-texture-pipeline claims and the moved ranges of the existing claims in the files it touches. Review round 1 (Grok 4.7 by grok-cli, read-only, NEEDS-WORK, 13 findings) applied: figures re-measured on 2026-11-02 with domain and statistic stated, the mod's calibrated classes removed (not judged by their owner yet), in-game observations in their own runtime claims, overclaims narrowed. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "257d571410783c645082f06faab17bef818501593ad7c68cea03ce0b450cfc16",
+          "source_hash": "fd390bb64bc33395c3ecc3a7a63cb28002a71c157d5750649bd59d443986b7c6",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): adds CLAIM-MCPV-REAL-GETIN-ACTION-130 and CLAIM-VEH-GETIN-ONE-SIDED-130, and moves the three dayz-1-30-vehicles.md claims whose markers moved down two lines.",
+          "license": "MIT",
+          "source_hash": "7c93db44c59d7e17820448235f3693bf1e1728059e0c2d0da6bca91355a2c17d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-getin-action@2026-11-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "257d571410783c645082f06faab17bef818501593ad7c68cea03ce0b450cfc16",
+      "output_hash": "fd390bb64bc33395c3ecc3a7a63cb28002a71c157d5750649bd59d443986b7c6",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -34811,10 +34841,20 @@
           "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
           "source_revision": "update/dayz-130-arma2quad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): section 5 gains CLAIM-VEH-GETIN-ONE-SIDED-130. Authored by Claude (Anthropic) from the Arma2Quad get-in checks of 2026-10-28 on the stable 1.30.164200 DayZDiag.",
+          "license": "MIT",
+          "source_hash": "f98031a74930118a316dca19bdd9853e0eb4bf28cbc3c31e0ca0a6e19023de7a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-getin-action@2026-11-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "6d5bff6cbe4409421c2e588a235d939b7828983b9308e702fea0a0bdce51e8aa",
+      "output_hash": "f98031a74930118a316dca19bdd9853e0eb4bf28cbc3c31e0ca0a6e19023de7a",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"

@@ -19,6 +19,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION`, `CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND`, `CLAIM-TEX-DXT-STAIRCASE-INGAME`,
   `CLAIM-TEX-ENV-GROUND-TINT`, `CLAIM-TEX-ENV-SILVER-OLIVE-INGAME`. Cross-family review: Grok 4.7 (round 1, NEEDS-WORK,
   13 findings, applied).
+- `dayz-mcp-verify` `references/acceptance-ladder.md`: rung R3b, the player's own get-in
+  action, with `CLAIM-MCPV-REAL-GETIN-ACTION-130` (stable DayZDiag 1.30.164200, 2026-10-28, Arma2Quad).
+  `query_get_in_condition` and the seating verbs do not go through the action under the cursor;
+  `action_cursor` plus `action_use("ActionGetInTransport", component_index, cursor_pos)`, from both
+  sides and for each seat, do. Also how to get the seat component and how far `player_look_at` turns,
+  and the fingerprint of a build whose scripts did not load (`class_name="CarScript"`).
+- `dayz-vehicles` `references/dayz-1-30-vehicles.md` section 5: `CLAIM-VEH-GETIN-ONE-SIDED-130`. The
+  door condition point decides the side a rider can get on from; Arma2Quad v1.0.1, with both points on
+  the left, could not be mounted from the right.
 - `dayz-animation-pipeline` `references/anim-graph.md`, new section "Porting a 1.29 `$AnimGraph 7`
   graph to 1.30 — field-by-field mapping" (DayZ 1.30.164078 stable, 2026-10-15): the 1.30 file set
   (`.agr` as `AnimSrcGraph`, `.agf` as `AnimSrcGraphFile`, `.ast` as `AnimSetTemplateSource`,
