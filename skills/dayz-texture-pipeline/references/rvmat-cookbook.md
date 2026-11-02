@@ -136,7 +136,7 @@ Example vanilla glass:
 | `env_mirror_co` | 123 / 127 / 114 | 171 / 180 / 193 |
 | `env_land_plastic_co` | 127 / 127 / 127 | 192 / 194 / 198 |
 
-[EXACT][CLAIM-TEX-ENV-SILVER-OLIVE-INGAME] The vanilla Motorbike_02 body uses `env_land_optic_co`, with its red paint at
+(claim: CLAIM-TEX-ENV-SILVER-OLIVE-INGAME) Historical, the project's own account with no versioned evidence: the vanilla Motorbike_02 body uses `env_land_optic_co`, with its red paint at
 `_smdi` G median 5 (`map-conventions.md` §Calibrating against a vanilla asset of the same family). A mod body kept that env
 with a silver paint raised to G/B 205/237: in game (2026-10-28) its side panels and tank read olive. With
 `env_land_chrome_co` in the body rvmat the silver read neutral in game; the damage and light materials built from the base

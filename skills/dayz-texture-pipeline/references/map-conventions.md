@@ -300,9 +300,10 @@ texels whose `_co` is not black (largest channel > 6). Luminance 0.299 R + 0.587
   median. These are the figures of one vanilla body: measure the vanilla asset closest to yours.
 - The mod's darkest tenth was lighter (luminance p10 30 against 24), and its ambient shadow weaker (`_as` G median 175
   against 120).
-- Name the statistic and the domain. On the vanilla dark class the `_as` G mean is 56 and the median 8. On the mod atlas the
-  `_as` G median is 154 over all texels and 175 without the black ones. A factor computed over faces plus padding left one
-  class of the mod at luminance 48 against a target of 28.
+- Name the statistic and the domain. On the vanilla dark class the `_as` G mean is 56 and the median 8. On the mod atlas the `_as` G median is 154 over all texels and 175 without the black ones.
+
+Historical, the project's own account, not part of the measurement above: a factor computed over faces plus padding left
+one class of the mod at luminance 48 against a target of 28.
 
 [DESIGN] Procedure: decode the shipped PAAs of the closest vanilla asset of the same family and of the mod, not the PNG
 sources; check that the rvmat constants match; set G and B per surface class with the vanilla figure beside each, stating
@@ -314,13 +315,13 @@ on the floor.
 
 ### A per-material change on a baked atlas leaves a DXT block staircase next to a material it skips (added 2026-11-02, LL-570)
 
-[EXACT][CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND] A per-material `_smdi` recalibration raised a fuel tank's mirror paint from
+(claim: CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND) Historical, the project's own account with no versioned evidence: a per-material `_smdi` recalibration raised a fuel tank's mirror paint from
 about G/B 100/190 to 205/237 and gave no class to the logo panel that shares its UV island. The mod's step that keeps the
 old value in every 4×4 DXT block holding texels of another material (so that DXT1 does not mix two islands) then left at
 G≈100 74 % of the mirror texels within 2 px of the logo, and 33 % of those 2-4 px away. With the logo given the class of
 the paint around it, that stale rim measured 0 %.
 
-[EXACT][CLAIM-TEX-DXT-STAIRCASE-INGAME] In game (2026-10-28), before the fix: a sawtooth line under the logo seen up close,
+(claim: CLAIM-TEX-DXT-STAIRCASE-INGAME) Historical, the project's own account with no versioned evidence: in game (2026-10-28), before the fix: a sawtooth line under the logo seen up close,
 and a two-tone tank, matte bands around the logo and a mirror centre. After it, the tank read one tone from the top view;
 the close-up of the sawtooth was not looked at again in game (that run's frame was degraded).
 

@@ -13217,7 +13217,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-02 (the owner's H2R texture pass, 2026-10-26 to 2026-10-28): rule 4 extends to map levels with a pointer to the vanilla calibration; reference guide line for map-conventions; LL-570, LL-571 and LL-572 in the promoted rules. Review round 1 (Grok 4.7 by grok-cli, read-only, NEEDS-WORK, 13 findings) applied: figures re-measured on 2026-11-02 with domain and statistic stated, the mod's calibrated classes removed (not judged by their owner yet), in-game observations in their own runtime claims, overclaims narrowed. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "6031411c008eb6026f8aff4943e3c73a31b86b890fc6043b685fd9e671091f22",
+          "source_hash": "b8e732401e612ee18e6f3c5026eb07dc8a8e418c325859fb89dffa2e63ff5fbd",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
@@ -13225,7 +13225,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6031411c008eb6026f8aff4943e3c73a31b86b890fc6043b685fd9e671091f22",
+      "output_hash": "b8e732401e612ee18e6f3c5026eb07dc8a8e418c325859fb89dffa2e63ff5fbd",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -13341,7 +13341,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-02 (the owner's H2R texture pass): pointer under the SMDI starting points; new subsections \"Calibrating against a vanilla asset of the same family\" (CLAIM-TEX-MOTORBIKE02-BODY-RVMAT, CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION) and the DXT block staircase (CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND, CLAIM-TEX-DXT-STAIRCASE-INGAME, LL-570). Review round 1 (Grok 4.7 by grok-cli, read-only, NEEDS-WORK, 13 findings) applied: figures re-measured on 2026-11-02 with domain and statistic stated, the mod's calibrated classes removed (not judged by their owner yet), in-game observations in their own runtime claims, overclaims narrowed. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "b1034ee28d6531ee1d41612da9b352b7ebeae08bcf620b244d858d5ee92ee95e",
+          "source_hash": "00a9e96f24776080164c69a3ed44043c5da18f4b29ddb45e44d387299e252a97",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
           "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
@@ -13349,7 +13349,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b1034ee28d6531ee1d41612da9b352b7ebeae08bcf620b244d858d5ee92ee95e",
+      "output_hash": "00a9e96f24776080164c69a3ed44043c5da18f4b29ddb45e44d387299e252a97",
       "output_path": "skills/dayz-texture-pipeline/references/map-conventions.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -13417,7 +13417,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-02 (the owner's H2R texture pass): new subsection \"Stage7: choose the env map by the specular of the parts that use it\" (CLAIM-TEX-ENV-GROUND-TINT, CLAIM-TEX-ENV-SILVER-OLIVE-INGAME, LL-571). Review round 1 (Grok 4.7 by grok-cli, read-only, NEEDS-WORK, 13 findings) applied: figures re-measured on 2026-11-02 with domain and statistic stated, the mod's calibrated classes removed (not judged by their owner yet), in-game observations in their own runtime claims, overclaims narrowed. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "8a0107c2bcdd57184e5581bd7edffdaf3f2afd49102a6c607fdf99e6d30b262f",
+          "source_hash": "0cbf68124a5cd5247bcf588748abaf1f987ccf5409ec3150ba794a02a14b6e98",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-texture-pipeline/references/rvmat-cookbook.md",
           "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
@@ -13425,7 +13425,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8a0107c2bcdd57184e5581bd7edffdaf3f2afd49102a6c607fdf99e6d30b262f",
+      "output_hash": "0cbf68124a5cd5247bcf588748abaf1f987ccf5409ec3150ba794a02a14b6e98",
       "output_path": "skills/dayz-texture-pipeline/references/rvmat-cookbook.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -19258,7 +19258,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-02: six new dayz-texture-pipeline claims and the moved ranges of the existing claims in the files it touches. Review round 1 (Grok 4.7 by grok-cli, read-only, NEEDS-WORK, 13 findings) applied: figures re-measured on 2026-11-02 with domain and statistic stated, the mod's calibrated classes removed (not judged by their owner yet), in-game observations in their own runtime claims, overclaims narrowed. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "fd390bb64bc33395c3ecc3a7a63cb28002a71c157d5750649bd59d443986b7c6",
+          "source_hash": "b8e30610593181dc3d40db6e7cc442d2a5ca3994f86df82e3fa0a0626928d528",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
@@ -19276,7 +19276,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fd390bb64bc33395c3ecc3a7a63cb28002a71c157d5750649bd59d443986b7c6",
+      "output_hash": "b8e30610593181dc3d40db6e7cc442d2a5ca3994f86df82e3fa0a0626928d528",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
