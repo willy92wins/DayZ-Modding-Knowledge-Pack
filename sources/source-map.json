@@ -1561,10 +1561,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/pr-135-review-4@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): one Added entry for rung R3b in dayz-mcp-verify and CLAIM-VEH-GETIN-ONE-SIDED-130 in dayz-vehicles.",
+          "license": "MIT",
+          "source_hash": "bb4e0896ef7dd302a75ffce97a37c43f6f89e710d945070b42e68f9abf2ef31f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/dayz-130-getin-action@2026-11-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d70f7584658045d4a350a21b90bbffe781fc55887d104b1f3e1d15a1575c510b",
+      "output_hash": "bb4e0896ef7dd302a75ffce97a37c43f6f89e710d945070b42e68f9abf2ef31f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9034,10 +9044,20 @@
           "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): rung R3b, the player's own get-in action, with CLAIM-MCPV-REAL-GETIN-ACTION-130, and three rows of the failure map. Authored by Claude (Anthropic) from the Arma2Quad get-in checks of 2026-10-28 on the stable 1.30.164200 DayZDiag.",
+          "license": "MIT",
+          "source_hash": "749418ce1716a1a12eed88ab12013fd2cb0187f512a36a6bca4cc5f9186a33da",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
+          "source_revision": "update/dayz-130-getin-action@2026-11-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "7e4b042dd6fe2ad26b42896167336f58daaf613f83e41711defbeb681c630747",
+      "output_hash": "749418ce1716a1a12eed88ab12013fd2cb0187f512a36a6bca4cc5f9186a33da",
       "output_path": "skills/dayz-mcp-verify/references/acceptance-ladder.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -19183,10 +19203,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/pr-135-review-5@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): adds CLAIM-MCPV-REAL-GETIN-ACTION-130 and CLAIM-VEH-GETIN-ONE-SIDED-130, and moves the three dayz-1-30-vehicles.md claims whose markers moved down two lines.",
+          "license": "MIT",
+          "source_hash": "7c93db44c59d7e17820448235f3693bf1e1728059e0c2d0da6bca91355a2c17d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/dayz-130-getin-action@2026-11-02",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d6fa7b31f5d6bcded3866a8707c4061a29e7847658cf17e4505df9a314a8a6bb",
+      "output_hash": "7c93db44c59d7e17820448235f3693bf1e1728059e0c2d0da6bca91355a2c17d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -34751,10 +34781,20 @@
           "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
           "source_revision": "update/dayz-130-arma2quad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-02 (Arma2Quad get-in): section 5 gains CLAIM-VEH-GETIN-ONE-SIDED-130. Authored by Claude (Anthropic) from the Arma2Quad get-in checks of 2026-10-28 on the stable 1.30.164200 DayZDiag.",
+          "license": "MIT",
+          "source_hash": "526f935b6ffa15f515859255c1ed83a88de017f60664690952ca0e2f58418f65",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
+          "source_revision": "update/dayz-130-getin-action@2026-11-02",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "6d5bff6cbe4409421c2e588a235d939b7828983b9308e702fea0a0bdce51e8aa",
+      "output_hash": "526f935b6ffa15f515859255c1ed83a88de017f60664690952ca0e2f58418f65",
       "output_path": "skills/dayz-vehicles/references/dayz-1-30-vehicles.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "historical"
