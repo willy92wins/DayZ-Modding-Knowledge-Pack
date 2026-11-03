@@ -1220,3 +1220,13 @@ discriminate and one on a pre-existing symbol did not, with the same command.
 
 Sibling to what this section already says about gates proving form and not
 compilation: there gate measures what it shouldn't, here it measures something already there.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Build with armake2 (bzed's fork) instead of AddonBuilder: `dayz-mod-pack.sh build [--binarize-models]` from the `dayz-dev` skill wraps `armake2 build`, `keygen` and `sign`. The validation checks of this skill (prefix, `config.cpp`, `$PBOPREFIX$`, duplicates, stringtable) do not depend on the packer and apply unchanged.
+- `--proton-binarize` needs a fork build with commit `0a0ce3b`; older builds lose texture alpha.
+- To compare against BI's AddonBuilder, it runs under Proton: `dayz-proton.sh tool AddonBuilder <P-root>/<Mod> <out> -prefix=<Mod>` (`-packonly` and full builds measured, `-clear` too). The binarize rules above hold: build from `P:\<Mod>`, never from a path whose parent is a large Linux directory, because binarize scans the parent. AddonBuilder exits 0 on a failed build; `dayz-proton.sh` returns the `[ResultCode]` from `DayZ Tools/Bin/Logs/AddonBuilder.rpt` instead.
+- `build_*.ps1`, `robocopy` and junctions: read the script for the source tree, then do the same with `sh`, `rsync` and symlinks. Do not run the `.ps1` under `pwsh`: it calls Windows programs and the registry.
+- Publishing: the `workshop` uploader (nozwock/steam-workshop-uploader) instead of Publisher; `dayz-mod-pack.sh publish-hint` prints the command.

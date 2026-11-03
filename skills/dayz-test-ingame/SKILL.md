@@ -1814,3 +1814,13 @@ Reglas:
    comparing variants, stratify by frame time or repeat with focus held.
 
 Evidencia y recetas: `<vault>\30_Sessions\2026-09-13-LFHeli-el-bote-sigue-al-foco-del-cliente.md`.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- `dayz-test.ps1`, `dayz_test_run` and the approved-launcher registry are Windows-only. The Linux route is the `dayz-dev` skill: native `DayZServer` (app 223350) from a tree made by `make-server-tree.sh`, ports from `free-ports.sh`, and the client under Proton headless via `dayz-client-headless.sh` / `dayz-client-test.sh` (`testing/local-server.md`, `testing/client-testing.md`).
+- `DayZDiag_x64.exe` runs under Proton: `dayz-proton.sh headless start <state> DayZDiag <args>`. Measured 2026-11-03 (1.30.164289): the client reaches the main menu, and `-server` with `-config=`/`-mission=`/`-profiles=` pointing into a Linux server tree loads the mission and runs the Central Economy. A diag client joining a diag server, and `-filePatching` from an unpacked `-mod=` folder under Proton, were **not verified**.
+- A diag server and a diag client need two prefixes (two `DAYZ_PROTON_HOME`s) or one shared display: a Wine prefix serves one display at a time (pitfalls in the guide).
+- Client and server must report the same game version (`dayz-proton.sh doctor`), or the join fails with `0x00020013`.
+- `%LOCALAPPDATA%\DayZ` is `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ`; pass `-profiles=<linux dir>` to keep logs where you read them. The Steam-session registry check (`HKCU\Software\Valve\Steam\ActiveProcess`) has no Linux counterpart: the Linux Steam client must simply be running and logged in.

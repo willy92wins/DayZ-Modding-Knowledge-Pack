@@ -456,3 +456,9 @@ Full detail: `references/dayz-1-30-particles.md`. Surface-dust / ceiling-dust / 
 - [Script API 1.30](references/script-api-reference.md#dayz-130-exp-surfaceinfo-vehicle-vfx-synced-spawn)
 - [Vanilla catalog 1.30 constants](references/vanilla-particle-catalog.md#dayz-130-exp-new-particlelist-constants)
 - [PlayOnObject client gate](references/answeroverflow-2026-05-17.md)
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- `.ptc`/`.emat` are text and are written without Workbench, so nothing here needs Windows. Workbench itself starts under Proton (`dayz-proton.sh gui Workbench`); its particle editor was **not verified** there.

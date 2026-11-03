@@ -982,3 +982,11 @@ that rate describes shipped configuration and not queue of experiments.
 happen. These cells are scripted landings, in a single spot and **without touching cyclic**;
 the only thing they authorize saying is testbench, as is, does not reproduce defect in
 shipped configuration.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Build and sign with armake2 (bzed's fork) instead of AddonBuilder; publish with the `workshop` uploader.
+- Test loop: native `DayZServer` plus the Proton client from the `dayz-dev` skill, or DayZDiag under Proton (`dayz-proton.sh headless start <state> DayZDiag …`). The `-filePatching` loop of section 6 under Proton was **not verified**.
+- `%LOCALAPPDATA%` and `.ps1` steps: see the guide's pitfalls; translate scripts to `sh`.
