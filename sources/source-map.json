@@ -4996,10 +4996,20 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8f6e3db5f9a91a46a0ba3ff56045e0a0320552cddafce1b1e40bd3bdbc8ad8aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a735d88e51ddf624c3cbd1a8ad0d79aa8f6a869406cb980cbf27bde085f81413",
+      "output_hash": "8f6e3db5f9a91a46a0ba3ff56045e0a0320552cddafce1b1e40bd3bdbc8ad8aa",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -6112,10 +6122,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e8a7de8ae6f84a8ffd2483d18d07323332b5bd4c837f4af764e2fcd83e0405c5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "105b8eda123e00fde25c5906d87f96970bdeb9259e49e2d7cd5a4fecf07eb458",
+      "output_hash": "e8a7de8ae6f84a8ffd2483d18d07323332b5bd4c837f4af764e2fcd83e0405c5",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7146,10 +7166,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "02de7d732d972f72177a7a74562b3fa09296f5294e8bf69562b55303c80e0c71",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8210cfb7953d65b4dd59f4eff42c89b8396815dab3b91fe18cdc0d697cc0564e",
+      "output_hash": "02de7d732d972f72177a7a74562b3fa09296f5294e8bf69562b55303c80e0c71",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -7842,10 +7872,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "43f16adf4b8155c59cf96aababf7b166edca860ccbf56e6c492ea805ab3b511f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ac1825e9c7d78cc36f72480d8a3c814290dced26b18c5218c7065fa704cb373b",
+      "output_hash": "43f16adf4b8155c59cf96aababf7b166edca860ccbf56e6c492ea805ab3b511f",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -8130,10 +8170,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b2cd63dd25780d951d8e2a330b99d9ce01153efd0a9f7e9974d1e7cd47539864",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fb0151135031d33990f17f5d6dddc3ee845711693756347b21e9872f50fefe68",
+      "output_hash": "b2cd63dd25780d951d8e2a330b99d9ce01153efd0a9f7e9974d1e7cd47539864",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -8456,10 +8506,20 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5a6c34c73a63a309296ac272b837e0a8aadeee14a7cbb48f4edb5576e497deb4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c761a65c8d33f36e0927995d480d854c44a10b069918c3af15374c64a5158e32",
+      "output_hash": "5a6c34c73a63a309296ac272b837e0a8aadeee14a7cbb48f4edb5576e497deb4",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -9102,10 +9162,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a76dc2d25e2ff6656069e32c257a0571ae38226a6be8f9b907b8a43ef7a4aa0e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ccbd19245be74dfba922cf4c8b95f230049f551bc49e2cbe433e80fd61cf71dc",
+      "output_hash": "a76dc2d25e2ff6656069e32c257a0571ae38226a6be8f9b907b8a43ef7a4aa0e",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -9380,10 +9450,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "11fba81c8c889153b7fe42b034b17575b660734d3a1d2607d954860f755aa4ba",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e1fa0e91e5c4de8f385e15018d6c1a418d841a12a3e1ce3e41e89917800b01b5",
+      "output_hash": "11fba81c8c889153b7fe42b034b17575b660734d3a1d2607d954860f755aa4ba",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -9698,10 +9778,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2dc8fd8720883c448a0a93e79dd8b42348f67c14380b0c5acb0f9ff3b9813573",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "803e1b1786f8087bdc407874a261e7025e1648831dd67c36c8b24eacb14ce045",
+      "output_hash": "2dc8fd8720883c448a0a93e79dd8b42348f67c14380b0c5acb0f9ff3b9813573",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -10576,10 +10666,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d35c2e35fb75750b8cee8b288c0e09fcc83250cb95c0a2d59501d3a66b1b03ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8aa7e090fb0c7983e007a965dda651d9eeb9e5a27f7cf2b5056514e1f9d0b7f8",
+      "output_hash": "d35c2e35fb75750b8cee8b288c0e09fcc83250cb95c0a2d59501d3a66b1b03ca",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -10968,10 +11068,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a299bdc6b67838a0ba6be3cf6a4d00a4706732d0c17fdee8d278cbf511c71516",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e80c6d7511978ba0ce7dc5a7a6c97bf1ff2bb82812a77dbc1633cd2d8b877cd0",
+      "output_hash": "a299bdc6b67838a0ba6be3cf6a4d00a4706732d0c17fdee8d278cbf511c71516",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -11456,10 +11566,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ebc629fa980a5ef7a440c8d5b94825ddf8ca22a1cc4b22c1f53556436c48496e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cf96d012894668664dd4b48d5488bdebda858b1a10ea4abb9279c7e0767d8494",
+      "output_hash": "ebc629fa980a5ef7a440c8d5b94825ddf8ca22a1cc4b22c1f53556436c48496e",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -12220,10 +12340,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "18174f55864fffb53ae2eb4455ea13135bc69d86e15824bdc6daec10f1b6421a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3f84a6a58e144c8a4be36d0a376445059d1983cd41af411b43f7bdcaaeafb698",
+      "output_hash": "18174f55864fffb53ae2eb4455ea13135bc69d86e15824bdc6daec10f1b6421a",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -12866,10 +12996,20 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5a4a842088a16a095c2041dc7fdc9c6ba375cf4bb690a6f3c3f340d453b873f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7c3158819408a4db0b18dfc8a4b63f688f88b3c4261bc2db9d18c0bed52af8fc",
+      "output_hash": "5a4a842088a16a095c2041dc7fdc9c6ba375cf4bb690a6f3c3f340d453b873f5",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -14988,10 +15128,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f72d19fc6bc32fd2dcc9d021707fbb12fabe054abd30a6dab781da547f9aa657",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9093d6d2b15e6bc9d0b0159c74e5ca4c84d5290ec147fb5dce5987bb6bdeeba7",
+      "output_hash": "f72d19fc6bc32fd2dcc9d021707fbb12fabe054abd30a6dab781da547f9aa657",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -16388,10 +16538,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "395487caa6e35e6d87aa2b41ac972ce24eedb5553690d32d337732ced2449600",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5abd6fad4edce8c24f98c1cc2a30e4035cca42b1966aee2b5d46889fdb9fca54",
+      "output_hash": "395487caa6e35e6d87aa2b41ac972ce24eedb5553690d32d337732ced2449600",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -17846,10 +18006,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "44d583471408ee0f0fb8c9ed4109cdf543bff5c348b946649ec7e38492c1e80d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b747c1c76068a0a5dbb9f84e050e0a11e5405f31240783ec26e4b364d475e0ce",
+      "output_hash": "44d583471408ee0f0fb8c9ed4109cdf543bff5c348b946649ec7e38492c1e80d",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -34619,10 +34789,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7e92c94dfe9a8cd552a04390439599709ff8adf0a929ddcd08c6f05675c32a73",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0f54d8d7d6620e81556d8d158f8fcdf47ac8c52e426b695f212514702dacda30",
+      "output_hash": "7e92c94dfe9a8cd552a04390439599709ff8adf0a929ddcd08c6f05675c32a73",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -37851,10 +38031,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1771024bdf6e71e8b64163b918f08c5619fa7fa31b69ccc3fec3890274739f66",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f40d2e644a4df93057983e36e7056e0f5406a8add18d5aff8920b3e3a506c0ca",
+      "output_hash": "1771024bdf6e71e8b64163b918f08c5619fa7fa31b69ccc3fec3890274739f66",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"

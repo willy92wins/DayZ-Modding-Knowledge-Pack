@@ -14,7 +14,7 @@ DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Ev
 | Windows step in a skill | On Linux | Status |
 |---|---|---|
 | Pack / sign a PBO (AddonBuilder, DSSignFile) | `armake2 build` / `keygen` / `sign` (bzed's fork, https://github.com/bzed/armake2; the `dayz-dev` skill's `dayz-mod-pack.sh` drives it) | native, **use this** |
-| Binarize models (`.p3d`/`.rtm` MLOD → ODOL) | `armake2 build --proton-binarize` (runs BI's binarize.exe under Proton itself) | works; needs a fork build with commit `0a0ce3b` (section 4) |
+| Binarize models (`.p3d`/`.rtm` MLOD → ODOL) | `armake2 build --proton-binarize` (runs BI's binarize.exe under Proton itself) | works with the fork's GitHub `master` (`cargo install --git https://github.com/bzed/armake2`; alpha fix `0a0ce3b`, section 4) |
 | Publish to the Workshop (Publisher) | `workshop` uploader (https://github.com/nozwock/steam-workshop-uploader; `dayz-mod-pack.sh publish-hint`) | native, **use this** |
 | Cross-check armake2 against BI's own tools | `dayz-proton.sh tool AddonBuilder P:\<Mod> <out> -prefix=<Mod>`; `tool DSCreateKey` / `DSSignFile` / `DSCheckSignatures`; `dayz-proton.sh binarize <P-root> <addon> <out> [files]` | works (section 4); for comparisons, not the build |
 | `config.cpp` → `config.bin` (CfgConvert) | `armake2 rapify`, or `dayz-proton.sh tool CfgConvert -bin -dst <bin> <cpp>` | both work |
