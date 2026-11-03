@@ -2808,6 +2808,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "update/dayz-130-getin-action@2026-11-02",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+      "claim_id": "CLAIM-ENFORCE-UNDEFINED-BUILTIN-METHOD",
+      "evidence_locator": "In game, pipeline inbox fb-20261103-150432-9f93 (LFSkateboard, 2026-11-03): the script log of a DayZDiag 1.30.164200 server (script_2026-11-03_15-40-28.log) holds at lines 13-14 `Undefined function 'vector.Cross'` for LFSkate_A/scripts/4_World/lfsk_playerbase.c 1957 and 1959, and `Can't compile \"World\" script module!` at line 41; the calls were `vector gU = gF.Cross(gR);` and `gR = gU.Cross(gF);` on vector locals. Source: `vector Cross(vector v)` is declared at 1_Core/proto/EnConvert.c:239-246 of the 1.30.164014 Exp scripts and nowhere in the scripts of the 1.30.164200 game (dta/scripts.pbo, PBO header version 127662; its EnConvert.c differs from 164014's only by that method) nor in a 1.29 tree. The engine defines one DAYZ_<major>_<minor> (1_Core/defines.c:11-14 of 1.30.164200; `DAYZ_1_30` among the defines at line 4 of the same log). Offline: fixtures under tests/fixtures/undefined_builtin_method (bad is the ticket's shape, FAIL on lines 13 and 15) and unit tests in TestUndefinedBuiltinMethod; against the 1.30.164200 scripts the LFSkateboard tree before the fix fails at lfsk_playerbase.c:1957 and :1959 and the fixed tree passes; the vanilla tree gives no finding over 8870 judged calls; 236 addon roots under P:\\ (23885 judged calls) give one finding, `text.StartsWith(` on a string, which no tree declares.",
+      "license": "MIT",
+      "line_end": 82,
+      "line_start": 29,
+      "observed_at": "2026-11-03",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "pack-r21-authored",
+      "source_revision": "update/validator-builtin-methods@2026-11-03",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1

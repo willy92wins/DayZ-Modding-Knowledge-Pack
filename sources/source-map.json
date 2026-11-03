@@ -1581,10 +1581,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/dayz-130-getin-action@2026-11-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "a241a402d1df1d393c1137dec9578816704b40e6832a3d0b12d734bb566f18e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e8c62f404eba224b13f20ab14109a59ce88463ac7e1fb4d13c487528d7db66b2",
+      "output_hash": "a241a402d1df1d393c1137dec9578816704b40e6832a3d0b12d734bb566f18e5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19273,10 +19283,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/dayz-130-getin-action@2026-11-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "a4212208e1cdfc310d4086eb42a137c227417d312680d0f43e8ef81df4eb7d29",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8e30610593181dc3d40db6e7cc442d2a5ca3994f86df82e3fa0a0626928d528",
+      "output_hash": "a4212208e1cdfc310d4086eb42a137c227417d312680d0f43e8ef81df4eb7d29",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -22628,10 +22648,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "dd4071eccb289c7ef844a4d811e0979f571623375c4a2556e5ec5702be07ec43",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7f615479f9fc77fc55618e6613494186002668aa85990492bc9a79f2acd5248c",
+      "output_hash": "dd4071eccb289c7ef844a4d811e0979f571623375c4a2556e5ec5702be07ec43",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23538,10 +23568,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "96ca6f140267f1bc7da07b92eb26aa8dbf49131100284c43c905362eb39d909d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c2aebb81dc20b8d66c9d49d9d68a8cd40b21e17ca3eddce6596b7e457ca9e15f",
+      "output_hash": "96ca6f140267f1bc7da07b92eb26aa8dbf49131100284c43c905362eb39d909d",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27478,10 +27518,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-inventory-130@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "60c84bf074b6f715035c202f683caf177e54b40a33d3bfc986a8d2b86d0e4290",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "defab0c117232d61d32e31bdd0a6b30ab70ae4c54e6a1a2461c4e96fd69e201a",
+      "output_hash": "60c84bf074b6f715035c202f683caf177e54b40a33d3bfc986a8d2b86d0e4290",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -36067,10 +36117,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "e15321c02ab634ef5106ea7a19b1d54a0fbc4108f75ccc2cec8e868621a95e87",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5ec3a06d9bee0e1d4093afb3c3ae1cb0e33471e6f54b4094cc951340aed8160b",
+      "output_hash": "e15321c02ab634ef5106ea7a19b1d54a0fbc4108f75ccc2cec8e868621a95e87",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -37492,6 +37552,160 @@
       "license": "MIT",
       "output_hash": "e1514f73b6a1a93b0e5290de25f7c63339c694d7a990b31dd219a9f8c9a19ffd",
       "output_path": "tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo_digest.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "2f5344e84dd9c4d4e60e17332dbdd1af4ed41d14bae72b9af952dead06a2a7af",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2f5344e84dd9c4d4e60e17332dbdd1af4ed41d14bae72b9af952dead06a2a7af",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
+      "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "2ee2b31ab9d9cf2c7cf623d8d91c4d0499951efabbdf4bb56f01e7839831c71e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/config.cpp",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2ee2b31ab9d9cf2c7cf623d8d91c4d0499951efabbdf4bb56f01e7839831c71e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/scripts/4_World/fx_edge_glue.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "f16a029aef5229e226c63ba8688448a2917ec7a6828fcb71c2028007f5666c83",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/scripts/4_World/fx_edge_glue.c",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f16a029aef5229e226c63ba8688448a2917ec7a6828fcb71c2028007f5666c83",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/scripts/4_World/fx_edge_glue.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "21e8f76ce43045420156cbd11b835bc9e458f65ca239f9d136642293a457505f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/config.cpp",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "21e8f76ce43045420156cbd11b835bc9e458f65ca239f9d136642293a457505f",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/scripts/4_World/fx_edge_glue.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "afdd46128292c8baf61464f18b414da7fb717bff73a5bf0b233edc304025e3e1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/scripts/4_World/fx_edge_glue.c",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "afdd46128292c8baf61464f18b414da7fb717bff73a5bf0b233edc304025e3e1",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/scripts/4_World/fx_edge_glue.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "f69a2077b5716a02d7dc695280ba17fc67bb12d09369d1317b2cfdba4326f251",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f69a2077b5716a02d7dc695280ba17fc67bb12d09369d1317b2cfdba4326f251",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }
