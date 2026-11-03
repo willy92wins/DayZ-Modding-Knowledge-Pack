@@ -96,13 +96,17 @@ Linux port can leave out. The minimal Linux set is: loopback daemon + client mod
 - **Build match**: by the evening both client and server reported 1.30.164289 (`doctor` in the runner
   compares the game versions; Steam `buildid`s differ per app by design). The Experimental server
   (1042420) was still on 1.30.164200 with an update pending.
-- **dayz-mcp Python side**: branch `linux-port` (commit `ff5657c`) fixes #1–#5 and #7 properly
+- **dayz-mcp Python side**: branch `linux-port` (commit `ac5578d`) fixes #1–#5 and #7 properly
   (no shims): every module imports except `native_launcher_backend`, the POSIX keyfile reader, OFD
   byte locks, `SO_REUSEADDR` on Linux, XDG state dir. `--embedded` answers MCP `initialize` and
   `tools/list` (107 tools) and serves the loopback. #6/#8 got further: the daemon passes the instance
   lock, startup election, interpreter check and process scan, then stops at the runs.json identity
   migration (`runs_backup_transaction_publish_failed`), which is built on Windows handle semantics
   (no-clobber rename, delete through a pinned handle, file-ID identity) and needs a POSIX design.
-  #9 (binding a hand-started game) is unchanged. Seven of the changed modules are embedded in the
-  sealed native launcher: `tools/packaged-modules.lock.json` drifts until the launcher is rebuilt,
-  which the repository reserves for the owner. The Windows test suite was not run.
+  The modules sealed into the native launcher (`tools/packaged-modules.lock.json`) are left
+  byte-identical: the Linux code lives in the unsealed `linux_compat.py` (its `install()` runs first
+  in `python -m dayz_mcp` and swaps Linux implementations in) and `byte_lock.py`, so no launcher
+  rebuild is needed. #9 (binding a hand-started game) is unchanged; attaching to a game under Proton
+  is a poor fit (its Linux PID is a Wine process), so the intended route is a Linux launch path in
+  which the daemon starts the native server and the Proton client itself and binds them by per-run
+  token. The Windows test suite was not run.
