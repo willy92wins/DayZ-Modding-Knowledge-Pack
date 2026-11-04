@@ -110,3 +110,39 @@ Linux port can leave out. The minimal Linux set is: loopback daemon + client mod
   is a poor fit (its Linux PID is a Wine process), so the intended route is a Linux launch path in
   which the daemon starts the native server and the Proton client itself and binds them by per-run
   token. The Windows test suite was not run.
+
+## 6. Follow-up, 2026-11-04: podman server, daemon on Linux, binding measured
+
+- **Native server in rootless podman** (dayz-mcp `bbcd0c5`, `tools/dayz_mcp/podman_server.py`): the
+  way dzo starts DayZServer, without dzo. A minimal `debian:trixie-slim` image, a private tree per run,
+  `--network host`, the install and mods mounted read-only as overlays. The container (name, ID,
+  image ID, labels) identifies the run, and `$profile:dayz_mcp.json` is written before start.
+  1.30.164289 with `@DayZ_MCP` loaded the mission in about 10 s and stopped cleanly in about 13 s.
+- **runs.json migration on POSIX** (dayz-mcp `850e48f`, `tools/dayz_mcp/posix_fileops.py`): the
+  three Windows handle behaviours are rebuilt. The no-clobber rename is
+  `renameat2(RENAME_NOREPLACE)`, with `link`+`unlink` as fallback. "Verify, then delete on close"
+  becomes: open `O_NOFOLLOW` under a held directory fd, check the bytes, rename to a random
+  quarantine name and unlink only if that inode is the pinned one. A concurrent swap cannot be
+  blocked as on Windows, but it is detected: the call reports a conflict and deletes nothing foreign.
+  With that, `--client` spawns `--daemon`, the migration completes, the client's connected-daemon
+  identity check passes and `session_status` answers. Three more sealed-module path checks needed
+  replacing through `linux_compat.install()`: `ntpath.isabs` is false for `/home/...` since Python
+  3.13, and `daemon_policy_contract.valid_absolute_path` demands a drive letter. The sealed module
+  hashes are unchanged (21/21 match `packaged-modules.lock.json`).
+- **Install detail**: create `tools/.venv-mcp` with `python3 -m venv --copies`. Sealed `host_config`
+  refuses a registered `command` that resolves to another path, and a default venv's `bin/python`
+  is a symlink. The client also needs the dayz-mcp registration in both `~/.claude.json` and
+  `~/.codex/config.toml`, and the two must agree, as on Windows.
+- **Binding measured, podman server + daemon**: the bridge's established poll connection to the
+  daemon is owned in the host TCP table (`psutil.net_connections`) by the containerised `DayZServer`'s
+  **host PID**. That PID is `podman inspect .State.Pid`, its `/proc/<pid>/exe` is the Steam
+  `DayZServer`, and `/proc/<pid>/cgroup` names the container ID
+  (`libpod-<id>.scope/container`). So the loopback's existing binding (poll → one PID → creation
+  time) works for a container run unchanged. Polls still arrive `LEGACY_UNBOUND`, because nothing
+  registers the run.
+- **Still missing**: `dayz_test_run` goes through the sealed Windows native launcher
+  (`native_launcher_backend`: a debugger-attached child in a job object), so it cannot start a
+  Linux run. Wiring podman in means a Linux launch backend at that seam. It mints the instance,
+  writes it into `dayz_mcp.json` before `podman run`, then records the run with host PID and
+  creation time, with the container ID and image ID as cross-checks (cgroup). The Proton client
+  (the Linux PID of the Wine `DayZ_x64.exe`) would bind the same way.

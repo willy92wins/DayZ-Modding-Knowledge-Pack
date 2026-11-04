@@ -38019,10 +38019,20 @@
           "source_path": "knowledge/linux-proton-findings-2026-11.md",
           "source_revision": "linux-proton-mcp-sealed@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 6 added (podman server bbcd0c5, POSIX runs.json migration 850e48f, binding attribution measured). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e4e30ac92665b51d713299ea2ff5510d689c7e280c2f5a44eddcf94e4e722860",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-mcp-daemon@2026-11-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "15de1bfac7ff6faf8ff67f58215405ba70e5835afcf59a93b28fbbb463f3d818",
+      "output_hash": "e4e30ac92665b51d713299ea2ff5510d689c7e280c2f5a44eddcf94e4e722860",
       "output_path": "knowledge/linux-proton-findings-2026-11.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
