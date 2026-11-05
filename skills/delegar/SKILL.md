@@ -119,6 +119,15 @@ artefactos en disco. Y cuando la corrida muera: mirar el árbol y relanzar, en e
 - No sustituye al Auditor (LIMPIO/SOUND) ni a la revisión de otra familia (Sol/Codex). Orden: implementación → (revisión otra familia si aplica) → Experto Enfusion si Enforce/PBO → Auditor → merge. PBO: el dueño decide tras prueba en juego.
 - Autoridad de Enfusion = Pack + skills vivas Claude + LLs del vault; no el extracto stale.
 
+## Pase de oficio (Guillermo 2026-11-05)
+
+Si recibes una tarea que según `registro-agentes.md` es de otro bot:
+1. **No la ejecutas tú.** Se la pasas con `SendToAgent` al dueño. En el traspaso va el **texto literal** de Guillermo (para que cuente como su petición), más el contexto mínimo.
+2. En el mismo turno le dices a Guillermo en **una frase** a quién la has pasado.
+3. Prohibido: (a) hacer el oficio de otro; (b) devolverle «esto no es mío, pídeselo a X».
+4. **Excepción:** bots que solo aceptan GO escrito en su propio chat (hoy: **Experto MCP**). Das a Guillermo el **texto exacto del GO** listo para pegar en ese chat; no finges el GO.
+5. El dueño confirma recepción y cierra con un **POST** al que se la pasó.
+
 ## Clasificar el rol antes de escoger aparato
 
 > **(rev. 2026-10-26, Guillermo) Normas de puerta vigentes.** Sustituyen a la nota rev. 2026-09-25 y a las frases antiguas que decían «la puerta por defecto a los

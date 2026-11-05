@@ -38098,9 +38098,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Live Claude skill ported on Guillermo request 2026-11-05 (Experto Enfusion gate section) through ~/.claude/skills/delegar/SKILL.md; bytes match the live copy by sha256. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
+          "decision_evidence": "Live Claude skill ported on Guillermo request 2026-11-05 (Experto Enfusion gate + Pase de oficio) through ~/.claude/skills/delegar/SKILL.md; output_hash is the LF blob CI checks out. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
           "license": "MIT",
-          "source_hash": "acfcbb10a0432bb74bf8cae667047b38a33a8c160cba16b27dc79b04afffbb5e",
+          "source_hash": "00ce167522ed694759b69cdaa31953d4b33f2506c248dd4a8d3f2058c25061c3",
           "source_id": "installed-skills",
           "source_path": "delegar/SKILL.md",
           "source_revision": "filesystem@2026-11-05",
@@ -38108,7 +38108,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "acfcbb10a0432bb74bf8cae667047b38a33a8c160cba16b27dc79b04afffbb5e",
+      "output_hash": "00ce167522ed694759b69cdaa31953d4b33f2506c248dd4a8d3f2058c25061c3",
       "output_path": "skills/delegar/SKILL.md",
       "routing_artifact_id": "skill/delegar",
       "verification_level": "cross_checked"
