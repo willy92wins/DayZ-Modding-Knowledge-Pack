@@ -35510,6 +35510,358 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/skills/task-observer/license",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "50bfbf25300f4b6c06f5c286bc9f63b2fe43a548233d633a6798a78a785bdb98",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/LICENSE",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "50bfbf25300f4b6c06f5c286bc9f63b2fe43a548233d633a6798a78a785bdb98",
+      "output_path": "skills/task-observer/LICENSE",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/environments.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "da8a4682abe62b8c01fdfbc63e9d3078d3a36961e2354de592e9ae3057826531",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/environments.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "da8a4682abe62b8c01fdfbc63e9d3078d3a36961e2354de592e9ae3057826531",
+      "output_path": "skills/task-observer/references/environments.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/migration.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "ba788539a5ff3a24d085ba5e420f308854e8d35a55d4ba7f8e51576b2feba5e9",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/migration.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "ba788539a5ff3a24d085ba5e420f308854e8d35a55d4ba7f8e51576b2feba5e9",
+      "output_path": "skills/task-observer/references/migration.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/observation-log.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "c29dc5c13cecfdc3db85c2520da41fab4856354565dc548ab137fdfb183de2f6",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/observation-log.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "c29dc5c13cecfdc3db85c2520da41fab4856354565dc548ab137fdfb183de2f6",
+      "output_path": "skills/task-observer/references/observation-log.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/signals.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "6f77ff5af42bcd0a8e9e1bc27e6362ebf923502449701adf6a38b3573c8e854b",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/signals.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "6f77ff5af42bcd0a8e9e1bc27e6362ebf923502449701adf6a38b3573c8e854b",
+      "output_path": "skills/task-observer/references/signals.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/skill-authoring.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "67fee4b5319dfa7e24e1b2dcb314e8732b66140b37b205f30b0be189cf7feb38",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/skill-authoring.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "67fee4b5319dfa7e24e1b2dcb314e8732b66140b37b205f30b0be189cf7feb38",
+      "output_path": "skills/task-observer/references/skill-authoring.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/weekly-review.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "a00831f044d7e3813743f2abcd5cd45ba5ba30b68b54237ad1fea3f014e04d9f",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/weekly-review.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "a00831f044d7e3813743f2abcd5cd45ba5ba30b68b54237ad1fea3f014e04d9f",
+      "output_path": "skills/task-observer/references/weekly-review.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "2518fc17e47073f62aef2b054b0a306d2a129d1bcccd8bb9ee61f2974ad4d576",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/SKILL.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "2518fc17e47073f62aef2b054b0a306d2a129d1bcccd8bb9ee61f2974ad4d576",
+      "output_path": "skills/task-observer/SKILL.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/source.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Provenance note written for the port (Guillermo, 2026-11-05).",
+          "license": "CC-BY-4.0",
+          "source_hash": "bee7977eaa36b11040595390c6032b4958668d097f613999d81fd237e33ed4e2",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/SOURCE.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "bee7977eaa36b11040595390c6032b4958668d097f613999d81fd237e33ed4e2",
+      "output_path": "skills/task-observer/SOURCE.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/condition-based-waiting-example.ts",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "40ae5ebe497fdf310200e43fe986552546d0a22837c0d39e855db1cfd33eb88e",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/condition-based-waiting-example.ts",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "40ae5ebe497fdf310200e43fe986552546d0a22837c0d39e855db1cfd33eb88e",
+      "output_path": "skills/systematic-debugging/condition-based-waiting-example.ts",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/condition-based-waiting.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "e89fec8400d6cd50f43407cec9fab50976ba4d55d0ec2eb51c0bd68036b54c26",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/condition-based-waiting.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e89fec8400d6cd50f43407cec9fab50976ba4d55d0ec2eb51c0bd68036b54c26",
+      "output_path": "skills/systematic-debugging/condition-based-waiting.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/defense-in-depth.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "1e175fb86fc357e58c6aebf5441e481e1b7868b4380c0456b63a17eefbd18ba7",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/defense-in-depth.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1e175fb86fc357e58c6aebf5441e481e1b7868b4380c0456b63a17eefbd18ba7",
+      "output_path": "skills/systematic-debugging/defense-in-depth.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/license",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/LICENSE",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+      "output_path": "skills/systematic-debugging/LICENSE",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/root-cause-tracing.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "6b0622269e098ca1399e123e553fd385f0b6412d88ef0e9c4f5a8ea9cf1cec7b",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/root-cause-tracing.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6b0622269e098ca1399e123e553fd385f0b6412d88ef0e9c4f5a8ea9cf1cec7b",
+      "output_path": "skills/systematic-debugging/root-cause-tracing.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "d7a6430b183880a7aa3faceacd05fbcc425aa21d3caebb91c4e86f453f56aee6",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/SKILL.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d7a6430b183880a7aa3faceacd05fbcc425aa21d3caebb91c4e86f453f56aee6",
+      "output_path": "skills/systematic-debugging/SKILL.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/source.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Provenance note written for the port (Guillermo, 2026-11-05).",
+          "license": "MIT",
+          "source_hash": "d26fc03a498d0568fd8b83700e83b5c62626dd41ad34c953c9e84932235896be",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/SOURCE.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d26fc03a498d0568fd8b83700e83b5c62626dd41ad34c953c9e84932235896be",
+      "output_path": "skills/systematic-debugging/SOURCE.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -38838,6 +39190,22 @@
       "public_locator": "https://github.com/willy92wins/DayZ-Modding-Knowledge-Pack/pull/135",
       "revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
       "source_id": "pr-135-kinkurono-dev"
+    },
+    {
+      "kind": "git",
+      "license": "CC-BY-4.0",
+      "notes": "Eoghan Henn / rebelytics, CC BY 4.0. Fetched via https://github.com/jeremybrasher/grokbot-skills (skills/task-observer). Modified: session-start trigger softened; attribution notice in SKILL.md and SOURCE.md; license text in LICENSE.",
+      "public_locator": "https://github.com/rebelytics/one-skill-to-rule-them-all",
+      "revision": "grokbot-skills-mirror@2026-11-05",
+      "source_id": "rebelytics-task-observer"
+    },
+    {
+      "kind": "git",
+      "license": "MIT",
+      "notes": "Copyright (c) 2025 Jesse Vincent, MIT. Fetched via https://github.com/jeremybrasher/grokbot-skills (skills/systematic-debugging). Unmodified; copyright notice kept in LICENSE.",
+      "public_locator": "https://github.com/obra/superpowers/blob/main/skills/systematic-debugging",
+      "revision": "grokbot-skills-mirror@2026-11-05",
+      "source_id": "obra-superpowers-systematic-debugging"
     }
   ]
 }
