@@ -9460,10 +9460,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "linux-proton-armake2-link@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: native DayZServer hangs with -filePatching (measured 2026-11-04). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1b5441f9ba1f3539c18d78ceeb918c3b214fa61534fdf164c73f21d520fcedaf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "linux-proton-mcp-run@2026-11-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "11fba81c8c889153b7fe42b034b17575b660734d3a1d2607d954860f755aa4ba",
+      "output_hash": "1b5441f9ba1f3539c18d78ceeb918c3b214fa61534fdf164c73f21d520fcedaf",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -13240,10 +13250,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: dayz_test_run mode=server on dayz-mcp linux-port; start the native server without -filePatching (measured 2026-11-04). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "57dbaf0300ea025b5a694fcb9cb623e1cc3980dab918f74dd6cf5bd19ae06fa1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "linux-proton-mcp-run@2026-11-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "15cb80e55df89980c29a5716e0c4ffac8fbe95d2a7ee77f9f9c820ec53ed0d68",
+      "output_hash": "57dbaf0300ea025b5a694fcb9cb623e1cc3980dab918f74dd6cf5bd19ae06fa1",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -38029,10 +38049,20 @@
           "source_path": "knowledge/linux-proton-findings-2026-11.md",
           "source_revision": "linux-proton-mcp-daemon@2026-11-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 7 added (dayz_test_run mode=server on Linux through a Linux bundle and podman launch; bound polls, managed stop and reaper measured; two DayZServer engine findings). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9dbfea1ca8d3959c7fb39e2b36f720b61005f5da0c33a23d839e6be2f60249e1",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-mcp-run@2026-11-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e4e30ac92665b51d713299ea2ff5510d689c7e280c2f5a44eddcf94e4e722860",
+      "output_hash": "9dbfea1ca8d3959c7fb39e2b36f720b61005f5da0c33a23d839e6be2f60249e1",
       "output_path": "knowledge/linux-proton-findings-2026-11.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -38061,10 +38091,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "linux-proton-armake2-link@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pitfalls: -filePatching hangs native DayZServer 1.30 before the landscape (measured natively and in podman); a read-only mod mount is skipped silently. Bridge row updated. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "266a677fc97046b72aecadcafb6dd4eb4f7fa146d401f98fe003ed4d109ec500",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "linux-proton-mcp-run@2026-11-04",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1771024bdf6e71e8b64163b918f08c5619fa7fa31b69ccc3fec3890274739f66",
+      "output_hash": "266a677fc97046b72aecadcafb6dd4eb4f7fa146d401f98fe003ed4d109ec500",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"

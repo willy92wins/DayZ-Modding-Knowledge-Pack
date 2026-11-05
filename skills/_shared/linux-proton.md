@@ -5,7 +5,7 @@ the Linux supplement they point to: which Windows step has a native Linux equiva
 under Proton and how, and what was not checked. Read it when a skill names a DayZ Tools program,
 `P:\`, PowerShell, `%LOCALAPPDATA%` or `DayZDiag_x64.exe` and the machine is Linux.
 
-Measured on 2026-11-03: Debian testing, Steam native, Proton Hotfix and GE-Proton11-1, DayZ and
+Measured on 2026-11-03 (server pitfalls in section 5 on 2026-11-04): Debian testing, Steam native, Proton Hotfix and GE-Proton11-1, DayZ and
 DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Everything below marked
 **not verified** was not run.
 
@@ -29,7 +29,7 @@ DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Ev
 | `P:` drive (WorkDrive, `subst`) | a plain directory, mapped by `dayz-proton.sh init <dir>` | works (section 3) |
 | PowerShell scripts (`*.ps1`) | rewrite the steps in sh; `pwsh` exists on Linux but the scripts call Windows programs, the registry and `subst` | translate, do not run |
 | `%LOCALAPPDATA%\DayZ` logs | `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ` (section 5) | |
-| dayz-mcp in-game bridge | addon works on the Linux server; the Python side needs the Linux port | see `knowledge/linux-proton-findings-2026-11.md` |
+| dayz-mcp in-game bridge | addon works on the Linux server; on dayz-mcp's `linux-port` branch `dayz_test_run mode=server` runs the server in rootless podman and binds its polls (client role not yet) | see `knowledge/linux-proton-findings-2026-11.md` |
 
 Build, sign, binarize and publish with armake2 and `workshop`; they are what this pack's Linux route
 is built on. AddonBuilder and Publisher are not needed on Linux. Use the Proton route when the question
@@ -127,6 +127,16 @@ apart: if in doubt, build the fork from source, or binarize one textured model b
   `steamapps/compatdata/221100`, the script's game prefix `~/.local/share/dayz-proton/game`); pass
   `-profiles=<linux dir>` (rewritten to `Z:\…`) to get them where you want. DayZ Tools write their own
   logs into `DayZ Tools/Bin/Logs`, as on Windows.
+- **`-filePatching` hangs the native server.** Measured 2026-11-04 on `DayZServer` 1.30, natively and
+  in rootless podman: after the last building type loads, the main thread busy-polls
+  `/proc/self/statm` and `/proc/meminfo` and the landscape never finishes (90 s natively, over 4 minutes
+  in the container); without the flag it loads in about 10 s. Start the Linux server without
+  `-filePatching`. Whether `DayZDiag_x64.exe -server -filePatching` under Proton does the same was
+  **not verified**.
+- **A read-only mod folder is skipped silently.** With a mod mounted read-only into a container
+  (`podman -v <mod>:<mod>:ro`) `DayZServer` 1.30 never logs `Adding package … @Mod` and runs without it;
+  from an overlay mount (`:O`) the same folder loads. Give the server a writable view of each mod
+  folder (an overlay keeps the build itself untouched).
 - **Case sensitivity**: Linux file systems are case-sensitive and Wine's `Z:` hides that from the
   tools, but native tools (armake2, the Linux server reading loose files) do not. Keep path case in
   `config.cpp`, `.rvmat` and model texture references identical to the files on disk.

@@ -146,3 +146,43 @@ Linux port can leave out. The minimal Linux set is: loopback daemon + client mod
   writes it into `dayz_mcp.json` before `podman run`, then records the run with host PID and
   creation time, with the container ID and image ID as cross-checks (cgroup). The Proton client
   (the Linux PID of the Wine `DayZ_x64.exe`) would bind the same way.
+
+## 7. Follow-up, 2026-11-04 (evening): `dayz_test_run` on Linux, server role
+
+The "still missing" item of section 6 is done for `mode=server` (dayz-mcp `7effeef`, branch
+`linux-port`), behind the same lease, sealed worker and daemon lifecycle as on Windows. The sealed modules are still
+byte-identical (21/21).
+
+- **Launcher without the PE.** A Linux bundle in `$LOCALAPPDATA/DayZ_MCP/linux-launchers/dayz-test-v1/`
+  holds the same `app.pyz` and the same `request-policy.json` / `worker-runtime.json` the Windows
+  builder emits from the launcher policy (POSIX paths), pinned by a manifest and checked against
+  `packaged-modules.lock.json` on every open (`python -m dayz_mcp.linux_launcher install|status`). A
+  Python relay replaces the PE's loop: the sealed worker runs under the approved interpreter from the
+  verified archive bytes, and only a per-frame `--lifecycle-child` sees the lease token and identity.
+  `secure_launcher.py` and the builder stay unedited (both feed the Windows build contract): a
+  stand-in `native_launcher_backend` module hands the launch to the relay.
+  The PE's debugger gate and job object are not rebuilt.
+- **Daemon launch in podman.** `ProcessLifecycle._launch` off Windows runs the worker's server argv in
+  rootless podman. Config, profiles and mission are absolute and mounted at their own paths (absolute
+  `-config`/`-profiles`/`-mission` work on the 1.30 Linux server); each `-mod` becomes an `@name` link
+  in a private tree. The launcher waits until the container's PID 1 has exec'd DayZServer, and checks
+  that PID's cgroup and the image. The run is recorded by host PID and creation time, as on Windows.
+  The daemon allows only the server binary paired with its `game_path`
+  (`steamapps/common/DayZ` → `DayZServer/DayZServer`).
+- **Host probes ported**: the process scan walks `/proc` (a Proton process is named by its Windows
+  `argv[0]`). In the UDP holder scan, other users' sockets (chrony, avahi, rpcbind), which an
+  unprivileged process cannot map to a PID, are labelled `uid:<n>`; before that every Linux host read
+  as `port_attribution_unknown` and no launch was admitted.
+- **Measured end to end** (DayZServer 1.30, `@DayZ_MCP`): `dayz_test_run mode=server` succeeded
+  (`lifecycle_ack: launch_identity_match`). The bridge's server polls arrived **bound** to the run
+  (`server_bound_last_poll_age_s` ≈ 0.3 s, equal to the unbound age). `dayz_test_stop` matched the
+  identity and killed the container's DayZServer (`terminated: 1`, run `EXITED`, container removed by
+  `--rm`). A container killed by hand was retired by the run reaper within one pass.
+- **Engine findings** (guide section 5): `-filePatching` makes the native `DayZServer` 1.30 busy-poll
+  `/proc/self/statm` and `/proc/meminfo` after the last building type, and the landscape never
+  finishes. This was measured natively and in podman, while without the flag the landscape loads in
+  about 10 s, so the podman launcher drops the flag and labels the container. Separately, a mod folder
+  mounted `:ro` is skipped without a log line, and `:O` loads it.
+- **Still missing**: the client and offline roles (DayZ under Proton, bound by the same PID rule: the
+  Linux PID of the Wine `DayZ_x64.exe`), build mode (AddonBuilder), and the Windows suite run for
+  these changes.

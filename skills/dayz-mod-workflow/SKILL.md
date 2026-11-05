@@ -988,5 +988,5 @@ shipped configuration.
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
 
 - Build and sign with armake2 (bzed's fork, https://github.com/bzed/armake2) instead of AddonBuilder; publish with the `workshop` uploader.
-- Test loop: native `DayZServer` plus the Proton client from the `dayz-dev` skill, or DayZDiag under Proton (`dayz-proton.sh headless start <state> DayZDiag …`). The `-filePatching` loop of section 6 under Proton was **not verified**.
+- Test loop: native `DayZServer` plus the Proton client from the `dayz-dev` skill, or DayZDiag under Proton (`dayz-proton.sh headless start <state> DayZDiag …`). The `-filePatching` loop of section 6 under Proton was **not verified**; the native `DayZServer` 1.30 hangs before the landscape with `-filePatching` (measured 2026-11-04), so start it without the flag and repack instead.
 - `%LOCALAPPDATA%` and `.ps1` steps: see the guide's pitfalls; translate scripts to `sh`.
