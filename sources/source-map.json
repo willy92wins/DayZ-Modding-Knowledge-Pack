@@ -38098,9 +38098,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Live Claude skill ported on Guillermo request 2026-11-05 (Experto Enfusion gate + Pase de oficio + Merge=Auditor) through ~/.claude/skills/delegar/SKILL.md; output_hash is the LF blob CI checks out. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
+          "decision_evidence": "Live Claude skill ported on Guillermo request 2026-11-05 (Experto Enfusion gate + Pase de oficio + Merge=Auditor) through ~/.claude/skills/delegar/SKILL.md; output_hash is the LF blob CI checks out. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted. Updated 2026-11-05 with hashed spec before implementation and Auditor PASS/HOLD/BLOCK.",
           "license": "MIT",
-          "source_hash": "1a51d69e8e25ec3910db8432d825b0e04c964462749cbedf528e26a266239390",
+          "source_hash": "89047e0ecbc8844cc8775b5e13a35ffd124355d2187be6d1b111c7290e56b4b5",
           "source_id": "installed-skills",
           "source_path": "delegar/SKILL.md",
           "source_revision": "filesystem@2026-11-05",
@@ -38108,7 +38108,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1a51d69e8e25ec3910db8432d825b0e04c964462749cbedf528e26a266239390",
+      "output_hash": "89047e0ecbc8844cc8775b5e13a35ffd124355d2187be6d1b111c7290e56b4b5",
       "output_path": "skills/delegar/SKILL.md",
       "routing_artifact_id": "skill/delegar",
       "verification_level": "cross_checked"
@@ -38243,6 +38243,28 @@
       "output_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
       "output_path": "skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
       "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/vigia-atascos/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New first-party skill vigia-atascos harvested from live Claude skills. Adapted from ideas in Archive228/foreman (MIT); not a copy of that stack. Checker detects stall patterns; checker is not the worker.",
+          "license": "MIT",
+          "source_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
+          "source_id": "installed-skills",
+          "source_path": "vigia-atascos/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
+      "output_path": "skills/vigia-atascos/SKILL.md",
+      "routing_artifact_id": "skill/vigia-atascos",
       "verification_level": "cross_checked"
     }
   ],

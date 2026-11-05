@@ -135,6 +135,15 @@ Los merges los ejecuta el **Auditor**. No preguntar a Guillermo por GO de merge.
 OK de merge = adversarial (Sol u otra familia) sin pendientes + prueba (en juego si toca PBO) + sello Auditor sobre el head exacto + CI verde. Pack: packctl validate PASS + CI pack-contract verde + sello → el Auditor hace squash-merge y POST hash.
 
 Si tienes una PR lista: pásala al Auditor. No la mergees tú (salvo GO explícito ya dado antes de esta norma).
+
+## Spec antes de implementar + veredicto Auditor (Guillermo 2026-11-05)
+
+1. **Antes de picar código:** congela un brief (done-when + write-set + sha). OT-SEAL si aplica. Sin brief hasheado el Auditor puede dar **HOLD**.
+2. **Auditor responde solo:** **PASS** | **HOLD** | **BLOCK** (mapa: PASS≈LIMPIO, HOLD≈SOUND+fixes/espera, BLOCK≈BLOQUEO).
+3. **PASS** exige evidencia (PR/CI/prueba); Partial no cuenta. Verifier ≠ producer (otro chat/agente).
+4. **Merge:** solo con PASS + adversarial + CI (+ prueba en juego si PBO). Lo ejecuta el Auditor. HOLD/BLOCK → no merge.
+5. Atascos: skill `vigia-atascos`; checker ≠ worker.
+
 ## Clasificar el rol antes de escoger aparato
 
 > **(rev. 2026-10-26, Guillermo) Normas de puerta vigentes.** Sustituyen a la nota rev. 2026-09-25 y a las frases antiguas que decían «la puerta por defecto a los
@@ -211,6 +220,14 @@ Muse Wonder: segundo modelo del Intelligence Index según Guillermo (dato suyo, 
 4. **Codex nativo por cuota** (abundante): ejecución que no cabe gratis y todo el JUICIO. `luna`/`astra` para lo ligero, `sol` para lo duro; el slug se lee del catálogo del CLI ese día.
 5. **Claude**; **Cursor** solo como contingencia de Grok si nada anterior sirve (no gastar Cursor Ultra en modelos no-Grok).
 6. **Puesto bloqueante** (gate que acepta, árbitro, revisor obligatorio): nunca gratis sin repuesto de la misma familia.
+
+**Cuándo delegar** (G7 del CLAUDE.md global, poda 2026-11-05): por defecto, la ejecución que gastaría
+la ventana del orquestador (leer mucho, generar mucho código, iterar build/test/render); directo solo si
+brief + revisión cuestan más que la tarea. La revisión de lo delegado la hace otra familia, sobre el diff.
+
+**El worker NO carga mi catálogo** (eje movido aquí desde G7 el 2026-11-05, texto original verbatim):
+`-nc -ns --skill <ruta>` en prime-agent, `OPENCODE_DISABLE_EXTERNAL_SKILLS=1`, `claude -p --safe-mode`,
+nunca `CLAUDE_CONFIG_DIR` (pierde el login); Grok no tiene dial. Detalle por ruta en `references/routes/`.
 
 ## Historial del escuadrón gratis: sillas medidas el 2026-08-28 (histórico, NO estado vivo)
 
