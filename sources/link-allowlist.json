@@ -235,6 +235,16 @@
       "path": "skills/delegar/SKILL.md",
       "target": "../jev/SKILL.md",
       "reason": "Companion files of the live Claude skill delegar stay in ~/.claude/skills (and sibling skill jev); omitted from the public MIT pack because they contain private host paths."
+    },
+    {
+      "path": "skills/lanzar-council-en-willy/SKILL.md",
+      "target": "sand-workflow:council-orchestration",
+      "reason": "Companion live paths / sand-workflow cross-links for lanzar-council-en-willy remain outside the public MIT pack (private host paths or Grok Bot workflow ids)."
+    },
+    {
+      "path": "skills/lanzar-council-en-willy/SKILL.md",
+      "target": "sand-workflow:sesiones-nocturnas",
+      "reason": "Companion live paths / sand-workflow cross-links for lanzar-council-en-willy remain outside the public MIT pack (private host paths or Grok Bot workflow ids)."
     }
   ]
 }

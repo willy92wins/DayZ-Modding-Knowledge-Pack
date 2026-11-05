@@ -5,6 +5,9 @@ description: Decide si delegar, elige modelo y ruta, y construye o recibe el han
 
 # Delegar
 
+> **Lanzador (cambio aprobado 1-nov-2026, traspaso del Orq):** el Orq ya no lanza. Lanza el **Experto MCP** (dueño único por máquina de los hops) con una **sesión Claude conduciendo** el bucle (la sesión solo conduce; veto solo como lane). Donde abajo diga que lanza el Orq u `orq-dispatch` desde el Orq, léase Experto MCP + sesión Claude. OT-SEAL siempre; sha solo en orq-dispatch. Merge: el **Auditor** (norma 5-nov).
+
+
 Esta es la única skill cargable del catálogo. Decide el reparto y construye o recibe el
 handoff. No contiene los manuales completos de cada CLI, el catálogo remoto ni el historial
 de mediciones. Esos datos se cargan bajo demanda desde `references/`.
