@@ -3,6 +3,7 @@
 import io
 import json
 import pathlib
+import shutil
 import sys
 import tempfile
 import unittest
@@ -91,6 +92,29 @@ class TestGenerator(unittest.TestCase):
             self.assertEqual(
                 0, document["nonexistent_method_verification"][name]["occurrences"]
             )
+
+    def test_a_byte_that_is_not_utf8_does_not_stop_the_build(self):
+        # Inbox 4c83: DayZ 1.30's 3_game/global/world.c has a cp1252 TRADE
+        # MARK SIGN (0x99) in a comment. The generator reads the tree as the
+        # detectors do, UTF-8 with replacement, and still indexes that file.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            tree = pathlib.Path(temp_dir) / "tree"
+            shutil.copytree(MINI_TREE, tree)
+            world = tree / "3_game" / "global" / "world.c"
+            world.parent.mkdir(parents=True)
+            world.write_bytes(
+                b"// Brand\x99 in a comment\n"
+                b"class Gamma\n{\n    protected int m_GammaMember;\n}\n"
+            )
+            document = build_vanilla_index.build_index_document(tree)
+
+        self.assertEqual(6, document["file_count"])
+        self.assertEqual(6, document["parsed_file_count"])
+        self.assertEqual([], document["diagnostics"]["read_errors"])
+        self.assertRegex(
+            document["global_class_names"]["Gamma"], r"3_game/global/world\.c:\d+"
+        )
+        self.assertIn("m_GammaMember", document["base_members"]["Gamma"])
 
 
 class TestWithoutIndexMatchesCurated(_IndexIsolation):
@@ -233,6 +257,24 @@ class TestIndexFallback(_IndexIsolation):
             vanilla_reference.set_index_path_for_tests(path)
             self.assertFalse(vanilla_reference.is_vanilla_global_class_name("Alpha"))
             self.assertTrue(vanilla_reference.is_vanilla_global_class_name("LogManager"))
+
+    def test_loaded_index_path_names_only_an_index_in_use(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "vanilla_index.json"
+            vanilla_reference.set_index_path_for_tests(path)
+            self.assertIsNone(vanilla_reference.loaded_index_path())
+            for text in (
+                "{not json",
+                json.dumps({"schema_version": 999}),
+            ):
+                path.write_text(text, encoding="utf-8")
+                vanilla_reference.reset_index_cache()
+                self.assertIsNone(vanilla_reference.loaded_index_path())
+            build_vanilla_index.write_index(
+                build_vanilla_index.build_index_document(MINI_TREE), path
+            )
+            vanilla_reference.reset_index_cache()
+            self.assertEqual(path, vanilla_reference.loaded_index_path())
 
 
 if __name__ == "__main__":

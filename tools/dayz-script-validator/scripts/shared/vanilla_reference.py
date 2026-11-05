@@ -92,6 +92,13 @@ def _load_index():
     return _index_data
 
 
+def loaded_index_path():
+    """Index file in use, or None when only the curated tables apply."""
+    if _load_index() is None:
+        return None
+    return _index_path()
+
+
 def base_member_set(base_name):
     curated = VANILLA_BASE_MEMBERS.get(base_name, set())
     index = _load_index()

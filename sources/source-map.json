@@ -1601,10 +1601,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-164289@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: an Unreleased Fixed entry for pipeline inbox fb-20261105-021157-4c83: a vanilla_index.json built from DayZ 1.29 and left in a checkout made the vanilla control fail on 1.30, and build_vanilla_index.py could not rebuild it because it read 3_game/global/world.c (cp1252 0x99 in a comment) as strict UTF-8.",
+          "license": "MIT",
+          "source_hash": "f4f787e243606defb9c1df1def8be67945433f346d573559110b0271aafc23bf",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "00359c0e2a6a1ce6f375c68394cb051231997b0a0ff9e68ce9dea12c713e67f9",
+      "output_hash": "f4f787e243606defb9c1df1def8be67945433f346d573559110b0271aafc23bf",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -22668,10 +22678,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. The vanilla control's exit-code line names the new SKIP: a local scripts/shared/vanilla_index.json that the validator loads, since the baseline measures the validator without one.",
+          "license": "MIT",
+          "source_hash": "56f906cf410e3e876dec6db5fe163b583a2428146c90867946e6fe526b4972ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "dd4071eccb289c7ef844a4d811e0979f571623375c4a2556e5ec5702be07ec43",
+      "output_hash": "56f906cf410e3e876dec6db5fe163b583a2428146c90867946e6fe526b4972ce",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -22756,10 +22776,20 @@
           "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
           "source_revision": "r21-vanilla-index@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. scan_file and verify_nonexistent_methods read each .c as UTF-8 with replacement, as the detectors read the vanilla tree (_vanilla_texts in detectors/es_undefined_class_ref.py), so a byte that is not UTF-8 no longer stops the build; the reporter measured a cp1252 0x99 in a comment of 3_game/global/world.c in 1.30.164200 and 1.30.164289. tree_digest and total_bytes still read the bytes. test_vanilla_index TestGenerator.test_a_byte_that_is_not_utf8_does_not_stop_the_build (the mini tree plus a world.c with 0x99) fails on main with UnicodeDecodeError and passes; a mutant with either read strict fails it.",
+          "license": "MIT",
+          "source_hash": "d25357d17e2bd5bed125117af22116f45b5fa4c6babd5c7b9c05d36314232dd4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "903329f535a8663886250253f6da980ee603dfc4e2f0610b57e1d6fd42689987",
+      "output_hash": "d25357d17e2bd5bed125117af22116f45b5fa4c6babd5c7b9c05d36314232dd4",
       "output_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23718,10 +23748,20 @@
           "source_path": "scripts/shared/vanilla_reference.py",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. loaded_index_path() returns the index file the detectors read, or None when the loader has none (missing, not JSON, another schema_version). Pinned by test_vanilla_index TestIndexFallback.test_loaded_index_path_names_only_an_index_in_use; a mutant that always returns the path fails it.",
+          "license": "MIT",
+          "source_hash": "4903d37818a8afef58e546e71b46717c4bca70f39af4262bd3fb21c2fba49ef4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9a759963a10b15cef739e31af09e3fe6f3814129fc769792eb7b11dd038763b7",
+      "output_hash": "4903d37818a8afef58e546e71b46717c4bca70f39af4262bd3fb21c2fba49ef4",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23794,10 +23834,20 @@
           "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. With a local vanilla_index.json loaded the validator is not the one the baseline measures: the reporter's 1.29 index gave four ES-OVERRIDE-PARAM-NAME-MISMATCH FAILs in each of 1.30.164289's genericicon.c and slotsicon.c, which pass without it. main() now SKIPs with exit 2 and names the file, after the tree is resolved and before --update or the comparison. test_vanilla_control TestLocalIndex: a loaded index SKIPs and names the file, --update with one writes no baseline, a file the loader rejects does not count; mutants that drop the check, test the file's existence instead, or check only before the comparison each fail one of them.",
+          "license": "MIT",
+          "source_hash": "6c9158eb17d8bba544e02c5233e6be5caff91019638b313dfad878233a68e1bf",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "71c43a0535d29d9bef44a65414e6e02fcd0a6887f177098c071f206592084214",
+      "output_hash": "6c9158eb17d8bba544e02c5233e6be5caff91019638b313dfad878233a68e1bf",
       "output_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27570,10 +27620,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
           "source_revision": "r21-vanilla-control@2026-08-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. The CLI tests point the index loader at a path in a fresh temporary directory, so an index in the checkout does not make them SKIP (without that, a local index fails the --update round trip); TestLocalIndex adds three tests. python3 -m unittest discover -s tests in tools/dayz-script-validator: 341 OK (336 on main); pytest is not installed in the container that ran it.",
+          "license": "MIT",
+          "source_hash": "8dea8bc741ce91ef9c43ae3264a6b6f1e765e4215c704f59945350556404a223",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "92e38ca36b52f9922d9fcadfa84c4f82c8d685b61ac38113869959cfb9df8f72",
+      "output_hash": "8dea8bc741ce91ef9c43ae3264a6b6f1e765e4215c704f59945350556404a223",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27592,10 +27652,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
           "source_revision": "r21-vanilla-index@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. Two tests: the generator indexes a tree whose world.c carries a cp1252 0x99 (file_count 6, parsed_file_count 6, no read_errors, Gamma and m_GammaMember indexed), and loaded_index_path() names only an index the loader uses (missing, not JSON and schema_version 999 give None; a built index gives its path). Both fail on main.",
+          "license": "MIT",
+          "source_hash": "41206e3f559723fe1ca787b294cbe49aecc3f146fcdac4ca3fac1fb7423b1021",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8e62ab760e7d726957935faf2d327ea3f8ac1f25a053f926e3da3a860f5c47f",
+      "output_hash": "41206e3f559723fe1ca787b294cbe49aecc3f146fcdac4ca3fac1fb7423b1021",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
