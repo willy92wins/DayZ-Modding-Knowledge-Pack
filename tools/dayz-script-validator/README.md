@@ -413,7 +413,9 @@ that rule fails the control rather than hiding in a SKIP. `--baseline` defaults 
 `tests/baselines/vanilla_control_baseline.json` next to this tool, not the
 cwd. `--update` rewrites the baseline on purpose after a DayZ patch or an
 accepted change; it prints what moved. Exit 0 is PASS, 1 is FAIL, 2 is
-SKIP (no tree, no baseline, unreadable).
+SKIP (no tree, no baseline, unreadable, or a local
+`scripts/shared/vanilla_index.json` that the validator loads: the baseline
+measures the validator without one, so move that file away first).
 
 Every baseline entry carries the reason it is tolerated. `--update` keeps
 the reasons already written and cannot invent the missing ones, so it names

@@ -636,6 +636,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-script-validator`: a `scripts/shared/vanilla_index.json` built from DayZ 1.29 and left in
+  a checkout turned the vanilla control red on 1.30 (fb-20261105-021157-4c83). The index keys
+  override signatures by method name only and kept 1.29's `InitIcon(icon, item, pos_x, pos_y)`, so
+  `ES-OVERRIDE-PARAM-NAME-MISMATCH` failed four parameters in each of the 1.30
+  `5_mission/gui/inventorynew/containeditems/genericicon.c:9` and `slotsicon.c:3`, which the
+  committed validator, without an index, passes. Nor could the index be rebuilt on 1.30:
+  `build_vanilla_index.py` read the tree as strict UTF-8 and stopped on the cp1252 trademark sign
+  (0x99) in a comment of `3_game/global/world.c`, in 1.30.164200 and 1.30.164289. It now decodes
+  with replacement, as the detectors read that tree, and indexes the file. `vanilla_control.py`
+  measures the validator without an index, so when one is loaded it SKIPs (exit 2) and names the
+  file, before it compares or `--update` writes a baseline. A file the loader rejects (not JSON,
+  another schema) is not loaded and does not count. The control's CLI tests now point the loader
+  at an empty temporary directory, so they do not depend on an index in the checkout. 341 unit
+  tests pass (336 before).
 - Citations of files this pack does not ship now say so. `_shared/dayz-conventions.md` gains
   "Citation placeholders: `[PROJ]`, `[SKILLS]`, `<project>_dev/...`": what each token means, and
   that a `[PROJ]` or `*_dev` citation records provenance, not a file you can open. The project-only
