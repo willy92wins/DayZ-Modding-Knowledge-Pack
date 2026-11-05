@@ -13260,10 +13260,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "linux-proton-mcp-run@2026-11-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: DayZDiag under Proton loads an absolute Z: -mod path and writes logs to a Z: -profiles path (measured 2026-11-05); join to native DayZServer not verified. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e47b4f263fcf8cf4e605c33b3d7f65fa3dfc246bc66624273bdd30d3fd0eaab0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "linux-proton-client@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "57dbaf0300ea025b5a694fcb9cb623e1cc3980dab918f74dd6cf5bd19ae06fa1",
+      "output_hash": "e47b4f263fcf8cf4e605c33b3d7f65fa3dfc246bc66624273bdd30d3fd0eaab0",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -38059,10 +38069,20 @@
           "source_path": "knowledge/linux-proton-findings-2026-11.md",
           "source_revision": "linux-proton-mcp-run@2026-11-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 8 added (client role implemented in dayz-mcp 3a82bdc, not yet run; DayZDiag under Proton loads -mod/-profiles Z: paths; Wine argv NUL padding; Linux SteamPID). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "68261db454e0f7b20aceac7e081a8e2db9eb4248b623f0fcfa0d44b1a7b6bcbd",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-client@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9dbfea1ca8d3959c7fb39e2b36f720b61005f5da0c33a23d839e6be2f60249e1",
+      "output_hash": "68261db454e0f7b20aceac7e081a8e2db9eb4248b623f0fcfa0d44b1a7b6bcbd",
       "output_path": "knowledge/linux-proton-findings-2026-11.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"

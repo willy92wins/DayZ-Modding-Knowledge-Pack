@@ -186,3 +186,23 @@ byte-identical (21/21).
 - **Still missing**: the client and offline roles (DayZ under Proton, bound by the same PID rule: the
   Linux PID of the Wine `DayZ_x64.exe`), build mode (AddonBuilder), and the Windows suite run for
   these changes.
+
+## 8. Follow-up, 2026-11-05: the client role, implemented but not yet run
+
+dayz-mcp `3a82bdc` adds the client and offline roles for `dayz_test_run` on Linux. They use dayz-dev's headless
+chain (headless sway, Steam Linux Runtime 4, `proton run`) with `DayZDiag_x64.exe`, not the retail
+`DayZ_x64.exe`, which the daemon treats as the user's own game. The Steam check reads `SteamPID` from
+`~/.steam/registry.vdf`. No managed client was started (the client was in use), so the join and the bound
+client polls are still open. Measured on the way:
+
+- **`DayZDiag_x64.exe` 1.30.164289.70 under GE-Proton11-1**, started through that chain, loads a mod from an
+  absolute `-mod=Z:\tmp\...\@DayZ_MCP` and writes its RPT, script and error logs into
+  `-profiles=Z:\tmp\...`. Mods need not be linked into the Steam install for the diag client.
+- **It is a host process.** Pressure-vessel does not hide it: `comm` is `enfMain`, `argv[0]` is the
+  `Z:\...\DayZDiag_x64.exe` path, and its parent is `pv-adverb`.
+- **Wine leaves the rewritten argv NUL-padded.** psutil reads the padding as empty arguments (222 after a
+  DayZDiag command line). Any tool that rejects empty arguments, as dayz-mcp's process guard did, cannot
+  identify a Proton process until it trims them.
+- **The Steam PID on Linux** is `HKLM/Software/Valve/Steam/SteamPID` in `~/.steam/registry.vdf` (and
+  `~/.steam/steam.pid`), held by `ubuntu12_32/steam`. The `ActiveProcess` key inside a Proton prefix holds a
+  Wine PID, which says nothing about the native Steam.
