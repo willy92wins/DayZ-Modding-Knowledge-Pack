@@ -540,6 +540,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164289 stable
+  (`DayZDiag_x64.exe` 1.30.164.289, the Steam update of 2026-11-04). On that tree it failed only
+  on the tree's digest: the validator reported the same 15 errors and 424 warnings as on
+  1.30.164200, with the same count for each rule in each file. The patch changes 27 of the files
+  the validator reads, all `.c` (base building, the code lock, the diag menu, heat stroke,
+  `game.c`, `playerconstants.c`, `miscgameplayfunctions.c` and others), and adds or removes none.
+  Twelve warnings only moved, because lines were added or removed above them, and a line
+  alignment of the two versions of each file maps all twelve: two `ES-CTX-READ-UNCHECKED` in
+  `4_world/plugins/pluginbase/plugindiagmenu/plugindiagmenuclient.c` and two
+  `ES-CTX-READ-UNSUPPORTED-PATTERN` in `plugindiagmenu.c` (+1); seven
+  `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN`, two in `4_world/classes/constructionbase.c` (+64), three in
+  `4_world/entities/itembase/basebuildingbase.c` (-1) and two in `basebuildingbase/fence.c` (+14);
+  and one `ES-GETTYPE-EXACT-MATCH` in `4_world/static/miscgameplayfunctions.c` (+6). None of the 15
+  baseline errors is in a changed file. The baseline names that build and the digest `fd826b40`
+  over 3057 files, as before; its 15 entries, their notes and its warning counts are unchanged.
+  The 1.30.164200 tree, rebuilt from `P:\scripts` with the 27 old files put back, still passes
+  against the old baseline (digest `d24552ff`) with this validator. The `--update` run and the
+  check after it took 194 and 181 seconds by the wall clock on the owner's PC on 2026-11-05.
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164200 stable
   (`DayZDiag_x64.exe` 1.30.164.200). On that tree it failed only on the tree's digest: the
   validator reported the same 15 errors and 424 warnings as on 1.30.164078, with the same count
