@@ -19349,10 +19349,20 @@
           "source_path": "sources/link-allowlist.json",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-11-05: allowlist six local Markdown links from skills/delegar/SKILL.md whose companions remain in the live Claude tree (private host paths, not published).",
+          "license": "MIT",
+          "source_hash": "9eb1acef41aa5d423763ff82b30d33d65e3b0c046867e822e270a96b45f55007",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/link-allowlist.json",
+          "source_revision": "delegar-enfusion@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2b0054707fe5214e81afb69b0017dd6ab1be5dba5026fdb907dd3fab13713796",
+      "output_hash": "9eb1acef41aa5d423763ff82b30d33d65e3b0c046867e822e270a96b45f55007",
       "output_path": "sources/link-allowlist.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38080,6 +38090,28 @@
       "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/delegar/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Live Claude skill ported on Guillermo request 2026-11-05 (Experto Enfusion gate section) through ~/.claude/skills/delegar/SKILL.md; bytes match the live copy by sha256. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
+          "license": "MIT",
+          "source_hash": "a733ece51800d93b16379119bbb9877f91f17088fd8af5296e717b20ee881f26",
+          "source_id": "installed-skills",
+          "source_path": "delegar/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a733ece51800d93b16379119bbb9877f91f17088fd8af5296e717b20ee881f26",
+      "output_path": "skills/delegar/SKILL.md",
+      "routing_artifact_id": "skill/delegar",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
