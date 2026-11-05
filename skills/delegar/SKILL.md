@@ -116,7 +116,7 @@ artefactos en disco. Y cuando la corrida muera: mirar el árbol y relanzar, en e
 
 - Toda PR o DIFF que toque **Enforce Script** (.c) o el **PBO**: revisión del Experto Enfusion (fbde1d58) **antes** del sello del Auditor. Sin esa revisión no se pide sello.
 - **Hooks antihack**: los diseña Experto Enfusion **con** Responsable Proyectos. No se inventan en el hop de implementación.
-- No sustituye al Auditor (LIMPIO/SOUND) ni a la revisión de otra familia (Sol/Codex). Orden: implementación → (revisión otra familia si aplica) → Experto Enfusion si Enforce/PBO → Auditor → merge. PBO: el dueño decide tras prueba en juego.
+- No sustituye al Auditor (LIMPIO/SOUND) ni a la revisión de otra familia (Sol/Codex). Orden: implementación → (revisión otra familia si aplica) → Experto Enfusion si Enforce/PBO → Auditor (sello y merge). PBO: el dueño decide tras prueba en juego.
 - Autoridad de Enfusion = Pack + skills vivas Claude + LLs del vault; no el extracto stale.
 
 ## Pase de oficio (Guillermo 2026-11-05)
@@ -128,6 +128,13 @@ Si recibes una tarea que según `registro-agentes.md` es de otro bot:
 4. **Excepción:** bots que solo aceptan GO escrito en su propio chat (hoy: **Experto MCP**). Das a Guillermo el **texto exacto del GO** listo para pegar en ese chat; no finges el GO.
 5. El dueño confirma recepción y cierra con un **POST** al que se la pasó.
 
+## Merge (Guillermo 2026-11-05)
+
+Los merges los ejecuta el **Auditor**. No preguntar a Guillermo por GO de merge.
+
+OK de merge = adversarial (Sol u otra familia) sin pendientes + prueba (en juego si toca PBO) + sello Auditor sobre el head exacto + CI verde. Pack: packctl validate PASS + CI pack-contract verde + sello → el Auditor hace squash-merge y POST hash.
+
+Si tienes una PR lista: pásala al Auditor. No la mergees tú (salvo GO explícito ya dado antes de esta norma).
 ## Clasificar el rol antes de escoger aparato
 
 > **(rev. 2026-10-26, Guillermo) Normas de puerta vigentes.** Sustituyen a la nota rev. 2026-09-25 y a las frases antiguas que decían «la puerta por defecto a los
