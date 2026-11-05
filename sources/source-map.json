@@ -19359,10 +19359,20 @@
           "source_path": "sources/link-allowlist.json",
           "source_revision": "delegar-enfusion@2026-11-05",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-11-05 OK#3: allowlist sand-workflow/local Markdown links from skills/lanzar-council-en-willy/SKILL.md (companions outside public pack).",
+          "license": "MIT",
+          "source_hash": "cb6316d1c1b8bb8dbf53b24dbdbfbade8bba3d1765008071a75862af60037b3b",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/link-allowlist.json",
+          "source_revision": "ok3-lanzar-council@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "736ab6bef1806d30230df198a06f13d4b54c241d422b20f0ba99cb94be79cb4c",
+      "output_hash": "cb6316d1c1b8bb8dbf53b24dbdbfbade8bba3d1765008071a75862af60037b3b",
       "output_path": "sources/link-allowlist.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38098,9 +38108,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Live Claude skill ported on Guillermo request 2026-11-05 (Experto Enfusion gate + Pase de oficio + Merge=Auditor) through ~/.claude/skills/delegar/SKILL.md; output_hash is the LF blob CI checks out. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted. Updated 2026-11-05 with hashed spec before implementation and Auditor PASS/HOLD/BLOCK.",
+          "decision_evidence": "Live Claude skill ported 2026-11-05 OK#3 Orq handoff: Lanzador=Experto MCP + Claude session conducts; Merge=Auditor. Also carries 2026-11-05 gates (Experto Enfusion, Pase de oficio, Spec+PASS/HOLD/BLOCK). output_hash is the LF blob CI checks out. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
           "license": "MIT",
-          "source_hash": "89047e0ecbc8844cc8775b5e13a35ffd124355d2187be6d1b111c7290e56b4b5",
+          "source_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
           "source_id": "installed-skills",
           "source_path": "delegar/SKILL.md",
           "source_revision": "filesystem@2026-11-05",
@@ -38108,9 +38118,31 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "89047e0ecbc8844cc8775b5e13a35ffd124355d2187be6d1b111c7290e56b4b5",
+      "output_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
       "output_path": "skills/delegar/SKILL.md",
       "routing_artifact_id": "skill/delegar",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/lanzar-council-en-willy/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New live Claude skill lanzar-council-en-willy harvested 2026-11-05 OK#3 Orq handoff: owner=Experto MCP; one DayZDiag at a time. Public Pack redacts the live host user profile path to C:\\\\Users\\\\<you>\\\\. Live copy on Willy retains real host paths; do not promote this skill over live without re-checking privacy.",
+          "license": "MIT",
+          "source_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
+          "source_id": "installed-skills",
+          "source_path": "lanzar-council-en-willy/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
+      "output_path": "skills/lanzar-council-en-willy/SKILL.md",
+      "routing_artifact_id": "skill/lanzar-council-en-willy",
       "verification_level": "cross_checked"
     },
     {
