@@ -7,6 +7,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: `ES-UNDEFINED-BUILTIN-METHOD` (FAIL), a call to a method that the vanilla tree's class of a
+  built-in type (`bool`, `int`, `float`, `vector`, `string`, `typename`, `array`, `set`, `map`) does not declare, made
+  on a value of one, a template of one, a typedef of one or the type itself. From pipeline inbox
+  fb-20261103-150432-9f93 (LFSkateboard): `gF.Cross(gR)` on vector locals stopped a DayZ 1.30.164200 server with
+  `Undefined function 'vector.Cross'`, which only the 1.30.164014 Exp scripts declare, and the validator had passed
+  the call against either tree. `--game-root` (or `DAYZ_GAME_ROOT`) compares the vanilla tree with the game's
+  `dta\scripts.pbo` by content, through the fail-closed reader of `dayz-vehicle-proxy-contract`, and warns with
+  `VANILLA-ROOT-BUILD-MISMATCH` when they differ. `_argument_type` of `ES-CAST-UNRELATED-TYPES` takes the reader of a
+  declared type as a parameter; its default, and so the three rules that already used it, are unchanged. Measured
+  against 1.30.164200: the LFSkateboard tree before its fix fails at `lfsk_playerbase.c:1957` and `:1959` and the
+  fixed tree passes; the vanilla tree gives no finding (8 870 calls judged) and the vanilla control matches its
+  baseline; 236 addon roots under `P:\` (23 885 calls judged) give one finding, a `string.StartsWith` that no build
+  declares. `CLAIM-ENFORCE-UNDEFINED-BUILTIN-METHOD`. 17 new tests (336 pass); 19 mutants of the two new modules, all
+  killed. Cross-family review: Grok 4.7 by grok-cli, one round on a copy with a shell (UNSOUND, 7 findings, each
+  reproduced): H1, a `(` that only one `#ifdef` branch opens hid the later members of a built-in class (a false FAIL;
+  the members now also include every name written before a `(`), and H5, a variable that never compiles hid a static
+  call, fixed with a test each; H2-H4, H6 and H7 are calls the lookup leaves unjudged (a later declarator, a loop
+  variable, an inherited member, nested template parameters, `value`), kept and listed in the README. On follow-up the
+  reviewer withdrew H5 as the weakest and confirmed that the H1 fix still fails `vector.Cross` on 1.30.164200.
 - `dayz-texture-pipeline`: what the H2R texture pass measured against the vanilla Motorbike_02 (2026-10-26
   to 2026-11-02). `references/map-conventions.md` gains "Calibrating against a vanilla asset of the same family": compare
   `_smdi` levels only under matching rvmat constants; the vanilla `motorbike_02_body` rvmat; its maps by surface class
