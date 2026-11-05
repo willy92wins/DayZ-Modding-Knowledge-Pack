@@ -6,7 +6,7 @@ description: >-
 ---
 # Tablero cupos y sesiones
 
-`VAULT` is your local Markdown vault root; `%APPDATA%` and `%USERPROFILE%` are Windows placeholders. The existing vault runbook is optional: the bundled helper reads these three quotas without it. Keep physical roots in local configuration.
+`VAULT` is your local Markdown vault root; `%APPDATA%`, `%LOCALAPPDATA%` and `%USERPROFILE%` are Windows placeholders. The existing vault runbook is optional: the bundled helper reads these three quotas without it. Keep physical roots in local configuration.
 
 Refresh `VAULT\AI\_tablero.md` from live sources. Do not wait for the 8:13 recap. Do not invent numbers. No tokens, cookies, or org UUIDs in chat.
 
@@ -16,10 +16,10 @@ Refresh `VAULT\AI\_tablero.md` from live sources. Do not wait for the 8:13 recap
 2. [EXACT][CLAIM-TABLERO-CODEX-CREDITS] Codex/OpenAI Pro: `python VAULT\AI\20_Runbooks\scripts\codex-usage.py --days 3`. Use CUOTA `rate_limits.primary` (used_percent, resets_at). Include credits balance: used >=100% with balance >0 = **NO bloqueado: tira de creditos**; without credits = **BLOQUEADO hasta reset**. If the dated row is >24h, say so. Do not `codex exec` just to read quota.
 3. Grok grok.com (**20 €/mes** since 2026-08-31 14:31 Madrid): unset `XAI_API_KEY`, `%USERPROFILE%\.grok\bin\grok.exe --oauth --no-alt-screen --minimal /usage`. Kill it if the TUI hangs. Not `grok -p /usage`. 402 before first turn = pool empty, not a brief bug. Cheap pool; unique public-X door.
 4. Cursor **Ultra (200 €/mes)** since 2026-08-31: `cursor-agent about` / `status` show tier, **not remaining quota**. Never invent a Cursor remaining figure. Point at Usage & Billing (`grokbot://app/v1/settings?id=plan`) for Grok Bot itself; Cursor Ultra saldo is not readable from CLI.
-5. [EXACT][CLAIM-TABLERO-AGY-USAGE] Antigravity: `agy -p "/usage"` does not spend a turn. TSV % = **remaining**; convert ISO UTC resets to Madrid.
+5. [EXACT][CLAIM-TABLERO-AGY-USAGE] Antigravity: TSV % = **remaining**; convert ISO UTC resets to Madrid. Helper cache: `%LOCALAPPDATA%\tablero-cupos\agy-usage.json` (raw TSV lines + epoch); call `agy -p "/usage"` only if missing/unusable, >24h old or not from today in Europe/Madrid; `--refresh-agy` forces a call. Reuse, including fallback after failure, = `STALE (lectura HH:MM Madrid)`; failed calls preserve good cache. Measured 2026-11-05 15:12–15:13 Madrid: three consecutive `/usage` calls, Gemini 5h 50%→50%→50%, weekly 76% constant: no measurable spend; cache avoids noise/latency, cost remains unproven.
 6. [EXACT][CLAIM-TABLERO-MUSE-USAGE] Muse: `muse usage --json`; `allowance` has tier, window + weekly usedPercent/resetsAtMs and asOfMs. Show both resets in Madrid; include them in the chat hot-cupos line.
 
-[EXACT][CLAIM-TABLERO-CUPOS-EXTRA] From this skill directory: `python scripts/cupos-extra.py` (or `--json`) reads Codex, Antigravity and Muse; each source fails soft. Madrid uses zoneinfo, with the EU DST rule if tzdata is absent.
+[EXACT][CLAIM-TABLERO-CUPOS-EXTRA] From this skill directory: `python scripts/cupos-extra.py` (or `--json`) reads Codex, Antigravity and Muse; each source fails soft. Antigravity JSON includes `stale` and `cached_at` (epoch seconds, null without a reading). Madrid uses zoneinfo, with the EU DST rule if tzdata is absent.
 
 ## Sesiones
 

@@ -16,8 +16,25 @@ SPEC = importlib.util.spec_from_file_location("cupos_extra", SCRIPT)
 usage = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(usage)
 
+AGY_TSV = ("Gemini Models\t5h Limit Remaining\t50%\t2026-11-05T18:00:00Z\n"
+           "Gemini Models\tWeekly Limit Remaining\t76%\t2026-11-11T14:56:58Z\n")
+
 
 class UsageContracts(unittest.TestCase):
+    def setUp(self):
+        folder = self.enterContext(tempfile.TemporaryDirectory())
+        self.cache_path = Path(folder) / "tablero-cupos" / "agy-usage.json"
+        self.enterContext(patch.dict(os.environ, {"LOCALAPPDATA": folder}))
+        self.now = usage.parse_utc("2026-11-05T14:00:00Z").timestamp()
+        self.clock = self.enterContext(patch("time.time", return_value=self.now))
+
+    def seed_agy_cache(self, cached_at=None):
+        self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+        self.cache_path.write_text(json.dumps({
+            "lines": AGY_TSV.splitlines(),
+            "cached_at": self.now if cached_at is None else cached_at,
+        }), encoding="utf-8")
+
     def test_codex_newest_mtime_last_record_and_credit_status(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -79,6 +96,145 @@ class UsageContracts(unittest.TestCase):
                 with self.assertRaises(usage.UsageError):
                     usage.read_antigravity()
 
+    def test_agy_missing_cache_then_reuses_raw_tsv(self):
+        completed = subprocess.CompletedProcess([], 0, AGY_TSV, "")
+        with patch.object(usage.subprocess, "run", return_value=completed) as run:
+            fresh = usage.read_antigravity()
+            cached = usage.read_antigravity()
+        self.assertEqual(run.call_count, 1)
+        self.assertEqual(run.call_args.args[0][-2:], ["-p", "/usage"])
+        self.assertFalse(fresh["stale"])
+        self.assertTrue(cached["stale"])
+        self.assertEqual(fresh["cached_at"], self.now)
+        self.assertEqual(cached["cached_at"], self.now)
+        self.assertEqual(cached["limits"], fresh["limits"])
+        self.assertEqual(json.loads(self.cache_path.read_text(encoding="utf-8")), {
+            "lines": AGY_TSV.splitlines(), "cached_at": self.now,
+        })
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            usage.print_block("Antigravity", {"ok": True, **cached})
+        self.assertIn("STALE (lectura 15:00 Madrid)", output.getvalue())
+
+    def test_agy_today_cache_does_not_call_subprocess(self):
+        self.seed_agy_cache(self.now - 60)
+        before = self.cache_path.read_bytes()
+        with patch.object(usage.subprocess, "run") as run:
+            result = usage.read_antigravity()
+        run.assert_not_called()
+        self.assertTrue(result["stale"])
+        self.assertEqual(self.cache_path.read_bytes(), before)
+
+    def test_agy_new_madrid_day_refreshes_before_24h(self):
+        for now, previous in (("2026-11-05T23:05:00Z", "2026-11-05T22:55:00Z"),
+                              ("2026-07-05T22:05:00Z", "2026-07-05T21:55:00Z")):
+            with self.subTest(now=now):
+                self.clock.return_value = usage.parse_utc(now).timestamp()
+                self.seed_agy_cache(usage.parse_utc(previous).timestamp())
+                with patch.object(usage.subprocess, "run", return_value=
+                                  subprocess.CompletedProcess([], 0, AGY_TSV, "")) as run:
+                    result = usage.read_antigravity()
+                run.assert_called_once()
+                self.assertFalse(result["stale"])
+
+    def test_agy_same_madrid_day_reuses_across_utc_midnight(self):
+        self.clock.return_value = usage.parse_utc("2026-11-06T00:05:00Z").timestamp()
+        self.seed_agy_cache(usage.parse_utc("2026-11-05T23:55:00Z").timestamp())
+        with patch.object(usage.subprocess, "run") as run:
+            result = usage.read_antigravity()
+        run.assert_not_called()
+        self.assertTrue(result["stale"])
+
+    def test_agy_24h_boundary_on_25_hour_madrid_day(self):
+        cached_at = usage.parse_utc("2026-10-24T22:05:00Z").timestamp()
+        for age, calls in ((86400, 0), (86401, 1)):
+            with self.subTest(age=age):
+                self.clock.return_value = cached_at + age
+                self.seed_agy_cache(cached_at)
+                with patch.object(usage.subprocess, "run", return_value=
+                                  subprocess.CompletedProcess([], 0, AGY_TSV, "")) as run:
+                    result = usage.read_antigravity()
+                self.assertEqual(run.call_count, calls)
+                self.assertEqual(result["stale"], not calls)
+
+    def test_agy_force_refresh_bypasses_today_cache(self):
+        self.seed_agy_cache(self.now - 60)
+        with patch.object(usage.subprocess, "run", return_value=
+                          subprocess.CompletedProcess([], 0, AGY_TSV, "")) as run:
+            result = usage.read_antigravity(refresh=True)
+        run.assert_called_once()
+        self.assertFalse(result["stale"])
+        self.assertEqual(result["cached_at"], self.now)
+
+    def test_agy_failed_refresh_preserves_good_cache(self):
+        failures = (subprocess.CompletedProcess([], 2, "", "private diagnostic"),
+                    subprocess.TimeoutExpired("private diagnostic", 90),
+                    FileNotFoundError("private diagnostic"), PermissionError("private diagnostic"),
+                    subprocess.CompletedProcess([], 0, "", ""),
+                    subprocess.CompletedProcess([], 0, "invalid TSV", ""))
+        for failure in failures:
+            for force in (False, True):
+                with self.subTest(failure=failure, force=force):
+                    stamp = self.now - (60 if force else 2 * 86400)
+                    self.seed_agy_cache(stamp)
+                    before = self.cache_path.read_bytes()
+                    kwargs = {"side_effect": failure} if isinstance(failure, Exception) else {"return_value": failure}
+                    with patch.object(usage.subprocess, "run", **kwargs) as run:
+                        result = usage.read_antigravity(refresh=force)
+                    run.assert_called_once()
+                    self.assertTrue(result["stale"])
+                    self.assertEqual(result["cached_at"], stamp)
+                    self.assertEqual(result["limits"][0]["remaining_percent"], 50)
+                    self.assertEqual(self.cache_path.read_bytes(), before)
+
+    def test_agy_failure_without_cache_does_not_create_one(self):
+        for completed in (subprocess.CompletedProcess([], 2, "", "private diagnostic"),
+                          subprocess.CompletedProcess([], 0, "invalid TSV", "")):
+            with self.subTest(completed=completed), \
+                 patch.object(usage.subprocess, "run", return_value=completed):
+                result = usage.safe_read(usage.read_antigravity)
+            self.assertFalse(result["ok"])
+            self.assertFalse(self.cache_path.exists())
+
+    def test_agy_invalid_cache_is_refetched(self):
+        for text in ("{partial", "[]", '{"lines":[],"cached_at":1}',
+                     '{"lines":[1],"cached_at":1}',
+                     json.dumps({"lines": AGY_TSV.splitlines(), "cached_at": "bad"}),
+                     json.dumps({"lines": AGY_TSV.splitlines(), "cached_at": 1e100})):
+            with self.subTest(text=text):
+                self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+                self.cache_path.write_text(text, encoding="utf-8")
+                with patch.object(usage.subprocess, "run", return_value=
+                                  subprocess.CompletedProcess([], 0, AGY_TSV, "")) as run:
+                    result = usage.read_antigravity()
+                run.assert_called_once()
+                self.assertFalse(result["stale"])
+
+    def test_agy_cache_write_failure_keeps_fresh_reading_and_old_cache(self):
+        self.seed_agy_cache(self.now - 60)
+        before = self.cache_path.read_bytes()
+        with patch.object(usage.subprocess, "run", return_value=
+                          subprocess.CompletedProcess([], 0, AGY_TSV, "")), \
+             patch.object(usage.os, "replace", side_effect=PermissionError("private diagnostic")):
+            result = usage.read_antigravity(refresh=True)
+        self.assertFalse(result["stale"])
+        self.assertEqual(self.cache_path.read_bytes(), before)
+        self.assertEqual(list(self.cache_path.parent.iterdir()), [self.cache_path])
+
+    def test_agy_json_metadata_and_refresh_flag(self):
+        self.seed_agy_cache(self.now - 60)
+        with patch.object(usage, "read_codex", return_value={}), \
+             patch.object(usage, "read_muse", return_value={}), \
+             patch.object(usage.subprocess, "run", return_value=
+                          subprocess.CompletedProcess([], 0, AGY_TSV, "")) as run:
+            for args, stale in ((["--json", "--refresh-agy"], False), (["--json"], True)):
+                with contextlib.redirect_stdout(io.StringIO()) as output:
+                    self.assertEqual(usage.main(args), 0)
+                data = json.loads(output.getvalue())["antigravity"]
+                self.assertTrue(data["ok"])
+                self.assertEqual(data["stale"], stale)
+                self.assertEqual(data["cached_at"], self.now)
+        run.assert_called_once()
+
     def test_muse_real_allowance_envelope(self):
         payload = {"schemaVersion": 1, "allowance": {
             "tier": "pro", "window": {"usedPercent": 12, "resetsAtMs": 1793880000000},
@@ -129,6 +285,8 @@ class UsageContracts(unittest.TestCase):
         result = json.loads(output.getvalue())
         self.assertFalse(result["codex"]["ok"])
         self.assertFalse(result["antigravity"]["ok"])
+        self.assertFalse(result["antigravity"]["stale"])
+        self.assertIsNone(result["antigravity"]["cached_at"])
         self.assertTrue(result["muse"]["ok"])
         self.assertNotIn("private diagnostic", output.getvalue())
 
