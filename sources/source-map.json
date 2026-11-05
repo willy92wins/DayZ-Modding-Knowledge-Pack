@@ -38452,7 +38452,7 @@
           "decision": "adopt",
           "decision_evidence": "New reference: DayZ 1.30 layout variants. Workbench authoring recipe and generated-file format, in-game behaviour of Prefab-ID variants against name-keyed files, gui-prefix fsShadowing packing, IDs not derivable offline (hash check reproduced 2026-11-05), recorded unknowns. Claims CLAIM-UI-VARIANT-*. No vanilla or third-party bytes beyond a 22-line excerpt of a Workbench-generated variant authored by the pack's owner. Evidence: VAULT/reviews/2026-10-26-dayz-130-variants-and-fsshadowing.md (Results 2026-10-27, Workbench-generated variants 2026-11-05, Probe 4 results 2026-11-05) and VAULT/plans/2026-11-05-ui-variant-probe-4.md, measured on DayZDiag 1.30.164200. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "32d56e6934862b95e730bcabfb5fe509852c8e730a1541815c83bcc8369c224b",
+          "source_hash": "f42020d8fa41c35c6a776c99b87db54a9812486339784a4cdeaf2ae83c739082",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
           "source_revision": "docs/ui-layout-variants-130@2026-11-05",
@@ -38460,7 +38460,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "32d56e6934862b95e730bcabfb5fe509852c8e730a1541815c83bcc8369c224b",
+      "output_hash": "f42020d8fa41c35c6a776c99b87db54a9812486339784a4cdeaf2ae83c739082",
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"

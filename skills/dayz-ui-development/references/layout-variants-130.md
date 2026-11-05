@@ -89,6 +89,8 @@ read back from the packed bytes), the `.meta` packed alongside the `.layout`, a 
 PBO unsigned, loaded on DayZDiag from a mod folder holding only the probe. Header and builder flags:
 `skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md` §"`fsShadowing`".
 
+RaG packing with a `config.cpp` is verified; without one is untested.
+
 ## 4. Unknowns — do not promise these
 
 - **ID stability across game builds.** Not measured: regenerate the variant after a DayZ update and diff.
