@@ -2821,6 +2821,58 @@
       "source_id": "pack-r21-authored",
       "source_revision": "update/validator-builtin-methods@2026-11-03",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/skill.md",
+      "claim_id": "CLAIM-TABLERO-CODEX-CREDITS",
+      "evidence_locator": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py:72-129; skills/tablero-cupos-sesiones/tests/test_cupos_extra.py:38-79. read_codex; newest rollout/last record and positive/zero credit tests. Local 2026-11-05 event_msg.payload.rate_limits exposes primary.used_percent/resets_at and credits.has_credits/balance; only usage fields were inspected. Credit availability does not establish future request success.",
+      "license": "MIT",
+      "line_end": 16,
+      "line_start": 16,
+      "observed_at": "2026-11-05",
+      "promotion_artifact_id": "skill/tablero-cupos-sesiones",
+      "source_id": "installed-skills",
+      "source_revision": "filesystem@2026-11-05",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/skill.md",
+      "claim_id": "CLAIM-TABLERO-AGY-USAGE",
+      "evidence_locator": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py:146-220; skills/tablero-cupos-sesiones/tests/test_cupos_extra.py:81-236. parse_antigravity/read_antigravity and isolated mocked time/subprocess/cache tests: missing, same Madrid date, local midnight in winter/summer, UTC midnight, 24h/24h+1s on the 25-hour DST day, forced refresh, malformed cache/output, nonzero exit, timeout, missing/denied CLI, and atomic-write failure. Raw TSV lines and epoch are stored; reuse/failure fallback is STALE; failed calls preserve good cache. Two local helper runs on 2026-11-05 created then reused the cache, with unchanged cache bytes on run 2. Human-supplied measurement 2026-11-05 15:12-15:13 Madrid: three consecutive /usage calls, Gemini 5h 50%->50%->50%, weekly 76% constant. No measurable spend in that observation; cost and turn accounting remain unproven. Cache avoids repeated CLI noise/latency.",
+      "license": "MIT",
+      "line_end": 19,
+      "line_start": 19,
+      "observed_at": "2026-11-05",
+      "promotion_artifact_id": "skill/tablero-cupos-sesiones",
+      "source_id": "installed-skills",
+      "source_revision": "filesystem@2026-11-05",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/skill.md",
+      "claim_id": "CLAIM-TABLERO-MUSE-USAGE",
+      "evidence_locator": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py:223-248; skills/tablero-cupos-sesiones/tests/test_cupos_extra.py:238-258. read_muse; real allowance envelope and invalid/nonfinite allowance tests. Local 2026-11-05 muse usage --json returned schemaVersion 1 with allowance.tier/window/weekly/asOfMs; window and weekly expose usedPercent and resetsAtMs, exit 0. Chat alerts are a workflow instruction, not exercised by this helper.",
+      "license": "MIT",
+      "line_end": 20,
+      "line_start": 20,
+      "observed_at": "2026-11-05",
+      "promotion_artifact_id": "skill/tablero-cupos-sesiones",
+      "source_id": "installed-skills",
+      "source_revision": "filesystem@2026-11-05",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/skill.md",
+      "claim_id": "CLAIM-TABLERO-CUPOS-EXTRA",
+      "evidence_locator": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py:51-61; skills/tablero-cupos-sesiones/scripts/cupos-extra.py:251-311; skills/tablero-cupos-sesiones/tests/test_cupos_extra.py:223-236; skills/tablero-cupos-sesiones/tests/test_cupos_extra.py:260-304. main, safe_read, print_block and madrid_time; 22-test stdlib suite covers output contracts, --refresh-agy forwarding, stale/cached_at epoch metadata (null when unavailable), EU DST fallback and provider failure isolation. The live helper ran twice on 2026-11-05; run 2 displayed STALE with the cached Madrid reading time. It does not refresh the dashboard or exercise Claude session joins.",
+      "license": "MIT",
+      "line_end": 22,
+      "line_start": 22,
+      "observed_at": "2026-11-05",
+      "promotion_artifact_id": "skill/tablero-cupos-sesiones",
+      "source_id": "installed-skills",
+      "source_revision": "filesystem@2026-11-05",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1
