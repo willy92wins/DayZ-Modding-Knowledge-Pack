@@ -19303,10 +19303,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registered the four tablero-cupos-sesiones usage contracts with local CLI field observations and the bundled positive/negative offline tests. Existing claims preserved.",
+          "license": "MIT",
+          "source_hash": "ba9177b5011aa0eb9e49ee40727421c0c638181e476dd2052ad356c907789eac",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "tablero-cupos-sesiones@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a4212208e1cdfc310d4086eb42a137c227417d312680d0f43e8ef81df4eb7d29",
+      "output_hash": "ba9177b5011aa0eb9e49ee40727421c0c638181e476dd2052ad356c907789eac",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38298,6 +38308,72 @@
       "output_path": "skills/vigia-atascos/SKILL.md",
       "routing_artifact_id": "skill/vigia-atascos",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Live Claude skill harvested 2026-11-05 following the ovh-cloud provenance pattern. Public Markdown replaces personal roots with VAULT and Windows environment placeholders, removes the personal name and adds claim markers. The source hash is the live input; the output hash seals the sanitized stage. Do not promote this public copy over the live configured skill.",
+          "license": "MIT",
+          "source_hash": "0e1a8bbeea603ae8f66efbe36e4464e8c08f705f1a3b3177e92ecc2dad8edc91",
+          "source_id": "installed-skills",
+          "source_path": "tablero-cupos-sesiones/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "90bf58478802645b495c938ecf69d884fd16d1cbe6363cb1b3e9cd79e30fcd35",
+      "output_path": "skills/tablero-cupos-sesiones/SKILL.md",
+      "routing_artifact_id": "skill/tablero-cupos-sesiones",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
+          "license": "MIT",
+          "source_hash": "76e9d32dfee62760346014fa4adb148c21e147bac94bdd35d5d5aa7b39f85f83",
+          "source_id": "installed-skills",
+          "source_path": "tablero-cupos-sesiones/scripts/cupos-extra.py",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "76e9d32dfee62760346014fa4adb148c21e147bac94bdd35d5d5aa7b39f85f83",
+      "output_path": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
+      "routing_artifact_id": "skill/tablero-cupos-sesiones",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
+          "license": "MIT",
+          "source_hash": "195261a2f2279937c112a6e9b9dbeb4fa48625e941692e097d73584abb744a10",
+          "source_id": "installed-skills",
+          "source_path": "tablero-cupos-sesiones/tests/test_cupos_extra.py",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "195261a2f2279937c112a6e9b9dbeb4fa48625e941692e097d73584abb744a10",
+      "output_path": "skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
+      "routing_artifact_id": "skill/tablero-cupos-sesiones",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
