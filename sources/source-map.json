@@ -19354,7 +19354,7 @@
           "decision": "merge",
           "decision_evidence": "2026-11-05: allowlist six local Markdown links from skills/delegar/SKILL.md whose companions remain in the live Claude tree (private host paths, not published).",
           "license": "MIT",
-          "source_hash": "9eb1acef41aa5d423763ff82b30d33d65e3b0c046867e822e270a96b45f55007",
+          "source_hash": "736ab6bef1806d30230df198a06f13d4b54c241d422b20f0ba99cb94be79cb4c",
           "source_id": "pack-r21-authored",
           "source_path": "sources/link-allowlist.json",
           "source_revision": "delegar-enfusion@2026-11-05",
@@ -19362,7 +19362,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9eb1acef41aa5d423763ff82b30d33d65e3b0c046867e822e270a96b45f55007",
+      "output_hash": "736ab6bef1806d30230df198a06f13d4b54c241d422b20f0ba99cb94be79cb4c",
       "output_path": "sources/link-allowlist.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38100,7 +38100,7 @@
           "decision": "adopt",
           "decision_evidence": "Live Claude skill ported on Guillermo request 2026-11-05 (Experto Enfusion gate section) through ~/.claude/skills/delegar/SKILL.md; bytes match the live copy by sha256. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
           "license": "MIT",
-          "source_hash": "a733ece51800d93b16379119bbb9877f91f17088fd8af5296e717b20ee881f26",
+          "source_hash": "acfcbb10a0432bb74bf8cae667047b38a33a8c160cba16b27dc79b04afffbb5e",
           "source_id": "installed-skills",
           "source_path": "delegar/SKILL.md",
           "source_revision": "filesystem@2026-11-05",
@@ -38108,7 +38108,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a733ece51800d93b16379119bbb9877f91f17088fd8af5296e717b20ee881f26",
+      "output_hash": "acfcbb10a0432bb74bf8cae667047b38a33a8c160cba16b27dc79b04afffbb5e",
       "output_path": "skills/delegar/SKILL.md",
       "routing_artifact_id": "skill/delegar",
       "verification_level": "cross_checked"
