@@ -540,6 +540,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-test-ingame`: `CLAIM-SIGN-NEGATIVE-CONTROL` adds that another build's PBO only works as a
+  signature negative control when the two builds differ in an entry the signature covers. Arma2Quad
+  v1.0.3-rc (2026-11-05), which differed from v1.0.2 only in `Arma2Quad_body.p3d` and the PBO
+  trailer, answered `is OK` with the v1.0.2 PBO next to its new `.bisign`; its `.c`-byte control
+  answered `is wrong`. For a change that only touches models or textures, the `.c`-byte control
+  is the one that can fail.
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164289 stable
   (`DayZDiag_x64.exe` 1.30.164.289, the Steam update of 2026-11-04). On that tree it failed only
   on the tree's digest: the validator reported the same 15 errors and 424 warnings as on
