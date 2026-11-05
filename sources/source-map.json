@@ -19313,10 +19313,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "tablero-cupos-sesiones@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Updated the four tablero usage evidence ranges after the daily agy cache change; registered cache, force-refresh and JSON metadata contracts, mock coverage and two real helper runs. The earlier 15:12-15:13 Madrid spend measurement is human-supplied; cost remains unproven. Existing claims preserved.",
+          "license": "MIT",
+          "source_hash": "b69972bf61c0ebeaaeae51861b06cc7ea395599254986542fda44d8acbe07554",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "tablero-agy-daily-cache@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ba9177b5011aa0eb9e49ee40727421c0c638181e476dd2052ad356c907789eac",
+      "output_hash": "b69972bf61c0ebeaaeae51861b06cc7ea395599254986542fda44d8acbe07554",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38316,9 +38326,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Live Claude skill harvested 2026-11-05 following the ovh-cloud provenance pattern. Public Markdown replaces personal roots with VAULT and Windows environment placeholders, removes the personal name and adds claim markers. The source hash is the live input; the output hash seals the sanitized stage. Do not promote this public copy over the live configured skill.",
+          "decision_evidence": "Live Claude skill harvested 2026-11-05 following the ovh-cloud provenance pattern. Public Markdown replaces personal roots with VAULT and Windows environment placeholders, removes the personal name and adds claim markers. The source hash is the live input; the output hash seals the sanitized stage. Do not promote this public copy over the live configured skill. Daily agy cache rule and the explicitly bounded 2026-11-05 human measurement added; cost is unproven, not asserted free.",
           "license": "MIT",
-          "source_hash": "0e1a8bbeea603ae8f66efbe36e4464e8c08f705f1a3b3177e92ecc2dad8edc91",
+          "source_hash": "73d7589f58e0a9363815b6499a4c6953776b0039d71ca47b4c7cd67b8240d487",
           "source_id": "installed-skills",
           "source_path": "tablero-cupos-sesiones/SKILL.md",
           "source_revision": "filesystem@2026-11-05",
@@ -38326,7 +38336,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "90bf58478802645b495c938ecf69d884fd16d1cbe6363cb1b3e9cd79e30fcd35",
+      "output_hash": "d4533fcd87bb3947d1e87217c51a7f8f1795fb53d6d40f3f4243cb5d15dd2b8f",
       "output_path": "skills/tablero-cupos-sesiones/SKILL.md",
       "routing_artifact_id": "skill/tablero-cupos-sesiones",
       "verification_level": "offline_tested"
@@ -38340,7 +38350,7 @@
           "decision": "adopt",
           "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
           "license": "MIT",
-          "source_hash": "76e9d32dfee62760346014fa4adb148c21e147bac94bdd35d5d5aa7b39f85f83",
+          "source_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
           "source_id": "installed-skills",
           "source_path": "tablero-cupos-sesiones/scripts/cupos-extra.py",
           "source_revision": "filesystem@2026-11-05",
@@ -38348,7 +38358,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "76e9d32dfee62760346014fa4adb148c21e147bac94bdd35d5d5aa7b39f85f83",
+      "output_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
       "output_path": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
       "routing_artifact_id": "skill/tablero-cupos-sesiones",
       "verification_level": "offline_tested"
@@ -38362,7 +38372,7 @@
           "decision": "adopt",
           "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
           "license": "MIT",
-          "source_hash": "195261a2f2279937c112a6e9b9dbeb4fa48625e941692e097d73584abb744a10",
+          "source_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
           "source_id": "installed-skills",
           "source_path": "tablero-cupos-sesiones/tests/test_cupos_extra.py",
           "source_revision": "filesystem@2026-11-05",
@@ -38370,7 +38380,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "195261a2f2279937c112a6e9b9dbeb4fa48625e941692e097d73584abb744a10",
+      "output_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
       "output_path": "skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
       "routing_artifact_id": "skill/tablero-cupos-sesiones",
       "verification_level": "offline_tested"

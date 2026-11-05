@@ -8,6 +8,8 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import tempfile
+import time
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
@@ -141,9 +143,7 @@ def label(value):
     return value
 
 
-def read_antigravity():
-    exe = profile_root() / "AppData" / "Local" / "agy" / "bin" / "agy.exe"
-    output = run_cli([str(exe), "-p", "/usage"], timeout=90)
+def parse_antigravity(output):
     limits = []
     for line in output.splitlines():
         if not line.strip():
@@ -161,6 +161,63 @@ def read_antigravity():
     if not limits:
         raise UsageError("sin limites de uso")
     return {"limits": limits}
+
+
+def load_agy_cache(path):
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or not isinstance(data.get("lines"), list):
+            return None
+        if not all(isinstance(line, str) for line in data["lines"]):
+            return None
+        cached_at = number(data.get("cached_at"))
+        epoch_madrid(cached_at)  # Reject epochs outside datetime's range.
+        return {**parse_antigravity("\n".join(data["lines"])),
+                "stale": True, "cached_at": cached_at}
+    except (OSError, ValueError, OverflowError, UsageError):
+        return None
+
+
+def save_agy_cache(path, output, cached_at):
+    temporary = None
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                         prefix="agy-usage-", suffix=".tmp", delete=False) as stream:
+            temporary = Path(stream.name)
+            json.dump({"lines": output.splitlines(), "cached_at": cached_at}, stream,
+                      ensure_ascii=True, allow_nan=False)
+        os.replace(temporary, path)
+    except OSError:
+        pass  # A fresh reading is still usable if the cache cannot be written.
+    finally:
+        if temporary is not None:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+
+def read_antigravity(*, refresh=False):
+    local = os.environ.get("LOCALAPPDATA")
+    root = Path(local) if local else profile_root() / "AppData" / "Local"
+    path = root / "tablero-cupos" / "agy-usage.json"
+    cached = load_agy_cache(path)
+    now = time.time()
+    if cached and not refresh and now - cached["cached_at"] <= 86400:
+        if epoch_madrid(cached["cached_at"])[:10] == epoch_madrid(now)[:10]:
+            return cached
+    exe = profile_root() / "AppData" / "Local" / "agy" / "bin" / "agy.exe"
+    try:
+        output = run_cli([str(exe), "-p", "/usage"], timeout=90)
+        result = parse_antigravity(output)
+    except (OSError, subprocess.SubprocessError, UsageError):
+        if cached:
+            return cached
+        raise
+    cached_at = time.time()
+    save_agy_cache(path, output, cached_at)
+    return {**result, "stale": False, "cached_at": cached_at}
 
 
 def read_muse():
@@ -211,7 +268,10 @@ def print_block(name, data):
     if not data["ok"]:
         print(f"{name}: ERROR {data['error']}")
         return
-    print(f"{name}:")
+    suffix = ""
+    if name == "Antigravity" and data["stale"]:
+        suffix = f" STALE (lectura {epoch_madrid(data['cached_at'])[11:]} Madrid)"
+    print(f"{name}:{suffix}")
     if name == "Codex":
         balance = data["credits"]["balance"]
         balance_text = f"{balance:.2f}" if balance is not None else "desconocido"
@@ -235,8 +295,11 @@ def print_block(name, data):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="salida estructurada por proveedor")
+    parser.add_argument("--refresh-agy", action="store_true", help="forzar lectura de Antigravity")
     args = parser.parse_args(argv)
-    result = {"codex": safe_read(read_codex), "antigravity": safe_read(read_antigravity),
+    result = {"codex": safe_read(read_codex),
+              "antigravity": {"stale": False, "cached_at": None,
+                              **safe_read(lambda: read_antigravity(refresh=args.refresh_agy))},
               "muse": safe_read(read_muse)}
     if args.json:
         print(json.dumps(result, ensure_ascii=True, allow_nan=False, indent=2))
