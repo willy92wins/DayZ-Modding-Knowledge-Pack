@@ -1147,3 +1147,11 @@ before queueing a 30 min batch is not caution, it is arithmetic.
 [EXACT] Enforce `protected` reaches only the declaring class and its descendants. A body moved into `5_Mission` (facade + impl split) reaches device state through parameters (`dev.m_Field`), and that compiles only if the field is PUBLIC — the impl class is not a descendant of the state owner. Measured: a tree with linter 48 warnings / 0 errors and a passing isolated binarize still killed the first server boot with `Variable 'm_DeviceId' is protected` → `Can't compile "Mission" script module!`; the fields were public on the branch where the bodies were written, and that visibility change did not travel with the bodies (measured in game, LFPowerGrid, DayZDiag).
 
 [DESIGN] In a cross-module body move, the move list includes the visibility of every field the body touches, not only the helpers it calls; resolve the type of every variable and require public before declaring the tree good. The gate is the ENGINE, not the linter: on 2026-09-26 the offline linter run in that project returned the identical verdict on the broken and the fixed tree, and cross-review missed it because its rounds read the branch where the field WAS public. The Pack's validator has a tree-level check for this pattern, `ES-PROTECTED-CROSS-MODULE` (`tools/dayz-script-validator/README.md`); run it, and still boot the server before declaring a cross-module move good — whether that check catches a receiver reached through a parameter, as here, was not measured.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Vanilla scripts (`P:\scripts\…`): extract them with the `dayz-dev` skill's `extract-dayz-sources.sh`, or query signatures offline with its `dayz-api.py`. Cite the extracted path.
+- Script logs: native server → its `-profiles` directory; Proton client → `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ` (or the `-profiles=` directory).
+- The native Linux server defines `PLATFORM_LINUX` and also `SERVER_FOR_WINDOWS` (observed); DayZDiag and the client under Proton define `PLATFORM_WINDOWS`. Do not use either define to mean "Windows host".

@@ -7,6 +7,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- CI: a `linux` job (validation, `packctl` and skill tests off Windows) and tests for
+  `skills/_shared/scripts/dayz-proton.sh`, which had none.
+- Linux findings (2026-11-06): the managed `dayz_test_run` cycle measured end to end on dayz-mcp's
+  `linux-port` branch. A diag client only joins a diag server (`0x00020017`); an absolute `-mission` leaves the
+  native server without `init.c`'s `main`; Steam's PID is `~/.steam/steam.pid`. Corrects earlier notes that said
+  otherwise. Windows instructions are unchanged.
+- Linux support notes (2026-11-03), append-only: Windows instructions are unchanged.
+  `skills/_shared/linux-proton.md` maps each Windows step to its Linux route (native armake2 and
+  `workshop` first, BI's tools under Proton where there is no native equivalent) and records what was
+  measured: ImageToPAA, CfgConvert, the DS tools, AddonBuilder, binarize, TexView, Object Builder,
+  Workbench and DayZDiag (client and `-server`) under Proton Hotfix / GE-Proton11-1, plus the
+  cross-app quirk (DayZ 221100 and DayZ Tools 830640 get separate Wine prefixes: no shared `P:`, an
+  empty game key, no install-script registry or VC++ runtime in a private prefix) and the pitfalls
+  (one display per prefix, WoW64 for the 32-bit tools, the first .NET start, AddonBuilder's exit code).
+  `skills/_shared/scripts/dayz-proton.sh` sets up private prefixes and runs the tools
+  (`doctor`, `init`, `tool`, `gui`, `binarize`, `headless`). An `## On Linux` section was appended to
+  30 skills that depend on a Windows-only step; `AGENTS.md` gains a routing row.
+  `knowledge/linux-proton-findings-2026-11.md` holds the raw findings and the dayz-mcp port status.
+  Not verified: Terrain Builder, Publisher, Workbench's editors, `-filePatching` under Proton, an ODOL
+  made under Proton loaded in game.
 - `dayz-script-validator`: `ES-UNDEFINED-BUILTIN-METHOD` (FAIL), a call to a method that the vanilla tree's class of a
   built-in type (`bool`, `int`, `float`, `vector`, `string`, `typename`, `array`, `set`, `map`) does not declare, made
   on a value of one, a template of one, a typedef of one or the type itself. From pipeline inbox

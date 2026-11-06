@@ -142,10 +142,20 @@
           "source_path": ".github/workflows/ci.yml",
           "source_revision": "kp-gate-skill-tests@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adds a linux job: validation, packctl tests and skill tests on ubuntu. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3f6c8c7e85c93798252de2cebb45eda210a2f3344cd0280df9ae9a9f5ffa0b49",
+          "source_id": "pack-r21-authored",
+          "source_path": ".github/workflows/ci.yml",
+          "source_revision": "linux-ci@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "29eb1dbfa4f40a088950f60a55a0af88189a74b9649ef32eece83ed3ed3f30c4",
+      "output_hash": "3f6c8c7e85c93798252de2cebb45eda210a2f3344cd0280df9ae9a9f5ffa0b49",
       "output_path": ".github/workflows/ci.yml",
       "routing_artifact_id": "root/github-workflows-ci",
       "verification_level": "offline_tested"
@@ -259,10 +269,20 @@
           "source_path": "AGENTS.md",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a2ae07f6a6124a41ef3453d284b03e018cb0d1141c9b5b31336a3b91339d5303",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "25d85f5c5cafcbf6fd63346b82f9031e36a5a1be3ac46ac01b1f79af5e156aec",
+      "output_hash": "a2ae07f6a6124a41ef3453d284b03e018cb0d1141c9b5b31336a3b91339d5303",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -1611,10 +1631,40 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cfb8a5d52566f789a588f10c61cd8439e481fb660a0bc03737fbbed074ff1d4f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Changelog entry for the 2026-11-06 Linux findings. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e3ca9fd72014910b1f7fefb7f4872ba9492256cbc6b0771adb346eb9ceeade54",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Changelog entry for the linux CI job and the dayz-proton.sh tests. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7ab973f61885bb56d4167d90bb47cd85ec005d0c64c94f4b0902a9f45f7cbda5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "linux-ci@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f4f787e243606defb9c1df1def8be67945433f346d573559110b0271aafc23bf",
+      "output_hash": "7ab973f61885bb56d4167d90bb47cd85ec005d0c64c94f4b0902a9f45f7cbda5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4996,10 +5046,30 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "kp-update-ai3d-sp071-rule12@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a735d88e51ddf624c3cbd1a8ad0d79aa8f6a869406cb980cbf27bde085f81413",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8f6e3db5f9a91a46a0ba3ff56045e0a0320552cddafce1b1e40bd3bdbc8ad8aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c91e51373dc4dc363a4d2bb133dce9b54daaef428b4ce9e3b8791477908c7d77",
+      "output_hash": "8f6e3db5f9a91a46a0ba3ff56045e0a0320552cddafce1b1e40bd3bdbc8ad8aa",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -5048,10 +5118,20 @@
           "source_path": "skills/ardy-motion-generation/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e8c16471fdc9a554c9169dbe4cfb1405c80276a15fbbd5ef5c7ba4668d02641d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ardy-motion-generation/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5d443cc4310f55e4c556dc02e358129ec29f91449e850165a1da90c6f08f2648",
+      "output_hash": "e8c16471fdc9a554c9169dbe4cfb1405c80276a15fbbd5ef5c7ba4668d02641d",
       "output_path": "skills/ardy-motion-generation/SKILL.md",
       "routing_artifact_id": "skill/ardy-motion-generation",
       "verification_level": "cross_checked"
@@ -5142,10 +5222,20 @@
           "source_path": "skills/blender-animation/SKILL.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9f8cc5eb2eed540ff3699685bae4af7228b0986ad11ed4250075c30ff94d6267",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d28aaab165939edcf93790962489213fea2db448580774daefb7e584fbd79c68",
+      "output_hash": "9f8cc5eb2eed540ff3699685bae4af7228b0986ad11ed4250075c30ff94d6267",
       "output_path": "skills/blender-animation/SKILL.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -6082,10 +6172,30 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "update/pr-135-review-4@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "105b8eda123e00fde25c5906d87f96970bdeb9259e49e2d7cd5a4fecf07eb458",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e8a7de8ae6f84a8ffd2483d18d07323332b5bd4c837f4af764e2fcd83e0405c5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d99fdbdd91d6a9f5282419ba3f50d2598c0f2f7513efef949bb02c43609a6317",
+      "output_hash": "e8a7de8ae6f84a8ffd2483d18d07323332b5bd4c837f4af764e2fcd83e0405c5",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7106,10 +7216,30 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "kp-update-inbb-mcp-notes@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8210cfb7953d65b4dd59f4eff42c89b8396815dab3b91fe18cdc0d697cc0564e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "02de7d732d972f72177a7a74562b3fa09296f5294e8bf69562b55303c80e0c71",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6ab2122b920af345bd7f2848c940684d411aa20b4571fe11ce85310cb319b8b9",
+      "output_hash": "02de7d732d972f72177a7a74562b3fa09296f5294e8bf69562b55303c80e0c71",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -7792,10 +7922,30 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "kp-chips-chartests@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ac1825e9c7d78cc36f72480d8a3c814290dced26b18c5218c7065fa704cb373b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "43f16adf4b8155c59cf96aababf7b166edca860ccbf56e6c492ea805ab3b511f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b84d632a5f2cd3f5438d5456551b68ca107e69b669651bdc254d320582bfa09c",
+      "output_hash": "43f16adf4b8155c59cf96aababf7b166edca860ccbf56e6c492ea805ab3b511f",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -8070,10 +8220,30 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "kp-update-inbc-pbo-sp155@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fb0151135031d33990f17f5d6dddc3ee845711693756347b21e9872f50fefe68",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b2cd63dd25780d951d8e2a330b99d9ce01153efd0a9f7e9974d1e7cd47539864",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "14754c2a1e15f1b121800847c91c4dacc2943605b8241d5f19fae3d419184ed3",
+      "output_hash": "b2cd63dd25780d951d8e2a330b99d9ce01153efd0a9f7e9974d1e7cd47539864",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -8386,10 +8556,30 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "kp-update-doors-provenance@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c761a65c8d33f36e0927995d480d854c44a10b069918c3af15374c64a5158e32",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5a6c34c73a63a309296ac272b837e0a8aadeee14a7cbb48f4edb5576e497deb4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1237c0d015bd0bd9e19d2068259c74edbd42edf2e9d39ab5a0290a2b1a23ec20",
+      "output_hash": "5a6c34c73a63a309296ac272b837e0a8aadeee14a7cbb48f4edb5576e497deb4",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -9022,10 +9212,40 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ccbd19245be74dfba922cf4c8b95f230049f551bc49e2cbe433e80fd61cf71dc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a76dc2d25e2ff6656069e32c257a0571ae38226a6be8f9b907b8a43ef7a4aa0e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: daemon, leases, dayz_test_run, close and stop run; bound polls measured; ready can precede the join; screenshot route. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f52d2ab81d9897ae911be46cce0f5be10e06d0ef6e9584a848e930c6178c187d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4eb6c70ba65bc5236fbca593f60b11163df3d6b8dcfbb2339a1ba4bf574a6680",
+      "output_hash": "f52d2ab81d9897ae911be46cce0f5be10e06d0ef6e9584a848e930c6178c187d",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -9290,10 +9510,50 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e1fa0e91e5c4de8f385e15018d6c1a418d841a12a3e1ce3e41e89917800b01b5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "11fba81c8c889153b7fe42b034b17575b660734d3a1d2607d954860f755aa4ba",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: native DayZServer hangs with -filePatching (measured 2026-11-04). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1b5441f9ba1f3539c18d78ceeb918c3b214fa61534fdf164c73f21d520fcedaf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "linux-proton-mcp-run@2026-11-04",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: test loop names the two pairs that can join; diag client on native server refused. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "96898ce9e21bf31faabcee0f8c52cf5a7730567e03487c53f8a1f38709b9e8cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "77f1454bbf0a7358c8e80968da2a8681eb6830c910c4252d0c810da457f86cc2",
+      "output_hash": "96898ce9e21bf31faabcee0f8c52cf5a7730567e03487c53f8a1f38709b9e8cb",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -9598,10 +9858,30 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "803e1b1786f8087bdc407874a261e7025e1648831dd67c36c8b24eacb14ce045",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2dc8fd8720883c448a0a93e79dd8b42348f67c14380b0c5acb0f9ff3b9813573",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fad7aa8318e9684a86a3036b0c14c798686b5d7ec641cafdf9180eb6fd28b72f",
+      "output_hash": "2dc8fd8720883c448a0a93e79dd8b42348f67c14380b0c5acb0f9ff3b9813573",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -10466,10 +10746,30 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8aa7e090fb0c7983e007a965dda651d9eeb9e5a27f7cf2b5056514e1f9d0b7f8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d35c2e35fb75750b8cee8b288c0e09fcc83250cb95c0a2d59501d3a66b1b03ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "09a013f97293e174a8b51fe2e5897e12cd767fd11b471d923721bc5821587561",
+      "output_hash": "d35c2e35fb75750b8cee8b288c0e09fcc83250cb95c0a2d59501d3a66b1b03ca",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -10848,10 +11148,30 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "kp-update-sp003-align@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e80c6d7511978ba0ce7dc5a7a6c97bf1ff2bb82812a77dbc1633cd2d8b877cd0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a299bdc6b67838a0ba6be3cf6a4d00a4706732d0c17fdee8d278cbf511c71516",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c79e7071f72b6cc8f7b51f2a984e6b12e04f1a6062ea9e4fe7054420aade7979",
+      "output_hash": "a299bdc6b67838a0ba6be3cf6a4d00a4706732d0c17fdee8d278cbf511c71516",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -10956,10 +11276,20 @@
           "source_path": "dayz-particles/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4fcb7b06492c8703dffafc9584458b055211014b002f9c35c1a5b91432761a41",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-particles/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "44a29d2c2ff7c44eb5365f287c00703a6df7c648feb69dd3503c3ce21ea8b10a",
+      "output_hash": "4fcb7b06492c8703dffafc9584458b055211014b002f9c35c1a5b91432761a41",
       "output_path": "skills/dayz-particles/SKILL.md",
       "routing_artifact_id": "skill/dayz-particles",
       "verification_level": "cross_checked"
@@ -11316,10 +11646,40 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cf96d012894668664dd4b48d5488bdebda858b1a10ea4abb9279c7e0767d8494",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ebc629fa980a5ef7a440c8d5b94825ddf8ca22a1cc4b22c1f53556436c48496e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: dayz_test_run build=true drives armake2; Addons spelling loads on both engines. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "319a9d6c6cb97416fdd78a73a2ca51636b2941fd4cbc9cba04cca6a36a7e7a94",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a2a44c154760da28f79e72704c6b59a377ba784bbc7679df78c7c238ff41467f",
+      "output_hash": "319a9d6c6cb97416fdd78a73a2ca51636b2941fd4cbc9cba04cca6a36a7e7a94",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -11496,10 +11856,20 @@
           "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b9e1665a46dd3607010756ce76ee966cab2a0b78c8120413c17b886b9203f59c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "93088f841ef08c10a548bbe0c73a92f00f507cd5889afc7526027cd80a47f797",
+      "output_hash": "b9e1665a46dd3607010756ce76ee966cab2a0b78c8120413c17b886b9203f59c",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -11956,10 +12326,20 @@
           "source_path": "dayz-preflight/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3a9aff3050b00159f132206e4a6ebc6460f501f0a2d3212b1a08587fb0c830c3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-preflight/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b106e20c16abffeb9670b7ea7553ad702cea290222e6e2956610125dcae869a",
+      "output_hash": "3a9aff3050b00159f132206e4a6ebc6460f501f0a2d3212b1a08587fb0c830c3",
       "output_path": "skills/dayz-preflight/SKILL.md",
       "routing_artifact_id": "skill/dayz-preflight",
       "verification_level": "cross_checked"
@@ -12050,10 +12430,30 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "skill-tests-pytest-folders@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3f84a6a58e144c8a4be36d0a376445059d1983cd41af411b43f7bdcaaeafb698",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "18174f55864fffb53ae2eb4455ea13135bc69d86e15824bdc6daec10f1b6421a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2ad65e2cdf2319f8fb3dca9c8170a0a614cea073730124f5e6630fe9d960a766",
+      "output_hash": "18174f55864fffb53ae2eb4455ea13135bc69d86e15824bdc6daec10f1b6421a",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -12686,10 +13086,30 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "kp-update-lfsk-notes@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7c3158819408a4db0b18dfc8a4b63f688f88b3c4261bc2db9d18c0bed52af8fc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5a4a842088a16a095c2041dc7fdc9c6ba375cf4bb690a6f3c3f340d453b873f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "447a8b3b089a86acaf181471cc9f581f6b792933f7e203b0c90cbc7ed9590159",
+      "output_hash": "5a4a842088a16a095c2041dc7fdc9c6ba375cf4bb690a6f3c3f340d453b873f5",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -12910,10 +13330,50 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "15cb80e55df89980c29a5716e0c4ffac8fbe95d2a7ee77f9f9c820ec53ed0d68",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: dayz_test_run mode=server on dayz-mcp linux-port; start the native server without -filePatching (measured 2026-11-04). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "57dbaf0300ea025b5a694fcb9cb623e1cc3980dab918f74dd6cf5bd19ae06fa1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "linux-proton-mcp-run@2026-11-04",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: DayZDiag under Proton loads an absolute Z: -mod path and writes logs to a Z: -profiles path (measured 2026-11-05); join to native DayZServer not verified. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e47b4f263fcf8cf4e605c33b3d7f65fa3dfc246bc66624273bdd30d3fd0eaab0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "linux-proton-client@2026-11-05",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: dayz_test_run all modes on dayz-mcp linux-port, policy picks the engine, close limits, steam.pid; Linux qualifiers on the Windows mission-path and build:true notes. Windows instructions unchanged. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0b84537551d1cd771863892cc6f7b260611643d8e484dfcb0efd69c34a599a74",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c90bb73bcf565e3a4200b22d787d7d52044977cc7dd5f0ae8efa675ce69b06eb",
+      "output_hash": "0b84537551d1cd771863892cc6f7b260611643d8e484dfcb0efd69c34a599a74",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -13252,10 +13712,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "claude/h2r-2810-texturas-review1@2026-11-02",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5aad4477a9ea658a3d35687d364d754bc6342128295a83d84be2052b8bbb34b0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8e732401e612ee18e6f3c5026eb07dc8a8e418c325859fb89dffa2e63ff5fbd",
+      "output_hash": "5aad4477a9ea658a3d35687d364d754bc6342128295a83d84be2052b8bbb34b0",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -13676,10 +14146,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4f4d3099141860177fd73c7833e2c251b9e8c23304fadc2d7e89e612723f94a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8570ad6604e4ca2aa32b3a7e4c6152dc77502aac65495957c705ffc1a536b7b4",
+      "output_hash": "4f4d3099141860177fd73c7833e2c251b9e8c23304fadc2d7e89e612723f94a5",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -14768,10 +15248,30 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9093d6d2b15e6bc9d0b0159c74e5ca4c84d5290ec147fb5dce5987bb6bdeeba7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f72d19fc6bc32fd2dcc9d021707fbb12fabe054abd30a6dab781da547f9aa657",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2ec89a8c066e00aa704d3b97a77dcc45198eca18a8290acd8e348cf5ff1036ca",
+      "output_hash": "f72d19fc6bc32fd2dcc9d021707fbb12fabe054abd30a6dab781da547f9aa657",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -16158,10 +16658,30 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5abd6fad4edce8c24f98c1cc2a30e4035cca42b1966aee2b5d46889fdb9fca54",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "395487caa6e35e6d87aa2b41ac972ce24eedb5553690d32d337732ced2449600",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "536aadc25a1b7da21d5e5069a0fc4fd1791c3a10c391eb462bb0676c63064b92",
+      "output_hash": "395487caa6e35e6d87aa2b41ac972ce24eedb5553690d32d337732ced2449600",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -16468,10 +16988,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5ca509cbc7e1b8ecbd98e68a59682bdb7bdb4523a22a8fa60540c1fcab768391",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b504cb7cd479f017fea96dd83af55d2b4e11c85265cb0315fb410f6f06b5e754",
+      "output_hash": "5ca509cbc7e1b8ecbd98e68a59682bdb7bdb4523a22a8fa60540c1fcab768391",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -16972,10 +17502,20 @@
           "source_path": "skills/rigorous-data-audit/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b9d68565e976ca7f4d262aa2c2d23bd8d6a658431e11c12fe8322d470660f90c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfdf8ec2eb0043e2b28980de2ed7e68af206e506260eff8294ab6474b4ef75ee",
+      "output_hash": "b9d68565e976ca7f4d262aa2c2d23bd8d6a658431e11c12fe8322d470660f90c",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -17586,10 +18126,30 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b747c1c76068a0a5dbb9f84e050e0a11e5405f31240783ec26e4b364d475e0ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "44d583471408ee0f0fb8c9ed4109cdf543bff5c348b946649ec7e38492c1e80d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "188c99ddf208df901641bf142f4501ae6e892818cf77c1176040f395f51effe7",
+      "output_hash": "44d583471408ee0f0fb8c9ed4109cdf543bff5c348b946649ec7e38492c1e80d",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -18062,10 +18622,20 @@
           "source_path": "skills/uv-clean-atlas/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e19862ec6f485ba5d6caa37f09b389e6f15e1a22012ae2ca7cb3237a02e9b0a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/uv-clean-atlas/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "78c0ed8cbd24ca36ffaa58fe901feda555e49fa57bb7f984aaecd5ec8fac7ab8",
+      "output_hash": "e19862ec6f485ba5d6caa37f09b389e6f15e1a22012ae2ca7cb3237a02e9b0a5",
       "output_path": "skills/uv-clean-atlas/SKILL.md",
       "routing_artifact_id": "skill/uv-clean-atlas",
       "verification_level": "cross_checked"
@@ -34539,10 +35109,30 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0f54d8d7d6620e81556d8d158f8fcdf47ac8c52e426b695f212514702dacda30",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7e92c94dfe9a8cd552a04390439599709ff8adf0a929ddcd08c6f05675c32a73",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e8fef9818e56fbdb9d5421b2231850fc7d9b9e4d20c72112f108bf50de549f8e",
+      "output_hash": "7e92c94dfe9a8cd552a04390439599709ff8adf0a929ddcd08c6f05675c32a73",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -35575,10 +36165,20 @@
           "source_path": "skills/dayz-underground/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5ad7df5d1f23ad1a13e6fc3ca865d1781f6674b521cdf6e9028fbc009c1bbca5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-underground/SKILL.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "91e6c602376491f23cc61b897fe89451836d088108dd00d34fd6104ef888b305",
+      "output_hash": "5ad7df5d1f23ad1a13e6fc3ca865d1781f6674b521cdf6e9028fbc009c1bbca5",
       "output_path": "skills/dayz-underground/SKILL.md",
       "routing_artifact_id": "skill/dayz-underground",
       "verification_level": "source_verified"
@@ -38372,6 +38972,184 @@
       "output_path": "skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
       "routing_artifact_id": "skill/ovh-cloud",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/knowledge/linux-proton-findings-2026-11.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Raw Linux/Proton findings by the pack user (bzed) from a dayz-mcp Linux test on 2026-11-03, plus a follow-up section recording what was built from them. Not registered as claims.",
+          "license": "MIT",
+          "source_hash": "da9a298f8a1253947404a26e47ddc677728dbc24da6ac48f0fbb081848bdd359",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: dayz-mcp linux-port status updated (commit ac5578d, sealed launcher modules left byte-identical). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "15de1bfac7ff6faf8ff67f58215405ba70e5835afcf59a93b28fbbb463f3d818",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-mcp-sealed@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 6 added (podman server bbcd0c5, POSIX runs.json migration 850e48f, binding attribution measured). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e4e30ac92665b51d713299ea2ff5510d689c7e280c2f5a44eddcf94e4e722860",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-mcp-daemon@2026-11-04",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 7 added (dayz_test_run mode=server on Linux through a Linux bundle and podman launch; bound polls, managed stop and reaper measured; two DayZServer engine findings). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9dbfea1ca8d3959c7fb39e2b36f720b61005f5da0c33a23d839e6be2f60249e1",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-mcp-run@2026-11-04",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 8 added (client role implemented in dayz-mcp 3a82bdc, not yet run; DayZDiag under Proton loads -mod/-profiles Z: paths; Wine argv NUL padding; Linux SteamPID). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "68261db454e0f7b20aceac7e081a8e2db9eb4248b623f0fcfa0d44b1a7b6bcbd",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-client@2026-11-05",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 9, managed cycle measured end to end, three earlier statements corrected, limits recorded. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "234cfa57160b36c08dacfe892010491844ee0f622b345511502e05615739c08a",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 9 no longer lists the Windows suite as not measured; it passed on these changes in dayz-mcp CI on 2026-11-06, without a game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7ec4fe1d407f24ca43890336f45286dc06365bb5e1893508f827632877048805",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06b",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "7ec4fe1d407f24ca43890336f45286dc06365bb5e1893508f827632877048805",
+      "output_path": "knowledge/linux-proton-findings-2026-11.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/_shared/linux-proton.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Linux supplement to the Windows-first skills: Windows step to Linux route, measured DayZ Tools matrix under Proton, cross-app prefix quirk, pitfalls. Measured 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f40d2e644a4df93057983e36e7056e0f5406a8add18d5aff8920b3e3a506c0ca",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux notes: link bzed's armake2 fork (https://github.com/bzed/armake2) with its install command; its GitHub master (7dcb3cf) was installed with cargo install --git and verified to keep texture alpha on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1771024bdf6e71e8b64163b918f08c5619fa7fa31b69ccc3fec3890274739f66",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "linux-proton-armake2-link@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pitfalls: -filePatching hangs native DayZServer 1.30 before the landscape (measured natively and in podman); a read-only mod mount is skipped silently. Bridge row updated. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "266a677fc97046b72aecadcafb6dd4eb4f7fa146d401f98fe003ed4d109ec500",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "linux-proton-mcp-run@2026-11-04",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux guide: diag client only joins a diag server (0x00020017); absolute -mission leaves native DayZServer without main; ~/.steam/steam.pid; orderly stop by SIGTERM and sway; DayZDiag -server -filePatching does not hang. Measured 2026-11-06, DayZDiag 1.30.164289.70 under GE-Proton11-1. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e58204c298624532071cc52888efc42945d7b0592ef4e88989970d1ec731b586",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e58204c298624532071cc52888efc42945d7b0592ef4e88989970d1ec731b586",
+      "output_path": "skills/_shared/linux-proton.md",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/dayz-proton.sh",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Runner for DayZ Tools and DayZDiag under Proton in private prefixes (doctor, init, tool, gui, binarize, headless); every subcommand exercised on 2026-11-03. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e2ff9ff014d34c0bf81c2abaebc5cb52295cbae5009176e2943b7ab16afe5a3b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-proton.sh",
+          "source_revision": "linux-proton@2026-11-03",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e2ff9ff014d34c0bf81c2abaebc5cb52295cbae5009176e2943b7ab16afe5a3b",
+      "output_path": "skills/_shared/scripts/dayz-proton.sh",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/_shared/tests/test_dayz_proton.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Tests for dayz-proton.sh that need no Steam or Proton: syntax, shellcheck, usage, winpath, missing Steam and Proton. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "811eae9cb6262af3a0e6e6a3de92d7adf69a53b19140a5d9842e376585b7c21d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_dayz_proton.py",
+          "source_revision": "linux-ci@2026-11-06",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "811eae9cb6262af3a0e6e6a3de92d7adf69a53b19140a5d9842e376585b7c21d",
+      "output_path": "skills/_shared/tests/test_dayz_proton.py",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

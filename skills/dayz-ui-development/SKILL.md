@@ -1760,3 +1760,10 @@ To resume them, having the display turned on is enough: load `$profile:uiprobe.l
 
 
 
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- `dayz-ui-lab` (`.layout` parse/check, offline render) is Python and runs natively.
+- Workbench starts under Proton (`dayz-proton.sh gui Workbench`); its layout and imageset editors were **not verified** there. `P:\gui\...` is the extracted vanilla data under the directory mapped by `dayz-proton.sh init`.
+- Packing: armake2 instead of AddonBuilder/MakePbo. Client-side checks: `dayz-dev`'s headless client (`testing/client-testing.md`), which takes screenshots with `grim`.

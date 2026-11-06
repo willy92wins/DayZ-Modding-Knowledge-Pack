@@ -433,3 +433,11 @@ Treat a baseline mismatch as an extraction failure. Stop the sweep instead of dr
 from bytes whose decoding has not been proved.
 
 **ODOL version preflight (1.30 Exp):** a 1.30 vanilla `.p3d` is ODOL v56 (1.29: v54). Read header bytes 4-7 before parsing a binarized model; a v54 reader fails with `ValueError: subsection not found`. Detail: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Standard PBOs: `armake2 inspect <pbo>` (header, prefix, file list) and `armake2 unpack --force <pbo> <dir>` (`--force`, because a packed `$PBOPREFIX$` collides with the header file armake2 writes) replace `ExtractPbo -LB` / `-P`. Rapified configs: `armake2 derapify`. The `dayz-dev` skill's `extract-dayz-sources.sh` pulls scripts and configs out of a whole install or Workshop item.
+- Obfuscated PBOs are not covered by this; see `japm-pbo-recovery`.
+- PowerShell loops (`Get-ChildItem … | ForEach-Object`) become `find … -name '*.pbo' -exec …`.

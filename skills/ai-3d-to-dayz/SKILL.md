@@ -181,3 +181,12 @@ reconstructed source profile with a different measured lineage." and "A pre-bina
 profile. Exclude `abs(dot) < 1e-9`. At the measured generic-DCC calibration, at least 95% negative
 is `SOLID`, positive-dominant is `INVERTED`, and an intermediate result means mixed per-piece
 winding that must be isolated before a bulk fix.")*
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Pack, sign and binarize with bzed's armake2 fork, https://github.com/bzed/armake2 (`cargo install --git https://github.com/bzed/armake2`; `armake2 build --proton-binarize`, `keygen`, `sign`; the `dayz-dev` skill's `dayz-mod-pack.sh`) instead of AddonBuilder. Its GitHub `master` contains the fix (commit `0a0ce3b`); older local builds lose texture alpha (verified 2026-11-03 against BI's binarize run from a `P:` root, byte-identical output).
+- `P:\` is a plain directory mapped by `skills/_shared/scripts/dayz-proton.sh init <dir>`; a `P:\<Mod>\...` path in this skill is `<dir>/<Mod>/...`.
+- Object Builder and TexView run under Proton: `dayz-proton.sh gui ObjectBuilder <p3d>`, `gui TexView <paa>`. Object Builder opened and displayed a model; editing in it was not exercised. Offline checks (`py3d`, `dayz-model-preflight`, `dayz-3d-viewer`) are Python and run natively.
+- In-game checks: the Linux notes of `dayz-test-ingame`.

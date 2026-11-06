@@ -519,3 +519,12 @@ the Memory-selection loss described in SP-002.
 ## Measure visibility by AREA sampling, not by a centroid ray (SP-446, added 2026-09-28)
 
 [EXACT] To decide whether a selection is visible from outside, cast rays from random points across the whole face (order of 3000 per LOD) and report the free-area percentage; a single ray from the centroid lies. Measured on a heater model: centroid rays reported "48/48 blocked in all 6 directions" while area sampling showed 84-86 % free — every face was a long thin triangle whose centroid sat behind a 1-2 mm wire. The false diagnosis nearly triggered rebuilding the model (the emissive grid) instead of fixing the config.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Pack, sign and binarize with bzed's armake2 fork, https://github.com/bzed/armake2 (`cargo install --git https://github.com/bzed/armake2`; `armake2 build --proton-binarize`, `keygen`, `sign`; the `dayz-dev` skill's `dayz-mod-pack.sh`) instead of AddonBuilder. Its GitHub `master` contains the fix (commit `0a0ce3b`); older local builds lose texture alpha (verified 2026-11-03 against BI's binarize run from a `P:` root, byte-identical output).
+- `P:\` is a plain directory mapped by `skills/_shared/scripts/dayz-proton.sh init <dir>`; a `P:\<Mod>\...` path in this skill is `<dir>/<Mod>/...`.
+- Object Builder and TexView run under Proton: `dayz-proton.sh gui ObjectBuilder <p3d>`, `gui TexView <paa>`. Object Builder opened and displayed a model; editing in it was not exercised. Offline checks (`py3d`, `dayz-model-preflight`, `dayz-3d-viewer`) are Python and run natively.
+- In-game checks: the Linux notes of `dayz-test-ingame`.

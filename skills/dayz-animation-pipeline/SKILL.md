@@ -353,3 +353,12 @@ the full entry lives there. Do not remove citation: the index detects promotion 
 - [ ] **Dynamic Grip/Stance Profiles**: Migrate attachment-based grip and weapon stance hacks to native `SetAnimationInstanceByName(asiName)` within `OnItemInHandsChanged`.
 - [ ] **Directional Boarding Support**: For custom vehicles and motorbikes, implement `HasDirectionalInOutAction()` and `GetSeatAnimationTypeDirectional(posIdx, directionIndex)` to take advantage of native directional entry/exit without scripted snaps.
 - [ ] **Workbench 2021 Filepatching**: Use `-resolveFilePatchingUsingEnfusion=1` in Workbench launch parameters when iterating on loose `.anm` and `.asi` resources.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- `.rtm` binarize: `armake2 build --proton-binarize` with bzed's fork from https://github.com/bzed/armake2 (`master` contains the alpha fix `0a0ce3b`); `.p3d` likewise.
+- Workbench starts under Proton (`dayz-proton.sh gui Workbench`) and compiles its bundled scripts; the Animation Editor, `.agr`/`.asi` editing and the `.txa` → `.anm` import were **not verified** there. Without `P:\dz` extracted it logs missing vanilla config entries.
+- Object Builder: `dayz-proton.sh gui ObjectBuilder`. `dayz-animation-formats` (RTM/SEAnim inspection) is Python and runs natively.
+- In-game checks: the Linux notes of `dayz-test-ingame`. `.ps1` helpers: translate to `sh`.

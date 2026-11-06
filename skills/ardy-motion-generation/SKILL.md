@@ -162,3 +162,9 @@ detail and open questions before attempting it.
 - WSL2 + heavy GPU setup already validated, same gotchas of HF-gated models: memory
   `trellis2-local-setup`
 - DayZ integration plan (unverified): `references/dayz-integration-plan.md`
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- The setup is written for WSL2; on a Linux host it runs natively (same conda environment, no WSL layer, no `/mnt/c` paths). The later `.txa` → Workbench → `.anm` step is Windows-first: see the Linux notes of `dayz-animation-pipeline`.
