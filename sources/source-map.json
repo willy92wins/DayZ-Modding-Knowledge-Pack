@@ -38220,6 +38220,138 @@
       "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Live Claude skill ovh-cloud harvested 2026-11-05 with the machine-priority window (through 2026-11-28 inclusive; fallback from 2026-11-29). Public Pack redacts project id as <REDACTED-PROJECT-ID> and instance IP as <REDACTED-IP>. Live copy on Willy retains account identifiers; do not promote this skill over live.",
+          "license": "MIT",
+          "source_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
+      "output_path": "skills/ovh-cloud/SKILL.md",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/references/api.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/references/api.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
+      "output_path": "skills/ovh-cloud/references/api.md",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/references/pricing-2026-11.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/references/pricing-2026-11.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
+      "output_path": "skills/ovh-cloud/references/pricing-2026-11.md",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/scripts/ovhpc.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/scripts/ovhpc.py",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
+      "output_path": "skills/ovh-cloud/scripts/ovhpc.py",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/scripts/vm-agent/install.ps1",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/scripts/vm-agent/install.ps1",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
+      "output_path": "skills/ovh-cloud/scripts/vm-agent/install.ps1",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
+      "output_path": "skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -39144,54 +39276,6 @@
       "source_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
       "source_id": "installed-skills",
       "source_path": "lanzar-council-en-willy/SKILL.md",
-      "source_revision": "filesystem@2026-11-05"
-    },
-    {
-      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
-      "reason": "project_evidence",
-      "source_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
-      "source_id": "installed-skills",
-      "source_path": "ovh-cloud/SKILL.md",
-      "source_revision": "filesystem@2026-11-05"
-    },
-    {
-      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
-      "reason": "project_evidence",
-      "source_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
-      "source_id": "installed-skills",
-      "source_path": "ovh-cloud/references/api.md",
-      "source_revision": "filesystem@2026-11-05"
-    },
-    {
-      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
-      "reason": "project_evidence",
-      "source_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
-      "source_id": "installed-skills",
-      "source_path": "ovh-cloud/references/pricing-2026-11.md",
-      "source_revision": "filesystem@2026-11-05"
-    },
-    {
-      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
-      "reason": "project_evidence",
-      "source_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
-      "source_id": "installed-skills",
-      "source_path": "ovh-cloud/scripts/ovhpc.py",
-      "source_revision": "filesystem@2026-11-05"
-    },
-    {
-      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
-      "reason": "project_evidence",
-      "source_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
-      "source_id": "installed-skills",
-      "source_path": "ovh-cloud/scripts/vm-agent/install.ps1",
-      "source_revision": "filesystem@2026-11-05"
-    },
-    {
-      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
-      "reason": "project_evidence",
-      "source_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
-      "source_id": "installed-skills",
-      "source_path": "ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
       "source_revision": "filesystem@2026-11-05"
     },
     {
