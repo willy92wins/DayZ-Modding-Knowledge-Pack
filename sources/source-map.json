@@ -1611,10 +1611,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: one Unreleased Changed entry for CLAIM-SIGN-NEGATIVE-CONTROL (model-only builds).",
+          "license": "MIT",
+          "source_hash": "2c661f0003af62ce4358c08f9a74af9021b88b11e1c394e36ec701d8ee202b13",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/sign-control-model-only@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f4f787e243606defb9c1df1def8be67945433f346d573559110b0271aafc23bf",
+      "output_hash": "2c661f0003af62ce4358c08f9a74af9021b88b11e1c394e36ec701d8ee202b13",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -12910,10 +12920,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05 (Arma2Quad v1.0.3-rc, a model-only change): CLAIM-SIGN-NEGATIVE-CONTROL adds that another build's PBO only fails as a negative control when the builds differ in a signed entry; claim range recomputed from its marker.",
+          "license": "MIT",
+          "source_hash": "d461ae04ea16d27ed0e16a1a95fb0bc851039d4a175b3016ae2f72d64fcda582",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "update/sign-control-model-only@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c90bb73bcf565e3a4200b22d787d7d52044977cc7dd5f0ae8efa675ce69b06eb",
+      "output_hash": "d461ae04ea16d27ed0e16a1a95fb0bc851039d4a175b3016ae2f72d64fcda582",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -19373,10 +19393,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "sanitize-rip-vehicle-lanes@2026-11-06",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: CLAIM-SIGN-NEGATIVE-CONTROL takes the Arma2Quad v1.0.3-rc evidence (a model-only build), its new line range and revision.",
+          "license": "MIT",
+          "source_hash": "4cb4f4b1a4748407d0b43d9b8371099b87cf40594a3a3fec8088c4c96bfecf39",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/sign-control-model-only@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9cc3a033f981ca878fa32c1c530eea08812c738242a59c8d84ecc0e7bb5989ce",
+      "output_hash": "4cb4f4b1a4748407d0b43d9b8371099b87cf40594a3a3fec8088c4c96bfecf39",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

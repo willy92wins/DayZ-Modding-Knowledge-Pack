@@ -2539,14 +2539,14 @@
     {
       "artifact_id": "file/skills/dayz-test-ingame/skill.md",
       "claim_id": "CLAIM-SIGN-NEGATIVE-CONTROL",
-      "evidence_locator": "2026-10-26, DayZ Tools DsUtils DSSignFile (default v3) and DSCheckSignatures with Return0.bikey, on the LFQuad v1.0.1 release PBO (sha256 6a47c84d...): the release dir -> 'Signature ... is OK'; one byte XOR 0x01 at offset 3104817 (inside data\\LFQuad_wheel_rear_co.paa), SHA-1 trailer untouched -> 'is OK'; the previous build's PBO with the new .bisign -> 'is wrong'; one byte of scripts\\4_world\\LFQuad_RuinedWheels.c changed and the trailer recomputed -> 'is wrong'.",
+      "evidence_locator": "2026-10-26, DayZ Tools DsUtils DSSignFile (default v3) and DSCheckSignatures with Return0.bikey, on the LFQuad v1.0.1 release PBO (sha256 6a47c84d...): the release dir -> 'Signature ... is OK'; one byte XOR 0x01 at offset 3104817 (inside data\\LFQuad_wheel_rear_co.paa), SHA-1 trailer untouched -> 'is OK'; the previous build's PBO with the new .bisign -> 'is wrong'; one byte of scripts\\4_world\\LFQuad_RuinedWheels.c changed and the trailer recomputed -> 'is wrong'. 2026-11-05, same tools and key, on the Arma2Quad v1.0.3-rc PBO built from willy92wins/Arma2Quad 418127f (sha256 5256171f...), whose only differences from the v1.0.2 release PBO (sha256 464f35d9...) are the Arma2Quad_body.p3d entry (bytes and timestamp) and the SHA-1 trailer: the v1.0.2 PBO with the new .bisign -> 'is OK'; one byte of scripts\\4_world\\Arma2Quad_Wheels.c changed and the trailer recomputed -> 'is wrong'.",
       "license": "MIT",
-      "line_end": 1563,
+      "line_end": 1568,
       "line_start": 1556,
-      "observed_at": "2026-10-26",
+      "observed_at": "2026-11-05",
       "promotion_artifact_id": "skill/dayz-test-ingame",
       "source_id": "pack-r21-authored",
-      "source_revision": "update/dayz-130-car-port-lfquad@2026-10-26",
+      "source_revision": "update/sign-control-model-only@2026-11-05",
       "verification_level": "offline_tested"
     },
     {
