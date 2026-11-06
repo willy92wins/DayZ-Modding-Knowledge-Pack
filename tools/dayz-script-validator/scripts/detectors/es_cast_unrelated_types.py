@@ -263,11 +263,11 @@ class FileScopes:
                 around.pop()
             self._region_parents.append(around[-1] if around else -1)
             around.append(index)
-        # {(class body open, name, blocks around the cast or call): its type
-        #  as a member of that body}
+        # {(class body open, name, blocks around the cast or call, reader of
+        #  the declared type): its type as a member of that body}
         self.members = {}
-        # {(class body open, name): [(type, line), ...] of its declarations
-        #  at the top level of that body}
+        # {(class body open, name, reader of the declared type): [(type,
+        #  line), ...] of its declarations at the top level of that body}
         self.declarations = {}
 
     def line(self, at):
@@ -297,7 +297,10 @@ def _apart(around, line, blocks):
     return around is not None and around[line] != blocks[:len(around[line])]
 
 
-def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
+def _argument_type(
+    stripped, scopes, arg, cast_at, inherited=None, around=None,
+    declared_type=_declared_type,
+):
     """The one plain declared type of `arg` at `cast_at`, or None.
 
     scopes: the FileScopes of `stripped`. around, when given, is the
@@ -309,6 +312,8 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
     inherited(open, arg, blocks), when given, is asked for a member that the
     enclosing class body (open: the offset of its `{`) does not declare,
     with the blocks around cast_at, and gives its type or None.
+    declared_type(match) reads the type of each declaration, as
+    _declared_type() does by default.
     """
     line = scopes.line(cast_at)
     blocks = () if around is None else around[line]
@@ -326,7 +331,7 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
             at = match.start("type")
             if scopes.line(at) in scopes.dead:
                 continue
-            declared = _declared_type(match)
+            declared = declared_type(match)
             if declared is None:
                 continue
             if at < body or _still_open(stripped, match.end(), cast_at):
@@ -346,13 +351,14 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
     open_brace, close_brace = enclosing
     # The same for every cast or call in the body under the same blocks:
     # read once per name.
-    key = (open_brace, arg, blocks)
+    key = (open_brace, arg, blocks, declared_type)
     if key in scopes.members:
         return scopes.members[key]
     # The body is scanned once per name, whatever the blocks: scanning it
     # for each set of blocks around the calls made the rule 21 % slower than
     # the second version over the mods (third round of the review of #125).
-    if (open_brace, arg) not in scopes.declarations:
+    body_key = (open_brace, arg, declared_type)
+    if body_key not in scopes.declarations:
         declarations = []
         for match in declaration_re.finditer(stripped, open_brace, close_brace):
             at = match.start("type")
@@ -363,13 +369,13 @@ def _argument_type(stripped, scopes, arg, cast_at, inherited=None, around=None):
                 "("
             ) != inner.count(")"):
                 continue  # inside a method, or a parameter
-            declared = _declared_type(match)
+            declared = declared_type(match)
             if declared is not None:
                 declarations.append((declared, scopes.line(at)))
-        scopes.declarations[(open_brace, arg)] = declarations
+        scopes.declarations[body_key] = declarations
     found = {
         "" if _apart(around, declared_line, blocks) else declared
-        for declared, declared_line in scopes.declarations[(open_brace, arg)]
+        for declared, declared_line in scopes.declarations[body_key]
     }
     if found:
         member = found.pop() if len(found) == 1 and "" not in found else None

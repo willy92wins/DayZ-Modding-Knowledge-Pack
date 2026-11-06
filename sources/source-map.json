@@ -1594,6 +1594,36 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "a241a402d1df1d393c1137dec9578816704b40e6832a3d0b12d734bb566f18e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: an Unreleased Changed entry for the vanilla control re-baselined on DayZ 1.30.164289 stable (DayZDiag_x64.exe 1.30.164.289). Before the update the control on P:\\scripts failed only with digest_mismatch (fd826b40 against d24552ff); full dumps of the 1.30.164200 and 1.30.164289 trees with the same validator gave 15 errors and 424 warnings each, with the same count for each rule in each file, and the 12 findings in the changed files, all warnings, mapped through a difflib line alignment, land exactly on the ones reported now. The rebuilt 1.30.164200 tree passes against the baseline of main with this validator. --update and the check after it: 3057 files, digest fd826b40, PASS, 194 and 181 s by the wall clock. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "00359c0e2a6a1ce6f375c68394cb051231997b0a0ff9e68ce9dea12c713e67f9",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-164289@2026-11-05",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: an Unreleased Fixed entry for pipeline inbox fb-20261105-021157-4c83: a vanilla_index.json built from DayZ 1.29 and left in a checkout made the vanilla control fail on 1.30, and build_vanilla_index.py could not rebuild it because it read 3_game/global/world.c (cp1252 0x99 in a comment) as strict UTF-8.",
+          "license": "MIT",
+          "source_hash": "f4f787e243606defb9c1df1def8be67945433f346d573559110b0271aafc23bf",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Linux support pass 2026-11-03, append-only: an '## On Linux' section (or a routing row / changelog entry) pointing at skills/_shared/linux-proton.md; no Windows instruction changed. Measured on Debian testing with Proton Hotfix / GE-Proton11-1, DayZ 1.30.164289, DayZ Tools build 26405911. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "cfb8a5d52566f789a588f10c61cd8439e481fb660a0bc03737fbbed074ff1d4f",
@@ -1614,7 +1644,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e3ca9fd72014910b1f7fefb7f4872ba9492256cbc6b0771adb346eb9ceeade54",
+      "output_hash": "aba443e999351e015f0239278968dce3ffd865284971d4be37ac338de123758a",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19823,10 +19853,50 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/dayz-130-getin-action@2026-11-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "a4212208e1cdfc310d4086eb42a137c227417d312680d0f43e8ef81df4eb7d29",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registered the four tablero-cupos-sesiones usage contracts with local CLI field observations and the bundled positive/negative offline tests. Existing claims preserved.",
+          "license": "MIT",
+          "source_hash": "ba9177b5011aa0eb9e49ee40727421c0c638181e476dd2052ad356c907789eac",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "tablero-cupos-sesiones@2026-11-05",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Updated the four tablero usage evidence ranges after the daily agy cache change; registered cache, force-refresh and JSON metadata contracts, mock coverage and two real helper runs. The earlier 15:12-15:13 Madrid spend measurement is human-supplied; cost remains unproven. Existing claims preserved.",
+          "license": "MIT",
+          "source_hash": "b69972bf61c0ebeaaeae51861b06cc7ea395599254986542fda44d8acbe07554",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "tablero-agy-daily-cache@2026-11-05",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Shifted the four tablero-cupos-sesiones claim line ranges by +4 after inserting Preferencia de lanes (2026-11-06) above Cupos; scripts/tests unchanged. Grok 24h cache and lane preference are SKILL prose only; no new executable claim. Existing claims preserved.",
+          "license": "MIT",
+          "source_hash": "b692b292b764679566fa18d940d8db5b8e31c29e7e1d77e0d42cb76817850782",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "tablero-preferencia-lanes@2026-11-06",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8e30610593181dc3d40db6e7cc442d2a5ca3994f86df82e3fa0a0626928d528",
+      "output_hash": "b692b292b764679566fa18d940d8db5b8e31c29e7e1d77e0d42cb76817850782",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -19869,10 +19939,30 @@
           "source_path": "sources/link-allowlist.json",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-11-05: allowlist six local Markdown links from skills/delegar/SKILL.md whose companions remain in the live Claude tree (private host paths, not published).",
+          "license": "MIT",
+          "source_hash": "736ab6bef1806d30230df198a06f13d4b54c241d422b20f0ba99cb94be79cb4c",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/link-allowlist.json",
+          "source_revision": "delegar-enfusion@2026-11-05",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-11-05 OK#3: allowlist sand-workflow/local Markdown links from skills/lanzar-council-en-willy/SKILL.md (companions outside public pack).",
+          "license": "MIT",
+          "source_hash": "cb6316d1c1b8bb8dbf53b24dbdbfbade8bba3d1765008071a75862af60037b3b",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/link-allowlist.json",
+          "source_revision": "ok3-lanzar-council@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2b0054707fe5214e81afb69b0017dd6ab1be5dba5026fdb907dd3fab13713796",
+      "output_hash": "cb6316d1c1b8bb8dbf53b24dbdbfbade8bba3d1765008071a75862af60037b3b",
       "output_path": "sources/link-allowlist.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -23178,10 +23268,30 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "dd4071eccb289c7ef844a4d811e0979f571623375c4a2556e5ec5702be07ec43",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. The vanilla control's exit-code line names the new SKIP: a local scripts/shared/vanilla_index.json that the validator loads, since the baseline measures the validator without one.",
+          "license": "MIT",
+          "source_hash": "56f906cf410e3e876dec6db5fe163b583a2428146c90867946e6fe526b4972ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7f615479f9fc77fc55618e6613494186002668aa85990492bc9a79f2acd5248c",
+      "output_hash": "56f906cf410e3e876dec6db5fe163b583a2428146c90867946e6fe526b4972ce",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23266,10 +23376,20 @@
           "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
           "source_revision": "r21-vanilla-index@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. scan_file and verify_nonexistent_methods read each .c as UTF-8 with replacement, as the detectors read the vanilla tree (_vanilla_texts in detectors/es_undefined_class_ref.py), so a byte that is not UTF-8 no longer stops the build; the reporter measured a cp1252 0x99 in a comment of 3_game/global/world.c in 1.30.164200 and 1.30.164289. tree_digest and total_bytes still read the bytes. test_vanilla_index TestGenerator.test_a_byte_that_is_not_utf8_does_not_stop_the_build (the mini tree plus a world.c with 0x99) fails on main with UnicodeDecodeError and passes; a mutant with either read strict fails it.",
+          "license": "MIT",
+          "source_hash": "d25357d17e2bd5bed125117af22116f45b5fa4c6babd5c7b9c05d36314232dd4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "903329f535a8663886250253f6da980ee603dfc4e2f0610b57e1d6fd42689987",
+      "output_hash": "d25357d17e2bd5bed125117af22116f45b5fa4c6babd5c7b9c05d36314232dd4",
       "output_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24088,10 +24208,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "96ca6f140267f1bc7da07b92eb26aa8dbf49131100284c43c905362eb39d909d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c2aebb81dc20b8d66c9d49d9d68a8cd40b21e17ca3eddce6596b7e457ca9e15f",
+      "output_hash": "96ca6f140267f1bc7da07b92eb26aa8dbf49131100284c43c905362eb39d909d",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24218,10 +24348,20 @@
           "source_path": "scripts/shared/vanilla_reference.py",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. loaded_index_path() returns the index file the detectors read, or None when the loader has none (missing, not JSON, another schema_version). Pinned by test_vanilla_index TestIndexFallback.test_loaded_index_path_names_only_an_index_in_use; a mutant that always returns the path fails it.",
+          "license": "MIT",
+          "source_hash": "4903d37818a8afef58e546e71b46717c4bca70f39af4262bd3fb21c2fba49ef4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9a759963a10b15cef739e31af09e3fe6f3814129fc769792eb7b11dd038763b7",
+      "output_hash": "4903d37818a8afef58e546e71b46717c4bca70f39af4262bd3fb21c2fba49ef4",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24294,10 +24434,20 @@
           "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
           "source_revision": "kp-update-val-undef-class-ref@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. With a local vanilla_index.json loaded the validator is not the one the baseline measures: the reporter's 1.29 index gave four ES-OVERRIDE-PARAM-NAME-MISMATCH FAILs in each of 1.30.164289's genericicon.c and slotsicon.c, which pass without it. main() now SKIPs with exit 2 and names the file, after the tree is resolved and before --update or the comparison. test_vanilla_control TestLocalIndex: a loaded index SKIPs and names the file, --update with one writes no baseline, a file the loader rejects does not count; mutants that drop the check, test the file's existence instead, or check only before the comparison each fail one of them.",
+          "license": "MIT",
+          "source_hash": "6c9158eb17d8bba544e02c5233e6be5caff91019638b313dfad878233a68e1bf",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "71c43a0535d29d9bef44a65414e6e02fcd0a6887f177098c071f206592084214",
+      "output_hash": "6c9158eb17d8bba544e02c5233e6be5caff91019638b313dfad878233a68e1bf",
       "output_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24346,10 +24496,20 @@
           "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
           "source_revision": "kp-update-vanilla-164200@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: vanilla control re-baselined on DayZ 1.30.164289 stable (DayZDiag_x64.exe file version 1.30.164.289, product version 1.30.164289.70, read on the owner's PC; Steam update of 2026-11-04 18:53). P:\\scripts was updated on 2026-11-05 from that build's dta\\scripts.pbo (sha256 09012cdae8c4ae2d..., PBO header version 127855): only the 27 .c files that differ from the 1.30.164200 PBO were rewritten, each checked before (still the 164200 bytes) and after (sha256 read-back); config.bin did not change, so the tree's config.cpp stays; afterwards P:\\scripts equals an extract of that PBO in every file but config.bin/config.cpp. Before the update the control on P:\\scripts failed only with digest_mismatch: digest fd826b4016910c5ca99046158d6e07aea79b4e52722b5ad20b36ffed8e527a1e against d24552ff, with no extra or missing error, no new warning rule and no warning count above or below the baseline. Full dumps of both trees with the same validator gave 15 errors and 424 warnings each, with the same count for each rule in each file; 422 findings are identical, and the other 12, all warnings in changed files, only moved: mapped through a difflib line alignment of the two versions of each file, they land exactly on the ones reported on 1.30.164289 (two ES-CTX-READ-UNCHECKED in 4_world/plugins/pluginbase/plugindiagmenu/plugindiagmenuclient.c and two ES-CTX-READ-UNSUPPORTED-PATTERN in plugindiagmenu.c, +1; ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN, two in 4_world/classes/constructionbase.c, +64, three in 4_world/entities/itembase/basebuildingbase.c, -1, and two in basebuildingbase/fence.c, +14; one ES-GETTYPE-EXACT-MATCH in 4_world/static/miscgameplayfunctions.c, +6). None of the 15 baseline errors is in a changed file. The 1.30.164200 tree, rebuilt from P:\\scripts with the 27 old files of the backup put back, passes against the baseline of main with this validator (digest d24552ff), so nothing here comes from the rule changes since 2026-10-24. vanilla_control.py --update on P:\\scripts wrote 15 errors and 424 warnings over 3057 files, digest fd826b40; tree.dayz_build, tree.dayz_build_note and measured were then set by hand, because --update keeps them; the 15 entries, their notes and the warning counts are unchanged. The check after it: PASS. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "98f9ff744a37b66437d8e13160d36c40856115ae342dc42246dd8ecc9f2fdeaa",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
+          "source_revision": "kp-update-vanilla-164289@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4296bc3c51546a7ab0d196f5c0634ec624361cbf0381a5c050b0fa28e85b2081",
+      "output_hash": "98f9ff744a37b66437d8e13160d36c40856115ae342dc42246dd8ecc9f2fdeaa",
       "output_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -28028,10 +28188,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-inventory-130@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "60c84bf074b6f715035c202f683caf177e54b40a33d3bfc986a8d2b86d0e4290",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "defab0c117232d61d32e31bdd0a6b30ab70ae4c54e6a1a2461c4e96fd69e201a",
+      "output_hash": "60c84bf074b6f715035c202f683caf177e54b40a33d3bfc986a8d2b86d0e4290",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -28050,10 +28220,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
           "source_revision": "r21-vanilla-control@2026-08-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. The CLI tests point the index loader at a path in a fresh temporary directory, so an index in the checkout does not make them SKIP (without that, a local index fails the --update round trip); TestLocalIndex adds three tests. python3 -m unittest discover -s tests in tools/dayz-script-validator: 341 OK (336 on main); pytest is not installed in the container that ran it.",
+          "license": "MIT",
+          "source_hash": "8dea8bc741ce91ef9c43ae3264a6b6f1e765e4215c704f59945350556404a223",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "92e38ca36b52f9922d9fcadfa84c4f82c8d685b61ac38113869959cfb9df8f72",
+      "output_hash": "8dea8bc741ce91ef9c43ae3264a6b6f1e765e4215c704f59945350556404a223",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -28072,10 +28252,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
           "source_revision": "r21-vanilla-index@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-05: pipeline inbox fb-20261105-021157-4c83. Two tests: the generator indexes a tree whose world.c carries a cp1252 0x99 (file_count 6, parsed_file_count 6, no read_errors, Gamma and m_GammaMember indexed), and loaded_index_path() names only an index the loader uses (missing, not JSON and schema_version 999 give None; a built index gives its path). Both fail on main.",
+          "license": "MIT",
+          "source_hash": "41206e3f559723fe1ca787b294cbe49aecc3f146fcdac4ca3fac1fb7423b1021",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
+          "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8e62ab760e7d726957935faf2d327ea3f8ac1f25a053f926e3da3a860f5c47f",
+      "output_hash": "41206e3f559723fe1ca787b294cbe49aecc3f146fcdac4ca3fac1fb7423b1021",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -36020,6 +36210,358 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/skills/task-observer/license",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "50bfbf25300f4b6c06f5c286bc9f63b2fe43a548233d633a6798a78a785bdb98",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/LICENSE",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "50bfbf25300f4b6c06f5c286bc9f63b2fe43a548233d633a6798a78a785bdb98",
+      "output_path": "skills/task-observer/LICENSE",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/environments.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "da8a4682abe62b8c01fdfbc63e9d3078d3a36961e2354de592e9ae3057826531",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/environments.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "da8a4682abe62b8c01fdfbc63e9d3078d3a36961e2354de592e9ae3057826531",
+      "output_path": "skills/task-observer/references/environments.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/migration.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "ba788539a5ff3a24d085ba5e420f308854e8d35a55d4ba7f8e51576b2feba5e9",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/migration.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "ba788539a5ff3a24d085ba5e420f308854e8d35a55d4ba7f8e51576b2feba5e9",
+      "output_path": "skills/task-observer/references/migration.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/observation-log.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "c29dc5c13cecfdc3db85c2520da41fab4856354565dc548ab137fdfb183de2f6",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/observation-log.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "c29dc5c13cecfdc3db85c2520da41fab4856354565dc548ab137fdfb183de2f6",
+      "output_path": "skills/task-observer/references/observation-log.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/signals.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "6f77ff5af42bcd0a8e9e1bc27e6362ebf923502449701adf6a38b3573c8e854b",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/signals.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "6f77ff5af42bcd0a8e9e1bc27e6362ebf923502449701adf6a38b3573c8e854b",
+      "output_path": "skills/task-observer/references/signals.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/skill-authoring.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "67fee4b5319dfa7e24e1b2dcb314e8732b66140b37b205f30b0be189cf7feb38",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/skill-authoring.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "67fee4b5319dfa7e24e1b2dcb314e8732b66140b37b205f30b0be189cf7feb38",
+      "output_path": "skills/task-observer/references/skill-authoring.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/references/weekly-review.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "a00831f044d7e3813743f2abcd5cd45ba5ba30b68b54237ad1fea3f014e04d9f",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/references/weekly-review.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "a00831f044d7e3813743f2abcd5cd45ba5ba30b68b54237ad1fea3f014e04d9f",
+      "output_path": "skills/task-observer/references/weekly-review.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/task-observer; bytes match the live copy by sha256.",
+          "license": "CC-BY-4.0",
+          "source_hash": "2518fc17e47073f62aef2b054b0a306d2a129d1bcccd8bb9ee61f2974ad4d576",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/SKILL.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "2518fc17e47073f62aef2b054b0a306d2a129d1bcccd8bb9ee61f2974ad4d576",
+      "output_path": "skills/task-observer/SKILL.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/task-observer/source.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Provenance note written for the port (Guillermo, 2026-11-05).",
+          "license": "CC-BY-4.0",
+          "source_hash": "bee7977eaa36b11040595390c6032b4958668d097f613999d81fd237e33ed4e2",
+          "source_id": "rebelytics-task-observer",
+          "source_path": "task-observer/SOURCE.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "output_hash": "bee7977eaa36b11040595390c6032b4958668d097f613999d81fd237e33ed4e2",
+      "output_path": "skills/task-observer/SOURCE.md",
+      "routing_artifact_id": "skill/task-observer",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/condition-based-waiting-example.ts",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "40ae5ebe497fdf310200e43fe986552546d0a22837c0d39e855db1cfd33eb88e",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/condition-based-waiting-example.ts",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "40ae5ebe497fdf310200e43fe986552546d0a22837c0d39e855db1cfd33eb88e",
+      "output_path": "skills/systematic-debugging/condition-based-waiting-example.ts",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/condition-based-waiting.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "e89fec8400d6cd50f43407cec9fab50976ba4d55d0ec2eb51c0bd68036b54c26",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/condition-based-waiting.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e89fec8400d6cd50f43407cec9fab50976ba4d55d0ec2eb51c0bd68036b54c26",
+      "output_path": "skills/systematic-debugging/condition-based-waiting.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/defense-in-depth.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "1e175fb86fc357e58c6aebf5441e481e1b7868b4380c0456b63a17eefbd18ba7",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/defense-in-depth.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1e175fb86fc357e58c6aebf5441e481e1b7868b4380c0456b63a17eefbd18ba7",
+      "output_path": "skills/systematic-debugging/defense-in-depth.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/license",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/LICENSE",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+      "output_path": "skills/systematic-debugging/LICENSE",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/root-cause-tracing.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "6b0622269e098ca1399e123e553fd385f0b6412d88ef0e9c4f5a8ea9cf1cec7b",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/root-cause-tracing.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6b0622269e098ca1399e123e553fd385f0b6412d88ef0e9c4f5a8ea9cf1cec7b",
+      "output_path": "skills/systematic-debugging/root-cause-tracing.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Third-party skill ported on Guillermo's request (2026-11-05) through the live tree ~/.claude/skills/systematic-debugging; bytes match the live copy by sha256.",
+          "license": "MIT",
+          "source_hash": "d7a6430b183880a7aa3faceacd05fbcc425aa21d3caebb91c4e86f453f56aee6",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/SKILL.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d7a6430b183880a7aa3faceacd05fbcc425aa21d3caebb91c4e86f453f56aee6",
+      "output_path": "skills/systematic-debugging/SKILL.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/systematic-debugging/source.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Provenance note written for the port (Guillermo, 2026-11-05).",
+          "license": "MIT",
+          "source_hash": "d26fc03a498d0568fd8b83700e83b5c62626dd41ad34c953c9e84932235896be",
+          "source_id": "obra-superpowers-systematic-debugging",
+          "source_path": "systematic-debugging/SOURCE.md",
+          "source_revision": "grokbot-skills-mirror@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d26fc03a498d0568fd8b83700e83b5c62626dd41ad34c953c9e84932235896be",
+      "output_path": "skills/systematic-debugging/SOURCE.md",
+      "routing_artifact_id": "skill/systematic-debugging",
+      "verification_level": "cross_checked"
+    },
+    {
       "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_modded_engine_class.py",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -36647,10 +37189,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "e15321c02ab634ef5106ea7a19b1d54a0fbc4108f75ccc2cec8e868621a95e87",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5ec3a06d9bee0e1d4093afb3c3ae1cb0e33471e6f54b4094cc951340aed8160b",
+      "output_hash": "e15321c02ab634ef5106ea7a19b1d54a0fbc4108f75ccc2cec8e868621a95e87",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_cast_unrelated_types.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -38076,6 +38628,424 @@
       "verification_level": "offline_tested"
     },
     {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "2f5344e84dd9c4d4e60e17332dbdd1af4ed41d14bae72b9af952dead06a2a7af",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2f5344e84dd9c4d4e60e17332dbdd1af4ed41d14bae72b9af952dead06a2a7af",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
+      "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "2ee2b31ab9d9cf2c7cf623d8d91c4d0499951efabbdf4bb56f01e7839831c71e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/config.cpp",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2ee2b31ab9d9cf2c7cf623d8d91c4d0499951efabbdf4bb56f01e7839831c71e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/scripts/4_World/fx_edge_glue.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "f16a029aef5229e226c63ba8688448a2917ec7a6828fcb71c2028007f5666c83",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/scripts/4_World/fx_edge_glue.c",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f16a029aef5229e226c63ba8688448a2917ec7a6828fcb71c2028007f5666c83",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/bad/scripts/4_World/fx_edge_glue.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "21e8f76ce43045420156cbd11b835bc9e458f65ca239f9d136642293a457505f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/config.cpp",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "21e8f76ce43045420156cbd11b835bc9e458f65ca239f9d136642293a457505f",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/scripts/4_World/fx_edge_glue.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "afdd46128292c8baf61464f18b414da7fb717bff73a5bf0b233edc304025e3e1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/scripts/4_World/fx_edge_glue.c",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "afdd46128292c8baf61464f18b414da7fb717bff73a5bf0b233edc304025e3e1",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/ok/scripts/4_World/fx_edge_glue.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-03: pipeline inbox fb-20261103-150432-9f93 (LFSkateboard). FAIL rule ES-UNDEFINED-BUILTIN-METHOD: a call to a method that the vanilla tree's class of a built-in type (bool, int, float, vector, string, typename, array, set, map) does not declare, on the type, a typedef of it, or a name looked up as in ES-CAST-UNRELATED-TYPES and declared as one of them, a template of one or a typedef of one; members are the top-level names of every declaration of the class (vanilla, addon, external roots, modded and #ifdef branches included, comments and strings dropped) plus Class's. Not judged: a static name the file declares as a variable, a template list read across other parameters, lines that never compile, lines that need a DAYZ_<major>_<minor> macro defined. --game-root / DAYZ_GAME_ROOT compares the vanilla tree with the game's dta/scripts.pbo by content (fail-closed reader of dayz-vehicle-proxy-contract) and warns VANILLA-ROOT-BUILD-MISMATCH. _argument_type takes the declared-type reader as a parameter, default unchanged; FileScopes caches key on it. Measured against 1.30.164200: LFSkateboard before its fix FAIL at lfsk_playerbase.c:1957 and :1959, fixed tree PASS; vanilla tree 8870 calls judged, no finding, vanilla control matches its baseline; 236 addon roots under P:\\ 23885 calls judged, one finding (string.StartsWith, declared by no build); the 1.30.164014 Exp and a 1.29 tree, each against itself, no finding (8878 and 8059 calls judged). python -m pytest tests: 336 passed (319 before); 19 mutants of the two new modules killed. Cross-family review: Grok 4.7 (grok-cli, one round, shell on a copy): UNSOUND, 7 findings, each reproduced; H1 (a ( that one #ifdef branch opens hid later members: false FAIL) and H5 (a dead variable hid a static call) fixed with a test each; H2-H4, H6, H7 are calls the shared lookup leaves unjudged, kept and listed in the README; on follow-up the reviewer withdrew H5 as the weakest and confirmed the H1 fix still fails vector.Cross on 1.30.164200.",
+          "license": "MIT",
+          "source_hash": "f69a2077b5716a02d7dc695280ba17fc67bb12d09369d1317b2cfdba4326f251",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
+          "source_revision": "update/validator-builtin-methods@2026-11-03",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f69a2077b5716a02d7dc695280ba17fc67bb12d09369d1317b2cfdba4326f251",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/delegar/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Live Claude skill ported 2026-11-05 OK#3 Orq handoff: Lanzador=Experto MCP + Claude session conducts; Merge=Auditor. Also carries 2026-11-05 gates (Experto Enfusion, Pase de oficio, Spec+PASS/HOLD/BLOCK). output_hash is the LF blob CI checks out. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
+          "license": "MIT",
+          "source_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
+          "source_id": "installed-skills",
+          "source_path": "delegar/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
+      "output_path": "skills/delegar/SKILL.md",
+      "routing_artifact_id": "skill/delegar",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/lanzar-council-en-willy/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New live Claude skill lanzar-council-en-willy harvested 2026-11-05 OK#3 Orq handoff: owner=Experto MCP; one DayZDiag at a time. Public Pack redacts the live host user profile path to C:\\\\Users\\\\<you>\\\\. Live copy on Willy retains real host paths; do not promote this skill over live without re-checking privacy.",
+          "license": "MIT",
+          "source_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
+          "source_id": "installed-skills",
+          "source_path": "lanzar-council-en-willy/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
+      "output_path": "skills/lanzar-council-en-willy/SKILL.md",
+      "routing_artifact_id": "skill/lanzar-council-en-willy",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Live Claude skill ovh-cloud harvested 2026-11-05 with the machine-priority window (through 2026-11-28 inclusive; fallback from 2026-11-29). Public Pack redacts project id as <REDACTED-PROJECT-ID> and instance IP as <REDACTED-IP>. Live copy on Willy retains account identifiers; do not promote this skill over live.",
+          "license": "MIT",
+          "source_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
+      "output_path": "skills/ovh-cloud/SKILL.md",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/references/api.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/references/api.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
+      "output_path": "skills/ovh-cloud/references/api.md",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/references/pricing-2026-11.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/references/pricing-2026-11.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
+      "output_path": "skills/ovh-cloud/references/pricing-2026-11.md",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/scripts/ovhpc.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/scripts/ovhpc.py",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
+      "output_path": "skills/ovh-cloud/scripts/ovhpc.py",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/scripts/vm-agent/install.ps1",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/scripts/vm-agent/install.ps1",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
+      "output_path": "skills/ovh-cloud/scripts/vm-agent/install.ps1",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
+          "license": "MIT",
+          "source_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
+          "source_id": "installed-skills",
+          "source_path": "ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
+      "output_path": "skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
+      "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/vigia-atascos/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New first-party skill vigia-atascos harvested from live Claude skills. Adapted from ideas in Archive228/foreman (MIT); not a copy of that stack. Checker detects stall patterns; checker is not the worker.",
+          "license": "MIT",
+          "source_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
+          "source_id": "installed-skills",
+          "source_path": "vigia-atascos/SKILL.md",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
+      "output_path": "skills/vigia-atascos/SKILL.md",
+      "routing_artifact_id": "skill/vigia-atascos",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/skill.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Live Claude skill harvested 2026-11-06 following the ovh-cloud provenance pattern. Public Markdown replaces personal roots with VAULT and Windows environment placeholders, removes the personal name and adds claim markers. The source hash is the live input; the output hash seals the sanitized stage. Do not promote this public copy over the live configured skill. Added Preferencia de lanes (2026-11-06): Muse -> agy -> DeepSeek/GB10 -> Claude A -> Grok only if public-X door needed; Codex extra credits frozen until 2026-11-09 16:34 Madrid. Grok cupo item now documents 24h helper cache at %LOCALAPPDATA%\\tablero-cupos\\grok-usage.json with --refresh-grok (same pattern as agy); scripts/tests unchanged.",
+          "license": "MIT",
+          "source_hash": "15a35651893930edd358632295a7f5cedbb6c91a19019b496f4593d01e283001",
+          "source_id": "installed-skills",
+          "source_path": "tablero-cupos-sesiones/SKILL.md",
+          "source_revision": "filesystem@2026-11-06",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "95049de4b96d55c2576918ba83b68fe6a9ca36d2e250630ebafeaaf27cd0f0b5",
+      "output_path": "skills/tablero-cupos-sesiones/SKILL.md",
+      "routing_artifact_id": "skill/tablero-cupos-sesiones",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
+          "license": "MIT",
+          "source_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
+          "source_id": "installed-skills",
+          "source_path": "tablero-cupos-sesiones/scripts/cupos-extra.py",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
+      "output_path": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
+      "routing_artifact_id": "skill/tablero-cupos-sesiones",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
+          "license": "MIT",
+          "source_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
+          "source_id": "installed-skills",
+          "source_path": "tablero-cupos-sesiones/tests/test_cupos_extra.py",
+          "source_revision": "filesystem@2026-11-05",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
+      "output_path": "skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
+      "routing_artifact_id": "skill/tablero-cupos-sesiones",
+      "verification_level": "offline_tested"
+    },
+    {
       "artifact_id": "file/knowledge/linux-proton-findings-2026-11.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -39330,6 +40300,22 @@
       "public_locator": "https://github.com/willy92wins/DayZ-Modding-Knowledge-Pack/pull/135",
       "revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
       "source_id": "pr-135-kinkurono-dev"
+    },
+    {
+      "kind": "git",
+      "license": "CC-BY-4.0",
+      "notes": "Eoghan Henn / rebelytics, CC BY 4.0. Fetched via https://github.com/jeremybrasher/grokbot-skills (skills/task-observer). Modified: session-start trigger softened; attribution notice in SKILL.md and SOURCE.md; license text in LICENSE.",
+      "public_locator": "https://github.com/rebelytics/one-skill-to-rule-them-all",
+      "revision": "grokbot-skills-mirror@2026-11-05",
+      "source_id": "rebelytics-task-observer"
+    },
+    {
+      "kind": "git",
+      "license": "MIT",
+      "notes": "Copyright (c) 2025 Jesse Vincent, MIT. Fetched via https://github.com/jeremybrasher/grokbot-skills (skills/systematic-debugging). Unmodified; copyright notice kept in LICENSE.",
+      "public_locator": "https://github.com/obra/superpowers/blob/main/skills/systematic-debugging",
+      "revision": "grokbot-skills-mirror@2026-11-05",
+      "source_id": "obra-superpowers-systematic-debugging"
     }
   ]
 }

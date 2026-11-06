@@ -239,7 +239,10 @@ def collect_c_files(vanilla_root):
 
 
 def scan_file(path, relative_path):
-    raw = path.read_text(encoding="utf-8")
+    # Decoded as the detectors read the vanilla tree (_vanilla_texts in
+    # detectors/es_undefined_class_ref.py): 1.30's 3_game/global/world.c
+    # has a cp1252 0x99 in a comment.
+    raw = path.read_text(encoding="utf-8", errors="replace")
     text, _warnings = strip_enforce_comments_and_strings(raw, relative_path)
     lines = text.splitlines()
 
@@ -509,7 +512,8 @@ def verify_nonexistent_methods(files, root):
     hits = {name: [] for name in VANILLA_NONEXISTENT_METHODS}
     for path in files:
         text, _warnings = strip_enforce_comments_and_strings(
-            path.read_text(encoding="utf-8"), _posix_relative(path, root)
+            path.read_text(encoding="utf-8", errors="replace"),
+            _posix_relative(path, root),
         )
         for match in pattern.finditer(text):
             name = match.group(1)

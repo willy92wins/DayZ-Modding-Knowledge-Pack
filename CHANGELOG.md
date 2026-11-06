@@ -25,6 +25,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `knowledge/linux-proton-findings-2026-11.md` holds the raw findings and the dayz-mcp port status.
   Not verified: Terrain Builder, Publisher, Workbench's editors, `-filePatching` under Proton, an ODOL
   made under Proton loaded in game.
+- `dayz-script-validator`: `ES-UNDEFINED-BUILTIN-METHOD` (FAIL), a call to a method that the vanilla tree's class of a
+  built-in type (`bool`, `int`, `float`, `vector`, `string`, `typename`, `array`, `set`, `map`) does not declare, made
+  on a value of one, a template of one, a typedef of one or the type itself. From pipeline inbox
+  fb-20261103-150432-9f93 (LFSkateboard): `gF.Cross(gR)` on vector locals stopped a DayZ 1.30.164200 server with
+  `Undefined function 'vector.Cross'`, which only the 1.30.164014 Exp scripts declare, and the validator had passed
+  the call against either tree. `--game-root` (or `DAYZ_GAME_ROOT`) compares the vanilla tree with the game's
+  `dta\scripts.pbo` by content, through the fail-closed reader of `dayz-vehicle-proxy-contract`, and warns with
+  `VANILLA-ROOT-BUILD-MISMATCH` when they differ. `_argument_type` of `ES-CAST-UNRELATED-TYPES` takes the reader of a
+  declared type as a parameter; its default, and so the three rules that already used it, are unchanged. Measured
+  against 1.30.164200: the LFSkateboard tree before its fix fails at `lfsk_playerbase.c:1957` and `:1959` and the
+  fixed tree passes; the vanilla tree gives no finding (8 870 calls judged) and the vanilla control matches its
+  baseline; 236 addon roots under `P:\` (23 885 calls judged) give one finding, a `string.StartsWith` that no build
+  declares. `CLAIM-ENFORCE-UNDEFINED-BUILTIN-METHOD`. 17 new tests (336 pass); 19 mutants of the two new modules, all
+  killed. Cross-family review: Grok 4.7 by grok-cli, one round on a copy with a shell (UNSOUND, 7 findings, each
+  reproduced): H1, a `(` that only one `#ifdef` branch opens hid the later members of a built-in class (a false FAIL;
+  the members now also include every name written before a `(`), and H5, a variable that never compiles hid a static
+  call, fixed with a test each; H2-H4, H6 and H7 are calls the lookup leaves unjudged (a later declarator, a loop
+  variable, an inherited member, nested template parameters, `value`), kept and listed in the README. On follow-up the
+  reviewer withdrew H5 as the weakest and confirmed that the H1 fix still fails `vector.Cross` on 1.30.164200.
 - `dayz-texture-pipeline`: what the H2R texture pass measured against the vanilla Motorbike_02 (2026-10-26
   to 2026-11-02). `references/map-conventions.md` gains "Calibrating against a vanilla asset of the same family": compare
   `_smdi` levels only under matching rvmat constants; the vanilla `motorbike_02_body` rvmat; its maps by surface class
@@ -539,6 +558,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164289 stable
+  (`DayZDiag_x64.exe` 1.30.164.289, the Steam update of 2026-11-04). On that tree it failed only
+  on the tree's digest: the validator reported the same 15 errors and 424 warnings as on
+  1.30.164200, with the same count for each rule in each file. The patch changes 27 of the files
+  the validator reads, all `.c` (base building, the code lock, the diag menu, heat stroke,
+  `game.c`, `playerconstants.c`, `miscgameplayfunctions.c` and others), and adds or removes none.
+  Twelve warnings only moved, because lines were added or removed above them, and a line
+  alignment of the two versions of each file maps all twelve: two `ES-CTX-READ-UNCHECKED` in
+  `4_world/plugins/pluginbase/plugindiagmenu/plugindiagmenuclient.c` and two
+  `ES-CTX-READ-UNSUPPORTED-PATTERN` in `plugindiagmenu.c` (+1); seven
+  `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN`, two in `4_world/classes/constructionbase.c` (+64), three in
+  `4_world/entities/itembase/basebuildingbase.c` (-1) and two in `basebuildingbase/fence.c` (+14);
+  and one `ES-GETTYPE-EXACT-MATCH` in `4_world/static/miscgameplayfunctions.c` (+6). None of the 15
+  baseline errors is in a changed file. The baseline names that build and the digest `fd826b40`
+  over 3057 files, as before; its 15 entries, their notes and its warning counts are unchanged.
+  The 1.30.164200 tree, rebuilt from `P:\scripts` with the 27 old files put back, still passes
+  against the old baseline (digest `d24552ff`) with this validator. The `--update` run and the
+  check after it took 194 and 181 seconds by the wall clock on the owner's PC on 2026-11-05.
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164200 stable
   (`DayZDiag_x64.exe` 1.30.164.200). On that tree it failed only on the tree's digest: the
   validator reported the same 15 errors and 424 warnings as on 1.30.164078, with the same count
@@ -617,6 +654,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-script-validator`: a `scripts/shared/vanilla_index.json` built from DayZ 1.29 and left in
+  a checkout turned the vanilla control red on 1.30 (fb-20261105-021157-4c83). The index keys
+  override signatures by method name only and kept 1.29's `InitIcon(icon, item, pos_x, pos_y)`, so
+  `ES-OVERRIDE-PARAM-NAME-MISMATCH` failed four parameters in each of the 1.30
+  `5_mission/gui/inventorynew/containeditems/genericicon.c:9` and `slotsicon.c:3`, which the
+  committed validator, without an index, passes. Nor could the index be rebuilt on 1.30:
+  `build_vanilla_index.py` read the tree as strict UTF-8 and stopped on the cp1252 trademark sign
+  (0x99) in a comment of `3_game/global/world.c`, in 1.30.164200 and 1.30.164289. It now decodes
+  with replacement, as the detectors read that tree, and indexes the file. `vanilla_control.py`
+  measures the validator without an index, so when one is loaded it SKIPs (exit 2) and names the
+  file, before it compares or `--update` writes a baseline. A file the loader rejects (not JSON,
+  another schema) is not loaded and does not count. The control's CLI tests now point the loader
+  at an empty temporary directory, so they do not depend on an index in the checkout. 341 unit
+  tests pass (336 before).
 - Citations of files this pack does not ship now say so. `_shared/dayz-conventions.md` gains
   "Citation placeholders: `[PROJ]`, `[SKILLS]`, `<project>_dev/...`": what each token means, and
   that a `[PROJ]` or `*_dev` citation records provenance, not a file you can open. The project-only
