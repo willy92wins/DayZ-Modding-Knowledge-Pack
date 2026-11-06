@@ -18478,10 +18478,20 @@
           "source_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-11-06: remove team lane-split / Claude-Codex routing / shared Codex quota section (Reparto de lanes + Codex handoff prompt) from history runbook. Guillermo via Arquitecto: Pack must stay public-generic; cupos/routing/delegar stay team-internal. Technical vehicle-import content unchanged. Claim marker ranges shifted -20 lines. MOVED-EXACT pin resealed to new body hash after the cut.",
+          "license": "MIT",
+          "source_hash": "dc81ce7f51a4dd42da66fda9f87ebde651ef578b987fece3ec5c6180c3df920d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
+          "source_revision": "sanitize-rip-vehicle-lanes@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b05fc8f9e7e14bf2df4211855c40f820bfde9627296ec6acffe21161a36b637d",
+      "output_hash": "dc81ce7f51a4dd42da66fda9f87ebde651ef578b987fece3ec5c6180c3df920d",
       "output_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -19913,10 +19923,30 @@
           "source_path": "sources/claims.json",
           "source_revision": "tablero-preferencia-lanes@2026-11-06",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unpublish tablero-cupos-sesiones from the Pack (Guillermo 2026-11-06 ~11:06 Madrid via Arquitecto): cupos, routing, delegar and internal preferences are team-internal only; the Pack must serve anyone. Removed CLAIM-TABLERO-CODEX-CREDITS, CLAIM-TABLERO-AGY-USAGE, CLAIM-TABLERO-MUSE-USAGE, CLAIM-TABLERO-CUPOS-EXTRA. Skill remains live only at ~/.claude/skills/tablero-cupos-sesiones (and .bak); do not re-harvest.",
+          "license": "MIT",
+          "source_hash": "a4212208e1cdfc310d4086eb42a137c227417d312680d0f43e8ef81df4eb7d29",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "unpublish-tablero-cupos@2026-11-06",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-11-06: shift CLAIM-R21-RIP-WINDING-LINEAGE (322-332->302-312) and CLAIM-R21-RIP-MATERIAL-OVERRIDE (336-345->316-325) after removing 20-line team lane-split section from rip-vehicle-import history runbook.",
+          "license": "MIT",
+          "source_hash": "9cc3a033f981ca878fa32c1c530eea08812c738242a59c8d84ecc0e7bb5989ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "sanitize-rip-vehicle-lanes@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b692b292b764679566fa18d940d8db5b8e31c29e7e1d77e0d42cb76817850782",
+      "output_hash": "9cc3a033f981ca878fa32c1c530eea08812c738242a59c8d84ecc0e7bb5989ce",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -19979,10 +20009,20 @@
           "source_path": "sources/link-allowlist.json",
           "source_revision": "ok3-lanzar-council@2026-11-05",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Drop link-allowlist entries for unpublished team-internal skills delegar and lanzar-council-en-willy (Guillermo 2026-11-06 ~11:13 Madrid via Arquitecto: Pack = generic public).",
+          "license": "MIT",
+          "source_hash": "2b0054707fe5214e81afb69b0017dd6ab1be5dba5026fdb907dd3fab13713796",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/link-allowlist.json",
+          "source_revision": "unpublish-internal-routing-skills@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cb6316d1c1b8bb8dbf53b24dbdbfbade8bba3d1765008071a75862af60037b3b",
+      "output_hash": "2b0054707fe5214e81afb69b0017dd6ab1be5dba5026fdb907dd3fab13713796",
       "output_path": "sources/link-allowlist.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -32532,6 +32572,7 @@
     },
     {
       "artifact_id": "file/tools/sync_generated.py",
+      "distribution_reason": "Repository governance tooling; imports packctl and is excluded from the public release payload.",
       "distribution_role": "repo_only",
       "hash_policy": "sha256",
       "inputs": [
@@ -32550,8 +32591,7 @@
       "output_hash": "d8e3ebad0dd3bb1e2bc39f1303b61e4534a936fad67994bfebde3147bf02393c",
       "output_path": "tools/sync_generated.py",
       "routing_artifact_id": "tools",
-      "verification_level": "offline_tested",
-      "distribution_reason": "Repository governance tooling; imports packctl and is excluded from the public release payload."
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/tools/skill-runtime-pin/readme.md",
@@ -32649,6 +32689,7 @@
     },
     {
       "artifact_id": "file/packctl/generated.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
       "hash_policy": "sha256",
       "inputs": [
@@ -32667,8 +32708,7 @@
       "output_hash": "581e2f0c90f7da19819600c148ebf024658e347a09b47a6e3c13b5a10cd382b3",
       "output_path": "packctl/generated.py",
       "routing_artifact_id": "repo/packctl",
-      "verification_level": "offline_tested",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload."
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/packctl/pytest_observer.py",
@@ -38802,50 +38842,6 @@
       "verification_level": "offline_tested"
     },
     {
-      "artifact_id": "file/skills/delegar/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Live Claude skill ported 2026-11-05 OK#3 Orq handoff: Lanzador=Experto MCP + Claude session conducts; Merge=Auditor. Also carries 2026-11-05 gates (Experto Enfusion, Pase de oficio, Spec+PASS/HOLD/BLOCK). output_hash is the LF blob CI checks out. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
-          "license": "MIT",
-          "source_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
-          "source_id": "installed-skills",
-          "source_path": "delegar/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
-      "output_path": "skills/delegar/SKILL.md",
-      "routing_artifact_id": "skill/delegar",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/lanzar-council-en-willy/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "New live Claude skill lanzar-council-en-willy harvested 2026-11-05 OK#3 Orq handoff: owner=Experto MCP; one DayZDiag at a time. Public Pack redacts the live host user profile path to C:\\\\Users\\\\<you>\\\\. Live copy on Willy retains real host paths; do not promote this skill over live without re-checking privacy.",
-          "license": "MIT",
-          "source_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
-          "source_id": "installed-skills",
-          "source_path": "lanzar-council-en-willy/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
-      "output_path": "skills/lanzar-council-en-willy/SKILL.md",
-      "routing_artifact_id": "skill/lanzar-council-en-willy",
-      "verification_level": "cross_checked"
-    },
-    {
       "artifact_id": "file/skills/ovh-cloud/skill.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -38976,94 +38972,6 @@
       "output_path": "skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
       "routing_artifact_id": "skill/ovh-cloud",
       "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/vigia-atascos/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "New first-party skill vigia-atascos harvested from live Claude skills. Adapted from ideas in Archive228/foreman (MIT); not a copy of that stack. Checker detects stall patterns; checker is not the worker.",
-          "license": "MIT",
-          "source_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
-          "source_id": "installed-skills",
-          "source_path": "vigia-atascos/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
-      "output_path": "skills/vigia-atascos/SKILL.md",
-      "routing_artifact_id": "skill/vigia-atascos",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/tablero-cupos-sesiones/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Live Claude skill harvested 2026-11-06 following the ovh-cloud provenance pattern. Public Markdown replaces personal roots with VAULT and Windows environment placeholders, removes the personal name and adds claim markers. The source hash is the live input; the output hash seals the sanitized stage. Do not promote this public copy over the live configured skill. Added Preferencia de lanes (2026-11-06): Muse -> agy -> DeepSeek/GB10 -> Claude A -> Grok only if public-X door needed; Codex extra credits frozen until 2026-11-09 16:34 Madrid. Grok cupo item now documents 24h helper cache at %LOCALAPPDATA%\\tablero-cupos\\grok-usage.json with --refresh-grok (same pattern as agy); scripts/tests unchanged.",
-          "license": "MIT",
-          "source_hash": "15a35651893930edd358632295a7f5cedbb6c91a19019b496f4593d01e283001",
-          "source_id": "installed-skills",
-          "source_path": "tablero-cupos-sesiones/SKILL.md",
-          "source_revision": "filesystem@2026-11-06",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "95049de4b96d55c2576918ba83b68fe6a9ca36d2e250630ebafeaaf27cd0f0b5",
-      "output_path": "skills/tablero-cupos-sesiones/SKILL.md",
-      "routing_artifact_id": "skill/tablero-cupos-sesiones",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
-          "license": "MIT",
-          "source_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
-          "source_id": "installed-skills",
-          "source_path": "tablero-cupos-sesiones/scripts/cupos-extra.py",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
-      "output_path": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
-      "routing_artifact_id": "skill/tablero-cupos-sesiones",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
-          "license": "MIT",
-          "source_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
-          "source_id": "installed-skills",
-          "source_path": "tablero-cupos-sesiones/tests/test_cupos_extra.py",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
-      "output_path": "skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
-      "routing_artifact_id": "skill/tablero-cupos-sesiones",
-      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/knowledge/linux-proton-findings-2026-11.md",
@@ -40117,6 +40025,54 @@
       "source_id": "dayz-baltic-12km",
       "source_path": "tools/playtest/attach_navmesh.py",
       "source_revision": "84e2bb8 (branch v29-base)"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:06 Madrid (via Arquitecto): cupos, routing, delegar and internal preferences must not enter the DayZ-Modding-Knowledge-Pack. Author-owned live skill kept private at ~/.claude/skills/tablero-cupos-sesiones; Pack publication of #154/#155/#158 withdrawn. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "15a35651893930edd358632295a7f5cedbb6c91a19019b496f4593d01e283001",
+      "source_id": "installed-skills",
+      "source_path": "tablero-cupos-sesiones/SKILL.md",
+      "source_revision": "filesystem@2026-11-06"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:06 Madrid (via Arquitecto): cupos, routing, delegar and internal preferences must not enter the DayZ-Modding-Knowledge-Pack. Author-owned live skill kept private at ~/.claude/skills/tablero-cupos-sesiones; Pack publication of #154/#155/#158 withdrawn. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
+      "source_id": "installed-skills",
+      "source_path": "tablero-cupos-sesiones/scripts/cupos-extra.py",
+      "source_revision": "filesystem@2026-11-06"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:06 Madrid (via Arquitecto): cupos, routing, delegar and internal preferences must not enter the DayZ-Modding-Knowledge-Pack. Author-owned live skill kept private at ~/.claude/skills/tablero-cupos-sesiones; Pack publication of #154/#155/#158 withdrawn. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
+      "source_id": "installed-skills",
+      "source_path": "tablero-cupos-sesiones/tests/test_cupos_extra.py",
+      "source_revision": "filesystem@2026-11-06"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
+      "source_id": "installed-skills",
+      "source_path": "delegar/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
+      "source_id": "installed-skills",
+      "source_path": "lanzar-council-en-willy/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
+      "source_id": "installed-skills",
+      "source_path": "vigia-atascos/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
     }
   ],
   "generated_artifacts": [
