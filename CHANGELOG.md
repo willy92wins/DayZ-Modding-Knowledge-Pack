@@ -7,6 +7,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- CI: a `linux` job (validation, `packctl` and skill tests off Windows) and tests for
+  `skills/_shared/scripts/dayz-proton.sh`, which had none.
 - Linux findings (2026-11-06): the managed `dayz_test_run` cycle measured end to end on dayz-mcp's
   `linux-port` branch. A diag client only joins a diag server (`0x00020017`); an absolute `-mission` leaves the
   native server without `init.c`'s `main`; Steam's PID is `~/.steam/steam.pid`. Corrects earlier notes that said
