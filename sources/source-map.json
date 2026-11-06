@@ -17918,10 +17918,20 @@
           "source_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-11-06: remove team lane-split / Claude-Codex routing / shared Codex quota section (Reparto de lanes + Codex handoff prompt) from history runbook. Guillermo via Arquitecto: Pack must stay public-generic; cupos/routing/delegar stay team-internal. Technical vehicle-import content unchanged. Claim marker ranges shifted -20 lines. MOVED-EXACT pin resealed to new body hash after the cut.",
+          "license": "MIT",
+          "source_hash": "dc81ce7f51a4dd42da66fda9f87ebde651ef578b987fece3ec5c6180c3df920d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
+          "source_revision": "sanitize-rip-vehicle-lanes@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b05fc8f9e7e14bf2df4211855c40f820bfde9627296ec6acffe21161a36b637d",
+      "output_hash": "dc81ce7f51a4dd42da66fda9f87ebde651ef578b987fece3ec5c6180c3df920d",
       "output_path": "skills/rip-vehicle-import/history/pre-cambio-1-family-b-runbook.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -19353,10 +19363,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "unpublish-tablero-cupos@2026-11-06",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "2026-11-06: shift CLAIM-R21-RIP-WINDING-LINEAGE (322-332->302-312) and CLAIM-R21-RIP-MATERIAL-OVERRIDE (336-345->316-325) after removing 20-line team lane-split section from rip-vehicle-import history runbook.",
+          "license": "MIT",
+          "source_hash": "9cc3a033f981ca878fa32c1c530eea08812c738242a59c8d84ecc0e7bb5989ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "sanitize-rip-vehicle-lanes@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a4212208e1cdfc310d4086eb42a137c227417d312680d0f43e8ef81df4eb7d29",
+      "output_hash": "9cc3a033f981ca878fa32c1c530eea08812c738242a59c8d84ecc0e7bb5989ce",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
