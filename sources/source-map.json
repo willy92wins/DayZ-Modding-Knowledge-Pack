@@ -39037,10 +39037,20 @@
           "source_path": "knowledge/linux-proton-findings-2026-11.md",
           "source_revision": "linux-proton-managed-cycle@2026-11-06",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 9 no longer lists the Windows suite as not measured; it passed on these changes in dayz-mcp CI on 2026-11-06, without a game. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7ec4fe1d407f24ca43890336f45286dc06365bb5e1893508f827632877048805",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06b",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "234cfa57160b36c08dacfe892010491844ee0f622b345511502e05615739c08a",
+      "output_hash": "7ec4fe1d407f24ca43890336f45286dc06365bb5e1893508f827632877048805",
       "output_path": "knowledge/linux-proton-findings-2026-11.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"

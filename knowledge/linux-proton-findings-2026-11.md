@@ -246,7 +246,7 @@ with `client_needs_diag_executable`.
 hashes the worker's argv and Wine rewrites it (`lifecycle_launch_intent_unmatchable: argv_mismatch` in the audit log).
 
 **Not measured**: a binarizing `build=true` through a full managed run (the relay function ran `build
---proton-binarize` on an addon without binarizable assets); bridge tools in the world beyond `bridge_status`; the
-Windows suite for these changes. Seen once and not reproduced: a `dayz_test_stop` from a second session took 180 s
+--proton-binarize` on an addon without binarizable assets); bridge tools in the world beyond `bridge_status`. The
+Windows suite passes on these changes in CI, without a game. Seen once and not reproduced: a `dayz_test_stop` from a second session took 180 s
 and failed with `NativeLauncherTransactionError` while an aborted session's lease was still running out. In-game the
 picture filled about 1600x900 of the 1920x1080 output, which affects screenshots.
