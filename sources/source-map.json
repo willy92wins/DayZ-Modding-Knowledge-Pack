@@ -19333,10 +19333,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "tablero-agy-daily-cache@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Shifted the four tablero-cupos-sesiones claim line ranges by +4 after inserting Preferencia de lanes (2026-11-06) above Cupos; scripts/tests unchanged. Grok 24h cache and lane preference are SKILL prose only; no new executable claim. Existing claims preserved.",
+          "license": "MIT",
+          "source_hash": "b692b292b764679566fa18d940d8db5b8e31c29e7e1d77e0d42cb76817850782",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "tablero-preferencia-lanes@2026-11-06",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b69972bf61c0ebeaaeae51861b06cc7ea395599254986542fda44d8acbe07554",
+      "output_hash": "b692b292b764679566fa18d940d8db5b8e31c29e7e1d77e0d42cb76817850782",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38396,17 +38406,17 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Live Claude skill harvested 2026-11-05 following the ovh-cloud provenance pattern. Public Markdown replaces personal roots with VAULT and Windows environment placeholders, removes the personal name and adds claim markers. The source hash is the live input; the output hash seals the sanitized stage. Do not promote this public copy over the live configured skill. Daily agy cache rule and the explicitly bounded 2026-11-05 human measurement added; cost is unproven, not asserted free.",
+          "decision_evidence": "Live Claude skill harvested 2026-11-06 following the ovh-cloud provenance pattern. Public Markdown replaces personal roots with VAULT and Windows environment placeholders, removes the personal name and adds claim markers. The source hash is the live input; the output hash seals the sanitized stage. Do not promote this public copy over the live configured skill. Added Preferencia de lanes (2026-11-06): Muse -> agy -> DeepSeek/GB10 -> Claude A -> Grok only if public-X door needed; Codex extra credits frozen until 2026-11-09 16:34 Madrid. Grok cupo item now documents 24h helper cache at %LOCALAPPDATA%\\tablero-cupos\\grok-usage.json with --refresh-grok (same pattern as agy); scripts/tests unchanged.",
           "license": "MIT",
-          "source_hash": "73d7589f58e0a9363815b6499a4c6953776b0039d71ca47b4c7cd67b8240d487",
+          "source_hash": "15a35651893930edd358632295a7f5cedbb6c91a19019b496f4593d01e283001",
           "source_id": "installed-skills",
           "source_path": "tablero-cupos-sesiones/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
+          "source_revision": "filesystem@2026-11-06",
           "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d4533fcd87bb3947d1e87217c51a7f8f1795fb53d6d40f3f4243cb5d15dd2b8f",
+      "output_hash": "95049de4b96d55c2576918ba83b68fe6a9ca36d2e250630ebafeaaf27cd0f0b5",
       "output_path": "skills/tablero-cupos-sesiones/SKILL.md",
       "routing_artifact_id": "skill/tablero-cupos-sesiones",
       "verification_level": "offline_tested"
