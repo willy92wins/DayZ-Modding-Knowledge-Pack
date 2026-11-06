@@ -19343,10 +19343,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "tablero-preferencia-lanes@2026-11-06",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unpublish tablero-cupos-sesiones from the Pack (Guillermo 2026-11-06 ~11:06 Madrid via Arquitecto): cupos, routing, delegar and internal preferences are team-internal only; the Pack must serve anyone. Removed CLAIM-TABLERO-CODEX-CREDITS, CLAIM-TABLERO-AGY-USAGE, CLAIM-TABLERO-MUSE-USAGE, CLAIM-TABLERO-CUPOS-EXTRA. Skill remains live only at ~/.claude/skills/tablero-cupos-sesiones (and .bak); do not re-harvest.",
+          "license": "MIT",
+          "source_hash": "a4212208e1cdfc310d4086eb42a137c227417d312680d0f43e8ef81df4eb7d29",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "unpublish-tablero-cupos@2026-11-06",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b692b292b764679566fa18d940d8db5b8e31c29e7e1d77e0d42cb76817850782",
+      "output_hash": "a4212208e1cdfc310d4086eb42a137c227417d312680d0f43e8ef81df4eb7d29",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38398,72 +38408,6 @@
       "output_path": "skills/vigia-atascos/SKILL.md",
       "routing_artifact_id": "skill/vigia-atascos",
       "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/tablero-cupos-sesiones/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Live Claude skill harvested 2026-11-06 following the ovh-cloud provenance pattern. Public Markdown replaces personal roots with VAULT and Windows environment placeholders, removes the personal name and adds claim markers. The source hash is the live input; the output hash seals the sanitized stage. Do not promote this public copy over the live configured skill. Added Preferencia de lanes (2026-11-06): Muse -> agy -> DeepSeek/GB10 -> Claude A -> Grok only if public-X door needed; Codex extra credits frozen until 2026-11-09 16:34 Madrid. Grok cupo item now documents 24h helper cache at %LOCALAPPDATA%\\tablero-cupos\\grok-usage.json with --refresh-grok (same pattern as agy); scripts/tests unchanged.",
-          "license": "MIT",
-          "source_hash": "15a35651893930edd358632295a7f5cedbb6c91a19019b496f4593d01e283001",
-          "source_id": "installed-skills",
-          "source_path": "tablero-cupos-sesiones/SKILL.md",
-          "source_revision": "filesystem@2026-11-06",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "95049de4b96d55c2576918ba83b68fe6a9ca36d2e250630ebafeaaf27cd0f0b5",
-      "output_path": "skills/tablero-cupos-sesiones/SKILL.md",
-      "routing_artifact_id": "skill/tablero-cupos-sesiones",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
-          "license": "MIT",
-          "source_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
-          "source_id": "installed-skills",
-          "source_path": "tablero-cupos-sesiones/scripts/cupos-extra.py",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
-      "output_path": "skills/tablero-cupos-sesiones/scripts/cupos-extra.py",
-      "routing_artifact_id": "skill/tablero-cupos-sesiones",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file copied byte-for-byte from the live skill; stdlib-only usage reader and contract tests, with no account data or credentials.",
-          "license": "MIT",
-          "source_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
-          "source_id": "installed-skills",
-          "source_path": "tablero-cupos-sesiones/tests/test_cupos_extra.py",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
-      "output_path": "skills/tablero-cupos-sesiones/tests/test_cupos_extra.py",
-      "routing_artifact_id": "skill/tablero-cupos-sesiones",
-      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -39349,6 +39293,30 @@
       "source_id": "dayz-baltic-12km",
       "source_path": "tools/playtest/attach_navmesh.py",
       "source_revision": "84e2bb8 (branch v29-base)"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:06 Madrid (via Arquitecto): cupos, routing, delegar and internal preferences must not enter the DayZ-Modding-Knowledge-Pack. Author-owned live skill kept private at ~/.claude/skills/tablero-cupos-sesiones; Pack publication of #154/#155/#158 withdrawn. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "15a35651893930edd358632295a7f5cedbb6c91a19019b496f4593d01e283001",
+      "source_id": "installed-skills",
+      "source_path": "tablero-cupos-sesiones/SKILL.md",
+      "source_revision": "filesystem@2026-11-06"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:06 Madrid (via Arquitecto): cupos, routing, delegar and internal preferences must not enter the DayZ-Modding-Knowledge-Pack. Author-owned live skill kept private at ~/.claude/skills/tablero-cupos-sesiones; Pack publication of #154/#155/#158 withdrawn. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "b431d76ca25cdab2e2e1fac888092cde179e2b844f9a70531ede3078751a91f7",
+      "source_id": "installed-skills",
+      "source_path": "tablero-cupos-sesiones/scripts/cupos-extra.py",
+      "source_revision": "filesystem@2026-11-06"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:06 Madrid (via Arquitecto): cupos, routing, delegar and internal preferences must not enter the DayZ-Modding-Knowledge-Pack. Author-owned live skill kept private at ~/.claude/skills/tablero-cupos-sesiones; Pack publication of #154/#155/#158 withdrawn. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "3900dbc29f96f6d21a16836dc4aa13d499c7f7f276431ac21b4746972e2ff761",
+      "source_id": "installed-skills",
+      "source_path": "tablero-cupos-sesiones/tests/test_cupos_extra.py",
+      "source_revision": "filesystem@2026-11-06"
     }
   ],
   "generated_artifacts": [
