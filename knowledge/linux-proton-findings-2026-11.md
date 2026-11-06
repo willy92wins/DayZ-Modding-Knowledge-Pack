@@ -206,3 +206,47 @@ client polls are still open. Measured on the way:
 - **The Steam PID on Linux** is `HKLM/Software/Valve/Steam/SteamPID` in `~/.steam/registry.vdf` (and
   `~/.steam/steam.pid`), held by `ubuntu12_32/steam`. The `ActiveProcess` key inside a Proton prefix holds a
   Wine PID, which says nothing about the native Steam.
+
+## 9. Follow-up, 2026-11-06: the full cycle ran, and three earlier statements were wrong
+
+dayz-mcp branch `linux-port`, newer than `3a82bdc`. Machine as above, DayZDiag 1.30.164289.70 under GE-Proton11-1, `@DayZ_MCP`,
+every result through `dayz_test_run` with a scratch `HOME`.
+
+**Corrections to the sections above**
+
+- Section 7: "absolute `-mission` works on the 1.30 Linux server" was wrong. Modules load and the bridge polls, so it
+  looked healthy, but the RPT says `Mission script has no main function, player connect will stay disabled!`. The
+  `dayz_test_run mode=server` runs of section 7 used that path. A relative `-mission=mpmissions/<name>` gives `[CE][Hive]`
+  and `[IdleMode]`.
+- Section 8: the Steam PID is `~/.steam/steam.pid`. `SteamPID` in `registry.vdf` was 20624, no such process, with
+  Steam live as 20622, so a freshly started Steam read `steam_session_stale`. Section 8 passed, presumably because
+  the value happened to match that day.
+- Sections 7 and 8: a `DayZDiag` client cannot join the native `DayZServer`, so the planned pairing could not work:
+  `CONNECTING FAILED (0x00020017): Client is using Diag exe while the server is not`. Nothing in the RPT says so; a
+  screenshot of the headless session did. The earlier manual attempt that "stopped while loading" was this.
+
+**What the daemon does now**: the policy's `diag_executable` picks the engine. `DayZDiag_x64.exe` runs both roles
+under Proton, one headless sway each, one prefix; `DayZServer` is server-only in podman, and a client is refused
+with `client_needs_diag_executable`.
+
+**Measured**
+
+| What | Result |
+|---|---|
+| `mode=all` | `ready`, both polls bound to the run, about 34 s after `dayz_test_run` returned (it took 15 s once, 138 s once; the difference was not looked into) |
+| The join | server RPT `Player "Dev" ... is connected`; screenshot: player in the world, with HUD. `ready` can precede it: at one `ready` the client was still on its loading screen |
+| `dayz_test_close`, client still loading | `graceful: true`, `stop_method: orderly_close`, `exit_metrics_valid: true`, 3.6 s; both RPTs end `--- Termination successfully completed ---` |
+| `dayz_test_close`, player in the world (2 of 2) | `logout_finished: true`, server RPT ends with the termination line; the client reaches `Destroying game` and exits with code 3 before its own, so `graceful: false`, `exit_metrics_valid: false`, about 21 s. Cause unknown |
+| `mode=all build=true pack_only=true` | armake2 in the sealed worker's path; PBO in `@DayZ_MCP/Addons/`, loaded by both roles, polls bound, player connected |
+| `dayz_test_stop` from a second session | `run_protected` with `retry_after_s` (the 600 s abandon rule, as on Windows) |
+| Native server | SIGTERM is an orderly shutdown as a container's PID 1, 11.5 s; loads `Addons/` |
+| `DayZDiag -server -filePatching` with a packed mod | no hang, takes a player |
+
+**Limit**: a daemon that dies between a game's launch and its record cannot re-match it, because the launch intent
+hashes the worker's argv and Wine rewrites it (`lifecycle_launch_intent_unmatchable: argv_mismatch` in the audit log).
+
+**Not measured**: a binarizing `build=true` through a full managed run (the relay function ran `build
+--proton-binarize` on an addon without binarizable assets); bridge tools in the world beyond `bridge_status`; the
+Windows suite for these changes. Seen once and not reproduced: a `dayz_test_stop` from a second session took 180 s
+and failed with `NativeLauncherTransactionError` while an aborted session's lease was still running out. In-game the
+picture filled about 1600x900 of the 1920x1080 output, which affects screenshots.

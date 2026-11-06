@@ -25,11 +25,11 @@ DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Ev
 | Terrain Builder, DSUtils GUI, ImageToPAA GUI | `dayz-proton.sh gui <Tool>` | **not verified** |
 | Dedicated server (`DayZServer_x64.exe`) | native `DayZServer` (Steam app 223350); `dayz-dev` skill, `testing/local-server.md` | native, preferred |
 | Client (`DayZ_x64.exe`) | Proton; `dayz-dev`'s `dayz-client-headless.sh` / `dayz-client-test.sh` | works |
-| `DayZDiag_x64.exe` (client or `-server`) | `dayz-proton.sh headless start <state> DayZDiag <args>` | client reaches the main menu; `-server` loads the mission and Central Economy |
+| `DayZDiag_x64.exe` (client or `-server`) | `dayz-proton.sh headless start <state> DayZDiag <args>`, or managed through dayz-mcp (next row) | both roles run; a diag client joins a diag server and reaches the world (section 5, pairing) |
 | `P:` drive (WorkDrive, `subst`) | a plain directory, mapped by `dayz-proton.sh init <dir>` | works (section 3) |
 | PowerShell scripts (`*.ps1`) | rewrite the steps in sh; `pwsh` exists on Linux but the scripts call Windows programs, the registry and `subst` | translate, do not run |
 | `%LOCALAPPDATA%\DayZ` logs | `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ` (section 5) | |
-| dayz-mcp in-game bridge | addon works on the Linux server; on dayz-mcp's `linux-port` branch `dayz_test_run mode=server` runs the server in rootless podman and binds its polls (client role not yet) | see `knowledge/linux-proton-findings-2026-11.md` |
+| dayz-mcp in-game bridge | dayz-mcp branch `linux-port`: `dayz_test_run` (`mode=all/server/client`, `build=true`), `dayz_test_close`, `dayz_test_stop` and bound bridge polls | measured end to end 2026-11-06, with limits; see `knowledge/linux-proton-findings-2026-11.md` section 9 |
 
 Build, sign, binarize and publish with armake2 and `workshop`; they are what this pack's Linux route
 is built on. AddonBuilder and Publisher are not needed on Linux. Use the Proton route when the question
@@ -106,7 +106,8 @@ apart: if in doubt, build the fork from source, or binarize one textured model b
 
 - **One display per prefix.** A prefix's wineserver is bound to the display its first program used.
   A program started later on another display — or after that display is gone, e.g. a stopped headless
-  sway — dies with `X Error … BadWindow … X_UnmapWindow`. Run one session per prefix, and stop the
+  sway — dies with `X Error … BadWindow … X_UnmapWindow`. (That is the X11 path. With
+  `PROTON_ENABLE_WAYLAND=1` two sways on one prefix worked, measured 2026-11-06.) Run one session per prefix, and stop the
   wineserver when it ends (`headless stop` does; by hand:
   `WINEPREFIX=<prefix>/pfx <proton dir>/files/bin/wineserver -k`).
 - **32-bit tools need WoW64 here.** TexView, Object Builder, Terrain Builder, ImageToPAA and
@@ -118,6 +119,26 @@ apart: if in doubt, build the fork from source, or binarize one textured model b
   and hung after its constructor with it; every later start worked. `init` spends that start.
 - **Never `pkill -f <tool>`** from a shell whose command line contains that name: it kills the shell.
   Kill by PID, or stop the prefix's wineserver.
+- **A diag client only joins a diag server.** `DayZDiag_x64.exe` on the native `DayZServer` stops at the
+  modal `CONNECTING FAILED (0x00020017): Client is using Diag exe while the server is not`, after the client
+  has loaded; the log shows no error, only the screen does, and the server never sees a player. Pair them: both
+  `DayZDiag` (`-server` under Proton, with `allowFilePatching = 1` in `serverDZ.cfg`), or the retail `DayZ_x64.exe`
+  with the native server (the `dayz-dev` harness). Measured 2026-11-06, 1.30.164289.70: the diag pair joined,
+  `Player "Dev" … is connected` in the server RPT and the player in the world, from one prefix with each role
+  in its own headless sway (`PROTON_ENABLE_WAYLAND=1`).
+- **An absolute `-mission` on the native server boots without a mission.** `DayZServer` 1.30 with
+  `-mission=/abs/path` loads the mission's modules, but `init.c`'s `main` does not run: `Mission script has no
+  main function, player connect will stay disabled!` in the RPT, no `[CE][Hive]` lines, and the mod's scripts and
+  bridge still work, so it looks healthy. Name it relative to the working directory, `-mission=mpmissions/<name>`
+  (measured 2026-11-06). `DayZDiag -server` under Proton takes an absolute `Z:\…` path.
+- **Which PID is Steam**: `~/.steam/steam.pid`, the file `steam.sh` itself checks. `SteamPID` in
+  `~/.steam/registry.vdf` can name a start-up process that is already gone (measured 2026-11-06: `SteamPID`
+  20624, no such process, `steam.pid` 20622, the live `ubuntu12_32/steam`).
+- **Stopping a game in order**: `DayZServer` handles SIGTERM as an orderly shutdown, also as a container's PID 1
+  (11.5 s, RPT ends `--- Termination successfully completed ---`, measured 2026-11-06). So does
+  `DayZDiag -server` under Proton on SIGTERM. A headless sway view closes the game too:
+  `swaymsg '[con_id=N] kill'`; a `DayZDiag` client in the world then logs out and exits with code 3 before its
+  termination line (2 of 2 runs, cause unknown), so its RPT exit metrics are not complete.
 - **Client and server versions must match**, or the client is refused with `0x00020013 Client is a
   newer build than the server`. Steam `buildid`s differ per app by design; compare the game version
   (`dayz-proton.sh doctor` prints it) and check `StateFlags` 4 (fully updated) in both
@@ -131,8 +152,9 @@ apart: if in doubt, build the fork from source, or binarize one textured model b
   in rootless podman: after the last building type loads, the main thread busy-polls
   `/proc/self/statm` and `/proc/meminfo` and the landscape never finishes (90 s natively, over 4 minutes
   in the container); without the flag it loads in about 10 s. Start the Linux server without
-  `-filePatching`. Whether `DayZDiag_x64.exe -server -filePatching` under Proton does the same was
-  **not verified**.
+  `-filePatching`. `DayZDiag_x64.exe -server -filePatching` under Proton does not hang: it loaded the mission
+  and took a player (measured 2026-11-06, with a packed mod; loose files from an unpacked `-mod=` folder were
+  **not verified**).
 - **A read-only mod folder is skipped silently.** With a mod mounted read-only into a container
   (`podman -v <mod>:<mod>:ro`) `DayZServer` 1.30 never logs `Adding package … @Mod` and runs without it;
   from an overlay mount (`:O`) the same folder loads. Give the server a writable view of each mod

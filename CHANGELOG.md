@@ -7,6 +7,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Linux findings (2026-11-06): the managed `dayz_test_run` cycle measured end to end on dayz-mcp's
+  `linux-port` branch. A diag client only joins a diag server (`0x00020017`); an absolute `-mission` leaves the
+  native server without `init.c`'s `main`; Steam's PID is `~/.steam/steam.pid`. Corrects earlier notes that said
+  otherwise. Windows instructions are unchanged.
 - Linux support notes (2026-11-03), append-only: Windows instructions are unchanged.
   `skills/_shared/linux-proton.md` maps each Windows step to its Linux route (native armake2 and
   `workshop` first, BI's tools under Proton where there is no native equivalent) and records what was

@@ -1601,10 +1601,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Changelog entry for the 2026-11-06 Linux findings. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e3ca9fd72014910b1f7fefb7f4872ba9492256cbc6b0771adb346eb9ceeade54",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cfb8a5d52566f789a588f10c61cd8439e481fb660a0bc03737fbbed074ff1d4f",
+      "output_hash": "e3ca9fd72014910b1f7fefb7f4872ba9492256cbc6b0771adb346eb9ceeade54",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -9172,10 +9182,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "linux-proton-armake2-link@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: daemon, leases, dayz_test_run, close and stop run; bound polls measured; ready can precede the join; screenshot route. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f52d2ab81d9897ae911be46cce0f5be10e06d0ef6e9584a848e930c6178c187d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a76dc2d25e2ff6656069e32c257a0571ae38226a6be8f9b907b8a43ef7a4aa0e",
+      "output_hash": "f52d2ab81d9897ae911be46cce0f5be10e06d0ef6e9584a848e930c6178c187d",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -9470,10 +9490,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "linux-proton-mcp-run@2026-11-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: test loop names the two pairs that can join; diag client on native server refused. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "96898ce9e21bf31faabcee0f8c52cf5a7730567e03487c53f8a1f38709b9e8cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1b5441f9ba1f3539c18d78ceeb918c3b214fa61534fdf164c73f21d520fcedaf",
+      "output_hash": "96898ce9e21bf31faabcee0f8c52cf5a7730567e03487c53f8a1f38709b9e8cb",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -11586,10 +11616,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "linux-proton-armake2-link@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: dayz_test_run build=true drives armake2; Addons spelling loads on both engines. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "319a9d6c6cb97416fdd78a73a2ca51636b2941fd4cbc9cba04cca6a36a7e7a94",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ebc629fa980a5ef7a440c8d5b94825ddf8ca22a1cc4b22c1f53556436c48496e",
+      "output_hash": "319a9d6c6cb97416fdd78a73a2ca51636b2941fd4cbc9cba04cca6a36a7e7a94",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13270,10 +13310,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "linux-proton-client@2026-11-05",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "On Linux: dayz_test_run all modes on dayz-mcp linux-port, policy picks the engine, close limits, steam.pid; Linux qualifiers on the Windows mission-path and build:true notes. Windows instructions unchanged. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0b84537551d1cd771863892cc6f7b260611643d8e484dfcb0efd69c34a599a74",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e47b4f263fcf8cf4e605c33b3d7f65fa3dfc246bc66624273bdd30d3fd0eaab0",
+      "output_hash": "0b84537551d1cd771863892cc6f7b260611643d8e484dfcb0efd69c34a599a74",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -38079,10 +38129,20 @@
           "source_path": "knowledge/linux-proton-findings-2026-11.md",
           "source_revision": "linux-proton-client@2026-11-05",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Findings note: section 9, managed cycle measured end to end, three earlier statements corrected, limits recorded. Measured 2026-11-06. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "234cfa57160b36c08dacfe892010491844ee0f622b345511502e05615739c08a",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "68261db454e0f7b20aceac7e081a8e2db9eb4248b623f0fcfa0d44b1a7b6bcbd",
+      "output_hash": "234cfa57160b36c08dacfe892010491844ee0f622b345511502e05615739c08a",
       "output_path": "knowledge/linux-proton-findings-2026-11.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -38121,10 +38181,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "linux-proton-mcp-run@2026-11-04",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Linux guide: diag client only joins a diag server (0x00020017); absolute -mission leaves native DayZServer without main; ~/.steam/steam.pid; orderly stop by SIGTERM and sway; DayZDiag -server -filePatching does not hang. Measured 2026-11-06, DayZDiag 1.30.164289.70 under GE-Proton11-1. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e58204c298624532071cc52888efc42945d7b0592ef4e88989970d1ec731b586",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "linux-proton-managed-cycle@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "266a677fc97046b72aecadcafb6dd4eb4f7fa146d401f98fe003ed4d109ec500",
+      "output_hash": "e58204c298624532071cc52888efc42945d7b0592ef4e88989970d1ec731b586",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
