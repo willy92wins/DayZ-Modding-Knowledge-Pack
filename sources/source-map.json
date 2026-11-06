@@ -19419,10 +19419,20 @@
           "source_path": "sources/link-allowlist.json",
           "source_revision": "ok3-lanzar-council@2026-11-05",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Drop link-allowlist entries for unpublished team-internal skills delegar and lanzar-council-en-willy (Guillermo 2026-11-06 ~11:13 Madrid via Arquitecto: Pack = generic public).",
+          "license": "MIT",
+          "source_hash": "2b0054707fe5214e81afb69b0017dd6ab1be5dba5026fdb907dd3fab13713796",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/link-allowlist.json",
+          "source_revision": "unpublish-internal-routing-skills@2026-11-06",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cb6316d1c1b8bb8dbf53b24dbdbfbade8bba3d1765008071a75862af60037b3b",
+      "output_hash": "2b0054707fe5214e81afb69b0017dd6ab1be5dba5026fdb907dd3fab13713796",
       "output_path": "sources/link-allowlist.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -31972,6 +31982,7 @@
     },
     {
       "artifact_id": "file/tools/sync_generated.py",
+      "distribution_reason": "Repository governance tooling; imports packctl and is excluded from the public release payload.",
       "distribution_role": "repo_only",
       "hash_policy": "sha256",
       "inputs": [
@@ -31990,8 +32001,7 @@
       "output_hash": "d8e3ebad0dd3bb1e2bc39f1303b61e4534a936fad67994bfebde3147bf02393c",
       "output_path": "tools/sync_generated.py",
       "routing_artifact_id": "tools",
-      "verification_level": "offline_tested",
-      "distribution_reason": "Repository governance tooling; imports packctl and is excluded from the public release payload."
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/tools/skill-runtime-pin/readme.md",
@@ -32089,6 +32099,7 @@
     },
     {
       "artifact_id": "file/packctl/generated.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
       "distribution_role": "repo_only",
       "hash_policy": "sha256",
       "inputs": [
@@ -32107,8 +32118,7 @@
       "output_hash": "581e2f0c90f7da19819600c148ebf024658e347a09b47a6e3c13b5a10cd382b3",
       "output_path": "packctl/generated.py",
       "routing_artifact_id": "repo/packctl",
-      "verification_level": "offline_tested",
-      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload."
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/packctl/pytest_observer.py",
@@ -38210,204 +38220,6 @@
       "output_path": "tools/dayz-script-validator/tests/fixtures/undefined_builtin_method/vanilla/1_core/proto/fx_builtin.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/skills/delegar/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Live Claude skill ported 2026-11-05 OK#3 Orq handoff: Lanzador=Experto MCP + Claude session conducts; Merge=Auditor. Also carries 2026-11-05 gates (Experto Enfusion, Pase de oficio, Spec+PASS/HOLD/BLOCK). output_hash is the LF blob CI checks out. Companion references/ stay in the live tree (private host paths); local Markdown links are allowlisted.",
-          "license": "MIT",
-          "source_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
-          "source_id": "installed-skills",
-          "source_path": "delegar/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
-      "output_path": "skills/delegar/SKILL.md",
-      "routing_artifact_id": "skill/delegar",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/lanzar-council-en-willy/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "New live Claude skill lanzar-council-en-willy harvested 2026-11-05 OK#3 Orq handoff: owner=Experto MCP; one DayZDiag at a time. Public Pack redacts the live host user profile path to C:\\\\Users\\\\<you>\\\\. Live copy on Willy retains real host paths; do not promote this skill over live without re-checking privacy.",
-          "license": "MIT",
-          "source_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
-          "source_id": "installed-skills",
-          "source_path": "lanzar-council-en-willy/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
-      "output_path": "skills/lanzar-council-en-willy/SKILL.md",
-      "routing_artifact_id": "skill/lanzar-council-en-willy",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Live Claude skill ovh-cloud harvested 2026-11-05 with the machine-priority window (through 2026-11-28 inclusive; fallback from 2026-11-29). Public Pack redacts project id as <REDACTED-PROJECT-ID> and instance IP as <REDACTED-IP>. Live copy on Willy retains account identifiers; do not promote this skill over live.",
-          "license": "MIT",
-          "source_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
-      "output_path": "skills/ovh-cloud/SKILL.md",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/references/api.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/references/api.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
-      "output_path": "skills/ovh-cloud/references/api.md",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/references/pricing-2026-11.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/references/pricing-2026-11.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
-      "output_path": "skills/ovh-cloud/references/pricing-2026-11.md",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/scripts/ovhpc.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/scripts/ovhpc.py",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
-      "output_path": "skills/ovh-cloud/scripts/ovhpc.py",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/scripts/vm-agent/install.ps1",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/scripts/vm-agent/install.ps1",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
-      "output_path": "skills/ovh-cloud/scripts/vm-agent/install.ps1",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
-      "output_path": "skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/vigia-atascos/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "New first-party skill vigia-atascos harvested from live Claude skills. Adapted from ideas in Archive228/foreman (MIT); not a copy of that stack. Checker detects stall patterns; checker is not the worker.",
-          "license": "MIT",
-          "source_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
-          "source_id": "installed-skills",
-          "source_path": "vigia-atascos/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
-      "output_path": "skills/vigia-atascos/SKILL.md",
-      "routing_artifact_id": "skill/vigia-atascos",
-      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -39317,6 +39129,78 @@
       "source_id": "installed-skills",
       "source_path": "tablero-cupos-sesiones/tests/test_cupos_extra.py",
       "source_revision": "filesystem@2026-11-06"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "4cdfd7c4c2b8ef8a2039d009ec3c825bb633bbe69dfbfa95d0851161466dec9a",
+      "source_id": "installed-skills",
+      "source_path": "delegar/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "0c80e625d9b896b2553c43328acec814a9d816c6bd0de261de6a4a2d06aa5e2c",
+      "source_id": "installed-skills",
+      "source_path": "lanzar-council-en-willy/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/references/api.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/references/pricing-2026-11.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/scripts/ovhpc.py",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/scripts/vm-agent/install.ps1",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-06 ~11:13 Madrid (via Arquitecto): sweep the whole Pack for internal team preference (cupos, routing, delegar, Muse/agy/DS, OT seals, team lanes). Pack = generic public. This skill encodes team routing/agent roles/infra priority; kept private in ~/.claude/skills. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
+      "source_id": "installed-skills",
+      "source_path": "vigia-atascos/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
     }
   ],
   "generated_artifacts": [

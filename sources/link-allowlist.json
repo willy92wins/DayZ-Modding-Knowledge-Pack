@@ -205,46 +205,6 @@
       "path": "skills/rigorous-data-audit/index.md",
       "target": "./audit-japm-pbo-recovery.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
-    },
-    {
-      "path": "skills/delegar/SKILL.md",
-      "target": "references/routes/muse-cli.md",
-      "reason": "Companion files of the live Claude skill delegar stay in ~/.claude/skills (and sibling skill jev); omitted from the public MIT pack because they contain private host paths."
-    },
-    {
-      "path": "skills/delegar/SKILL.md",
-      "target": "references/routing.md#council-base-del-usuario-2026-10-24",
-      "reason": "Companion files of the live Claude skill delegar stay in ~/.claude/skills (and sibling skill jev); omitted from the public MIT pack because they contain private host paths."
-    },
-    {
-      "path": "skills/delegar/SKILL.md",
-      "target": "references/evidence/probes-2026-10-26.md",
-      "reason": "Companion files of the live Claude skill delegar stay in ~/.claude/skills (and sibling skill jev); omitted from the public MIT pack because they contain private host paths."
-    },
-    {
-      "path": "skills/delegar/SKILL.md",
-      "target": "references/providers/gx10.md",
-      "reason": "Companion files of the live Claude skill delegar stay in ~/.claude/skills (and sibling skill jev); omitted from the public MIT pack because they contain private host paths."
-    },
-    {
-      "path": "skills/delegar/SKILL.md",
-      "target": "references/providers/cline.md",
-      "reason": "Companion files of the live Claude skill delegar stay in ~/.claude/skills (and sibling skill jev); omitted from the public MIT pack because they contain private host paths."
-    },
-    {
-      "path": "skills/delegar/SKILL.md",
-      "target": "../jev/SKILL.md",
-      "reason": "Companion files of the live Claude skill delegar stay in ~/.claude/skills (and sibling skill jev); omitted from the public MIT pack because they contain private host paths."
-    },
-    {
-      "path": "skills/lanzar-council-en-willy/SKILL.md",
-      "target": "sand-workflow:council-orchestration",
-      "reason": "Companion live paths / sand-workflow cross-links for lanzar-council-en-willy remain outside the public MIT pack (private host paths or Grok Bot workflow ids)."
-    },
-    {
-      "path": "skills/lanzar-council-en-willy/SKILL.md",
-      "target": "sand-workflow:sesiones-nocturnas",
-      "reason": "Companion live paths / sand-workflow cross-links for lanzar-council-en-willy remain outside the public MIT pack (private host paths or Grok Bot workflow ids)."
     }
   ]
 }
