@@ -56,13 +56,13 @@ FrameWidgetClass {
 The vanilla widgets behind those IDs are `Licensing`, `version` and `copyright`
 (`VANILLA/gui/layouts/day_z_ingamemenu.layout:8`, `:25`, `:42`).
 
-[EXACT][CLAIM-UI-VARIANT-IDS-NOT-DERIVABLE] **The IDs cannot be derived offline.** The vanilla layout text
+[EXACT][CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK] **How the IDs are derived is unknown.** The vanilla layout text
 is keyed by name (`WrapSpacerWidgetClass Licensing {`, `day_z_ingamemenu.layout:8`) and carries no widget
 IDs; the `{16-hex}` prefixes it does carry are texture references (`imageTexture "{GUID}Gui/textures/..."`).
 A handful of vanilla widgets that Workbench re-saved carry their own ID and a `Name`
 (`VANILLA/gui/layouts/day_z_hud.layout:291`), which says nothing about the IDs of the others. The four
-recorded IDs (`Licensing`, `version`, `copyright`, `dayz_logo`) are not CRC32, FNV-1, FNV-1a or Adler-32 of
-the widget name in its own, lower or upper case. Generate variants in Workbench.
+recorded IDs (`Licensing`, `version`, `copyright`, `dayz_logo`) matched none of 32-bit CRC32, FNV-1, FNV-1a or
+Adler-32 of the widget name in its own, lower or upper case; no other function was tried. Use Workbench.
 
 ## 2. What a Workbench-generated variant does in game
 

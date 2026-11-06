@@ -13,12 +13,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tree as `Class "{id}" { Prefab "{id}" }` with properties only on edited widgets, and in game hides, recolours and adds
   vanilla widgets in place, at the root and in nested containers, matched by `Prefab` ID; vanilla script finds an added
   widget with `FindAnyWidget`. Hand-written name-keyed files only add widgets, so the earlier "variants only add"
-  conclusion holds for those files only. The IDs are not CRC32, FNV-1, FNV-1a or Adler-32 of the widget name (reproduced
-  offline); generate variants in Workbench. Unknowns recorded: ID stability across builds, two mods varying one layout,
-  two `gui` shadow PBOs in one load, a `gui`-prefix PBO without `config.cpp` (a community author's report, unverified),
+  conclusion holds for those files only. How the IDs are derived is unknown: they matched none of CRC32, FNV-1, FNV-1a or
+  Adler-32 of the widget name (reproduced offline; no other function tried); generate variants in Workbench.
+  Unknowns recorded: ID stability across builds, two mods varying one layout, two `gui` shadow PBOs in one load, a `gui`-prefix PBO without `config.cpp` (a community author's report, unverified),
   per-screen toggling. `SKILL.md` gains a TASK ROUTER row and a Reference Files entry. `dayz-pbo-build`
   `references/dayz-1-30-pbo-build.md` gains the `fsShadowing` note: prefix `gui`, RaG `--fs-shadowing`, `.meta` packed.
-  `CLAIM-UI-VARIANT-WORKBENCH-FORMAT-130`, `CLAIM-UI-VARIANT-IDS-NOT-DERIVABLE`, `CLAIM-UI-VARIANT-PREFAB-MERGE-130`,
+  `CLAIM-UI-VARIANT-WORKBENCH-FORMAT-130`, `CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`, `CLAIM-UI-VARIANT-PREFAB-MERGE-130`,
   `CLAIM-UI-VARIANT-NAME-KEYED-ADD-ONLY-130`, `CLAIM-UI-VARIANT-GUI-PREFIX-PACKING-130`,
   `CLAIM-UI-VARIANT-NO-CONFIG-REPORT` (unverified), `CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130`.
 - `dayz-script-validator`: `ES-UNDEFINED-BUILTIN-METHOD` (FAIL), a call to a method that the vanilla tree's class of a
