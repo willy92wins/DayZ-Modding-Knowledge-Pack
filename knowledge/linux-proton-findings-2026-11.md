@@ -1,5 +1,7 @@
 # Linux / Proton findings (2026-11-03) — notes for making the pack and dayz-mcp work on Linux
 
+Scope update (2026-11-08): these are historical branch measurements, not new runtime results. `dayz-dev` names author-local helpers which this Pack does not distribute. The Linux managed-cycle work is tracked by unmerged dayz-mcp PR #353, not published on upstream main. Full managed binarization with assets remains unverified.
+
 Status: **raw findings**; sections 1–4 are the first pass, section 5 records what was built from them. Nothing here is registered in
 `sources/claims.json`; promote individual items through the normal workflow once they are re-checked.
 

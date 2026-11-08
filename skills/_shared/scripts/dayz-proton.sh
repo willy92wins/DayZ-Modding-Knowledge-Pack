@@ -110,7 +110,7 @@ find_runtime() {
 }
 
 # prun <exe> [args]: `proton run`, by default bare with PROTON_USE_WOW64=1.
-# Most DayZ Tools are 32-bit (TexView, Object Builder, Terrain Builder, ImageToPAA, AddonBuilder).
+# The measured tool/font workaround uses WoW64; inspect installed PE headers for bitness.
 # Bare and without WoW64, Proton runs them against the host's i386 libraries, and without an i386
 # FreeType their dialogs show no text at all. Inside the Steam Linux Runtime container
 # (DAYZ_PROTON_RUNTIME=1, what Steam itself does) GDI tools died on a fontconfig/X error here.
@@ -218,7 +218,7 @@ warm_dotnet() {
 # private prefix never gets: without it TexView stops at "Missing registry entry
 # HKEY_LOCAL_MACHINE/Software\BIStudio\TextureConvert". Plus the game's "main" key, which on Windows
 # the DayZ installer writes and which no Proton prefix of 830640 has (the game lives in 221100's).
-# HKLM keys go to both registry views, as most tools are 32-bit and read WOW6432Node.
+# HKLM keys go to both registry views, including WOW6432Node for tools that read it.
 import_registry() {
     td=$(appdir 830640) || return 0
     wtd=$(winpath "$td" | sed 's/\\/\\\\/g')

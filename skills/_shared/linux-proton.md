@@ -13,9 +13,9 @@ DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Ev
 
 | Windows step in a skill | On Linux | Status |
 |---|---|---|
-| Pack / sign a PBO (AddonBuilder, DSSignFile) | `armake2 build` / `keygen` / `sign` (bzed's fork, https://github.com/bzed/armake2; the `dayz-dev` skill's `dayz-mod-pack.sh` drives it) | native, **use this** |
-| Binarize models (`.p3d`/`.rtm` MLOD → ODOL) | `armake2 build --proton-binarize` (runs BI's binarize.exe under Proton itself) | works with the fork's GitHub `master` (`cargo install --git https://github.com/bzed/armake2`; alpha fix `0a0ce3b`, section 4) |
-| Publish to the Workshop (Publisher) | `workshop` uploader (https://github.com/nozwock/steam-workshop-uploader; `dayz-mod-pack.sh publish-hint`) | native, **use this** |
+| Pack / sign a PBO (AddonBuilder, DSSignFile) | `armake2 build` / `keygen` / `sign` (https://github.com/bzed/armake2, commit `7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa`) | native; no external wrapper required |
+| Binarize models (`.p3d` MLOD → ODOL) | `armake2 build --proton-binarize` (invokes BI binarize.exe under Proton) | recorded textured-cube comparison at `7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa`; install with `cargo install --git https://github.com/bzed/armake2 --rev 7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa` (section 4) |
+| Publish to the Workshop (Publisher) | `workshop` uploader (https://github.com/nozwock/steam-workshop-uploader) | native route; author-local publish-hint wrapper is not distributed here |
 | Cross-check armake2 against BI's own tools | `dayz-proton.sh tool AddonBuilder P:\<Mod> <out> -prefix=<Mod>`; `tool DSCreateKey` / `DSSignFile` / `DSCheckSignatures`; `dayz-proton.sh binarize <P-root> <addon> <out> [files]` | works (section 4); for comparisons, not the build |
 | `config.cpp` → `config.bin` (CfgConvert) | `armake2 rapify`, or `dayz-proton.sh tool CfgConvert -bin -dst <bin> <cpp>` | both work |
 | PNG/TGA → PAA (ImageToPAA) | `armake2 img2paa`, or `dayz-proton.sh tool ImageToPAA <in> <out.paa>` | both work |
@@ -23,13 +23,13 @@ DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Ev
 | Object Builder | `dayz-proton.sh gui ObjectBuilder [model.p3d]` | starts, loads a model; editing not exercised |
 | Workbench | `dayz-proton.sh gui Workbench` | starts and compiles the bundled scripts; game config needs `P:\dz` (section 3) |
 | Terrain Builder, DSUtils GUI, ImageToPAA GUI | `dayz-proton.sh gui <Tool>` | **not verified** |
-| Dedicated server (`DayZServer_x64.exe`) | native `DayZServer` (Steam app 223350); `dayz-dev` skill, `testing/local-server.md` | native, preferred |
-| Client (`DayZ_x64.exe`) | Proton; `dayz-dev`'s `dayz-client-headless.sh` / `dayz-client-test.sh` | works |
-| `DayZDiag_x64.exe` (client or `-server`) | `dayz-proton.sh headless start <state> DayZDiag <args>`, or managed through dayz-mcp (next row) | both roles run; a diag client joins a diag server and reaches the world (section 5, pairing) |
+| Dedicated server (`DayZServer_x64.exe`) | native `DayZServer` (Steam app 223350) | native; the author-local server-tree harness is not distributed by this Pack |
+| Client (`DayZ_x64.exe`) | retail client under Proton, paired with the native server | recorded external harness; not a distributed Pack launcher. For the in-Pack diag helper, see the next row |
+| `DayZDiag_x64.exe` (client or `-server`) | `dayz-proton.sh headless start <state> DayZDiag <args>`, or experimentally managed through unmerged dayz-mcp PR #353 (last row) | both roles run; a diag client joins a diag server and reaches the world (section 5, pairing) |
 | `P:` drive (WorkDrive, `subst`) | a plain directory, mapped by `dayz-proton.sh init <dir>` | works (section 3) |
 | PowerShell scripts (`*.ps1`) | rewrite the steps in sh; `pwsh` exists on Linux but the scripts call Windows programs, the registry and `subst` | translate, do not run |
 | `%LOCALAPPDATA%\DayZ` logs | `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ` (section 5) | |
-| dayz-mcp in-game bridge | dayz-mcp branch `linux-port`: `dayz_test_run` (`mode=all/server/client`, `build=true`), `dayz_test_close`, `dayz_test_stop` and bound bridge polls | measured end to end 2026-11-06, with limits; see `knowledge/linux-proton-findings-2026-11.md` section 9 |
+| dayz-mcp in-game bridge | experimental `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main: `dayz_test_run` (`mode=all/server/client`, `build=true`), `dayz_test_close`, `dayz_test_stop`, bound polls | recorded pack-only managed cycle, 2026-11-06; managed binarization with assets unverified; section 9 of `knowledge/linux-proton-findings-2026-11.md` |
 
 Build, sign, binarize and publish with armake2 and `workshop`; they are what this pack's Linux route
 is built on. AddonBuilder and Publisher are not needed on Linux. Use the Proton route when the question
@@ -69,13 +69,14 @@ inside the root and `Z:\…` elsewhere.
 Keep the `P:` root small. Binarize scans the folder above the addon it converts (`-addon=` is the
 parent of the source folder; `dayz-pbo-build` documents this); from `P:\MyMod` that is the `P:` root.
 From a `Z:` path it is a Linux directory, possibly your home, and binarize then burns CPU for minutes
-(`dayz-dev` measured it walking `~/.cargo` and a network mount).
+(the author recorded scans of `~/.cargo` and a network mount).
 
 Vanilla data under `P:\dz` (what WorkDrive's "extract game data" does on Windows): unpack the game's
-PBOs with `armake2 unpack` into `P/` at their prefix paths, or only scripts and configs with
-`dayz-dev`'s `extract-dayz-sources.sh`. Workbench run without it compiled its bundled scripts but
-logged `No entry 'config.bin/CfgVehicles/…'` for every vanilla class. Whether an extracted `P:\dz`
-removes those errors is **not verified**, and neither is a model that references vanilla textures.
+PBOs with `armake2 unpack` into `P/` at their prefix paths. The author-local
+`extract-dayz-sources.sh` helper is external and is not distributed here. Workbench without the
+extracted data compiled its bundled scripts but logged `No entry 'config.bin/CfgVehicles/…'`
+for vanilla classes. Whether an extracted `P:\dz` removes those errors is **not verified**,
+and neither is a model that references vanilla textures.
 
 ## 4. DayZ Tools under Proton: what was measured
 
@@ -87,7 +88,7 @@ All through `dayz-proton.sh` in a fresh private prefix after `init`.
 | CfgConvert | `-bin` output decodes with `armake2 derapify`; a syntax error exits 1 with the message | a **missing input exits 0** and writes a 26-byte empty `config.bin`: check the input exists |
 | DSCreateKey / DSSignFile / DSCheckSignatures | key pair, `.bisign`, "Signature … is OK" | they print nothing on Proton's console; `tool` runs them through `cmd` with output redirected |
 | AddonBuilder | `-packonly` and full builds (config.bin, binarized `.p3d`, `texHeaders.bin`), 3–5 s | exits 0 on failure; `tool` reads `[ResultCode]` from `DayZ Tools/Bin/Logs/AddonBuilder.rpt` and returns it |
-| binarize (`binarize` subcommand) | MLOD → ODOL v8 | identical bytes to AddonBuilder's binarized model; textures resolved |
+| binarize (`binarize` subcommand) | MLOD → ODOL; output version not independently verified | recorded byte match to AddonBuilder for the tested model; textures resolved |
 | TexView | opens a DXT5 PAA, shows format, size, average colour | |
 | Object Builder | opens a `.p3d` (points, faces, LOD, selections shown) | first start shows BI's licence: run it once on your desktop and answer it yourself |
 | Workbench | starts, compiles the vanilla script modules from its bundled `dta/`, shows its script-authorization prompt | game config missing without `P:\dz` |
@@ -95,12 +96,13 @@ All through `dayz-proton.sh` in a fresh private prefix after `init`.
 | DayZDiag_x64 `-server` | mission loaded from a Linux server tree via `Z:` paths, Central Economy ran, listening on the given UDP port | |
 
 armake2 `--proton-binarize` against BI's binarize run from the `P:` root (same textured cube, alpha
-`_ca.paa`): a fork build from HEAD `7dcb3cf` (contains `0a0ce3b`, "run binarize.exe from a P: root with
-the addon mapped, so texture alpha is detected") gives **byte-identical** output. An older fork build
-differed in 20 bytes: the face's average colour (`00 00 00 FF` instead of `70 83 83 C8`) and its flag
-bits, the texture-not-found defaults — the alpha bug the `dayz-dev` skill describes for fork
-`782396e`. `armake2 --version` prints `v0.3.0` for both, so the version string does not tell them
-apart: if in doubt, build the fork from source, or binarize one textured model both ways and `cmp`.
+`_ca.paa`): the author reports **byte-identical** output from fork commit
+`7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa` (short `7dcb3cf`, including fix `0a0ce3b`).
+The older tested fork build `782396e` differed in 20 bytes: the face's average colour
+(`00 00 00 FF` instead of `70 83 83 C8`) and flag bits, consistent with texture-not-found defaults.
+`armake2 --version` prints `v0.3.0` for both; the version string does not identify the tested build.
+Install the recorded snapshot with `cargo install --git https://github.com/bzed/armake2 --rev 7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa`.
+This is a record of the comparison, not a new measurement or an in-game validation of the ODOL.
 
 ## 5. Pitfalls
 
@@ -110,11 +112,11 @@ apart: if in doubt, build the fork from source, or binarize one textured model b
   `PROTON_ENABLE_WAYLAND=1` two sways on one prefix worked, measured 2026-11-06.) Run one session per prefix, and stop the
   wineserver when it ends (`headless stop` does; by hand:
   `WINEPREFIX=<prefix>/pfx <proton dir>/files/bin/wineserver -k`).
-- **32-bit tools need WoW64 here.** TexView, Object Builder, Terrain Builder, ImageToPAA and
-  AddonBuilder are 32-bit. Run bare and without WoW64, Proton uses the host's i386 libraries; without an
-  i386 FreeType ("Wine cannot find the FreeType font library") their dialogs show no text.
-  `PROTON_USE_WOW64=1` (the script's default) fixed it. Inside the Steam Linux Runtime container
-  (`DAYZ_PROTON_RUNTIME=1`) GDI tools crashed on this host (fontconfig error, X error).
+- **WoW64 workaround on the tested host.** `PROTON_USE_WOW64=1` (the script's default)
+  fixed the reported tool-startup/font issues. Without it, the host showed missing FreeType
+  and empty tool dialogs; GDI tools inside the Steam Linux Runtime container
+  (`DAYZ_PROTON_RUNTIME=1`) crashed on this host (fontconfig/X errors). Check each installed
+  executable's PE architecture before describing it as a 32-bit tool.
 - **The first .NET start in a fresh prefix fails**: AddonBuilder crashed (DXVK error) without WoW64
   and hung after its constructor with it; every later start worked. `init` spends that start.
 - **Never `pkill -f <tool>`** from a shell whose command line contains that name: it kills the shell.
@@ -123,7 +125,7 @@ apart: if in doubt, build the fork from source, or binarize one textured model b
   modal `CONNECTING FAILED (0x00020017): Client is using Diag exe while the server is not`, after the client
   has loaded; the log shows no error, only the screen does, and the server never sees a player. Pair them: both
   `DayZDiag` (`-server` under Proton, with `allowFilePatching = 1` in `serverDZ.cfg`), or the retail `DayZ_x64.exe`
-  with the native server (the `dayz-dev` harness). Measured 2026-11-06, 1.30.164289.70: the diag pair joined,
+  with the native server (the author-local harness, not distributed here). Measured 2026-11-06, 1.30.164289.70: the diag pair joined,
   `Player "Dev" … is connected` in the server RPT and the player in the world, from one prefix with each role
   in its own headless sway (`PROTON_ENABLE_WAYLAND=1`).
 - **An absolute `-mission` on the native server boots without a mission.** `DayZServer` 1.30 with
@@ -166,5 +168,4 @@ apart: if in doubt, build the fork from source, or binarize one textured model b
 ## 6. What this note does not cover
 
 Terrain Builder, Publisher, BinMake and the GUI front-ends were not started. Object Builder was
-opened, not used to edit. An ODOL produced under Proton was not loaded in game here (the
-`dayz-dev` note on `--proton-binarize` says the same of its own output).
+opened, not used to edit. An ODOL produced under Proton was not loaded in game here.

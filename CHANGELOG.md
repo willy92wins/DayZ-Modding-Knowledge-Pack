@@ -9,10 +9,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - CI: a `linux` job (validation, `packctl` and skill tests off Windows) and tests for
   `skills/_shared/scripts/dayz-proton.sh`, which had none.
-- Linux findings (2026-11-06): the managed `dayz_test_run` cycle measured end to end on dayz-mcp's
-  `linux-port` branch. A diag client only joins a diag server (`0x00020017`); an absolute `-mission` leaves the
-  native server without `init.c`'s `main`; Steam's PID is `~/.steam/steam.pid`. Corrects earlier notes that said
-  otherwise. Windows instructions are unchanged.
+- Linux findings (2026-11-06): the pack-only managed `dayz_test_run` cycle was measured on the
+  unmerged dayz-mcp `linux-port` branch (PR #353), not upstream main. Managed binarization with
+  assets was not verified. A diag client only joins a diag server (`0x00020017`); an absolute
+  `-mission` leaves the native server without `init.c`'s `main`; Steam's PID is `~/.steam/steam.pid`.
+  Windows guidance is preserved; see the additive Linux qualifications in `dayz-test-ingame`.
 - Linux support notes (2026-11-03), append-only: Windows instructions are unchanged.
   `skills/_shared/linux-proton.md` maps each Windows step to its Linux route (native armake2 and
   `workshop` first, BI's tools under Proton where there is no native equivalent) and records what was
@@ -27,6 +28,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `knowledge/linux-proton-findings-2026-11.md` holds the raw findings and the dayz-mcp port status.
   Not verified: Terrain Builder, Publisher, Workbench's editors, `-filePatching` under Proton, an ODOL
   made under Proton loaded in game.
+- `dayz-ui-development` `references/layout-variants-130.md`: DayZ 1.30 layout variants, measured on DayZDiag
+  1.30.164200 (2026-10-27 and 2026-11-05) against the Esc menu layout. A variant generated in Workbench (resource
+  browser, create resource variant for an addon) writes `gui/layouts/<name>.layout` plus a `.meta`, mirrors the vanilla
+  tree as `Class "{id}" { Prefab "{id}" }` with properties only on edited widgets, and in game hides, recolours and adds
+  vanilla widgets in place, at the root and in nested containers, matched by `Prefab` ID; vanilla script finds an added
+  widget with `FindAnyWidget`. Hand-written name-keyed files only add widgets, so the earlier "variants only add"
+  conclusion holds for those files only. How the IDs are derived is unknown: they matched none of CRC32, FNV-1, FNV-1a or
+  Adler-32 of the widget name (reproduced offline; no other function tried); generate variants in Workbench.
+  Unknowns recorded: ID stability across builds, two mods varying one layout, two `gui` shadow PBOs in one load, a `gui`-prefix PBO without `config.cpp` (a community author's report, unverified),
+  per-screen toggling. `SKILL.md` gains a TASK ROUTER row and a Reference Files entry. `dayz-pbo-build`
+  `references/dayz-1-30-pbo-build.md` gains the `fsShadowing` note: prefix `gui`, RaG `--fs-shadowing`, `.meta` packed.
+  `CLAIM-UI-VARIANT-WORKBENCH-FORMAT-130`, `CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`, `CLAIM-UI-VARIANT-PREFAB-MERGE-130`,
+  `CLAIM-UI-VARIANT-NAME-KEYED-ADD-ONLY-130`, `CLAIM-UI-VARIANT-GUI-PREFIX-PACKING-130`,
+  `CLAIM-UI-VARIANT-NO-CONFIG-REPORT` (unverified), `CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130`.
 - `dayz-script-validator`: `ES-UNDEFINED-BUILTIN-METHOD` (FAIL), a call to a method that the vanilla tree's class of a
   built-in type (`bool`, `int`, `float`, `vector`, `string`, `typename`, `array`, `set`, `map`) does not declare, made
   on a value of one, a template of one, a typedef of one or the type itself. From pipeline inbox
@@ -560,6 +575,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-test-ingame`: `CLAIM-SIGN-NEGATIVE-CONTROL` adds that another build's PBO only works as a
+  signature negative control when the two builds differ in an entry the signature covers. Arma2Quad
+  v1.0.3-rc (2026-11-05), which differed from v1.0.2 only in `Arma2Quad_body.p3d` and the PBO
+  trailer, answered `is OK` with the v1.0.2 PBO next to its new `.bisign`; its `.c`-byte control
+  answered `is wrong`. For a change that only touches models or textures, the `.c`-byte control
+  is the one that can fail.
 - `dayz-script-validator`: the vanilla control is measured on DayZ 1.30.164289 stable
   (`DayZDiag_x64.exe` 1.30.164.289, the Steam update of 2026-11-04). On that tree it failed only
   on the tree's digest: the validator reported the same 15 errors and 424 warnings as on

@@ -438,6 +438,6 @@ from bytes whose decoding has not been proved.
 
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
 
-- Standard PBOs: `armake2 inspect <pbo>` (header, prefix, file list) and `armake2 unpack --force <pbo> <dir>` (`--force`, because a packed `$PBOPREFIX$` collides with the header file armake2 writes) replace `ExtractPbo -LB` / `-P`. Rapified configs: `armake2 derapify`. The `dayz-dev` skill's `extract-dayz-sources.sh` pulls scripts and configs out of a whole install or Workshop item.
+- Standard PBOs: `armake2 inspect <pbo>` (header, prefix, file list) and `armake2 unpack --force <pbo> <dir>` (`--force`, because a packed `$PBOPREFIX$` collides with the header file armake2 writes) replace `ExtractPbo -LB` / `-P`. Rapified configs: `armake2 derapify`. Whole-install extraction helpers mentioned by the author are external, not distributed by this Pack.
 - Obfuscated PBOs are not covered by this; see `japm-pbo-recovery`.
 - PowerShell loops (`Get-ChildItem … | ForEach-Object`) become `find … -name '*.pbo' -exec …`.
