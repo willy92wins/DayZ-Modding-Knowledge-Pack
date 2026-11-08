@@ -215,6 +215,94 @@ were not measured again.
   and the vanilla tree, so without a vanilla tree no vanilla proto is
   judged, with no SKIP line. Only a proto's refusal is measured: an argument
   of a script method and a down-cast in an assignment are not judged.
+- `ES-UNDEFINED-BUILTIN-METHOD` (FAIL): a call to a method that the vanilla
+  tree's class of a built-in type does not declare. `vector gU =
+  gF.Cross(gR);`, with `gF` and `gR` vector locals, made a DayZ 1.30.164200
+  server refuse the World module with `Undefined function 'vector.Cross'`
+  (inbox fb-20261103-150432-9f93): the 1.30.164014 Exp scripts declare
+  `vector.Cross` (`1_Core/proto/EnConvert.c:239-246`), the 1.30.164200 ones
+  do not, and the validator had passed the call against either tree. The
+  built-in types are `bool`, `int`, `float`, `vector`, `string`, `typename`,
+  `array`, `set` and `map`. Their members are the names at the top level of
+  every declaration of that class in the vanilla tree, the addon and the
+  `--external-scripts` roots (`modded` included, any `#ifdef` branch,
+  comments and strings dropped), and every name written before a `(` from
+  such a header to the next class header, plus those of `Class`; a type the
+  vanilla tree does not declare is not judged. Judged: `T.Method(` with `T` one of
+  them or a typedef of one (`TStringArray`), unless a variable of the file is
+  named `T` (`Widget map`, which `ES-VARIABLE-NAMED-AS-TYPE` reports); and
+  `name.Method(` where `name` is looked up as in `ES-CAST-UNRELATED-TYPES`
+  (a declaration under an `#ifdef` that is not around the call leaves it
+  unknown) and declared as one of them, a template of one (`array<string>
+  names`) or a typedef of one. A typedef counts when its name has one
+  target, no `[]` (`typedef int[] Physics` is a handle) and no class
+  declaration anywhere (`ResourceName` is also `class ResourceName :
+  string`). A call's result, a member access (`this.m_X.`), an index, a
+  `for` or `foreach` variable inside its loop, a local of a block closed
+  before the call, a name a later declarator declares (`vector a, x;`), a
+  member declared in a parent class, `value` inside a `modded class vector`
+  and a parameter whose template arguments the lookup reads across other
+  parameters are not judged. Lines that never
+  compile are not judged, nor lines that need a DayZ version macro defined:
+  the engine defines one `DAYZ_<major>_<minor>` (`1_Core/defines.c:11-14`)
+  and the tree does not say which, so `#ifdef DAYZ_1_29`, and the `#else` of
+  `#ifndef DAYZ_1_29`, are left out, while the `#ifndef DAYZ_1_29` branch,
+  the code of every later build, is judged. Without a usable vanilla tree
+  the rule is a SKIP line. A verdict holds for the build the vanilla tree
+  comes from: see `--game-root` below.
+
+  Measured on 2026-11-03 against the 1.30.164200 scripts: on the
+  LFSkateboard tree before its fix the rule reports `lfsk_playerbase.c:1957`
+  and `:1959` and nothing else (390 calls judged), and nothing on the fixed
+  tree (388 judged). Nothing on the vanilla tree itself (8 870 calls judged),
+  and the vanilla control still matches its baseline; nothing either on the
+  1.30.164014 Exp tree or a 1.29 tree, each against itself (8 878 and 8 059
+  calls judged). Over 236 addon roots
+  under `P:\` (2 019 files, 23 885 calls judged) it reports one call,
+  `text.StartsWith(` on a string in an old copy of a bench mod: no tree
+  declares `StartsWith` (1.29, 1.30.164014 and 1.30.164200), and the shipped
+  copy of that mod uses `IndexOf` instead. Before two fixes the same pass
+  gave 19 false positives: 18 where the lookup read `map<string, int> m` as
+  an array, its `<...>` running from an earlier parameter's `<`, and one on
+  `map.ClearFlags(` with a `Widget map` local. A cross-family review (Grok
+  4.7, 2026-11-03) built a third on a synthetic tree: a `(` that only one
+  branch of an `#ifdef` opens hid every later member of `vector`, hence the
+  names written before a `(`. It also listed the unjudged receivers above as
+  missed calls; they stay unjudged. The rule takes about 1 s on
+  the 11-file LFSkateboard addon (about 2.5 s on the first call of a
+  process) and about 6 s on the 3 056 files of the vanilla tree.
+
+## Which build the vanilla tree is
+
+The rules that read the vanilla tree judge the addon against that tree, not
+against the game. A gate that read the 1.30.164014 Exp extract while the
+game was 1.30.164200 passed `vector.Cross`, which only the extract declares
+(inbox fb-20261103-150432-9f93). `--game-root`, or `DAYZ_GAME_ROOT`, names
+the DayZ install folder (or its `dta\scripts.pbo` itself), and the vanilla
+tree is compared with that PBO, `.c` file by `.c` file, by content, with
+names compared without case:
+
+```powershell
+python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
+    --vanilla-root <tree> --game-root <DayZ install folder>
+```
+
+When they differ, `VANILLA-ROOT-BUILD-MISMATCH` (WARN) gives the counts
+(files that differ, files the tree lacks, files only the tree has), the
+first five names and the PBO header's `version`; `info.vanilla_build` holds
+the counts either way, with `matches`. A folder carries no build number,
+and the header's `version` or the exe's version only name a build, so the
+comparison is by content. The PBO is read with the fail-closed reader of
+`tools/dayz-vehicle-proxy-contract` (a compressed entry is refused): a PBO
+that cannot be read, a folder without `dta\scripts.pbo` or a missing vanilla
+tree gives a SKIP line, never a match. Without `--game-root` nothing is
+compared. WARN exits 2, which a gate that accepts WARN lets through: a gate
+that must stop on a stale tree has to fail on this rule itself.
+
+Measured on 2026-11-03: the 1.30.164014 Exp extract against a 1.30.164200
+game gives 111 `.c` files that differ and 14 that the tree lacks
+(`1_Core/proto/EnConvert.c` first); `P:\scripts` and an extract of the same
+`scripts.pbo` both match (3 056 files). The comparison takes about 1.7 s.
 
 ## Compile errors read from one file
 
@@ -325,7 +413,9 @@ that rule fails the control rather than hiding in a SKIP. `--baseline` defaults 
 `tests/baselines/vanilla_control_baseline.json` next to this tool, not the
 cwd. `--update` rewrites the baseline on purpose after a DayZ patch or an
 accepted change; it prints what moved. Exit 0 is PASS, 1 is FAIL, 2 is
-SKIP (no tree, no baseline, unreadable).
+SKIP (no tree, no baseline, unreadable, or a local
+`scripts/shared/vanilla_index.json` that the validator loads: the baseline
+measures the validator without one, so move that file away first).
 
 Every baseline entry carries the reason it is tolerated. `--update` keeps
 the reasons already written and cannot invent the missing ones, so it names

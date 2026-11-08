@@ -229,14 +229,20 @@ before deleting a car. When the client reports the player seated, `object_delete
 live mode with admin), it refuses with `vehicle_seat_unverified`, `deleted=0`. Treat either answer
 as a refusal, not a transient error: get the player out on the client, then retry.
 
-[EXACT][CLAIM-MCPV-CLEAN-REBUILDS-PBO-130] dayz-mcp issue #301 reports that the `dayz-test-v1`
-launcher rebuilds the bridge PBO from `default_source` on every launch, even with `build=false`.
-The confirmed cause is narrower: `effective_build = build or clean` (`dayz_test_request.py:538`,
-same rule at `server.py:6130`), so `clean=true` always forces the build whatever `build` says.
-Until #301 is fixed, after every launch read the sha256 of the live PBO on the server and the
-client and compare it with the build you meant to test; put it back and check it again when the
-run is done. (The quad run `43b9f3cb`, PBO `3DA69CD1` to `52F9A9E5`, is not verifiable from the
-issue.) The `-serverMod=` guidance is dayz-mcp #296, not #301.
+[EXACT][CLAIM-MCPV-CLEAN-REBUILDS-PBO-130] Historical behavior reported in dayz-mcp issue #301:
+the `dayz-test-v1` launcher rebuilt the bridge PBO from `default_source` even with `build=false`
+when `clean=true`. The confirmed rule was `effective_build = build or clean`
+(`dayz_test_request.py:538`, same rule at `server.py:6130` in the issue's snapshot).
+The quad run `43b9f3cb` (PBO `3DA69CD1` to `52F9A9E5`) is not verifiable from the issue.
+The `-serverMod=` guidance is dayz-mcp #296, not #301.
+
+Source update (2026-11-08): PR #314 fixed this rule in commit
+`de772447f5adac9814257a212c29244be6bc140a`. At dayz-mcp main snapshot
+`4129522921241b2d4fb3e97f62343a360fe9f173`, `tools/dayz_mcp/dayz_test_request.py:577-578`
+says that clean only modifies an explicitly requested build and sets `effective_build = build`;
+`clean=true` alone no longer requests a build through this rule. This is a source check, not a
+new in-game test. Retain SHA-256 checks of the live server and client PBOs after launch and at
+run end as provenance checks; do not describe the old rebuild rule as current behavior.
 
 [EXACT][CLAIM-MCPV-PROVENANCE-NO-WMI] On a Windows box where `Get-CimInstance Win32_Process`
 answers access denied, a provenance check that reads command lines through WMI fails before any

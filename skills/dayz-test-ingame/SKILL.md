@@ -1560,7 +1560,12 @@ the `data\LFQuad_wheel_rear_co.paa` entry, with the trailer left as it was, stil
 `Signature ... is OK`. Two controls did fail with `is wrong`: the previous build's PBO next
 to the new `.bisign`, and the new PBO with one byte of a `.c` entry changed and the trailer
 recomputed, which is what any repacker writes. Build the negative control the way a packer
-would, or from another PBO; a raw byte flip proves nothing about the signature.
+would, or from another PBO; a raw byte flip proves nothing about the signature. Another build's
+PBO only fails when the two builds differ in an entry the signature covers: Arma2Quad v1.0.3-rc
+(2026-11-05), which differed from v1.0.2 only in the `Arma2Quad_body.p3d` entry (its bytes and
+timestamp) and the trailer, answered `is OK` with the v1.0.2 PBO next to its new `.bisign`, while
+its `.c`-byte control answered `is wrong`. For a change that only touches models or textures, the
+`.c`-byte control is the one that can fail.
 
 ### Bonus: a disposable probe does not need to register as an MCP project
 

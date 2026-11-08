@@ -2,6 +2,7 @@
 import json
 import os
 import pathlib
+import struct
 import sys
 import tempfile
 import time
@@ -22,13 +23,15 @@ _MODULE_PATCHES = []
 
 
 def setUpModule():
-    # run() looks for the vanilla tree in DAYZ_VANILLA_ROOT, then P:\scripts.
-    # A unit test must not change verdict with what this machine has mounted,
-    # so neither is visible here; tests that need a tree pass --vanilla-root.
+    # run() looks for the vanilla tree in DAYZ_VANILLA_ROOT, then P:\scripts,
+    # and for the installed game in DAYZ_GAME_ROOT. A unit test must not
+    # change verdict with what this machine has mounted, so none is visible
+    # here; tests that need a tree pass --vanilla-root.
     env = mock.patch.dict(os.environ)
     env.start()
     _MODULE_PATCHES.append(env)
     os.environ.pop("DAYZ_VANILLA_ROOT", None)
+    os.environ.pop("DAYZ_GAME_ROOT", None)
     pdrive = mock.patch.object(
         vanilla_tree, "PDRIVE_SCRIPTS", FIXTURES / "no_vanilla_tree_in_unit_tests"
     )
@@ -5059,6 +5062,402 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         ]
         for source, lines in cases:
             self.assertEqual(lines, _proto_lines(source), source)
+
+
+BUILTIN = FIXTURES / "undefined_builtin_method"
+BUILTIN_RULE = "ES-UNDEFINED-BUILTIN-METHOD"
+
+
+def _builtin_check(source, external=(), vanilla=BUILTIN / "vanilla"):
+    from detectors.es_undefined_builtin_method import (
+        check_es_undefined_builtin_method,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    return check_es_undefined_builtin_method(
+        [("scripts/4_World/x.c", strip(source))],
+        [(path, strip(text)) for path, text in external],
+        vanilla,
+    )
+
+
+def _builtin_errors(source, external=(), vanilla=BUILTIN / "vanilla"):
+    return _builtin_check(source, external, vanilla)[0]
+
+
+def _builtin_skips(result):
+    return [
+        s for s in result["info"].get("skipped_checks", [])
+        if s["rule_id"] == BUILTIN_RULE
+    ]
+
+
+class TestUndefinedBuiltinMethod(unittest.TestCase):
+    """ES-UNDEFINED-BUILTIN-METHOD: a method the built-in type does not declare.
+
+    Inbox fb-20261103-150432-9f93, DayZDiag 1.30.164200 server: `gF.Cross(gR)`
+    with vector locals stopped the World module with "Undefined function
+    'vector.Cross'"; only the 1.30.164014 Exp scripts declare vector.Cross.
+    """
+
+    def test_ticket_repro_fails(self):
+        exit_code, result = script_validator.run(
+            [str(BUILTIN / "bad"), "--vanilla-root", str(BUILTIN / "vanilla")]
+        )
+
+        self.assertEqual(1, exit_code)
+        errors = _errors_of(result, BUILTIN_RULE)
+        self.assertEqual([13, 15], [e["line"] for e in errors])
+        self.assertIn("'forward.Cross('", errors[0]["message"])
+        self.assertIn("'forward' is declared as vector", errors[0]["message"])
+        self.assertIn("1_core/proto/fx_builtin.c:33", errors[0]["message"])
+        self.assertIn("Undefined function 'vector.Cross'", errors[0]["message"])
+        self.assertIn("'up.Cross('", errors[1]["message"])
+        self.assertIn("fx_edge_glue.c", errors[0]["file"])
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], _builtin_skips(result))
+        assert_standard_findings(self, result)
+
+    def test_without_the_vanilla_tree_the_rule_is_skipped(self):
+        _code, result = script_validator.run([str(BUILTIN / "bad")])
+
+        self.assertEqual([], _errors_of(result, BUILTIN_RULE))
+        skips = _builtin_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("vanilla tree", skips[0]["reason"])
+        # A folder that is no DayZ scripts tree is no vanilla tree either.
+        _code, result = script_validator.run(
+            [str(BUILTIN / "bad"), "--vanilla-root", str(BUILTIN / "ok")]
+        )
+        self.assertEqual([], _errors_of(result, BUILTIN_RULE))
+        self.assertIn("class Managed", _builtin_skips(result)[0]["reason"])
+
+    def test_valid_and_unjudged_calls_pass(self):
+        _code, result = script_validator.run(
+            [str(BUILTIN / "ok"), "--vanilla-root", str(BUILTIN / "vanilla")]
+        )
+
+        # The fix written out; calls on vector, string, int, float, bool,
+        # typename, array, set, map and a typedef of array, on a value and
+        # on the type; Class's members; a call's result, a member access and
+        # an index; the bad call in a comment and in a string.
+        self.assertEqual([], _errors_of(result, BUILTIN_RULE))
+        self.assertEqual([], _builtin_skips(result))
+
+    def test_every_built_in_type_is_judged(self):
+        source = "\n".join([
+            "class C",
+            "{",
+            "    string m_S;",
+            "    ref map<string, int> m_M;",
+            "    void F(vector v, typename t, TStringArray labels)",
+            "    {",
+            "        int i = 1;",
+            "        float f = 1.0;",
+            "        bool b = true;",
+            "        array<int> a = new array<int>;",
+            "        set<int> s;",
+            "        v.Cross(v);",
+            "        vector.Cross(v, v);",
+            "        m_S.Cross();",
+            "        i.Cross();",
+            "        f.Cross();",
+            "        b.Cross();",
+            "        t.Cross();",
+            "        a.Cross();",
+            "        s.Cross();",
+            "        m_M.Cross();",
+            "        labels.Cross();",
+            "        TStringArray.Cross();",
+            "    }",
+            "}",
+        ]) + "\n"
+
+        errors = _builtin_errors(source)
+
+        self.assertEqual(list(range(12, 24)), [e["line"] for e in errors])
+        messages = {e["line"]: e["message"] for e in errors}
+        self.assertIn("'vector' is a built-in type", messages[13])
+        self.assertIn("'a' is declared as array", messages[19])
+        self.assertIn("Undefined function 'map.Cross'", messages[21])
+        self.assertIn(
+            "'labels' is declared as TStringArray, a typedef of array", messages[22]
+        )
+        self.assertIn("'TStringArray' is a typedef of array", messages[23])
+
+    def test_unresolvable_receivers_are_skipped(self):
+        cases = [
+            # auto, and a template parameter
+            "class FX_T<Class T>\n{\n    T m_Item;\n    void F()\n    {\n"
+            "        auto x = 1;\n        x.Cross();\n        m_Item.Cross();\n"
+            "    }\n}\n",
+            # two types in two branches
+            "void F()\n{\n#ifdef FX_A\n    vector x;\n#else\n    FX_Other x;\n"
+            "#endif\n    x.Cross();\n}\n",
+            # a later declarator makes the name unknown
+            "void F()\n{\n    vector a, x;\n    x.Cross();\n}\n",
+            # an array of vectors, a typedef of int[], a typedef that is also
+            # a class
+            "void F(FX_Handle h, FX_ResourceName r)\n{\n    vector pts[2];\n"
+            "    pts.Cross();\n    h.Cross();\n    r.Cross();\n}\n",
+            # a foreach variable inside its loop
+            "void F(TStringArray list)\n{\n    foreach (string s : list)\n    {\n"
+            "        s.Cross();\n    }\n}\n",
+            # a parameter of another method
+            "class C\n{\n    void G(vector m_P)\n    {\n    }\n    void F()\n"
+            "    {\n        m_P.Cross();\n    }\n}\n",
+            # this and super
+            "class C\n{\n    void F()\n    {\n        this.Cross();\n"
+            "        super.Cross();\n    }\n}\n",
+            # lines that never compile
+            "void F(vector v)\n{\n#if 0\n    v.Cross(v);\n#endif\n}\n",
+            "#define FX_ON\nvoid F(vector v)\n{\n#ifndef FX_ON\n    v.Cross(v);\n"
+            "#endif\n}\n",
+        ]
+        for source in cases:
+            self.assertEqual([], _builtin_errors(source), source)
+
+    def test_any_declaration_of_the_type_counts(self):
+        source = (
+            "void F(vector v)\n{\n    v.Cross(v);\n    v.ToDebugString();\n"
+            "    v.ClassName();\n    v.IsInherited(int);\n}\n"
+        )
+
+        # ToDebugString sits under #ifdef DIAG_DEVELOPER in the vanilla
+        # class, ClassName and IsInherited in Class; Cross only in comments.
+        self.assertEqual([3], [e["line"] for e in _builtin_errors(source)])
+        modded = (
+            "modded class vector\n{\n    vector Cross(vector v)\n    {\n"
+            "        return v;\n    }\n}\n"
+        )
+        self.assertEqual([], _builtin_errors(modded + source))
+        self.assertEqual(
+            [], _builtin_errors(source, [("scripts/1_Core/m.c", modded)])
+        )
+
+    def test_a_template_list_read_across_parameters_is_unknown(self):
+        # Mods pass, 2026-11-03: the lookup read `map<string, int> refunds`
+        # from array's `<` to map's `>` and reported GetKey on an array.
+        source = (
+            "void F(array<ref FX_Claim> timeline, array<int> values, bool dirty, "
+            "map<string, int> refunds)\n{\n    refunds.GetKey(0);\n"
+            "    refunds.Contains(\"a\");\n}\n"
+            "void G(map<string, int> counts, int n)\n{\n    counts.Contains(\"a\");\n"
+            "    counts.Cross();\n}\n"
+        )
+
+        # G's map is read alone and still judged.
+        self.assertEqual([9], [e["line"] for e in _builtin_errors(source)])
+
+    def test_only_lines_for_one_dayz_build_are_left_out(self):
+        # `#ifndef DAYZ_1_29` holds the code of every later build and is
+        # judged; `#ifdef DAYZ_1_29` and the #else of `#ifndef` compile on
+        # 1.29 alone, which the tree may not be.
+        source = "\n".join([
+            "void F(vector v)",
+            "{",
+            "#ifdef DAYZ_1_29",
+            "    v.Cross(v);",
+            "#else",
+            "    v.Cross(v);",
+            "#endif",
+            "#ifndef DAYZ_1_29",
+            "    v.Cross(v);",
+            "#else",
+            "    v.Cross(v);",
+            "#endif",
+            "#ifdef FX_OTHER_MOD",
+            "    v.Cross(v);",
+            "#endif",
+            "}",
+        ]) + "\n"
+
+        self.assertEqual([6, 9, 14], [e["line"] for e in _builtin_errors(source)])
+
+    def test_a_variable_that_never_compiles_hides_no_static_call(self):
+        # Grok review, 2026-11-03 (H5): `int vector` under `#if 0` left
+        # `vector.Cross(` unjudged in the whole file.
+        source = (
+            "void F()\n{\n    vector.Cross(\"0 0 1\", \"0 1 0\");\n}\n"
+            "#if 0\nint vector = 1;\n#endif\n"
+        )
+
+        self.assertEqual([3], [e["line"] for e in _builtin_errors(source)])
+
+    def test_a_variable_named_as_the_type_is_no_static_call(self):
+        # Mods pass, 2026-11-03: `Widget map = ...; map.ClearFlags(...)`. The
+        # name fails as a variable (ES-VARIABLE-NAMED-AS-TYPE), not the call.
+        source = (
+            "void F(Widget root)\n{\n    Widget map = root;\n"
+            "    map.ClearFlags(0);\n    vector.Cross(\"0 0 1\", \"0 1 0\");\n}\n"
+        )
+
+        self.assertEqual([5], [e["line"] for e in _builtin_errors(source)])
+
+    def test_a_type_the_vanilla_tree_does_not_declare_is_not_judged(self):
+        # The cast fixture's tree declares Class and Managed, no vector.
+        source = "void F(vector v)\n{\n    v.Cross(v);\n}\n"
+
+        errors, skipped = _builtin_check(source, vanilla=CAST / "vanilla")
+
+        self.assertEqual([], errors)
+        self.assertEqual([], skipped)
+
+
+def _pbo_bytes(entries, properties=(("prefix", "scripts"), ("version", "4242"))):
+    """An uncompressed PBO of (name, data[, packing]) entries."""
+    header = bytearray(b"\x00" + struct.pack("<5I", 0x56657273, 0, 0, 0, 0))
+    for key, value in properties:
+        header.extend(key.encode("ascii") + b"\x00" + value.encode("ascii") + b"\x00")
+    header.append(0)
+    payload = bytearray()
+    for item in entries:
+        name, data = item[0], item[1]
+        packing = item[2] if len(item) > 2 else 0
+        header.extend(name.encode("ascii") + b"\x00")
+        header.extend(struct.pack("<5I", packing, len(data), 0, 0, len(data)))
+        payload.extend(data)
+    header.extend(b"\x00" + struct.pack("<5I", 0, 0, 0, 0, 0))
+    return bytes(header + payload + b"\x00" + b"\x5a" * 20)
+
+
+BUILD_RULE = "VANILLA-ROOT-BUILD-MISMATCH"
+
+
+class TestVanillaRootBuild(unittest.TestCase):
+    """--game-root: the vanilla tree against the game's own dta/scripts.pbo.
+
+    Inbox fb-20261103-150432-9f93: the gate read the 1.30.164014 Exp extract
+    while the game was 1.30.164200, and vector.Cross, which only the extract
+    declares, passed.
+    """
+
+    FILES = {
+        "1_Core/proto/fx_builtin.c": b"class Managed\n{\n}\n",
+        "4_World/fx_world.c": b"class FX_World\n{\n}\n",
+    }
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        base = pathlib.Path(self._tmp.name)
+        # Lower case on disk, as an extract can be; the PBO names keep theirs.
+        self.vanilla = base / "scripts"
+        for name, data in self.FILES.items():
+            path = self.vanilla / name.lower()
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        (self.vanilla / "config.cpp").write_text("class CfgPatches\n{\n};\n")
+        self.game = base / "DayZ"
+        (self.game / "dta").mkdir(parents=True)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _install(self, files):
+        """files: {name: data, or (data, packing)}."""
+        entries = []
+        for name, data in files.items():
+            data = data if isinstance(data, tuple) else (data,)
+            entries.append((name.replace("/", "\\"),) + data)
+        (self.game / "dta" / "scripts.pbo").write_bytes(_pbo_bytes(entries))
+
+    def _run(self, *extra):
+        return script_validator.run(
+            [str(FIXTURES / "empty"), "--vanilla-root", str(self.vanilla)] + list(extra)
+        )
+
+    def _build_warnings(self, result):
+        return [w for w in result["warnings"] if w["rule_id"] == BUILD_RULE]
+
+    def _build_skips(self, result):
+        return [
+            s for s in result["info"].get("skipped_checks", [])
+            if s["rule_id"] == BUILD_RULE
+        ]
+
+    def test_the_game_scripts_match(self):
+        self._install(self.FILES)
+
+        code, result = self._run("--game-root", str(self.game))
+
+        self.assertEqual(0, code)
+        self.assertEqual([], self._build_warnings(result))
+        build = result["info"]["vanilla_build"]
+        self.assertTrue(build["matches"])
+        self.assertEqual("4242", build["pbo_version"])
+        self.assertEqual(2, build["files"])
+
+    def test_another_tree_warns(self):
+        changed = dict(self.FILES)
+        changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
+        changed["4_World/fx_new.c"] = b"class FX_New\n{\n}\n"
+        changed["config.bin"] = b"\x00raP"
+        self._install(changed)
+
+        code, result = self._run("--game-root", str(self.game))
+
+        self.assertEqual(2, code)
+        warnings = self._build_warnings(result)
+        self.assertEqual(1, len(warnings))
+        message = warnings[0]["message"]
+        self.assertIn("1_Core/proto/fx_builtin.c", message)
+        self.assertIn("4_World/fx_new.c", message)
+        self.assertIn("header version 4242", message)
+        self.assertIn("1 differ", message)
+        self.assertEqual("WARN", warnings[0]["severity"])
+        build = result["info"]["vanilla_build"]
+        self.assertEqual(
+            (3, 1, 1, 0, False),
+            (build["files"], build["differ"], build["missing"], build["extra"],
+             build["matches"]),
+        )
+        assert_standard_findings(self, result)
+
+    def test_a_tree_with_files_the_game_lacks_warns(self):
+        self._install({"4_World/fx_world.c": self.FILES["4_World/fx_world.c"]})
+
+        _code, result = self._run("--game-root", str(self.game))
+
+        self.assertEqual(1, len(self._build_warnings(result)))
+        self.assertEqual(1, result["info"]["vanilla_build"]["extra"])
+
+    def test_the_pbo_and_the_environment_name_the_game_too(self):
+        self._install(self.FILES)
+        pbo = self.game / "dta" / "scripts.pbo"
+
+        _code, result = self._run("--game-root", str(pbo))
+        self.assertTrue(result["info"]["vanilla_build"]["matches"])
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            _code, result = self._run()
+        self.assertTrue(result["info"]["vanilla_build"]["matches"])
+
+    def test_without_a_game_nothing_is_compared(self):
+        _code, result = self._run()
+
+        self.assertNotIn("vanilla_build", result["info"])
+        self.assertEqual([], self._build_warnings(result))
+        self.assertEqual([], self._build_skips(result))
+
+    def test_an_unreadable_game_is_skipped_not_judged(self):
+        # No scripts.pbo under the folder.
+        code, result = self._run("--game-root", str(self.game))
+        self.assertEqual(0, code)
+        self.assertIn("no dta/scripts.pbo under", self._build_skips(result)[0]["reason"])
+        self.assertNotIn("vanilla_build", result["info"])
+        # A compressed entry: the reader fails closed.
+        self._install({"4_World/fx_world.c": (b"xx", 0x43707273)})
+        _code, result = self._run("--game-root", str(self.game))
+        self.assertIn("compressed", self._build_skips(result)[0]["reason"])
+        self.assertEqual([], self._build_warnings(result))
+        # No vanilla tree to compare.
+        self._install(self.FILES)
+        _code, result = script_validator.run(
+            [str(FIXTURES / "empty"), "--game-root", str(self.game)]
+        )
+        self.assertIn("vanilla tree", self._build_skips(result)[0]["reason"])
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 > HISTORY ONLY — NO AUTHORITY. Textual snapshot of the body that CAMBIO-1 removed from the critical path. The active adapter is in `../SKILL.md`; no commands or gates are executed from this history.
 
-<!-- MOVED-EXACT source="rip-vehicle-import/SKILL.md:5" sha256="B9A5C27F31B03FB4DDDA3CD5EFB4F84CC935895AC9915E7725258150D983B2C7" -->
+<!-- MOVED-EXACT source="rip-vehicle-import/SKILL.md:5" sha256="DE7403C2442D53C926CF3F0DFA0066616B957D55B6FB46B7208A2DA8E3AF06A8" -->
 # rip → DayZ: runbook con cutover CAMBIO-0 (2026-08-05)
 
 > Destilado del build SUB_BRZ s2..s32 + research dual consolidado
@@ -159,26 +159,6 @@ HH-60G en 2026-08-02; van aquí para que se encuentren):
 Y el corolario de proceso: cuando el usuario diga «esto ya pasó en el coche anterior», eso **es** la
 señal de promoción — la fila entra aquí el mismo día, sin esperar al diagnóstico. Origen: 2026-08-02,
 el usuario reportó 3 de 9 defectos como repetición explícita de SUB_BRZ.
-
-## Reparto de lanes (modelo operativo)
-
-- **Claude**: arquitectura y specs (con causa medida + fixture), orquestación del loop
-  in-game (MCP host), juez visual de capturas, verificación independiente de CADA
-  entrega (regenerar artefacto + gate real — jamás aceptar el exit 0), vault/memoria.
-- **Codex** (end-to-end bajo spec): builders Python TDD, gates+fixtures, config/model/
-  script con firmas verificadas, física numérica, cirugía `.p3d` determinista en work,
-  Blender headless, reviews R21/R22, 2ª opinión sobre capturas (`codex exec -i`).
-  Límites: sin veredicto engine, sin estética, sin deploy fuera del workspace, 1 exec
-  concurrente, CUOTA COMPARTIDA entre sesiones (presupuestarla; muere fail-fast con
-  "usage limit"), preflight fail-closed (P:\ montada antes de lanzar).
-- **Usuario**: decisiones de gusto (stance/color/decimación visual — SIEMPRE gated),
-  OK estético final sobre contact-sheet, feel de conducción.
-
-**Prompt de handoff a Codex (7 puntos, siempre):** spec aprobada + archivos permitidos ·
-inputs con hashes · firmas/APIs con path:line verificadas · fixtures pos/neg + exit
-codes · comandos de gate + criterio de parada · prohibiciones (no deploy, no refactor
-incidental, no tocar profile fuera del bloque) · output = diff+tests+JSONs+hashes+
-unknowns + `NEEDS_INGAME` explícito. Skill `codex-handoff-template` para el armazón.
 
 ## Referencias
 

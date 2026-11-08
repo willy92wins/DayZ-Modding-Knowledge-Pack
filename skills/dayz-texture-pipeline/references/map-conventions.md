@@ -185,6 +185,10 @@ Material starting points:
 | glass/chrome | 255 | 180-255 | 180-255 | Also needs appropriate shader/fresnel/env. |
 | wood | 255 | 20-70 | 30-90 | Usually low specular and broad roughness. |
 
+These rows are generic starting points, not measured vanilla values. On the vanilla `motorbike_02` body the red paint
+measures G median 5: calibrate against a vanilla asset of the same family before trusting a row (§Calibrating against a
+vanilla asset of the same family, below).
+
 Evidence:
 
 - BI Super shader channel description: https://community.bistudio.com/wiki/Super_shader
@@ -259,6 +263,75 @@ That matches the packing table above. What reading the script shows:
   so on a Q16 build force `-depth 8`. [DESIGN] Not run here (no ImageMagick on this machine). `Pack_SMDI.bat` passes
   no `-depth`, so a 16-bit source run through a Q16 build can give a 16-bit `_SMDI`, depending on the output format.
 - Same licence rule: cite, do not vendor.
+
+### Calibrating against a vanilla asset of the same family (added 2026-11-02)
+
+[DESIGN] Compare `_smdi` levels only between materials whose rvmat constants match: the map works together with the
+rvmat's `specular[]`, `specularPower`, fresnel and env, so the same G can read differently under other constants.
+
+[EXACT][CLAIM-TEX-MOTORBIKE02-BODY-RVMAT] The vanilla body material
+(`DZ\vehicles\singletrack\Motorbike_02\data\motorbike_02_body.rvmat`, DayZ 1.30.164014) has
+`specular[]={1.1,1.1,1.1,1}` and `specularPower=160` (`:14-15`), Stage6 `#(ai,128,1,1)fresnel(0.53,0.22)` (`:80`) and
+Stage7 `dz\data\data\env_land_optic_co.paa` (`:92`). The mod body measured below already used those four values. [INFERRED] The maps are then the likely
+cause of its difference from the vanilla; other material inputs, normals and viewing conditions were not compared.
+
+[EXACT][CLAIM-TEX-VANILLA-MOTORBIKE02-CALIBRATION] Measured on 2026-11-02: the vanilla `motorbike_02_body_red_co.paa`,
+`_smdi.paa` and `_as.paa` (DayZ 1.30.164014, `vehicles_singletrack.pbo`) against the body atlas of a mod motorbike before
+its calibration, which its owner had judged worse than the vanilla in gloss and colour, seen side by side in game
+(2026-10-26). Mip 0 decoded with ImageToPAA, `_smdi` and `_as` resampled to the `_co` size. Domain in both columns: the
+texels whose `_co` is not black (largest channel > 6). Luminance 0.299 R + 0.587 G + 0.114 B.
+
+| | Vanilla `motorbike_02_body` | Mod atlas before calibration |
+| --- | --- | --- |
+| `_co` luminance p10 / p50 / p90 | 24 / 56 / 99 | 30 / 41 / 112 |
+| `_smdi` G (specular) p50 / p90 | 4 / 101 | 30 / 125 |
+| `_smdi` B (gloss) p50 / p90 | 49 / 156 | 107 / 154 |
+| `_as` G mean / median | 121 / 120 | 171 / 175 |
+
+| Vanilla class (by `_co`, same domain) | Luminance p50 | `_smdi` G p50 / p90 | `_smdi` B p50 / p90 | `_as` G mean / median |
+| --- | ---: | --- | --- | --- |
+| red paint (saturation ≥ 0.35, red channel 20 over green and blue) | 92 | 5 / 52 | 55 / 82 | 137 / 146 |
+| light metal (luminance > 110, saturation < 0.15) | 138 | 28 / 243 | 50 / 148 | 207 / 215 |
+| mid grey (luminance 60-110, saturation < 0.15) | 73 | 49 / 174 | 47 / 159 | 183 / 201 |
+| dark (luminance < 35) | 25 | 0 / 12 | 41 / 206 | 56 / 8 |
+
+- Half of this body's texels have G ≤ 4 and its red paint sits at G median 5; the high values are in the p90 of the
+  light-metal and mid-grey classes. The generic "worn painted metal" row above (G 70-130) is 14 to 26 times that paint
+  median. These are the figures of one vanilla body: measure the vanilla asset closest to yours.
+- The mod's darkest tenth was lighter (luminance p10 30 against 24), and its ambient shadow weaker (`_as` G median 175
+  against 120).
+- Name the statistic and the domain. On the vanilla dark class the `_as` G mean is 56 and the median 8. On the mod atlas the `_as` G median is 154 over all texels and 175 without the black ones.
+
+Historical, the project's own account, not part of the measurement above: a factor computed over faces plus padding left
+one class of the mod at luminance 48 against a target of 28.
+
+[DESIGN] Procedure: decode the shipped PAAs of the closest vanilla asset of the same family and of the mod, not the PNG
+sources; check that the rvmat constants match; set G and B per surface class with the vanilla figure beside each, stating
+domain and statistic; then look in game next to the vanilla asset under the same light.
+
+[INFERRED] The `#383838` (56) floor of §From a metallic/roughness set reads G as an sRGB-encoded reflectance; this vanilla
+paint sits at 5. That is one more hint against reading G as an F0: for a vehicle, calibrate on a vanilla asset rather than
+on the floor.
+
+### A per-material change on a baked atlas leaves a DXT block staircase next to a material it skips (added 2026-11-02, LL-570)
+
+(claim: CLAIM-TEX-DXT-STAIRCASE-SAME-ISLAND) Historical, the project's own account with no versioned evidence: a per-material `_smdi` recalibration raised a fuel tank's mirror paint from
+about G/B 100/190 to 205/237 and gave no class to the logo panel that shares its UV island. The mod's step that keeps the
+old value in every 4×4 DXT block holding texels of another material (so that DXT1 does not mix two islands) then left at
+G≈100 74 % of the mirror texels within 2 px of the logo, and 33 % of those 2-4 px away. With the logo given the class of
+the paint around it, that stale rim measured 0 %.
+
+(claim: CLAIM-TEX-DXT-STAIRCASE-INGAME) Historical, the project's own account with no versioned evidence: in game (2026-10-28), before the fix: a sawtooth line under the logo seen up close,
+and a two-tone tank, matte bands around the logo and a mirror centre. After it, the tank read one tone from the top view;
+the close-up of the sawtooth was not looked at again in game (that run's frame was degraded).
+
+[DESIGN] What follows from that one case:
+- Give a decal or logo under clear coat the class of the paint around it, not "no class".
+- Before accepting a per-material change, measure by distance to the border with each neighbour in the same island: the
+  share of border texels that did not change while the interior did. A rim of 2-4 texels that kept the old value is the
+  staircase.
+- Keeping whole DXT blocks next to a foreign island is this pipeline's tradeoff, not a general rule: it also restores the recalibrated island's texels in shared blocks, and DXT1 shares one palette per 4x4 block anyway. Check the border
+  of both islands and tell restored values apart from compression artifacts. The measured step was inside one island, between the mirror paint and the logo left without a class.
 
 ## Export and path rules
 
