@@ -1621,10 +1621,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/sign-control-model-only@2026-11-05",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "An Unreleased Added entry for the DayZ 1.30 layout-variant reference in dayz-ui-development and the fsShadowing note in dayz-pbo-build, naming the seven claims. Evidence: VAULT/reviews/2026-10-26-dayz-130-variants-and-fsshadowing.md (Results 2026-10-27, Workbench-generated variants 2026-11-05, Probe 4 results 2026-11-05) and VAULT/plans/2026-11-05-ui-variant-probe-4.md, measured on DayZDiag 1.30.164200. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4797655e27eeec0055cf4b81a04b54b0b33df32c5e605d7d9ca6ef933558655f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "docs/ui-layout-variants-130@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2c661f0003af62ce4358c08f9a74af9021b88b11e1c394e36ec701d8ee202b13",
+      "output_hash": "4797655e27eeec0055cf4b81a04b54b0b33df32c5e605d7d9ca6ef933558655f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13696,10 +13706,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "One TASK ROUTER row and one Reference Files entry pointing at references/layout-variants-130.md (DayZ 1.30 layout variants). No other line changed. Evidence: VAULT/reviews/2026-10-26-dayz-130-variants-and-fsshadowing.md (Results 2026-10-27, Workbench-generated variants 2026-11-05, Probe 4 results 2026-11-05) and VAULT/plans/2026-11-05-ui-variant-probe-4.md, measured on DayZDiag 1.30.164200. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c0a7ddc367d96350525ce4f87b8eea1fa288107b9a283cbabe348d83d995ec15",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "docs/ui-layout-variants-130@2026-11-05",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "8570ad6604e4ca2aa32b3a7e4c6152dc77502aac65495957c705ffc1a536b7b4",
+      "output_hash": "c0a7ddc367d96350525ce4f87b8eea1fa288107b9a283cbabe348d83d995ec15",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -19403,10 +19423,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/sign-control-model-only@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registered CLAIM-UI-VARIANT-WORKBENCH-FORMAT-130 (offline_tested), CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK (offline_tested), CLAIM-UI-VARIANT-PREFAB-MERGE-130 (runtime_verified), CLAIM-UI-VARIANT-NAME-KEYED-ADD-ONLY-130 (runtime_verified), CLAIM-UI-VARIANT-GUI-PREFIX-PACKING-130 (runtime_verified), CLAIM-UI-VARIANT-NO-CONFIG-REPORT (unverified, a community author's report) and CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130 (runtime_verified). Existing claims preserved.",
+          "license": "MIT",
+          "source_hash": "b4bd7bee0aa803f77c55d374f4699b1fe31c03c8bc4c8aa41c6a38e55d3b3add",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "docs/ui-layout-variants-130@2026-11-05",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4cb4f4b1a4748407d0b43d9b8371099b87cf40594a3a3fec8088c4c96bfecf39",
+      "output_hash": "b4bd7bee0aa803f77c55d374f4699b1fe31c03c8bc4c8aa41c6a38e55d3b3add",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -34849,10 +34879,20 @@
           "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
           "source_revision": "5ad3174929f731381eb876df7d3eca5db79f1671",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "New section on the 1.30 fsShadowing PBO header property for a gui-prefix PBO (RaG --fs-shadowing, .meta packed, header read back, loaded unsigned, variant applied in game; no-config.cpp case unverified). CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130. Existing lines unchanged. Evidence: VAULT/reviews/2026-10-26-dayz-130-variants-and-fsshadowing.md (Results 2026-10-27, Workbench-generated variants 2026-11-05, Probe 4 results 2026-11-05) and VAULT/plans/2026-11-05-ui-variant-probe-4.md, measured on DayZDiag 1.30.164200. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b36c4bc1e0ee2297f84ea695d65347d412e65c032784bdcf2d19d062ab682ed8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
+          "source_revision": "docs/ui-layout-variants-130@2026-11-05",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "996aca9e0a827255e57c38a674c939667ef5d249302c84e687b1330e31e41647",
+      "output_hash": "b36c4bc1e0ee2297f84ea695d65347d412e65c032784bdcf2d19d062ab682ed8",
       "output_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "historical"
@@ -38401,6 +38441,28 @@
       "output_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
       "output_path": "skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
       "routing_artifact_id": "skill/ovh-cloud",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ui-development/references/layout-variants-130.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New reference: DayZ 1.30 layout variants. Workbench authoring recipe and generated-file format, in-game behaviour of Prefab-ID variants against name-keyed files, gui-prefix fsShadowing packing, ID derivation unknown (four name hashes ruled out, reproduced 2026-11-05), recorded unknowns. Claims CLAIM-UI-VARIANT-*. No vanilla or third-party bytes beyond a 22-line excerpt of a Workbench-generated variant authored by the pack's owner. Evidence: VAULT/reviews/2026-10-26-dayz-130-variants-and-fsshadowing.md (Results 2026-10-27, Workbench-generated variants 2026-11-05, Probe 4 results 2026-11-05) and VAULT/plans/2026-11-05-ui-variant-probe-4.md, measured on DayZDiag 1.30.164200. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5595742a07a14c8818ca824154797b41c3ac29b01fd80e63ce8c3b14e9cdd0ad",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+          "source_revision": "docs/ui-layout-variants-130@2026-11-05",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5595742a07a14c8818ca824154797b41c3ac29b01fd80e63ce8c3b14e9cdd0ad",
+      "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+      "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
     }
   ],
