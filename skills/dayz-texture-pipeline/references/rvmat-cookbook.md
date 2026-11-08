@@ -122,6 +122,31 @@ Example vanilla glass:
 - `P:\DZ\vehicles\wheeled\van_01\data\van_01_glass.rvmat:71` uses fresnel.
 - `P:\DZ\vehicles\wheeled\van_01\data\van_01_glass.rvmat:83` uses `dz\data\data\env_land_co.paa`.
 
+### Stage7: choose the env map by the specular of the parts that use it (added 2026-11-02, LL-571)
+
+[EXACT][CLAIM-TEX-ENV-GROUND-TINT] Mean RGB of the lower (ground) and upper (sky) halves of vanilla env maps, mip 0 of the
+256² files in `P:\DZ\data\data`, decoded with ImageToPAA (2026-11-02):
+
+| Env map | Ground half | Sky half |
+| --- | --- | --- |
+| `env_land_optic_co` | 80 / 79 / 54 (blue 25 under) | 169 / 182 / 200 |
+| `env_land_co` | 39 / 40 / 33 | 160 / 173 / 187 |
+| `env_land_chrome_co` | 62 / 64 / 59 | 206 / 210 / 213 |
+| `env_chrome_co` | 132 / 131 / 129 | 194 / 198 / 204 |
+| `env_mirror_co` | 123 / 127 / 114 | 171 / 180 / 193 |
+| `env_land_plastic_co` | 127 / 127 / 127 | 192 / 194 / 198 |
+
+(claim: CLAIM-TEX-ENV-SILVER-OLIVE-INGAME) Historical, the project's own account with no versioned evidence: the vanilla Motorbike_02 body uses `env_land_optic_co`, with its red paint at
+`_smdi` G median 5 (`map-conventions.md` §Calibrating against a vanilla asset of the same family). A mod body kept that env
+with a silver paint raised to G/B 205/237: in game (2026-10-28) its side panels and tank read olive. With
+`env_land_chrome_co` in the body rvmat the silver read neutral in game; the damage and light materials built from the base
+rvmat inherited it.
+
+[DESIGN]
+- If your G stays near the vanilla asset's, keep its env. If you raise G toward mirror, measure the ground half of the env
+  first instead of inheriting `env_land_optic_co` because the vanilla asset uses it.
+- For mirror, chrome or silver with a high G, a neutral env such as `env_land_chrome_co`.
+
 ## Penetration materials
 
 Collision LOD faces need a penetration `.rvmat` when bullet/surface behavior matters. The `.rvmat` references a `.bisurf`.

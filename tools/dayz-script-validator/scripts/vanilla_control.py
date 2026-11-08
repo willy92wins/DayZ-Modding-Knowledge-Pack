@@ -22,6 +22,7 @@ if str(SCRIPT_DIR) not in sys.path:
 from build_vanilla_index import tree_digest  # noqa: E402
 from script_validator import validate_addon  # noqa: E402
 from shared.input_errors import discover_files  # noqa: E402
+from shared.vanilla_reference import loaded_index_path  # noqa: E402
 from shared.vanilla_tree import resolve_vanilla_root  # noqa: E402
 
 
@@ -31,6 +32,10 @@ DEFAULT_BASELINE_PATH = (
 DIGEST_MISMATCH_MESSAGE = (
     "the control tree is not the one that was measured; check the DayZ "
     "build, then re-baseline on purpose with --update"
+)
+LOCAL_INDEX_MESSAGE = (
+    "a local vanilla index is loaded (%s); the baseline measures the "
+    "validator without one, so move that file away and run the control again"
 )
 DEFAULT_WHAT_THIS_IS = (
     "Expected findings of dayz-script-validator over Bohemia's vanilla "
@@ -419,6 +424,9 @@ def main(argv=None):
     vanilla_root, skip = resolve_vanilla_root(args.vanilla_root)
     if skip:
         return emit_skip(skip, args.json)
+    index_path = loaded_index_path()
+    if index_path is not None:
+        return emit_skip(LOCAL_INDEX_MESSAGE % index_path, args.json)
 
     baseline_path = Path(args.baseline)
     if args.update:

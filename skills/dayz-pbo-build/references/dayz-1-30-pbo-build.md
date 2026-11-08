@@ -35,3 +35,22 @@ because unpacked load exists.
 Navmesh `.nm` regeneration (changelog `:21`) is a terrain/Workbench task, not
 a PBO linter check. Flag it in the release notes of a custom map; this skill
 does not validate `.nm` bytes (binaries are not in `exp\`).
+
+## `fsShadowing`: a second PBO with a vanilla prefix (1.30 Update 2)
+
+(since 1.30.164200: the PBO header property `fsShadowing=1` lets a PBO load even
+when its prefix matches one already loaded, so its files can shadow vanilla
+paths. Vanilla PBO headers do not carry it.)
+
+[EXACT][CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130] Measured on DayZDiag 1.30.164200
+(2026-11-05) for a Workbench-generated layout variant: a PBO whose
+`$PBOPREFIX$.txt` is the bare line `gui`, built with RaG PBO Builder
+`--fs-shadowing`, packed `config.bin`, the `.layout` and its `.layout.meta`,
+and the header read back as `prefix=gui`, `fsShadowing=1`. It loaded unsigned
+and the variant applied in game. A `config.cpp` was present; whether a
+`gui`-prefix PBO loads without one is not verified. What the variant does and
+how to author it: `skills/dayz-ui-development/references/layout-variants-130.md`.
+
+Checks for such a PBO: the header shows both properties; the `.meta` beside
+each variant `.layout` is in the file list; the PBO contains only the files it
+means to shadow.

@@ -17,7 +17,9 @@ DELIVERED_BASELINE = (
 )
 sys.path.insert(0, str(SCRIPTS))
 
+import build_vanilla_index
 import vanilla_control
+from shared import vanilla_reference
 
 
 def _baseline(**overrides):
@@ -134,7 +136,19 @@ class TestCompare(unittest.TestCase):
         self.assertTrue(head.startswith("FAIL"))
 
 
-class TestCliSkipAndUpdate(unittest.TestCase):
+class _WithoutLocalIndex(unittest.TestCase):
+    # A vanilla_index.json left in the checkout makes main() SKIP, so the
+    # loader reads a path in a fresh temporary directory instead.
+    def setUp(self):
+        temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        self.temp_dir = pathlib.Path(temp_dir.name)
+        self.index_path = self.temp_dir / "vanilla_index.json"
+        vanilla_reference.set_index_path_for_tests(self.index_path)
+        self.addCleanup(vanilla_reference.set_index_path_for_tests, None)
+
+
+class TestCliSkipAndUpdate(_WithoutLocalIndex):
     def test_missing_tree_exits_2(self):
         with redirect_stdout(io.StringIO()) as captured:
             code = vanilla_control.main(
@@ -202,6 +216,59 @@ class TestCliSkipAndUpdate(unittest.TestCase):
             self.assertEqual(0, code)
             self.assertTrue(captured.getvalue().splitlines()[0].startswith("PASS"))
         self.assertEqual(delivered_before, DELIVERED_BASELINE.read_bytes())
+
+
+class TestLocalIndex(_WithoutLocalIndex):
+    # Inbox 4c83: a local 1.29 index turned the control red on 1.30 while
+    # the committed validator was clean there.
+    def setUp(self):
+        super().setUp()
+        self.baseline = self.temp_dir / "baseline.json"
+
+    def _write_index(self, text=None):
+        if text is None:
+            build_vanilla_index.write_index(
+                build_vanilla_index.build_index_document(MINI_TREE),
+                self.index_path,
+            )
+        else:
+            self.index_path.write_text(text, encoding="utf-8")
+        vanilla_reference.reset_index_cache()
+
+    def _main(self, *extra):
+        argv = [
+            "--vanilla-root",
+            str(MINI_TREE),
+            "--baseline",
+            str(self.baseline),
+        ]
+        with redirect_stdout(io.StringIO()) as captured:
+            code = vanilla_control.main(argv + list(extra))
+        return code, captured.getvalue().splitlines()
+
+    def test_a_loaded_index_skips_and_names_the_file(self):
+        code, _lines = self._main("--update")
+        self.assertEqual(0, code)
+        self._write_index()
+        code, lines = self._main()
+        self.assertEqual(2, code)
+        self.assertTrue(lines[0].startswith("SKIP"))
+        self.assertIn(str(self.index_path), lines[0])
+
+    def test_a_loaded_index_writes_no_baseline(self):
+        self._write_index()
+        code, lines = self._main("--update")
+        self.assertEqual(2, code)
+        self.assertTrue(lines[0].startswith("SKIP"))
+        self.assertFalse(self.baseline.exists())
+
+    def test_an_index_the_loader_rejects_does_not_skip(self):
+        self._write_index("{not json")
+        code, _lines = self._main("--update")
+        self.assertEqual(0, code)
+        code, lines = self._main()
+        self.assertEqual(0, code)
+        self.assertTrue(lines[0].startswith("PASS"))
 
 
 class TestUnexplainedEntries(unittest.TestCase):

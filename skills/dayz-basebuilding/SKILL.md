@@ -152,8 +152,13 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   `EConstructionTools.TOOL_BRICKLAYING = 256` (`ConstructionConstants.c:25`).)
 - **How much of a material fits in one slot is decided by the SLOT's `stackMax`, NOT by the item's
   `varQuantityMax`.** For a splitable item, `GetTargetQuantityMax` asks `InventorySlots.GetStackMaxForSlotId`
-  first and only falls back to `varStackMax`, then to `varQuantityMax` (`itembase.c:3453-3472`). Vanilla
-  declares the cap per slot in `scripts\config.cpp`: `Material_WoodenPlanks` and `Material_MetalSheets` are
+  first and only falls back to `varStackMax`, then to `varQuantityMax` (`itembase.c:3453-3472`).
+
+The following config values and line numbers are retained from the author's 1.30.164200
+extraction; the exact scripts/config.cpp artifact has not been independently recovered.
+Treat those line numbers as extraction-specific, not as a newly verified citation.
+
+Vanilla declares the cap per slot in `scripts\config.cpp`: `Material_WoodenPlanks` and `Material_MetalSheets` are
   `stackMax=20` (`:2285-2300`), `Material_Nails` is `99` (`:2279-2283`). A NON-splitable item skips that
   branch entirely and lands on `varQuantityMax` — `MetalWire` declares no quantity and neither of its slots
   declares `stackMax` (`:2309-2315`, `:2508-2514`), so it is one wire per slot. Reading the item class instead

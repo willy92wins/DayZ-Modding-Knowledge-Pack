@@ -21,6 +21,7 @@ vanilla scripts at `<dayz-projects>\scripts\`, vanilla GUI data at
 | Extending the HUD / hide-show HUD groups | `vanilla-menus-map.md §5` (HUD chain + IngameHudVisibility) | — |
 | Action info panels / construction cursor grids (1.30 Exp) | `references/hud-action-info-panels.md` | `vanilla-menus-map.md §5` |
 | Writing/debugging a `.layout` file | `references/layout-format.md` | Rules 1-4 below |
+| Changing a VANILLA layout (hide/recolour/add a widget) without replacing it — 1.30 layout variant | `references/layout-variants-130.md` | `dayz-pbo-build` 1.30 reference for the `gui`-prefix `fsShadowing` PBO |
 | Starting from a copy-paste layout (modal / HUD / form row / scroll list) | [`templates/README.md`](templates/README.md) | that template + Rules 1-4 |
 | Iterating a design without repacking (edit the file, see it in the running game) | `references/hot-iteration.md` | Rules 1-4 below |
 | Styled chrome (borders, buttons w/ press feedback, 9-slice, theming a panel) | `references/styles-format.md` | — |
@@ -134,6 +135,7 @@ Read the relevant file BEFORE writing code:
 - **.styles system — complete dissection (states, 9-slice item contracts, Colorable mechanism,
   custom-style recipe, ActionWidget 9-slice gradient in 1.30)** → `references/styles-format.md`
 - **Layout file format (.layout Enfusion)** → `references/layout-format.md`
+- **DayZ 1.30 layout variants (measured 2026-11-05)** → `references/layout-variants-130.md` — a Workbench-generated variant at the vanilla path hides, recolours and adds vanilla widgets in place, matched by `Prefab` ID; hand-written name-keyed files only add. Authoring recipe, packing (`gui` prefix + `fsShadowing=1`) and the open unknowns.
 - **Starting layouts (modal, HUD overlay, form row, scroll list)** → [`templates/README.md`](templates/README.md#the-four-construction-traps) — four copy-paste `.layout` files and the four construction traps they exist to stop. Offline gate is `tools/dayz-ui-lab` (`parse.py --check`); `ui_rect_lint.py` is not distributed with this pack.
 - **★ Hot iteration — edit a `.layout` on disk and reload it into the RUNNING client (measured 2026-08-19)** → `references/hot-iteration.md` — the addon prefix is served by the PBO and only the PBO, but `$profile:` is re-read on every load, so a design can be iterated in seconds instead of one repack-and-boot per change. Carries the guard that keeps `CreateWidgets` from killing the client, the fact that a second load STACKS instead of replacing, and the two silent failures (a missing texture paints flat WHITE and logs nothing; perfect rects say nothing about whether anything is drawn).
 - **Advanced UI patterns (toggles, anti-overlap, tabs, hover, drag)** → `references/advanced-patterns.md` — ⚠️ contains 3 confabulated APIs (see the CORRECTIONS banner at the top of that file before copying any code).
