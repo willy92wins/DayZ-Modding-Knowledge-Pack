@@ -74,7 +74,7 @@ Community traps **not** already covered by the hard rules above (skip ternary; I
 | Method arity hard-cap **16** params (1.28+) | Split args into structs/helpers | StarDZ gotchas 32 |
 | `array.Remove` is **unordered** (swaps with last) | Don’t assume stable order after Remove — confirm ordered API on P:\scripts if order matters | StarDZ gotchas 23 |
 
-More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile; crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
+More one-liners (historical): string methods may mutate in-place; empty #ifdef/#ifndef blocks can crash compile (not reproduced: one holding only a comment compiled and ran on DayZDiag 1.30.164289, `references/pitfalls-advanced.md` section 5); crash_*.log filename ≠ proof of engine crash; compile errors sometimes cite the wrong file; parenthesize bitwise vs comparison tests; Obsolete (1.28+) warnings deserve cleanup; StarDZ says JsonFileLoader.JsonLoadFile returns void — reconcile with Pack SP-136 before treating as a hard rule.
 
 Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-enforce-script/12-gotchas.md (CC BY-SA 4.0).
 
@@ -239,7 +239,7 @@ Pick the reference file matching your need:
 | Memory management | `references/memory-management.md` | Using ref/autoptr, debugging GC, preventing leaks |
 | Networking & persistence | `references/networking.md` | ScriptRPC, SyncVars, OnStoreSave/Load, RPC patterns |
 | Timers & performance | `references/timers-performance.md` | CallLater, Timer, EnProfiler, centralized tick |
-| Advanced pitfalls | `references/pitfalls-advanced.md` | Compiler bugs (int.MIN, switch/default return, empty #ifdef segfault, wrong-file compile errors), runtime segfaults (map<Widget,T>, ScriptView from RPC, compound expression to array element), operator precedence, modded class rules, variable scoping traps, debugging tools (Print, script console, RPT), string/number gotchas |
+| Advanced pitfalls | `references/pitfalls-advanced.md` | Compiler bugs (int.MIN, switch/default return, empty #ifdef: a reported segfault not reproduced on 1.30, wrong-file compile errors), runtime segfaults (map<Widget,T>, ScriptView from RPC, compound expression to array element), operator precedence, modded class rules, variable scoping traps, debugging tools (Print, script console, RPT), string/number gotchas |
 | Dabs MVC advanced | `references/dabs-mvc-advanced.md` | ObservableCollection, auto-bind failures, Relay_Command |
 | config.cpp patterns | `references/config-cpp.md` | CfgVehicles, CfgPatches, CfgSlots (custom attachment slots), inputs.xml keybinds, inventorySlot overrides (string vs array bug T148506), ghostIcon values, GUIInventoryAttachmentsProps, preventing item pickup, vanilla item parent classes |
 | Production UI patterns | `references/production-patterns.md` | UI state management, hover caching, view binding, animation, memory, event handlers |
@@ -626,7 +626,7 @@ Moved to `references/verified-api-catalog.md` — verified global functions (scr
 
 ## ADDITIONAL PITFALLS — Style guide & performance
 
-Moved to `references/pitfalls-advanced.md` (appended section) — EnScript style-guide and performance pitfalls: empty #ifdef segfault, int.MIN, switch/default return, bitwise precedence, GetType vs ClassName, notnull, EXTrace, CfgMods defines[], cross-mod #ifdef gates, DEVELOPER vs DIAG_DEVELOPER (SP-037), foreach-on-getter.
+Moved to `references/pitfalls-advanced.md` (appended section) — EnScript style-guide and performance pitfalls: empty #ifdef (reported segfault, not reproduced on 1.30), int.MIN, switch/default return, bitwise precedence, GetType vs ClassName, notnull, EXTrace, CfgMods defines[], cross-mod #ifdef gates, DEVELOPER vs DIAG_DEVELOPER (SP-037), foreach-on-getter.
 
 ## TROUBLESHOOTING — Common Errors & Fixes
 

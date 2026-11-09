@@ -1651,10 +1651,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "pack-141-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: an Unreleased Changed entry for pipeline inbox dada: ES-EMPTY-IFDEF is WARN, no longer FAIL, after an #ifdef block holding only a comment compiled and ran on DayZDiag 1.30.164289 (the owner's PC, dayz-mcp run 06624c45, server and client), with what was not measured and what the vanilla control's baseline must change when it is regenerated on the owner's PC. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "f81bb8f325d2ee1cfd084f4a5569b015b52c16ec2b6d22f01193836b93470ff8",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "73dddaa36be866eb64c45330686702b97ef649d0a48e2efae1c1225b2b1cf2b6",
+      "output_hash": "f81bb8f325d2ee1cfd084f4a5569b015b52c16ec2b6d22f01193836b93470ff8",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4866,10 +4876,20 @@
           "source_path": "skills/_shared/enscript-style.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. 'Empty Preprocessor Blocks' keeps the guide's segfault claim as the guide's and says it was not reproduced: on DayZDiag 1.30.164289 a block holding only a comment compiled and ran on server and client at file, class and method scope (enforce-script-reference pitfalls-advanced.md section 5); a block with nothing inside, retail and 1.29 not measured. The WRONG/CORRECT example becomes the measured block. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "f079b62d512d03377e07c9e40fe4ebcf27a59ec7b5c96b859dd70b9f7dee0f59",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/enscript-style.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "235ceaa1173717793936a30e231276be155d13c21fcd9f925ed54b8603393a55",
+      "output_hash": "f079b62d512d03377e07c9e40fe4ebcf27a59ec7b5c96b859dd70b9f7dee0f59",
       "output_path": "skills/_shared/enscript-style.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -9330,10 +9350,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. The offline gate paragraph no longer lists an empty #ifdef among the errors that only show when the module compiles: ES-EMPTY-IFDEF is WARN, after a block holding only a comment compiled on DayZDiag 1.30.164289. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "a56978c0116e69935432d01111589838cce26eaf7c3b95351e6a52a347032b9b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "77f1454bbf0a7358c8e80968da2a8681eb6830c910c4252d0c810da457f86cc2",
+      "output_hash": "a56978c0116e69935432d01111589838cce26eaf7c3b95351e6a52a347032b9b",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -11356,10 +11386,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. 'Offline script linter (pre-PBO)' no longer lists an empty #ifdef among the errors that give exit 1: ES-EMPTY-IFDEF is WARN. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "6c33b4cec6368c3c9f32f1c79a16a15be03029a919ab5c8fe74d474117eec5f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a2a44c154760da28f79e72704c6b59a377ba784bbc7679df78c7c238ff41467f",
+      "output_hash": "6c33b4cec6368c3c9f32f1c79a16a15be03029a919ab5c8fe74d474117eec5f2",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -16528,10 +16568,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. Three one-line mentions of the empty-#ifdef segfault (the StarDZ one-liners, the reference-table row of pitfalls-advanced.md and the moved style-guide section) say it was not reproduced on DayZDiag 1.30.164289. No line added or removed, so the claim lines are unchanged. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "3724bda07f5d8ab97ab2fa03742cd845c67f6dd2f4d70fec0fb42bad3442d618",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b504cb7cd479f017fea96dd83af55d2b4e11c85265cb0315fb410f6f06b5e754",
+      "output_hash": "3724bda07f5d8ab97ab2fa03742cd845c67f6dd2f4d70fec0fb42bad3442d618",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -16690,10 +16740,20 @@
           "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. Section 5, 'Empty #ifdef Blocks Cause Segfault', now says what was measured: on DayZDiag 1.30.164289 (2026-11-09, the owner's PC, dayz-mcp run 06624c45, server and client, a probe mod's 4_World script) an #ifdef/#endif block holding only a comment compiled and ran at file scope, in a class body and in a method body, with DIAG_DEVELOPER and with a macro nobody defines, its marker printed and no hang; vanilla 1.30 ships one at 4_world/classes/environment/environment.c:1-3; a block with nothing inside, a retail build and 1.29 are not measured (CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130). The style-guide bullet that said such blocks segfault now gives that as the Expansion devs' report and says it was not reproduced. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "4f7d1360fc5c2481094906c5895a3efa2a95d3808e536a91adc9f84e94bf1f2c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b760fc50b79ff2cf9375ca17947ffc7e705152f87420915f72734de4aa24c86c",
+      "output_hash": "4f7d1360fc5c2481094906c5895a3efa2a95d3808e536a91adc9f84e94bf1f2c",
       "output_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -19473,10 +19533,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "pack-141-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. Registered CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130 (runtime_verified) on pitfalls-advanced.md section 5, lines 66-77. CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE moves from 652-668 to 653-669: section 5 is one line shorter and the style-guide bullet two lines longer. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "33a27397a170897ec276737c19ce65968040fd42f00db004bd05c356acc942fc",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fbdeef179a1cac037a770ff2055abed0b38dd52edefc1660f963da0101d3933d",
+      "output_hash": "33a27397a170897ec276737c19ce65968040fd42f00db004bd05c356acc942fc",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -23130,10 +23200,20 @@
           "source_path": "scripts/detectors/es_empty_ifdef.py",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. ES-EMPTY-IFDEF reports an #ifdef or #ifndef block with no statement as a WARN among the warnings instead of a FAIL, so it no longer gives exit 1. Its message drops the 'documented segfault' and says what was measured on DayZDiag 1.30.164289 (a block holding only a comment compiled and ran on server and client, at file, class and method scope, with a macro DayZDiag defines and one nobody defines) and what was not (a block with nothing inside, a retail build, 1.29); a header comment says the same. Over the probe mod @MCPProbeOk the validator gives six WARNs where it gave six FAILs. The vanilla control was not run: no vanilla tree on this machine. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "425777e0f1130bb41aaa76a502753f575aad1d39ea02ce2b186d0634307f9d50",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_empty_ifdef.py",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5693b91b3d180d41ed93ce3814f1796bae40668a5e4a38fbd89375338268e186",
+      "output_hash": "425777e0f1130bb41aaa76a502753f575aad1d39ea02ce2b186d0634307f9d50",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_empty_ifdef.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27788,10 +27868,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. TestEsEmptyIfdef: the two empty-block tests assert a WARN (exit 2, no error, the new message, no 'Documented segfault'); TestFullCorpus expects the two ES-EMPTY-IFDEF fixtures among the warnings. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "de511c0efa6a1f6f79f4ca8702f3514110e5832da7d6e5cf460635f60715c1ef",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "60c84bf074b6f715035c202f683caf177e54b40a33d3bfc986a8d2b86d0e4290",
+      "output_hash": "de511c0efa6a1f6f79f4ca8702f3514110e5832da7d6e5cf460635f60715c1ef",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

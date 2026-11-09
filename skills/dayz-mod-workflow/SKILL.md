@@ -517,7 +517,7 @@ opening the menu.
 Costs under one second on a full addon, so **there is no cost excuse**:
 runs on every pass, not just at the end. Catches the family of errors that only
 manifests when compiling the module at boot (`Unknown type`, local redeclaration,
-missing method override, `delete`, empty `#ifdef`, item override in wrong
+missing method override, `delete`, item override in wrong
 `CfgXxx`) and which otherwise is paid for with a multi-minute in-game cycle.
 
 **What this gate does NOT authorize**, and is the whole point of this section: green here

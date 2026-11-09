@@ -409,45 +409,56 @@ class TestEsEmptyIfdef(unittest.TestCase):
         self.assertEqual([], result["errors"])
         self.assertEqual([], result["warnings"])
 
-    def test_empty_ifdef_with_comments_fails(self):
+    # Pipeline inbox dada: on DayZDiag 1.30.164289 a block holding only a
+    # comment compiled and ran on server and client, so no crash is on record
+    # and the rule warns.
+    EMPTY_IFDEF_MEASURED = (
+        "block contains no statements (comments do not count). Such blocks "
+        "were reported to segfault, and no measurement shows it: on DayZDiag "
+        "1.30.164289 a block holding only a comment compiled and ran on server "
+        "and client, at file scope, in a class body and in a method body, with "
+        "a macro DayZDiag defines and with one nobody defines "
+        "(enforce-script-reference pitfalls-advanced.md, section 5). Not "
+        "measured: a block with nothing at all inside, a retail build, DayZ "
+        "1.29. Remove the block if it holds no code."
+    )
+
+    def test_empty_ifdef_with_comments_warns(self):
         fixture = FIXTURES / "es" / "bad_empty_ifdef_with_comments.c"
         exit_code, result = script_validator.run([str(fixture)])
         expected_message = (
-            "[FAIL] bad_empty_ifdef_with_comments.c line 1: '#ifdef MY_MOD' "
-            "block contains no statements (comments do not count). Documented "
-            "segfault per pitfalls-advanced.md:66 (\"Empty #ifdef Blocks Cause "
-            "Segfault\"). Add at least one statement (e.g., 'int _placeholder;')."
+            "[WARN] bad_empty_ifdef_with_comments.c line 1: '#ifdef MY_MOD' "
+            + self.EMPTY_IFDEF_MEASURED
         )
 
-        self.assertEqual(1, exit_code)
-        self.assertEqual("FAIL", result["status"])
-        self.assertEqual(1, len(result["errors"]))
-        self.assertEqual([], result["warnings"])
-        self.assertEqual("ES-EMPTY-IFDEF", result["errors"][0]["rule_id"])
-        self.assertEqual("FAIL", result["errors"][0]["severity"])
-        self.assertEqual("bad_empty_ifdef_with_comments.c", result["errors"][0]["file"])
-        self.assertEqual(1, result["errors"][0]["line"])
-        self.assertEqual(expected_message, result["errors"][0]["message"])
+        self.assertEqual(2, exit_code)
+        self.assertEqual("WARN", result["status"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual(1, len(result["warnings"]))
+        self.assertEqual("ES-EMPTY-IFDEF", result["warnings"][0]["rule_id"])
+        self.assertEqual("WARN", result["warnings"][0]["severity"])
+        self.assertEqual("bad_empty_ifdef_with_comments.c", result["warnings"][0]["file"])
+        self.assertEqual(1, result["warnings"][0]["line"])
+        self.assertEqual(expected_message, result["warnings"][0]["message"])
+        self.assertNotIn("Documented segfault", result["warnings"][0]["message"])
 
-    def test_empty_ifndef_with_comments_fails(self):
+    def test_empty_ifndef_with_comments_warns(self):
         fixture = FIXTURES / "es" / "bad_empty_ifndef_with_comments.c"
         exit_code, result = script_validator.run([str(fixture)])
         expected_message = (
-            "[FAIL] bad_empty_ifndef_with_comments.c line 1: '#ifndef SERVER' "
-            "block contains no statements (comments do not count). Documented "
-            "segfault per pitfalls-advanced.md:66 (\"Empty #ifdef Blocks Cause "
-            "Segfault\"). Add at least one statement (e.g., 'int _placeholder;')."
+            "[WARN] bad_empty_ifndef_with_comments.c line 1: '#ifndef SERVER' "
+            + self.EMPTY_IFDEF_MEASURED
         )
 
-        self.assertEqual(1, exit_code)
-        self.assertEqual("FAIL", result["status"])
-        self.assertEqual(1, len(result["errors"]))
-        self.assertEqual([], result["warnings"])
-        self.assertEqual("ES-EMPTY-IFDEF", result["errors"][0]["rule_id"])
-        self.assertEqual("FAIL", result["errors"][0]["severity"])
-        self.assertEqual("bad_empty_ifndef_with_comments.c", result["errors"][0]["file"])
-        self.assertEqual(1, result["errors"][0]["line"])
-        self.assertEqual(expected_message, result["errors"][0]["message"])
+        self.assertEqual(2, exit_code)
+        self.assertEqual("WARN", result["status"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual(1, len(result["warnings"]))
+        self.assertEqual("ES-EMPTY-IFDEF", result["warnings"][0]["rule_id"])
+        self.assertEqual("WARN", result["warnings"][0]["severity"])
+        self.assertEqual("bad_empty_ifndef_with_comments.c", result["warnings"][0]["file"])
+        self.assertEqual(1, result["warnings"][0]["line"])
+        self.assertEqual(expected_message, result["warnings"][0]["message"])
 
     def test_ifdef_nested_passes(self):
         fixture = FIXTURES / "es" / "ok_ifdef_nested.c"
@@ -1542,8 +1553,6 @@ class TestFullCorpus(unittest.TestCase):
         }
 
         expected_errors = {
-            ("ES-EMPTY-IFDEF", "bad_empty_ifdef_with_comments.c"),
-            ("ES-EMPTY-IFDEF", "bad_empty_ifndef_with_comments.c"),
             ("ES-CTX-READ-UNCHECKED", "bad_ctx_read_unchecked_in_rpc.c"),
             (
                 "ES-CTX-READ-UNCHECKED",
@@ -1574,6 +1583,8 @@ class TestFullCorpus(unittest.TestCase):
             ),
         }
         expected_warnings = {
+            ("ES-EMPTY-IFDEF", "bad_empty_ifdef_with_comments.c"),
+            ("ES-EMPTY-IFDEF", "bad_empty_ifndef_with_comments.c"),
             ("ES-SOURCE-UNTERMINATED-BLOCK-COMMENT", "bad_unterminated_block_comment.c"),
             ("ES-SOURCE-UNTERMINATED-STRING", "bad_unterminated_string.c"),
             (

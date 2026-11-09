@@ -562,6 +562,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-script-validator`: `ES-EMPTY-IFDEF` is WARN, no longer FAIL, and the pack no longer says
+  that an empty `#ifdef` block segfaults (pipeline inbox dada). Measured on DayZDiag 1.30.164289.70
+  (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, dayz-mcp run 06624c45, server and
+  client, with the probe mod `@MCPProbeOk` (`scripts/4_World/MCPProbeIfdef.c`, the pack's own
+  code): six `#ifdef`/`#endif` blocks holding only a comment, at file scope, in a class body and in
+  a method body, each with `DIAG_DEVELOPER` (defined by DayZDiag on both peers) and with a macro
+  nobody defines, compiled and ran on both peers; the method's marker `MCP_PROBE_IFDEF_RAN` is in
+  both script logs and neither process hung. Vanilla 1.30 ships such a block at
+  `4_world/classes/environment/environment.c:1-3`. Not measured: a block with nothing at all inside,
+  a retail build, DayZ 1.29, so the rule stays as a WARN whose message says so. Over that probe the
+  validator gives six WARNs where it gave six FAILs. `enforce-script-reference`
+  `references/pitfalls-advanced.md` section 5 and its style-guide bullet, three lines of its
+  `SKILL.md` and `_shared/enscript-style.md` now say what was measured
+  (`CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130`), and `dayz-pbo-build` and `dayz-mod-workflow` no longer
+  list an empty `#ifdef` among the errors that stop a build. The vanilla control was not run (no
+  vanilla tree on the machine that wrote this) and its baseline was not edited: it allows the 7
+  `ES-EMPTY-IFDEF` hits of 1.30.164289 as errors, which now come out as warnings, so the control
+  fails until `vanilla_control.py --update` runs on the owner's PC, which should move them from
+  `errors` (15 to 8 entries) to `warning_counts` (`ES-EMPTY-IFDEF`: 7, 424 to 431 warnings).
 - `dayz-test-ingame`: `CLAIM-SIGN-NEGATIVE-CONTROL` adds that another build's PBO only works as a
   signature negative control when the two builds differ in an entry the signature covers. Arma2Quad
   v1.0.3-rc (2026-11-05), which differed from v1.0.2 only in `Arma2Quad_body.p3d` and the PBO

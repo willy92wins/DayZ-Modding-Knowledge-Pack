@@ -900,22 +900,15 @@ if (!list[1])  // Evaluates to true for both null and out-of-bounds
 
 **Empty Preprocessor Blocks:**
 
-Empty `#ifdef`/`#ifndef` blocks cause segfaults, even if they only contain comments:
+The guide says that empty `#ifdef`/`#ifndef` blocks cause segfaults, even if they only contain comments. Not reproduced: on DayZDiag 1.30.164289 (2026-11-09) a block holding only a comment compiled and ran on server and client, at file scope, in a class body and in a method body (`enforce-script-reference` `references/pitfalls-advanced.md`, section 5). A block with nothing at all inside, a retail build and DayZ 1.29 are not measured.
 
 ```
-// WRONG - Causes segfault
+// Compiled and ran on DayZDiag 1.30.164289, server and client
 #ifdef FOO
-    // This will crash
+    // only a comment
 #endif
 
-// CORRECT - Either remove or add actual code
-#ifdef FOO
-    int dummy;  // At least one statement
-#endif
-
-// BETTER - Remove if not needed
-// #ifdef FOO
-// #endif
+// Simplest - remove a block that holds no code
 ```
 
 ### Defines

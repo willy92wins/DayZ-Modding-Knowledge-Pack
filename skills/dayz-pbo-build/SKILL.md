@@ -924,7 +924,7 @@ For the authoritative Enforce Script rule set, see the `enforce-script-reference
 python tools/dayz-script-validator/scripts/script_validator.py <addon_root>
 ```
 
-Exit `0` PASS / `1` FAIL / `2` WARN. **Do not build a PBO on exit 1**: the errors it catches (`Unknown type`, local redeclaration, override of an absent method, `delete`, empty `#ifdef`, item declared under the wrong `CfgXxx`) only surface when the script module compiles at boot, so packing first turns a one-second check into a full in-game cycle. Add `ui_reconcile.py <addon_root>` when the mod ships UI.
+Exit `0` PASS / `1` FAIL / `2` WARN. **Do not build a PBO on exit 1**: the errors it catches (`Unknown type`, local redeclaration, override of an absent method, `delete`, item declared under the wrong `CfgXxx`) only surface when the script module compiles at boot, so packing first turns a one-second check into a full in-game cycle. Add `ui_reconcile.py <addon_root>` when the mod ships UI.
 
 Green here means the module should COMPILE and the asset should LOAD. It says nothing about engine behaviour — see `dayz-mod-workflow` §"Gates offline" for the full contract and the known coverage limits.
 

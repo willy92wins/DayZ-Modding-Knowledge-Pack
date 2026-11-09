@@ -63,19 +63,18 @@ with the actual error. This is extremely misleading.
 **Debugging strategy**: If you get a compile error in a file that looks
 correct, check if any class it references requires an addon that isn't loaded.
 
-### 5. Empty #ifdef Blocks Cause Segfault
+### 5. An #ifdef Block Holding Only a Comment Compiles (no segfault measured)
+
+[EXACT][CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130] This entry used to say that an empty `#ifdef` block, comments or not, causes a segfault. Measured on DayZDiag 1.30.164289 (2026-11-09), in a mod's `4_World` scripts: a block holding only a comment compiled and ran on server and client, at file scope, in a class body and in a method body, each with `DIAG_DEVELOPER` (which DayZDiag defines on both peers) and with a macro nobody defines; the method's marker was printed and neither process hung (pipeline inbox dada). Vanilla 1.30 ships such a block at `4_world/classes/environment/environment.c:1-3`.
 
 ```
-// SEGFAULT — empty block (even with comments)
-#ifdef MY_MOD
-// This comment doesn't count as content
-#endif
-
-// CORRECT — at least one statement
-#ifdef MY_MOD
-int _placeholder;
+// Compiled and ran on DayZDiag 1.30.164289, server and client
+#ifdef DIAG_DEVELOPER
+// only a comment
 #endif
 ```
+
+Not measured: a block with nothing at all inside, a retail build, DayZ 1.29. `dayz-script-validator` still reports such a block, as a WARN (`ES-EMPTY-IFDEF`); remove the block if it holds no code.
 
 ### **`Expected ',' or ')', not a '0'`** + cascade (`Unexpected scope`, `Syntax error`) on a signature line (SP-364)
 
@@ -398,9 +397,11 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
 
 ### Compiler / language quirks
 
-- **Empty `#ifdef` / `#ifndef` blocks segfault** — even if they only contain comments.
-  Either remove the block entirely or put at least one statement inside (`int dummy;`).
-  *(Reported by Expansion devs; engine-level, hard to verify in vanilla source.)*
+- **Empty `#ifdef` / `#ifndef` blocks were reported to segfault**, even with only comments
+  inside *(Expansion devs)*. Not reproduced: on DayZDiag 1.30.164289 a block holding only a
+  comment compiled and ran on server and client, at file scope, in a class body and in a
+  method body (section 5 above, pipeline inbox dada). A block with nothing at all inside, a
+  retail build and DayZ 1.29 are not measured. Remove a block that holds no code.
 
 - **`1 < int.MIN` returns TRUE** — and `1 < -2147483647` also returns TRUE. Integer
   comparison against `int.MIN` is broken. Always guard MIN/MAX comparisons explicitly.
