@@ -1681,10 +1681,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-7b9e@2026-11-09",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: an Unreleased Changed entry for pipeline inbox e074: ES-PROTO-ARGUMENT-DOWNCAST reports an Object where a proto takes an EntityAI as FAIL with its own evidence, after ItemPreviewWidget.SetItem refused one on DayZDiag 1.30.164289; the RaycastRV pair keeps its text. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "387eba81962691b8717508fadecf4dd1dccdb69b9351c6886339209fdb9431da",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "60d350edb75708f0903a027d5129fd8bc691c11b48bb6727be3df4e3c464eace",
+      "output_hash": "387eba81962691b8717508fadecf4dd1dccdb69b9351c6886339209fdb9431da",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19613,10 +19623,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-7b9e@2026-11-09",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST records the SetItem refusal and the RaycastRV control on DayZDiag 1.30.164289, says the two measured pairs are FAIL, the new fixture and the changed unit cases, and covers the header comment's lines 28-97 (was 28-82). Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "093faba4c36847b185f328b96f0c8168ec334777114211bfd1ee73e8e28fb3fa",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d2b8d2229946f59b2a87c601c470ad8a915481a4b73da186243f6ca1917eef74",
+      "output_hash": "093faba4c36847b185f328b96f0c8168ec334777114211bfd1ee73e8e28fb3fa",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -23028,10 +23048,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-7b9e@2026-11-09",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. The ES-PROTO-ARGUMENT-DOWNCAST bullet says DayZDiag 1.30.164289 refused the RaycastRV call again and an Object at the EntityAI parameter 0 of ItemPreviewWidget.SetItem, that both pairs are FAIL and any other WARN, and that a retail build is not measured for the second. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "ed47e94e6d68c085d0245f20f3f6a60572f304d3c0a2c185cbe3e5125e5996f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "25a7d3c370a22eda83ec26a5443b7a99bb2ce64f0ed05d03e7180d96be911da3",
+      "output_hash": "ed47e94e6d68c085d0245f20f3f6a60572f304d3c0a2c185cbe3e5125e5996f6",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27988,10 +28018,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-7b9e@2026-11-09",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. TestProtoArgumentDowncast: the SetItem shape FAILs at line 9 with its own evidence and no RaycastRV text; the RaycastRV fixture keeps its evidence; an Object where FX_Hold takes an EntityAI is FAIL beside the IEntity where an Object is taken, while a Managed where an Object is taken and an IEntity where an EntityAI is taken stay WARN, also through the command line. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "7c1cf29fe07736d2b95190f30772f85b05ff069a50750349fe8884488ed2cd18",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f44dfdaf740faf702f62a4dc0f7dbd221ef05b7eba507324e36bb1acb6fe3c35",
+      "output_hash": "7c1cf29fe07736d2b95190f30772f85b05ff069a50750349fe8884488ed2cd18",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -37599,10 +37639,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. _MEASURED maps each measured pair to where it was refused, and the FAIL message names it: an Object where a proto takes an EntityAI is FAIL with 'DayZDiag 1.30.164289, at ItemPreviewWidget.SetItem, argument '0'', while the RaycastRV pair's message is byte for byte what it was (compared on the bad fixture). The WARN message names both refusals; the header comment gives the SetItem probe, its error lines and that a retail build is not measured. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "cfab7ee5cfc94c46e012871470685466b6db182ac5a4317ecaa10efd93da25ac",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7240b61e8365ff9a1f0fb401d9c31be73a064a88cf5d1922b68e1bb93c0e7272",
+      "output_hash": "cfab7ee5cfc94c46e012871470685466b6db182ac5a4317ecaa10efd93da25ac",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -38996,6 +39046,50 @@
       "license": "MIT",
       "output_hash": "19f36230a4adaf1fd92991790ab29f525149a1a674a7bcf14b9290171961723e",
       "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_split20.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_preview.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074, case A: the probe's shape, `static void Show(ItemPreviewWidget preview, Object obj)` with `preview.SetItem(obj);` on the same line 9 (from MCPProbeDowncastA.c (389 B, sha256 8f7050a0fdfb7e36a77a7bde4685de7360ecf6a75da7fff8f78f048c0414a58f as filed in the inbox)), against the stand-in FX_ItemPreview.FX_SetItem; ES-PROTO-ARGUMENT-DOWNCAST gives FAIL at line 9 with the SetItem evidence. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "196de8a8a800f1003c3ef1d86759c7c796593a4f6c51b7407fcea154c620b9de",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_preview.c",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "196de8a8a800f1003c3ef1d86759c7c796593a4f6c51b7407fcea154c620b9de",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_preview.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_widgets.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. A stand-in with the shape only of ItemPreviewWidget.SetItem, a proto that takes an EntityAI at argument 0, as the error of the probe names it ('Cannot convert 'Object' to 'EntityAI' for argument '0' to method 'SetItem''); no vanilla text. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "2837855fa118466eeb7631bb5ea82f9785e393a4b571d4ef7e3a7d6960f8ad4b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_widgets.c",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2837855fa118466eeb7631bb5ea82f9785e393a4b571d4ef7e3a7d6960f8ad4b",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_widgets.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     }

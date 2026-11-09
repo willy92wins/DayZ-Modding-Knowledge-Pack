@@ -185,9 +185,14 @@ were not measured again.
   `hitEntity` an `IEntity` at the `Object` parameter 6, made DayZ
   1.30.164014 server refuse the World module with `Cannot convert 'IEntity'
   to 'Object' for argument '6' to method 'RaycastRV'` (inbox
-  fb-20261006-030019-e074; the compiler counts arguments from 0). That
-  pair, an `IEntity` where an `Object` is taken, is FAIL; any other is WARN,
-  because no refusal of it is measured. Judged only when everything is
+  fb-20261006-030019-e074; the compiler counts arguments from 0). DayZDiag
+  1.30.164289 refused that call again, and an `Object` passed to the
+  `EntityAI` parameter 0 of `ItemPreviewWidget.SetItem`, the shape the rule
+  had found in a mod, with `Cannot convert 'Object' to 'EntityAI' for
+  argument '0' to method 'SetItem'` (inbox e074; a retail build is not
+  measured for it). Those two pairs, an `IEntity` where an `Object` is
+  taken and an `Object` where an `EntityAI` is, are FAIL; any other is
+  WARN, because no refusal of it is measured. Judged only when everything is
   known: the call is in a method the validator reads (not one whose return
   type has template arguments, `array<T> F(`); the receiver is a class, or a
   name looked up as in `ES-CAST-UNRELATED-TYPES` or else as a member of

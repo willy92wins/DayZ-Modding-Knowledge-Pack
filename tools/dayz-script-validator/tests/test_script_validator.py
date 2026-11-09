@@ -4530,8 +4530,20 @@ class TestProtoArgumentDowncast(unittest.TestCase):
 
     Inbox fb-20261006-030019-e074, DayZ 1.30.164014 server: an IEntity at the
     Object argument 6 of DayZPhysics.RaycastRV, "Cannot convert 'IEntity' to
-    'Object' for argument '6' to method 'RaycastRV'".
+    'Object' for argument '6' to method 'RaycastRV'". Pipeline inbox e074,
+    DayZDiag 1.30.164289: an Object at the EntityAI argument 0 of
+    ItemPreviewWidget.SetItem, "Cannot convert 'Object' to 'EntityAI' for
+    argument '0' to method 'SetItem'".
     """
+
+    RAYCAST_EVIDENCE = (
+        "(DayZ 1.30, at DayZPhysics.RaycastRV, where it also said \"Types "
+        "'IEntity' and 'Object' are unrelated\")"
+    )
+    SETITEM_EVIDENCE = (
+        "(DayZDiag 1.30.164289, at ItemPreviewWidget.SetItem, argument '0', "
+        "where it also said \"Types 'Object' and 'EntityAI' are unrelated\")"
+    )
 
     def test_ticket_repro_fails(self):
         exit_code, result = script_validator.run(
@@ -4539,7 +4551,9 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         )
 
         self.assertEqual(1, exit_code)
-        errors = _errors_of(result, PROTO_RULE)
+        errors = [
+            e for e in _errors_of(result, PROTO_RULE) if "fx_rider.c" in e["file"]
+        ]
         self.assertEqual([19, 21], [e["line"] for e in errors])
         self.assertIn(
             "argument 6 (counted from 0), 'hitEntity', is declared as IEntity",
@@ -4554,11 +4568,42 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         self.assertIn("Pass Object.Cast(hitEntity)", errors[0]["message"])
         self.assertIn("the proto Object.FX_SetOwner", errors[1]["message"])
         self.assertIn("fx_rider.c", errors[0]["file"])
+        # The RaycastRV pair keeps its own evidence.
+        for error in errors:
+            self.assertIn(self.RAYCAST_EVIDENCE, error["message"])
+            self.assertNotIn("SetItem", error["message"])
         assert_standard_findings(self, result)
 
-    def test_only_an_ientity_where_an_object_is_taken_fails(self):
-        # The ticket's pair is FAIL. A Managed where an Object is taken, and
-        # an Object or an IEntity where an EntityAI is, are not measured.
+    def test_an_object_where_setitem_takes_an_entityai_fails(self):
+        # Pipeline inbox e074, case A: the shape the rule had found in a mod,
+        # refused by DayZDiag 1.30.164289 at the probe's line 9.
+        _code, result = script_validator.run(
+            [str(PROTO / "bad"), "--vanilla-root", str(PROTO / "vanilla")]
+        )
+
+        errors = [
+            e for e in _errors_of(result, PROTO_RULE) if "fx_preview.c" in e["file"]
+        ]
+        self.assertEqual([(9, "FAIL")], [(e["line"], e["severity"]) for e in errors])
+        message = errors[0]["message"]
+        self.assertIn(
+            "argument 0 (counted from 0), 'obj', is declared as Object, and the "
+            "proto FX_ItemPreview.FX_SetItem takes EntityAI there",
+            message,
+        )
+        self.assertIn(
+            "\"Cannot convert 'Object' to 'EntityAI' for argument '0' to method "
+            "'FX_SetItem'\"",
+            message,
+        )
+        self.assertIn(self.SETITEM_EVIDENCE, message)
+        self.assertNotIn("RaycastRV", message)
+        self.assertIn("Pass EntityAI.Cast(obj)", message)
+
+    def test_only_the_two_measured_pairs_fail(self):
+        # An IEntity where an Object is taken and an Object where an EntityAI
+        # is are FAIL. A Managed where an Object is taken, and an IEntity
+        # where an EntityAI is, are not measured.
         source = (
             "void F(EntityAI s, IEntity e, Managed m, Object o)\n{\n"
             "    s.FX_SetOwner(e);\n    s.FX_SetOwner(m);\n"
@@ -4566,33 +4611,50 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         )
 
         errors, warnings = _proto_findings(source)
-        self.assertEqual([(3, "FAIL")], [(e["line"], e["severity"]) for e in errors])
         self.assertEqual(
-            [(4, "WARN"), (5, "WARN"), (6, "WARN")],
+            [(3, "FAIL"), (5, "FAIL")],
+            [(e["line"], e["severity"]) for e in errors],
+        )
+        self.assertEqual(
+            [(4, "WARN"), (6, "WARN")],
             [(w["line"], w["severity"]) for w in warnings],
         )
+        self.assertIn(self.RAYCAST_EVIDENCE, errors[0]["message"])
+        self.assertIn(self.SETITEM_EVIDENCE, errors[1]["message"])
         message = warnings[1]["message"]
-        self.assertTrue(message.startswith("[WARN] scripts/4_World/x.c line 5: "))
+        self.assertTrue(message.startswith("[WARN] scripts/4_World/x.c line 6: "))
         self.assertIn(
-            "'o', is declared as Object, and the proto FX_Physics.FX_Hold takes "
+            "'e', is declared as IEntity, and the proto FX_Physics.FX_Hold takes "
             "EntityAI there",
             message,
         )
         self.assertIn(
-            "whether it refuses Object where EntityAI is taken is not measured",
+            "DayZ 1.30 refused two, an IEntity where DayZPhysics.RaycastRV takes "
+            "an Object and an Object where ItemPreviewWidget.SetItem takes an "
+            "EntityAI",
             message,
         )
-        self.assertIn("Pass EntityAI.Cast(o)", message)
-        # The validator counts them as warnings.
+        self.assertIn(
+            "whether it refuses IEntity where EntityAI is taken is not measured",
+            message,
+        )
+        self.assertIn("Pass EntityAI.Cast(e)", message)
+        self.assertIn(
+            "whether it refuses Managed where Object is taken is not measured",
+            warnings[0]["message"],
+        )
+        # The validator counts the FAILs as errors and the rest as warnings.
         with tempfile.TemporaryDirectory() as temp_dir:
             path = pathlib.Path(temp_dir) / "x.c"
             path.write_text(source, encoding="utf-8")
             _code, result = script_validator.run(
                 [str(path), "--vanilla-root", str(PROTO / "vanilla")]
             )
-        self.assertEqual([3], [e["line"] for e in _errors_of(result, PROTO_RULE)])
         self.assertEqual(
-            [4, 5, 6],
+            [3, 5], [e["line"] for e in _errors_of(result, PROTO_RULE)]
+        )
+        self.assertEqual(
+            [4, 6],
             [w["line"] for w in result["warnings"] if w["rule_id"] == PROTO_RULE],
         )
 

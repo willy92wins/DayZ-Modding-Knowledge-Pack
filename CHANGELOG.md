@@ -596,6 +596,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-script-validator`: `ES-PROTO-ARGUMENT-DOWNCAST` reports an `Object` passed where a proto takes
+  an `EntityAI` as FAIL, no longer WARN (pipeline inbox e074). Measured on DayZDiag 1.30.164289.70 (DayZ
+  1.30.164289 stable) on the owner's PC on 2026-11-09, server only, one probe mod per run:
+  `static void Show(ItemPreviewWidget preview, Object obj) { preview.SetItem(obj); }` in a mod's
+  `4_World` script, the shape the rule had found in a mod, failed with
+  `Unsafe down-casting, use 'EntityAI.Cast' for safe down-casting`,
+  `Types 'Object' and 'EntityAI' are unrelated` and
+  `Cannot convert 'Object' to 'EntityAI' for argument '0' to method 'SetItem'`, and the World module did
+  not compile; the ticket's `RaycastRV` call, run as the control, failed as the ticket said. A retail
+  build is not measured. The FAIL message of the new pair names its own evidence
+  (`ItemPreviewWidget.SetItem`, argument '0'), the `IEntity`/`Object` pair keeps its text word for word,
+  and the WARN for any other pair names both refusals. A fixture with the probe's shape
+  (`bad/scripts/4_World/fx_preview.c`, FAIL at line 9) and a stand-in proto join the tests; the header
+  comment, the README and `CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST` say the same. The vanilla control is
+  not affected: its baseline holds no finding of this rule, and a first version that failed every pair
+  found none on vanilla 1.30.164078 and 1.29.0.163451.
 - `dayz-script-validator`: `ES-EMPTY-IFDEF` is WARN, no longer FAIL, and the pack no longer says
   that an empty `#ifdef` block segfaults (pipeline inbox dada). Measured on DayZDiag 1.30.164289.70
   (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, dayz-mcp run 06624c45, server and
