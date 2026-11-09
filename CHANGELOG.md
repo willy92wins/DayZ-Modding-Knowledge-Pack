@@ -7,6 +7,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-mcp-verify` `references/dayz-1-30-mcp-verify.md`, new section "Deleting vehicles and checking
+  what a run loaded" (DayZ 1.30.164200, 2026-11-01), four claims from the dayz-mcp fronts: eject
+  every occupant before deleting a car or the server crashes (#298, fixed by #300); the server sees
+  only its own crew, so a client-only occupant leaves the client's `HumanCommandVehicle` dangling
+  (`ACCESS_VIOLATION`) and the delete must refuse with `vehicle_seat_unverified` when the client
+  seat cannot be verified (#302, PR #309); the historical `clean=true` / `build=false` rebuild bug (#301, fixed by #314),
+  with SHA-256 checks of the live PBO retained as provenance checks; and
+  provenance without WMI (`Get-Process` plus the RPT command line).
 - `dayz-ui-development` `references/layout-variants-130.md`: DayZ 1.30 layout variants, measured on DayZDiag
   1.30.164200 (2026-10-27 and 2026-11-05) against the Esc menu layout. A variant generated in Workbench (resource
   browser, create resource variant for an addon) writes `gui/layouts/<name>.layout` plus a `.meta`, mirrors the vanilla
