@@ -223,7 +223,9 @@ Layers `DYNAMICITEM` vs `DYNAMICITEM_NOCHAR` (`dayzphysics.c:9-10`): the pair co
 
 ### 2.10 Player CCT (character controller)
 
-Player controller is NOT a script-visible rigid body; its API lives in `Human` (`3_game/human.c`):
+Player controller is NOT a script-visible rigid body; its API lives in `Human` (`3_game/human.c`). The line
+numbers in this block are those of 1.29 (`stable-1.29/scripts/scripts/3_Game/human.c`); the 1.30.164200 ones
+follow it:
 ```c
 proto native bool    PhysicsIsFalling(bool pValidate);            // :1397
 proto native IEntity PhysicsGetFloorEntity();                     // :1400
@@ -239,7 +241,7 @@ proto native bool    CheckFreeSpace(vector localDir, float distance, bool useHea
 proto       float    CollisionMoveTest(vector dir, vector offset, float xzScale, IEntity ignoreEntity, out IEntity hitEntity, out vector hitPosition, out vector hitNormal); // :1357
 proto native void    LinkToLocalSpaceOf(notnull IEntity child, vector pLocalSpaceMatrix[4]); // :1361
 ```
-(since 1.30: `PhysicsIsFalling` :1428 also true if ragdoll moves > 1 m/s; `PhysicsSetSimpleDeath` :1448-1449 is the "old" death-state system that previously was `PhysicsSetRagdoll`; `PhysicsSetRagdoll` :1451 no longer carries the 1.29 RAGDOLL-layer comment; `PhysicsIsRagdoll()` :1452; `HumanCommandUnconscious.IsRagdoll()` :647. Death branch calls `PhysicsSetSimpleDeath(true)` at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:745`. CheckFreeSpace :1381, CollisionMoveTest :1387, LinkToLocalSpaceOf :1391.)
+(since 1.30: `PhysicsIsFalling` `human.c:1428` also true if ragdoll moves > 1 m/s; `PhysicsSetSimpleDeath` :1448-1449 is the "old" death-state system that previously was `PhysicsSetRagdoll`; `PhysicsSetRagdoll` :1451 no longer carries the 1.29 RAGDOLL-layer comment; `PhysicsIsRagdoll()` :1452; `HumanCommandUnconscious.IsRagdoll()` :647. Death branch calls `PhysicsSetSimpleDeath(true)` at `exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:745`. CheckFreeSpace `human.c:1381`, CollisionMoveTest :1387, LinkToLocalSpaceOf :1391.)
 - CCT belongs to `CHARACTER` layer [strong INFERENCE: `transport.c:791` queries `dGetInteractionLayer(this, PhxInteractionLayers.CHARACTER, layer)` to determine what blocks player].
 - Vanilla manipulates it: `dayzplayerimplement.c:32` (`PhysicsEnableGravity(true)` upon leaving unconscious-fall), `:661` (`PhysicsSetSolid(true)`).
 - ⚠️RELEVANT: for player NOT to pass through stone, stone body must (a) exist on the machine simulating CCT (player local client) and (b) be in a layer with active interaction against `CHARACTER` (e.g. `DYNAMICITEM`).
@@ -271,7 +273,7 @@ if (dBodyIsSet(this)) {
     dBodyActive(this, ActiveState.ACTIVE);
     dBodyDynamic(this, true);
 }
-// destructor: if (dBodyIsSet(this)) dBodyDestroy(this);   // :57-58
+// destructor: if (dBodyIsSet(this)) dBodyDestroy(this);   // scriptmodel.c:57-58
 ```
 
 **Native throw (server + owner client)** — `hand_actions.c:76-84`:

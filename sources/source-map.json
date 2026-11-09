@@ -1664,7 +1664,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "15c8619a2e9ee5baf1cbbec282dd24bf18d23c85203f767161b1582062717c76",
+      "output_hash": "95faad52a76cbc2ac3b58fd814c44d6b76abb03823b602414b5c318817d8b02b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7159,7 +7159,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "86e0a287c64437d5aaafe3e1051f0e5f709d360fb6415b81891b18b0b0375554",
+      "output_hash": "eeee83e90cb43edc16f8bcc65bd6941e70b58bf1236ee8e28f4a219545b870c7",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -7565,7 +7565,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4c3c2219ceffa30a4be4baf8626b0455f186c8bf2d7ada44033a004aec904226",
+      "output_hash": "431688b46327cc57e714e5d25c5be3e0c19141aafbd9d8963d9a36af384a2234",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -7607,7 +7607,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "63c2cad119a155e7d3b89b34185643d9652ded8527e0b065fb0c2e4bcf7a6ca4",
+      "output_hash": "7d304cd34d0374ff4dd469e1bfe6ff777ab77735f6e871d50c61cb8e0bf185cd",
       "output_path": "skills/dayz-basebuilding/references/config-contract.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -7743,7 +7743,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3e432f3633599bf4dc25a835fa1e6f7a9e7a13b34b24e006758366e491f29c57",
+      "output_hash": "12e832d8b4c1e0ffbaaf44c015a9d8c0dfdf1bd367f2a51d29027b725e5308d2",
       "output_path": "skills/dayz-basebuilding/references/persistence-audit.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -11901,7 +11901,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9468bcf3c2a10796c643559db19650b56f766a8900ee578c06544e1b76480d32",
+      "output_hash": "c89c527aeabcb47c07899f16aeac55c94d824295964826d6041e1b782c650d5a",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -11965,7 +11965,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1a903a2d165840561cd09839a1978fec4af6944697a1b1fd7762c93c5f471154",
+      "output_hash": "b84ad1f5f2937d2bc3cb67a592ed3333889b30582d28992ab49e2a98fa7449f9",
       "output_path": "skills/dayz-physics-engine/references/fisica-engine-deep-dive.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -12749,7 +12749,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4120108e85ebb456da8539a3b8c4267b0dbf6e98863f1830b191f19cd83bb1d9",
+      "output_hash": "a81674531dd380552bb141ceb52ca1a5fbf97008b34290402cc9ca3f99899e62",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -14249,7 +14249,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8857bac86ca90f533cddd23abdaddc499aa5c2ef4aa8ec33bf9f205d69f926bb",
+      "output_hash": "0a3d6c8ca5bb3472775a8dd819b9975a1da797a2273ca2cb4e012ea7dee628c8",
       "output_path": "skills/dayz-ui-development/references/vanilla-menus-map.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -16581,7 +16581,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "59396e4b2e56b61494cb43f91d926665ea7e52b249df5df4698d67ea9de22114",
+      "output_hash": "1d534d716277c4135960a5cc0d2a9c267e2651dd8074c56d3e13af61197d2247",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -19536,7 +19536,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e6f605cfa4652d218509ac7d81acc7899ea6e61c9ddf9907991f893c548d6bf5",
+      "output_hash": "598aa829364ff58472d3f8a4bf4dad776a20cca0d7669b975d08c4d9bae3d5f0",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

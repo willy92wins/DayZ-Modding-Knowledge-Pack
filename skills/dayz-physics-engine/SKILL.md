@@ -203,8 +203,8 @@ by naming (inference — internal assignment not script-visible).
 
 `PhysicsIsFalling` (up to 1.29: :1397; from 1.30: `exp/scripts/scripts/3_Game/human.c:1428`, comment `:1426-1427` "returns true if the ragdoll is moving greater than 1m/s"), `PhysicsGetFloorEntity` (up to 1.29: :1400; from 1.30: :1431), `PhysicsGetLinkedEntity` :1434,
 `PhysicsGetVelocity` :1441, `PhysicsEnableGravity` :1443, `PhysicsSetSolid` :1446,
-`PhysicsSetRagdoll` (up to 1.29: :1418 comment at `stable-1.29/scripts/scripts/3_Game/human.c:1417-1418`; from 1.30: `:1451`, catalogued as old death-state system),
-`PhysicsSetSimpleDeath` (from 1.30: `:1449`), `PhysicsIsRagdoll` (from 1.30: `:1452`; also `HumanCommandUnconscious.IsRagdoll` at `:647`),
+`PhysicsSetRagdoll` (up to 1.29: :1418 comment at `stable-1.29/scripts/scripts/3_Game/human.c:1417-1418`; from 1.30: `:1451`),
+`PhysicsSetSimpleDeath` (from 1.30: `:1449`, under the comment "Old system for handling player death state, was previously handled by PhysicsSetRagdoll" at `:1448`), `PhysicsIsRagdoll` (from 1.30: `:1452`; also `HumanCommandUnconscious.IsRagdoll` at `:647`),
 `CheckFreeSpace` :1381, `CollisionMoveTest` :1387, `LinkToLocalSpaceOf` :1391.
 
 **Lifting the player from a `HumanCommandScript` needs the controller's gravity off** (measured in game, DayZDiag 1.30.164014 Exp, LFSkateboard test R1c, 2026-10-06, server and one client on one machine) [EXACT][CLAIM-PHYS-SCRIPTCMD-GRAVITY-130]. A skateboard ride command integrated its own ollie (`dy = vy·dt − ½g·dt²` each tick, vy 2.69 m/s at take-off) and passed `dy` as the y of `PrePhys_SetTranslation`, which is local space (`exp/scripts/scripts/3_Game/human.c:1313`). In `PostPhysUpdate` it compared `PostPhys_GetPosition` with the integrated height and, past 3 cm, pinned the height with `PostPhys_SetPosition` on every air tick (world space, `human.c:1325-1327`).

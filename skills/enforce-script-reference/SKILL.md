@@ -23,7 +23,7 @@ crash, segfault, or silent failure in production.
 Before treating any vanilla Enforce API as callable, verify it is not trapped inside an `#ifdef` whose macro is never defined in the tree. Gate: `grep -rn "#ifdef <MACRO>\|#define <MACRO>" scripts/` — if only `#ifdef` hits appear, the code is DEAD in this build and the symbol does not exist.
 
 Canonical case: `ActionManagerClient.PerformAction(int user_action_id, ActionTarget, ItemBase, Param)` at `actionmanagerclient.c:798` is a correct citation, but sits inside `#ifdef BOT` (opens `:796`, closes `:802`). `BOT` appears in the entire vanilla tree only as `#ifdef`, never as `#define` → the symbol does not exist in retail or diag. The real public entry point for dispatching an action by script is `PerformActionStart(ActionBase, ActionTarget, ItemBase, Param)` at `:804`, outside the block.
-(hasta 1.29: those line numbers). (desde 1.30: `#ifdef BOT` is `ActionManagerClient.c:796-802`, `PerformAction` is `:798`, public `PerformActionStart` is `:804`. SP `PerformActionStart` ignores re-entry when pending/current exist; `GetActionState()` can return `UA_AM_INIT` while pending. Cite-then-verify still applies — `BOT` still has no `#define`. Bodies: `references/dayz-1-30-enforce-script.md`.)
+(hasta 1.29: `#ifdef BOT` is `ActionManagerClient.c:754-760`, `PerformAction` is `:756`, public `PerformActionStart` is `:762`.) (desde 1.30: `#ifdef BOT` is `ActionManagerClient.c:796-802`, `PerformAction` is `:798`, public `PerformActionStart` is `:804`. SP `PerformActionStart` ignores re-entry when pending/current exist; `GetActionState()` can return `UA_AM_INIT` while pending. Cite-then-verify still applies — `BOT` still has no `#define`. Bodies: `references/dayz-1-30-enforce-script.md`.)
 
 The same gate applies to `proto native` declarations: **a correct citation does not prove the function is linked.** `GetFPS` is declared `proto native int GetFPS();` at `scripts/1_core/proto/proto.c:147` (same line in 1.29 stable and 1.30.164014 Exp), yet in DayZDiag 1.29 every call throws `Virtual Machine Exception — Function 'GetFPS' not linked` (measured 2026-09-14). A `proto native` line in the tree proves the declaration exists, not that the engine registered a native behind it: probe-call a `proto native` API once from a throwaway script before building logic on it. [EXACT]
 
@@ -171,7 +171,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
     at exactly 0 (`input.c:29-34`). And in a vehicle vanilla picks the camera from
     `m_Camera3rdPerson` whenever the server allows third person (`dayzplayerimplement.c:2891-2914`;
     1.29 `:2849-2868`), so a sight must force 1pp via `SetIsInThirdPerson(false)`
-    (`:308`) and restore the previous value on exit, or entering in 3rd person leaves the operator
+    (`:307-310`) and restore the previous value on exit, or entering in 3rd person leaves the operator
     outside the aircraft.
     **MEASURED OUTCOME 2026-08-19 — the rebuild is NECESSARY BUT NOT SUFFICIENT.** With the
     vehicle command rebuilt, the probe read `vehCmd=true seat1=true parent=true inVeh=true`

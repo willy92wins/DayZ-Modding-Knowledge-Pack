@@ -89,12 +89,12 @@ From `3_game/tools/uiscriptedmenu.c`:
   closed via `Continue()` → RemoveActiveInputExcludes + `CloseMenu(MENU_INGAME)` (:1334-1349).
   For cheap dialogs.
 - **(B) create-ONCE + show/hide** — vanilla inventory: `InitInventory()` creates once via
-  `CreateScriptedMenu(MENU_INVENTORY, null)` (:217-223); `ShowInventory()` re-shows the SAME cached
+  `CreateScriptedMenu(MENU_INVENTORY, null)` (`missiongameplay.c:217-223`); `ShowInventory()` re-shows the SAME cached
   instance via `ShowScriptedMenu(m_InventoryMenu, null)` (:1190-1209); `HideInventory()` →
   HideScriptedMenu (:1211-1221). Keeps the Init()-built widget tree alive across opens — copy for
   heavyweight menus (inventory rebuilds a whole container tree in Init).
 - Key-open pattern = input polling in Mission OnUpdate: `GetUApi().GetInputByID(UAGear).LocalPress()`
-  → ShowInventory (:510-521); `UAUIMenu` → Pause (:700-706).
+  → ShowInventory (`missiongameplay.c:510-521`); `UAUIMenu` → Pause (:700-706).
 - Vanilla input-exclude group names used in missiongameplay.c: `"menu"`, `"inventory"`,
   `"radialmenu"`, `"loopedactions"`, `"map"`.
 
@@ -113,7 +113,7 @@ From `3_game/tools/uiscriptedmenu.c`:
 - Safest modded extension points: (1) `modded class IngameHud` override `Init(Widget hud_panel)` →
   super, then add widgets inside the HudPanel subtree; (2) `modded class MissionGameplay` override
   `OnInit` → super, then `CreateWidgets(your.layout)` as a SIBLING root — the same pattern vanilla
-  uses for HudDebug (:175).
+  uses for HudDebug (`missiongameplay.c:175`).
 - **Show/hide HUD groups = flag system, not ad-hoc Show()**: `IngameHudVisibility`
   (`gui/ingamehudvisibility.c`) maps an `EHudContextFlags` bitmask (HUD_DISABLE=1, HUD_HIDE=2,
   VEHICLE_DISABLE=4, DRIVER=8, VEHICLE=16, MENU_OPEN=32, NO_BADGE=64, QUICKBAR_DISABLE=128,

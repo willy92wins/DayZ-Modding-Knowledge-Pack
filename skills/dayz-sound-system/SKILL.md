@@ -219,10 +219,10 @@ the same character sound bases played through `PlaySoundSet` were loud. With a p
 of a `SoundObject` is in the parent's model space, and `EffectSound` always sets it right before its
 own `Play3D`: it calls `SetCurrentLocalPosition` at `:172`, just before `Play3D` at `:173`, and its
 override of `SetCurrentLocalPosition` passes the position to `m_SoundObject.SetPosition`
-(`:750-757`). The hand-built loop set no position, and sat far from the rider. What fixed it:
+(`:746-754`). The hand-built loop set no position, and sat far from the rider. What fixed it:
 `SetPosition` on the sound object after `SetParent` and before `Play3D`, with a small offset in the
 parent's model space (the project used 0.1 m up). Lines of 1.30.164.200; 1.29 has the same code, the
-override at `:746-753`.
+override at `:742-750`.
 
 [EXACT][CLAIM-SOUND-WAVE-FREQUENCY-FACTOR-130] `GetFrequency()` of that wave, a playing OGG loop,
 returned 1.0: `SetFrequency` takes a factor, a pitch multiplier, not a frequency in Hz. Set it

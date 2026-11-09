@@ -29,7 +29,7 @@ A concrete entity, e.g. `class Fence: BaseBuildingBase` (`config.cpp:2062-2079`)
 |---|---|---|
 | `attachments[]` | every material and attachment slot the entity accepts | `GetAttachmentSlots()` reads `CfgVehicles <type> attachments` — `basebuildingbase.c:847-854`; declared `config.cpp:2683` |
 | `hybridAttachments[]` | attachments whose health mirrors a damage zone of the same name | `CheckForHybridAttachments` `basebuildingbase.c:1121-1131`; read in ctor `:53-57`; declared `config.cpp:2077` |
-| `mountables[]` | attachments that get proxy physics toggled (barbed wire) | read in ctor `:58-62`; `UpdateAttachmentPhysics` early-returns if a slot is NOT in `mountables` `:785-786`; declared `config.cpp:2078` |
+| `mountables[]` | attachments that get proxy physics toggled (barbed wire) | read in ctor `basebuildingbase.c:58-62`; `UpdateAttachmentPhysics` early-returns if a slot is NOT in `mountables` `:785-786`; declared `config.cpp:2078` |
 
 ## 3. The `Construction{}` block field-by-field
 

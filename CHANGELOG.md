@@ -784,12 +784,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `Transport.CheckVitalItemCallback`, not the obsolete `CarScript.CheckVitalItem`;
   `dayz-basebuilding` `references/entity-lifecycle.md` says that 1.30's `CanDismantlePart` and
   `CanDestroyPart` also require `SupportRemovalCheck`, and gives as 1.29 the `OnFinishProgressServer`
-  with the "redundant at this point" comment; `dayz-basebuilding` `SKILL.md` retains the slot caps of
-  `scripts\config.cpp` at the lines reported from the author's 1.30.164200 extraction;
-  independent verification of that exact config extraction is pending. `dayz-particles` `SKILL.md` cites the whole
+  with the "redundant at this point" comment; `dayz-basebuilding` `SKILL.md` gives the slot caps of
+  `scripts\config.cpp` at their 1.30.164200 lines. `dayz-particles` `SKILL.md` cites the whole
   small-area branch of `effectarea.c` (`:348-386`), and `dayz-environment-hazards` `SKILL.md` says
   that the six-file Nasdara PBO was that of 1.30.164014.
-
+- More of the same, found by a review of that sweep: `dayz-physics-engine` `SKILL.md` gives 1.30's
+  comment "Old system for handling player death state" to `PhysicsSetSimpleDeath`
+  (`human.c:1448-1449`), not to `PhysicsSetRagdoll`, and `references/fisica-engine-deep-dive.md` says
+  that its block of `Human` physics lines gives 1.29's lines, and names `human.c` and `scriptmodel.c`
+  next to three short citations. `enforce-script-reference` `SKILL.md` gives the 1.29 lines of the
+  `#ifdef BOT` case (`ActionManagerClient.c:754-760`), where it called the 1.30 ones 1.29's, and cites
+  the whole `SetIsInThirdPerson` (`dayzplayerimplement.c:307-310`); `dayz-sound-system` `SKILL.md`
+  cites the whole `SetCurrentLocalPosition` override of `EffectSound` (`:746-754`, 1.29 `:742-750`);
+  `dayz-basebuilding` `references/persistence-audit.md` gives the failsafe relock at
+  `basebuildingbase.c:303` in its checklist too, which said `:314` (the 1.29 line). `dayz-aviation`
+  `SKILL.md` (`RFFSHeli_Core.c:1892`), `dayz-basebuilding` `references/config-contract.md` and
+  `references/persistence-audit.md`, and `dayz-ui-development` `references/vanilla-menus-map.md` name
+  the file of short citations that had none in their item.
 - `dayz-script-validator`: a `scripts/shared/vanilla_index.json` built from DayZ 1.29 and left in
   a checkout turned the vanilla control red on 1.30 (fb-20261105-021157-4c83). The index keys
   override signatures by method name only and kept 1.29's `InitIcon(icon, item, pos_x, pos_y)`, so

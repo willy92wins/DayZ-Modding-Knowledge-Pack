@@ -125,7 +125,7 @@ This skill compiles patterns extracted from LM_Planes (Workshop ID `3730564764`)
   `GRAVITY * dt` back to the velocity Y each flight tick (`RFFSHeli_Core.c:1854`).
   (2) **Kill residual body spin after `SetOrientation`** with `dBodySetAngularVelocity(this, vector.Zero)`
   (`enphysics.c:165`) — else the body's own angular velocity fights your per-tick `SetOrientation` and
-  the rotation (and the seat camera) judders. RFFS does this (`:1892`). NOTE: this smooths ROTATION only;
+  the rotation (and the seat camera) judders. RFFS does this (`RFFSHeli_Core.c:1892`). NOTE: this smooths ROTATION only;
   jittery POSITION replication is a separate problem (native pose replication frequency / client
   interpolation).
   (3) **Car-wheel suspension re-anchors the vertical `SetVelocity` whenever wheels touch the ground** —

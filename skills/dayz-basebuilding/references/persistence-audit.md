@@ -46,8 +46,8 @@ every saved base corrupts on the next load.
 - `AfterStoreLoad` (`basebuildingbase.c:466-474`) → `SetPartsAfterStoreLoad()` (`:476-487`) → `SetPartsFromSyncData()`: rebuilds
   each part's built flag from the bitmask, sets base state from the base part, re-syncs.
 - Guarded by `m_FixDamageSystemInit` — the damage-system migration path uses `EEOnAfterLoad` + a 500ms
-  deferred call instead (`:505-513`).
-- `SetPartFromSyncData` (`:265-304`) is the core: per part, compares "built in sync bitmask" vs "built flag",
+  deferred call instead (`basebuildingbase.c:505-513`).
+- `SetPartFromSyncData` (`basebuildingbase.c:265-304`) is the core: per part, compares "built in sync bitmask" vs "built flag",
   adds/removes constructed parts, shows/hides physics, toggles the `Deployed` proxy for the base, and
   **failsafe-relocks attached materials** (`:303`, "failsafe for corrupted sync/storage data").
 
@@ -70,7 +70,7 @@ Before declaring a base-building persistence change release-safe, confirm with `
 4. A new persisted field bumps the version and adds a legacy branch for old saves.
 5. Crash-recovery walk: kill the server between each I/O hop of save/load — does the next boot recover the
    base or lose parts? (R8 mental walk.)
-6. The failsafe relock path (`SetPartFromSyncData:314`) still runs for corrupted sync/storage data.
+6. The failsafe relock path (`SetPartFromSyncData`, `basebuildingbase.c:303`) still runs for corrupted sync/storage data.
 7. In-game gate: build parts, restart the server, confirm every part and the base survive (not just an
    offline audit — the R9 case history shows bases-lost bugs that only surface on a real restart).
 
