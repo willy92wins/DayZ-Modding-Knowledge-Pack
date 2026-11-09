@@ -53,7 +53,7 @@ Before persisting or ordering data across restarts, verify both the clock and th
 12. **Class constant read from a `static` method → `static const` (LL-478)** — plain `const`
     is fatal in retail (only the engine compiles); the "compiles" gate is a retail boot
     with `SERVER` before any review, and cascade errors are diagnosed fixing the first only
-13. **`%` works only in integer context** — `float ox = (n % 4) * 0.7 - 1.05;` with `int n` fails with `Unknown operator '%'` and kills the mission init compile (measured in game, DayZ 1.30.164014 Exp). [EXACT][CLAIM-ENF-MODULO-INT-ONLY] Every vanilla modulo is integer-context (`scripts/1_core/proto/enscript.c:652-661`, `scripts/3_game/cfgbunkerbroadcastjsondata.c:196`); no vanilla line applies `%` to a float. Compute the modulo into an `int` first (`int col = n % 4;`) and multiply the float afterwards.
+13. **`%` works only in integer context** — `float ox = (n % 4) * 0.7 - 1.05;` with `int n` fails with `Unknown operator '%'` and kills the mission init compile (measured in game, DayZ 1.30.164014 Exp; again on DayZDiag 1.30.164289 in a mod's `4_World`, `references/pitfalls-advanced.md`). [EXACT][CLAIM-ENF-MODULO-INT-ONLY] Every vanilla modulo is integer-context (`scripts/1_core/proto/enscript.c:652-661`, `scripts/3_game/cfgbunkerbroadcastjsondata.c:196`); no vanilla line applies `%` to a float. Compute the modulo into an `int` first (`int col = n % 4;`) and multiply the float afterwards.
 
 <!-- corpus-stardz-2026-09-07 -->
 

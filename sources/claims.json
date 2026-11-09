@@ -539,8 +539,8 @@
       "claim_id": "CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE",
       "evidence_locator": "scripts/4_world/entities/itembase.c:2202-2262,2308-2332,3354-3363,3413-3416; scripts/3_game/entities/entityai.c:774-778,807-810; scripts/3_game/entities/object.c:82-85",
       "license": "MIT",
-      "line_end": 669,
-      "line_start": 653,
+      "line_end": 673,
+      "line_start": 657,
       "observed_at": "2026-09-19",
       "promotion_artifact_id": "skill/enforce-script-reference",
       "source_id": "dayz-vanilla",
@@ -849,15 +849,15 @@
     {
       "artifact_id": "file/skills/enforce-script-reference/skill.md",
       "claim_id": "CLAIM-ENF-MODULO-INT-ONLY",
-      "evidence_locator": "scripts/1_core/proto/EnScript.c:652-661",
+      "evidence_locator": "scripts/1_core/proto/EnScript.c:652-661. In game, pipeline inbox d35a: DayZDiag 1.30.164289.70 (DayZ 1.30.164289 stable), 2026-11-09, on the owner's PC (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only, one probe mod per run, the pack's own code. `float x = (cell % 103) * 150 + 150 * 0.5;` (MCPProbeD35aB, scripts/4_World, line 6): reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 of the three lines joined with LF and LF-terminated, as the round's data file copies them: A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34): SCRIPT (E): @\"MCPProbeD35aB/scripts/4_World/mcpprobed35ab.c,6\": Unknown operator '%', then SCRIPT (E): Can't compile \"World\" script module!, then MCPProbeD35aB/scripts/4_World/mcpprobed35ab.c(6): Unknown operator '%'. The ticket's expression `float x = (cell % SIDE) * STEP + STEP * 0.5;` with static const float STEP and static const int SIDE (MCPProbeD35aC, line 10): reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), the same three lines at mcpprobed35ac.c,10. Split as `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;` (MCPProbeOk, scripts/4_World/MCPProbeStaticConst.c) it compiled and ran (run 06624c45). Limits: both failing statements hold the literal 0.5, so whether a static const float with no literal beside it fails is not isolated; the ticket saw `Unknown operator ''` in a mission's init.c, which was not measured again.",
       "license": "MIT",
       "line_end": 56,
       "line_start": 56,
-      "observed_at": "2026-10-01",
+      "observed_at": "2026-11-09",
       "promotion_artifact_id": "skill/enforce-script-reference",
       "source_id": "dayz-vanilla",
       "source_revision": "1.30.164014-exp",
-      "verification_level": "source_verified"
+      "verification_level": "runtime_verified"
     },
     {
       "artifact_id": "file/skills/enforce-script-reference/skill.md",
@@ -1629,14 +1629,14 @@
     {
       "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_modulo_float_context.py",
       "claim_id": "CLAIM-ENFORCE-MODULO-FLOAT-CONTEXT",
-      "evidence_locator": "In game. DayZDiag 1.29 (defines DAYZ_1_29), 2026-09-28 03:43, LFPowerGrid client script log: lfpg_probe3d.c,255: Unknown operator '%', then Can't compile \"Mission\" script module! (log re-read on 2026-10-03; the probe source is deleted: its author filed the expression as `((g % 5) - 2) * 7.0` in pipeline inbox fb-20260928-032137-7ce1, the correction of fb-20260928-014950-7b9e, which had replaced it with `g - (g / 5) * 5`). DayZ 1.30 Exp, 2026-09-24: `float ox = (n % 4) * 0.7 - 1.05;` failed with the same error and compiled once the `%` went into an int local first (vault lessons-learned, revision of 2026-09-24; that log is deleted). Vanilla 1.29.0.163451 holds 69 `%` operators and 1.30.164014 Exp 94, none in an expression with a float literal. Offline: fixtures under tests/fixtures/modulo_float_context; nothing on either vanilla tree.",
+      "evidence_locator": "In game. DayZDiag 1.29 (defines DAYZ_1_29), 2026-09-28 03:43, LFPowerGrid client script log: lfpg_probe3d.c,255: Unknown operator '%', then Can't compile \"Mission\" script module! (log re-read on 2026-10-03; the probe source is deleted: its author filed the expression as `((g % 5) - 2) * 7.0` in pipeline inbox fb-20260928-032137-7ce1, the correction of fb-20260928-014950-7b9e, which had replaced it with `g - (g / 5) * 5`). DayZ 1.30 Exp, 2026-09-24: `float ox = (n % 4) * 0.7 - 1.05;` failed with the same error and compiled once the `%` went into an int local first (vault lessons-learned, revision of 2026-09-24; that log is deleted). DayZDiag 1.30.164289.70, 2026-11-09, the owner's PC, server only, pipeline inbox d35a: `float x = (cell % 103) * 150 + 150 * 0.5;` and `float x = (cell % SIDE) * STEP + STEP * 0.5;` (static const float STEP, static const int SIDE), each in a mod's 4_World script, stopped the World module with Unknown operator '%' at their line (reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21, sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34; reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21, sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), and `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;` compiled and ran (run 06624c45); both hold the literal 0.5, so a static const float with no literal beside it is not isolated, and the ticket saw `Unknown operator ''` in a mission's init.c, not measured again. Vanilla 1.29.0.163451 holds 69 `%` operators and 1.30.164014 Exp 94, none in an expression with a float literal. Offline: fixtures under tests/fixtures/modulo_float_context, the d35a statements among them (bad/scripts/4_World, ok/scripts/4_World); nothing on either vanilla tree.",
       "license": "MIT",
-      "line_end": 32,
+      "line_end": 44,
       "line_start": 9,
-      "observed_at": "2026-09-28",
+      "observed_at": "2026-11-09",
       "promotion_artifact_id": "knowledge",
       "source_id": "pack-r21-authored",
-      "source_revision": "kp-update-val-compile-errors@2026-10-03",
+      "source_revision": "kp-update-d35a@2026-11-09",
       "verification_level": "runtime_verified"
     },
     {
@@ -2976,6 +2976,19 @@
       "promotion_artifact_id": "skill/enforce-script-reference",
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-dada@2026-11-09",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/enforce-script-reference/references/pitfalls-advanced.md",
+      "claim_id": "CLAIM-ENFORCE-MODULO-FLOAT-LITERAL-130",
+      "evidence_locator": "In game, pipeline inbox d35a: DayZDiag 1.30.164289.70 (DayZ 1.30.164289 stable), 2026-11-09, on the owner's PC (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only, one probe mod per run, the pack's own code: MCPProbeD35aB (`float x = (cell % 103) * 150 + 150 * 0.5;`, scripts/4_World line 6) and MCPProbeD35aC (the ticket's `float x = (cell % SIDE) * STEP + STEP * 0.5;` with static const float STEP and static const int SIDE, line 10). reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34): SCRIPT (E): @\"MCPProbeD35aB/scripts/4_World/mcpprobed35ab.c,6\": Unknown operator '%', then SCRIPT (E): Can't compile \"World\" script module!; reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A): the same at mcpprobed35ac.c,10. The hashes are those of the lines joined with LF and LF-terminated, as the round's data file copies them. MCPProbeOk's scripts/4_World/MCPProbeStaticConst.c (sha256 4125136bc47799fa6f3b4bf47d15204ea796ca7505a04285dd061eaa60ed2e46 as filed), `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;`, compiled and ran (P2, run 06624c45). Not isolated: a static const float with no literal beside it; the ticket saw `Unknown operator ''` in a mission's init.c, not measured again.",
+      "license": "MIT",
+      "line_end": 86,
+      "line_start": 84,
+      "observed_at": "2026-11-09",
+      "promotion_artifact_id": "skill/enforce-script-reference",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-d35a@2026-11-09",
       "verification_level": "runtime_verified"
     }
   ],

@@ -2437,23 +2437,53 @@ class TestModuloFloatContext(unittest.TestCase):
 
     `((g % 5) - 2) * 7.0` failed on DayZDiag 1.29 (2026-09-28) and
     `float ox = (n % 4) * 0.7 - 1.05;` on DayZ 1.30 Exp (2026-09-24), both
-    with "Unknown operator '%'".
+    with "Unknown operator '%'". On DayZDiag 1.30.164289 (2026-11-09,
+    pipeline inbox d35a) two more failed with it, each at its own line, and
+    the third shape, with the '%' in an int local first, compiled.
     """
+
+    def _errors_in(self, result, name):
+        return [
+            e for e in _errors_of(result, MODULO_RULE)
+            if pathlib.Path(e["file"]).name == name
+        ]
 
     def test_both_failing_shapes_fail(self):
         exit_code, result = script_validator.run([str(MODULO / "bad")])
 
         self.assertEqual(1, exit_code)
-        errors = _errors_of(result, MODULO_RULE)
+        errors = self._errors_in(result, "fx_probe_grid.c")
         self.assertEqual([7, 12], [e["line"] for e in errors])
         self.assertIn("7.0", errors[0]["message"])
         self.assertIn("0.7", errors[1]["message"])
         assert_standard_findings(self, result)
 
+    def test_the_two_d35a_statements_fail_at_the_line_the_compiler_named(self):
+        _code, result = script_validator.run([str(MODULO / "bad")])
+
+        # mcpprobed35ab.c,6 and mcpprobed35ac.c,10 in the server script logs.
+        literals = self._errors_in(result, "fx_cell_literals.c")
+        static_const = self._errors_in(result, "fx_cell_static_const.c")
+        self.assertEqual([6], [e["line"] for e in literals])
+        self.assertEqual([10], [e["line"] for e in static_const])
+        for error in literals + static_const:
+            self.assertEqual("FAIL", error["severity"])
+            self.assertIn("float literal 0.5.", error["message"])
+
     def test_integer_modulo_and_the_int_local_fix_pass(self):
         _code, result = script_validator.run([str(MODULO / "ok")])
 
         self.assertEqual([], _errors_of(result, MODULO_RULE))
+
+    def test_the_three_d35a_statements_that_compiled_give_no_finding(self):
+        exit_code, result = script_validator.run([str(MODULO / "ok")])
+
+        self.assertEqual(0, exit_code)
+        findings = [
+            f for f in result["errors"] + result["warnings"]
+            if pathlib.Path(f["file"]).name == "fx_cell_int_local.c"
+        ]
+        self.assertEqual([], findings)
 
     def test_expression_boundaries(self):
         from detectors.es_modulo_float_context import check_es_modulo_float_context

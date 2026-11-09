@@ -7,6 +7,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator` and `enforce-script-reference`: the `%` failure measured again (pipeline inbox
+  d35a), on DayZDiag 1.30.164289.70 (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, server
+  only, one probe mod per run. In a mod's `4_World` script, `float x = (cell % 103) * 150 + 150 * 0.5;`
+  and the ticket's `float x = (cell % SIDE) * STEP + STEP * 0.5;` (`static const float STEP`,
+  `static const int SIDE`) each stopped the World module with `Unknown operator '%'` at its own line
+  (`mcpprobed35ab.c,6`, `mcpprobed35ac.c,10`);
+  `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;` compiled and ran (run 06624c45).
+  Both failing statements hold the literal `0.5`, so whether a `static const float` with no literal
+  beside it fails is not isolated, and the ticket saw `Unknown operator ''` in a mission's `init.c`,
+  which was not measured again. `ES-MODULO-FLOAT-CONTEXT` does not change; it gains fixtures under
+  `tests/fixtures/modulo_float_context` (FAIL at the two lines the compiler named, no finding on the
+  three statements that compiled), and its header comment gives the error lines.
+  `references/pitfalls-advanced.md` gains a short `Unknown operator '%'` entry
+  (`CLAIM-ENFORCE-MODULO-FLOAT-LITERAL-130`), `SKILL.md` item 13 points to it, and
+  `CLAIM-ENF-MODULO-INT-ONLY` and `CLAIM-ENFORCE-MODULO-FLOAT-CONTEXT` record the measurement.
 - `dayz-mcp-verify` `references/dayz-1-30-mcp-verify.md`, new section "Deleting vehicles and checking
   what a run loaded" (DayZ 1.30.164200, 2026-11-01), four claims from the dayz-mcp fronts: eject
   every occupant before deleting a car or the server crashes (#298, fixed by #300); the server sees
