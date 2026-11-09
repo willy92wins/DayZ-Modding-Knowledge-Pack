@@ -11,7 +11,7 @@ names make the second UNREACHABLE"): that is a second file under your own path. 
 file at the **vanilla** path, in a PBO that shadows the vanilla prefix, which the engine applies on top of
 the vanilla layout.
 
-## 1. Generate it in Workbench; do not hand-write it
+## 1. Generate it in Workbench
 
 [EXACT][CLAIM-UI-VARIANT-WORKBENCH-FORMAT-130] Recipe that produced a working variant:
 
@@ -56,13 +56,33 @@ FrameWidgetClass {
 The vanilla widgets behind those IDs are `Licensing`, `version` and `copyright`
 (`VANILLA/gui/layouts/day_z_ingamemenu.layout:8`, `:25`, `:42`).
 
-[EXACT][CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK] **How the IDs are derived is unknown.** The vanilla layout text
-is keyed by name (`WrapSpacerWidgetClass Licensing {`, `day_z_ingamemenu.layout:8`) and carries no widget
-IDs; the `{16-hex}` prefixes it does carry are texture references (`imageTexture "{GUID}Gui/textures/..."`).
-A handful of vanilla widgets that Workbench re-saved carry their own ID and a `Name`
-(`VANILLA/gui/layouts/day_z_hud.layout:291`), which says nothing about the IDs of the others. The four
-recorded IDs (`Licensing`, `version`, `copyright`, `dayz_logo`) matched none of 32-bit CRC32, FNV-1, FNV-1a or
-Adler-32 of the widget name in its own, lower or upper case; no other function was tried. Use Workbench.
+[EXACT][CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK] **How the IDs are derived.** Computed offline on 2026-11-09
+over the vanilla layouts of 1.29, 1.30.164014, 1.30.164200 and 1.30.164289. An ID is `00000000` followed by a
+CRC-32 of the widget's `Name` and then each ancestor's `Name`, up to but not including the layout root, with
+no separators: `version` inside `Licensing` hashes `versionLicensing` to `308B9F61`, and the root-level
+`dayz_logo` (`:540`) hashes to `9FF48118`. A named root hashes its own name. The CRC is polynomial
+`0x04C11DB7`, MSB first, in a shift register that is not augmented (the message bits enter at the low end and
+no 32 zero bits follow), with init and final XOR `0xFFFFFFFF`; `zlib.crc32` and CRC-32/BZIP2 give other
+values. The earlier check hashed the bare name, which is why CRC32, FNV-1, FNV-1a and Adler-32 all failed.
+
+`day_z_ingamemenu.layout` stores no widget IDs (its `{16-hex}` prefixes are texture references,
+`imageTexture "{GUID}Gui/textures/..."`), but 10 of the 227 vanilla layouts store one per widget, 1,438 in all
+(`VANILLA/gui/layouts/day_z_hud.layout:295`), and 1,395 of them equal the derived ID. The other 43 are nine
+64-bit IDs of widgets added after 1.29 (`debug/day_z_debug_monitor.layout`,
+`script_console/script_console.layout`) and 34 in
+`underground_trigger_editor/day_z_underground_trigger_editor.layout` from `:71`: nine match the chain without
+`triggers_section`, and 25 lie between `CC000001` and `CC000020`. Two siblings with one name share an ID
+(`xbox/day_z_ingamemenu_xbox.layout:232` and `:667`, both `CDEFDF47`).
+
+Outside `script_console.layout` and the `debug/` layouts, no widget changed its ID from 1.29 to 1.30.164289;
+six were added in `new_ui/options/msstore/game_tab.layout`. The 878 IDs that seven layouts gained in
+1.30.164014, and `day_z_hud.layout` in 1.30.164200, are the ones derived from the previous build's names. A
+derived ID changes with the name of the widget or of any ancestor below the root, as it did for nine widgets
+of `debug/day_z_hud_debug.layout` that moved between 1.29 and 1.30.164014.
+
+[INFERRED] Where the vanilla widget stores an ID, a variant needs that ID rather than the derived one, and
+one variant entry cannot tell two same-named siblings apart. A variant written by hand with derived IDs is
+untested in game: Workbench is the measured route.
 
 ## 2. What a Workbench-generated variant does in game
 
@@ -93,7 +113,8 @@ RaG packing with a `config.cpp` is verified; without one is untested.
 
 ## 4. Unknowns — do not promise these
 
-- **ID stability across game builds.** Not measured: regenerate the variant after a DayZ update and diff.
+- **A `Prefab` that matches no widget.** Not measured: what the game does with a variant entry whose ID no
+  vanilla widget has, as after a rename or a move. After a DayZ update, recompute the IDs (§1) and diff.
 - **Two mods varying the same layout.** Not measured.
 - **Two `gui`-prefix shadow PBOs with different files in one load.** Planned as a side effect of the probe,
   but the measured run loaded only the probe's mod folder, so it is not shown.
@@ -102,3 +123,4 @@ RaG packing with a `config.cpp` is verified; without one is untested.
   says pboProject refuses such folders. A report, not verified here.
 - **Per-screen toggling.** No mechanism known: as measured, a loaded variant is always applied. Put
   conditional behaviour in script, not in the variant.
+- **Variants of other resource types.** Not measured: only layout variants have been made and loaded.

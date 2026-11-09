@@ -485,10 +485,11 @@ limitation — and no framework plugs it (see the CUI correction below).
 1. **`.layout` files in `P:\gui\layouts\` (~100+ files)**
 
    Color attributes are baked **per-widget** as RGBA tuples directly in the XML.
-   `modded class` does NOT apply to `.layout` files. The only override path is to
+   `modded class` does NOT apply to `.layout` files. The classic override path is to
    ship a same-named layout in your mod's `gui/layouts/` — which clobbers the
    ENTIRE layout (heavyweight, brittle across DayZ updates). One vanilla layout
-   touched, the whole layout reshipped.
+   touched, the whole layout reshipped. Since 1.30, a layout variant changes single
+   vanilla widgets in place instead: `references/layout-variants-130.md`.
 
 2. **Inline ARGB literals in `P:\scripts\5_mission\gui\` (10+ files)**
 
@@ -543,7 +544,7 @@ It requires:
 When the user asks for a UI color change, ask FIRST:
 
 - **Single element** ("the bleeding icon", "the menu hover state") — feasible,
-  scoped to one method override or one layout swap.
+  scoped to one method override, one layout swap, or (1.30) one layout variant.
 - **All red → all blue** ("retheme the whole UI") — push back. Define scope-by-scope
   and treat as a batch; no framework makes this a one-property edit (see below).
 
@@ -563,7 +564,8 @@ calls brittle, NOT a centralized propagating theme layer. A "Pro" variant exists
 Implications: (a) do NOT promise that adopting CUI turns retheming into one-property edits — that
 capability does not exist in the ecosystem; (b) CUI IS useful as a starting TEMPLATE when the goal
 is "reskin the whole vanilla UI" (it has already done the reshipping work); (c) for one-off recolors
-of an existing mod, stay scoped to the specific element. Also verified: Community Framework (CF)
+of an existing mod, stay scoped to the specific element (on 1.30, a layout variant does that
+without reshipping the layout: `references/layout-variants-130.md`). Also verified: Community Framework (CF)
 ships NO MVC/UI layer (its changelog: MVC added deprecated in 1.1, removed in 1.3.1) — its only UI
 surface worth knowing is the server-aware NotificationSystem.
 

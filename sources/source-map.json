@@ -1664,7 +1664,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "eaf2b85149ff27d5cee45aa70c80b938502b1e4ff37e184bf8be69f463578a3b",
+      "output_hash": "ff0138447343199c8357f5ba1120ced7286f9c9254fc89201ca0c2f9a3f60f8a",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4827,7 +4827,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3a7efe815f15f1e0ba210c4eb10683bc733f439c0bc301a3c3395055f78bcc00",
+      "output_hash": "ff2eb19c1a6787e47665f68cb85d8a736eaa3c6bfdaf6e17d24db0b24bc0e089",
       "output_path": "skills/_shared/dayz-conventions.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -6641,7 +6641,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "22b3b175e94d67ef668883f7194310aae43755a54f60c50153b97678d59c9509",
+      "output_hash": "d880967d3c5a2139fb298fcacc9fe60f019a532d38ca6c8c629d60c00a7d2f7e",
       "output_path": "skills/dayz-animation-pipeline/references/tooling-and-walls.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -11019,7 +11019,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "77b601d1b3a7dc6de1e2638d7662e719d9c6091377189daddf9c2e8743e05975",
+      "output_hash": "a93a5493ab48eba169c79f4c819531ae64f67d17084facba84bd870fc33ab9dd",
       "output_path": "skills/dayz-particles/SKILL.md",
       "routing_artifact_id": "skill/dayz-particles",
       "verification_level": "cross_checked"
@@ -11379,7 +11379,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4c3e56163bab7ba7abb0719a3fd40ab8ed630b4b7739db6bb64ad83a3483b0a2",
+      "output_hash": "cdf15046f73fd9d7e822e80ffac9dde4b7d815d43810660c1f1e5cc604c3dc1d",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13789,7 +13789,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ac4c5a4b5f3fe32e67b6681bbadce89f427ebac39cd0d3305d643046068339c2",
+      "output_hash": "cd943bdf8d3b3b1d24721215d200a1a5c58918e0ed19c777975f3763ca212a7e",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -14121,7 +14121,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "97972eb40f84caab018fcd92006ef3ec3cf7fa8d21d20d9ca1521ba965593abc",
+      "output_hash": "0ced0de491bf1471f6299fa4169dee1bd4ea3815155da48c00af3970ebd90a9a",
       "output_path": "skills/dayz-ui-development/references/layout-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -19536,7 +19536,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "202e7ac84c803d80935a8ee4a3ba412f1695177bd9911b84fc30dccaa1aa9757",
+      "output_hash": "129de9f25c04bcda0cfc061bdf9016955d34cc7f055e9d4a32be096327df1a74",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -35022,7 +35022,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "42136b3bdd9b8e012a27e22dc250d6b94eefeda2f918155f497d11e9cd457aa9",
+      "output_hash": "70e8a04bd359e3798cca206711cc2c2364fdbbad0500c46717c40b67f37be3cb",
       "output_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "historical"
@@ -38600,7 +38600,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5595742a07a14c8818ca824154797b41c3ac29b01fd80e63ce8c3b14e9cdd0ad",
+      "output_hash": "c018f581d53d168e4e731ff2eb287f3a0ae5ab1a67e71de3a7511936192b6ffa",
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"

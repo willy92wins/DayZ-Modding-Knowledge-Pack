@@ -36,7 +36,7 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
 ### 1. Folder Structure Validation
 
 **Checks performed:**
-- **REQUIRED:** `config.cpp` exists at addon root
+- **REQUIRED:** `config.cpp` exists at addon root (a 1.30 `gui`-prefix shadow PBO without one is untested: `references/dayz-1-30-pbo-build.md`)
 - **REQUIRED:** `$PBOPREFIX$` file exists (single line: `mymod\myaddon` format)
 - **RECOMMENDED:** `data/` folder (for textures, .rvmat, .p3d files)
 - **RECOMMENDED:** `scripts/` folder (for .c, .cpp, .h files)
@@ -422,7 +422,7 @@ mymod\myaddon
 - Use backslashes `\` (not forward slashes)
 - No trailing backslash
 - No quotes or extra whitespace
-- Must be unique across all addons (namespace collision = invisible mod)
+- Must be unique across all addons (namespace collision = invisible mod), unless the PBO sets the 1.30 header property `fsShadowing=1` to shadow vanilla files on purpose (`references/dayz-1-30-pbo-build.md`)
 
 **Example folder structure:**
 ```

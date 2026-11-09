@@ -40,7 +40,8 @@ does not validate `.nm` bytes (binaries are not in `exp\`).
 
 (since 1.30.164200: the PBO header property `fsShadowing=1` lets a PBO load even
 when its prefix matches one already loaded, so its files can shadow vanilla
-paths. Vanilla PBO headers do not carry it.)
+paths; whether a shadow PBO replaces single files or the whole folder is not established.
+Vanilla PBO headers do not carry it.)
 
 [EXACT][CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130] Measured on DayZDiag 1.30.164200
 (2026-11-05) for a Workbench-generated layout variant: a PBO whose
@@ -52,5 +53,6 @@ and the variant applied in game. A `config.cpp` was present; whether a
 how to author it: `skills/dayz-ui-development/references/layout-variants-130.md`.
 
 Checks for such a PBO: the header shows both properties; the `.meta` beside
-each variant `.layout` is in the file list; the PBO contains only the files it
-means to shadow.
+each variant `.layout` is in the file list (the measured PBO carried it; whether
+the game needs it is untested); the PBO contains only the files it means to
+shadow.

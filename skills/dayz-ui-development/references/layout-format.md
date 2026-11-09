@@ -108,12 +108,13 @@ an in-game measurement.
 
 [VERIFIED file-format, 2026-10-28] Most vanilla layouts put a widget's name in its header:
 `FrameWidgetClass FrameWidget {` (`day_z_ingamemenu.layout:1`). A few leave it out of the header,
-which then holds the class alone or the class and a GUID string, and give the name as the widget's
+which then holds the class alone or the class and the widget's ID, and give the name as the widget's
 first property: `FrameWidgetClass {` then `Name "HudFrameWidget"`, and
 `RichTextWidgetClass "{00000000E4E67D3A}" {` then `Name "DefaultActionWidget"`
 (`day_z_hud.layout:1-2`, `:11-12`). Vanilla ships both forms in one build, so the game reads both.
-On 1.30.164200, 10 of the 227 vanilla layouts have GUID headers: `day_z_hud.layout` and nine
+On 1.30.164200, 10 of the 227 vanilla layouts have ID headers: `day_z_hud.layout` and nine
 console, Xbox, debug and editor layouts. 1.30.164014 has the same nine, and 1.29 none of its 216.
+The ID is the one a 1.30 layout variant puts in `Prefab`; how it is derived: `layout-variants-130.md` §1.
 `day_z_hud.layout` changed form in 1.30.164200: each of its 292 widgets gives its name on a
 `Name` line (its other three blocks are `ScriptParamsClass`, with no name), so the file went from
 5,176 lines on 1.30.164014 to 5,468, and the citations of it in this skill give the 1.30.164200
@@ -124,7 +125,7 @@ on 1.29 where 1.29 has them (it has neither `action_info_spacer.layout` nor
 `SimpleIconTemplate.layout`).
 
 The pack parser takes the token after the class as the name, so on a layout in the second form it
-reports the GUID string, or an empty name, and keeps the real name as a `Name` attribute
+reports the ID string, or an empty name, and keeps the real name as a `Name` attribute
 (`tools/dayz-ui-lab/dayz_ui_lab/parse.py`, `Parser.parse_widget`; run on `day_z_hud.layout` of
 both builds on 2026-10-28).
 

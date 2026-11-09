@@ -15,7 +15,7 @@ not binary. Custom particles can be created programmatically without Workbench.
 | `.ptc` | Plain text config | YES | Particle effect (emitters, physics, curves) |
 | `.emat` | Plain text config | YES | Material (texture ref, blend mode, color) |
 | `.edds` | Standard DDS renamed | YES | Billboard sprite texture |
-| `.meta` | Plain text (GUIDs) | Workbench only | NOT needed for mod runtime |
+| `.meta` | Plain text (GUIDs) | Workbench only | NOT needed for particle runtime (a layout variant's `.meta`: untested, see `dayz-pbo-build`) |
 
 All particles are CLIENT-ONLY. Server controls state via SyncVars; client
 creates/destroys particles in response.
