@@ -4,7 +4,7 @@ Insertion-only companion to `dayz-persistence`. Digests I, J, and O named this
 skill; every `[EXACT]` block below was copied from `exp\` after opening the
 file. Digest line numbers that disagreed with disk were discarded.
 
-Path prefix for all script cites: `exp\scripts\scripts\`. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
+Path prefix for all script cites: `exp\scripts\scripts\`. Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## What changed
 
@@ -200,7 +200,7 @@ copy it. Stage, then commit.
 New 1.30 item. Entity stream is `super` then the component:
 
 ```
-// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase\CodeLock.c:484
+// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase\CodeLock.c:505
 	override void OnStoreSave(ParamsWriteContext ctx)
 	{
 		super.OnStoreSave(ctx);
@@ -248,7 +248,7 @@ No `version` gate: the class did not exist in 1.29. Failed PIN read mutates
 ## `BaseBuildingBase` suffix unchanged; `Rebuilding` is a different stream
 
 ```
-// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase\BaseBuildingBase.c:420
+// [EXACT] exp\scripts\scripts\4_World\Entities\ItemBase\BaseBuildingBase.c:419
 	override void OnStoreSave( ParamsWriteContext ctx )
 	{   
 		super.OnStoreSave( ctx );

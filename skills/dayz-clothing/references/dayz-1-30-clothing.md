@@ -5,7 +5,7 @@ Companion to `SKILL.md` § DayZ 1.30. Worn-mesh killers, canonical frame, and
 
 Line numbers are from the files opened under `exp\` (and `stable-1.29\` where a
 1.29 contrast is stated). Digest L/E/F line numbers were **not** copied.
-Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
+Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## NBC secondary slots
 

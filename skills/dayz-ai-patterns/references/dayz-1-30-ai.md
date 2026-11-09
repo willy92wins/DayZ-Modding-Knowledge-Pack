@@ -1,6 +1,6 @@
 # DayZ 1.30 — vanilla AI noise, infected cower, animal groups
 
-Citations re-opened under `exp\` (build 1.30.164014). Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Expansion eAI scripts are **not** in this extract; this file is vanilla infected / animal / NoiseSystem.
+Citations re-opened under `exp\` (build 1.30.164014). Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Expansion eAI scripts are **not** in this extract; this file is vanilla infected / animal / NoiseSystem.
 
 ## Native environment noise reduction
 

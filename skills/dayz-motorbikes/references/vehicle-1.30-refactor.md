@@ -1,6 +1,6 @@
 # Vehicle Refactor in DayZ 1.30 (1.29 -> 1.30 Migration Guide)
 
-This document details the internal restructuring of the vehicle system introduced in DayZ 1.30 (written on Experimental build 1.30.164014; citations re-checked on stable 1.30.164200). It covers the modular decomposition of `CarScript`, the escalation of responsibilities to `Transport`, the adoption of specialized components, and the migration guide for existing car mods.
+This document details the internal restructuring of the vehicle system introduced in DayZ 1.30 (written on Experimental build 1.30.164014; citations re-checked on stable 1.30.164200 and 1.30.164289). It covers the modular decomposition of `CarScript`, the escalation of responsibilities to `Transport`, the adoption of specialized components, and the migration guide for existing car mods.
 
 ---
 

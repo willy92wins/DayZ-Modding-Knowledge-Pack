@@ -621,6 +621,35 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     three decimals, and its 12 `mtl_down` images have `mode blend` where they had `mode additive`.
     `references/layout-format.md` describes both forms, says which vanilla layouts use each, and
     how the pack parser reads the `Name` form.
+- The line numbers move to 1.30.164289, the stable build since the Steam update of 2026-11-04
+  (`DayZ_x64.exe` 1.30.164.289). On 2026-11-09 the two builds were compared file by file.
+  1.30.164289 changes 27 of the 3,076 script files, all `.c`, and keeps `scripts\config.cpp`; in
+  its data PBOs none of the 42,357 entries that the 2026-10-28 re-check extracted changed
+  (configs, layouts, XML, `.agf`, `.rvmat` and the rest), and 2,143 `.p3d` models, four
+  `navmesh.nm` and `ChernarusPlus.wrp` changed size and were not compared. The citations of the
+  27 files in the skills, the `knowledge/` notes, `product-spec.md` and `compatibility-matrix.md`
+  move to their 1.30.164289 lines (190 by a line alignment of the two versions of each file,
+  the rest by hand), and claim line ranges move with the text. `_shared/dayz-conventions.md`
+  §Vanilla line numbers: which build lists the 27 files and reads a citation with no build named
+  as a 1.30.164289 line; the README's build coverage, the compatibility matrix and the 1.30
+  notes at the top of the companion files say so.
+- What 1.30.164289 changed, written where each skill covers it:
+  - `dayz-environment-hazards`: heat stroke. Phase 2's `OnDeactivate` decrements the disease
+    count and phase 1's no longer does, so the sickness-icon defect is fixed; phase 2
+    deactivates below 0.38 (`STAGE_DEACTIVATION_BUFFER = 0.02`), not at 0.4, and runs
+    `OnActivate` again on reconnect; phase 4 does 0.01-0.15 health damage per tick, not
+    0.01-0.35. `THERMAL_BIAS_POSITIVE_HC_DECREMENT` is 0.0002 (was 0.0001) and
+    `THERMAL_BIAS_POSITIVE_HC_LOW_INCREMENT` 0.0002 (was 0.00022); `HeatComfortMdfr` lowers the
+    bias of a player with high water through the new `RecoverThermalBias`; and washing the head
+    again while its 30 s resistance runs changes nothing.
+  - `dayz-physics-engine`: `CollisionFlags` starts with `NONE = 0`, which moves every other value
+    up by one.
+  - `dayz-doors`: `Land_WarheadStorage_Main` and `Land_WarheadStorage_Bunker_Facility` override
+    the `DoorManipulationParams` form of `CanDoorBeOpened`, not the `int` form.
+  - `dayz-basebuilding`: a construction part no longer reads `item_falling_data`. The box in
+    which items fall when the part goes is built from its `collision_data` plus margins by part
+    category, and the new int `item_fall_trigger` (default 1) takes a part out of that check
+    with `0`.
 
 - `dayz-test-ingame`: `CLAIM-SIGN-NEGATIVE-CONTROL` adds that another build's PBO only works as a
   signature negative control when the two builds differ in an entry the signature covers. Arma2Quad
@@ -801,6 +830,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `SKILL.md` (`RFFSHeli_Core.c:1892`), `dayz-basebuilding` `references/config-contract.md` and
   `references/persistence-audit.md`, and `dayz-ui-development` `references/vanilla-menus-map.md` name
   the file of short citations that had none in their item.
+- Four citations that list lines with `/` gave 1.29 lines after the first, because the
+  2026-10-28 re-check moved only the first number. `miscgameplayfunctions.c:1329/1345/1353`
+  (`knowledge/DAYZ_TECHNICAL_NOTES.md`), `game.c:708/710` (`enforce-script-reference`
+  `SKILL.md`), `carscript.c:552/577/845` (`dayz-vehicles`
+  `references/network-physics-ownership.md`) and `carscript.c:1776/1783`
+  (`knowledge/vault-notes/dayz-vehicles-crossproject.md`) now give 1.30.164289 lines. In
+  `dayz-environment-hazards` `references/thermal-heatstroke.md` the short citations of the
+  heat-stroke phase table and of the head-washing section name their file (`HeatStroke.c`,
+  `ActionWashHeadWettingClothesBase.c`); by the convention they read as lines of
+  `ModifiersManager.c`, the full citation before them.
 - `dayz-script-validator`: a `scripts/shared/vanilla_index.json` built from DayZ 1.29 and left in
   a checkout turned the vanilla control red on 1.30 (fb-20261105-021157-4c83). The index keys
   override signatures by method name only and kept 1.29's `InitIcon(icon, item, pos_x, pos_y)`, so

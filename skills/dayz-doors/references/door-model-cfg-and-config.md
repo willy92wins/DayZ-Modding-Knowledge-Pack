@@ -118,7 +118,7 @@ The button is absent from its skeleton because it does not animate (**Door_w_But
 | **soundOpenABit** | Partial-opening sound. | Full door entries Simple/button/expert **:29**. |
 | **relatedInventorySlots[]** (since 1.30) | Names of inventory slots tied to this door (locks). Parsed into `AdditionalDoorInfo.m_RelatedInventorySlotNames`. Absent from the tutorial's examples. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:23-26`. **[UNVERIFIED]** no extracted vanilla `config.cpp` **class Doors** entry in this dump actually sets the property. |
 | **lockCompatibilityBitMask** (since 1.30) | Integer already in bitwise form. If omitted, script default is `1 << EBuildingLockType.LOCKPICK`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:29-32`, `exp/scripts/scripts/3_Game/Enums/EBuildingLockTypes.c:7-16`. |
-| **interactPositionPoint** / **interactDirPoint** (since 1.30) | Memory point names for one-sided open/close. Config keys are these two strings; members are `m_InteractLimitingPositionPoint` / `m_InteractLimitingDirPoint`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:34-38`, `exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:335-342`. |
+| **interactPositionPoint** / **interactDirPoint** (since 1.30) | Memory point names for one-sided open/close. Config keys are these two strings; members are `m_InteractLimitingPositionPoint` / `m_InteractLimitingDirPoint`. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:34-38`, `exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:440-447`. |
 | **doorConstructionPart** / **doorConstructionPhysicsSource** (since 1.30) | Rebuildable-house door: construction part name and AnimationSource that toggles door physics. | `exp/scripts/scripts/3_Game/Entities/AdditionalDoorsInfo.c:40-44`, `exp/scripts/scripts/4_World/Classes/Rebuilding/Rebuilding.c:439-463`. |
 
 Tutorial sound list: **DZ\sounds\hpp\config.cpp** (**WELCOME TO novoGODS Shit Door Tutorial.txt:255-256**). Verify a sound there before adding it.
@@ -246,7 +246,7 @@ class DoorManipulationParams
 `BuildingBase` then rejects Open when a related `DigitalCodeLock` or `CombinationLock` is locked:
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:312
+// [EXACT] exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:417
 		int doorIndex = params.m_DoorIndex;
 		AdditionalDoorInfo doorInfo = GetDoorInfo(doorIndex);
 		if (doorInfo && doorInfo.m_RelatedInventorySlotNames)
@@ -273,7 +273,7 @@ class DoorManipulationParams
 Directional check (missing/empty memory points pass — the helper returns true):
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:335
+// [EXACT] exp/scripts/scripts/4_World/Entities/Game/Super/Building.c:440
 	//! checks against player relative to defined door direction, some doors can only be operated from one side
 	bool DoorsDirectionalCheck(PlayerBase player, int componentIdx)
 	{
@@ -318,7 +318,7 @@ enum EBuildingLockType
 }
 ```
 
-**[DESIGN]** Combination locks and code locks are `IsExternalLockType()` inventory items (`DigitalCodeLock` / `CombinationLock` override, `CodeLock.c:542`, `CombinationLock.c:779`), not extra `EBuildingLockType` values. Digest J's `COMBINATION_LOCK = 2` / `CODE_LOCK = 4` is false against this file.
+**[DESIGN]** Combination locks and code locks are `IsExternalLockType()` inventory items (`DigitalCodeLock` / `CombinationLock` override, `CodeLock.c:563`, `CombinationLock.c:779`), not extra `EBuildingLockType` values. Digest J's `COMBINATION_LOCK = 2` / `CODE_LOCK = 4` is false against this file.
 
 `GetLockCompatibilityType` now returns `GetDoorInfo(doorIdx).m_LockCompatibilityBitMask` (`Building.c:193-196`). `ActionLockDoors` / `ActionUnlockDoors` still use that mask against `tool.GetKeyCompatibilityType()`, but they return false first if any related slot already holds an `IsExternalLockType()` item (`ActionLockDoors.c:40-57`).
 

@@ -292,7 +292,7 @@ three ways to cross that binding.
 3. **A restore pass still queued can reopen saving at shutdown.** If the restore clears the
    shutdown flag (for a mission restart in the same process), a restore `CallLater` still in
    `CALL_CATEGORY_SYSTEM`, which is processed "without any restrictions"
-   (`VANILLA/3_game/global/game.c:1515`), clears it again after `OnMissionFinish`, and the
+   (`VANILLA/3_game/global/game.c:1516`), clears it again after `OnMissionFinish`, and the
    `EEDelete` calls of the shutdown then unregister entries. Rule: remove the pending passes
    (`ScriptCallQueue.Remove`, `VANILLA/2_gamelib/tools.c:65`) before setting the flag
    [EXACT][CLAIM-PERS-SHUTDOWN-QUEUE]. Read in the code; the shutdown order in game is not confirmed.
@@ -326,7 +326,7 @@ Mission-file exception: [references/sidecar-files.md](references/sidecar-files.m
 - `CombinationLock` writes `m_CombinationInside` and reads it at
   `version >= 143` (`4_World\Entities\ItemBase\CombinationLock.c:128-177`).
 - New `DigitalCodeLock` streams PIN / locked / door index through
-  `CodeLockComponent` (`ItemBase\CodeLock.c:484-497`;
+  `CodeLockComponent` (`ItemBase\CodeLock.c:505-518`;
   `Classes\CodeLockComponent.c:257-277`).
 - New `$mission:BunkerBroadcastPersistenceStorage.bin` via `FileSerializer`
   (`Classes\BunkerBroadcastHandler.c:16-82`). Not the character/world bin.
@@ -357,7 +357,7 @@ not persistence.
 - [ ] Do not treat a 1.29 `player.bin` on 1.30 as a successful thermal
       legacy migrate — vanilla always reads the new float on MP load.
 - [ ] Do not apply `Rebuilding`'s ten ints to `BaseBuildingBase` (still three
-      ints + `m_HasBase` at `BaseBuildingBase.c:420-429`).
+      ints + `m_HasBase` at `BaseBuildingBase.c:419-428`).
 - [ ] Do not clone vanilla's unchecked `$mission:` `FileSerializer` overwrite.
 - [ ] Classify CombinationLock 142→144 as gated known/legacy; classify
       ThermalBias 142→144 as failed/truncated unless Bohemia wipes characters.

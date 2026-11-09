@@ -263,11 +263,11 @@ Work-in-progress aspects first seen in the Experimental code (1.30.164014), re-c
 
 ## Cite-then-verify
 
-Every technical claim in this skill includes the source file path and exact line range. Paths keep the `exp\` prefix of the first extraction (`<extract-root>/1.30.164014/`); the line numbers are those of stable 1.30.164200 unless the text names another build (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
+Every technical claim in this skill includes the source file path and exact line range. Paths keep the `exp\` prefix of the first extraction (`<extract-root>/1.30.164014/`); the line numbers are those of stable 1.30.164289 unless the text names another build (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 - If you need to verify a citation, open the corresponding file at that exact line and check the symbol.
 - Last full audit: 2026-09-19. All `file:line` citations, `[EXACT]` blocks (byte-for-byte identical), and `references/sources.md` counts were verified against the extraction; displaced citations and claims regarding contact damage, kickstand (DIAG only), default battery, `Jawa_05` clips, and sound ranges were corrected. Previous copies: `*.bak-20260919-pre-audit`. Still unverified: anything depending on native simulation (curve units, effect of `tipoverAngle`).
 - Re-checked on stable 1.30.164200 on 2026-10-28: every vanilla `file:line` citation was moved with its text, and the status items above were read again on that build. `references/sources.md` keeps the 1.30.164014 line counts and lists what changed on 1.30.164200.
-- When Bohemia publishes a new build of DayZ 1.30, **DO NOT overwrite** the current extraction directory. Extract the new version into a sibling directory identified by its build number (for example `<extract-root>/1.30.XXXXXX/`), run a textual diff against the build the line numbers come from (1.30.164200 today), and update shifted line numbers.
+- When Bohemia publishes a new build of DayZ 1.30, **DO NOT overwrite** the current extraction directory. Extract the new version into a sibling directory identified by its build number (for example `<extract-root>/1.30.XXXXXX/`), run a textual diff against the build the line numbers come from (1.30.164289 today), and update shifted line numbers.
 
 ## References Index
 

@@ -12,7 +12,7 @@ description: >
 
 # DayZ Environment Hazards (1.30)
 
-DayZ 1.30 (written on Experimental build 1.30.164014, re-checked on stable 1.30.164200) adds native environmental hazards: hybrid engine+script sandstorm (`Weather.GetSandstorm()`, `exp\scripts\scripts\3_Game\Weather.c:210` and `exp\scripts\scripts\3_Game\Sandstorm.c:6-135`), exposure with shelter fade in `ScriptedSandstormController`, heatstroke via `ThermalBiasHandler` accumulator (high heat no longer kills from `HeatComfortMdfr`), eye irritation and silicosis via `AGT_AIRBOURNE_SOLID`, `OilPitArea` oil pits, dust via `SurfaceInfo`, and sunstroke with `IsInShadow`. The Nasdara world (DLC Badlands, `appId = 3816030`) brings sand weather and solar tables, but on 1.30.164014 `data_nasdara.pbo` was a 6-file stub (what 1.30.164200 installs: "Status in 1.30 stable", item 1).
+DayZ 1.30 (written on Experimental build 1.30.164014, re-checked on stable 1.30.164200 and 1.30.164289) adds native environmental hazards: hybrid engine+script sandstorm (`Weather.GetSandstorm()`, `exp\scripts\scripts\3_Game\Weather.c:210` and `exp\scripts\scripts\3_Game\Sandstorm.c:6-135`), exposure with shelter fade in `ScriptedSandstormController`, heatstroke via `ThermalBiasHandler` accumulator (high heat no longer kills from `HeatComfortMdfr`), eye irritation and silicosis via `AGT_AIRBOURNE_SOLID`, `OilPitArea` oil pits, dust via `SurfaceInfo`, and sunstroke with `IsInShadow`. The Nasdara world (DLC Badlands, `appId = 3816030`) brings sand weather and solar tables, but on 1.30.164014 `data_nasdara.pbo` was a 6-file stub (what 1.30.164200 installs: "Status in 1.30 stable", item 1).
 
 All evidence is `source_verified` against extracted text. No behavior is declared `runtime_verified`.
 
@@ -43,7 +43,7 @@ Recommendation: a new environmental hazard inherits the vanilla pattern (`Effect
 4. [DESIGN] **WorldData**: if you want automatic storms like Nasdara, copy the `CalculateWind` + `StartSandstorm` pattern (`Nasdara.c:318-322, 561-575`). ChernarusPlus does not start sandstorm in its `WeatherOnBeforeChange`.
 5. [EXACT] **Shelter**: intensity per player is `GetIntensity(head)` attenuated over 1.5 s if underground, interior (roof **and** `IsSoundInsideBuilding`) or `Car` (`ScriptedSandstormController.c:15, 142-178, 213-248, 250-282`). Motorbike and boat do **not** count as shelter.
 6. [EXACT] **PPE**: mask `DEF_DUST_PARTICLE_BREATH` against silicosis; eyewear/mask/NVG `DEF_DUST_PARTICLE_EYES` against irritation (`constants.c:545-550`, `PluginTransmissionAgents.c:414-437`).
-7. [EXACT] **Heat**: `HeatComfortMdfr` feeds `ThermalBiasHandler.Add` above comfort thresholds (`HeatComfortMdfr.c:74-111`). The 4 phases of `HeatStroke` read `GetThermalBiasHandler().Get()` (`HeatStroke.c:4, 58-61`).
+7. [EXACT] **Heat**: `HeatComfortMdfr` feeds `ThermalBiasHandler.Add` above comfort thresholds (`HeatComfortMdfr.c:74-112`). The 4 phases of `HeatStroke` read `GetThermalBiasHandler().Get()` (`HeatStroke.c:4, 59-62`).
 8. [DESIGN] **Shadow and sunstroke**: `CheckShadowPresence` every `ENVIRO_TICK_SHADOW_RC_CHECK` (30 s, not 5) (`constants.c:760`, `Environment.c:406-415, 665-720`). The +2/+6/+8 °C table is in `NasdaraData.Init`, not ChernarusPlus.
 9. [DESIGN] **Economy / CE**: register `OilPitArea` zones via `cfgeffectarea.json` like any `EffectArea`. Detail in [references/dust-oilpit-nasdara.md](references/dust-oilpit-nasdara.md).
 
@@ -61,13 +61,13 @@ Recommendation: a new environmental hazard inherits the vanilla pattern (`Effect
 
 ### 3. Lethal heat no longer lives in `HeatComfortMdfr`
 - **Symptom**: a 1.29 mod trimming heat damage in `HeatComfortMdfr` stops doing anything (player still dies from `HeatStrokePhase4`).
-- **Cause**: high heat tick calls `thermalBiasHandler.Add(...)` (`HeatComfortMdfr.c:74-111`). Health damage is in `HeatStrokePhase4Mdfr.OnTick` (`HeatStroke.c:307-309`).
+- **Cause**: high heat tick calls `thermalBiasHandler.Add(...)` (`HeatComfortMdfr.c:74-112`). Health damage is in `HeatStrokePhase4Mdfr.OnTick` (`HeatStroke.c:314-316`).
 - **Remedy**: balance `PlayerConstants.THERMAL_BIAS_*` (`PlayerConstants.c:203-210`) or `HeatStroke` phases. Cold still subtracts health in same modifier (`HeatComfortMdfr.c:62-71`).
 
-### 4. `HeatStrokePhase1` breaks sickness badge
+### 4. `HeatStrokePhase1` breaks sickness badge (until 1.30.164200)
 - **Symptom** [CHANGELOG / confirmed in script]: sickness icons do not reappear.
-- **Cause**: empty `OnActivate` and `OnDeactivate` calls `DecreaseDiseaseCount()` (`HeatStroke.c:68-75`). Since 1.30.164078 the only increment is phase 2's `OnActivate` and phase 2's `OnDeactivate` no longer decrements (`HeatStroke.c:110-123`), so the counter balances only when phase 2 activates once per phase 1 episode: phase 1 alone nets −1 and each further phase 2 activation nets +1. `ImmuneSystemMdfr` only refreshes `NTF_SICK` when `HasDisease()` changes (`ImmuneSystem.c:44-55`, `PlayerBase.c:1119-1122`).
-- **Remedy**: if modding the phases, keep each `IncreaseDiseaseCount` and its `DecreaseDiseaseCount` in the same phase, for example decrement in phase 2's `OnDeactivate` and drop phase 1's decrement.
+- **Cause** (1.30.164078 and 1.30.164200): empty `OnActivate` and `OnDeactivate` calls `DecreaseDiseaseCount()` (1.30.164200 `HeatStroke.c:68-75`). The only increment is phase 2's `OnActivate` and phase 2's `OnDeactivate` does not decrement (1.30.164200 `HeatStroke.c:110-123`), so the counter balances only when phase 2 activates once per phase 1 episode: phase 1 alone nets −1 and each further phase 2 activation nets +1. `ImmuneSystemMdfr` only refreshes `NTF_SICK` when `HasDisease()` changes (`ImmuneSystem.c:44-55`, `PlayerBase.c:1119-1122`).
+- **Fixed in 1.30.164289**: phase 1's `OnDeactivate` is empty (`HeatStroke.c:73-75`) and phase 2's decrements (`HeatStroke.c:124-130`). On an older build, or if modding the phases, keep each `IncreaseDiseaseCount` and its `DecreaseDiseaseCount` in the same phase.
 
 ### 5. Respiratory PPE ≠ Eye PPE
 - **Symptom**: eyewear prevents silicosis, or a mask without `DEF_DUST_PARTICLE_EYES` does not prevent squinting.
@@ -103,7 +103,7 @@ Recommendation: a new environmental hazard inherits the vanilla pattern (`Effect
    - **Shelter**: enter a building with `IsSoundInsideBuilding`; intensity → 0 in 1.5 s. Mount a motorbike: intensity must NOT go to 0. Enter a `Car`: yes.
    - **PPE**: with dust mask, no cough or silicosis; with glasses, no squint.
    - **Heat**: sustained high heatcomfort must raise `ThermalBias` and activate `MDF_HEAT_STROKE1..4`.
-   - **WashHead**: reduces 10 `EYES_IRRITATION` (1.6 from bottle) and applies resistance for 30 s (`ActionWashHeadWettingClothesBase.c:46-55`, `ActionWashHeadItemContinuous.c:41`).
+   - **WashHead**: reduces 10 `EYES_IRRITATION` (1.6 from bottle) and applies resistance for 30 s (`ActionWashHeadWettingClothesBase.c:46-63`, `ActionWashHeadItemContinuous.c:41`); since 1.30.164289 a wash while the resistance runs changes nothing (`ActionWashHeadWettingClothesBase.c:55-60`).
    - **Oil pit**: wait 3–10 s; then 20 HeatDamage/s and `OIL_FIRE1`/`OIL_FIRE2` particles.
 3. **RPT** [UNVERIFIED texts]: search for `ThermalBiasHandler`, `Sandstorm`, `Could not get players sandstorm data`.
 
@@ -119,7 +119,7 @@ Work-in-progress aspects first seen in the Experimental code (1.30.164014), re-c
 
 ## Cite-then-verify
 
-Paths relative to `E:\DayZ-Exp-Extract\1.30.164014\` (the `exp\` prefix). Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Open file at the line. Digests I/M shifted dozens of citations (e.g. "5 s" shadow, `PluginTransmissionAgents.c:377`, `PlayerBase.c:941`). NEVER copy an `[EXACT]` block from a digest: open it in `exp\`.
+Paths relative to `E:\DayZ-Exp-Extract\1.30.164014\` (the `exp\` prefix). Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Open file at the line. Digests I/M shifted dozens of citations (e.g. "5 s" shadow, `PluginTransmissionAgents.c:377`, `PlayerBase.c:941`). NEVER copy an `[EXACT]` block from a digest: open it in `exp\`.
 
 ## References index
 

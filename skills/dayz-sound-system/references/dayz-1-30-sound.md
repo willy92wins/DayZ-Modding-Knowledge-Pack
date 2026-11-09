@@ -1,6 +1,6 @@
 # DayZ 1.30 — sound, NoiseSystem, music, radios
 
-Citations re-opened under `exp\` (build 1.30.164014). Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Do not copy digest `[EXACT]` blocks; line numbers below are from the files opened here.
+Citations re-opened under `exp\` (build 1.30.164014). Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Do not copy digest `[EXACT]` blocks; line numbers below are from the files opened here.
 
 ## Server / headless guards
 

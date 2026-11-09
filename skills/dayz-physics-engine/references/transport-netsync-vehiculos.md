@@ -1,5 +1,5 @@
 # 04 — Vehicles and Network Synchronization (Transport / CarScript)
-> DayZ Standalone v1.24 · Decompiled Enforce Script · 2026-06-06 · line numbers re-checked on 1.30.164200 (2026-10-28); a cite labelled 1.29 is the 1.29 line  
+> DayZ Standalone v1.24 · Decompiled Enforce Script · 2026-06-06 · line numbers re-checked on 1.30.164200 (2026-10-28) and 1.30.164289 (2026-11-09); a cite labelled 1.29 is the 1.29 line  
 > Source of truth: `<dayz-projects>\scripts\`  
 > Anti-confabulation: every class/signature verified with Grep/Read + path:line
 

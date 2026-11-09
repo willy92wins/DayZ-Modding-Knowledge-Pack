@@ -186,7 +186,7 @@ Tutorial Memory LOD (axes, `soundPos`, interaction) is unchanged. 1.30 adds extr
 | Lock attachment proxy | `CfgSlots` `selection` | `att_combinationlock`, `att_codelock` (and numbered `_wood` / `_metal` variants) | `exp/scripts/scripts/config.cpp:2316-2321,2768-2773` |
 | One-sided open/close | `interactPositionPoint` + `interactDirPoint` on the Doors child | Whatever strings you put there; empty/missing → `MemPointDirectionalCheck` returns true | `AdditionalDoorsInfo.c:34-38`, `MiscGameplayFunctions.c:944-969` |
 | Bunker inside vs outside | `Bunker.CanDoorBeOpened` formats `"%1_action"` and `"%1_inside"` from `doorInfo.m_DoorType` | Example: Doors subclass `Door1` → `Door1_action` and `Door1_inside` | `exp/scripts/scripts/4_World/Entities/Building/Bunker.c:47-54` |
-| Code lock facing | `DigitalCodeLock.MEMPOINT_CENTER` / `MEMPOINT_INSIDE` on the **item** P3D | `ce_center`, `inside` | `exp/scripts/scripts/4_World/Entities/ItemBase/CodeLock.c:3-4,221` |
+| Code lock facing | `DigitalCodeLock.MEMPOINT_CENTER` / `MEMPOINT_INSIDE` on the **item** P3D | `ce_center`, `inside` | `exp/scripts/scripts/4_World/Entities/ItemBase/CodeLock.c:3-4,242` |
 | Combination lock faces | item selections | `lock_attached_outside`, `lock_attached_inside` | `exp/scripts/scripts/4_World/Entities/ItemBase/CombinationLock.c:27-30` |
 | Bunker crate spawn | `BroadcastedBunker` | `storagecratepos`, `storagecratedir` | `exp/scripts/scripts/4_World/Entities/Building/Bunker.c:174-176,307-317` |
 

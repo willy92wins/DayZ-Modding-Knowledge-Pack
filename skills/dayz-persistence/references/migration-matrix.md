@@ -118,7 +118,7 @@ explicitly; do not infer a migrate from a version bump alone.
 | `PlayerBase` saved on 1.29, loaded on 1.30 MP | `truncated` (vanilla does **not** gate) | `reject` | thermal `ctx.Read` fails | pre-load player state | print `---- failed to load ThermalBiasHandler, read fail  ----` (`PlayerBase.c:7520-7524`). Not `ok_legacy`. |
 | `PlayerBase` saved on 1.30 MP | `known-version` | `ok` | one float after arrow manager | complete | `ThermalBiasHandler.c:67-77`. |
 | `DigitalCodeLock` on a 1.29 world | `fresh` | `ok` | `0` | defaults | class did not exist; no legacy record. |
-| `BaseBuildingBase` 1.29 fence | `known-version` | `ok` | three ints + bool after `super` | complete | suffix unchanged (`BaseBuildingBase.c:420-429`). |
+| `BaseBuildingBase` 1.29 fence | `known-version` | `ok` | three ints + bool after `super` | complete | suffix unchanged (`BaseBuildingBase.c:419-428`). |
 | `Rebuilding` stored version `< REBUILDING_STORAGE_VERSION` | vanilla rejects as invalid | `reject` | `0` applied after the version int fails the `<` check | intact | `Rebuilding.c:518-524`. |
 | `Rebuilding` stored version `>` current | vanilla **accepts** | (violates this matrix's `future-version` cell) | ten ints | applied | `[DESIGN]` do not copy. `m_LastStorageVersion < REBUILDING_STORAGE_VERSION` only. |
 | Missing `$mission:BunkerBroadcastPersistenceStorage.bin` | `fresh` | `ok` | `0` | scheduler/handler defaults | `Load()` returns `false` when `Open` fails (`BunkerBroadcastHandler.c:56-68`); constructor still installs empty objects (`:29-34`). |

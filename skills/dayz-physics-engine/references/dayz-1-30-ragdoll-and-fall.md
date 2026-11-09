@@ -4,7 +4,7 @@ Lane P04 overflow for `dayz-physics-engine`. SKILL.md keeps the 90% working set;
 1.30 physics-engine detail that would blow the 500-line cap. Character bind path (`ragdoll =` on
 `SurvivorBase`) is `dayz-characters`. Animation-graph / surrender ASI is `dayz-animation-pipeline`.
 
-Citations are under `exp/` unless marked `stable-1.29/`. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp/` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). `[EXACT]` blocks were copied from the
+Citations are under `exp/` unless marked `stable-1.29/`. Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp/` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). `[EXACT]` blocks were copied from the
 opened file. `[UNVERIFIED]` = no script call-site or no in-game test.
 
 ## 1. `.ragdoll` / `RagdollDef`

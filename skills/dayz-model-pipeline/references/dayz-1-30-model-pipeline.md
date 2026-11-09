@@ -6,7 +6,7 @@ is the 1.30 engine/config delta for meshes, proxies, houses, and cache.
 
 Line numbers are from files opened under `exp\` (and the official changelog
 transcription). Digest O/F/H line numbers were **not** copied.
-Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
+Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## Inventory-attachment proxy position on dedicated server
 

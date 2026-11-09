@@ -147,7 +147,7 @@ proto static bool EntityOverlapBullet(...) / EntityOverlapSingleBullet(...) / Sp
 ```
 - `RaycastRVParams` (`:49-92`): default `type` **`ObjIntersectView`** (`:88`); documented values `ObjIntersectFire(0), View(1), Geom(2), IFire(3), None(4)` (`:66-71`) — constants defined in engine, not in scripts.
 - `RaycastRVResult` (`:98-113`): `obj/parent` (proxy if `hierLevel>0`), `pos`, `dir`, `component`, `surface` (SurfaceInfo), `entry/exit`.
-- `CollisionFlags` — `1_core/proto/endebug.c:140-148`: `FIRSTCONTACT, NEARESTCONTACT, ONLYSTATIC, ONLYDYNAMIC, ONLYWATER, ALLOBJECTS`.
+- `CollisionFlags` — `1_core/proto/endebug.c:140-149`: `FIRSTCONTACT, NEARESTCONTACT, ONLYSTATIC, ONLYDYNAMIC, ONLYWATER, ALLOBJECTS`; since 1.30.164289 `NONE = 0` comes first, which moves every other value up by one.
 - `CollisionOverlapCallback.OnContact(IEntity other, Contact contact)` (`dayzphysics.c:115-121`) for overlaps.
 - `PhxRaycast*` **does not exist** (grep without matches).
 
@@ -213,7 +213,7 @@ if ( player.GetInstanceType() != DayZPlayerInstanceType.INSTANCETYPE_REMOTE )
     item.ThrowPhysically(player, throwEvent.GetForce());
 ```
 → executes on **server and on owner client** (not on remotes): dynamic simulation exists on both; remotes receive result via network [internal replication mechanism not visible in scripts — NOT VERIFIED].
-2. **Emptying inventory/containers**: `MiscGameplayFunctions.ThrowEntityFromInventory` (`4_world/static/miscgameplayfunctions.c:1299-1355`) calls `entityIB.ThrowPhysically(null, force, false)` (without collision against characters) and, for non-ItemBase entities, `dBodyApplyImpulse(entity, force)` (`:1353`).
+2. **Emptying inventory/containers**: `MiscGameplayFunctions.ThrowEntityFromInventory` (`4_world/static/miscgameplayfunctions.c:1305-1361`) calls `entityIB.ThrowPhysically(null, force, false)` (without collision against characters) and, for non-ItemBase entities, `dBodyApplyImpulse(entity, force)` (`:1359`).
 3. **Admin spawn with physics**: `plugindeveloper.c:430,553` — `item.ThrowPhysically(null, "0 0 0")` server-side to activate falling physics.
 4. **Shutdown**: `ItemBase.StopItemDynamicPhysics()` → `SetDynamicPhysicsLifeTime(0.01)` (`4_world/entities/itembase.c:4534-4538`) — drop dynamic physics has a *lifetime* managed by engine; setting it to 0.01 kills it instantly. Flag `m_ItemBeingDroppedPhys` (`itembase.c:59`).
 5. `CreateDynamicPhysics(layers)` **is never called from vanilla script** (grep: only declaration) — engine invokes it inside `ThrowPhysically` [INFERENCE]; exposed for mods.

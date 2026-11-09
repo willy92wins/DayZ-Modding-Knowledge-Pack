@@ -22,7 +22,7 @@ change the environment, the player's "underground" state, and what Badlands buil
 (radio-announced bunkers, irrigation tunnel entrance).
 
 Citations `exp\scripts\scripts\…` were first read in `dta\scripts.pbo` of 1.30.164014 and compared
-with 1.29. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Everything marked `source_verified` was opened in those files. **Nothing in
+with 1.29. Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Everything marked `source_verified` was opened in those files. **Nothing in
 this skill has been tested in game yet**: §Verification Status states the level
 of each claim and §Before designing with holes, how to raise it.
 

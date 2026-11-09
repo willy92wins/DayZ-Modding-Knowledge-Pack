@@ -1,6 +1,6 @@
 # 02 — DayZ sound system (Enfusion/Enforce Script)
 > Deep-dive verificado contra vanilla v1.24 scripts + prior art real. 2026-06-06.
-> Line numbers re-checked on 1.30.164200 (2026-10-28); a cite labelled 1.29 is the 1.29 line.
+> Line numbers re-checked on 1.30.164200 (2026-10-28) and 1.30.164289 (2026-11-09); a cite labelled 1.29 is the 1.29 line.
 
 ---
 

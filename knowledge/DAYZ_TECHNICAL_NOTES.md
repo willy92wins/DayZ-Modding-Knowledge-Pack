@@ -132,7 +132,7 @@ Reference: vanilla `WoodenCrate` in `DZ/gear/camping/config.cpp` lines 10074–1
 ```
 proto native void ThrowPhysically(DayZPlayer player, vector force, bool collideWithCharacters = true);
 ```
-Internally does `CreateDynamicPhysics(ITEM_LARGE)` + `SetDynamicPhysicsLifeTime(...)` + applies force as impulse. It is the vanilla pattern (`miscgameplayfunctions.c:1323/1204/1212`, `plugindeveloper.c`).
+Internally does `CreateDynamicPhysics(ITEM_LARGE)` + `SetDynamicPhysicsLifeTime(...)` + applies force as impulse. It is the vanilla pattern (`miscgameplayfunctions.c:1329/1345/1353`, `plugindeveloper.c`).
 
 ```enforce
 ItemBase debrisEnt = ItemBase.Cast(spawned);

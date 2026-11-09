@@ -9,7 +9,7 @@ Source-verified vs vanilla v1.24 + real mods: recipes/crafting (PluginRecipesMan
 ## Deep-dive verified additions (added 2026-06-06)
 
 > Source-verified vs vanilla v1.24 + real mods (digests in
-> `LF_RollingStone_dev/research/deep-dive-2026-06-06/`). Line refs +-3, re-checked on 1.30.164200 (2026-10-28).
+> `LF_RollingStone_dev/research/deep-dive-2026-06-06/`). Line refs +-3, re-checked on 1.30.164200 (2026-10-28) and 1.30.164289 (2026-11-09).
 
 ### Recipes / crafting (PluginRecipesManager)
 - `MAX_NUMBER_OF_INGREDIENTS = 2` (`recipebase.c:1`) — recipes are physically limited to 2

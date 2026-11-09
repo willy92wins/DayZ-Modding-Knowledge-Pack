@@ -122,11 +122,11 @@ not a mod `storageVersion`):
 | (ungated on 1.30 MP load) | `PlayerBase` | `float m_TemporaryResistanceTime` | `PlayerBase.c:7520-7524`; `ThermalBiasHandler.c:72-77` |
 
 `BaseBuildingBase` subclass suffix is unchanged: `super`, three sync ints,
-`m_HasBase` (`exp\scripts\scripts\4_World\Entities\ItemBase\BaseBuildingBase.c:420-429`).
+`m_HasBase` (`exp\scripts\scripts\4_World\Entities\ItemBase\BaseBuildingBase.c:419-428`).
 
 New 1.30 entity (no 1.29 fixture): `DigitalCodeLock` writes
 `m_LockPIN` (string), `m_IsLocked` (bool), `m_DoorIndex` (int) after `super`
-(`CodeLock.c:484-497`; `CodeLockComponent.c:257-277`).
+(`CodeLock.c:505-518`; `CodeLockComponent.c:257-277`).
 
 Full `[EXACT]` copies:
 [dayz-1-30-persistence.md](dayz-1-30-persistence.md).

@@ -1,6 +1,6 @@
 # DayZ 1.30 — Particles, dust, vehicle VFX, sandstorm
 
-Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Verified against extracted 1.30 Exp scripts (`exp\scripts\scripts\`) and `exp\graphics\graphics\Materials\postprocess\sandstorm.emat`. Binary `.ptc` bodies are not in `exp\`; file existence is from `work\pbo-listings\exp__dta__graphics.txt`.
+Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Verified against extracted 1.30 Exp scripts (`exp\scripts\scripts\`) and `exp\graphics\graphics\Materials\postprocess\sandstorm.emat`. Binary `.ptc` bodies are not in `exp\`; file existence is from `work\pbo-listings\exp__dta__graphics.txt`.
 
 ## Client gate: `IsHeadlessOrDedicatedServer`
 

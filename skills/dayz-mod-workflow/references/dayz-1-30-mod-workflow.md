@@ -5,7 +5,7 @@ gates, and SyncVar rules still hold. This file is the 1.30 contract delta for
 actions, CE rootclasses, `cfggameplay.json`, the underground trigger editor,
 and NV type switches.
 
-Line numbers are from files opened under `exp\`. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
+Line numbers are from files opened under `exp\`. Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## Action pipeline: `CanBeStarted` + `CCTLiquid`
 

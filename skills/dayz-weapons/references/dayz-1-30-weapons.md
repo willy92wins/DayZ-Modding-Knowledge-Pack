@@ -4,7 +4,7 @@ Insertion-only companion to `dayz-weapons`. Digest K named this skill; every `[E
 copied from `exp\` after opening the file (digest K reconstructed several paths and signatures — do not
 copy digest snippets). `[VERIFIED-vanilla]` = read on disk in this extract. Anim motion stays with
 `dayz-animation-pipeline`.
-Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
+Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build).
 
 ## W-STAGING1 — scripts without CfgWeapons / `.p3d` on 1.30.164014
 

@@ -5,8 +5,8 @@ description: "Use when: sonido DayZ, CfgSoundShaders, SoundSet, sound not playin
 
 # DayZ Sound System (Enforce Script + config)
 
-Verified reference for mod audio. Citations are `path:line` against the vanilla 1.30.164200 scripts
-(first verified on v1.24, re-checked on 2026-10-28; a cite labelled 1.29 is the 1.29 line; ±3 drift) and two real mods used as prior art (IMPWMODPart2 weapons, DoorLockSystem). The full
+Verified reference for mod audio. Citations are `path:line` against the vanilla 1.30.164289 scripts
+(first verified on v1.24, re-checked on 2026-10-28 and 2026-11-09; a cite labelled 1.29 is the 1.29 line; ±3 drift) and two real mods used as prior art (IMPWMODPart2 weapons, DoorLockSystem). The full
 deep-dive with every signature lives in `references/sonido-deep-dive.md` — load it for AbstractWave
 events, DynamicMusicPlayer internals, or PlayerSoundManager handlers. 1.30 Exp cites:
 `references/dayz-1-30-sound.md`.

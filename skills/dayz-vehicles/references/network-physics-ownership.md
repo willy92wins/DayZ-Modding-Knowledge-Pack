@@ -17,7 +17,7 @@ drive/automate a car from a client peer or reason about "who drives":
   (carscript.c:2592-2601) is the **car's network OWNERSHIP**, not the player's (glossary pawn.c:5-8:
   Owner = client controlling the pawn).
 - **`IsServerOrOwner()` DOES NOT gate throttle.** Its only consumers are teardown/fluids
-  (carscript.c:552/850/986). Throttle->physics is **proto native** (`SetThrottle` car.c:191, "future
+  (carscript.c:552/577/845). Throttle->physics is **proto native** (`SetThrottle` car.c:191, "future
   throttle value") and is applied by **body simulator = the OWNER**. The only script `SetThrottle`
   (carscript.c:1202) is dead in production (`#ifdef DIAG_DEVELOPER`).
 - A car **without client-owner = `IsAuthorityOwner`** (authority without owner, pawn.c:199-200) -> simulated

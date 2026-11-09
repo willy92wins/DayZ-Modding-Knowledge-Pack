@@ -33,7 +33,7 @@ The same gate applies to `proto native` declarations: **a correct citation does 
 
 Before persisting or ordering data across restarts, verify both the clock and the identity source:
 
-- `CGame.GetTime()` is mission time in milliseconds (`3_game\global\game.c:1533-1534`). It resets on every boot. Use it for durations inside one session, never for a durable timestamp or cross-restart ordering.
+- `CGame.GetTime()` is mission time in milliseconds (`3_game\global\game.c:1534-1535`). It resets on every boot. Use it for durations inside one session, never for a durable timestamp or cross-restart ordering.
 - Build wall-clock timestamps from `GetYearMonthDayUTC` and `GetHourMinuteSecondUTC` (`1_core\proto\ensystem.c:100,76`). Store all UTC components needed by the ordering contract.
 - `PlayerIdentity.GetId()` is the hashed identity intended for databases and logs (`3_game\gameplay.c:367-368`). `GetPlainId()` is explicitly not for databases or logs (`:369-370`), and `GetPlayerId()` is a reusable session ID (`:371-372`). Neither is a durable ownership key.
 
@@ -737,7 +737,7 @@ Five measured facts (LFHeli LF-007 / LF-001; evidence `evidence-2026-08-17/cell-
 
 1. **`CheckVitalItem` false `EngineStop` on the owner.** `CarScript.EOnPostSimulate` (1.29 `carscript.c:986-997`) calls `CheckVitalItem` (1.29 `:2513-2524`) with `IsServerOrOwner()` every `CARS_FLUIDS_TICK=1` s. On the OWNER this reads the local inventory replica and calls `EngineStop()` if the vital item is absent. With parts created by script after spawn, a late replica stops a healthy engine ~1 s after sitting (measured with stack). Remedy: `override protected void CheckVitalItem(bool,int)` as a no-op outside the server. On 1.30 the tick calls `Transport.CheckVitalItemCallback(..., this, "EngineStop")` instead (`carscript.c:839-854`, `transport.c:423-438`) and `CheckVitalItem` is `[Obsolete]` and never called (`carscript.c:2951-2974`), so that override does nothing there: override `CheckVitalItemCallback` the same way (read in the source, not measured on 1.30).
 
-2. **`SetPosition` on a client-side proxy Pawn (PHYSICS) does not apply, not even one frame.** The ex-owner's proxy stays at the last pre-possession snapshot and never receives the transform (a 10 cm server-side movement did not arrive in 25 s). Fix on server with empty crew: `GetGame().RemoteObjectTreeDelete(obj)` + `GetGame().RemoteObjectTreeCreate(obj)` (`game.c:708/709`; vanilla pattern `replaceitemwithnewlambdabase.c:117-123`). All clients rebuild the replica in the authoritative pose; the client script instance is destroyed (its `CallLater`s die).
+2. **`SetPosition` on a client-side proxy Pawn (PHYSICS) does not apply, not even one frame.** The ex-owner's proxy stays at the last pre-possession snapshot and never receives the transform (a 10 cm server-side movement did not arrive in 25 s). Fix on server with empty crew: `GetGame().RemoteObjectTreeDelete(obj)` + `GetGame().RemoteObjectTreeCreate(obj)` (`game.c:708/710`; vanilla pattern `replaceitemwithnewlambdabase.c:117-123`). All clients rebuild the replica in the authoritative pose; the client script instance is destroyed (its `CallLater`s die).
 
 3. **`Object.GetHealth01(zone,type)` (`object.c:1001`) is not callable on client.** Throws `Virtual Machine Exception ... cannot be called on client` (non-fatal, returns 0).
 

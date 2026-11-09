@@ -1,7 +1,7 @@
 # Deep-Dive: Damage System, Hitzones and Armor — DayZ v1.24
 
 > Investigation: 2026-06-06  
-> Source of truth: `<dayz-projects>\scripts\` (vanilla v1.24; line numbers re-checked on 1.30.164200, 2026-10-28, and a cite labelled 1.29 is the 1.29 line)  
+> Source of truth: `<dayz-projects>\scripts\` (vanilla v1.24; line numbers re-checked on 1.30.164200, 2026-10-28, and 1.30.164289, 2026-11-09; a cite labelled 1.29 is the 1.29 line)  
 > Anti-confabulation: every cited API is verified with Grep/Read in the indicated files.
 
 ---
@@ -558,7 +558,7 @@ When `directHitObject == null`, system applies damage in radius defined in CfgAm
 
 ### DealAbsoluteDmg (script helper)
 ```c
-// scripts/4_world/static/miscgameplayfunctions.c:1668
+// scripts/4_world/static/miscgameplayfunctions.c:1674
 static void DealAbsoluteDmg(ItemBase item, float dmg)
 {
     item.DecreaseHealth(dmg, false);  // false = no auto-delete
@@ -682,7 +682,7 @@ class CfgAmmo {
 | `scripts/4_world/classes/areadamage/.../areadamagecomponent.c` | `AreaDamageComponent.EvaluateDamageInternal` |
 | `scripts/3_game/constants.c:909-913` | `STATE_PRISTINE`..`STATE_RUINED` |
 | `scripts/4_world/classes/useractionscomponent/actions/actionconstants.c:149-159` | `UADamageApplied` constantes |
-| `scripts/4_world/static/miscgameplayfunctions.c:1668-1670` | `DealAbsoluteDmg` |
+| `scripts/4_world/static/miscgameplayfunctions.c:1674-1676` | `DealAbsoluteDmg` |
 
 ## DayZ 1.30
 

@@ -385,8 +385,8 @@ inside the cylinder while showing no gas. That can be deliberate, but it must no
 ### Safe positions and schema
 
 `SafePositions` is global, not attached to one area. `GetClosestSafePos` searches the whole array in
-2D (`VANILLA/scripts/4_world/static/miscgameplayfunctions.c:1769,1788`) during the early-presence
-rescue path (`:1763`; caller `areaexposure.c:44`). After any radius change, measure every safe
+2D (`VANILLA/scripts/4_world/static/miscgameplayfunctions.c:1775,1794`) during the early-presence
+rescue path (`:1769`; caller `areaexposure.c:44`). After any radius change, measure every safe
 position against every area; a rescue point inside another cylinder can teleport a reconnecting
 player from gas to gas.
 

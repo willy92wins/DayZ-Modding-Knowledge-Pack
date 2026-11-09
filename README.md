@@ -537,13 +537,14 @@ representative in-game matrix. Record evidence and unknowns in
 [`CHANGELOG.md`](CHANGELOG.md). Contribution and privacy requirements are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-**Build coverage (2026-10-28).** The per-skill levels of the compatibility matrix are
+**Build coverage (2026-11-09).** The per-skill levels of the compatibility matrix are
 pinned to stable `1.29.0.163451`. DayZ 1.30 reached stable on 2026-10-15. 28 skills
 carry 1.30 sections, written on Experimental build `1.30.164014`, and `dayz-motorbikes`
 targets 1.30 only. On 2026-10-28 the vanilla `path:line` citations in the skills were
 re-checked against stable `1.30.164200`: every script citation whose text some build
-has, and the data citations the re-check could read. Line numbers with no build named
-are that build's, but for the data citations that
+has, and the data citations the re-check could read. On 2026-11-09 they moved to
+`1.30.164289`, the stable build since 2026-11-04, which changed 27 script files and no
+data file's text. Line numbers with no build named are that build's, but for the data citations that
 [`skills/_shared/dayz-conventions.md`](skills/_shared/dayz-conventions.md) §Vanilla line
 numbers: which build lists. Measurements keep the build they were made on.
 Where each 1.30 section lives: [`compatibility-matrix.md`](compatibility-matrix.md)

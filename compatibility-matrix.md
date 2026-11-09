@@ -18,7 +18,7 @@ every row below was checked against.
 > every level below as verified on `163451` until someone re-runs it.
 
 > **Since 2026-10-15 the stable branch is DayZ 1.30** (`1.30.164078`; the author's
-> install has run `1.30.164200` since 2026-10-21). The levels in §Skill coverage are
+> install ran `1.30.164200` from 2026-10-21 and has run `1.30.164289` since 2026-11-04). The levels in §Skill coverage are
 > still the 1.29 ones: no row was re-run on 1.30. What was checked on 1.30 stable, and
 > how, is in §DayZ 1.30 below.
 
@@ -61,6 +61,14 @@ status lists of `dayz-motorbikes` and `dayz-environment-hazards` were read again
 it. Measurements were not repeated: something measured in game on `1.30.164014` is
 evidence for that build. How to tell which build a citation's lines come from:
 `skills/_shared/dayz-conventions.md` §Vanilla line numbers: which build.
+
+**Move to 1.30.164289 (2026-11-09).** `1.30.164289`, the Steam update of 2026-11-04, changed
+27 script files, all `.c`, and none of the data PBO entries the 2026-10-28 re-check extracted;
+its models, four navmeshes and `ChernarusPlus.wrp` changed size and were not compared. The
+citations of the 27 files were moved to their `1.30.164289` lines. Where it changed the code
+they cite, the text says what changed: heat stroke and head washing in
+`dayz-environment-hazards`, `CollisionFlags` in `dayz-physics-engine`, the bunker doors in
+`dayz-doors`, and the item-fall box and the part keys in `dayz-basebuilding`.
 
 | Skill | Where the 1.30 content lives |
 |---|---|
@@ -137,15 +145,15 @@ evidence for that build. How to tell which build a citation's lines come from:
 | `dayz-realistic-animation-director` | `cross_checked` | Blender with `bpy`; `blender-animation`; `dayz-animation-pipeline`; optional DayZDiag for the in-game gate | Offline validators compile. No third-party motion models or ARDY weights ship. Adopted, not re-run. | `skills/dayz-realistic-animation-director/SKILL.md`; `skills/dayz-realistic-animation-director/scripts/` |
 | `uv-clean-atlas` | `cross_checked` | Blender 4.3+ headless; optional PartUV (not shipped) | Scripts compile; `sys.path` stays at the skill `scripts/` directory. One source-game brand token was neutralized. Adopted, not re-run. | `skills/uv-clean-atlas/SKILL.md`; `skills/uv-clean-atlas/scripts/` |
 | `3d-generation-harness` | `cross_checked` | `blender-assembly`; `blender-visual-review`; `dayz-model-pipeline`; `dayz-p3d-audit`; optional external image-to-3D skill (not in this pack) | Process harness. `hunyuan3d-local` and kin are optional/external — the pack does not include them. Adopted, not re-run. | `skills/3d-generation-harness/SKILL.md` |
-| `dayz-environment-hazards` | `unverified` (1.30-only feature set) | `enforce-script-reference`; `dayz-underground` | Written against 1.30.164014 Exp; citations re-checked on 1.30.164200 stable (2026-10-28); not checked on 1.29. | `skills/dayz-environment-hazards/references/sources.md` |
+| `dayz-environment-hazards` | `unverified` (1.30-only feature set) | `enforce-script-reference`; `dayz-underground` | Written against 1.30.164014 Exp; citations re-checked on 1.30.164200 stable (2026-10-28) and 1.30.164289 (2026-11-09); not checked on 1.29. | `skills/dayz-environment-hazards/references/sources.md` |
 | `dayz-motorbikes` | `unverified` (targets 1.30 only) | `dayz-vehicles`; `dayz-animation-pipeline`; `dayz-model-pipeline` | 1.30 `MotorbikeScript` contract, written against 1.30.164014 Exp and re-checked on 1.30.164200 stable (2026-10-28); the 1.29 stable scripts contain no `MotorbikeScript` (0 references, checked 2026-10-01). | `skills/dayz-motorbikes/references/sources.md` |
-| `dayz-underground` | `unverified` (1.30-only terrain holes) | `dayz-basebuilding`; `dayz-test-ingame` | Written against 1.30.164014 Exp; citations re-checked on 1.30.164200 stable (2026-10-28); not checked on 1.29. | `skills/dayz-underground/references/terrain-holes-evidence.md` |
+| `dayz-underground` | `unverified` (1.30-only terrain holes) | `dayz-basebuilding`; `dayz-test-ingame` | Written against 1.30.164014 Exp; citations re-checked on 1.30.164200 stable (2026-10-28) and 1.30.164289 (2026-11-09); not checked on 1.29. | `skills/dayz-underground/references/terrain-holes-evidence.md` |
 
 ## Stable-build evidence and update policy
 
 - The exact local game/scripts baseline used for source checks is
-  `1.29.0.163451`. For the 1.30 content it is `1.30.164200` since the
-  2026-10-28 re-check (§DayZ 1.30).
+  `1.29.0.163451`. For the 1.30 content it is `1.30.164289` since
+  2026-11-09, and was `1.30.164200` from the 2026-10-28 re-check (§DayZ 1.30).
 - The [official stable changelog](https://forums.dayz.com/topic/266379-stable-update-129/)
   identifies Steam Stable `1.29.163451`, released 2026-07-15.
 - Before a DayZ stable update is adopted, pin its build, diff relevant vanilla

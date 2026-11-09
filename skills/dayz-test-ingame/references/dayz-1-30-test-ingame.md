@@ -5,7 +5,7 @@ Companion to the `since 1.30` note at the top of `SKILL.md`. Diag-only managed l
 1.30 launch-flag and action-injection delta.
 
 Line numbers are from files opened under `exp\` and the changelog
-transcription. Since 2026-10-28 the line numbers are those of stable 1.30.164200; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Runtime behaviour of the new exe flags is [CHANGELOG] /
+transcription. Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp\` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). Runtime behaviour of the new exe flags is [CHANGELOG] /
 [UNVERIFIED] (no DayZ 1.30 Tools binary in this extract).
 
 ## Unpacked `-mod` folder (configs without packing)

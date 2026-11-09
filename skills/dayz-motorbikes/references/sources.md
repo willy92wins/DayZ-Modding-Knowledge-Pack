@@ -10,7 +10,7 @@ This document details the extraction environment, analyzed builds, primary sourc
 - **Extraction tool**: Mikero tools; `config.cpp` files are `config.bin` debinarized with DeRap ("Dos Tools Dll version 10.13", header of `exp\vehicles_singletrack\DZ\vehicles\singletrack\config.cpp:1-6`)
 - **Stable comparison version**: DayZ 1.29 Stable (`stable-1.29\` folder)
 - **Evidence level**: `source_verified` (claims are verified in Enforce Script `.c` source code, `.cpp` configs, and `.agf` graph, except those marked `[UNVERIFIED]`; none is assumed `runtime_verified` until tested on server).
-- **Re-check on 1.30 stable (2026-10-28)**: the skill's line numbers are now those of stable build `1.30.164200`, read in a sibling extraction of that build; the paths keep the `exp\` prefix of this one. The line counts and section ranges in this file stay `1.30.164014`'s; what differs on `1.30.164200` is in §7 below.
+- **Re-check on 1.30 stable (2026-10-28)**: the skill's line numbers are now those of stable build `1.30.164200`, read in a sibling extraction of that build; the paths keep the `exp\` prefix of this one. The line counts and section ranges in this file stay `1.30.164014`'s; what differs on `1.30.164200` is in §7 below. On 2026-11-09 they were checked on `1.30.164289`, which changed none of the script files this skill cites and no data file's text, so they are its lines too.
 
 ## Critical Note on Vehicle and Motorbike SoundSets
 

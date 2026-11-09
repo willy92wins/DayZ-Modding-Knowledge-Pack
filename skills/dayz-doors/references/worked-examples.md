@@ -292,7 +292,7 @@ class AdditionalDoorInfo
 							break;
 ```
 
-`BuildingBase.CanReceiveAttachment` refuses a second lock on the twin slot (`HasConflictingDoorAttachment` swaps `Att_CodeLock` ↔ `Att_CombinationLock` suffixes) and refuses any external lock while that door is open (`Building.c:192-249`). `CanReleaseAttachment` refuses while `DigitalCodeLock.IsLocked()` or `CombinationLock.IsLocked()` (`Building.c:267-280`).
+`BuildingBase.CanReceiveAttachment` refuses a second lock on the twin slot (`HasConflictingDoorAttachment` swaps `Att_CodeLock` ↔ `Att_CombinationLock` suffixes) and refuses any external lock while that door is open (`Building.c:297-354`). `CanReleaseAttachment` refuses while `DigitalCodeLock.IsLocked()` or `CombinationLock.IsLocked()` (`Building.c:372-385`).
 
 ### Combination lock: two faces and explicit unlock
 
@@ -399,4 +399,4 @@ Component persist order: `m_LockPIN` (string), `m_IsLocked` (bool), `m_DoorIndex
 
 ### Script override trap
 
-Vanilla Open no longer calls `CanDoorBeOpened(int, bool)`. Override `CanDoorBeOpened(notnull DoorManipulationParams params)`. `Land_WarheadStorage_Main.CanDoorBeOpened(int doorIndex, bool checkIfLocked = false)` (`Land_WarheadStorage_Main.c:352`) is the old signature still present in 1.30 — do not treat it as the current Open path.
+Vanilla Open no longer calls `CanDoorBeOpened(int, bool)`. Override `CanDoorBeOpened(notnull DoorManipulationParams params)`. `Land_WarheadStorage_Main` and `Land_WarheadStorage_Bunker_Facility` overrode the old signature `CanDoorBeOpened(int doorIndex, bool checkIfLocked = false)` until 1.30.164200; since 1.30.164289 both override the `DoorManipulationParams` form (`Land_WarheadStorage_Main.c:352`, `Land_WarheadStorage_Bunker_Facility.c:20`).

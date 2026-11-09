@@ -1,7 +1,7 @@
 # Fence gate — the worked example
 
 Authored 2026-07-07 (F4) from vanilla P:\scripts (then 1.29); line numbers re-checked on 1.30.164200
-(2026-10-28), and a cite labelled 1.29 is the 1.29 line — see citations.
+(2026-10-28) and 1.30.164289 (2026-11-09), and a cite labelled 1.29 is the 1.29 line — see citations.
 
 `Fence: BaseBuildingBase` (`fence.c`, 904 ln) is the richest concrete entity: it adds a gate state machine,
 an open/close animation, a combo lock, barbed-wire area damage, and a persisted gate field. Use it as the
@@ -21,9 +21,9 @@ plays the gate animation and toggles `m_IsOpened`.
 
 ## 2. Barbed-wire area damage
 
-`CreateAreaDamage` (`basebuildingbase.c:981-1026`) builds an `AreaDamageLoopedDeferred_NoVehicle` from the
+`CreateAreaDamage` (`basebuildingbase.c:980-1025`) builds an `AreaDamageLoopedDeferred_NoVehicle` from the
 `<slot>_min` / `<slot>_max` memory points, ammo `"BarbedWireHit"`, hitting Torso / hands / legs / feet.
-Fence rotates that area damage with the gate (`fence.c:604-612`) so the damage volume follows the gate leaf
+Fence rotates that area damage with the gate (`fence.c:618-626`) so the damage volume follows the gate leaf
 as it swings.
 
 Barbed wire is a `mountables[]` attachment (proxy physics toggled — see `config-contract.md §2`); its damage
@@ -34,21 +34,21 @@ zone also unmounts the wire when destroyed.
 The gate state is persisted AFTER the base three sync ints, following the strict `OnStoreSave`/`OnStoreLoad`
 ordering invariant (this is the canonical example of the subclass-after-super rule in `persistence-audit.md`):
 
-- `Fence.OnStoreSave` (`fence.c:246-254`): calls `super.OnStoreSave` FIRST (which writes `m_SyncParts01/02/03`
+- `Fence.OnStoreSave` (`fence.c:255-263`): calls `super.OnStoreSave` FIRST (which writes `m_SyncParts01/02/03`
   then `m_HasBase`), THEN writes `m_GateState`, `m_IsOpened`.
-- `Fence.OnStoreLoad` (`fence.c:256-289`): calls `super.OnStoreLoad` FIRST, then handles a legacy branch — for
+- `Fence.OnStoreLoad` (`fence.c:265-298`): calls `super.OnStoreLoad` FIRST, then handles a legacy branch — for
   `version < 110` it reads and DISCARDS a bool, then reads the gate state + opened for current versions.
 
 **Version note:** Fence gate persistence was bumped at **v110**. The base damage-system version is
-`GetDamageSystemVersionChange()→111` (`basebuildingbase.c:1133-1136`). When you add a persisted field to a
+`GetDamageSystemVersionChange()→111` (`basebuildingbase.c:1132-1135`). When you add a persisted field to a
 subclass, you bump the version and add a legacy branch exactly like this — read the old layout for old saves,
 the new layout for new ones, so existing bases don't corrupt on the first load after the update. Getting this
 wrong loses every fence on the server → treat as data-critical (R9, `persistence-audit.md`).
 
 ## 4. Repair
 
-`Fence.CanBeRepairedToPristine()→true` (`fence.c:466-469`). Repair scales the material requirement by
-`REPAIR_MATERIAL_PERCENTAGE=0.15` (`constructionbase.c:34, 1146-1147, 1208-1209`; 1.29
+`Fence.CanBeRepairedToPristine()→true` (`fence.c:480-483`). Repair scales the material requirement by
+`REPAIR_MATERIAL_PERCENTAGE=0.15` (`constructionbase.c:34, 1210-1211, 1272-1273`; 1.29
 `construction.c:13, 640-644`), floor min 1. The repair action itself is the
 generic `ActionRepairPart` / kit path (not in `fence.c`).
 
@@ -58,7 +58,7 @@ generic `ActionRepairPart` / kit path (not in `fence.c`).
 2. Persist them in `OnStoreSave`/`OnStoreLoad` AFTER `super`, in the exact same order both ways.
 3. Bump the version and add a legacy read branch for old saves.
 4. If the behaviour has a physical volume (area damage, a moving leaf), rotate/relocate it in the same
-   handler that mutates the state (`fence.c:604-612` pattern).
+   handler that mutates the state (`fence.c:618-626` pattern).
 5. Gate the whole thing behind server authority — the state mutation runs server-side and syncs to clients.
 
 ## 6. DayZ 1.30 — `DigitalCodeLock` and combo-lock unlock
@@ -79,13 +79,13 @@ dial unlocked/detached the lock). (since 1.30: Fence also declares `DigitalCodeL
 ```
 
 `GetCodeLock()` finds the slot (`fence.c:161-165`). `GetCombinationLock()` is unchanged (`:155-159`). Gate
-open checks in 1.30 also reject a mounted code lock (`fence.c:208,440`).
+open checks in 1.30 also reject a mounted code lock (`fence.c:208,454`).
 
 `CombinationLock.SetActions` now includes `ActionCombinationLockUnlock` (`CombinationLock.c:686`). Dialing
 the right combination is not enough. Persist: `OnStoreSave` writes `m_Combination`, `m_CombinationLocked`,
 then `m_CombinationInside`; `OnStoreLoad` reads the third int only when `version >= 143`
 (`CombinationLock.c:128-136,169-177`). Fence gate fields themselves still follow the v110 branch
-(`fence.c:246-289`, the methods of §3).
+(`fence.c:255-298`, the methods of §3).
 
 Building-door lock slots on `BuildingBase` (`Building.c:10-11`) are documented for `dayz-doors`. This
 file only covers the Fence attachment.
@@ -93,7 +93,7 @@ file only covers the Fence attachment.
 `Fence.OnStoreSave` in 1.30:
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/BaseBuildingBase/Fence.c:246-254
+// [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/BaseBuildingBase/Fence.c:255-263
 	override void OnStoreSave( ParamsWriteContext ctx )
 	{   
 		super.OnStoreSave( ctx );

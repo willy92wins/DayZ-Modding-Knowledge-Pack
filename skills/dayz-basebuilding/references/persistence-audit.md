@@ -19,9 +19,9 @@ Part `id` → bit:
 - `id` 32..62 → `m_SyncParts02`
 - `id` 63..93 → `m_SyncParts03`
 
-Bit ops in `RegisterPartForSync` (`basebuildingbase.c:137-164`). Also `m_InteractedPartId` /
+Bit ops in `RegisterPartForSync` (`basebuildingbase.c:136-163`). Also `m_InteractedPartId` /
 `m_PerformedActionId` (`:13-14`, registered `:46-47`) sync the last action so clients play the right SFX
-(`SetActionFromSyncData` `:248-262`).
+(`SetActionFromSyncData` `:247-261`).
 
 ## 2. The 93-part cap
 
@@ -32,30 +32,30 @@ no runtime warning — verify by hand or with a script that every `id` in the co
 
 ## 3. OnStoreSave / OnStoreLoad — strict ordering
 
-- `OnStoreSave` (`basebuildingbase.c:420-430`): writes `m_SyncParts01`, `02`, `03`, then `m_HasBase`.
-- `OnStoreLoad` (`:432-464`): reads the three ints then `m_HasBase`, each guarded with a `return false` on
+- `OnStoreSave` (`basebuildingbase.c:419-429`): writes `m_SyncParts01`, `02`, `03`, then `m_HasBase`.
+- `OnStoreLoad` (`:431-463`): reads the three ints then `m_HasBase`, each guarded with a `return false` on
   read failure (default-then-abort).
 
 **Subclass-after-super invariant:** a subclass writes/reads its extra fields AFTER calling `super`, in the
 exact same order in both methods. Fence appends `m_GateState`, `m_IsOpened` after the base three ints
-(`fence.c:246-254` save / `:256-289` load). Reorder either side, or write in the subclass before `super`, and
+(`fence.c:255-263` save / `:265-298` load). Reorder either side, or write in the subclass before `super`, and
 every saved base corrupts on the next load.
 
 ## 4. Load reconciliation
 
-- `AfterStoreLoad` (`basebuildingbase.c:466-474`) → `SetPartsAfterStoreLoad()` (`:476-487`) → `SetPartsFromSyncData()`: rebuilds
+- `AfterStoreLoad` (`basebuildingbase.c:465-473`) → `SetPartsAfterStoreLoad()` (`:475-486`) → `SetPartsFromSyncData()`: rebuilds
   each part's built flag from the bitmask, sets base state from the base part, re-syncs.
 - Guarded by `m_FixDamageSystemInit` — the damage-system migration path uses `EEOnAfterLoad` + a 500ms
-  deferred call instead (`basebuildingbase.c:505-513`).
-- `SetPartFromSyncData` (`basebuildingbase.c:265-304`) is the core: per part, compares "built in sync bitmask" vs "built flag",
+  deferred call instead (`basebuildingbase.c:504-512`).
+- `SetPartFromSyncData` (`basebuildingbase.c:264-303`) is the core: per part, compares "built in sync bitmask" vs "built flag",
   adds/removes constructed parts, shows/hides physics, toggles the `Deployed` proxy for the base, and
-  **failsafe-relocks attached materials** (`:303`, "failsafe for corrupted sync/storage data").
+  **failsafe-relocks attached materials** (`:302`, "failsafe for corrupted sync/storage data").
 
 ## 5. Version bumps
 
-- Base damage-system version: `GetDamageSystemVersionChange()→111` (`basebuildingbase.c:1133-1136`).
+- Base damage-system version: `GetDamageSystemVersionChange()→111` (`basebuildingbase.c:1132-1135`).
 - Fence gate persistence bumped at **v110** — `Fence.OnStoreLoad` reads a discarded bool for `version < 110`,
-  then the gate fields for current versions (`fence.c:256-289`).
+  then the gate fields for current versions (`fence.c:265-298`).
 
 When you add a persisted field, bump the version and add a legacy read branch so old saves load with the old
 layout and new saves with the new one.
@@ -70,7 +70,7 @@ Before declaring a base-building persistence change release-safe, confirm with `
 4. A new persisted field bumps the version and adds a legacy branch for old saves.
 5. Crash-recovery walk: kill the server between each I/O hop of save/load — does the next boot recover the
    base or lose parts? (R8 mental walk.)
-6. The failsafe relock path (`SetPartFromSyncData`, `basebuildingbase.c:303`) still runs for corrupted sync/storage data.
+6. The failsafe relock path (`SetPartFromSyncData`, `basebuildingbase.c:302`) still runs for corrupted sync/storage data.
 7. In-game gate: build parts, restart the server, confirm every part and the base survive (not just an
    offline audit — the R9 case history shows bases-lost bugs that only surface on a real restart).
 
@@ -90,7 +90,7 @@ still is, **for `BaseBuildingBase` only**.)
 Verified unchanged on `BaseBuildingBase`:
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/BaseBuildingBase.c:420-430
+// [EXACT] exp/scripts/scripts/4_World/Entities/ItemBase/BaseBuildingBase.c:419-429
 	override void OnStoreSave( ParamsWriteContext ctx )
 	{   
 		super.OnStoreSave( ctx );
@@ -105,20 +105,20 @@ Verified unchanged on `BaseBuildingBase`:
 ```
 
 `RegisterPartForSync` still packs 1 bit per `id` into `m_SyncParts01/02/03` with the same 1..31 / 32..62 /
-63..93 ranges (`basebuildingbase.c:137-164`). `GetDamageSystemVersionChange()` is still `111` (`:1133-1136`).
+63..93 ranges (`basebuildingbase.c:136-163`). `GetDamageSystemVersionChange()` is still `111` (`:1132-1135`).
 
-`Rebuilding` (component on `BuildingBase`, created by `CreateConstructionComponent` at `Building.c:23-26`)
+`Rebuilding` (component on `BuildingBase`, created by `CreateConstructionComponent` at `Building.c:47-50`)
 is a **different** save:
 
 - version const `REBUILDING_STORAGE_VERSION = 1` (`Rebuilding.c:3`)
-- ten ints `m_SyncParts1`..`m_SyncParts10` (`:7-16`), netsync-registered on `BuildingBase` (`Building.c:35-44`)
+- ten ints `m_SyncParts1`..`m_SyncParts10` (`:7-16`), netsync-registered on `BuildingBase` (`Building.c:59-68`)
 - `HandleStoreSave` → `SerializeConstructionData`: version then the ten ints (`Rebuilding.c:473-514`)
 - 2 bits reserved per part (`ConstructionPart.BITWISE_SYNCINFO_SIZE_BASE = 2` at `ConstructionPart.c:6`)
 - capacity [DESIGN]: `BIT_INT_SIZE = 32` (`BitArray.c:4`) × 10 / 2 = **160 part ids**
-- bit 0 = built (`ConstructionPart.c:111-117`); `ConstructionPartRebuild` stores facing in bit 1 (`:1057-1063`)
+- bit 0 = built (`ConstructionPart.c:111-117`); `ConstructionPartRebuild` stores facing in bit 1 (`:1051-1057`)
 
 Do **not** put Rebuilding parts on a `BaseBuildingBase` entity or write the ten-int blob from a Fence/Watchtower
-subclass. Fence extra fields still go **after** `super.OnStoreSave` (`fence.c:246-254` in 1.30).
+subclass. Fence extra fields still go **after** `super.OnStoreSave` (`fence.c:255-263` in 1.30).
 
 `CombinationLock` on a Fence attachment now writes a third int `m_CombinationInside` and reads it at
 vanilla stream **version >= 143** (`CombinationLock.c:128-136,169-177`). A modded `OnStoreLoad` that always

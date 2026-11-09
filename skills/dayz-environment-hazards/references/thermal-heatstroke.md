@@ -39,14 +39,19 @@ Until 1.29 extreme heat could damage health from this modifier. Since 1.30 the *
 		}
 ```
 
+Since 1.30.164289, above `THRESHOLD_HEAT_COMFORT_PLUS_WARNING` a player with water at or above `SL_WATER_HIGH`
+and heat comfort at or below `THRESHOLD_HEAT_COMFORT_PLUS_CRITICAL` loses bias through the new `RecoverThermalBias`
+(`HeatComfortMdfr.c:104-107, 115-120`), and between `SL_WATER_NORMAL` and `SL_WATER_HIGH` the bias settles near
+`0.4 - STAGE_DEACTIVATION_BUFFER` (0.38) instead of 0.4 (`:95-103`).
+
 Constantes (`exp\scripts\scripts\3_Game\PlayerConstants.c:203-210`):
 
 | Symbol | Value |
 |---|---|
 | `THERMAL_BIAS_WASH_HEAD_DECREMENT` | 0.175 |
 | `THERMAL_BIAS_WASH_HEAD_TEMPORARY_RESISTANCE_TIME` | 30.0 s |
-| `THERMAL_BIAS_POSITIVE_HC_DECREMENT` | 0.0001 |
-| `THERMAL_BIAS_POSITIVE_HC_LOW_INCREMENT` | 0.00022 |
+| `THERMAL_BIAS_POSITIVE_HC_DECREMENT` | 0.0002 (0.0001 until 1.30.164200) |
+| `THERMAL_BIAS_POSITIVE_HC_LOW_INCREMENT` | 0.0002 (0.00022 until 1.30.164200) |
 | `THERMAL_BIAS_POSITIVE_HC_MEDIUM_INCREMENT` | 0.00032 |
 | `THERMAL_BIAS_POSITIVE_HC_HIGH_INCREMENT` | 0.00050 |
 
@@ -58,23 +63,29 @@ Constantes (`exp\scripts\scripts\3_Game\PlayerConstants.c:203-210`):
 	const float STAGE_THRESHOLDS[NUMBER_OF_STAGES] = {0.0, 0.4, 0.6, 0.85};
 ```
 
+Since 1.30.164289 the class also declares `STAGE_DEACTIVATION_BUFFER = 0.02` (`HeatStroke.c:5`), used by phase 2 and
+by `HeatComfortMdfr`.
+
 IDs: `MDF_HEAT_STROKE1..4` (`eModifiers.c:66-69`). Sync: `MODIFIER_SYNC_HEAT_STROKE` (`ModifiersManager.c:12`).
 
 | Phase | Active if bias | Verified effects |
 |---|---|---|
-| 1 | `> 0.0` | Drains water 0.35/tick (`:77-81`). `OnActivate` empty; `OnDeactivate` → `DecreaseDiseaseCount()` (`:68-75`). |
-| 2 | `> 0.4` | `SYMPTOM_FEVERBLUR`, stamina `DISEASE_PNEUMONIA`, `IncreaseDiseaseCount`, water 0.5, complaints `SYMPTOM_HOT` (`:110-136`). Since 1.30.164078 its `OnDeactivate` no longer calls `DecreaseDiseaseCount()` (`:118-123`; 1.30.164014 did), so phase 1's `OnDeactivate` is the only heat-stroke decrement. |
-| 3 | `> 0.6` | Vanilla comment: stays active alongside phase 4 (`:139`). Water 0.75, cyclic vomiting 70 water / 55 energy, `VOMIT_EXHAUSTION` (`:186-229`). Deactivate uses `<` not `<=` (`:164-166`). |
-| 4 | `> 0.85` | Health damage remap 0.01–0.35/tick (`:26-28, 307-309`), `SYMPTOM_FAINT`, uncon 5–10 s every 60–120 s, shock 25 (`:18-22, 265-386`). Extra uncon if `thermalBias > 0.75` (`:370`). |
+| 1 | `> 0.0` | Drains water 0.35/tick (`HeatStroke.c:77-81`). `OnActivate` empty, and since 1.30.164289 `OnDeactivate` too (`:69-75`); until 1.30.164200 its `OnDeactivate` called `DecreaseDiseaseCount()`. |
+| 2 | `> 0.4` | `SYMPTOM_FEVERBLUR`, stamina `DISEASE_PNEUMONIA`, `IncreaseDiseaseCount`, water 0.5, complaints `SYMPTOM_HOT` (`HeatStroke.c:111-143`). Since 1.30.164289 it deactivates below `0.4 - STAGE_DEACTIVATION_BUFFER` = 0.38 (`:87`, `:106-109`), where it deactivated at `<= 0.4`; `OnReconnect` re-runs `OnActivate` (`:119-122`); and its `OnDeactivate` calls `DecreaseDiseaseCount()` (`:124-130`), the only heat-stroke decrement. 1.30.164078 and 1.30.164200 decremented in phase 1's `OnDeactivate` instead (1.30.164014 in both). |
+| 3 | `> 0.6` | Vanilla comment: stays active alongside phase 4 (`HeatStroke.c:146`). Water 0.75, cyclic vomiting 70 water / 55 energy, `VOMIT_EXHAUSTION` (`:193-236`). Deactivate uses `<` not `<=` (`:171-173`). |
+| 4 | `> 0.85` | Health damage remap 0.01–0.15/tick (0.01–0.35 until 1.30.164200) (`HeatStroke.c:27-29, 314-316`), `SYMPTOM_FAINT`, uncon 5–10 s every 60–120 s, shock 25 (`:19-23, 272-393`). Extra uncon if `thermalBias > 0.75` (`:377`). |
 
 ## WashHead and wet clothing
 
-`ActionWashHeadWettingClothesBase.OnFinishProgressServer` (`:49-56`):
+`ActionWashHeadWettingClothesBase.OnFinishProgressServer` (`ActionWashHeadWettingClothesBase.c:49-63`):
 
 - `ReduceAgent(EYES_IRRITATION, 10)` (bottle override 1.6 in `ActionWashHeadItemContinuous.c:41`).
 - `ThermalBiasHandler.Add(-THERMAL_BIAS_WASH_HEAD_DECREMENT)`.
-- `SetTemporaryResistance(30 s)`.
-- Wets slots according to container vs surface map (`:10-43`).
+- `SetTemporaryResistance(30 s)`. Since 1.30.164289 the bias drop and the resistance only happen when no resistance
+  is left (`GetTemporaryResistance() <= 0.0`, `ActionWashHeadWettingClothesBase.c:55-60`), so washing again within
+  the 30 s changes nothing; 1.30.164200 restarted the 30 s on every wash (its `Add` was already ignored while the
+  resistance ran, `ThermalBiasHandler.c:40-48`).
+- Wets slots according to container vs surface map (`ActionWashHeadWettingClothesBase.c:10-43`).
 
 `ActionWashHeadItemContinuous.ActionCondition` accepts any liquid ≠ gasoline (`:32-38`). No `IsFrozen()`. [CHANGELOG] KNOWN ISSUES: frozen bottles.
 

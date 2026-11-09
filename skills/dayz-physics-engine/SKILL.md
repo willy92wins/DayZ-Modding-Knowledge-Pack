@@ -6,8 +6,8 @@ description: "Use when: física DayZ, dBody, collision layers, player walks thro
 # DayZ Engine Physics (Enforce Script)
 
 Engine-truth reference for rigid-body work in DayZ mods. Every API claim below was verified against
-the decompiled vanilla v1.24 scripts and re-checked on 1.30.164200 (2026-10-28); citations are `path:line` on
-1.30.164200 relative to the script root, unless labelled 1.29 (treat
+the decompiled vanilla v1.24 scripts and re-checked on 1.30.164200 (2026-10-28) and 1.30.164289
+(2026-11-09); citations are `path:line` on 1.30.164289 relative to the script root, unless labelled 1.29 (treat
 line numbers as ±3 — minor drift between builds). When something common-sounding is missing here,
 check section "What does NOT exist" before assuming it exists.
 
@@ -164,7 +164,8 @@ Two separate worlds — pick the right one:
 | `RayCastBullet` :211, `SphereCastBullet` :213, `*OverlapBullet` :216-228 | Bullet physics world, filtered by `PhxInteractionLayers` | physical LOS, ground probes, area queries on bodies |
 
 `CollisionFlags` (FIRSTCONTACT, NEARESTCONTACT, ONLYSTATIC, ONLYDYNAMIC, ONLYWATER, ALLOBJECTS) —
-`1_core/proto/endebug.c:140-148`. Overlap callback: `CollisionOverlapCallback.OnContact(IEntity, Contact)`
+`1_core/proto/endebug.c:140-149`. Since 1.30.164289 the enum starts with `NONE = 0` ("All colliding objects"),
+which moves every other value up by one. Overlap callback: `CollisionOverlapCallback.OnContact(IEntity, Contact)`
 (`dayzphysics.c:115-121`). Action-cursor ground fallback uses `RayCastBullet` with
 `ROADWAY|TERRAIN|WATERLAYER` (up to 1.29: `actiontargets.c:324-325`; from 1.30: `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:383-384`).
 
@@ -192,7 +193,7 @@ proto native void EnableDynamicCCD(bool state);                // up to 1.29: :4
 proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // up to 1.29: :464; from 1.30 Exp: :458
 ```
 Lifecycle: throw (`hand_actions.c:62-88`, server+owner) · inventory dump uses
-`ThrowPhysically(null, force, false)` (`4_world/static/miscgameplayfunctions.c:1299-1355`) · admin
+`ThrowPhysically(null, force, false)` (`4_world/static/miscgameplayfunctions.c:1305-1361`) · admin
 spawn-with-gravity uses `item.ThrowPhysically(null, "0 0 0")` server-side
 (`4_world/plugins/pluginbase/plugindeveloper.c:430,553`) · re-config hook
 `override void OnCreatePhysics()` (`itembase.c:1150-1155`; real overrides in tentbase.c, fireplace.c,
@@ -290,7 +291,7 @@ on sleeping bodies are lost.
 ## Debugging physics
 
 - Visual overlay works in retail builds: `Shape.CreateSphere(0x88FF0000, ShapeFlags.TRANSP|ShapeFlags.NOZBUFFER, pos, r)`
-  and `Shape.CreateLines(...)` with `ShapeFlags.ONCE` for per-frame draws (`1_core/proto/endebug.c:114-230`;
+  and `Shape.CreateLines(...)` with `ShapeFlags.ONCE` for per-frame draws (`1_core/proto/endebug.c:114-231`;
   never keep a pointer to a ONCE shape).
 - Log the layer matrix at runtime with the `dGetInteractionLayer` query pattern above.
 - Count world bodies: `dGetNumDynamicBodies(world)` / `dGetDynamicBody(world, i)` (`enphysics.c:9-10`).

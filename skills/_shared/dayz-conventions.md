@@ -590,28 +590,47 @@ pack's own `references/` and record the new `path:line`.
 
 ## Vanilla line numbers: which build (added 2026-10-28)
 
-DayZ 1.30 reached stable on 2026-10-15 (build 1.30.164078); the author's stable install has run
-1.30.164200 since 2026-10-21. On 2026-10-28 every vanilla script citation (a `.c` file, or
-`scripts\config.cpp`) in the skills, the `knowledge/` notes, `product-spec.md` and
-`compatibility-matrix.md` was re-checked against 1.30.164200 and moved with the text it cites,
-where some build has that text (`history/` and `CHANGELOG.md` keep the lines of their dates).
-Citations of the game's data files were re-checked where the re-check could tell what they cite
-(see "Data files" below). Read a citation by what is next to it:
+DayZ 1.30 reached stable on 2026-10-15 (build 1.30.164078); the author's stable install ran
+1.30.164200 from 2026-10-21 and has run 1.30.164289 since the Steam update of 2026-11-04. On
+2026-10-28 every vanilla script citation (a `.c` file, or `scripts\config.cpp`) in the skills,
+the `knowledge/` notes, `product-spec.md` and `compatibility-matrix.md` was re-checked against
+1.30.164200 and moved with the text it cites, where some build has that text (`history/` and
+`CHANGELOG.md` keep the lines of their dates). Citations of the game's data files were
+re-checked where the re-check could tell what they cite (see "Data files" below). On 2026-11-09
+the citations of the script files that 1.30.164289 changed were moved to it (see "1.30.164289"
+below). Read a citation by what is next to it:
 
 | Citation | Its line numbers are from |
 |---|---|
-| no build named (`MotorbikeScript.c:141`, `3_game/global/game.c:1533`) | 1.30.164200 stable |
-| an `exp\` or `exp/` path (`exp\scripts\scripts\4_World\...`) | 1.30.164200 too. `exp\` is the folder of the first 1.30 extraction (1.30.164014 Experimental); the paths kept it, the lines moved |
+| no build named (`MotorbikeScript.c:141`, `3_game/global/game.c:1534`) | 1.30.164289 stable |
+| an `exp\` or `exp/` path (`exp\scripts\scripts\4_World\...`) | 1.30.164289 too. `exp\` is the folder of the first 1.30 extraction (1.30.164014 Experimental); the paths kept it, the lines moved |
 | labelled `1.29`, or inside a "hasta 1.29" / "up to 1.29" note | 1.29 stable |
-| labelled with another build (`1.30.164014 Exp`, `1.30.164078`, `v1.24`) | that build. Where a later build changed it, the text says so |
+| labelled with another build (`1.30.164014 Exp`, `1.30.164078`, `1.30.164200`, `v1.24`) | that build. Where a later build changed it, the text says so |
 | a file only 1.29 has: the `.agr` sub-graphs (`Combat.agr`, `Locomotion.agr`, `Vehicles.agr`), which 1.30 replaced with `.agf` files | 1.29 stable |
 
+- **1.30.164289.** It changed 27 of the 3,076 script files, all `.c`: `endebug.c`,
+  `ediagmenuids.c`, `3_game/global/game.c`, `playerconstants.c`, `constructionbase.c`,
+  `constructionpart.c`, `constructionparttyped.c`, `constructiondebugs.c`, `rebuilding.c`,
+  `basebuildingbase.c`, `fence.c`, the `building.c` of `BuildingBase`
+  (`4_world/entities/game/super/`), `codelock.c`, `codelockvisualmanager.c`, `heatstroke.c`,
+  `heatcomfortmdfr.c`, `actionwashheadwettingclothesbase.c`, `actiondismantlepart.c`,
+  `actiondismantlepartinstant.c`, `actionpartinfo.c`, `actioncraftbolts.c`,
+  `land_warheadstorage_main.c`, `land_warheadstorage_bunker_facility.c`,
+  `dusteffectsmanager.c`, `miscgameplayfunctions.c`, `plugindiagmenu.c` and
+  `plugindiagmenuclient.c`. The other script files and `scripts\config.cpp` are byte for byte
+  the same, and so are the 42,357 entries of the data PBOs that the 2026-10-28 re-check
+  extracted (configs, layouts, XML, `.agf`, `.rvmat` and the rest), so outside those 27 files a
+  1.30.164200 line is the same line on 1.30.164289. The models (2,143 `.p3d`), four
+  `navmesh.nm` and `ChernarusPlus.wrp` changed size and were not compared. The citations of the
+  27 files were moved to their 1.30.164289 lines; where 1.30.164289 changed the code they cite,
+  the text says what changed, and a line it gives for an older build names that build
+  (`1.30.164200 HeatStroke.c:68-75`).
 - **Measurements keep their build.** "Measured in game, DayZ 1.30.164014 Exp" says where and
-  when something was observed. The 2026-10-28 re-check moved citations; it did not repeat
-  measurements, so unless the text says otherwise a measurement labelled with an older 1.30
-  build was not re-run on 1.30.164200.
+  when something was observed. The re-checks of 2026-10-28 and 2026-11-09 moved citations; they
+  did not repeat measurements, so unless the text says otherwise a measurement labelled with an
+  older 1.30 build was not re-run on a later one.
 - **Claim records keep theirs too.** In `sources/claims.json` a claim's `source_revision` and
-  `evidence_locator` still name the build and the lines it was verified on; the re-check moved
+  `evidence_locator` still name the build and the lines it was verified on; the re-checks moved
   only the claim's line range in the skill file.
 - **Names.** Since 2026-10-28 the headings of the 1.30 sections say "DayZ 1.30"; the companion
   files keep their `dayz-1-30-*.md` names because other files link to them. Text that still says
