@@ -233,7 +233,7 @@ Nasdara ships native group-behaviour templates in `GroupBehaviourTemplates` (`ex
 
 - `references/eai-fsm-combat.md` — PC-5, PC-11, PC-13, PC-9a
 - `references/eai-pathfinding-groups.md` — PC-14, PC-7, PC-2, PC-9b, PC-15, PC-16, PC-17, PC-18
-- `references/dayz-1-30-ai.md` — 1.30 Exp: native noise attenuation, `MINDSTATE_COWER`, `AIParams`, animal group templates
+- `references/dayz-1-30-ai.md` — 1.30: native noise attenuation, `MINDSTATE_COWER`, `AIParams`, animal group templates
 
 
 ## NoiseSystem — feeding noise the AI can hear (added 2026-06-06)

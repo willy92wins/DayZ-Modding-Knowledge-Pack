@@ -12,7 +12,7 @@ description: >
   AddItemBoneRemap, Weapon_Bolt, Weapon_Trigger and Mode_*. Grip/hand pose, ADS,
   reload, fire and jam animations belong to dayz-animation-pipeline. Use
   dayz-vehicles/dayz-characters/dayz-model-pipeline for those domains.
-  Also 1.30 Exp: GetExplosiveEffectData, ExplosiveEffectData, Get*PistolAnimState,
+  Also 1.30: GetExplosiveEffectData, ExplosiveEffectData, Get*PistolAnimState,
   SCARL/Luger/LeeEnfield/MP18 script-only staging.
 ---
 
@@ -109,8 +109,8 @@ or another packed peer. On 1.30.164200 their own models are in `weapons_nasdara.
 | **Grip / hands / ADS / rider pose wrong** | NOT this skill — anim | `dayz-animation-pipeline` → `weapon-in-hands.md` |
 | **Bolt-slide / reload / fire / jam-unjam MOTION** | NOT this skill — anim (`.anm`/`.asi` authoring) | `dayz-animation-pipeline` → `weapon-anim-*` |
 | Spawn/class missing for SCARL/Luger/LeeEnfield/MP18 (1.30.164014) | W-STAGING1 — script+IK present, no CfgWeapons / `.p3d` in that build's weapon PBOs; 1.30.164200 ships them in `weapons_nasdara.pbo` | `dayz-1-30-weapons.md` |
-| Compile fail on `GetExplosionParticleID` (1.30 Exp) | API replaced by `AmmoTypesAPI.GetExplosiveEffectData(ammo, surface)` | `dayz-1-30-weapons.md` §ammo |
-| Pistol slide/toggle anim IDs wrong (1.30 Exp) | override `Get*PistolAnimState()`; do not fork the pistol FSM classes | `dayz-1-30-weapons.md` §pistol |
+| Compile fail on `GetExplosionParticleID` (1.30) | API replaced by `AmmoTypesAPI.GetExplosiveEffectData(ammo, surface)` | `dayz-1-30-weapons.md` §ammo |
+| Pistol slide/toggle anim IDs wrong (1.30) | override `Get*PistolAnimState()`; do not fork the pistol FSM classes | `dayz-1-30-weapons.md` §pistol |
 
 ## DELEGATION MAP — ANIM vs ENTITY, and the generic-pipeline hand-offs
 
@@ -129,7 +129,7 @@ or another packed peer. On 1.30.164200 their own models are in `weapons_nasdara.
 | Enforce Script (`modded class`, config-script side) rules | `enforce-script-reference` |
 | PBO packaging / binarize | `dayz-pbo-build` |
 | In-game build/deploy/launch + auto-verify | `dayz-test-ingame` (+ `dayz-mcp-verify`) |
-| 1.30 Exp pistol anim-state getters, open-bolt mag detach, explosion FX API, staging weapons | **THIS skill** → `dayz-1-30-weapons.md` |
+| 1.30 pistol anim-state getters, open-bolt mag detach, explosion FX API, staging weapons | **THIS skill** → `dayz-1-30-weapons.md` |
 
 ## CITE-THEN-VERIFY
 

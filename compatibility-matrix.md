@@ -8,8 +8,8 @@ later the same day, and four more (`dayz-ai-patterns`,
 in the closing batch. None of those adoptions were re-run in this phase. The
 other rows were not re-reviewed on those dates.
 
-Target stable build: **DayZ PC 1.29.0.163451** (released 2026-07-15) — the build
-every row below was checked against.
+Build every row below was checked against: **DayZ PC 1.29.0.163451** (released
+2026-07-15; 1.29 was the stable branch until 2026-10-15).
 
 > **The stable branch has since moved to `1.29.0.163709`** (observed on the
 > author's install 2026-08-15). **No row has been re-checked against it.** Same

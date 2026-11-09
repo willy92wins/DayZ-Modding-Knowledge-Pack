@@ -13,7 +13,7 @@ description: >
   authoring/debugging a buildable structure or its persistence. Delegate
   geometry to dayz-model-pipeline, script APIs to enforce-script-reference,
   persistence audit to rigorous-data-audit and packaging to dayz-pbo-build.
-  Also 1.30 Exp: ConstructionBase/Rebuilding, BuildPartServerEx, bricks/mortar, fence code lock.
+  Also 1.30: ConstructionBase/Rebuilding, BuildPartServerEx, bricks/mortar, fence code lock.
   Not terrain holes: dayz-underground.
 ---
 
@@ -282,7 +282,7 @@ against the real `.c` and `.p3d`, never from memory.
   combolock, barbed-wire area damage, and the v110 gate-persistence version bump.
 - `references/persistence-audit.md` — the three-int bitmask packing, the 93-part cap, `OnStoreSave/Load`
   ordering, the version bumps, and the R9 hand-off checklist.
-- `references/dayz-1-30-construction-rebuilding.md` — 1.30 Exp hierarchy (`ConstructionBasic` /
+- `references/dayz-1-30-construction-rebuilding.md` — 1.30 hierarchy (`ConstructionBasic` /
   `ConstructionBase` / `Rebuilding`), `ConstructionPartTypeData`, `*ServerEx` / `IsCollidingEx`,
   obsolete collision-trigger wrappers, brick/mortar/trowel loop, Fence `DigitalCodeLock`.
 

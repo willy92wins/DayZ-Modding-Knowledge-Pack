@@ -407,7 +407,7 @@ keep provenance labels (`[LFInfectedBig ✓]`, `[recipe ✓]`, `[TBD-verify]`). 
   the see-through hole, LODs, with primary-source citations. Deep config detail lives here.
 - `dayz-animation-pipeline` → `references/player-skeleton.md` — the OFP2_ManSkeleton bone catalog by zone.
 - `references/character-ragdoll.md` — 1.30 `human.ragdoll` (`RagdollDef`) on `SurvivorBase`.
-- `references/dayz-1-30-characters.md` — 1.30 Exp humanoid delta (variants, agr/agf, PPE, skinning, surrender).
+- `references/dayz-1-30-characters.md` — 1.30 humanoid delta (variants, agr/agf, PPE, skinning, surrender).
 
 ## CASE LOG (append one entry per real import)
 

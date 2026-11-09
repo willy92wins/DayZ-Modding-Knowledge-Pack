@@ -753,6 +753,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- The skills no longer call 1.30 "Exp" where they route to their 1.30 content: the descriptions of
+  `dayz-basebuilding` and `dayz-weapons` ("Also 1.30:"), and the pointers and rows of the `SKILL.md`
+  of `dayz-ai-patterns`, `dayz-basebuilding`, `dayz-characters`, `dayz-model-pipeline`,
+  `dayz-particles`, `dayz-physics-engine`, `dayz-sound-system`, `dayz-ui-development` and
+  `dayz-weapons`. What was measured or first seen on 1.30.164014 Exp still says so.
+  `product-spec.md` and `compatibility-matrix.md` now say that 1.29 was the stable branch until
+  2026-10-15.
 - Citations that matched their text on no build, found by the re-check, now point at it:
   `dayz-physics-engine` `SKILL.md` gives the 1.29 ground fallback of the action cursor at
   `actiontargets.c:324-325` (not `:329-331`), and `references/fisica-engine-deep-dive.md` the

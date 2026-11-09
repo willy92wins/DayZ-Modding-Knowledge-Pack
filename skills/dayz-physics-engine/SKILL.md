@@ -21,7 +21,7 @@ only when the task needs that depth:
 | `references/fisica-engine-deep-dive.md` | full dBody/dGeom/dJoint signatures, raycast family tables, surfaces, drop-physics lifecycle details |
 | `references/transport-netsync-vehiculos.md` | anything about why/how vehicles replicate, CarScript damage-by-momentum, Pawn/TransportOwnerState, push-action pattern |
 | `references/dano-transporthit.md` | damage pipeline (MDF), EEHitBy chain, the complete TransportHit flow line-by-line, hitzones, armor reality |
-| `references/dayz-1-30-ragdoll-and-fall.md` | 1.30 Exp: `.ragdoll` / `RagdollDef`, `PhysicsSetSimpleDeath`, unconscious wake-while-falling, fall-damage `CurveExp` |
+| `references/dayz-1-30-ragdoll-and-fall.md` | 1.30: `.ragdoll` / `RagdollDef`, `PhysicsSetSimpleDeath`, unconscious wake-while-falling, fall-damage `CurveExp` |
 
 ## The 11 engine truths (prevent the classic bugs)
 

@@ -86,7 +86,7 @@ Before doing anything, read the relevant reference file:
 - **Memory points & named selections** → `references/memory-and-selections.md`
 - **Animations (model.cfg)** → `references/animations.md`
 - **Config.cpp & addon structure** → `references/config-and-packing.md`
-- **DayZ 1.30 Exp (proxies / cacheP3D / disableSimulation / liquid_source)** → `references/dayz-1-30-model-pipeline.md`
+- **DayZ 1.30 (proxies / cacheP3D / disableSimulation / liquid_source)** → `references/dayz-1-30-model-pipeline.md`
 - **Blender manual workflow (ALTERNATIVE)** → `references/blender-workflow.md`
 - **LF_PowerGrid object recipes** → `references/lfpg-recipes.md`
 - **AnswerOverflow community findings (mined 2026-05-17)** → `references/answeroverflow-2026-05-17.md` (binarize misalignment on personality meshes, nested proxy disappearance on binarized models, Maya Object Builder alternative)

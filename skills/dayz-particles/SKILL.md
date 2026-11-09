@@ -339,7 +339,7 @@ Full catalog: `references/vanilla-particle-catalog.md` (276 entries; version-dep
 - `references/emat-format-reference.md` — .emat format, both shader types, all 12 properties
 - `references/script-api-reference.md` — Particle/ParticleSource/ParticleManager signatures
 - `references/answeroverflow-2026-05-17.md` — community snippets verified vs vanilla (PlayOnObject pattern with client guard)
-- `references/dayz-1-30-particles.md` — DayZ 1.30 Exp: dust, VehicleVFX, ParticleParamsOverrideData, sandstorm, oil pits, SurfaceInfo IDs, migration
+- `references/dayz-1-30-particles.md` — DayZ 1.30: dust, VehicleVFX, ParticleParamsOverrideData, sandstorm, oil pits, SurfaceInfo IDs, migration
 
 ## Effect areas (`cfgeffectarea.json`): emitter budget and vertical band (added 2026-08-31)
 

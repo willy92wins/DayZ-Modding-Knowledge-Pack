@@ -19,7 +19,7 @@ vanilla scripts at `<dayz-projects>\scripts\`, vanilla GUI data at
 | "It looks different in-game than designed / at other resolutions" | `plan-to-implementation.md §1` (root causes) | Rule 3 below |
 | New menu opened by key / menu IDs / pause-style menu | `references/vanilla-menus-map.md` (§2 registration recipe, §4 strategies) | §3 contract |
 | Extending the HUD / hide-show HUD groups | `vanilla-menus-map.md §5` (HUD chain + IngameHudVisibility) | — |
-| Action info panels / construction cursor grids (1.30 Exp) | `references/hud-action-info-panels.md` | `vanilla-menus-map.md §5` |
+| Action info panels / construction cursor grids (1.30) | `references/hud-action-info-panels.md` | `vanilla-menus-map.md §5` |
 | Writing/debugging a `.layout` file | `references/layout-format.md` | Rules 1-4 below |
 | Changing a VANILLA layout (hide/recolour/add a widget) without replacing it — 1.30 layout variant | `references/layout-variants-130.md` | `dayz-pbo-build` 1.30 reference for the `gui`-prefix `fsShadowing` PBO |
 | Starting from a copy-paste layout (modal / HUD / form row / scroll list) | [`templates/README.md`](templates/README.md) | that template + Rules 1-4 |
@@ -120,9 +120,9 @@ Read the relevant file BEFORE writing code:
   a SIBLING branch of TextWidget (whose getters are GetOutlineSize/GetShadowSize, no "Text" prefix).
   Also missing there: the UIWidget SETTERS — `SetTextColor(int)` (THE way to color a button/editbox
   LABEL; `Widget.SetColor` colors the body), `SetTextOutline`, `SetTextShadow`, `SetTextItalic/Bold`.
-  Includes DayZ 1.30 Exp native `PreviewWidget`, `ItemPreviewWidget` (`SetForceFlipEnable`, `SetForceFlip`),
+  Includes DayZ 1.30 native `PreviewWidget`, `ItemPreviewWidget` (`SetForceFlipEnable`, `SetForceFlip`),
   and `PlayerPreviewWidget` native APIs, plus verification debunking changelog tickets not exposed in scripts.
-- **HUD Action Info Panels & Cursor Construction Grids (DayZ 1.30 Exp modular cursor pipeline)** → `references/hud-action-info-panels.md` —
+- **HUD Action Info Panels & Cursor Construction Grids (DayZ 1.30 modular cursor pipeline)** → `references/hud-action-info-panels.md` —
   modular target action info architecture (`ActionTargetsCursor.c`, `ActionInfoPanels.c`, `ActionInfoGrids.c`, `ConstructionInfoIcons.c`, `action_info_spacer.layout`, `SimpleIconTemplate.layout`), tool/material requirement grids, action dimming (`SetAlpha(0.149)`), universal gamepad controller icon binding via RichText (`SetControllerIcon`).
 - **Dabs Framework deep dive (MVC + Animator + Color + Menu)** → `references/dabs-framework.md` —
   now includes a HEAD DEEP-DIVE (2026-07-05, production=Workshop-identical MVC): ScriptViewMenu real
@@ -932,7 +932,7 @@ Useful for feature flags across mod boundaries.
 | A UI image comes out as a flat WHITE box | The texture path does not resolve | Check the path first, not the color or the style: a missing UI texture fills the slot with white (255,255,255, deviation 0,0) and writes **nothing** to the RPT (measured 2026-08-19) |
 | Reloading a layout at runtime draws two copies, or clicks land on nothing | `CreateWidgets` STACKS a second tree, it does not replace the first | `Unlink()` the previous root before every load (hot-iteration.md trap 2) |
 | ImageWidget invisible in script | No image loaded | `LoadImageFile(0, "#(argb,8,8,3)color(1,1,1,1,CO)")` then SetColor. ⚠️ this procedural texture FAILED on DayZ 1.29 ("Bad texture name", LFPowerGrid RPT) — if it fails, ship a 1×1 white .edds (or use a Colorable style, styles-format.md §5) |
-| FindAnyWidget returns null for interact / item in HUD (1.30 Exp) | Interaction widgets in day_z_hud.layout mutated from ImageWidgetClass to PanelWidgetClass with style ActionWidget | Cast to PanelWidget instead of ImageWidget: `PanelWidget.Cast(m_Root.FindAnyWidget("interact"))` |
+| FindAnyWidget returns null for interact / item in HUD (1.30) | Interaction widgets in day_z_hud.layout mutated from ImageWidgetClass to PanelWidgetClass with style ActionWidget | Cast to PanelWidget instead of ImageWidget: `PanelWidget.Cast(m_Root.FindAnyWidget("interact"))` |
 | ViewBinding not updating UI | Binding_Name mismatch | Verify ScriptParams Binding_Name matches controller property exactly |
 | CreateWidgets crashes | Called from RPC or early init | Pre-create views in MissionInit when GetWorkspace() is valid (Rule 9) |
 | Widget z-order wrong | Children overlap in wrong order | Use `Widget.SetSort(int)` — higher value renders later (on top). SetSort(1000 - priority) for priority ordering |
