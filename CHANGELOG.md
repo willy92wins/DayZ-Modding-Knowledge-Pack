@@ -7,6 +7,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-script-validator`: `ES-FORMULA-TOO-COMPLEX` (WARN), a statement that holds a string literal and
+  joins 18 or more terms with binary `+` (pipeline inbox 7b9e/7ce1). Measured on DayZDiag 1.30.164289.70
+  (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, with one statement on one line in a mod's
+  `4_World` script that alternates string literals with an `int` and a float's `ToString()`
+  (`string s = "a" + i0 + " b" + f0.ToString() + ...`, the pattern of 7b9e's `Log(...)` line). 14 terms
+  (the control, run 06624c45) compiled; 17, 18 and 20 ran on the server alone, one probe mod per run: 17
+  compiled, and 18 and 20 failed with `Formula too complex` on the statement's line, then
+  `Incompatible parameter 'i0'` there, then `Can't compile "World" script module!`. Other operand types
+  and a statement over several lines are not measured, so the rule warns and its message says so. `++`,
+  `+=` and a unary `+` join nothing and a `+` in a string or a comment is none; every binary `+` of the
+  statement counts, one in parentheses or in a call's arguments too; a chain with no string literal is
+  not judged; what never compiles is not read, and two branches of one block are not counted together.
+  Fixtures under `tests/fixtures/formula_too_complex`: 18 and 20 terms WARN at line 6, the line the
+  compiler named; 14 and 17 terms, 20 numbers, and the 20 terms split across two statements give
+  nothing. `enforce-script-reference` `references/pitfalls-advanced.md`: item 4 of the compile-fail
+  families gives the measured limit (`CLAIM-ENFORCE-FORMULA-TERMS-130`) and the SP-080 cascade section
+  points to it; `CLAIM-ENFORCE-FORMULA-TOO-COMPLEX` covers the rule's header. The rule has not run on a
+  vanilla tree (none on the machine that wrote it); the vanilla control fails with a new warning rule if
+  it finds any on the owner's PC, and those hits must be triaged before `--update`.
 - `dayz-script-validator` and `enforce-script-reference`: the `%` failure measured again (pipeline inbox
   d35a), on DayZDiag 1.30.164289.70 (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, server
   only, one probe mod per run. In a mod's `4_World` script, `float x = (cell % 103) * 150 + 150 * 0.5;`

@@ -2630,6 +2630,150 @@ class TestModuloFloatContext(unittest.TestCase):
             self.assertEqual("", stripped[start:end].strip())
 
 
+FORMULA = FIXTURES / "formula_too_complex"
+FORMULA_RULE = "ES-FORMULA-TOO-COMPLEX"
+
+
+def _formula_chain(terms):
+    """The probes' pattern: literal, int, literal, float.ToString(), ..."""
+    parts = []
+    for index in range(terms):
+        if index % 2 == 1:
+            parts.append("i0" if index % 4 == 1 else "f0.ToString()")
+        else:
+            parts.append('"%s"' % ("a" if index == 0 else " " + chr(ord("a") + index // 2)))
+    return " + ".join(parts)
+
+
+class TestFormulaTooComplex(unittest.TestCase):
+    """ES-FORMULA-TOO-COMPLEX: 18 or more terms joined by '+' with a string.
+
+    DayZDiag 1.30.164289 (2026-11-09, pipeline inbox 7b9e/7ce1): one line
+    alternating string literals with an int and a float's ToString()
+    compiled with 14 and 17 terms and failed with "Formula too complex" with
+    18 and 20.
+    """
+
+    def _flagged(self, body):
+        from detectors.es_formula_too_complex import check_es_formula_too_complex
+        from stripper import strip_enforce_comments_and_strings
+
+        source = (
+            "class C\n{\n    string F(int i0, float f0)\n    {\n%s\n    }\n}\n" % body
+        )
+        stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+        return [
+            w["line"] for w in check_es_formula_too_complex(source, stripped, "x.c")
+        ]
+
+    def test_the_chain_is_the_probes_pattern(self):
+        self.assertEqual(
+            '"a" + i0 + " b" + f0.ToString() + " c"', _formula_chain(5)
+        )
+        probe = (
+            '"a" + i0 + " b" + f0.ToString() + " c" + i0 + " d" + f0.ToString()'
+            ' + " e" + i0 + " f" + f0.ToString() + " g" + i0 + " h"'
+            ' + f0.ToString() + " i" + i0 + " j" + f0.ToString()'
+        )
+        self.assertEqual(probe, _formula_chain(20))
+
+    def test_18_and_20_terms_warn_at_the_line_the_compiler_named(self):
+        exit_code, result = script_validator.run([str(FORMULA / "bad")])
+
+        self.assertEqual(2, exit_code)
+        self.assertEqual([], result["errors"])
+        warnings = [w for w in result["warnings"] if w["rule_id"] == FORMULA_RULE]
+        # mcpprobeterms18.c,6 and mcpprobeterms20.c,6 in the server script logs.
+        self.assertEqual(
+            [("fx_terms18.c", 6), ("fx_terms20.c", 6)],
+            sorted((pathlib.Path(w["file"]).name, w["line"]) for w in warnings),
+        )
+        for warning in warnings:
+            self.assertEqual("WARN", warning["severity"])
+            self.assertIn("Formula too complex", warning["message"])
+            self.assertIn(
+                "Other operand types and a statement over several lines are "
+                "not measured.",
+                warning["message"],
+            )
+        self.assertIn("joins 18 terms", warnings[0]["message"])
+        assert_standard_findings(self, result)
+
+    def test_14_and_17_terms_numbers_alone_and_a_split_give_no_finding(self):
+        exit_code, result = script_validator.run([str(FORMULA / "ok")])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], result["errors"] + result["warnings"])
+
+    def test_what_counts_as_a_join(self):
+        chain17 = _formula_chain(17)
+        self.assertEqual([], self._flagged("        string s = %s;" % chain17))
+        self.assertEqual(
+            [5], self._flagged("        string s = %s + i0;" % chain17)
+        )
+        # `++`, `+=` and a unary `+` join nothing.
+        self.assertEqual([], self._flagged(
+            "        int k = 0;\n"
+            "        string s = %s + (k++).ToString() + (+k).ToString();\n"
+            "        s += i0;" % _formula_chain(15)
+        ))
+        # A `+` after a postfix increment does join.
+        self.assertEqual([6], self._flagged(
+            "        int k = 0;\n"
+            "        string s = %s + k++ + i0;" % chain17[:chain17.rindex(" + ")]
+        ))
+        # A `+` in a string or a comment is none: 17 terms.
+        self.assertEqual([], self._flagged(
+            '        string s = %s + "+ + + +" /* + + + */ + i0; // + + +'
+            % _formula_chain(15)
+        ))
+        # Numbers alone are not judged, however many.
+        self.assertEqual([], self._flagged(
+            "        int n = %s;" % " + ".join(["i0"] * 30)
+        ))
+        # A `+` inside parentheses or a call's arguments counts.
+        self.assertEqual([5], self._flagged(
+            '        string s = "a" + (%s).ToString() + i0;'
+            % " + ".join(["i0"] * 16)
+        ))
+
+    def test_a_statement_over_several_lines_is_reported_at_its_first_line(self):
+        chain = _formula_chain(18).split(" + ")
+        body = "        string s = %s\n            + %s\n            + %s;" % (
+            " + ".join(chain[:6]),
+            " + ".join(chain[6:12]),
+            " + ".join(chain[12:]),
+        )
+
+        self.assertEqual([5], self._flagged(body))
+
+    def test_what_never_compiles_and_other_branches_are_not_counted(self):
+        head = _formula_chain(9)
+        tail = " + ".join(["i0"] * 6)
+        # Under #if 0: never compiled, so 9 terms.
+        self.assertEqual([], self._flagged(
+            "        string s = %s\n#if 0\n            + %s + i0 + i0 + i0\n#endif\n"
+            "            ;" % (head, tail)
+        ))
+        # Each branch of one block holds 6 more terms: 15 in either build,
+        # though the file holds 21.
+        self.assertEqual([], self._flagged(
+            "        string s = %s\n#ifdef FX_OTHER_MOD\n            + %s\n"
+            "#else\n            + %s\n#endif\n            ;" % (head, tail, tail)
+        ))
+        # Another mod's branch compiles along with the rest: 18 terms.
+        self.assertEqual([5], self._flagged(
+            "        string s = %s\n#ifdef FX_OTHER_MOD\n            + %s + i0 + i0 + i0\n"
+            "#endif\n            ;" % (head, tail)
+        ))
+        # Two blocks side by side are not counted together either: 15 terms
+        # in each view, though both can compile in one build (21).
+        self.assertEqual([], self._flagged(
+            "        string s = %s\n#ifdef FX_ONE\n            + %s\n#endif\n"
+            "#ifdef FX_TWO\n            + %s\n#endif\n            ;" % (head, tail, tail)
+        ))
+
+
 UNDEFINED = FIXTURES / "undefined_class_ref"
 UNDEFINED_RULE = "ES-UNDEFINED-CLASS-REF"
 
