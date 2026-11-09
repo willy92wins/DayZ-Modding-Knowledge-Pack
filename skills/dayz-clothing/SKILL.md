@@ -232,7 +232,7 @@ blocks: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md).
   (`Container_Base`); its `CfgVehicles` entry is not in this extract (`[UNVERIFIED]`).
 - **GP5 / Airborne protection moved to the filter.** (until 1.29: `class Protection`
   on both masks included `biological = 1` and `dust_particle_breath = 1`.) (since
-  1.30 Exp: those two keys are omitted; only `dust_particle_eyes = 1` remains.
+  1.30: those two keys are omitted; only `dust_particle_eyes = 1` remains.
   `GetProtectionLevel` reads the attached `GasMask_Filter`. The sealed `GasMask`
   class still has full passive Protection. There is no class named `FilterBase`.)
 - **`ItemBaseType`** parses `headSelectionsToHide`, `hideSelectionsByinventorySlot`,

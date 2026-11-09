@@ -53,7 +53,7 @@ Source: `SurvivorAnims/animgraph/player_main/{combat,locomotion,player_main}.agr
 
 ### New Player Commands in DayZ 1.30 [EXACT]
 
-In DayZ 1.30 Exp (`exp\scripts\scripts\3_Game\dayzplayer.c:766-767, 889-899`), 11 new Full-Body action commands (`CMD_ACTIONFB_*`) and new modifier action commands (`CMD_ACTIONMOD_*`) are registered in `DayZPlayerConstants`:
+In DayZ 1.30 (`exp\scripts\scripts\3_Game\dayzplayer.c:766-767, 889-899`), 11 new Full-Body action commands (`CMD_ACTIONFB_*`) and new modifier action commands (`CMD_ACTIONMOD_*`) are registered in `DayZPlayerConstants`:
 
 | Command | Constant Value | Stance / Context (`dayzplayer.c`) |
 |---|---|---|
@@ -83,7 +83,7 @@ Animal graphs declare variables with `#Var <name> <type> <default> <min> <max> "
 
 ### DayZ 1.30: ControlTemplate in AnimSrcGraph (.agr) [EXACT]
 
-(until 1.29: `#Var` declarations were used in animal graphs; since 1.30: `#Var` is completely replaced by `ControlTemplate AnimSrcGCT`). In 1.30 Exp, variables are declared in the root `.agr` file (`AnimSrcGraph`) under `ControlTemplate`:
+(until 1.29: `#Var` declarations were used in animal graphs; since 1.30: `#Var` is completely replaced by `ControlTemplate AnimSrcGCT`). In 1.30, variables are declared in the root `.agr` file (`AnimSrcGraph`) under `ControlTemplate`:
 
 ```enfusion
 // [EXACT] exp\animals\DZ\animals\animations\!graph_files\wolf\wolf_graph.agr:4-16
@@ -327,7 +327,7 @@ The `ikpose_chainoffset`/`ikpose_weaponoffset`/`ikpose_secchainoffset`/`ikpose_c
 
 (until 1.29: `.ast` files allowed anonymous groups `$groupType { #ngroupnames 0 ... }`; since 1.30: unnamed groups are rejected by the compiler).
 
-In DayZ 1.30 Exp, `.ast` files are formatted as `AnimSetTemplateSource` and **must** declare an explicit `Name` for every group (`AnimSetTemplateSource_AnimationGroup`):
+In DayZ 1.30, `.ast` files are formatted as `AnimSetTemplateSource` and **must** declare an explicit `Name` for every group (`AnimSetTemplateSource_AnimationGroup`):
 
 ```enfusion
 // [EXACT] exp\anims_workspaces\DZ\anims\workspaces\player\player_main\player_main.ast:1216-1224
@@ -419,11 +419,11 @@ Where each row is confirmed:
 
 ## DayZ 1.30: Elimination of Buffer Save / Buffer Use Nodes [EXACT]
 
-In DayZ 1.30 Exp, `Buffer Save` and `Buffer Use` nodes were completely eliminated from the animation graph compiler and engine (`changelog:41`). An audit of all `.agf` sub-graphs (`Vehicles.agf`, `Locomotion.agf`, `wolf_maingraph.agf`) confirms zero instances of Buffer nodes. Custom graphs relying on buffer nodes must migrate to variables (`AnimSrcGCTVar*`) or direct state machine transitions.
+In DayZ 1.30, `Buffer Save` and `Buffer Use` nodes were completely eliminated from the animation graph compiler and engine (`changelog:41`). An audit of all 1.30.164014 `.agf` sub-graphs (`Vehicles.agf`, `Locomotion.agf`, `wolf_maingraph.agf`) confirms zero instances of Buffer nodes. Custom graphs relying on buffer nodes must migrate to variables (`AnimSrcGCTVar*`) or direct state machine transitions.
 
 ## DayZ 1.30: Script Animation APIs in Enforce Script [EXACT]
 
-DayZ 1.30 Exp introduces several native proto methods for script-side animation control:
+DayZ 1.30 introduces several native proto methods for script-side animation control:
 
 1. **Dynamic Animation Instance Control**:
    `proto native void SetAnimationInstanceByName(string animationInstanceName, float blendingTime);` (`exp\scripts\scripts\3_Game\human.c:1384`)

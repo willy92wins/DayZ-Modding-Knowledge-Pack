@@ -6,7 +6,7 @@ This is the canonical agent file; `CLAUDE.md`, `GEMINI.md`, `.cursorrules` and
 
 ## What this repository is
 
-A knowledge pack for **DayZ (Enfusion) modding**: 42 domain playbooks, thirteen
+A knowledge pack for **DayZ (Enfusion) modding**: 44 domain playbooks, thirteen
 Python tools, and verified reference notes, assembled from shipped mods. It is
 written to be handed to a coding agent, not read cover to cover by a human.
 
@@ -126,7 +126,7 @@ Obsidian's.
 
 | Path | What it is |
 |---|---|
-| `skills/` | 42 playbooks + `_shared/`. The primary content. |
+| `skills/` | 44 playbooks + `_shared/`. The primary content. |
 | `tools/` | Thirteen Python tools. See [`TOOLS.md`](TOOLS.md). |
 | `examples/` | Worked examples that chain the tools on synthetic inputs. |
 | `knowledge/` | Verified reference notes: engine facts, infra, topic syntheses. |

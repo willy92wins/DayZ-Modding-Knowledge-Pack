@@ -123,14 +123,14 @@ Highlights per type (full inventory in the styles file itself):
 - PanelWidget (22+): `rover_sim_colorable, blank, Outline, ColorablePanel, editor_quad,
   editor_quad_dark, dashed, DayZDefaultPanel(+Left/Right/Top/Bottom/Sides), ToolbarWidget,
   UIDefaultPanel, rover_sim_black(_2), InventoryPanel, EditorPanel, editor_selection`,
-  **`ActionWidget` (DayZ 1.30 Exp)**
+  **`ActionWidget` (DayZ 1.30)**
 - ProgressBarWidget: `Default, DayZLoading, Stamina, Quantity, Loading`
 - Styles exist for XComboBox/SmartPanel/Html/ThreeStateCheckbox/graph widgets too — the 4 graph
   widgets are the only types with styles but zero vanilla layout instantiation.
 
 ### The `ActionWidget` Style for `PanelWidget` (Added in DayZ 1.30)
 
-In DayZ 1.30 Exp (`exp\gui\gui\looknfeel\dayzwidgets.styles:3700-3723`), a new style `ActionWidget`
+In DayZ 1.30 (`exp\gui\gui\looknfeel\dayzwidgets.styles:3700-3723`), a new style `ActionWidget`
 was introduced for `PanelWidget`:
 
 ```xml

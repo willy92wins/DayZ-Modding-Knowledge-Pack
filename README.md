@@ -12,7 +12,7 @@ It contains three things:
 
 | Part | What it is |
 |---|---|
-| `skills/` | 42 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
+| `skills/` | 44 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
 | `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, the pre-PBO script/config linter, the vehicle-proxy gate, UI lab, `.layout` previewer and 3D-viewer tools, a PBO entry diff, a structural navmesh comparison and an experimental Terrain Builder runner. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
@@ -229,14 +229,20 @@ back to it.
 | `rigorous-data-audit` | **Before releasing data-critical code** (persistence, state machines, admin commands, async multi-tick queues) — anything where a bug means lost player progression. A multi-angle parallel audit + adversarial verification for invariant violations, races, path inconsistencies, and recovery-path defects. |
 | `dayz-test-ingame` | **Building, deploying and launching a mod locally** with `DayZDiag_x64.exe` + filepatching (server+client on one box, or single-exe offline). Generates a parametrized test orchestrator. *Assumes a specific Windows/DayZ tooling layout — see §8.* |
 | `dayz-mcp-verify` | **Auto-testing a mod in-game** by driving it with MCP tools (spawn a classname, orbit the camera, screenshot, raycast, read telemetry) and the drivable-car acceptance ladder. *Drives the game through [DayZ-MCP](https://github.com/willy92wins/dayz-mcp), published separately — see §8 for the wiring.* |
+| `systematic-debugging` | **A bug, a failing test or unexpected behaviour**: find the root cause before proposing a fix. Ported from obra/superpowers (MIT); see its `SOURCE.md`. |
+| `task-observer` | **During multi-step work with tools**: watches for patterns, user corrections and methods worth turning into skills, and keeps an observation log. Ported from rebelytics' "One Skill to Rule Them All" (CC BY 4.0) and modified; see its `SOURCE.md`. |
 
 ---
 
 ## 4. What is in the pack, and what you still install separately
 
-These playbooks are the author's. The local plugin folder they were installed under happened
-to be named `anthropic-skills`; that is a namespace on one machine, not a licence or an
-upstream. They ship under the same MIT licence as the rest of the pack.
+These playbooks are the author's, apart from two ported skills. The local plugin folder they
+were installed under happened to be named `anthropic-skills`; that is a namespace on one
+machine, not a licence or an upstream. They ship under the same MIT licence as the rest of the
+pack. The two ported skills keep their own licence and ship their `LICENSE` and `SOURCE.md`:
+`task-observer`, adapted from rebelytics' "One Skill to Rule Them All" (Eoghan Henn, CC BY 4.0,
+modified), and `systematic-debugging`, from obra/superpowers (MIT, Copyright (c) 2025 Jesse
+Vincent). See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ### Shipped in this pack
 

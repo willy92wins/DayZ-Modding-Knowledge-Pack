@@ -103,7 +103,7 @@ Recommendation: a new environmental hazard inherits the vanilla pattern (`Effect
    - **Shelter**: enter a building with `IsSoundInsideBuilding`; intensity → 0 in 1.5 s. Mount a motorbike: intensity must NOT go to 0. Enter a `Car`: yes.
    - **PPE**: with dust mask, no cough or silicosis; with glasses, no squint.
    - **Heat**: sustained high heatcomfort must raise `ThermalBias` and activate `MDF_HEAT_STROKE1..4`.
-   - **WashHead**: reduces 10 `EYES_IRRITATION` (1.6 from bottle) and applies resistance for 30 s (`ActionWashHeadWettingClothesBase.c:46-63`, `ActionWashHeadItemContinuous.c:41`); since 1.30.164289 a wash while the resistance runs changes nothing (`ActionWashHeadWettingClothesBase.c:55-60`).
+   - **WashHead**: reduces 10 `EYES_IRRITATION` (1.6 from bottle) and applies resistance for 30 s (`ActionWashHeadWettingClothesBase.c:46-63`, `ActionWashHeadItemContinuous.c:41`); since 1.30.164289 a wash while the resistance runs no longer lowers the bias or restarts the 30 s, but it still reduces the irritation and wets the clothes (`ActionWashHeadWettingClothesBase.c:53-62`).
    - **Oil pit**: wait 3–10 s; then 20 HeatDamage/s and `OIL_FIRE1`/`OIL_FIRE2` particles.
 3. **RPT** [UNVERIFIED texts]: search for `ThermalBiasHandler`, `Sandstorm`, `Could not get players sandstorm data`.
 

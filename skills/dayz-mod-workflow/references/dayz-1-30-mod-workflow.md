@@ -259,7 +259,7 @@ static bool MyMod_IsHeadlessOrDedicated()
 By their documented semantics (the `Game.c:1125-1136` excerpt above) both guards
 agree on a rendered client and on a dedicated server and differ only on a headless
 client; that is inferred, not measured. `ROBOCLIENT` and `INPUT_OVERRIDE` are
-defined in the public 1.30 Exp DayZDiag, client and server, so code under
+defined in the public DayZDiag 1.30.164014, client and server, so code under
 `#ifdef ROBOCLIENT` compiles for everyone on that exe and every `PlayerBase`
 carries an idle `m_Bot`. Details: `dayz-mcp-verify/references/dayz-1-30-mcp-verify.md`.
 

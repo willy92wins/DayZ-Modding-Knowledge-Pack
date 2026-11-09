@@ -130,7 +130,7 @@ From `3_game/tools/uiscriptedmenu.c`:
 - Sibling overlays NOT inside IngameHud (map for extending them): watermark `gui/watermark.c:10`;
   debug monitor `gui/debugmonitor.c:28`; player tag `ingamehud.c:1105`
   (`new_ui/hud/hud_player_tag.layout`, lazy); chat lines `chat/chatline.c:25`.
-- **Modular Action Info Panels on Cursor (DayZ 1.30 Exp)**: `ActionTargetsCursor.c:152-176, 1268-1292`
+- **Modular Action Info Panels on Cursor (DayZ 1.30)**: `ActionTargetsCursor.c:152-176, 1268-1292`
   incorporates modular supplemental info panels (`TargetActionInfoPanelBase`, `ConstructionActionInfoPanel`
   in `ActionInfoPanels.c:82`) attached to layout `new_ui/hud/action_info_spacer.layout:1`, dynamically
   rendering grids of tools and materials required for the action (`ActionInfoGrids.c:103`).
@@ -146,7 +146,7 @@ From `3_game/tools/uiscriptedmenu.c`:
   null, false)` → `parent.GetMainWidget().AddChild(...)` (:89-121); dtor deletes root (:123-127).
   `Container extends LayoutHolder` adds `array<ref LayoutHolder> m_Body` + focused-container/column
   state for gamepad nav (`containers/container.c:1-80`) + `Insert(holder, pos)` (:1197).
-- **Decoupling of `SlotsIconBase` (DayZ 1.30 Exp)**:
+- **Decoupling of `SlotsIconBase` (DayZ 1.30)**:
   *(up to 1.29: `SlotsIcon.c` was the monolithic base class for inventory slots; since 1.30: `exp\scripts\scripts\5_Mission\GUI\InventoryNew\ContainedItems\SlotsIconBase.c:1` absorbed 744 lines of generic logic, reducing `SlotsIcon.c:1` to 217 lines dedicated to mouse event registration).*
   `SlotsIconBase` manages state widgets (`m_CursorWidget`, `m_ColWidget`, `m_MountedWidget`,
   `m_OutOfReachWidget`, `m_ReservedWidget`, `m_SelectedPanel`, `m_EmptySelectedPanel`, `m_MicromanagedPanel`),
@@ -175,7 +175,7 @@ From `3_game/tools/uiscriptedmenu.c`:
 - Device hot-swap: subscribe `g_Game.GetMission().GetOnInputDeviceChanged().Insert(fn)`
   (+ GetOnInputPresetChanged) — 23 vanilla files do this and **Remove in destructor**
   (`mapmenu.c:41-47,162-163`).
-- **Universal gamepad icons vs obsolete Xbox methods (DayZ 1.30 Exp)**:
+- **Universal gamepad icons vs obsolete Xbox methods (DayZ 1.30)**:
   *(up to 1.29: `ActionTargetsCursor.c` used Xbox-specific methods such as `SetInteractXboxIcon`, `SetContinuousInteractXboxIcon`, `SetSingleXboxIcon`, `SetContinuousXboxIcon`, and `SetXboxIcon`; since 1.30: `exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:1368-1377` marks them as `[Obsolete("no replacement")]`).*
   Gamepad support is now cross-platform and unified via `SetControllerIcon(string pWidgetName, string pInputName)`
   (`exp\scripts\scripts\5_Mission\GUI\ActionTargetsCursor.c:146-150`), which injects dynamic RichText glyphs

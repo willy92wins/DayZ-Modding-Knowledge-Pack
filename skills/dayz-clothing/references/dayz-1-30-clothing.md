@@ -411,7 +411,7 @@ That alias is not in vanilla 1.30.
 
 New continuous actions (digest F). Wetness is applied per clothing slot from
 maps in `ActionWashHeadWettingClothesBase.GetWetnessMap`
-(`:13-22` container vs `:31-40` surface). Wash-head also reduces
+(`ActionWashHeadWettingClothesBase.c:13-22` container vs `:31-40` surface). Wash-head also reduces
 `eAgents.EYES_IRRITATION` and calls `GetThermalBiasHandler()`.
 
 Constants (digest F marked these unverified; they are in this extract):

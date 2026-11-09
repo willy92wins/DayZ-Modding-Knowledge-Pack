@@ -162,7 +162,7 @@ enum EGetParticleMode {
 
 ```
 // Singleton access (returns null on dedicated server!)
-// (until 1.29: skipped when IsDedicatedServer.) (since 1.30 Exp: skipped when IsHeadlessOrDedicatedServer — ParticleManager.c:65)
+// (until 1.29: skipped when IsDedicatedServer.) (since 1.30: skipped when IsHeadlessOrDedicatedServer — ParticleManager.c:65)
 static ParticleManager GetInstance();
 static void CleanupInstance();
 
@@ -289,7 +289,7 @@ preventing double-stop bugs.
 
 ## DayZ 1.30: SurfaceInfo, vehicle VFX, synced spawn
 
-Signatures verified from 1.30 Exp sources. Full narrative: `dayz-1-30-particles.md`.
+Signatures verified from the 1.30.164014 sources. Full narrative: `dayz-1-30-particles.md`.
 
 `proto native bool IsHeadlessOrDedicatedServer();` — `exp\scripts\scripts\3_Game\Global\Game.c:1136` (comment at `:1132-1135`: also true for headed dedicated servers).
 

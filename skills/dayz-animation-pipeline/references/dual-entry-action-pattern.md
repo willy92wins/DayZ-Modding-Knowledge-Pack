@@ -179,7 +179,7 @@ If step 4 misbehaves, the bail-out check is wrong — likely you whitelisted a t
 
 ## DayZ 1.30: Native Directional In/Out (Alternative) [EXACT]
 
-In DayZ 1.30 Exp, vanilla introduced a native engine-supported mechanism for directional get-in / get-out on single-track vehicles (motorcycles / bikes), eliminating the need for scripted player snaps on vehicles implementing this contract.
+In DayZ 1.30, vanilla introduced a native engine-supported mechanism for directional get-in / get-out on single-track vehicles (motorcycles / bikes), eliminating the need for scripted player snaps on vehicles implementing this contract.
 
 ### Engine flow in `ActionGetInTransport.c`
 When `transport.HasDirectionalInOutAction()` returns `true` (`Transport.c:680`), `ActionGetInTransport` computes the approach side using the dot product between the target direction vector and the vehicle's right-normal vector:

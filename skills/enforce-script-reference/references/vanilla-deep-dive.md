@@ -23,7 +23,7 @@ Source-verified vs vanilla v1.24 + real mods: recipes/crafting (PluginRecipesMan
   same item in both slots and the craft cancelled itself (`SKILL.md`, Override Rules, rule 42).
 - `m_ResultToInventory`: only `-1` (to inventory) works; the swap branch `>= 0` is commented out in
   `SpawnItems`. `SetIsCacheable` does not exist.
-- (through 1.29: `TransferItemProperties` on a result with `m_ResultReplacesIngredient` could overwrite health from `m_ResultInheritsHealth`). (since 1.30: `TransferItemProperties(ingr, res, true, true, false, false)` is called — `transfer_health = false` — `RecipeBase.c:353`. Signature: `MiscGameplayFunctions.c:271`. New: `PluginRecipesManager.GetRecipeClassName(int recipe_id)` at `:84`, not at `:54`.)
+- (through 1.29: `TransferItemProperties` on a result with `m_ResultReplacesIngredient` could overwrite health from `m_ResultInheritsHealth`). (since 1.30: `TransferItemProperties(ingr, res, true, true, false, false)` is called — `transfer_health = false` — `RecipeBase.c:353`. Signature: `MiscGameplayFunctions.c:271`. New: `PluginRecipesManager.GetRecipeClassName(int recipe_id)` at `PluginRecipesManager.c:84`, not at `:54`.)
 
 ### ComponentEnergyManager (quick facts)
 - `MAX_SOCKETS_COUNT = 4` hardcoded (`componentenergymanager.c:73`).
@@ -40,7 +40,7 @@ Source-verified vs vanilla v1.24 + real mods: recipes/crafting (PluginRecipesMan
 - `CCTCursor` measures from the hit-pos of the `ObjIntersectView` raycast (requires View Geometry LOD);
   `CCTObject` measures from target's `GetPosition()`. If an action does not appear and the model lacks
   ViewGeo, check the LOD first (skill `dayz-physics-engine`, truth #2).
-- (through 1.29: CCT distance from hit-pos / `GetPosition()`, often via Head bone). (since 1.30: `CCTCursor` and `CCTCursorInherited` also measure `MiscGameplayFunctions.GetPlayerHeadPosition` — stance height, not Head bone — `CCTCursor.c:35-36`, `CCTCursorInherited.c:28-32`, `MiscGameplayFunctions.c:778`. New `CCTLiquid` (ctor `:37`) replaces vanilla use of `CCTWaterSurfaceEx` in fill/drink/wash. `Can()` of a custom CCT does not change signature.)
+- (through 1.29: CCT distance from hit-pos / `GetPosition()`, often via Head bone). (since 1.30: `CCTCursor` and `CCTCursorInherited` also measure `MiscGameplayFunctions.GetPlayerHeadPosition` — stance height, not Head bone — `CCTCursor.c:35-36`, `CCTCursorInherited.c:28-32`, `MiscGameplayFunctions.c:778`. New `CCTLiquid` (ctor `CCTLiquid.c:37`) replaces vanilla use of `CCTWaterSurfaceEx` in fill/drink/wash. `Can()` of a custom CCT does not change signature.)
 
 ### Damage pipeline (quick facts)
 - `ProcessDirectDamage(damageType, source, componentName, ammoName, modelPos, damageCoef, flags)`

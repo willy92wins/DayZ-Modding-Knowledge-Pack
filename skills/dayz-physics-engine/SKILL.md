@@ -188,9 +188,9 @@ contact in `Transport.OnContact`, `3_game/vehicles/transport.c:318-346`, and con
 proto native void EnableCollisionsWithCharacter(bool state);   // :21
 proto native void ThrowPhysically(DayZPlayer player, vector force, bool collideWithCharacters = true); // :26
 // 3_game/entities/object.c
-proto native void CreateDynamicPhysics(int interactionLayers); // up to 1.29: :462; from 1.30 Exp: exp/scripts/scripts/3_Game/Entities/Object.c:456  (never called by vanilla script)
-proto native void EnableDynamicCCD(bool state);                // up to 1.29: :463; from 1.30 Exp: :457
-proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // up to 1.29: :464; from 1.30 Exp: :458
+proto native void CreateDynamicPhysics(int interactionLayers); // up to 1.29: :462; from 1.30: exp/scripts/scripts/3_Game/Entities/Object.c:456  (never called by vanilla script)
+proto native void EnableDynamicCCD(bool state);                // up to 1.29: :463; from 1.30: :457
+proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // up to 1.29: :464; from 1.30: :458
 ```
 Lifecycle: throw (`hand_actions.c:62-88`, server+owner) · inventory dump uses
 `ThrowPhysically(null, force, false)` (`4_world/static/miscgameplayfunctions.c:1305-1361`) · admin

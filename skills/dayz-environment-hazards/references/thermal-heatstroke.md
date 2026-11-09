@@ -41,8 +41,11 @@ Until 1.29 extreme heat could damage health from this modifier. Since 1.30 the *
 
 Since 1.30.164289, above `THRESHOLD_HEAT_COMFORT_PLUS_WARNING` a player with water at or above `SL_WATER_HIGH`
 and heat comfort at or below `THRESHOLD_HEAT_COMFORT_PLUS_CRITICAL` loses bias through the new `RecoverThermalBias`
-(`HeatComfortMdfr.c:104-107, 115-120`), and between `SL_WATER_NORMAL` and `SL_WATER_HIGH` the bias settles near
-`0.4 - STAGE_DEACTIVATION_BUFFER` (0.38) instead of 0.4 (`:95-103`).
+(`HeatComfortMdfr.c:104-107, 115-120`), and a conscious player with water between `SL_WATER_NORMAL` and
+`SL_WATER_HIGH` gains bias below `0.4 - STAGE_DEACTIVATION_BUFFER` (0.38; 0.4 on 1.30.164200) and loses it above
+(`:95-103`). That holds the bias near 0.38 only while heat comfort stays at or below
+`THRESHOLD_HEAT_COMFORT_PLUS_CRITICAL`: above it the separate feed of `:75-82` adds 0.00032 or 0.0005 × deltaT,
+more than the 0.0002 × deltaT taken off, so the bias still rises.
 
 Constantes (`exp\scripts\scripts\3_Game\PlayerConstants.c:203-210`):
 
@@ -83,7 +86,8 @@ IDs: `MDF_HEAT_STROKE1..4` (`eModifiers.c:66-69`). Sync: `MODIFIER_SYNC_HEAT_STR
 - `ThermalBiasHandler.Add(-THERMAL_BIAS_WASH_HEAD_DECREMENT)`.
 - `SetTemporaryResistance(30 s)`. Since 1.30.164289 the bias drop and the resistance only happen when no resistance
   is left (`GetTemporaryResistance() <= 0.0`, `ActionWashHeadWettingClothesBase.c:55-60`), so washing again within
-  the 30 s changes nothing; 1.30.164200 restarted the 30 s on every wash (its `Add` was already ignored while the
+  the 30 s neither lowers the bias nor restarts the 30 s, while the irritation drop (`:53`) and the wetting (`:62`)
+  still happen; 1.30.164200 restarted the 30 s on every wash (its `Add` was already ignored while the
   resistance ran, `ThermalBiasHandler.c:40-48`).
 - Wets slots according to container vs surface map (`ActionWashHeadWettingClothesBase.c:10-43`).
 

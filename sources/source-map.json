@@ -262,7 +262,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "25d85f5c5cafcbf6fd63346b82f9031e36a5a1be3ac46ac01b1f79af5e156aec",
+      "output_hash": "bbf01f1df2c3fb665021da977eef04aa90366baa3bbf117d3207914afd73c5a0",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -1664,7 +1664,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ff0138447343199c8357f5ba1120ced7286f9c9254fc89201ca0c2f9a3f60f8a",
+      "output_hash": "4be1bf32ff6e1feab90331e149c852bc2044f2a6133bcd223ca0577ce611c6fe",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2018,7 +2018,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "63492662af9ca4299e34771cd89ee6f0abb1bcdc8bbc5ea8a0a0a3bae84ca4b7",
+      "output_hash": "26e9cac555044f5b6e44a7c5b8aa33f99078a7773a65556133dd79a154c7dc4e",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -2060,7 +2060,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "94b1233bd2d3eee992ca9033f71f637d61408c2bebfafe28981e702d700cd318",
+      "output_hash": "73dc1c69e358cd06a627a46c417bbd902df6eebeff2f4d92adeca124ccfea2be",
       "output_path": "THIRD_PARTY_NOTICES.md",
       "routing_artifact_id": "root/third-party-notices",
       "verification_level": "cross_checked"
@@ -6237,7 +6237,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7f428f94dadf736820703a3ada71913f20a6fb4fa661b0722d5a5c2067c36564",
+      "output_hash": "fc38945c2706f11403b0bb476258c689a3f2ac66caedf42b1598aa6130215e19",
       "output_path": "skills/dayz-animation-pipeline/references/anim-graph.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6363,7 +6363,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2790d8c2afa57b0aaf66a59c70b556ec7c95f2b268b08b893f55b7d0565f4686",
+      "output_hash": "8ac8cd46c009b8b720ee34ea792634b112d44018ce4efaecd8376399f1a45629",
       "output_path": "skills/dayz-animation-pipeline/references/dual-entry-action-pattern.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6447,7 +6447,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ea18f3117ac523beff7b82359000e65fbbb7b917a713d88d34a1239af2a9bcb9",
+      "output_hash": "ac2664083304dad036e8cdc9a97213fc59e6f7dd3e294143a65be83d1c4a6ff9",
       "output_path": "skills/dayz-animation-pipeline/references/item-ik-and-hide.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6489,7 +6489,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e7b99b50d74690cf611872eda6ebbb96b4a90ee3683f394143a909a479dcfd95",
+      "output_hash": "0d7ea4576864df8328f563feba3121d6f1025b4409ebc4ef60b9a76c1c66694a",
       "output_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6641,7 +6641,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d880967d3c5a2139fb298fcacc9fe60f019a532d38ca6c8c629d60c00a7d2f7e",
+      "output_hash": "4c52c465fd0b2ee5e68c3b50cffde66ea3b4a00781062ef0133e50e746089a5a",
       "output_path": "skills/dayz-animation-pipeline/references/tooling-and-walls.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6797,7 +6797,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cf1ffc256ed7ff53c0f27a2765eebe9ce418705946b8566428b42ac171988f66",
+      "output_hash": "ca0970685f730aa957690ffefeec791a01567d0c778055a42e08bd2a704b5214",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7565,7 +7565,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0a6fd23758bfecb47106467e6d052fd262af32aafc15acffde16fa65874ad8a4",
+      "output_hash": "2d4df81860e50c025ea83c4e078153412ce4cb89c8d677da015fe1598c4a7046",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -7659,7 +7659,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e4762f119f758cf84fce24305d42e3da6dc023bb11646bbb5146bbef49060e34",
+      "output_hash": "bc6317517539b1bc6abefcaed46f27c7c28a4aacefca33e5b417c4a66f7c2dca",
       "output_path": "skills/dayz-basebuilding/references/entity-lifecycle.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -7743,7 +7743,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a94b54184c030e5ed15515401bfeae6c7b8d8ae5cc220919c7834bd6622b8df7",
+      "output_hash": "97511ebba50f6fa79eb331590cbef03646284228a69f71ac22de89a100c525e8",
       "output_path": "skills/dayz-basebuilding/references/persistence-audit.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -8133,7 +8133,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "27e0492a70f34c566b9873324d89438b7e944563497343850dd5cc916e122f72",
+      "output_hash": "a56fb968089cb4931e44920a95b8354ba623fdc756bf35b14cd0d36a549de26b",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -8481,7 +8481,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d72c2248341e787fdada1ae241cc861a704ab54ecd1fbf822170b750419ff337",
+      "output_hash": "6e02c4be65093df33d2950fc7036585ad49b6f8bf48fa8e9f17bf8086c491cdb",
       "output_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -11019,7 +11019,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a93a5493ab48eba169c79f4c819531ae64f67d17084facba84bd870fc33ab9dd",
+      "output_hash": "f382b568a37df051452eb649770e2dc85b5b2e014242ea52b2f283fa5252e623",
       "output_path": "skills/dayz-particles/SKILL.md",
       "routing_artifact_id": "skill/dayz-particles",
       "verification_level": "cross_checked"
@@ -11129,7 +11129,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "eb609239df1870d341a51f490a1814e78f1f33f890d210e46e6eb03d7be58915",
+      "output_hash": "457de1c8ef45518d6e6a39e7c3228069207931b8d861147584e0f5bf521e54e4",
       "output_path": "skills/dayz-particles/references/script-api-reference.md",
       "routing_artifact_id": "skill/dayz-particles",
       "verification_level": "cross_checked"
@@ -11559,7 +11559,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "93088f841ef08c10a548bbe0c73a92f00f507cd5889afc7526027cd80a47f797",
+      "output_hash": "ff136087d045c2dbb75c77e4c97bfda7a541bc2b846906ae4cc07e9a4ae5fe8b",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -11631,7 +11631,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f76206a88f758f67a211a80b9dc89fa8b66561880b029294fb556471ed772491",
+      "output_hash": "56c2292b17bdfff984a4aeff508dc1888933ab7505106133ee09355b8832ed9d",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -11901,7 +11901,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "badf1a45678d0b1de48df0bae673602d6b8d2489c37faccad183abd2b633d6f0",
+      "output_hash": "436bcb57c6fc876cbd16081f7b0fee2081ae99a86bc1f476eb9baf1b3e735472",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -11965,7 +11965,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6cf35162d4b8c2467f631b64adb84f68f0cbc5ec2d7ac27af60ae2cae18a30e5",
+      "output_hash": "c8a5c4c532bf1c07e7e43d42a76a6108ad966e8449ba31837fd3ad3ef73885af",
       "output_path": "skills/dayz-physics-engine/references/fisica-engine-deep-dive.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -12781,7 +12781,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6730a7fbbcbeff6ad512902124d8bd63004b7ebfe3f0330dcfa29225bfd2157c",
+      "output_hash": "ef448f8afd6147ec3fca179a5b915c31f48fc8b1844900aa60051235abce77db",
       "output_path": "skills/dayz-sound-system/references/sonido-deep-dive.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -14217,7 +14217,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f8b680fa737b64d1e585303b9f094af2fc30743e78faf122f810dc29a0db8649",
+      "output_hash": "e428c09c9cf66eca3841f27f61d49b886dbe8d60b82135f9b96d1f841169985c",
       "output_path": "skills/dayz-ui-development/references/styles-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -14249,7 +14249,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0a3d6c8ca5bb3472775a8dd819b9975a1da797a2273ca2cb4e012ea7dee628c8",
+      "output_hash": "8c60c3ab5249e7579d570c608a7c99ccc75ec3f9c34fca12010332e384853690",
       "output_path": "skills/dayz-ui-development/references/vanilla-menus-map.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -16271,7 +16271,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0630592d08a3db10ed3107a6ee1e6c07cb075311d5f93a625bc31f2b76bdd289",
+      "output_hash": "586e3fa13cceb288f16dcb4650a1e58a8d0d351bfb097d535087aad3eb87a91e",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -16581,7 +16581,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "336ae9ef7206623760a0b5304399cc4fa2af792bafd21aeac2545b5d10a2ee42",
+      "output_hash": "5e28f9efed6ff2443e6813dbca4f6c399617d3251fdfb503f6a639dc8dad1504",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -16603,7 +16603,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "9605359dd0384ac7d9082b72025dff8f0b6443beb14604c5e81e1abc032d0008",
+      "output_hash": "5d1c0d041487ab755b315bd0f526c0cb516a3052e3977ac960a78f948259b777",
       "output_path": "skills/enforce-script-reference/references/config-cpp.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -16861,7 +16861,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "962289460e932f61ab7927b84381932286bd9129b54c53b57dd1e8a0f6eb21d1",
+      "output_hash": "780b1e12f2d4cac39372e3b53a06d14bd0e5e54bd8996eccf8bc0e7577533f83",
       "output_path": "skills/enforce-script-reference/references/vanilla-deep-dive.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -34104,7 +34104,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "931fbafe38e288e519f8d63b8a7d31fa38dc3639954834f017b6d9db1d9655d1",
+      "output_hash": "8cc8da16547e64145d6f21be85fc980557e052359b4bc7e26a9aab906a0d7b1a",
       "output_path": "skills/dayz-basebuilding/references/dayz-1-30-construction-rebuilding.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "historical"
@@ -34322,7 +34322,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "723ffd7a148e6355d61f1042e13480a7070369694f9a0f7d9da8b9a2c6565a04",
+      "output_hash": "2c5601b0f19545c89ca254f7a07ea92daeeef0e85caa35285a90360469543ad6",
       "output_path": "skills/dayz-clothing/references/dayz-1-30-clothing.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "historical"
@@ -34354,7 +34354,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "08e2250e1a03a9525236f06dcef87e97ed5fc0cb1ee34be1e8d6785f42b8f1bb",
+      "output_hash": "03a53604ec8f5c4fd19fbc3ba7d32ed10b23cfc5be39693f7872b70ed5c86ec1",
       "output_path": "skills/dayz-environment-hazards/SKILL.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -34514,7 +34514,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3d03748ba65e4958f573db19c13cc1d76dd2dbf1c69fa5c2743f972761eb043f",
+      "output_hash": "49eeef5c1c97c819091e82bde7362b23b5a63f86b84316f4a7851bced58357cd",
       "output_path": "skills/dayz-environment-hazards/references/thermal-heatstroke.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -34638,7 +34638,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7dd8ef287a4415541c557571cd8f2f5e43fca9677d4e22113a95ea31badd01aa",
+      "output_hash": "7adb2b5561c54d2ec47fe14c7ce8a6321ad03e7cbb226d1ccf6d50919c68e45c",
       "output_path": "skills/dayz-mod-workflow/references/dayz-1-30-mod-workflow.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "historical"
@@ -35044,7 +35044,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "17b29847d72c18fca142eeedc4e7ad22bbf1304ed3eaa25605d9038e28e38def",
+      "output_hash": "c8609309e3a6817b728f588596e2cb42375d6cf53223c73aa3529cf3b93c9f59",
       "output_path": "skills/dayz-persistence/references/dayz-1-30-persistence.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "historical"
@@ -35852,7 +35852,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "449805cdd09f2e36aaa91091d0163ffb979c8ad9f7340e0121643f6738eff123",
+      "output_hash": "e58215352e3546065e022f2b90600087d2fb878c1b153f4166458e924cdb364f",
       "output_path": "skills/dayz-underground/references/underground-triggers.md",
       "routing_artifact_id": "skill/dayz-underground",
       "verification_level": "source_verified"
@@ -38452,138 +38452,6 @@
       "verification_level": "offline_tested"
     },
     {
-      "artifact_id": "file/skills/ovh-cloud/skill.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Live Claude skill ovh-cloud harvested 2026-11-05 with the machine-priority window (through 2026-11-28 inclusive; fallback from 2026-11-29). Public Pack redacts project id as <REDACTED-PROJECT-ID> and instance IP as <REDACTED-IP>. Live copy on Willy retains account identifiers; do not promote this skill over live.",
-          "license": "MIT",
-          "source_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/SKILL.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
-      "output_path": "skills/ovh-cloud/SKILL.md",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/references/api.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/references/api.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
-      "output_path": "skills/ovh-cloud/references/api.md",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/references/pricing-2026-11.md",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/references/pricing-2026-11.md",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
-      "output_path": "skills/ovh-cloud/references/pricing-2026-11.md",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/scripts/ovhpc.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/scripts/ovhpc.py",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
-      "output_path": "skills/ovh-cloud/scripts/ovhpc.py",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/scripts/vm-agent/install.ps1",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/scripts/vm-agent/install.ps1",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
-      "output_path": "skills/ovh-cloud/scripts/vm-agent/install.ps1",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
-      "artifact_id": "file/skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Companion file from the redacted ovh-cloud skill tree (no secrets). Live scripts on Willy may differ; Pack is the public sanitized copy.",
-          "license": "MIT",
-          "source_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
-          "source_id": "installed-skills",
-          "source_path": "ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
-          "source_revision": "filesystem@2026-11-05",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
-      "output_path": "skills/ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
-      "routing_artifact_id": "skill/ovh-cloud",
-      "verification_level": "cross_checked"
-    },
-    {
       "artifact_id": "file/skills/dayz-ui-development/references/layout-variants-130.md",
       "distribution_role": "payload",
       "hash_policy": "sha256",
@@ -39536,6 +39404,54 @@
       "source_hash": "60ee024ee644facdf51b4af7300d0f41634e85a20da06a4975d2636a2f946a7a",
       "source_id": "installed-skills",
       "source_path": "vigia-atascos/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-09 16:33Z, in the release thread of v1.7.0: ovh-cloud stays out of the Pack (#151 added it; #159 kept it pending his decision). It is about the owner's own OVH account and development machine, not DayZ modding, and under his rule of 2026-11-06 the Pack carries nothing internal to the team. The live skill stays private in ~/.claude/skills/ovh-cloud. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "4debe7f5f73756b8e70994e206e4334a722cef3736b20b409948187ba8730ede",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/SKILL.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-09 16:33Z, in the release thread of v1.7.0: ovh-cloud stays out of the Pack (#151 added it; #159 kept it pending his decision). It is about the owner's own OVH account and development machine, not DayZ modding, and under his rule of 2026-11-06 the Pack carries nothing internal to the team. The live skill stays private in ~/.claude/skills/ovh-cloud. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "ef06c1d2a368b9b76066f78f2931edee2817eaa60626160ce819b74d45d5e0e2",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/references/api.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-09 16:33Z, in the release thread of v1.7.0: ovh-cloud stays out of the Pack (#151 added it; #159 kept it pending his decision). It is about the owner's own OVH account and development machine, not DayZ modding, and under his rule of 2026-11-06 the Pack carries nothing internal to the team. The live skill stays private in ~/.claude/skills/ovh-cloud. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "e15ef6cbc2bdb02fefbe6da4855d578b89c64a0d6b8612416f7c7c57933a5f7e",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/references/pricing-2026-11.md",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-09 16:33Z, in the release thread of v1.7.0: ovh-cloud stays out of the Pack (#151 added it; #159 kept it pending his decision). It is about the owner's own OVH account and development machine, not DayZ modding, and under his rule of 2026-11-06 the Pack carries nothing internal to the team. The live skill stays private in ~/.claude/skills/ovh-cloud. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "f4b6b90221086eec78623902d9c963e4e848e002fda93910ad0cdc473ec830c3",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/scripts/ovhpc.py",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-09 16:33Z, in the release thread of v1.7.0: ovh-cloud stays out of the Pack (#151 added it; #159 kept it pending his decision). It is about the owner's own OVH account and development machine, not DayZ modding, and under his rule of 2026-11-06 the Pack carries nothing internal to the team. The live skill stays private in ~/.claude/skills/ovh-cloud. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "96013bbd422af5af063de0a08031788ed16474a4248569b3b9eba30469a6c7ba",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/scripts/vm-agent/install.ps1",
+      "source_revision": "filesystem@2026-11-05"
+    },
+    {
+      "decision_evidence": "Guillermo 2026-11-09 16:33Z, in the release thread of v1.7.0: ovh-cloud stays out of the Pack (#151 added it; #159 kept it pending his decision). It is about the owner's own OVH account and development machine, not DayZ modding, and under his rule of 2026-11-06 the Pack carries nothing internal to the team. The live skill stays private in ~/.claude/skills/ovh-cloud. No bytes from this skill enter the public payload.",
+      "reason": "project_evidence",
+      "source_hash": "c1682c6661dc04907ac6380257556a241c71bd658a72256d7529e99259a724d1",
+      "source_id": "installed-skills",
+      "source_path": "ovh-cloud/scripts/vm-agent/ovh-idle-shelve.ps1",
       "source_revision": "filesystem@2026-11-05"
     }
   ],

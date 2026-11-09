@@ -195,7 +195,7 @@ Full API signatures: `references/script-api-reference.md`
 Particle p = Particle.PlayOnObject(ID, parent, localPos, localOri, forceWorldRot);
 Particle p = Particle.PlayInWorld(ID, worldPos);
 // ParticleManager.GetInstance() returns null on dedicated server — always guard.
-// (since 1.30 Exp: also null on headless — use !g_Game.IsHeadlessOrDedicatedServer().)
+// (since 1.30: also null on headless — use !g_Game.IsHeadlessOrDedicatedServer().)
 ParticleManager pm = ParticleManager.GetInstance();
 ParticleSource ps;
 if (pm) ps = pm.PlayOnObject(ID, parent, localPos);

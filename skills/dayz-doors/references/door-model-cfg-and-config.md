@@ -166,7 +166,7 @@ Remaining:
 - ? Duplicate skeleton names causing a server crash: tutorial warning, not independently reproduced. Treat skeleton-name uniqueness as a cheap preventive convention.
 - Conflict (resolved by authority, not a ?): the one-source/one-Doors rule is contradicted by Expert -- two Doors entries share component `door1_open`. A real quirk of the tutorial's example.
 - Conflict (resolved by authority): Expert prose has `soundOpen = "switchOpen"` / `soundClose = "switchClose"`, but the tutorial's real `Doors_Buttons_Lesson/Expert_Mode/config.cpp:31-38` omits both. The real file wins.
-- ? (1.30 Exp) No extracted vanilla `config.cpp` **class Doors** child in this dump sets `relatedInventorySlots[]`, `lockCompatibilityBitMask`, `interactPositionPoint`, or `doorConstructionPart`. The parser and script consumers are verified; a copy-paste vanilla Doors block with those keys is **[UNVERIFIED]**. Fence uses entity-level `attachments[] = {..., "Att_CombinationLock", "Att_CodeLock", ...}` (`exp/gear_camping/DZ/gear/camping/config.cpp:2683`) rather than per-door `relatedInventorySlots[]`.
+- ? (1.30.164014) No extracted vanilla `config.cpp` **class Doors** child in this dump sets `relatedInventorySlots[]`, `lockCompatibilityBitMask`, `interactPositionPoint`, or `doorConstructionPart`. The parser and script consumers are verified; a copy-paste vanilla Doors block with those keys is **[UNVERIFIED]**. Fence uses entity-level `attachments[] = {..., "Att_CombinationLock", "Att_CodeLock", ...}` (`exp/gear_camping/DZ/gear/camping/config.cpp:2683`) rather than per-door `relatedInventorySlots[]`.
 
 ## Door open conditions and locks (DayZ 1.30)
 

@@ -131,7 +131,7 @@ Digest J claimed a new ctor `ConstructionPart(notnull ConstructionPartTypeData)`
 	}
 ```
 
-Note: `player` **can be null** (comment at `:178`). `Construction` then calls `m_Parent.OnPartBuiltServer` (`Construction.c:52-68`). Vanilla `ActionBuildPart` already calls Ex:
+Note: `player` **can be null** (comment at `ConstructionBase.c:212`). `Construction` then calls `m_Parent.OnPartBuiltServer` (`Construction.c:52-68`). Vanilla `ActionBuildPart` already calls Ex:
 
 ```c
 // [EXACT] exp/scripts/scripts/4_World/Classes/UserActionsComponent/Actions/Continuous/ActionBuildPart.c:167-170

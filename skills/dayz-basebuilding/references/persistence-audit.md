@@ -33,7 +33,7 @@ no runtime warning — verify by hand or with a script that every `id` in the co
 ## 3. OnStoreSave / OnStoreLoad — strict ordering
 
 - `OnStoreSave` (`basebuildingbase.c:419-429`): writes `m_SyncParts01`, `02`, `03`, then `m_HasBase`.
-- `OnStoreLoad` (`:431-463`): reads the three ints then `m_HasBase`, each guarded with a `return false` on
+- `OnStoreLoad` (`basebuildingbase.c:431-463`): reads the three ints then `m_HasBase`, each guarded with a `return false` on
   read failure (default-then-abort).
 
 **Subclass-after-super invariant:** a subclass writes/reads its extra fields AFTER calling `super`, in the
@@ -111,7 +111,7 @@ Verified unchanged on `BaseBuildingBase`:
 is a **different** save:
 
 - version const `REBUILDING_STORAGE_VERSION = 1` (`Rebuilding.c:3`)
-- ten ints `m_SyncParts1`..`m_SyncParts10` (`:7-16`), netsync-registered on `BuildingBase` (`Building.c:59-68`)
+- ten ints `m_SyncParts1`..`m_SyncParts10` (`Rebuilding.c:7-16`), netsync-registered on `BuildingBase` (`Building.c:59-68`)
 - `HandleStoreSave` → `SerializeConstructionData`: version then the ten ints (`Rebuilding.c:473-514`)
 - 2 bits reserved per part (`ConstructionPart.BITWISE_SYNCINFO_SIZE_BASE = 2` at `ConstructionPart.c:6`)
 - capacity [DESIGN]: `BIT_INT_SIZE = 32` (`BitArray.c:4`) × 10 / 2 = **160 part ids**

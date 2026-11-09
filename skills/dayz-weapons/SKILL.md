@@ -13,7 +13,8 @@ description: >
   reload, fire and jam animations belong to dayz-animation-pipeline. Use
   dayz-vehicles/dayz-characters/dayz-model-pipeline for those domains.
   Also 1.30: GetExplosiveEffectData, ExplosiveEffectData, Get*PistolAnimState,
-  SCARL/Luger/LeeEnfield/MP18 script-only staging.
+  the Nasdara SCARL/Luger/LeeEnfield/MP18 (script-only on 1.30.164014, in
+  weapons_nasdara.pbo since 1.30.164200).
 ---
 
 # DayZ Firearm Modding — the ENTITY side
@@ -129,7 +130,7 @@ or another packed peer. On 1.30.164200 their own models are in `weapons_nasdara.
 | Enforce Script (`modded class`, config-script side) rules | `enforce-script-reference` |
 | PBO packaging / binarize | `dayz-pbo-build` |
 | In-game build/deploy/launch + auto-verify | `dayz-test-ingame` (+ `dayz-mcp-verify`) |
-| 1.30 pistol anim-state getters, open-bolt mag detach, explosion FX API, staging weapons | **THIS skill** → `dayz-1-30-weapons.md` |
+| 1.30 pistol anim-state getters, open-bolt mag detach, explosion FX API, Nasdara weapons | **THIS skill** → `dayz-1-30-weapons.md` |
 
 ## CITE-THEN-VERIFY
 

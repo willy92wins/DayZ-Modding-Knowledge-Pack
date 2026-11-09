@@ -496,7 +496,7 @@ class NoiseSystem
         float external_strenght_multiplier = 1.0);
     proto void AddNoiseTarget(vector pos, float lifetime, NoiseParams noise_params,
         float external_strength_multiplier = 1.0);
-    proto native float GetEnvironmentNoiseReduction(vector pos); // desde 1.30 Exp; Noise.c:13
+    proto native float GetEnvironmentNoiseReduction(vector pos); // desde 1.30; Noise.c:13
 }
 
 class NoiseParams

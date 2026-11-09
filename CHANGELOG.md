@@ -7,6 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `systematic-debugging`, a new skill ported from obra/superpowers
+  (https://github.com/obra/superpowers, MIT, Copyright (c) 2025 Jesse Vincent): find the root cause
+  of a bug, a failing test or unexpected behaviour before proposing a fix. Its `LICENSE` and
+  `SOURCE.md` ship with it (#146).
+- `task-observer`, a new skill ported from rebelytics' "One Skill to Rule Them All"
+  (https://github.com/rebelytics/one-skill-to-rule-them-all, Eoghan Henn, CC BY 4.0) and modified:
+  its session-start trigger is softened, so it observes only while work is in progress. It watches
+  multi-step work for patterns, corrections and methods worth turning into skills, and keeps an
+  observation log. Its `LICENSE` and `SOURCE.md` ship with it (#146).
 - `dayz-mcp-verify` `references/dayz-1-30-mcp-verify.md`, new section "Deleting vehicles and checking
   what a run loaded" (DayZ 1.30.164200, 2026-11-01), four claims from the dayz-mcp fronts: eject
   every occupant before deleting a car or the server crashes (#298, fixed by #300); the server sees
@@ -642,7 +651,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     0.01-0.35. `THERMAL_BIAS_POSITIVE_HC_DECREMENT` is 0.0002 (was 0.0001) and
     `THERMAL_BIAS_POSITIVE_HC_LOW_INCREMENT` 0.0002 (was 0.00022); `HeatComfortMdfr` lowers the
     bias of a player with high water through the new `RecoverThermalBias`; and washing the head
-    again while its 30 s resistance runs changes nothing.
+    again while its 30 s resistance runs no longer lowers the bias or restarts the 30 s (it still
+    reduces eye irritation and wets the clothes).
   - `dayz-physics-engine`: `CollisionFlags` starts with `NONE = 0`, which moves every other value
     up by one.
   - `dayz-doors`: `Land_WarheadStorage_Main` and `Land_WarheadStorage_Bunker_Facility` override
@@ -754,13 +764,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-- The skills no longer call 1.30 "Exp" where they route to their 1.30 content: the descriptions of
-  `dayz-basebuilding` and `dayz-weapons` ("Also 1.30:"), and the pointers and rows of the `SKILL.md`
-  of `dayz-ai-patterns`, `dayz-basebuilding`, `dayz-characters`, `dayz-model-pipeline`,
+- README and `AGENTS.md` give the number of skills, 44 (they said 42), and the README skill index
+  lists the skills of #146, which it did not.
+- The skills no longer call 1.30 "Exp" where they mean 1.30 as it is now: the descriptions of
+  `dayz-basebuilding` and `dayz-weapons` ("Also 1.30:"; the Nasdara weapons are script-only on
+  1.30.164014 and ship in `weapons_nasdara.pbo` since 1.30.164200), the pointers and rows of the
+  `SKILL.md` of `dayz-ai-patterns`, `dayz-basebuilding`, `dayz-characters`, `dayz-model-pipeline`,
   `dayz-particles`, `dayz-physics-engine`, `dayz-sound-system`, `dayz-ui-development` and
-  `dayz-weapons`. What was measured or first seen on 1.30.164014 Exp still says so.
-  `product-spec.md` and `compatibility-matrix.md` now say that 1.29 was the stable branch until
-  2026-10-15.
+  `dayz-weapons`, and the labels of 1.30 features in `dayz-animation-pipeline`, `dayz-clothing`,
+  `dayz-particles`, `dayz-pbo-reverse-engineering`, `dayz-persistence`, `dayz-physics-engine`,
+  `dayz-sound-system`, `dayz-ui-development` and `enforce-script-reference`. What was measured or
+  first seen on 1.30.164014 Exp still says so, and what describes that install names the build
+  (`dayz-basebuilding`, `dayz-doors`, `dayz-mod-workflow`, `dayz-particles`). `product-spec.md` and
+  `compatibility-matrix.md` now say that 1.29 was the stable branch until 2026-10-15.
+- README §4 said that every playbook is the author's and MIT. It now names the two ported skills
+  of #146 and their licences (`task-observer`, CC BY 4.0, modified; `systematic-debugging`, MIT),
+  and `THIRD_PARTY_NOTICES.md` lists both.
 - Citations that matched their text on no build, found by the re-check, now point at it:
   `dayz-physics-engine` `SKILL.md` gives the 1.29 ground fallback of the action cursor at
   `actiontargets.c:324-325` (not `:329-331`), and `references/fisica-engine-deep-dive.md` the

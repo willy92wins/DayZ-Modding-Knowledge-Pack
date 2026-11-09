@@ -948,7 +948,7 @@ In `player_main.ast`, animation groups are defined with explicit `GroupNames`:
 
 ### Resolution to SP-042: Dynamic Per-Item ASI Switching at Runtime
 
-Prior to 1.30, swapping weapon animation stances or grip IK dynamically without respawning the entity was unsupported (§4.9, SP-042). DayZ 1.30 Exp introduces native dynamic animation instance switching in Enforce Script:
+Prior to 1.30, swapping weapon animation stances or grip IK dynamically without respawning the entity was unsupported (§4.9, SP-042). DayZ 1.30 introduces native dynamic animation instance switching in Enforce Script:
 
 ```c
 // In 3_Game/human.c
@@ -976,7 +976,7 @@ This enables mods to swap character weapon profiles dynamically when grips or at
 ### Workbench 2021 & Filepatching Workflow Updates
 
 - **Named File System Routing**: Workbench 2021 resolves filepatching using the new `-resolveFilePatchingUsingEnfusion=1` switch, avoiding PBO packing loops during `.anm` iterations when loading loose workspace and meta resources.
-- **GUID Integrity**: In DayZ 1.30 Exp, `{GUID}` prefixes in `.asi` and `.ast` files must be strictly maintained for engine asset tracking and Animation Editor stability.
+- **GUID Integrity**: In DayZ 1.30, `{GUID}` prefixes in `.asi` and `.ast` files must be strictly maintained for engine asset tracking and Animation Editor stability.
 
 
 

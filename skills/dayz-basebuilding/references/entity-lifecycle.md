@@ -106,7 +106,7 @@ sets the variant count (`constructionactiondata.c:187`), and its `OnUpdateAction
   each part's built flag from the bitmask, sets base state from the base part, re-syncs. Guarded by
   `m_FixDamageSystemInit` (the damage-system migration path uses `EEOnAfterLoad` + a 500ms deferred call
   instead, `:504-512`).
-- `SetPartFromSyncData` (`:264-303`) — the reconciliation core: per part, compares "built in sync bitmask"
+- `SetPartFromSyncData` (`basebuildingbase.c:264-303`) — the reconciliation core: per part, compares "built in sync bitmask"
   vs "built flag", adds/removes constructed parts, shows/hides physics, toggles the `Deployed` proxy for the
   base, and **failsafe-relocks attached materials** (`:302`, "failsafe for corrupted sync/storage data").
 

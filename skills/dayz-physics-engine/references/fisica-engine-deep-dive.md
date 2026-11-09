@@ -161,9 +161,9 @@ Who uses what (verified):
 | Weapon lift | member mask `hit_mask` with `...\|AI` | — | `4_world/entities/firearms/weapon_base.c:75` |
 | Under roof? (Environment) | `RayCastBullet` vertical 25 m | `ITEM_LARGE\|BUILDING\|VEHICLE` | `4_world/classes/environment/environment.c:650-654` |
 | Admin spawn on crosshair | `RayCastBullet` | `BUILDING\|DOOR\|VEHICLE\|ROADWAY\|TERRAIN\|CHARACTER\|AI\|RAGDOLL\|RAGDOLL_NO_CHARACTER` | `4_world/plugins/pluginbase/plugindeveloper.c:523-524` |
-| Action cursor (1st pass, 1.30 Exp) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255` |
-| Action cursor (ground fallback, 1.30 Exp) | `RayCastBullet` | `ROADWAY\|TERRAIN\|WATERLAYER` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:383-384` |
-| Action cursor (liquid surface without object, 1.30 Exp) | scoring | utility 0.01 if `SurfaceInfo.GetLiquidType() != LIQUID_NONE` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:535-537` |
+| Action cursor (1st pass, 1.30) | `RaycastRVProxy` | `ObjIntersectView` (default) + `CollisionFlags.ALLOBJECTS` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255` |
+| Action cursor (ground fallback, 1.30) | `RayCastBullet` | `ROADWAY\|TERRAIN\|WATERLAYER` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:383-384` |
+| Action cursor (liquid surface without object, 1.30) | scoring | utility 0.01 if `SurfaceInfo.GetLiquidType() != LIQUID_NONE` | `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:535-537` |
 
 ### 2.8 Contacts and events
 
@@ -202,9 +202,9 @@ proto native bool HasCollisionsWithCharacter();                // :22
 proto native void ThrowPhysically(DayZPlayer player, vector force, bool collideWithCharacters = true); // :26
 proto native void ForceFarBubble(bool state);                  // :31 (network bubble far)
 // 3_game/entities/object.c
-proto native void CreateDynamicPhysics(int interactionLayers); // up to 1.29: :462; since 1.30 Exp: exp/scripts/scripts/3_Game/Entities/Object.c:456
-proto native void EnableDynamicCCD(bool state);                // up to 1.29: :463; since 1.30 Exp: :457
-proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // up to 1.29: :464; since 1.30 Exp: :458
+proto native void CreateDynamicPhysics(int interactionLayers); // up to 1.29: :462; since 1.30: exp/scripts/scripts/3_Game/Entities/Object.c:456
+proto native void EnableDynamicCCD(bool state);                // up to 1.29: :463; since 1.30: :457
+proto native void SetDynamicPhysicsLifeTime(float lifeTime);   // up to 1.29: :464; since 1.30: :458
 ```
 Lifecycle observed in vanilla:
 1. **Throw from hands**: `HandActionThrow.Action` (`3_game/systems/inventory/hand_actions.c:62-88`) — moves item to GROUND via inventory and then:

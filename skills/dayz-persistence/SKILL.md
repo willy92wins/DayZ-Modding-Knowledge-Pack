@@ -292,7 +292,7 @@ three ways to cross that binding.
 3. **A restore pass still queued can reopen saving at shutdown.** If the restore clears the
    shutdown flag (for a mission restart in the same process), a restore `CallLater` still in
    `CALL_CATEGORY_SYSTEM`, which is processed "without any restrictions"
-   (`VANILLA/3_game/global/game.c:1516`), clears it again after `OnMissionFinish`, and the
+   (`VANILLA/3_game/global/game.c:1540`), clears it again after `OnMissionFinish`, and the
    `EEDelete` calls of the shutdown then unregister entries. Rule: remove the pending passes
    (`ScriptCallQueue.Remove`, `VANILLA/2_gamelib/tools.c:65`) before setting the flag
    [EXACT][CLAIM-PERS-SHUTDOWN-QUEUE]. Read in the code; the shutdown order in game is not confirmed.

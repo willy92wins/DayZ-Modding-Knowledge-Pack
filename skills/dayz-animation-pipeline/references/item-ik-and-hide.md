@@ -133,7 +133,7 @@ Geometry (and Geometry if the attached model needs collision).
 
 ## Pattern D — Dynamic Animation Instance Switching (DayZ 1.30) [EXACT]
 
-In DayZ 1.30 Exp, Bohemia introduced native Enforce Script methods to dynamically switch the player character's animation instance (`.asi`) at runtime without needing to swap physical items in hands.
+In DayZ 1.30, Bohemia introduced native Enforce Script methods to dynamically switch the player character's animation instance (`.asi`) at runtime without needing to swap physical items in hands.
 
 ### Native `Human.SetAnimationInstanceByName`
 ```c
@@ -157,7 +157,7 @@ In DayZ 1.30 Exp, Bohemia introduced native Enforce Script methods to dynamicall
 ```
 
 ### Resetting to Unarmed Hands via "Empty" Profile
-To return the player character cleanly to the default unarmed state, DayZ 1.30 Exp registers an `"Empty"` hands profile in `DayZPlayerCfgBase.c`:
+To return the player character cleanly to the default unarmed state, DayZ 1.30 registers an `"Empty"` hands profile in `DayZPlayerCfgBase.c`:
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c:1546-1549
 	//! Empty profile to be able to switch back to this using SetAnimationInstanceByName
@@ -168,7 +168,7 @@ To return the player character cleanly to the default unarmed state, DayZ 1.30 E
 The profile only makes that instance loaded: vanilla switches back by the `.asi` path, `SetAnimationInstanceByName("dz/anims/workspaces/player/player_main/player_main.asi", 1)` (`4_World/Entities/ManBase/PlayerBase.c:2107`), and a mod's child `.asi` registered the same way was switched to by its path (2026-09-28, `vehicle-rider-ik-pose.md` §Per-vehicle pose without a graph change). [UNVERIFIED] Passing the profile name `"Empty"` instead of a path has not been tried.
 
 ### Native Surrender System (No Dummy Item)
-In 1.29 and earlier, the surrender emote (`HandsUp`) required spawning an invisible `SurrenderDummyItem` in hands. In 1.30 Exp nothing goes into the hands any more, but the dummy item's profile is still registered so that `player_main_surrender.asi` is preloaded (`DayZPlayerCfgBase.c:1541-1544`, preload at `:1653`), and `PlayerBase` switches to it with `SetAnimationInstanceByName`:
+In 1.29 and earlier, the surrender emote (`HandsUp`) required spawning an invisible `SurrenderDummyItem` in hands. In 1.30 nothing goes into the hands any more, but the dummy item's profile is still registered so that `player_main_surrender.asi` is preloaded (`DayZPlayerCfgBase.c:1541-1544`, preload at `:1653`), and `PlayerBase` switches to it with `SetAnimationInstanceByName`:
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Entities\ManBase\PlayerBase.c:2081-2090
 	protected void OnStartTransitionToSurrender()

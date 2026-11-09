@@ -8,7 +8,7 @@ Path prefix for all script cites: `exp\scripts\scripts\`. Since 2026-11-09 the l
 
 ## What changed
 
-| Surface | 1.29 (stable) | 1.30 Exp | Effect on a 1.29 mod |
+| Surface | 1.29 | 1.30 | Effect on a 1.29 mod |
 |---|---|---|---|
 | `GAME_STORAGE_VERSION` | `142` at `stable-1.29\scripts\scripts\3_Game\Global\Game.c:5` | `144` at `3_Game\Global\Game.c:5` | Hook `version` on a 1.30 save is 144. `g_Game.SaveVersion()` is at `:435` (skill 1.29 cite was `:434`). |
 | `EntityAI` prefix | energy-or-nothing, then `SaveVariables` | `GetConstructionBasic().HandleStoreSave` **before** energy; load of that block only if `version >= 143` | Mods that skip `super` or assume a fixed EntityAI prefix misalign on rebuilt houses. |
@@ -27,7 +27,7 @@ static int GAME_STORAGE_VERSION = 144;
 ```
 
 `CGame` still publishes it through `StorageVersion(GAME_STORAGE_VERSION)` at
-`:50` and `proto native int SaveVersion()` at `:435`. The skill's 1.29 cite
+`3_Game\Global\Game.c:50` and `proto native int SaveVersion()` at `:435`. The skill's 1.29 cite
 `game.c:434` is the same native one line earlier in this extract.
 
 (hasta 1.29: `GAME_STORAGE_VERSION = 142`.)
