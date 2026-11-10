@@ -1671,10 +1671,40 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "release-v1.7.0@2026-11-10",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, step 3: an [Unreleased] Added entry for dayz-ui-lab widget_ids.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3d3ba4ef921eaf2bc8747fac3170cdf417ea165aa2b0395d2dbf318a48634e0a",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10: an [Unreleased] Changed entry for layout-variants-130.md and dayz-1-30-pbo-build.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "236df5c5cb41f07d770b440a2c25ca948167fc62c4bbd55247fdd6d4fb194a55",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "gap-66306aa-ingame@2026-11-10",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10, run R3c: the [Unreleased] Changed entry adds the gui-prefix PBO without config.cpp, FileBank and the SKILL.md note of dayz-pbo-build. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "66323aae12c9c4d4f8d09fa73356955b1d5ef1d9e58224ae3b059bc182178c0e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "45f30170697e81763850082aeb3bd296aecd72e6a77495a0d6c870c602c765e3",
+      "output_hash": "66323aae12c9c4d4f8d09fa73356955b1d5ef1d9e58224ae3b059bc182178c0e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2139,10 +2169,20 @@
           "source_path": "TOOLS.md",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, step 3: the dayz-ui-lab row and section add widget_ids.py, its three commands, what each one gives, its exit codes and its counts on the 1.30.164200 and 1.30.164289 vanilla layouts. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "40add86fbc7446525653f9fcd2250463994b1d59c09a63c82d537fbd52377c32",
+          "source_id": "pack-r21-authored",
+          "source_path": "TOOLS.md",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3cd40663a6f790930df25ac3df407effc590513e6d147e097c72a8cbfbc6ea85",
+      "output_hash": "40add86fbc7446525653f9fcd2250463994b1d59c09a63c82d537fbd52377c32",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -11386,10 +11426,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, run R3c: the REQUIRED config.cpp check notes that a 1.30 gui-prefix shadow PBO holding only layouts loaded without one (CLAIM-UI-VARIANT-NO-CONFIG-130, CLAIM-PBO-FSSHADOWING-FILEBANK-130), instead of calling that case untested. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1f18d7e8e9be9b6590233ad1324c2a366c21feb9f90a33ec96a1adc3b16ff3d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "cdf15046f73fd9d7e822e80ffac9dde4b7d815d43810660c1f1e5cc604c3dc1d",
+      "output_hash": "1f18d7e8e9be9b6590233ad1324c2a366c21feb9f90a33ec96a1adc3b16ff3d6",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -19543,10 +19593,30 @@
           "source_path": "sources/claims.json",
           "source_revision": "pack-140-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289: five new claims, CLAIM-UI-VARIANT-HAND-WRITTEN-130, CLAIM-UI-VARIANT-STALE-PREFAB-130, CLAIM-UI-VARIANT-TWO-MODS-130, CLAIM-UI-VARIANT-MAKEPBO-PACKING-130 and CLAIM-PBO-FSSHADOWING-MAKEPBO-130; the line ranges of the other claims of the two edited pages move with their text. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4ebdccead34fabfcd361363890f8dcd71a606f077fabfb037a8ecce73b30bf93",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "gap-66306aa-ingame@2026-11-10",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, run R3c: two new claims, CLAIM-UI-VARIANT-NO-CONFIG-130 and CLAIM-PBO-FSSHADOWING-FILEBANK-130; CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130 ends with its own paragraph; the evidence of CLAIM-UI-VARIANT-HAND-WRITTEN-130 adds that runs without a GUI warning name the layout nowhere, and the evidence of the five claims of the previous commit names the folder of the second R5 attempt; the other claims of the two pages move with their text. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8f9a59c6c06e92805b7f45db1634ac530e5f0cc299baed95b6c32eb3fda5a54b",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "129de9f25c04bcda0cfc061bdf9016955d34cc7f055e9d4a32be096327df1a74",
+      "output_hash": "8f9a59c6c06e92805b7f45db1634ac530e5f0cc299baed95b6c32eb3fda5a54b",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -35029,10 +35099,30 @@
           "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
           "source_revision": "pack-140-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289 (plan L5, runs R2, R4 and R5): CLAIM-PBO-FSSHADOWING-MAKEPBO-130 (MakePbo writes fsShadowing=1 from $PBOPREFIX$.txt; AddonBuilder has no option for it); the fsShadowing note says a shadow PBO does not hide the vanilla files it does not hold, and the checks say the .meta is optional. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8116fea68de11c7ef8daa569d6066b691d3c9bda991f29ab1b6972d1d5f76cc1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
+          "source_revision": "gap-66306aa-ingame@2026-11-10",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, run R3c (plan L5): CLAIM-PBO-FSSHADOWING-FILEBANK-130 (FileBank takes fsShadowing=1 as a -property and packs a folder without config.cpp); CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130 drops its 'not verified' remark on config.cpp and its line range ends with its own paragraph, so the checks paragraph after it, now also resting on the 2026-11-10 runs, says that the .meta and config.cpp are optional. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "98a333c6db31a93d23cc6052f9dab2449d241f483b89d6346882473db84565bb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "70e8a04bd359e3798cca206711cc2c2364fdbbad0500c46717c40b67f37be3cb",
+      "output_hash": "98a333c6db31a93d23cc6052f9dab2449d241f483b89d6346882473db84565bb",
       "output_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "historical"
@@ -38475,13 +38565,209 @@
           "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
           "source_revision": "docs/ui-layout-variants-130@2026-11-05",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289 (plan L5, runs R2, R4 and R5), variants written by hand and packed with MakePbo: CLAIM-UI-VARIANT-HAND-WRITTEN-130 in section 1; CLAIM-UI-VARIANT-STALE-PREFAB-130 and CLAIM-UI-VARIANT-TWO-MODS-130 in section 2, whose heading drops 'Workbench-generated'; CLAIM-UI-VARIANT-MAKEPBO-PACKING-130 in section 3 replaces the line on RaG packing; the three unknowns those claims measure leave section 4; the header names the new build. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "08a251468f144ce5f297bf5c91c20d02a8bb2cc2413be461062d6e72d2967362",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+          "source_revision": "gap-66306aa-ingame@2026-11-10",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, run R3c (plan L5): CLAIM-UI-VARIANT-NO-CONFIG-130 in section 3, a gui-prefix PBO without config.cpp, packed by FileBank, loads and applies; the community report CLAIM-UI-VARIANT-NO-CONFIG-REPORT moves from section 4 to section 3 beside it, its last sentence saying which part the measurement agrees with; the summary sentence that pointed to section 4 is dropped; CLAIM-UI-VARIANT-HAND-WRITTEN-130 says that the log names the layout in the lines of the warning, since runs without a warning name it nowhere. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "77db3c18b84789d154b789b9bc0f12ba55d5b53dc5fddd00d17d8eb4749d6172",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "c018f581d53d168e4e731ff2eb287f3a0ae5ab1a67e71de3a7511936192b6ffa",
+      "output_hash": "77db3c18b84789d154b789b9bc0f12ba55d5b53dc5fddd00d17d8eb4749d6172",
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/dayz_ui_lab/widget_ids.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Gap of commit 66306aa, step 3, chosen by the owner on 2026-11-10. widget_ids.py gives the widget IDs of a DayZ 1.30 layout variant: 00000000 and a CRC-32 (polynomial 0x04C11DB7, MSB first, not augmented, init and final XOR 0xFFFFFFFF) of the widget's name and its ancestors' names below the root (CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK); it reads the stored ID and the Prefab through parse.py and gives derive, scan and collide, with exit codes 0, 1 and 2. tests/test_widget_ids.py: 17 passed, and tools/dayz-ui-lab/tests: 94 passed, on Python 3.14.3 (Windows) and 3.13 (Linux). scan over the vanilla gui/layouts trees: files=216 stored=0 on 1.29; files=227 stored=1147 derived_match=1104 upper32_nonzero=9 on 1.30.164014; files=227 stored=1438 derived_match=1395 upper32_nonzero=9 on 1.30.164200 and 1.30.164289; no parse error; the totals of the investigation's independent walker. Two scans of 1.30.164200 give the same bytes. collide on xbox/day_z_ingamemenu_xbox.layout prints 00000000CDEFDF47 232:top; 667:top and exits 1. Written by DeepSeek V4.1 Flash, run locally through OpenCode, from a plan and tests written by Claude; reviewed by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2c66e2edaca289bb001d9f2c0eb3b51810854308a93a776955ada08e1dd33304",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/dayz_ui_lab/widget_ids.py",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2c66e2edaca289bb001d9f2c0eb3b51810854308a93a776955ada08e1dd33304",
+      "output_path": "tools/dayz-ui-lab/dayz_ui_lab/widget_ids.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/tests/test_widget_ids.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Gap of commit 66306aa, step 3: the contract of widget_ids.py, written before the module: the CRC check value; 26 positive and 7 negative vanilla name chains, with zlib.crc32 and reversed-chain controls that miss every positive; derive on name-keyed, ID-keyed and variant layouts, as TSV and JSON; collide with and without a shared ID; scan totals, a parse error (exit 1) and a missing root (exit 2); derive and collide on a broken or missing file (exit 2). 17 tests pass on Python 3.14.3 and 3.13. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "028ecf40d9bc885b0185dd120a16a3251d5b0f4689b084361956184463d2ef09",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/tests/test_widget_ids.py",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "028ecf40d9bc885b0185dd120a16a3251d5b0f4689b084361956184463d2ef09",
+      "output_path": "tools/dayz-ui-lab/tests/test_widget_ids.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/widget-ids/cases.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Fixture of tests/test_widget_ids.py (gap of commit 66306aa, step 3), first-party: the CRC check value (123456789 gives B995A485) and the 26 positive and 7 negative name chains, from the vanilla layouts of 1.29 to 1.30.164289, on which the derivation was checked; widget names and IDs only, no layout content. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2ad1667fb99dfee2328d1bcf70a4f2cea0c0a4b9ac5366b2af6aaaa030dea4c0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/widget-ids/cases.json",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2ad1667fb99dfee2328d1bcf70a4f2cea0c0a4b9ac5366b2af6aaaa030dea4c0",
+      "output_path": "tools/dayz-ui-lab/fixtures/widget-ids/cases.json",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/widget-ids/name-keyed.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Fixture of tests/test_widget_ids.py (gap of commit 66306aa, step 3), first-party: a name-keyed layout shaped like the in-game menu (a FrameWidget root, Licensing with version and copyright, dayz_logo, an unnamed frame and a ScriptParamsClass), with no stored IDs. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "de7c095628313ec2e6c2b71e71cf5aecef04b10186c3567e17f20f3dcd1fa78d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/widget-ids/name-keyed.layout",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "de7c095628313ec2e6c2b71e71cf5aecef04b10186c3567e17f20f3dcd1fa78d",
+      "output_path": "tools/dayz-ui-lab/fixtures/widget-ids/name-keyed.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/widget-ids/id-keyed.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Fixture of tests/test_widget_ids.py (gap of commit 66306aa, step 3), first-party: an ID-keyed layout with five stored IDs equal to the derived ones and one 64-bit ID that is not. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "630dc4a6885ef39c43a4dfa91bb757ba5295477d26401f21a3e609791c332dd6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/widget-ids/id-keyed.layout",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "630dc4a6885ef39c43a4dfa91bb757ba5295477d26401f21a3e609791c332dd6",
+      "output_path": "tools/dayz-ui-lab/fixtures/widget-ids/id-keyed.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/widget-ids/variant.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Fixture of tests/test_widget_ids.py (gap of commit 66306aa, step 3), first-party: a variant file: Prefab entries keyed by ID with no Name, and one added widget with a 64-bit ID and a Name. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "32875c1a0c2efaf3fce48a28e6e12a28d04060fe59b1551870212760f25c278e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/widget-ids/variant.layout",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "32875c1a0c2efaf3fce48a28e6e12a28d04060fe59b1551870212760f25c278e",
+      "output_path": "tools/dayz-ui-lab/fixtures/widget-ids/variant.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/widget-ids/collision.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Fixture of tests/test_widget_ids.py (gap of commit 66306aa, step 3), first-party: two same-named siblings under one parent, which share a derived ID. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ae81b0f0208761fac4b2bdd319449d41318af36f48879ff2c9d958761560fac9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/widget-ids/collision.layout",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ae81b0f0208761fac4b2bdd319449d41318af36f48879ff2c9d958761560fac9",
+      "output_path": "tools/dayz-ui-lab/fixtures/widget-ids/collision.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-ui-lab/fixtures/widget-ids/broken.layout",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Fixture of tests/test_widget_ids.py (gap of commit 66306aa, step 3), first-party: an unclosed layout that parse.py refuses. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "21d1ca4a6ffa1f18fab6c7787a146f9901d58fa313d33d9cc5d4824e350723f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-ui-lab/fixtures/widget-ids/broken.layout",
+          "source_revision": "gap-66306aa-step3@2026-11-10",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "21d1ca4a6ffa1f18fab6c7787a146f9901d58fa313d33d9cc5d4824e350723f2",
+      "output_path": "tools/dayz-ui-lab/fixtures/widget-ids/broken.layout",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

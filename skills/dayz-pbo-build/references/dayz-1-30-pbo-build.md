@@ -40,19 +40,41 @@ does not validate `.nm` bytes (binaries are not in `exp\`).
 
 (since 1.30.164200: the PBO header property `fsShadowing=1` lets a PBO load even
 when its prefix matches one already loaded, so its files can shadow vanilla
-paths; whether a shadow PBO replaces single files or the whole folder is not established.
-Vanilla PBO headers do not carry it.)
+paths. Vanilla PBO headers do not carry it. A shadow PBO does not hide the
+vanilla files it does not hold: with two holding only layouts, the rest of
+vanilla `gui` still loaded on 1.30.164289 (`layout-variants-130.md` §2).)
 
 [EXACT][CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130] Measured on DayZDiag 1.30.164200
 (2026-11-05) for a Workbench-generated layout variant: a PBO whose
 `$PBOPREFIX$.txt` is the bare line `gui`, built with RaG PBO Builder
 `--fs-shadowing`, packed `config.bin`, the `.layout` and its `.layout.meta`,
 and the header read back as `prefix=gui`, `fsShadowing=1`. It loaded unsigned
-and the variant applied in game. A `config.cpp` was present; whether a
-`gui`-prefix PBO loads without one is not verified. What the variant does and
-how to author it: `skills/dayz-ui-development/references/layout-variants-130.md`.
+and the variant applied in game. A `config.cpp` was present. What the variant
+does and how to author it:
+`skills/dayz-ui-development/references/layout-variants-130.md`.
 
-Checks for such a PBO: the header shows both properties; the `.meta` beside
-each variant `.layout` is in the file list (the measured PBO carried it; whether
-the game needs it is untested); the PBO contains only the files it means to
-shadow.
+Checks for such a PBO: the header shows both properties; the PBO contains only
+the files it means to shadow. A `.meta` beside each variant `.layout` is
+optional, and so is `config.cpp`: variants packed without them applied on
+1.30.164289 (2026-11-10, `layout-variants-130.md` §1 and §3).
+
+[EXACT][CLAIM-PBO-FSSHADOWING-MAKEPBO-130] MakePbo writes the property too
+(Mikero MakePbo 2.16, 2026-11-10): a `$PBOPREFIX$.txt` holding the two lines
+`prefix=gui` and `fsShadowing=1` gives the header `prefix=gui`,
+`Mikero=DePbo.dll.10.13`, `fsShadowing=1` and a `version=` stamp (the two
+extra properties are MakePbo's own), with `config.cpp` compiled to `config.bin`
+and the prefix file left out. Such PBOs loaded unsigned on DayZDiag
+1.30.164289 and their variants applied. Without a `config.cpp`, MakePbo writes
+no prefix. AddonBuilder (1.0.240639) has no option for the property: it writes
+`product=dayz ugc` and `prefix`, and when the folder has no `config.cpp` it
+packs an empty one and the prefix file.
+
+[EXACT][CLAIM-PBO-FSSHADOWING-FILEBANK-130] FileBank, the DayZ Tools packer that
+AddonBuilder calls (`Bin\PboUtils\FileBank.exe`; DayZ Tools Steam build
+26405911, 2026-11-10), writes any property and needs no `config.cpp`:
+`FileBank -property prefix=gui -property fsShadowing=1 -exclude <list file>
+-dst <out folder> <folder>\gui` gave the header `prefix=gui`, `fsShadowing=1` and
+nothing else, and a list file holding the line `$PBOPREFIX$.txt` kept the prefix
+file out. The PBO is named after the source folder (`gui.pbo`). Such a PBO,
+holding only a layout variant and installed under another name, loaded unsigned
+on DayZDiag 1.30.164289 and its variant applied (`layout-variants-130.md` §3).

@@ -36,7 +36,7 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
 ### 1. Folder Structure Validation
 
 **Checks performed:**
-- **REQUIRED:** `config.cpp` exists at addon root (a 1.30 `gui`-prefix shadow PBO without one is untested: `references/dayz-1-30-pbo-build.md`)
+- **REQUIRED:** `config.cpp` exists at addon root (a 1.30 `gui`-prefix shadow PBO holding only layouts loaded without one on 1.30.164289: `references/dayz-1-30-pbo-build.md`)
 - **REQUIRED:** `$PBOPREFIX$` file exists (single line: `mymod\myaddon` format)
 - **RECOMMENDED:** `data/` folder (for textures, .rvmat, .p3d files)
 - **RECOMMENDED:** `scripts/` folder (for .c, .cpp, .h files)

@@ -5,6 +5,35 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-ui-lab`: `widget_ids.py` gives the widget IDs of a DayZ 1.30 layout variant. `derive` lists
+  each widget's stored ID, the ID derived from its name and its ancestors' names
+  (`CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`) and whether the two match; `scan` counts them over a
+  folder of layouts, and `collide` lists the IDs that two widgets of one layout share. Stdlib only,
+  through the tool's parser. 17 tests on six new fixtures, among them the 26 vanilla IDs and the
+  7 negative controls the derivation was checked on. On the 1.30.164200 vanilla layouts `scan`
+  counts 1,438 stored IDs, 1,395 of them derived, and `collide` finds the two `top` siblings of
+  `xbox/day_z_ingamemenu_xbox.layout`.
+
+### Changed
+
+- `dayz-ui-development` `references/layout-variants-130.md`: layout variants written by hand, measured on
+  DayZDiag 1.30.164289 (2026-11-10). A variant in the Workbench format, with the derived IDs and no `.meta`,
+  hides, recolours and adds vanilla widgets like a generated one; an entry whose ID no widget has is dropped
+  with a `GUI (W)` warning; two mods varying one layout both apply, and where both set one property the mod
+  later in `-mod=` wins; MakePbo packs the PBO, and the variant's own `CfgPatches` class is not in the game
+  config; a PBO without `config.cpp`, packed by FileBank, loads and applies too. Four unknowns leave the
+  list: a `Prefab` that matches no widget, two mods varying one layout, two `gui` shadow PBOs in one load,
+  a `gui`-prefix PBO without `config.cpp` (the community report on it moves to the packing section).
+  `CLAIM-UI-VARIANT-HAND-WRITTEN-130`, `CLAIM-UI-VARIANT-STALE-PREFAB-130`, `CLAIM-UI-VARIANT-TWO-MODS-130`,
+  `CLAIM-UI-VARIANT-MAKEPBO-PACKING-130`, `CLAIM-UI-VARIANT-NO-CONFIG-130`. `dayz-pbo-build`
+  `references/dayz-1-30-pbo-build.md`: MakePbo writes `fsShadowing=1` from `$PBOPREFIX$.txt`, FileBank takes
+  it as a `-property` and packs a folder without `config.cpp`, and AddonBuilder has no option for it
+  (`CLAIM-PBO-FSSHADOWING-MAKEPBO-130`, `CLAIM-PBO-FSSHADOWING-FILEBANK-130`); the `.meta` and `config.cpp`
+  are optional, and a shadow PBO does not hide the vanilla files it does not hold. `SKILL.md` says so where
+  it requires `config.cpp`.
+
 ## [1.7.0] - 2026-11-10
 
 The pack consolidated for DayZ 1.30 stable: every vanilla script citation, and the data citations
