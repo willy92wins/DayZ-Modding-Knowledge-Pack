@@ -114,9 +114,11 @@ string filename;
 FileAttr attr;
 FindFileHandle fh = FindFile(dir + "/*", filename, attr, FindFileFlags.ALL);
 if (fh) {
-    do {
+    bool found = true;
+    while (found) {                   // Enforce has no do...while
         bool isDir = (attr & FileAttr.DIRECTORY);
-    } while (FindNextFile(fh, filename, attr));
+        found = FindNextFile(fh, filename, attr);
+    }
     CloseFindFile(fh);
 }
 ```

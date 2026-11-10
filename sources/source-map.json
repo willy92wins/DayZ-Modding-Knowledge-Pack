@@ -1701,10 +1701,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: [Unreleased] gains the Fixed entries of the v1.8.0 batch from the check of bzed's dayz-dev skill (#161). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a10b41912a97cc7f098684212127340ad44e78b579af9cc9907147b65cc7fc2e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "66323aae12c9c4d4f8d09fa73356955b1d5ef1d9e58224ae3b059bc182178c0e",
+      "output_hash": "a10b41912a97cc7f098684212127340ad44e78b579af9cc9907147b65cc7fc2e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2847,10 +2857,20 @@
           "source_path": "knowledge/DAYZ_INFRA.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): globals.xml under db/ as in the vanilla mission; the script log's file name and the retail server RPT repeating its SCRIPT lines (server RPTs of 1.29.163047 and 1.30.164200 read on the test PC, 2026-11-09); the June retail caveat marked not reproduced on 1.30.164289 (boots of 2026-11-10). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d4e1fdbe90ae569cc7fe66825e216d49c9c16468e17107e864066ca414320514",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/DAYZ_INFRA.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "39435ff0e90831107cf221dc60a0b087845cf2bd391924e9f329f4ecb390a461",
+      "output_hash": "d4e1fdbe90ae569cc7fe66825e216d49c9c16468e17107e864066ca414320514",
       "output_path": "knowledge/DAYZ_INFRA.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -2963,10 +2983,20 @@
           "source_path": "knowledge/public-wiki-harvest-2026-09.md",
           "source_revision": "public-wiki-harvest@2026-09-07",
           "verification_level": "historical"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): dayz-scripts.yadz.app redirects to diff.yadz.app and its Doxygen pages return 404 (checked from the test PC, 2026-11-09); the explorer entry and the suggested source_id follow it. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b475343505efb5a7aa922546d4a895d025e0911e08e8abba9794dbd924a4c318",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/public-wiki-harvest-2026-09.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "37664c775b564a7077593b9fda7c9ec97f1fe9b511a4578a0ff33e0dc761cc36",
+      "output_hash": "b475343505efb5a7aa922546d4a895d025e0911e08e8abba9794dbd924a4c318",
       "output_path": "knowledge/public-wiki-harvest-2026-09.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "historical"
@@ -3661,10 +3691,20 @@
           "source_path": "knowledge/vault-notes/dayz-wiki-systems-reference.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): DayZ Tools app id 830640 (appmanifest_830640.acf on the test PC; dayz-animation-pipeline/references/tooling-and-walls.md:17); vonCodecQuality 0-30 as the shipped serverDZ.cfg comments it (read on 1.30.164200); the BattlEye profile folder on retail 1.30.164289 (2026-11-10); diff.yadz.app in place of the redirected dayz-scripts.yadz.app. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "18e39fd454f0c791376afd1bf5b1561297ea80b980fb519c464de22c6b9cb609",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/vault-notes/dayz-wiki-systems-reference.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "098b9282dd1f883e01e84917681195ea8735b01a1d390c94982e7aed4818cebb",
+      "output_hash": "18e39fd454f0c791376afd1bf5b1561297ea80b980fb519c464de22c6b9cb609",
       "output_path": "knowledge/vault-notes/dayz-wiki-systems-reference.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -9400,10 +9440,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): LL-304's cut of long log messages around 255 characters scoped to the 1.29 retail logger (CLAIM-WF-LOG-CUT-129-ONLY). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "06003655bf721466ac5b72553b0d7a81a88baa5c340a709e10da89a0ecebbf90",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfaba41b9bb1993106035236b628f5d5d3d8a41e9e4dcf6e6c4b7a10ca9b18a2",
+      "output_hash": "06003655bf721466ac5b72553b0d7a81a88baa5c340a709e10da89a0ecebbf90",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -13050,10 +13100,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "pack-140-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): new `instanceId` bullet after the `class Missions` one (CLAIM-TEST-SERVERCFG-INSTANCEID-130, retail DayZServer 1.30.164289 boots on the test PC) and, under MOD PATHS MUST BE ABSOLUTE, the Windows scope, the `..\\` error window (CLAIM-TEST-MODPATH-DOTDOT-130) and bzed's Linux report, marked not re-measured; claim ranges below the inserts recomputed from their markers. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c7535c0ec16fdd4b7c90bc7f46075a55568b3d49440c031318b4c915313fbdb0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "bc52ba4613a93b979422b5262495bb1d36cabee3b9b88d48e602412968b39df9",
+      "output_hash": "c7535c0ec16fdd4b7c90bc7f46075a55568b3d49440c031318b4c915313fbdb0",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -14242,10 +14302,20 @@
           "source_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
           "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): dayz-scripts.yadz.app redirects to diff.yadz.app and its Doxygen pages return 404 (checked from the test PC, 2026-11-09); the pointer now says so. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1f6dbe0aad5c6e04c1aa864bc2b5591d2920d012fe4443450292ecaa1bef8dc8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2ca61c76bf0e7165d7594ee2cc628df67bc4d67b9a9d27a235ebd3537d9ef778",
+      "output_hash": "1f6dbe0aad5c6e04c1aa864bc2b5591d2920d012fe4443450292ecaa1bef8dc8",
       "output_path": "skills/dayz-ui-development/references/plan-to-implementation.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -16876,10 +16946,20 @@
           "source_path": "enforce-script-reference/references/timers-performance.md",
           "source_revision": "kp-update-docs-2783-5c98-ca47@2026-10-13",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): point 21b scoped to client diag 1.29, where it was measured, and the retail DayZServer 1.30.164289 measurement added (CLAIM-ENF-CALLLATER-REQUEUE-130). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a54fa76b736d5e354c242a8bdec5c1de8f74d1398e7749222aadb8a5e202d18c",
+          "source_id": "pack-r21-authored",
+          "source_path": "enforce-script-reference/references/timers-performance.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7779c9465a45ba641cc01fc63782807f3c0bea550d8eb88b51580fd77253d52",
+      "output_hash": "a54fa76b736d5e354c242a8bdec5c1de8f74d1398e7749222aadb8a5e202d18c",
       "output_path": "skills/enforce-script-reference/references/timers-performance.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -16950,10 +17030,20 @@
           "source_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
           "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): the FindFile directory listing rewritten from do { } while, which Enforce lacks (enforce-script-reference/SKILL.md:66, CLAIM-STARDZ-ENFORCE-SYNTAX-ABSENCES), to a while loop; CLAIM-ENF-CONFIGISEXISTING-TRAILING-SPACE range recomputed from its marker. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2abfd49659fe7af9e3cc11de4589b6d298139cadb43b213066c53fed182b6242",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3c97c93d6282018696db843e2a0bc7994d094e9da644de377e70b2e6086e0696",
+      "output_hash": "2abfd49659fe7af9e3cc11de4589b6d298139cadb43b213066c53fed182b6242",
       "output_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -19613,10 +19703,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 (v1.8.0 batch from the check of bzed's dayz-dev skill, #161): four runtime claims (CLAIM-TEST-SERVERCFG-INSTANCEID-130, CLAIM-TEST-MODPATH-DOTDOT-130, CLAIM-ENF-CALLLATER-REQUEUE-130, CLAIM-WF-LOG-CUT-129-ONLY) and six ranges recomputed from their markers after the inserts in dayz-test-ingame/SKILL.md and verified-api-catalog.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "065a05ef9ef7035727877913b0d8a353d6a845063c23f97271c251584fba92d8",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "claude/project-thread-l0hlko@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "8f9a59c6c06e92805b7f45db1634ac530e5f0cc299baed95b6c32eb3fda5a54b",
+      "output_hash": "065a05ef9ef7035727877913b0d8a353d6a845063c23f97271c251584fba92d8",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

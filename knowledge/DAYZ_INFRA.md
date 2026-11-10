@@ -221,7 +221,7 @@ Standard layout under `<mission>/`:
 | `cfgspawnabletypes.xml` | Items appearing as event content |
 | `cfggameplay.json` | Runtime tuning (movement, stamina, environment) |
 | `cfgweather.xml` | Weather config (XML: `<weather reset= enable=>` + overcast/fog/rain/wind/storm). NOT `.json` (erratum corrected 2026-07-06 against DayZ wiki:Weather_Configuration) |
-| `globals.xml` | CE global variables |
+| `db/globals.xml` | CE global variables |
 | `mapgroupproto.xml` + `mapgrouppos.xml` | Loot tier locations (military, residential, etc.) |
 | `storage_1/` | Active persistence. **Backup BEFORE touching economy.** |
 
@@ -235,7 +235,9 @@ Standard layout under `<mission>/`:
 
 ## When the RPT cites that a script fails
 
-- `script.log` → script side errors (compile + runtime)
+- `script_<date>_<time>.log` → script side errors (compile + runtime). On the retail server the RPT
+  repeats its `SCRIPT` lines as well (server RPTs of 1.29.163047 and 1.30.164200, read 2026-11-09),
+  so a script error shows up in both
 - `<server>.RPT` / cliente RPT → engine-side errors (missing assets, malformed
   configs, access violations)
 - `crash_<date>_<time>.log` → **excepciones manejadas, NO segfaults reales** (los
@@ -265,7 +267,7 @@ Basic pipeline:
 
 ## Caveats for this machine (added 2026-06-11, LFSlidingFloor session)
 
-- **DayZServer standalone (Steam, app 223350) does NOT complete mission loading on this machine EVEN IN PURE VANILLA**: hangs after loading configs, no error in logs, and dies ~6 min later with -freezecheck ("Termination successfully completed"). 4 verified runs 2026-06-10. For local tests ALWAYS use DayZDiag route (skill dayz-test-ingame; per-mod tools in `<Mod>_dev\tools\`). Its mpmissions folder remains useful as mission source for diag absolute -mission.
+- **DayZServer standalone (Steam, app 223350) does NOT complete mission loading on this machine EVEN IN PURE VANILLA**: hangs after loading configs, no error in logs, and dies ~6 min later with -freezecheck ("Termination successfully completed"). 4 verified runs 2026-06-10. For local tests ALWAYS use DayZDiag route (skill dayz-test-ingame; per-mod tools in `<Mod>_dev\tools\`). Its mpmissions folder remains useful as mission source for diag absolute -mission. **Not reproduced on 1.30 (2026-11-10):** on the same machine the retail DayZServer 1.30.164289 passed Steam init, loaded a copy of the vanilla mission and ran until a test mod asked it to exit, with a `serverDZ.cfg` that sets `instanceId` (without it the server counts down `termination in: 10` and exits: `dayz-test-ingame` SKILL.md, `instanceId` bullet).
 - **Parsing of -mod in standalone DayZServer**: embedded quotes in paths with spaces SPLIT the value (treats `"C:\Program` as mod name; symptom: `ANIMATION (E): Can't load "C:\Program...`). DayZDiag with ENTIRE -mod token wrapped in outer quotes does accept absolute paths with spaces separated by semicolons. General fix: junctions without spaces (mklink /J) and paths relative to working dir.
 - Junctions created 2026-06-10 in DayZServer folder: `@CF` and `@VPPAdminTools` pointing to client !Workshop (for deprecated Steam server .bat; diag flow does not need them).
 
