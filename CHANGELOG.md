@@ -16,6 +16,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   counts 1,438 stored IDs, 1,395 of them derived, and `collide` finds the two `top` siblings of
   `xbox/day_z_ingamemenu_xbox.layout`.
 
+### Changed
+
+- `dayz-ui-development` `references/layout-variants-130.md`: layout variants written by hand, measured on
+  DayZDiag 1.30.164289 (2026-11-10). A variant in the Workbench format, with the derived IDs and no `.meta`,
+  hides, recolours and adds vanilla widgets like a generated one; an entry whose ID no widget has is dropped
+  with a `GUI (W)` warning; two mods varying one layout both apply, and where both set one property the mod
+  later in `-mod=` wins; MakePbo packs the PBO, and the variant's own `CfgPatches` class is not in the game
+  config. Three unknowns leave the list: a `Prefab` that matches no widget, two mods varying one layout, two
+  `gui` shadow PBOs in one load. `CLAIM-UI-VARIANT-HAND-WRITTEN-130`, `CLAIM-UI-VARIANT-STALE-PREFAB-130`,
+  `CLAIM-UI-VARIANT-TWO-MODS-130`, `CLAIM-UI-VARIANT-MAKEPBO-PACKING-130`. `dayz-pbo-build`
+  `references/dayz-1-30-pbo-build.md`: MakePbo writes `fsShadowing=1` from `$PBOPREFIX$.txt` and AddonBuilder
+  has no option for it (`CLAIM-PBO-FSSHADOWING-MAKEPBO-130`); the `.meta` is optional, and a shadow PBO does
+  not hide the vanilla files it does not hold.
+
 ## [1.7.0] - 2026-11-10
 
 The pack consolidated for DayZ 1.30 stable: every vanilla script citation, and the data citations

@@ -1681,10 +1681,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-step3@2026-11-10",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10: an [Unreleased] Changed entry for layout-variants-130.md and dayz-1-30-pbo-build.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "236df5c5cb41f07d770b440a2c25ca948167fc62c4bbd55247fdd6d4fb194a55",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "gap-66306aa-ingame@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "3d3ba4ef921eaf2bc8747fac3170cdf417ea165aa2b0395d2dbf318a48634e0a",
+      "output_hash": "236df5c5cb41f07d770b440a2c25ca948167fc62c4bbd55247fdd6d4fb194a55",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19563,10 +19573,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "pack-140-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289: five new claims, CLAIM-UI-VARIANT-HAND-WRITTEN-130, CLAIM-UI-VARIANT-STALE-PREFAB-130, CLAIM-UI-VARIANT-TWO-MODS-130, CLAIM-UI-VARIANT-MAKEPBO-PACKING-130 and CLAIM-PBO-FSSHADOWING-MAKEPBO-130; the line ranges of the other claims of the two edited pages move with their text. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "4ebdccead34fabfcd361363890f8dcd71a606f077fabfb037a8ecce73b30bf93",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "gap-66306aa-ingame@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "129de9f25c04bcda0cfc061bdf9016955d34cc7f055e9d4a32be096327df1a74",
+      "output_hash": "4ebdccead34fabfcd361363890f8dcd71a606f077fabfb037a8ecce73b30bf93",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -35049,10 +35069,20 @@
           "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
           "source_revision": "pack-140-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289 (plan L5, runs R2, R4 and R5): CLAIM-PBO-FSSHADOWING-MAKEPBO-130 (MakePbo writes fsShadowing=1 from $PBOPREFIX$.txt; AddonBuilder has no option for it); the fsShadowing note says a shadow PBO does not hide the vanilla files it does not hold, and the checks say the .meta is optional. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8116fea68de11c7ef8daa569d6066b691d3c9bda991f29ab1b6972d1d5f76cc1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
+          "source_revision": "gap-66306aa-ingame@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "70e8a04bd359e3798cca206711cc2c2364fdbbad0500c46717c40b67f37be3cb",
+      "output_hash": "8116fea68de11c7ef8daa569d6066b691d3c9bda991f29ab1b6972d1d5f76cc1",
       "output_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "historical"
@@ -38495,10 +38525,20 @@
           "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
           "source_revision": "docs/ui-layout-variants-130@2026-11-05",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289 (plan L5, runs R2, R4 and R5), variants written by hand and packed with MakePbo: CLAIM-UI-VARIANT-HAND-WRITTEN-130 in section 1; CLAIM-UI-VARIANT-STALE-PREFAB-130 and CLAIM-UI-VARIANT-TWO-MODS-130 in section 2, whose heading drops 'Workbench-generated'; CLAIM-UI-VARIANT-MAKEPBO-PACKING-130 in section 3 replaces the line on RaG packing; the three unknowns those claims measure leave section 4; the header names the new build. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "08a251468f144ce5f297bf5c91c20d02a8bb2cc2413be461062d6e72d2967362",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+          "source_revision": "gap-66306aa-ingame@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "c018f581d53d168e4e731ff2eb287f3a0ae5ab1a67e71de3a7511936192b6ffa",
+      "output_hash": "08a251468f144ce5f297bf5c91c20d02a8bb2cc2413be461062d6e72d2967362",
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
