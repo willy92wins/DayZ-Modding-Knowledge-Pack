@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `dayz-ui-lab`: `widget_ids.py` gives the widget IDs of a DayZ 1.30 layout variant. `derive` lists
+  each widget's stored ID, the ID derived from its name and its ancestors' names
+  (`CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`) and whether the two match; `scan` counts them over a
+  folder of layouts, and `collide` lists the IDs that two widgets of one layout share. Stdlib only,
+  through the tool's parser. 17 tests on six new fixtures, among them the 26 vanilla IDs and the
+  7 negative controls the derivation was checked on. On the 1.30.164200 vanilla layouts `scan`
+  counts 1,438 stored IDs, 1,395 of them derived, and `collide` finds the two `top` siblings of
+  `xbox/day_z_ingamemenu_xbox.layout`.
+
 ## [1.7.0] - 2026-11-10
 
 The pack consolidated for DayZ 1.30 stable: every vanilla script citation, and the data citations
