@@ -1661,10 +1661,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "pack-140-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10 release v1.7.0, version chosen by the owner, who approved the notes on 2026-11-10: [Unreleased] renamed [1.7.0] - 2026-11-10 with a summary paragraph, and an empty [Unreleased] kept above it. Its entries come from the pull requests merged after v1.6.0 (#98, #105 to #134 and #136 to #160; the contribution of #135 came in through #139) and are unchanged. #140 added the entries that the skills of #146 lacked, the skill counts and the README index rows, and took `ovh-cloud` (#151) out of the pack, as the owner chose on 2026-11-09, so no entry announces it. The summary was written by Claude from the entries, the skills and the files, checked against them, and reviewed cross-family by Codex gpt-6.1-sol, read-only, with the notes, in rounds 7 and 8 of the review of #140. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "45f30170697e81763850082aeb3bd296aecd72e6a77495a0d6c870c602c765e3",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "release-v1.7.0@2026-11-10",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a4adf0ea211724dfc26db3ca3b9f3e7be9213bdb6168fd33103a667a7cad2924",
+      "output_hash": "45f30170697e81763850082aeb3bd296aecd72e6a77495a0d6c870c602c765e3",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
