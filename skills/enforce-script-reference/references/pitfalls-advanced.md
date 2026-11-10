@@ -63,31 +63,34 @@ with the actual error. This is extremely misleading.
 **Debugging strategy**: If you get a compile error in a file that looks
 correct, check if any class it references requires an addon that isn't loaded.
 
-### 5. Empty #ifdef Blocks Cause Segfault
+### 5. An #ifdef Block Holding Only a Comment Compiles (no segfault measured)
+
+[EXACT][CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130] This entry used to say that an empty `#ifdef` block, comments or not, causes a segfault. Measured on DayZDiag 1.30.164289 (2026-11-09), in a mod's `4_World` scripts: a block holding only a comment compiled and ran on server and client, at file scope, in a class body and in a method body, each with `DIAG_DEVELOPER` (which DayZDiag defines on both peers) and with a macro nobody defines; the method's marker was printed and neither process hung (pipeline inbox dada). Vanilla 1.30 ships such a block at `4_world/classes/environment/environment.c:1-3`.
 
 ```
-// SEGFAULT — empty block (even with comments)
-#ifdef MY_MOD
-// This comment doesn't count as content
-#endif
-
-// CORRECT — at least one statement
-#ifdef MY_MOD
-int _placeholder;
+// Compiled and ran on DayZDiag 1.30.164289, server and client
+#ifdef DIAG_DEVELOPER
+// only a comment
 #endif
 ```
+
+Not measured: a block with nothing at all inside, a retail build, DayZ 1.29. `dayz-script-validator` still reports such a block, as a WARN (`ES-EMPTY-IFDEF`); remove the block if it holds no code.
 
 ### **`Expected ',' or ')', not a '0'`** + cascade (`Unexpected scope`, `Syntax error`) on a signature line (SP-364)
 
 - The lexer splits an identifier that STARTS with a reserved keyword followed by a digit: `out vector out0` is tokenized as keyword `out` + type `vector` + keyword `out` + literal `0`, so the parser sees a stray `'0'` that "does not exist" on the line at first glance. Same family as SP-073 (keyword-as-name) but the trigger is keyword+digit, not keyword alone. Affected prefixes: `out`, `ref`, `new`, `auto`, `inout`. Vanilla contains zero `out<digit>` identifiers (full grep of `P:\scripts`)
 - Rename to a non-keyword prefix: `dst0`, `res0`, `val0`, etc. Diag: if the error names a digit token (`'0'`, `'1'`, …) you cannot find on the line, suspect a parameter or variable whose name starts with a reserved keyword. [VERIFIED LF-COM S2b 2026-08-07, run `02d2ee1a` fail 284/285/288; fix `out0..out3`→`dst0..dst3` compiles clean run 3]
 
+### **`Unknown operator '%'`**: `%` in an expression with a float literal (pipeline inbox d35a)
+
+[EXACT][CLAIM-ENFORCE-MODULO-FLOAT-LITERAL-130] On DayZDiag 1.30.164289 (2026-11-09), in a mod's `4_World` script, `float x = (cell % 103) * 150 + 150 * 0.5;` and `float x = (cell % SIDE) * STEP + STEP * 0.5;` (`static const float STEP`, `static const int SIDE`) each stopped the World module with `Unknown operator '%'` at its own line, then `Can't compile "World" script module!`. With the `%` in an `int` local first, `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;` compiled and ran. Both failing lines hold the literal `0.5`, so whether a `static const float` with no literal beside it fails is not isolated. The ticket that reported the second expression saw `Unknown operator ''` instead, in a mission's `init.c`, which was not measured again. `SKILL.md` item 13 gives the rule; `dayz-script-validator` reports it as `ES-MODULO-FLOAT-CONTEXT`.
+
 ### Six recurring compile-fail families (SP-208, added 2026-08-31)
 
 1. **Opaque file handles are not integers.** `FileHandle` and `FindFileHandle` are `int[]` aliases (`1_core\proto\ensystem.c:390,503`). Declare the proper type without `= 0`; test `if (!handle)` and track open state separately. The directory API is `FindFile(pattern, out name, out attr, flags)`, `FindNextFile(handle, out name, out attr)`, then `CloseFindFile(handle)` (`:520-522`). `OpenFile` returns `FileHandle` (`:417`); `ReadFile(FileHandle, void, int)` (`:425`) is not a whole-file-by-path helper. Read text with `OpenFile(READ)` + repeated `FGets` + `CloseFile` (`5_mission\gui\controlsxbox.c:297-305`).
 2. **`ScriptRPC` has no `WriteString`.** The class adds only `Reset` and `Send` to `ParamsWriteContext` (`3_game\gameplay.c:104-118`); that context is a `Serializer`, whose payload API is generic `Write` / `Read` (`1_core\proto\serializer.c:57-58`). A class member that keeps the RPC object needs a strong `ref`.
 3. **`string.Replace` mutates and returns an `int`** (`1_core\proto\enstring.c:156`). Chaining `.Replace().Replace()` tries to call `Replace` on that integer. Copy to a local, call `Replace` once per step, then return the local.
-4. **Long formulas have a compiler limit.** A JSON-style expression with roughly 30 operands can fail with `Formula too complex`. Build it incrementally (`result = result + part;`); roughly ten operands per line was safe in the measured LF-COM compile gate, not a guaranteed language boundary.
+4. **Long formulas have a compiler limit.** [EXACT][CLAIM-ENFORCE-FORMULA-TERMS-130] On DayZDiag 1.30.164289, one statement on one line that alternates string literals with an `int` and a float's `ToString()` (`string s = "a" + i0 + " b" + f0.ToString() + …`) compiled with 17 terms and failed with 18 and with 20: `Formula too complex` on its line, then `Incompatible parameter 'i0'`, then `Can't compile "World" script module!` (pipeline inbox 7b9e/7ce1). Other operand types and a statement over several lines are not measured; a JSON-style expression with roughly 30 operands also failed in the LF-COM compile gate. Build it incrementally (`result = result + part;`). `dayz-script-validator` warns on a statement that holds a string literal and joins 18 or more terms with `+` (`ES-FORMULA-TOO-COMPLEX`).
 5. **Locals have method scope, not block scope.** Reusing one local name in sibling `if` or `switch` branches produces `Multiple declaration`; rename per branch or hoist once. Separate `#ifdef` / `#else` compile views may reuse a name because only one view exists at a time.
 6. **Brace-only balance is incomplete.** `Unmatched brackets detected!` can come from parentheses or square brackets. An offline checker must balance `()`, `[]`, and `{}` after stripping strings and comments, per file. It cannot replace the game compile gate; preprocessor views, encoding failures, and these API contracts remain outside that check.
 
@@ -398,9 +401,11 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
 
 ### Compiler / language quirks
 
-- **Empty `#ifdef` / `#ifndef` blocks segfault** — even if they only contain comments.
-  Either remove the block entirely or put at least one statement inside (`int dummy;`).
-  *(Reported by Expansion devs; engine-level, hard to verify in vanilla source.)*
+- **Empty `#ifdef` / `#ifndef` blocks were reported to segfault**, even with only comments
+  inside *(Expansion devs)*. Not reproduced: on DayZDiag 1.30.164289 a block holding only a
+  comment compiled and ran on server and client, at file scope, in a class body and in a
+  method body (section 5 above, pipeline inbox dada). A block with nothing at all inside, a
+  retail build and DayZ 1.29 are not measured. Remove a block that holds no code.
 
 - **`1 < int.MIN` returns TRUE** — and `1 < -2147483647` also returns TRUE. Integer
   comparison against `int.MIN` is broken. Always guard MIN/MAX comparisons explicitly.
@@ -637,9 +642,9 @@ Do not hide the declaration with `#ifndef SERVER`. That can make the dedicated-s
 
 ### Long concatenation diagnostic cascades (SP-080, added 2026-08-31)
 
-For a long concatenation or formatting expression, `Formula too complex` is the root parser/compiler error. An `Incompatible parameter` reported on the same line can be a cascade, not a second API defect. Split the build into incremental single-line assignments (`s = s + part;`). Extract vector or matrix indexing and function-call results into typed locals before formatting them.
+For a long concatenation or formatting expression, `Formula too complex` is the root parser/compiler error. An `Incompatible parameter` reported on the same line can be a cascade, not a second API defect: the 18- and 20-term statements of item 4 in "Six recurring compile-fail families" logged that pair on one line. Split the build into incremental single-line assignments (`s = s + part;`). Extract vector or matrix indexing and function-call results into typed locals before formatting them.
 
-A physical expression longer than 400 characters is a useful offline lint signal, not a language boundary. Likewise, the roughly-ten-operands observation is empirical. The game compile remains the gate.
+A physical expression longer than 400 characters is a useful offline lint signal, not a language boundary. The limit measured in item 4 (17 terms compiled, 18 failed) holds for one pattern on one line; other operand types are not measured. `dayz-script-validator` warns from 18 terms joined by `+` in a statement that holds a string literal (`ES-FORMULA-TOO-COMPLEX`). The game compile remains the gate.
 
 ## DayZ 1.30 — obsolete callbacks, ID shift, hand FSM
 

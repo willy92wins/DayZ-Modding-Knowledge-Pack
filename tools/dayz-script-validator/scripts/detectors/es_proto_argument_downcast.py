@@ -38,10 +38,25 @@ ES_PROTO_ARGUMENT_DOWNCAST_RULE_ID = "ES-PROTO-ARGUMENT-DOWNCAST"
 # 'Object.Cast'", "Types 'IEntity' and 'Object' are unrelated" and "Cannot
 # convert 'IEntity' to 'Object' for argument '6' to method 'RaycastRV'", and
 # the World module did not compile. The compiler counts arguments from 0.
-# That Object derives from IEntity is read from the vanilla tree when the
-# rule runs. Only that pair is measured, so an IEntity where a proto takes
-# an Object is FAIL and any other class above the parameter's is WARN. An
-# argument of a script method, an argument of an unrelated class and a
+# DayZDiag 1.30.164289 (2026-11-09, pipeline inbox e074, a mod's 4_World
+# script) refused that call again, and refused an Object passed to the
+# EntityAI parameter 0 of ItemPreviewWidget.SetItem, the shape this rule
+# had found in a mod:
+#
+#   static void Show(ItemPreviewWidget preview, Object obj)
+#   {
+#       preview.SetItem(obj);
+#   }
+#
+# with "Unsafe down-casting, use 'EntityAI.Cast' for safe down-casting",
+# "Types 'Object' and 'EntityAI' are unrelated" and "Cannot convert
+# 'Object' to 'EntityAI' for argument '0' to method 'SetItem'", and the
+# World module did not compile; a retail build is not measured for it.
+# That Object derives from IEntity, and EntityAI from Object, is read from
+# the vanilla tree when the rule runs. Only those two pairs are measured,
+# so an IEntity where a proto takes an Object and an Object where it takes
+# an EntityAI are FAIL, and any other class above the parameter's is WARN.
+# An argument of a script method, an argument of an unrelated class and a
 # down-cast in an assignment are not judged.
 #
 # Judged only when everything is known, otherwise skipped without a word:
@@ -93,8 +108,18 @@ _PARAMETER_MODIFIERS = frozenset({
     "out", "inout", "notnull", "const", "owned", "ref", "autoptr", "local",
 })
 _WRITTEN = frozenset({"out", "inout"})
-# (argument's class, parameter's class) of the one refusal on record.
-_MEASURED = ("IEntity", "Object")
+# (argument's class, parameter's class) of each refusal on record, and
+# where it was refused, for the FAIL message.
+_MEASURED = {
+    ("IEntity", "Object"): (
+        "DayZ 1.30, at DayZPhysics.RaycastRV, where it also said \"Types "
+        "'IEntity' and 'Object' are unrelated\""
+    ),
+    ("Object", "EntityAI"): (
+        "DayZDiag 1.30.164289, at ItemPreviewWidget.SetItem, argument '0', "
+        "where it also said \"Types 'Object' and 'EntityAI' are unrelated\""
+    ),
+}
 
 ES_PROTO_ARGUMENT_DOWNCAST_MESSAGE = (
     "[FAIL] {rel_path} line {line}: '{recv}.{method}(': argument {index} "
@@ -103,16 +128,16 @@ ES_PROTO_ARGUMENT_DOWNCAST_MESSAGE = (
     "({param_chain}). The compiler refuses the implicit down-cast with "
     "\"Cannot convert '{arg_type}' to '{param_type}' for argument '{index}' "
     "to method '{method}'\" and the whole script module does not compile "
-    "(DayZ 1.30, at DayZPhysics.RaycastRV, where it also said \"Types "
-    "'IEntity' and 'Object' are unrelated\"). Pass {param_type}.Cast({arg}), "
+    "({measured}). Pass {param_type}.Cast({arg}), "
     "which is null when it is not one, or declare '{arg}' as {param_type}."
 )
 ES_PROTO_ARGUMENT_DOWNCAST_WARN_MESSAGE = (
     "[WARN] {rel_path} line {line}: '{recv}.{method}(': argument {index} "
     "(counted from 0), '{arg}', is declared as {arg_type}, and the proto "
     "{owner}.{method} takes {param_type} there, which derives from it "
-    "({param_chain}): an implicit down-cast. DayZ 1.30 refused one, an "
-    "IEntity where DayZPhysics.RaycastRV takes an Object, and the script "
+    "({param_chain}): an implicit down-cast. DayZ 1.30 refused two, an "
+    "IEntity where DayZPhysics.RaycastRV takes an Object and an Object "
+    "where ItemPreviewWidget.SetItem takes an EntityAI, and the script "
     "module did not compile; whether it refuses {arg_type} where "
     "{param_type} is taken is not measured. Pass {param_type}.Cast({arg}), "
     "which is null when it is not one, or declare '{arg}' as {param_type}."
@@ -564,7 +589,7 @@ def check_es_proto_argument_downcast(addon_sources, external_sources, vanilla_ro
                 )
                 if arg_type == IMPLICIT_ROOT or arg_type not in param_chain[1:]:
                     continue
-                measured = (arg_type, param_type) == _MEASURED
+                measured = _MEASURED.get((arg_type, param_type))
                 message = (
                     ES_PROTO_ARGUMENT_DOWNCAST_MESSAGE if measured
                     else ES_PROTO_ARGUMENT_DOWNCAST_WARN_MESSAGE
@@ -580,6 +605,7 @@ def check_es_proto_argument_downcast(addon_sources, external_sources, vanilla_ro
                             arg_type=arg_type, owner=owner,
                             param_type=param_type,
                             param_chain=" > ".join(param_chain),
+                            measured=measured,
                         ),
                         "severity": "FAIL" if measured else "WARN",
                         "rule_id": ES_PROTO_ARGUMENT_DOWNCAST_RULE_ID,

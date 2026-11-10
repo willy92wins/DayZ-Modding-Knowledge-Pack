@@ -1714,9 +1714,79 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: an Unreleased Changed entry for pipeline inbox dada: ES-EMPTY-IFDEF is WARN, no longer FAIL, after an #ifdef block holding only a comment compiled and ran on DayZDiag 1.30.164289 (the owner's PC, dayz-mcp run 06624c45, server and client), with what was not measured and what the vanilla control's baseline must change when it is regenerated on the owner's PC. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "f81bb8f325d2ee1cfd084f4a5569b015b52c16ec2b6d22f01193836b93470ff8",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: an Unreleased Added entry for pipeline inbox d35a: the `%` failure measured again on DayZDiag 1.30.164289 (two statements that stopped the World module, the int-local split that compiled, the two limits), with the fixtures, docs and claims that record it. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "f00911cd622ac5e3114608251b9426ca26135ee74efcea508ce7d338b53dace5",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: an Unreleased Added entry for pipeline inbox 7b9e/7ce1: the new WARN rule ES-FORMULA-TOO-COMPLEX, the measured limit (17 terms compiled, 18 and 20 failed with Formula too complex), what it counts and what is not measured, its fixtures, the docs and claims, and that it has not run on a vanilla tree. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "60d350edb75708f0903a027d5129fd8bc691c11b48bb6727be3df4e3c464eace",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: an Unreleased Changed entry for pipeline inbox e074: ES-PROTO-ARGUMENT-DOWNCAST reports an Object where a proto takes an EntityAI as FAIL with its own evidence, after ItemPreviewWidget.SetItem refused one on DayZDiag 1.30.164289; the RaycastRV pair keeps its text. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "387eba81962691b8717508fadecf4dd1dccdb69b9351c6886339209fdb9431da",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main at the 1.7.0 tag and #164 with the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: their CHANGELOG entries go under Unreleased, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "71525a076dd4838dc42febfb7434a4561c624d6a7647f6ea940bbaa4b555631f",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "pack-162-resolution@2026-11-10",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main with #165 (fixes from the bzed dayz-dev check) into the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: the CHANGELOG keeps both sides' Unreleased entries, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "c96afefd80d96479da7d9649f07ffe05f0871b8f75349d4abfc69c70de763eca",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "pack-162-resolution-165@2026-11-10",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: the Unreleased entries of ES-FORMULA-TOO-COMPLEX (pipeline inbox 7b9e/7ce1) and ES-EMPTY-IFDEF (pipeline inbox dada) say what the vanilla control measured on the owner's PC on 2026-11-10, on DayZ 1.30.164289 stable (tree digest fd826b40, 3057 files), in place of 'not run': --update moved the 7 ES-EMPTY-IFDEF hits from errors (15 to 8 entries) to warning_counts (424 to 431 warnings) and no other finding moved, the check after it and a --json run passed, and ES-FORMULA-TOO-COMPLEX gave no finding.",
+          "license": "MIT",
+          "source_hash": "88af397e47d162aa2854861685fc9c7794940255de6cce567e31d5a7f278a0fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-control-162@2026-11-10",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "[Unreleased] Changed gains the entry for the GP6 measurements of layout-variants-130.md (one screen only, the layout GUID as a CRC-64 of its path, imageset and styles shadows). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "2b2e8a840e0061c2061b2adb58a5f5a4c10a616be4826682214adfa1a0e501a7",
+          "source_hash": "60b1c83f91d5a041225ad75a492c7d4e9c572937e5d6864959ce28a82102bf28",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "claude/project-thread-h217et@2026-11-10",
@@ -1724,7 +1794,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2b2e8a840e0061c2061b2adb58a5f5a4c10a616be4826682214adfa1a0e501a7",
+      "output_hash": "60b1c83f91d5a041225ad75a492c7d4e9c572937e5d6864959ce28a82102bf28",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4976,10 +5046,30 @@
           "source_path": "skills/_shared/enscript-style.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. 'Empty Preprocessor Blocks' keeps the guide's segfault claim as the guide's and says it was not reproduced: on DayZDiag 1.30.164289 a block holding only a comment compiled and ran on server and client at file, class and method scope (enforce-script-reference pitfalls-advanced.md section 5); a block with nothing inside, retail and 1.29 not measured. The WRONG/CORRECT example becomes the measured block. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "f079b62d512d03377e07c9e40fe4ebcf27a59ec7b5c96b859dd70b9f7dee0f59",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/enscript-style.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main at the 1.7.0 tag and #164 with the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: their CHANGELOG entries go under Unreleased, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "5fa1f46275862aac9a3ef9b13b3f6481dc887d70384f7f6e9e0d9c6b01948d11",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/enscript-style.md",
+          "source_revision": "pack-162-resolution@2026-11-10",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "521585f82e42a9fcaa7af02eefa6183f42f60837b20c3ba76b180b0791012adc",
+      "output_hash": "5fa1f46275862aac9a3ef9b13b3f6481dc887d70384f7f6e9e0d9c6b01948d11",
       "output_path": "skills/_shared/enscript-style.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -9460,10 +9550,40 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "claude/project-thread-l0hlko@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. The offline gate paragraph no longer lists an empty #ifdef among the errors that only show when the module compiles: ES-EMPTY-IFDEF is WARN, after a block holding only a comment compiled on DayZDiag 1.30.164289. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "a56978c0116e69935432d01111589838cce26eaf7c3b95351e6a52a347032b9b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main at the 1.7.0 tag and #164 with the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: their CHANGELOG entries go under Unreleased, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "9b215536f96d32fed592f6f160af114b053790e054a0ad77667b3e4cd50bbd55",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "pack-162-resolution@2026-11-10",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main with #165 (fixes from the bzed dayz-dev check) into the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: the CHANGELOG keeps both sides' Unreleased entries, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "34fb63e1e9ea31baf464c98a24f837a3ed7d69562552ba5611610da108503884",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "pack-162-resolution-165@2026-11-10",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "06003655bf721466ac5b72553b0d7a81a88baa5c340a709e10da89a0ecebbf90",
+      "output_hash": "34fb63e1e9ea31baf464c98a24f837a3ed7d69562552ba5611610da108503884",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -11496,10 +11616,30 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. 'Offline script linter (pre-PBO)' no longer lists an empty #ifdef among the errors that give exit 1: ES-EMPTY-IFDEF is WARN. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "6c33b4cec6368c3c9f32f1c79a16a15be03029a919ab5c8fe74d474117eec5f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main at the 1.7.0 tag and #164 with the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: their CHANGELOG entries go under Unreleased, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "02fcca91b0641e2b75598b2b73d377388e1537e4a998def9f5a516ce9265f9fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "pack-162-resolution@2026-11-10",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "1f18d7e8e9be9b6590233ad1324c2a366c21feb9f90a33ec96a1adc3b16ff3d6",
+      "output_hash": "02fcca91b0641e2b75598b2b73d377388e1537e4a998def9f5a516ce9265f9fd",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -16728,10 +16868,40 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "e5f0294ceff8c2c443b325c03b5d14c42e39f25e",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. Three one-line mentions of the empty-#ifdef segfault (the StarDZ one-liners, the reference-table row of pitfalls-advanced.md and the moved style-guide section) say it was not reproduced on DayZDiag 1.30.164289. No line added or removed, so the claim lines are unchanged. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "3724bda07f5d8ab97ab2fa03742cd845c67f6dd2f4d70fec0fb42bad3442d618",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox d35a. Item 13 says the `%` failure was measured again on DayZDiag 1.30.164289 in a mod's 4_World and points to references/pitfalls-advanced.md; it stays on line 56, so CLAIM-ENF-MODULO-INT-ONLY keeps its range. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "01967873eb391afac26f25d6fd16f737921bdd648865ba0dbb98e24532802a84",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main at the 1.7.0 tag and #164 with the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: their CHANGELOG entries go under Unreleased, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "2c9e4af02bfc186484e97beeec0c56a34ded478044b7aa492c443bbab9d43111",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "pack-162-resolution@2026-11-10",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "5e28f9efed6ff2443e6813dbca4f6c399617d3251fdfb503f6a639dc8dad1504",
+      "output_hash": "2c9e4af02bfc186484e97beeec0c56a34ded478044b7aa492c443bbab9d43111",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -16890,10 +17060,50 @@
           "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
           "source_revision": "kp-update-3f33-0303-2466@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. Section 5, 'Empty #ifdef Blocks Cause Segfault', now says what was measured: on DayZDiag 1.30.164289 (2026-11-09, the owner's PC, dayz-mcp run 06624c45, server and client, a probe mod's 4_World script) an #ifdef/#endif block holding only a comment compiled and ran at file scope, in a class body and in a method body, with DIAG_DEVELOPER and with a macro nobody defines, its marker printed and no hang; vanilla 1.30 ships one at 4_world/classes/environment/environment.c:1-3; a block with nothing inside, a retail build and 1.29 are not measured (CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130). The style-guide bullet that said such blocks segfault now gives that as the Expansion devs' report and says it was not reproduced. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "4f7d1360fc5c2481094906c5895a3efa2a95d3808e536a91adc9f84e94bf1f2c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox d35a. A short entry before 'Six recurring compile-fail families': on DayZDiag 1.30.164289 two statements with `%` and the literal 0.5 stopped the World module with Unknown operator '%' at their line, the int-local split compiled and ran, and the two limits (a static const float with no literal not isolated; the ticket's Unknown operator '' in a mission's init.c, not measured again) (CLAIM-ENFORCE-MODULO-FLOAT-LITERAL-130). Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "1107ae1e0d3550438facc562fdabb53fcdc1378cd8b01dcc19e87791a9c48bd0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. Item 4 of 'Six recurring compile-fail families' gives the measured limit instead of 'roughly 30 operands' and 'roughly ten per line': one statement on one line alternating string literals with an int and a float's ToString() compiled with 17 terms and failed with 18 and 20 (Formula too complex, then Incompatible parameter 'i0'), other operand types and several lines not measured, and the validator rule (CLAIM-ENFORCE-FORMULA-TERMS-130). The SP-080 cascade section points to item 4 and to ES-FORMULA-TOO-COMPLEX in place of the roughly-ten-operands remark. No line added or removed. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "210c710b30ed5693040b722cf87bc85c3c2c8cd69a34dc9acef17356dd2703d0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main at the 1.7.0 tag and #164 with the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: their CHANGELOG entries go under Unreleased, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "f40196f36c696166b22b580c11e402f41698bfb80c1859b035eebd1afe96663e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
+          "source_revision": "pack-162-resolution@2026-11-10",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "e458bcbfea31f95e6b115069e5f38c9656d0512efa2ebca741ddc04e711fa3ed",
+      "output_hash": "f40196f36c696166b22b580c11e402f41698bfb80c1859b035eebd1afe96663e",
       "output_path": "skills/enforce-script-reference/references/pitfalls-advanced.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -19736,9 +19946,79 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. Registered CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130 (runtime_verified) on pitfalls-advanced.md section 5, lines 66-77. CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE moves from 652-668 to 653-669: section 5 is one line shorter and the style-guide bullet two lines longer. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "33a27397a170897ec276737c19ce65968040fd42f00db004bd05c356acc942fc",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox d35a. CLAIM-ENF-MODULO-INT-ONLY records the 1.30.164289 measurement and its two limits, so it is runtime_verified; CLAIM-ENFORCE-MODULO-FLOAT-CONTEXT records it too and covers the header comment's lines 9-44 (was 9-32); CLAIM-ENFORCE-MODULO-FLOAT-LITERAL-130 (runtime_verified) is registered on pitfalls-advanced.md lines 84-86; CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE moves from 653-669 to 657-673. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "f4726632868ec1f363a08c6c0284aa768c87ace926824f429cf9b9b023b7c9ac",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. Registered CLAIM-ENFORCE-FORMULA-TOO-COMPLEX (runtime_verified) on es_formula_too_complex.py lines 8-33 and CLAIM-ENFORCE-FORMULA-TERMS-130 (runtime_verified) on pitfalls-advanced.md line 93, item 4 of 'Six recurring compile-fail families'. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "d2b8d2229946f59b2a87c601c470ad8a915481a4b73da186243f6ca1917eef74",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST records the SetItem refusal and the RaycastRV control on DayZDiag 1.30.164289, says the two measured pairs are FAIL, the new fixture and the changed unit cases, and covers the header comment's lines 28-97 (was 28-82). Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "093faba4c36847b185f328b96f0c8168ec334777114211bfd1ee73e8e28fb3fa",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main at the 1.7.0 tag and #164 with the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: their CHANGELOG entries go under Unreleased, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "61463b122a2c9ac9befc63573f8765d88413f53a02f9e07102f06a904a2810cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "pack-162-resolution@2026-11-10",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main with #165 (fixes from the bzed dayz-dev check) into the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: the CHANGELOG keeps both sides' Unreleased entries, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "206bac172c5660fdb49f4f9642d9ad398dab263528d7f985cd453dcd6c444617",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "pack-162-resolution-165@2026-11-10",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: the evidence of CLAIM-ENFORCE-FORMULA-TOO-COMPLEX says that the vanilla control on the owner's PC found no finding of the rule on DayZ 1.30.164289 stable (3057 files, tree digest fd826b40), in place of 'the rule has not run on a vanilla tree'. Only that sentence changes; its range and the other claims are untouched.",
+          "license": "MIT",
+          "source_hash": "df81da6320a580c56c199934f1f659c3ba4eef0989b9bade793f3929e021e237",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-vanilla-control-162@2026-11-10",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Five runtime claims from runs Q1, Q2 and Q3 of the 66306aa gap test: CLAIM-UI-VARIANT-INHERIT-GUID-130, CLAIM-UI-LAYOUT-GUID-CRC64-130, CLAIM-UI-VARIANT-INHERIT-STACKS-130, CLAIM-UI-SHADOW-IMAGESET-REPLACES-130 and CLAIM-UI-SHADOW-STYLES-REPLACES-130. No other range moves: the page changes only from line 154 and SKILL.md keeps its line count. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "b02b5d2ebb66e9587724e04fc6cfdfda62aec4cd1b52cc684a32fab8dfb6e2a2",
+          "source_hash": "572ddd099816728022a4c54360e2d6871f9a1ffc8f874330f1b92294958100e3",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame-gp6@2026-11-10",
@@ -19746,7 +20026,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b02b5d2ebb66e9587724e04fc6cfdfda62aec4cd1b52cc684a32fab8dfb6e2a2",
+      "output_hash": "572ddd099816728022a4c54360e2d6871f9a1ffc8f874330f1b92294958100e3",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -23148,10 +23428,40 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. 'Compile errors read from one file' lists ES-FORMULA-TOO-COMPLEX (WARN) with the measured limit, what it counts and what is not measured, and how it reads preprocessor branches; the 'no rule here yet' paragraph on Formula too complex goes, its vanilla fact (a statement with 14 `+` compiles) stays, and the README says the rule has not run on a vanilla tree. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "25a7d3c370a22eda83ec26a5443b7a99bb2ce64f0ed05d03e7180d96be911da3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. The ES-PROTO-ARGUMENT-DOWNCAST bullet says DayZDiag 1.30.164289 refused the RaycastRV call again and an Object at the EntityAI parameter 0 of ItemPreviewWidget.SetItem, that both pairs are FAIL and any other WARN, and that a retail build is not measured for the second. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "ed47e94e6d68c085d0245f20f3f6a60572f304d3c0a2c185cbe3e5125e5996f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: the vanilla control on the owner's PC ran this branch's validator (00b05447023e1b3ac54581c868b572f40c5c1dc9) over P:\\scripts, DayZ 1.30.164289 stable (tree digest fd826b4016910c5ca99046158d6e07aea79b4e52722b5ad20b36ffed8e527a1e, 3057 files), three times: ES-FORMULA-TOO-COMPLEX gave no finding in any of them. The detector runs on every script file (scripts/script_validator.py:170 and :419-421). The 'Measured on 2026-10-03' paragraph says so in place of 'has not run on a vanilla tree yet'.",
+          "license": "MIT",
+          "source_hash": "ce4e19a70da831ead0ae0b0815ea12e6b4b15e66ca2c26319faff8fe7d708673",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-control-162@2026-11-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "56f906cf410e3e876dec6db5fe163b583a2428146c90867946e6fe526b4972ce",
+      "output_hash": "ce4e19a70da831ead0ae0b0815ea12e6b4b15e66ca2c26319faff8fe7d708673",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -23400,10 +23710,20 @@
           "source_path": "scripts/detectors/es_empty_ifdef.py",
           "source_revision": "dayz-tooling@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. ES-EMPTY-IFDEF reports an #ifdef or #ifndef block with no statement as a WARN among the warnings instead of a FAIL, so it no longer gives exit 1. Its message drops the 'documented segfault' and says what was measured on DayZDiag 1.30.164289 (a block holding only a comment compiled and ran on server and client, at file, class and method scope, with a macro DayZDiag defines and one nobody defines) and what was not (a block with nothing inside, a retail build, 1.29); a header comment says the same. Over the probe mod @MCPProbeOk the validator gives six WARNs where it gave six FAILs. The vanilla control was not run: no vanilla tree on this machine. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "425777e0f1130bb41aaa76a502753f575aad1d39ea02ce2b186d0634307f9d50",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_empty_ifdef.py",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5693b91b3d180d41ed93ce3814f1796bae40668a5e4a38fbd89375338268e186",
+      "output_hash": "425777e0f1130bb41aaa76a502753f575aad1d39ea02ce2b186d0634307f9d50",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_empty_ifdef.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24078,10 +24398,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. Imports check_es_formula_too_complex and runs it on every .c file, its findings among the warnings, next to ES-MODULO-FLOAT-CONTEXT. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "0fa5c508e1ee778896d3a51b652bae5ae577f8b7df83dad31dad05e4aa97561d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "96ca6f140267f1bc7da07b92eb26aa8dbf49131100284c43c905362eb39d909d",
+      "output_hash": "0fa5c508e1ee778896d3a51b652bae5ae577f8b7df83dad31dad05e4aa97561d",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24366,10 +24696,20 @@
           "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
           "source_revision": "kp-update-vanilla-164289@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: vanilla control re-baselined on the same tree, DayZ 1.30.164289 stable (P:\\scripts on the owner's PC, digest fd826b4016910c5ca99046158d6e07aea79b4e52722b5ad20b36ffed8e527a1e, 3057 files, 14032879 bytes), after ES-EMPTY-IFDEF became WARN (pipeline inbox dada). Run with Python 3.14 in a review clone of this branch at 00b05447023e1b3ac54581c868b572f40c5c1dc9: vanilla_control.py --update exited 0 and reported only the 7 ES-EMPTY-IFDEF entries as stale (3_game/entities/entityai.c, 3_game/gui/hints/uihintpanel.c, 3_game/ppemanager/materials/ppematclassesbase.c, 4_world/classes/bunkerbroadcasthandler.c, 4_world/classes/environment/environment.c, 4_world/classes/useractionscomponent/actionbase.c, 4_world/plugins/pluginbase/plugintransmissionagents.c) and ES-EMPTY-IFDEF as a new warning rule. It wrote errors 15 to 8 entries, warnings 424 to 431 with ES-EMPTY-IFDEF: 7 in warning_counts, and changed nothing else but elapsed_seconds (the file it wrote, sha256 fad72a1d9efe3e4dbf5596b26d0564a25b99f277b2cc0a27705b559501066daa, 4371 bytes, was rebuilt here byte for byte from the previous baseline). The check after it and a --json run exited 0 with the same digest and empty extra, missing, new-rule and count lists; ES-FORMULA-TOO-COMPLEX gave no finding. The measured block was then set by hand: date 2026-11-10 and three runs, with elapsed_seconds as --update wrote it. By the wall clock the three runs took 348.6, 349.8 and 285.8 s.",
+          "license": "MIT",
+          "source_hash": "3bcf90da8264ab17e1eced38b5fc6f9f771dee390e48da8bdfe93075edc5c3d5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
+          "source_revision": "kp-update-vanilla-control-162@2026-11-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "98f9ff744a37b66437d8e13160d36c40856115ae342dc42246dd8ecc9f2fdeaa",
+      "output_hash": "3bcf90da8264ab17e1eced38b5fc6f9f771dee390e48da8bdfe93075edc5c3d5",
       "output_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -28058,10 +28398,60 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox dada. TestEsEmptyIfdef: the two empty-block tests assert a WARN (exit 2, no error, the new message, no 'Documented segfault'); TestFullCorpus expects the two ES-EMPTY-IFDEF fixtures among the warnings. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), P2 run 06624c45, server and client; its logs are in reviews\\ronda-final-2026-11-09\\evidence\\ on that PC and the round's data file (pack-sondas-ronda-2026-11-09.md, section dada) copies no log line for it, since nothing failed. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 341 OK.",
+          "license": "MIT",
+          "source_hash": "de511c0efa6a1f6f79f4ca8702f3514110e5832da7d6e5cf460635f60715c1ef",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-dada@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox d35a. TestModuloFloatContext: the two d35a statements FAIL at lines 6 and 10, the lines the compiler named; the three that compiled give no finding; the 1.29 and 1.30 Exp shapes are checked in their own file. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "03be30bf39ffb6363510fa1228e7fa4a5805377c35c0d2cb25e7b71c3d671d63",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. TestFormulaTooComplex: 18 and 20 terms WARN at line 6, the line the compiler named; 14 and 17 terms, 20 numbers and the 20 terms split across two statements give nothing; `++`, `+=`, a unary `+`, a `+` in a string or comment join nothing and a `+` after a postfix increment does; a statement over several lines is reported at its first line; #if 0 lines, two branches of one block and two blocks side by side are not counted together. Taking out the unary check, the #if 0 filter or the branch views each made one of these tests fail (checked by hand). Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "f44dfdaf740faf702f62a4dc0f7dbd221ef05b7eba507324e36bb1acb6fe3c35",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. TestProtoArgumentDowncast: the SetItem shape FAILs at line 9 with its own evidence and no RaycastRV text; the RaycastRV fixture keeps its evidence; an Object where FX_Hold takes an EntityAI is FAIL beside the IEntity where an Object is taken, while a Managed where an Object is taken and an IEntity where an EntityAI is taken stay WARN, also through the command line. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "7c1cf29fe07736d2b95190f30772f85b05ff069a50750349fe8884488ed2cd18",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integrate main at the 1.7.0 tag and #164 with the probes of pipeline inbox dada, d35a, 7b9e/7ce1 and e074: their CHANGELOG entries go under Unreleased, both sides' claims are kept with ranges checked against their markers, and main's content is preserved.",
+          "license": "MIT",
+          "source_hash": "a5e728f5640e44e3edc130905215235d4b6fb424360c8511996d5faa8b06fa20",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "pack-162-resolution@2026-11-10",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "46d306eccc18c0b04bc7cbf17a0ae0e7932fa2de0dfd8a7b52ec423815fe129c",
+      "output_hash": "a5e728f5640e44e3edc130905215235d4b6fb424360c8511996d5faa8b06fa20",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -33031,10 +33421,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_modulo_float_context.py",
           "source_revision": "kp-update-val-compile-errors@2026-10-04",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox d35a. Only the header comment changes: it adds the two statements that failed on DayZDiag 1.30.164289 with their error lines (SCRIPT (E): @\"MCPProbeD35aB/scripts/4_World/mcpprobed35ab.c,6\": Unknown operator '%', then Can't compile \"World\" script module!), the two limits and the int-local split that compiled; CLAIM-ENFORCE-MODULO-FLOAT-CONTEXT now covers lines 9-44. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "a26c7b0c94bf2da64b4b1c2c714bb2f57fa98db93468efa9e000a6e4f4189502",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_modulo_float_context.py",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c645aef34682cf316a318cb415f6ccc62d0b633fd883cf3aefc76179ab7baf2c",
+      "output_hash": "a26c7b0c94bf2da64b4b1c2c714bb2f57fa98db93468efa9e000a6e4f4189502",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_modulo_float_context.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -37699,10 +38099,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
           "source_revision": "kp-update-e074@2026-10-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. _MEASURED maps each measured pair to where it was refused, and the FAIL message names it: an Object where a proto takes an EntityAI is FAIL with 'DayZDiag 1.30.164289, at ItemPreviewWidget.SetItem, argument '0'', while the RaycastRV pair's message is byte for byte what it was (compared on the bad fixture). The WARN message names both refusals; the header comment gives the SetItem probe, its error lines and that a retail build is not measured. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "cfab7ee5cfc94c46e012871470685466b6db182ac5a4317ecaa10efd93da25ac",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7240b61e8365ff9a1f0fb401d9c31be73a064a88cf5d1922b68e1bb93c0e7272",
+      "output_hash": "cfab7ee5cfc94c46e012871470685466b6db182ac5a4317ecaa10efd93da25ac",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_proto_argument_downcast.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -38732,6 +39142,314 @@
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modulo_float_context/bad/scripts/4_World/fx_cell_literals.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox d35a, case B: the probe MCPProbeD35aB's statement `float x = (cell % 103) * 150 + 150 * 0.5;` at the same line 6 (the probe's scripts/4_World/MCPProbeD35aB.c, sha256 2e88b37ffe5e2bb45c61b0e0576bd588fdf4998aea00f10e0df36e392cdc9e23 as filed in the inbox), class renamed FX_CellLiterals; ES-MODULO-FLOAT-CONTEXT gives FAIL at line 6. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "c0f03c8e0bb80a97d21d035d9bbe2a7618d857e32cc6e3d4fd0eb868ba98988f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modulo_float_context/bad/scripts/4_World/fx_cell_literals.c",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c0f03c8e0bb80a97d21d035d9bbe2a7618d857e32cc6e3d4fd0eb868ba98988f",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modulo_float_context/bad/scripts/4_World/fx_cell_literals.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modulo_float_context/bad/scripts/4_World/fx_cell_static_const.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox d35a, case C, the ticket's expression: the probe MCPProbeD35aC's members and statement `float x = (cell % SIDE) * STEP + STEP * 0.5;` at the same line 10 (the probe's scripts/4_World/MCPProbeD35aC.c, sha256 82b1dcbe4221ca8d1a1651aa8efa15810bfa7838949bc1b845505687995f6445 as filed in the inbox), class renamed FX_CellStaticConst; ES-MODULO-FLOAT-CONTEXT gives FAIL at line 10. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "b461f273e10735cd861c632ba3153d6dbcd481d7530a64eaf69041cec48c2c06",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modulo_float_context/bad/scripts/4_World/fx_cell_static_const.c",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b461f273e10735cd861c632ba3153d6dbcd481d7530a64eaf69041cec48c2c06",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modulo_float_context/bad/scripts/4_World/fx_cell_static_const.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/modulo_float_context/ok/scripts/4_World/fx_cell_int_local.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox d35a, case A: case C with the `%` in an int local first, `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;`, as in MCPProbeOk's scripts/4_World/MCPProbeStaticConst.c (sha256 4125136bc47799fa6f3b4bf47d15204ea796ca7505a04285dd061eaa60ed2e46 as filed in the inbox), which compiled and ran; class renamed FX_CellIntLocal. The validator gives no finding on it. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aB\\logs\\server-script_2026-11-09_17-27-35.log lines 13, 19 and 21 (sha256 A48EF577CCC899D5127B1583687EEB898B74CDC585B3AFAEE84DC071C8ED4A34) and reviews\\ronda-final-2026-11-09\\evidence\\P3-d35aC\\logs\\server-script_2026-11-09_17-28-24.log lines 13, 19 and 21 (sha256 D630977E11F5A405B593F0117A257D291A934F25AF78A1741AE9ABB342A2C42A), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section d35a) copies them, rechecked here; the split statement compiled and ran in P2, run 06624c45. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 343 OK; vanilla_control.py SKIPs here (no vanilla tree) and the rule's code is unchanged.",
+          "license": "MIT",
+          "source_hash": "d9f4e04fcfbcd8cc30ba339869be8d702d9843de134383617d66d1952082850a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/modulo_float_context/ok/scripts/4_World/fx_cell_int_local.c",
+          "source_revision": "kp-update-d35a@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d9f4e04fcfbcd8cc30ba339869be8d702d9843de134383617d66d1952082850a",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/modulo_float_context/ok/scripts/4_World/fx_cell_int_local.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_formula_too_complex.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. New WARN rule ES-FORMULA-TOO-COMPLEX: a statement (between `;`, `{` and `}`) that holds a string literal and joins 18 or more terms with binary `+`, read on the tokens of es_modulo_float_context.py (strings and comments are no `+`); `++`, `+=` and a unary `+` join nothing; lines that never compile are dropped and the terms are counted along one branch of nested blocks at a time (shared/dead_branches.py). The header comment carries CLAIM-ENFORCE-FORMULA-TOO-COMPLEX with the error lines; the message gives the measured limit and says other operand types and statements over several lines are not measured. On every .c file of the repository it fires only on the two bad fixtures. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "6ce2eef0dd504ff38cf5129cd1f821534125e7687d12cde68dde839ddb7e435f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_formula_too_complex.py",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "6ce2eef0dd504ff38cf5129cd1f821534125e7687d12cde68dde839ddb7e435f",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_formula_too_complex.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. CfgPatches of the fixture addon whose two scripts must WARN. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "fef0d67c07d2500de0ae9ea1f75de35ed524a6e6224579b6cf662b76f213ee2d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/config.cpp",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fef0d67c07d2500de0ae9ea1f75de35ed524a6e6224579b6cf662b76f213ee2d",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/scripts/4_World/fx_terms18.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. The 18-term probe's statement at the same line 6, from MCPProbeTerms18.c (323 B, sha256 50477EDC38EFD9179EA981E43BCECDC2380A503090449673F356B257351907CD), in a class renamed FX_Terms18; ES-FORMULA-TOO-COMPLEX warns at line 6. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "231c45e4e6717835249b1cb7ec275e5984aa17608e604eb4a51c3c8f30fe32b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/scripts/4_World/fx_terms18.c",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "231c45e4e6717835249b1cb7ec275e5984aa17608e604eb4a51c3c8f30fe32b9",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/scripts/4_World/fx_terms18.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/scripts/4_World/fx_terms20.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. The 20-term probe's statement at the same line 6, from MCPProbeTerms20.c (346 B, sha256 ec15561ecc7d14fe4fd623708bd803e212f739b63dff4401ecf86850160b5446 as filed in the inbox), in a class renamed FX_Terms20; ES-FORMULA-TOO-COMPLEX warns at line 6. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "0d987e0a14d59fa96ec37b60d2fc32e2bf4086b5e5a4dc2e75cda6808454131c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/scripts/4_World/fx_terms20.c",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0d987e0a14d59fa96ec37b60d2fc32e2bf4086b5e5a4dc2e75cda6808454131c",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/bad/scripts/4_World/fx_terms20.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. CfgPatches of the fixture addon that must give no finding. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "fef0d67c07d2500de0ae9ea1f75de35ed524a6e6224579b6cf662b76f213ee2d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/config.cpp",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fef0d67c07d2500de0ae9ea1f75de35ed524a6e6224579b6cf662b76f213ee2d",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_terms14.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. The 14-term control's statement, from MCPProbeOk's MCPProbeFormula.c (387 B, sha256 4d874dca234b43af583c60bcb64a3ad488272a71f18ac9ff5c96667d88ff863d as filed in the inbox), in the same shape as the other probes (line 6); it compiled, and the rule gives nothing. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "c16ea16a5fd846491f96c0e923b55830dc8c85d73d3522b476dd882dfa752f6a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_terms14.c",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c16ea16a5fd846491f96c0e923b55830dc8c85d73d3522b476dd882dfa752f6a",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_terms14.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_terms17.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. The 17-term probe's statement at the same line 6, from MCPProbeTerms17.c (318 B, sha256 590386B8E97818B8AB33B105DB9FF0E61CF3A789B691C83CD946037F47FC00E3); it compiled, and the rule gives nothing. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "74b057e1060cd1d895fc53bec7da580eee7251f466c86aacea83d3977e17613d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_terms17.c",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "74b057e1060cd1d895fc53bec7da580eee7251f466c86aacea83d3977e17613d",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_terms17.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_numbers20.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. 20 terms with no string literal, ints and floats added: not measured in game; the rule does not judge a chain with no string literal. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "b06874d858680c26e615acf295304f069a24a54334c38e74d289b1dc59848ece",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_numbers20.c",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b06874d858680c26e615acf295304f069a24a54334c38e74d289b1dc59848ece",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_numbers20.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_split20.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox 7b9e/7ce1. The 20 terms of the 20-term probe in two statements of 10 and 11 terms: not measured in game; each statement is under the 18 terms that failed. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea): 14 terms compiled in P2 (run 06624c45, server and client); 17, 18 and 20 ran in P3, server only, one probe mod per run: 17 compiled; 18: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms18\\logs\\server-script_2026-11-09_17-31-08.log lines 13, 14, 18 and 20 (sha256 27FF46239F4DE94196FC7450C4CE25DEE0BC0A0B111F7D70AA5236D3A5C1C597); 20: reviews\\ronda-final-2026-11-09\\evidence\\P3-Terms20\\logs\\server-script_2026-11-09_17-29-02.log lines 13, 14, 18 and 20 (sha256 F1E8A0DAA7825035C78DD1112A5DA7A6A50021BE30DFDC3FDBFD44A17E16FAF7), each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section 7b9e/7ce1) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 349 OK; vanilla_control.py SKIPs here (no vanilla tree), so the new rule has not run on vanilla.",
+          "license": "MIT",
+          "source_hash": "19f36230a4adaf1fd92991790ab29f525149a1a674a7bcf14b9290171961723e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_split20.c",
+          "source_revision": "kp-update-7b9e@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "19f36230a4adaf1fd92991790ab29f525149a1a674a7bcf14b9290171961723e",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/formula_too_complex/ok/scripts/4_World/fx_split20.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_preview.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074, case A: the probe's shape, `static void Show(ItemPreviewWidget preview, Object obj)` with `preview.SetItem(obj);` on the same line 9 (from MCPProbeDowncastA.c (389 B, sha256 8f7050a0fdfb7e36a77a7bde4685de7360ecf6a75da7fff8f78f048c0414a58f as filed in the inbox)), against the stand-in FX_ItemPreview.FX_SetItem; ES-PROTO-ARGUMENT-DOWNCAST gives FAIL at line 9 with the SetItem evidence. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "196de8a8a800f1003c3ef1d86759c7c796593a4f6c51b7407fcea154c620b9de",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_preview.c",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "196de8a8a800f1003c3ef1d86759c7c796593a4f6c51b7407fcea154c620b9de",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/bad/scripts/4_World/fx_preview.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_widgets.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-09: pipeline inbox e074. A stand-in with the shape only of ItemPreviewWidget.SetItem, a proto that takes an EntityAI at argument 0, as the error of the probe names it ('Cannot convert 'Object' to 'EntityAI' for argument '0' to method 'SetItem''); no vanilla text. Measured on the owner's PC, 2026-11-09, DayZDiag 1.30.164289.70 (dayz-mcp LIVE at 4129522, PBO 5a218dea), server only (P3), one probe mod per run: reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastA\\logs\\server-script_2026-11-09_17-32-41.log lines 12, 13, 14, 45 and 47 (sha256 5E861685A411C82EF0063540BFF03531F20B33C9F195D3552EBA8CD41C892EB1) for the SetItem case and reviews\\ronda-final-2026-11-09\\evidence\\P3-DowncastB\\logs\\server-script_2026-11-09_17-33-29.log lines 12, 13, 14, 45 and 47 (sha256 F4B4478A60934B0F58B608ECCC442DC6F9EF1A66A58BCB01F59CC1B0101D3F64) for the RaycastRV control, each hash that of the lines as the round's data file in the pipeline inbox (pack-sondas-ronda-2026-11-09.md, section e074) copies them, rechecked here. Gates: packctl validate PASS with 0 findings; pytest tests/packctl 353 passed, 14 skipped, 2 failed (the two Linux-only test_promotion failures main has too); packctl test-folders --tree skills PASS (9 suites); validator unittest 350 OK; vanilla_control.py SKIPs here (no vanilla tree). The baseline holds no ES-PROTO-ARGUMENT-DOWNCAST finding, and a first version of the rule that failed every pair found nothing on the vanilla scripts of 1.30.164078 and 1.29.0.163451.",
+          "license": "MIT",
+          "source_hash": "2837855fa118466eeb7631bb5ea82f9785e393a4b571d4ef7e3a7d6960f8ad4b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_widgets.c",
+          "source_revision": "kp-update-e074@2026-11-09",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2837855fa118466eeb7631bb5ea82f9785e393a4b571d4ef7e3a7d6960f8ad4b",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_widgets.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
     },
     {
       "artifact_id": "file/tools/dayz-ui-lab/dayz_ui_lab/widget_ids.py",

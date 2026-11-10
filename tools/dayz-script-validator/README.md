@@ -185,9 +185,14 @@ were not measured again.
   `hitEntity` an `IEntity` at the `Object` parameter 6, made DayZ
   1.30.164014 server refuse the World module with `Cannot convert 'IEntity'
   to 'Object' for argument '6' to method 'RaycastRV'` (inbox
-  fb-20261006-030019-e074; the compiler counts arguments from 0). That
-  pair, an `IEntity` where an `Object` is taken, is FAIL; any other is WARN,
-  because no refusal of it is measured. Judged only when everything is
+  fb-20261006-030019-e074; the compiler counts arguments from 0). DayZDiag
+  1.30.164289 refused that call again, and an `Object` passed to the
+  `EntityAI` parameter 0 of `ItemPreviewWidget.SetItem`, the shape the rule
+  had found in a mod, with `Cannot convert 'Object' to 'EntityAI' for
+  argument '0' to method 'SetItem'` (inbox e074; a retail build is not
+  measured for it). Those two pairs, an `IEntity` where an `Object` is
+  taken and an `Object` where an `EntityAI` is, are FAIL; any other is
+  WARN, because no refusal of it is measured. Judged only when everything is
   known: the call is in a method the validator reads (not one whose return
   type has template arguments, `array<T> F(`); the receiver is a class, or a
   name looked up as in `ES-CAST-UNRELATED-TYPES` or else as a member of
@@ -335,6 +340,20 @@ log, or from a broken file the validator passed:
   literal under an `(int)` cast, or in a parenthesised condition (only the
   results behind a `?` count), does not reach the expression. A float
   variable is not seen: only the literal case is caught.
+- `ES-FORMULA-TOO-COMPLEX` (WARN): one statement that holds a string
+  literal and joins 18 or more terms with binary `+`. On DayZDiag
+  1.30.164289 (inbox 7b9e/7ce1) a statement on one line alternating
+  string literals with an `int` and a float's `ToString()`
+  (`string s = "a" + i0 + " b" + f0.ToString() + ...`) compiled with 14
+  and 17 terms and failed with 18 and 20: `Formula too complex` on its
+  line, then `Incompatible parameter 'i0'` there as a cascade, and
+  `Can't compile "World" script module!`. The limit is that pattern's:
+  other operand types and a statement over several lines are not
+  measured, so the rule warns. `++`, `+=` and a unary `+` join nothing.
+  Every binary `+` of the statement counts, one inside parentheses or a
+  call's arguments too, and whether the compiler counts those is not
+  measured. A chain with no string literal adds numbers and is not
+  judged. Build the string in steps (`s = s + part;`).
 - `ES-UNBALANCED-BRACKETS` (FAIL): the first `(`, `[` or `{` never closed,
   or closed by another kind of bracket, and the first closer with nothing
   to close. `m_Objects.Clear();` sabotaged to `m_Objects.Clear(;` got PASS
@@ -369,17 +388,16 @@ blocks, and the `#ifndef` or `#else` branch of a macro the same file
 read through a branch that never compiles, nor from the branch that holds
 the `%` into another branch of the same block. Blocks are not compared by
 their macros: `#ifdef X` and a later `#ifndef X` count as unrelated, so
-their lines can still meet in one expression.
+their lines can still meet in one expression. The terms of a statement
+are counted outside every block and along one branch of nested blocks at
+a time: two branches of one block, or two blocks side by side, are never
+counted together.
 
 Measured on 2026-10-03: nothing on vanilla 1.29.0.163451 (69 `%` judged) or
 on vanilla 1.30.164014 Exp (94 `%`), and on the source that failed in game,
-`vector local;`, the reserved-word rule fires on that line.
-
-One compile error filed with these has no rule here yet:
-
-- `Formula too complex`: vanilla compiles a statement with 14 `+`, the one
-  that failed had about 20 terms and its source is gone, and the limit
-  between them was not measured.
+`vector local;`, the reserved-word rule fires on that line. Vanilla
+compiles a statement with 14 `+`. On 2026-11-10 the vanilla control found
+no `ES-FORMULA-TOO-COMPLEX` on vanilla 1.30.164289 (3057 files).
 
 ## Tests
 
