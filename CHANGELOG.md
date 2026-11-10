@@ -7,6 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `systematic-debugging`, a new skill ported from obra/superpowers
+  (https://github.com/obra/superpowers, MIT, Copyright (c) 2025 Jesse Vincent): find the root cause
+  of a bug, a failing test or unexpected behaviour before proposing a fix. Its `LICENSE` and
+  `SOURCE.md` ship with it (#146).
+- `task-observer`, a new skill ported from rebelytics' "One Skill to Rule Them All"
+  (https://github.com/rebelytics/one-skill-to-rule-them-all, Eoghan Henn, CC BY 4.0) and modified:
+  its session-start trigger is softened, so it observes only while work is in progress. It watches
+  multi-step work for patterns, corrections and methods worth turning into skills, and keeps an
+  observation log. Its `LICENSE` and `SOURCE.md` ship with it (#146).
 - `dayz-mcp-verify` `references/dayz-1-30-mcp-verify.md`, new section "Deleting vehicles and checking
   what a run loaded" (DayZ 1.30.164200, 2026-11-01), four claims from the dayz-mcp fronts: eject
   every occupant before deleting a car or the server crashes (#298, fixed by #300); the server sees
@@ -21,10 +30,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tree as `Class "{id}" { Prefab "{id}" }` with properties only on edited widgets, and in game hides, recolours and adds
   vanilla widgets in place, at the root and in nested containers, matched by `Prefab` ID; vanilla script finds an added
   widget with `FindAnyWidget`. Hand-written name-keyed files only add widgets, so the earlier "variants only add"
-  conclusion holds for those files only. How the IDs are derived is unknown: they matched none of CRC32, FNV-1, FNV-1a or
-  Adler-32 of the widget name (reproduced offline; no other function tried); generate variants in Workbench.
-  Unknowns recorded: ID stability across builds, two mods varying one layout, two `gui` shadow PBOs in one load, a `gui`-prefix PBO without `config.cpp` (a community author's report, unverified),
-  per-screen toggling. `SKILL.md` gains a TASK ROUTER row and a Reference Files entry. `dayz-pbo-build`
+  conclusion holds for those files only. An ID is a CRC-32 of the widget's name followed by its ancestors' names, root
+  excluded: it gives 1,395 of the 1,438 IDs vanilla layouts store, and no ID of a game screen changed from 1.29 to
+  1.30.164289. Generate variants in Workbench; a hand-written one is untested in game.
+  Unknowns recorded: a `Prefab` that matches no widget, two mods varying one layout, two `gui` shadow PBOs in one load, a `gui`-prefix PBO without `config.cpp` (a community author's report, unverified),
+  per-screen toggling, variants of other resource types. `SKILL.md` gains a TASK ROUTER row and a Reference Files entry. `dayz-pbo-build`
   `references/dayz-1-30-pbo-build.md` gains the `fsShadowing` note: prefix `gui`, RaG `--fs-shadowing`, `.meta` packed.
   `CLAIM-UI-VARIANT-WORKBENCH-FORMAT-130`, `CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`, `CLAIM-UI-VARIANT-PREFAB-MERGE-130`,
   `CLAIM-UI-VARIANT-NAME-KEYED-ADD-ONLY-130`, `CLAIM-UI-VARIANT-GUI-PREFIX-PACKING-130`,
@@ -33,8 +43,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   built-in type (`bool`, `int`, `float`, `vector`, `string`, `typename`, `array`, `set`, `map`) does not declare, made
   on a value of one, a template of one, a typedef of one or the type itself. From pipeline inbox
   fb-20261103-150432-9f93 (LFSkateboard): `gF.Cross(gR)` on vector locals stopped a DayZ 1.30.164200 server with
-  `Undefined function 'vector.Cross'`, which only the 1.30.164014 Exp scripts declare, and the validator had passed
-  the call against either tree. `--game-root` (or `DAYZ_GAME_ROOT`) compares the vanilla tree with the game's
+  `Undefined function 'vector.Cross'`, which the 1.30.164014 Exp and 1.30.164078 scripts declare and 1.30.164200
+  dropped, and the validator had passed the call against either tree. `--game-root` (or `DAYZ_GAME_ROOT`) compares the vanilla tree with the game's
   `dta\scripts.pbo` by content, through the fail-closed reader of `dayz-vehicle-proxy-contract`, and warns with
   `VANILLA-ROOT-BUILD-MISMATCH` when they differ. `_argument_type` of `ES-CAST-UNRELATED-TYPES` takes the reader of a
   declared type as a parameter; its default, and so the three rules that already used it, are unchanged. Measured
@@ -562,6 +572,96 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- The pack is consolidated for DayZ 1.30 stable. 1.30 reached stable on 2026-10-15 (1.30.164078),
+  and the owner's stable install has run 1.30.164200 since 2026-10-21. On 2026-10-28 every vanilla
+  script citation (a `.c` file, or `scripts\config.cpp`) in the skills, the `knowledge/` notes,
+  `product-spec.md` and `compatibility-matrix.md` was re-checked against 1.30.164200 and moved with
+  the text it cites, where some build has that text; `history/` and this changelog keep the lines
+  of their dates. Citations of the game's data files were re-checked where the re-check could
+  read the cited file on 1.30.164200; "Data files" in `_shared/dayz-conventions.md` says how, and
+  which may still give an older tree's line. The claims on those lines move with them, and
+  `sources/source-map.json` is resealed.
+  - `_shared/dayz-conventions.md` gains "Vanilla line numbers: which build". A citation with no
+    build named, or with an `exp\` path (the folder of the first 1.30 extraction, 1.30.164014),
+    gives the 1.30.164200 line; one labelled `1.29`, or inside a "hasta 1.29" note, or of a file
+    only 1.29 has (the `.agr` sub-graphs), the 1.29 line; one labelled with another build, that
+    build's line. Measurements keep the build they were made on, and claim records the build they
+    were verified on: the re-check moved citations and claim line ranges, and repeated no
+    measurement.
+  - A citation whose text 1.30 no longer has keeps its 1.29 line and is labelled `1.29` (the 1.29
+    `construction.c` in `dayz-basebuilding`, for one). Where the cited code changed in 1.30, the
+    text now says what 1.30 does: `CarFluid` is an alias of `ETransportFluid`, the class a ruined
+    wheel becomes is derived from its name, `THERMAL_BIAS` takes index 11 of the player stats, the
+    camera reads its look limits from the native `GetLookLimits`, the item sounds started in one
+    frame go in one RPC, `LocalTakeEntityAsAttachmentEx` is obsolete and `Man` no longer overrides
+    it, and the 1.29 fix for lights left on after the driver gets out finds nothing to fix on 1.30.
+  - The headings of the 1.30 sections say "DayZ 1.30", not "DayZ 1.30 Exp"; the companion files
+    keep their `dayz-1-30-*.md` names, which other files link to. The README's build coverage and
+    the compatibility matrix say what was re-checked on 1.30 stable; the matrix levels are still the
+    ones measured on 1.29.0.163451.
+- What 1.30.164200 changed, found by the re-check and written where each skill covers it:
+  - `enforce-script-reference`: `vector.Cross`, a script method in 1.30.164014 and 1.30.164078
+    (`EnConvert.c:239-246`), is gone.
+  - `dayz-mod-workflow`: `NVTypes` gains `NV_OPTICS_UNDERGROUND_DAY` and
+    `NV_OPTICS_UNDERGROUND_SANDSTORM_DAY` in the middle of the list, so every value after
+    `NV_OPTICS_UNDERGROUND` has a new number.
+  - `dayz-doors`: the `Slot_Att_CodeLock*` slots' `displayName` is `#STR_CfgVehicles_codelock0`,
+    not `#STR_CodeLock0`.
+  - `dayz-basebuilding`: a construction part reads the int `toggle_utility_part_update` where
+    1.30.164014 read the text array `utility_build`.
+  - `dayz-motorbikes`: both vanilla bikes declare their front and brake reflector materials,
+    `Motorbike_02_ColorBase` renames its light selections, and the bikes register their front light
+    on its own index again and no longer gang tail and brake lights. The status list is re-read on
+    1.30.164200, `references/sources.md` adds the line counts that differ, and the dayz-mcp note
+    says that the bridge still drives only a `CarScript`.
+  - `dayz-environment-hazards` and `dayz-underground`: the Nasdara map is installed
+    (`nasdara\addons\`, 24 PBOs and the encrypted `worlds_nasdara.ebo`, which was not opened), where
+    1.30.164014 had only a 6-file `data_nasdara.pbo`. The sickness-icon defect, which changed on
+    1.30.164078, is still there.
+  - `dayz-weapons`: W-STAGING1 is re-checked. On 1.30.164200 the SCARL, Luger, LeeEnfield and
+    MP18, their magazines and the P1907 bayonet ship with their models and configs in
+    `nasdara\addons\weapons_nasdara.pbo` (prefix `DZ\weapons_takistan`), not in `weapons_firearms`
+    or `weapons_pistols`, and the vanilla Nasdara `types.xml` spawns them, so "no model and no config
+    class" holds for 1.30.164014 only. `references/dayz-1-30-weapons.md` lists their classes: two
+    config parents are not the script ones (`SCARL_Base` and `MP18_Base` inherit `Rifle_Base`).
+    Spawning them in game was not tried.
+  - `dayz-ui-development`: `day_z_hud.layout` gives its widgets' names in `Name` lines instead of
+    their headers, so it grew from 5,176 lines on 1.30.164014 to 5,468 and its citations moved
+    (1.30.164078's layouts were not checked). It also rounds 115 colors, positions and sizes to
+    three decimals, and its 12 `mtl_down` images have `mode blend` where they had `mode additive`.
+    `references/layout-format.md` describes both forms, says which vanilla layouts use each, and
+    how the pack parser reads the `Name` form.
+- The line numbers move to 1.30.164289, the stable build since the Steam update of 2026-11-04
+  (`DayZ_x64.exe` 1.30.164.289). On 2026-11-09 the two builds were compared file by file.
+  1.30.164289 changes 27 of the 3,076 script files, all `.c`, and keeps `scripts\config.cpp`; in
+  its data PBOs none of the 42,357 entries that the 2026-10-28 re-check extracted changed
+  (configs, layouts, XML, `.agf`, `.rvmat` and the rest), and 2,143 `.p3d` models, four
+  `navmesh.nm` and `ChernarusPlus.wrp` changed size and were not compared. The citations of the
+  27 files in the skills, the `knowledge/` notes, `product-spec.md` and `compatibility-matrix.md`
+  move to their 1.30.164289 lines (190 by a line alignment of the two versions of each file,
+  the rest by hand), and claim line ranges move with the text. `_shared/dayz-conventions.md`
+  §Vanilla line numbers: which build lists the 27 files and reads a citation with no build named
+  as a 1.30.164289 line; the README's build coverage, the compatibility matrix and the 1.30
+  notes at the top of the companion files say so.
+- What 1.30.164289 changed, written where each skill covers it:
+  - `dayz-environment-hazards`: heat stroke. Phase 2's `OnDeactivate` decrements the disease
+    count and phase 1's no longer does, so the sickness-icon defect is fixed; phase 2
+    deactivates below 0.38 (`STAGE_DEACTIVATION_BUFFER = 0.02`), not at 0.4, and runs
+    `OnActivate` again on reconnect; phase 4 does 0.01-0.15 health damage per tick, not
+    0.01-0.35. `THERMAL_BIAS_POSITIVE_HC_DECREMENT` is 0.0002 (was 0.0001) and
+    `THERMAL_BIAS_POSITIVE_HC_LOW_INCREMENT` 0.0002 (was 0.00022); `HeatComfortMdfr` lowers the
+    bias of a player with high water through the new `RecoverThermalBias`; and washing the head
+    again while its 30 s resistance runs no longer lowers the bias or restarts the 30 s (it still
+    reduces eye irritation and wets the clothes).
+  - `dayz-physics-engine`: `CollisionFlags` starts with `NONE = 0`, which moves every other value
+    up by one.
+  - `dayz-doors`: `Land_WarheadStorage_Main` and `Land_WarheadStorage_Bunker_Facility` override
+    the `DoorManipulationParams` form of `CanDoorBeOpened`, not the `int` form.
+  - `dayz-basebuilding`: a construction part no longer reads `item_falling_data`. The box in
+    which items fall when the part goes is built from its `collision_data` plus margins by part
+    category, and the new int `item_fall_trigger` (default 1) takes a part out of that check
+    with `0`.
+
 - `dayz-test-ingame`: `CLAIM-SIGN-NEGATIVE-CONTROL` adds that another build's PBO only works as a
   signature negative control when the two builds differ in an entry the signature covers. Arma2Quad
   v1.0.3-rc (2026-11-05), which differed from v1.0.2 only in `Arma2Quad_body.p3d` and the PBO
@@ -664,6 +764,112 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- README and `AGENTS.md` give the number of skills, 44 (they said 42), and the README skill index
+  lists the skills of #146, which it did not.
+- The skills no longer call 1.30 "Exp" where they mean 1.30 as it is now: the descriptions of
+  `dayz-basebuilding` and `dayz-weapons` ("Also 1.30:"; the Nasdara weapons are script-only on
+  1.30.164014 and ship in `weapons_nasdara.pbo` since 1.30.164200), the pointers and rows of the
+  `SKILL.md` of `dayz-ai-patterns`, `dayz-basebuilding`, `dayz-characters`, `dayz-model-pipeline`,
+  `dayz-particles`, `dayz-physics-engine`, `dayz-sound-system`, `dayz-ui-development` and
+  `dayz-weapons`, and the labels of 1.30 features in `dayz-animation-pipeline`, `dayz-clothing`,
+  `dayz-particles`, `dayz-pbo-reverse-engineering`, `dayz-persistence`, `dayz-physics-engine`,
+  `dayz-sound-system`, `dayz-ui-development` and `enforce-script-reference`. What was measured or
+  first seen on 1.30.164014 Exp still says so, and what describes that install names the build
+  (`dayz-basebuilding`, `dayz-doors`, `dayz-mod-workflow`, `dayz-particles`). `product-spec.md` and
+  `compatibility-matrix.md` now say that 1.29 was the stable branch until 2026-10-15.
+- `dayz-animation-pipeline` (`SKILL.md`, `references/player-skeleton.md`) and `dayz-physics-engine`
+  (`references/dayz-1-30-ragdoll-and-fall.md`): the eleven masses of vanilla `human.ragdoll` add up
+  to 73.9 kg, not 73.8.
+- README §4 said that every playbook is the author's and MIT. It now names the two ported skills
+  of #146 and their licences (`task-observer`, CC BY 4.0, modified; `systematic-debugging`, MIT),
+  and `THIRD_PARTY_NOTICES.md` lists both.
+- Citations that matched their text on no build, found by the re-check, now point at it:
+  `dayz-physics-engine` `SKILL.md` gives the 1.29 ground fallback of the action cursor at
+  `actiontargets.c:324-325` (not `:329-331`), and `references/fisica-engine-deep-dive.md` the
+  1.30.164200 one at `:383-384` (not `:329-331`) and `res.hierLevel > 0` at `:271` (not `:249`);
+  `dayz-animation-pipeline` `references/anim-graph.md` gives the `.unnamed` group at `zoW.ast:4`
+  (not `:643`) and lists the `Facial` group of `player_main.ast` with the other migrated names.
+  `dayz-vehicles` `references/proxies-and-get-in.md` gives the `OnDebugSpawn` hook at
+  `entityai.c:3955` and the `OnDebugSpawnEx` that calls it at `:3937-3939`. Data citations too:
+  `skeletons.anim.xml` has `EntityPosition` at `:5` and `LookAt` at `:17` (not `:4` and `:18`) and
+  the bones marked `To Be removed` at `:293-302` (`dayz-animation-pipeline` and
+  `knowledge/vault-notes/dayz-animations-creatures-weapons.md`), and the 1.29 `player_main.aw` and
+  `player_main.agr` have `#eventtable` at `:137` and `CMD_Modifier_Additive` at `:48` (not `:136`
+  and `:47`). Config lines counted in another extraction now give the DeRap line of 1.30.164200
+  where the re-check reached them: the `Fence` blocks in `dayz-basebuilding`
+  `references/config-contract.md`, `CivSedanWheel` in `dayz-vehicles` `SKILL.md`, the zombies'
+  `enfanimsys` in `dayz-characters` `SKILL.md` and the two `reloadAction` lines of
+  `DZ\data\config.cpp` in `dayz-animation-pipeline`. Ranges that began or ended one line off on
+  their own build now cover the code they cite: `OnDebugSpawn` in `civiliansedan.c` (`dayz-vehicles`
+  `references/proxies-and-get-in.md`), `GetTime` in `game.c` and `IsSetForDeletion` in `entityai.c`
+  (`enforce-script-reference` `SKILL.md` and `references/pitfalls-advanced.md`), and
+  `GetQuantityMax` in `ItemBase.c` (`dayz-basebuilding` `SKILL.md`). Ranges that stopped short of
+  what they cite now take it in: `PhysicsSetSimpleDeath` with the ragdoll API in `human.c`
+  (`dayz-physics-engine` `references/dayz-1-30-ragdoll-and-fall.md`), the cursor's `RaycastRVProxy`
+  call in `actiontargets.c` (`references/fisica-engine-deep-dive.md` and `dayz-mcp-verify`
+  `SKILL.md`) and the long horn alias in `actioninput.c` (`dayz-vehicles`). `ITEM_SOUNDS_MAX` is
+  cited where `itembase.c` declares it (`dayz-sound-system` `SKILL.md`), and `CMD_Modifier_Additive`
+  where the 1.29 `Locomotion.agr` applies it (`dayz-animation-pipeline` `references/anim-graph.md`
+  and the vault note). The size of the cursor's cone is cited where `actiontargets.c` declares it
+  (`dayz-mcp-verify` and `dayz-physics-engine` `SKILL.md`, which cited its `DrawDebugRay`), and
+  `dayz-feature-spec` `references/spec-template.md` cites the `DamageZones.Engine` that the wheeled
+  config declares for `OffroadHatchback`, not a script line that reads it. Nine pointers to a "DayZ
+  1.30 Exp" section that `dayz-mcp-verify`, `dayz-mod-workflow`, `dayz-pbo-build` and
+  `dayz-test-ingame` do not have now point at the 1.30 note at the top of each skill and its
+  companion file. Citations whose text no build has, such as the `enwidgets.c` lines of
+  `dayz-ui-development` `references/LFPG_UI_KnowledgeBase_v3.md`, are left as they were.
+- `dayz-realistic-animation-director` (`SKILL.md` and `references/domain-gates.md`) and
+  `dayz-animation-pipeline` `references/anim-graph.md` said that 1.30 removed `SurrenderDummyItem`.
+  The class is still there, marked obsolete (`surrenderdummyitem.c:1-2`): 1.30 no longer puts it in
+  the hands, and only the obsolete `CheckEmoteLockedState` reads it (`EmoteManager.c:1211-1214`).
+- `dayz-persistence` (`SKILL.md` and `references/vanilla-stream.md`) and `rigorous-data-audit`
+  `SKILL.md` said that `EntityAI.OnStoreSave` writes nine energy fields. It writes eight, on 1.29 as
+  on 1.30 (`entityai.c:2917-2948`), and the stream simulator in `tests/persistence/` now writes
+  eight too.
+- Short citations (a line number with no file) that the re-check missed, because they were left at
+  an older build's line or sat under a citation of another file, now give the 1.30.164200 line or
+  name their file: `dayz-ui-development` `references/vanilla-menus-map.md` (the menu factory, the
+  pause and inventory menus, the HUD and its flags, and four lines under a citation of another
+  file),
+  `dayz-basebuilding` (`SKILL.md`, `references/entity-lifecycle.md` and
+  `references/persistence-audit.md`), `dayz-aviation`, `dayz-vehicles` (`SKILL.md` and
+  `references/dayz-1-30-vehicles.md`), `dayz-motorbikes`, `dayz-weapons`, `dayz-sound-system`,
+  `dayz-physics-engine` (`SKILL.md`, `references/fisica-engine-deep-dive.md` and
+  `references/dayz-1-30-ragdoll-and-fall.md`), `enforce-script-reference` (`SKILL.md` and
+  `references/dayz-1-30-enforce-script.md`), `dayz-environment-hazards` (`SKILL.md` and
+  `references/sources.md`), `dayz-mcp-verify` and `dayz-underground`
+  `references/underground-triggers.md`. Where 1.30 moved the code, the citation follows it:
+  `dayz-aviation` cites the vital-parts check that 1.30 runs through
+  `Transport.CheckVitalItemCallback`, not the obsolete `CarScript.CheckVitalItem`;
+  `dayz-basebuilding` `references/entity-lifecycle.md` says that 1.30's `CanDismantlePart` and
+  `CanDestroyPart` also require `SupportRemovalCheck`, and gives as 1.29 the `OnFinishProgressServer`
+  with the "redundant at this point" comment; `dayz-basebuilding` `SKILL.md` gives the slot caps of
+  `scripts\config.cpp` at their 1.30.164200 lines. `dayz-particles` `SKILL.md` cites the whole
+  small-area branch of `effectarea.c` (`:348-386`), and `dayz-environment-hazards` `SKILL.md` says
+  that the six-file Nasdara PBO was that of 1.30.164014.
+- More of the same, found by a review of that sweep: `dayz-physics-engine` `SKILL.md` gives 1.30's
+  comment "Old system for handling player death state" to `PhysicsSetSimpleDeath`
+  (`human.c:1448-1449`), not to `PhysicsSetRagdoll`, and `references/fisica-engine-deep-dive.md` says
+  that its block of `Human` physics lines gives 1.29's lines, and names `human.c` and `scriptmodel.c`
+  next to three short citations. `enforce-script-reference` `SKILL.md` gives the 1.29 lines of the
+  `#ifdef BOT` case (`ActionManagerClient.c:754-760`), where it called the 1.30 ones 1.29's, and cites
+  the whole `SetIsInThirdPerson` (`dayzplayerimplement.c:307-310`); `dayz-sound-system` `SKILL.md`
+  cites the whole `SetCurrentLocalPosition` override of `EffectSound` (`:746-754`, 1.29 `:742-750`);
+  `dayz-basebuilding` `references/persistence-audit.md` gives the failsafe relock at
+  `basebuildingbase.c:303` in its checklist too, which said `:314` (the 1.29 line). `dayz-aviation`
+  `SKILL.md` (`RFFSHeli_Core.c:1892`), `dayz-basebuilding` `references/config-contract.md` and
+  `references/persistence-audit.md`, and `dayz-ui-development` `references/vanilla-menus-map.md` name
+  the file of short citations that had none in their item.
+- Four citations that list lines with `/` gave 1.29 lines after the first, because the
+  2026-10-28 re-check moved only the first number. `miscgameplayfunctions.c:1329/1345/1353`
+  (`knowledge/DAYZ_TECHNICAL_NOTES.md`), `game.c:708/710` (`enforce-script-reference`
+  `SKILL.md`), `carscript.c:552/577/845` (`dayz-vehicles`
+  `references/network-physics-ownership.md`) and `carscript.c:1776/1783`
+  (`knowledge/vault-notes/dayz-vehicles-crossproject.md`) now give 1.30.164289 lines. In
+  `dayz-environment-hazards` `references/thermal-heatstroke.md` the short citations of the
+  heat-stroke phase table and of the head-washing section name their file (`HeatStroke.c`,
+  `ActionWashHeadWettingClothesBase.c`); by the convention they read as lines of
+  `ModifiersManager.c`, the full citation before them.
 - `dayz-script-validator`: a `scripts/shared/vanilla_index.json` built from DayZ 1.29 and left in
   a checkout turned the vanilla control red on 1.30 (fb-20261105-021157-4c83). The index keys
   override signatures by method name only and kept 1.29's `InitIcon(icon, item, pos_x, pos_y)`, so

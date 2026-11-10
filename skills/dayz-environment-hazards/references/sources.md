@@ -9,15 +9,15 @@ Lane Q01. New skill. Digests: I (sandstorm/environment/medical), M (vehicle VFX 
 | `exp\scripts\scripts\3_Game\Sandstorm.c` | API proto, GetScriptedType |
 | `exp\scripts\scripts\3_Game\Weather.c` | GetSandstorm :210, Obsolete noise :407-467 |
 | `exp\scripts\scripts\3_Game\WorldData.c` | StartSandstorm, sun effect, dust settings, frequency |
-| `exp\scripts\scripts\3_Game\CfgGameplayDataJson.c` | ITEM_SandstormData :433-451 |
-| `exp\scripts\scripts\3_Game\CfgGameplayHandler.c` | GetSandstormFrequency :518-521 |
+| `exp\scripts\scripts\3_Game\CfgGameplayDataJson.c` | ITEM_SandstormData :440-459 |
+| `exp\scripts\scripts\3_Game\CfgGameplayHandler.c` | GetSandstormFrequency :533-536 |
 | `exp\scripts\scripts\3_Game\Enums\EAgents.c` | SILICOSIS 512, EYES 1024 |
 | `exp\scripts\scripts\3_Game\constants.c` | AGT/DEF dust :545-550, ENVIRO shadow 30 s :760, moto/boat HC :792-798 |
 | `exp\scripts\scripts\3_Game\PlayerConstants.c` | THERMAL_BIAS_* :203-210 |
 | `exp\scripts\scripts\3_Game\SurfaceInfo.c` | dust protos :49-70 |
 | `exp\scripts\scripts\3_Game\DustKickupEffects.c` | kickup |
 | `exp\scripts\scripts\3_Game\PPEManager\Requesters\PPERSandstorm.c` | PPE |
-| `exp\scripts\scripts\3_Game\Vehicles\Transport.c` | GetWeightCoef :475 |
+| `exp\scripts\scripts\3_Game\Vehicles\Transport.c` | GetWeightCoef :478 |
 | `exp\scripts\scripts\4_World\Systems\Sandstorm\ScriptedSandstormController.c` | shelter |
 | `exp\scripts\scripts\4_World\Systems\Sandstorm\PlayerSandstormData.c` | per-player state |
 | `exp\scripts\scripts\4_World\Classes\PlayerModifiers\eModifiers.c` | new IDs |

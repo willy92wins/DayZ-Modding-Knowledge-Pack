@@ -65,7 +65,7 @@ Pipeline step "1. `.txa` route (official-aligned)" is the recommended route for 
 
 The line 41 caveat is real: DayZATool/Mikero extraction is worst for empties / IK-helper bones (the ones weapon reload/state anims use) and inverts local bone axes. Treat Route B extraction as a reference only; use Route A (`.txa`) for authoring. Frame data + full weapon-anim binding contract in `references/weapon-anim-blender-complete.md`.
 
-## DayZ 1.30 Exp Updates (build 1.30.164014) [EXACT]
+## DayZ 1.30 Updates [EXACT]
 
 ### Modular Plain-Text Graph Files (.agf)
 In DayZ 1.30 Exp, sub-graphs are distributed as plain-text Enfusion Config `.agf` files (`AnimSrcGraphFile`, e.g., `DZ/anims/workspaces/player/player_main/Locomotion.agf`, `Actions.agf`, `Combat.agf`, `Vehicles.agf`). Master `.agr` files (`AnimSrcGraph`) index these via `GraphFilesResourceNames`. (corrected 2026-09-28) This section used to say that before 1.30 the sub-graphs were opaque binaries compiled inside `.agr` monoliths. They were neither: 1.29 ships them as separate text `.agr` files in the old `$AnimGraph 7` format, listed by the root `player_main.agr` (`:540-547` in the 1.29 extraction). 1.30 changed the syntax and the extension; evidence in `anim-graph.md` §Vehicles.agf.

@@ -1,8 +1,8 @@
-# Character ragdoll (DayZ 1.30 Exp)
+# Character ragdoll (DayZ 1.30)
 
 (hasta 1.29: player death/unconscious physics was an opaque native ragdoll; scripts only toggled it via `PhysicsSetRagdoll`.)
 
-(desde 1.30 Exp: survivor death physics is data-driven. `SurvivorBase` points `enfAnimSys.ragdoll` at `DZ/characters/bodies/human.ragdoll`. Workbench ships a ragdoll editor for `.ragdoll` files ([CHANGELOG] `work/changelog-1.30-exp-modding.md:47`).)
+(desde 1.30: survivor death physics is data-driven. `SurvivorBase` points `enfAnimSys.ragdoll` at `DZ/characters/bodies/human.ragdoll`. Workbench ships a ragdoll editor for `.ragdoll` files ([CHANGELOG] `work/changelog-1.30-exp-modding.md:47`).)
 
 **Who this is for:** anyone authoring a custom survivor/human NPC body, or replacing `SurvivorBase` mesh/skeleton. Infected `ZombieBase.enfanimsys` in this build does **not** set a `ragdoll` path (`exp/characters_zombies/DZ/characters/zombies/config.cpp:50-57`). Whether a custom non-human `.ragdoll` is picked up by name/GUID is [UNVERIFIED] (no script `LoadRagdollFile`).
 

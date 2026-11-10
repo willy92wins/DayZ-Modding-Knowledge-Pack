@@ -555,7 +555,7 @@ Log `WheelHasContact(i)` per wheel + `WheelCountPresent()` for vehicle AND a wor
 make contact". With `wp=0` (no wheel-item attached) the engine still simulates colliders from the model →
 `wc` reflects the health of the model's wheel collision. Side-by-side delta (LFQuad −0.264 vs Croco
 +0.216 at spawn) pinpointed placement immediately; "flies to 38 m" alone did not indicate it. API: `Car.Cast(o)`,
-`WheelHasContact(int)`, `WheelCount()`, `WheelCountPresent()` — `scripts/3_game/vehicles/car.c:297,349,352`.
+`WheelHasContact(int)`, `WheelCount()`, `WheelCountPresent()` — `scripts/3_game/vehicles/car.c:286,345,348`.
 
 ### Tension with item #5 (thickness ≥0.5 m)
 
@@ -614,7 +614,7 @@ host-direct BEFORE committing a plan — reframes scope and is cheap. Origin: Me
     front 0/1, brake 2/3, reverse 4/5, tail 6/7, dashboard 8). A config putting `color/glass/interior` into
     0-2 and lights behind DEVIATES → risk of broken lights.
   - refueling: vanilla loads position only if `MemoryPointExists("refill")` and `GetActionCompNameFuel()`
-    returns `"refill"` (`scripts/3_game/vehicles/transport.c:75-76,313-315`). A p3d with `fuelpoint` (not
+    returns `"refill"` (`scripts/3_game/vehicles/transport.c:112-113,462-464`). A p3d with `fuelpoint` (not
     `refill`) leaves the fuel action without position (falls back to 0,0,0).
 
 ---
@@ -759,7 +759,7 @@ config `class <MOD>: CarScript` with no `.c` runs as bare CarScript whose `CrewC
 
 **Separate, do not conflate with get-in:** (a) the user insists DOORS must open/close first or get-in won't show —
 investigate `CarScript.CrewCanGetThrough`/`IsAreaAtDoorFree` + whether get-in needs CarDoor **attachments** (SUB_BRZ
-has none; doors are baked into body chunks). (b) get-in's `CanReachSeatFromDoors` (`carscript.c:2710`) uses the
+has none; doors are baked into body chunks). (b) get-in's `CanReachSeatFromDoors` (`carscript.c:2177`) uses the
 `seat_con_X_Y` **memory point** + player within 1.0 m, NOT the physical door attachment.
 
 > Origen: SUB_BRZ get-in/actions debug 2026-06-25 s8 (handoff `SUB_BRZ_dev\reviews\2026-06-25-prompt-next-session-proxys-actions-doors.md`). Cross-ref `rip-import.md`.
@@ -786,31 +786,31 @@ attached because there is no script module compiling it.
 ### Cause — the two-gate ActionCondition + the unoverridden base stub
 
 `ActionGetInTransport.ActionCondition`
-(`scripts/4_world/classes/useractionscomponent/actions/interact/actiongetintransport.c:51-66`) has TWO gates
+(`scripts/4_world/classes/useractionscomponent/actions/interact/actiongetintransport.c:45-55`) has TWO gates
 that BOTH must pass:
 1. gate-1 `CrewPositionIndex(componentIndex) >= 0` — needs the crew proxy bone selection (the "ATTACHMENT proxy
    BONE-NAME" addendum above); and
-2. gate-2 `trans.CrewCanGetThrough(crew_index)` (~:63), then a reachability loop
-   `CanReachSeatFromDoors(selections[i], player.GetPosition(), 1.0)` (:71-77).
+2. gate-2 `transport.CrewCanGetThrough(crewIndex)` (~:54), then a reachability loop
+   `CanReachSeatFromDoors(selections[i], playerPosition, 1.0)` (:62-66).
 
 `CrewCanGetThrough` is **NOT overridden by `CarScript` or `Car`** — only by the concrete vanilla car classes
 (`CivilianSedan` etc.). A vehicle running as **bare `CarScript`** falls to the base stub
-`Transport.CrewCanGetThrough` (`scripts/3_game/vehicles/transport.c:493-500`), which returns **false** in the
+`Transport.CrewCanGetThrough` (`scripts/3_game/vehicles/transport.c:727-734`), which returns **false** in the
 normal build (`#ifndef CFGMODS_DEFINE_TEST`) → gate-2 false → get-in never appears, no matter how perfect the
-crew bone is. The same trap hits `GetSeatAnimationType` (`transport.c:475-479` → `Error("not implemented")`) and
+crew bone is. The same trap hits `GetSeatAnimationType` (`transport.c:685-689` → `Error("not implemented")`) and
 `GetAnimInstance` (used in `ActionGetInTransport.Start`), both of which also `Error()`/false in the base.
 
 ### Fix — ship a thin `<MOD>_Base.c` script class (PIPELINE requirement; for an import pipeline add to the config/script phase)
 
 Minimal M1 set (the three are mandatory; door mappers / `CanReach*` / `GetSeatIndexFromDoor` /
 `GetAnimSourceFromSelection` are M2 — needed for openable doors and seat-switching, not for entering+driving).
-Signatures verbatim from `CivilianSedan` (`scripts/4_world/.../civiliansedan.c:85,95`):
+Signatures verbatim from `CivilianSedan` (`scripts/4_world/.../civiliansedan.c:109,119`):
 
 ```c
 class <PREFIX>_Base extends CarScript
 {
-    override int GetAnimInstance()                 { return VehicleAnimInstances.SEDAN; }       // civiliansedan.c:85
-    override int GetSeatAnimationType(int posIdx)                                               // civiliansedan.c:95
+    override int GetAnimInstance()                 { return VehicleAnimInstances.SEDAN; }       // civiliansedan.c:109
+    override int GetSeatAnimationType(int posIdx)                                               // civiliansedan.c:119
     {
         switch (posIdx) { case 0: return DayZPlayerConstants.VEHICLESEAT_DRIVER;
                           case 1: return DayZPlayerConstants.VEHICLESEAT_CODRIVER; }            // add PASSENGER_* per seat
@@ -829,10 +829,10 @@ car; they override `CrewCanGetThrough`/`GetSeatAnimationType`/`GetAnimInstance` 
 
 ### Geometry requirement (verified) — `seat_con_*` memory points
 
-`CarScript.CanReachSeatFromDoors` (`scripts/.../carscript.c:2710-2731`) calls
+`CarScript.CanReachSeatFromDoors` (`scripts/.../carscript.c:2177-2198`) calls
 `GetDoorConditionPointFromSelection` → `if (MemoryPointExists(conPointName))` and only then compares distance
 ≤ 1.0; if the memory point is absent it returns false → action filtered. The base maps `seat_driver`→`seat_con_1_1`,
-`seat_codriver`→`seat_con_2_1` (`carscript.c:2674`), so NO override is needed for the mapping, but the model MUST
+`seat_codriver`→`seat_con_2_1` (`carscript.c:2141`), so NO override is needed for the mapping, but the model MUST
 carry the memory points `seat_con_1_1`/`seat_con_2_1`, positioned so the player is ≤ 1.0 m away when facing the
 door/seat. The `crew` config must expose `seat_driver`/`seat_codriver`.
 
@@ -845,7 +845,7 @@ DayZ 1.30.164014 Exp).
 
 ### Doors are NOT required for get-in
 
-`GetCarDoorsState` returns `DOORS_MISSING` when no `CarDoor` attachment exists (`civiliansedan.c:178-181`,
+`GetCarDoorsState` returns `DOORS_MISSING` when no `CarDoor` attachment exists (`civiliansedan.c:190-193`,
 FC unknown_40493.c:982-985), and `DOORS_MISSING != DOORS_CLOSED` → `CrewCanGetThrough` passes. A script class with
 NO door attachments gives WORKING get-in (baked doors stay static). Openable doors are a SEPARATE feature (`CarDoor`
 classes + door proxies + door `.p3d` + `AnimationSources DoorsX` + model.cfg door bones), exactly as FC ships
@@ -938,7 +938,7 @@ The "Get in" radial and the seated player are governed by TWO ViewGeometry struc
 
 ### 1. Get-in appears for driver but NOT codriver (raycast "always driver")
 
-DayZ resolves the seat with **`Transport.CrewPositionIndex(componentIdx)`** (proto native, `P:\scripts\3_game\vehicles\transport.c:116`) over the **collision component the cursor raycast HITS in the ViewGeometry LOD** (`ObjIntersectView`, `dayzphysics.c:88`; consumed at `actiongetintransport.c:50-51`) — NOT by memory-point proximity. So each seat needs its OWN dedicated, clean, closed-convex component:
+DayZ resolves the seat with **`Transport.CrewPositionIndex(componentIdx)`** (proto native, `P:\scripts\3_game\vehicles\transport.c:182`) over the **collision component the cursor raycast HITS in the ViewGeometry LOD** (`ObjIntersectView`, `dayzphysics.c:88`; consumed at `actiongetintransport.c:45-46`) — NOT by memory-point proximity. So each seat needs its OWN dedicated, clean, closed-convex component:
 
 - `seat_driver` = 1 dedicated `ComponentNN` (its own cube); `seat_codriver` = 1 dedicated `ComponentNN`. Dual-tag: the seat selection and its `ComponentNN` share the SAME faces (100% overlap).
 - Seats painted across a multi-component grid -> the raycast never lands cleanly on the 2nd seat -> "always driver". (LFQuad N1.5: `seat_driver/codriver` spread over 88/112 points across ~23 components -> codriver never appeared.)
@@ -958,7 +958,7 @@ Seated position AND orientation come from the **crew-proxy triangle** (`crewdriv
 ### Builder fix (so future cars never hit this)
 source-game/regen builders create crew proxies via `add_proxy(..., scale=0.1)` -> tiny ambiguous triangles, and may paint seats over the collision grid. Change crew-proxy creation to emit the **canonical triangle (edges ~1.0/2.0, 3 distinct angles)** with the model-correct frame, in BOTH ViewGeo and FireGeo, and build seats as **2 dedicated clean cubes** (one ComponentNN each) from the start.
 
-> Origen: LFQuad "Bloque A — Crew" D34 (`30_Sessions/2026-06-05-LFQuad-crew-resuelto-postura.md`, in-game confirmed) + MercedesAMGLF get-in/seated-pose (2026-06-27). Cross-ref: `CrewPositionIndex` transport.c:116, `ActionGetInTransport.ActionCondition` actiongetintransport.c:50-73, `CanReachSeatFromDoors` carscript.c:2710. The earlier "codriver needs crew proxies in FireGeo" diagnosis was REFUTED — the cause is collision-component cleanliness + canonical proxy, not FireGeo presence.
+> Origen: LFQuad "Bloque A — Crew" D34 (`30_Sessions/2026-06-05-LFQuad-crew-resuelto-postura.md`, in-game confirmed) + MercedesAMGLF get-in/seated-pose (2026-06-27). Cross-ref: `CrewPositionIndex` transport.c:182, `ActionGetInTransport.ActionCondition` actiongetintransport.c:45-65, `CanReachSeatFromDoors` carscript.c:2177. The earlier "codriver needs crew proxies in FireGeo" diagnosis was REFUTED — the cause is collision-component cleanliness + canonical proxy, not FireGeo presence.
 
 > **VALUE CORRECTED 2026-08-18 — the flag is `0x0000003F`, not `0x02000000`.**
 > Measured directly on the sealed vanilla control with py3d 1.4.0:
@@ -1105,8 +1105,8 @@ comparing the script log's `Module: World; loaded Nx files` line with a run with
 > (telemetry `comp=0 crewIdx=0`, "native mapping works"). Source of truth is **Addendum 2026-06-27
 > "Crew get-in" of `references/vehicle-structural-parity.md`** (VERIFIED in-game LFQuad D34 + MercedesAMGLF). Summary:
 
-`CrewPositionIndex(componentIdx)` (native, transport.c:116) resolves the seat by the **collision component
-hit by cursor raycast in ViewGeo** (`ObjIntersectView`, actiongetintransport.c:50-51) — NOT by
+`CrewPositionIndex(componentIdx)` (native, transport.c:182) resolves the seat by the **collision component
+hit by cursor raycast in ViewGeo** (`ObjIntersectView`, actiongetintransport.c:45-46) — NOT by
 `GetCrewIndex` nor by memory points. The two real blockers, both geometric:
 - an **occluding solid box** in ViewGeo (e.g., a central "spine") → cursor hits it BEFORE the seat
   cube → no get-in. Fix = delete it (MERCEDES driver, in-game).

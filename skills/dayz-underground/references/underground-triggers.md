@@ -1,4 +1,4 @@
-# Underground triggers: schema and recipes (DayZ 1.30.164014 Exp)
+# Underground triggers: schema and recipes (DayZ 1.30)
 
 Citations from `exp\scripts\scripts\…`, opened on 2026-09-24. `source_verified` except what is
 marked `[DESIGN]` or unverified.
@@ -46,8 +46,8 @@ Player presence comes from type (`TranslateTriggerTypeToPresence`, `:190-203`).
    `CustomSpawn` (`SpawnAllTriggerCarriers`, `:135-154`, called in
    `5_Mission\mission\missionServer.c:91`).
 3. **Synchronization.** Upon player connection, server sends entire JSON via
-   `RPC_UNDERGROUND_SYNC` (`:174-177`; `missionServer.c:342,363`) and client stores it
-   (`:181-193`). Client does not need file locally.
+   `RPC_UNDERGROUND_SYNC` (`UndergroundAreaLoader.c:174-177`; `missionServer.c:342,363`) and client stores it
+   (`UndergroundAreaLoader.c:181-193`). Client does not need file locally.
 4. **Local.** In local game with `DIAG_DEVELOPER`, client loads and creates triggers
    itself (`5_Mission\mission\missionGameplay.c:112-117`).
 
@@ -59,8 +59,9 @@ a JSON supports up to 4096 triggers. In 1.29 it was 256.
 Two ways, both with `CustomSpawn = true`:
 
 - **Map object.** `ParentNetworkId` with network id of object; object itself
-  calls `JsonUndergroundTriggers.SpawnParentedTriggers(this)` (`:5-22`). Done by
-  `Land_WarheadStorage_Main` (`:72`) and `Land_WarheadStorage_Bunker_Facility` (`:16`).
+  calls `JsonUndergroundTriggers.SpawnParentedTriggers(this)` (`UndergroundAreaLoader.c:5-22`). Done by
+  `Land_WarheadStorage_Main` (`Land_WarheadStorage_Main.c:72`) and `Land_WarheadStorage_Bunker_Facility`
+  (`Land_WarheadStorage_Bunker_Facility.c:16`).
 - **Object placed by Object Spawner.**
   - Spawner entry (`ITEM_SpawnerObject`: `name`, `pos`, `ypr`, `scale`,
     `enableCEPersistency`, `customString`; `3_Game\ObjectSpawner.c:100-108`) carries

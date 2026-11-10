@@ -296,11 +296,11 @@ vanilla `ZmbM_SoldierNormal` and the player, sun from the east.
 | Faces / walks backward, proportions fine | det = +1 export `(x, z, −y)` sends the rig front (−Y) to +Z → re-export with `(x, z, y)` (Rule 12), not `(−x, z, y)` |
 | Limbs fling back/up at idle, sane rest pose; an off-centre detail on the wrong side | mirrored export (any det = +1 map, e.g. `(−x, z, y)`) → re-export with `(x, z, y)`; an L/R selection swap only relabels the mirror |
 
-## DayZ 1.30 Exp — bone indices and infected graphs
+## DayZ 1.30 — bone indices and infected graphs
 
 (hasta 1.29: `skeletons.anim.xml` listed a numeric `index` per bone; community practice treated 250 as a hard global cap.)
 
-(desde 1.30 Exp: [CHANGELOG] the 250 global bone limit is removed. The global bone index is derived from the bone **name**, not from a value in `skeletons.anim.xml`. Most of that XML is unused; only the `lod` attribute is used, plus adding bones that were missing inside the `.xob`. `work/changelog-1.30-exp-modding.md:31,43`.)
+(desde 1.30: [CHANGELOG] the 250 global bone limit is removed. The global bone index is derived from the bone **name**, not from a value in `skeletons.anim.xml`. Most of that XML is unused; only the `lod` attribute is used, plus adding bones that were missing inside the `.xob`. `work/changelog-1.30-exp-modding.md:31,43`.)
 
 The extracted `hermit_newbindpose.xob` block still *contains* leftover `index = "10"` style attributes (`exp/anims_cfg/DZ/anims/cfg/skeletons.anim.xml:2-16`). Do not copy those numbers into a custom skeleton — they are unused. New 1.30 skeletons name bones only; the sole remaining `index` is `EntityPosition` `index = "0"` (`ovis_gmelini_skeleton.xob` at `:986-989`, `canis_familiaris_dobermann_skeleton.xob` at `:1047-1050`). Those animal skeletons are **not** the zed bind: a custom infected still weights to the 95-bone `hermit_newbindpose.xob` subset.
 

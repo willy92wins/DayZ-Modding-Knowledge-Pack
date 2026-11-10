@@ -510,14 +510,14 @@ the server RPT has ZERO `PHYSICS (E/W)` lines — the s2/s8 `crewdriver`/`crewco
 get-in's **gate-1** (`CrewPositionIndex(componentIndex) >= 0`). It is necessary but NOT sufficient (see below).
 
 **ROOT CAUSE #2 (the real get-in blocker, geometry-independent):** `ActionGetInTransport.ActionCondition`
-(scripts/4_world/.../actiongetintransport.c:51-66) has TWO gates that BOTH must pass: (1) `CrewPositionIndex >= 0`
-(crew proxy bone = fix d), AND (2) `CrewCanGetThrough(crew_index)` (:63). **`CrewCanGetThrough` is NOT overridden by
+(scripts/4_world/.../actiongetintransport.c:45-55) has TWO gates that BOTH must pass: (1) `CrewPositionIndex >= 0`
+(crew proxy bone = fix d), AND (2) `CrewCanGetThrough(crewIndex)` (:54). **`CrewCanGetThrough` is NOT overridden by
 `CarScript` or `Car`** — only by the concrete car classes (CivilianSedan etc.). A ripped racing-game car whose config is
 `class <MOD>: CarScript` with NO Enforce Script class runs as **bare `CarScript`** (verified in-game: telemetry
 `class_name:"CarScript"`), so `CrewCanGetThrough` falls to the base stub `Transport.CrewCanGetThrough`
-(scripts/3_game/vehicles/transport.c:493-500) which returns `false` in the normal build (`#ifndef CFGMODS_DEFINE_TEST`).
+(scripts/3_game/vehicles/transport.c:727-734) which returns `false` in the normal build (`#ifndef CFGMODS_DEFINE_TEST`).
 → gate-2 false → **get-in action NEVER appears**, no matter how perfect the crew bone is. Same trap for
-`GetSeatAnimationType` (transport.c:475-479 → `Error("not implemented")`) and `GetAnimInstance` (used in Start()).
+`GetSeatAnimationType` (transport.c:685-689 → `Error("not implemented")`) and `GetAnimInstance` (used in Start()).
 
 **THE FIX = ship a thin `<MOD>_Base.c` script class (PIPELINE requirement — add to Phase 4).** Modeled on FC
 ("Frontera Cars", a shipped community car mod): `FC_Uaz_Pickup_Rest_Base extends CarScript`
@@ -529,7 +529,7 @@ get-in's **gate-1** (`CrewPositionIndex(componentIndex) >= 0`). It is necessary 
 vanilla car. The mod needs a `CfgMods` script module (worldScriptModule files[]) to compile the `.c`.
 
 **Doors are NOT required for get-in.** `GetCarDoorsState` returns `DOORS_MISSING` when no CarDoor attachment exists
-(civiliansedan.c:178-181, FC unknown_40493.c:982-985), and `DOORS_MISSING != DOORS_CLOSED` → `CrewCanGetThrough`
+(civiliansedan.c:190-193, FC unknown_40493.c:982-985), and `DOORS_MISSING != DOORS_CLOSED` → `CrewCanGetThrough`
 returns true → passable. So a script class with NO door attachments gives WORKING get-in (baked doors stay static).
 Openable doors = a separate FEATURE (CarDoor classes + door proxies + door `.p3d` + AnimationSources DoorsX +
 model.cfg door bones), exactly as FC ships (FC_Vaz_2101 `class FC_Vaz_2101_Door_Driver: CarDoor` config.cpp:326,

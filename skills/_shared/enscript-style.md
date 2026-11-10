@@ -1797,7 +1797,7 @@ void SetQuantityOrAmmo(EntityAI ent, float value)
 
 Verified `Magazine.ServerSetAmmoCount` at
 `P:\scripts\4_world\entities\itembase\magazine\magazine.c:70`. Vanilla uses
-this pattern in `weapon_base.c:805`, `cfgplayerspawnhandler.c:330,340`, and
+this pattern in `weapon_base.c:797`, `cfgplayerspawnhandler.c:330,340`, and
 ~20 other call sites.
 
 ### String operations — quirks worth knowing

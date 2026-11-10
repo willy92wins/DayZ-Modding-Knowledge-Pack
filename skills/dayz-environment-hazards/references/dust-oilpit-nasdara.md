@@ -29,7 +29,7 @@ Wrappers obsoletos:
 
 ## Vehicles
 
-`VehicleVFXComponent.PlayEffectData` detects ground with `g_Game.GetSurface` and passes `SurfaceInfo` (`VehicleVFXComponent.c:177-186`). `EffVehicleDust.SelectFromSurface` uses `GetVehicleDustParticleId()`; override LIFETIME/REPEAT/WIND/VELOCITY/SIZE/AIR_RESISTANCE by speed×weight (`VehicleDust.c:5-35`). `Transport.GetWeightCoef()` default 1.0 (`Transport.c:475-478`); `Offroad_02` 1.5 (`Offroad_02.c:133-136`). Digest M: truck 2.0, motorbike 0.25 — not reopened here, cite `dayz-vehicles` / `dayz-motorbikes`.
+`VehicleVFXComponent.PlayEffectData` detects ground with `g_Game.GetSurface` and passes `SurfaceInfo` (`VehicleVFXComponent.c:177-186`). `EffVehicleDust.SelectFromSurface` uses `GetVehicleDustParticleId()`; override LIFETIME/REPEAT/WIND/VELOCITY/SIZE/AIR_RESISTANCE by speed×weight (`VehicleDust.c:5-35`). `Transport.GetWeightCoef()` default 1.0 (`Transport.c:478-481`); `Offroad_02` 1.5 (`Offroad_02.c:133-136`). Digest M: truck 2.0, motorbike 0.25 — not reopened here, cite `dayz-vehicles` / `dayz-motorbikes`.
 
 `EffWheelContact` (`:25-57`): `GetWheelContactParticleId` + `GetWheelContactSoundSetName`.
 
@@ -66,7 +66,7 @@ Client: `BonfireLight` light at +2.5 m; fire `OIL_FIRE1`+`BONFIRE_SMOKE` or `OIL
 
 ## Nasdara (DLC Badlands) — build stub
 
-`CfgMods.nasdara` `appId = 3816030` (`exp\nasdara__data_nasdara\DZ\data_takistan\config.cpp:32-50`). Internal prefix `DZ\data_takistan`. Listing: **6 files** (`work\pbo-listing-diff.txt:487`): `aiconfigs\config.bin`, `basicdefines.hpp`, `config.bin`, plus `.p3d` / `.bisurf` / `.rvmat` impact test (`config.cpp:52-59`).
+`CfgMods.nasdara` `appId = 3816030` (`exp\nasdara__data_nasdara\DZ\data_takistan\config.cpp:32-50`). Internal prefix `DZ\data_takistan`. Listing: **6 files** (`work\pbo-listing-diff.txt:487`): `aiconfigs\config.bin`, `basicdefines.hpp`, `config.bin`, plus `.p3d` / `.bisurf` / `.rvmat` impact test (`config.cpp:52-59`). On 1.30.164200 the PBO has 8 files (also `data\penetration\mud_brick_impenetrable.bisurf` and `.rvmat`), its `config.cpp`, `basicDefines.hpp` and `aiconfigs\config.cpp` are unchanged, and the rest of the map ships beside it (`SKILL.md` §Status in 1.30 stable, item 1).
 
 Skinning (`basicDefines.hpp:5-32`): mouflon 10 steaks / 2 guts / 1 lard / 1 bones; dog + head; lizard 1 of each. Digest I `config.cpp:214-239` does not exist: Nasdara `config.cpp` ends ~line 60.
 

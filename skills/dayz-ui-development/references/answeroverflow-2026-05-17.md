@@ -23,7 +23,7 @@ class LoadingScreen { ... }   // NOT a UIScriptedMenu — owns m_WidgetRoot dire
 
 The Discord snippet (Deth297) wrote `modded class LoginQueueBase extends UIScriptedMenu` — **wrong syntax**. `modded class` does NOT take an `extends` clause; it just modifies the existing class. Correct form: `modded class LoginQueueBase { ... }`. Inheritance chain is already `LoginQueueBase → LoginScreenBase → UIScriptedMenu`.
 
-**`LoadingScreen` widget bindings to override (verified at `dayzgame.c:693–707`):**
+**`LoadingScreen` widget bindings to override (verified at `dayzgame.c:704-743`):**
 
 ```cs
 TextWidget   m_ModdedWarning;          // "ModdedWarning" — set in m_WidgetRoot.FindAnyWidget

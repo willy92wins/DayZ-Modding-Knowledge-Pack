@@ -16,6 +16,17 @@ Components listed below retain their own notices and licenses.
 The pack contains a DayZ-specific fork. The upstream copyright and license
 must remain with redistributions of that component.
 
+### obra/superpowers systematic-debugging
+
+- Component: `skills/systematic-debugging/`
+- Upstream: [obra/superpowers](https://github.com/obra/superpowers), `skills/systematic-debugging`
+- License: MIT
+- Copyright: © 2025 Jesse Vincent
+- Local license: [`skills/systematic-debugging/LICENSE`](skills/systematic-debugging/LICENSE)
+
+The skill is unmodified; what was fetched and what was left out is in
+[`skills/systematic-debugging/SOURCE.md`](skills/systematic-debugging/SOURCE.md).
+
 ## Adaptation attribution
 
 ### GitHub Spec Kit
@@ -56,6 +67,16 @@ uses [SE2Dev/io_anim_seanim](https://github.com/SE2Dev/io_anim_seanim) at
 commit `dffe313b635ce8940264201f25db9e68f4486d7e` as an independent
 reader/writer oracle. That project is MIT-licensed. No SE2Dev source is bundled
 in the tool.
+
+### rebelytics One Skill to Rule Them All
+
+`skills/task-observer/` adapts the task-observer skill of
+[rebelytics/one-skill-to-rule-them-all](https://github.com/rebelytics/one-skill-to-rule-them-all)
+(Eoghan Henn, CC BY 4.0) and modifies it: the session-start trigger in its
+description is softened, so it observes only while work is in progress. The
+license text is in [`skills/task-observer/LICENSE`](skills/task-observer/LICENSE),
+and what changed and what was left out in
+[`skills/task-observer/SOURCE.md`](skills/task-observer/SOURCE.md).
 
 ## First-party binary fixtures
 

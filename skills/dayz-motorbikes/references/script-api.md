@@ -139,8 +139,8 @@ proto native void Fill(MotorbikeFluid fluid, float amount);
 - `float GetSpeedometer()` (`Motorbike.c:45-52`): Returns longitudinal speed by multiplying projection by 3.6 (km/h).
 - `float GetSpeedometerAbsolute()` (`Motorbike.c:55-58`): `Math.AbsFloat(GetSpeedometer())`.
 - `override bool IsAreaAtDoorFree(...)` (`Motorbike.c:60-68`): Unconditionally returns `true` (motorbikes have no doors).
-- `bool OnBeforeEngineStart()` (`Motorbike.c:312-316`): Callback evaluated before allowing engine start. `MotorbikeScript.c:1558-1564` checks that operational state is `EMotorbikeOperationalState.OK`.
-- `void OnEngineStart()` (`Motorbike.c:321`, empty): invoked upon starting. The override in `MotorbikeScript.c:1003-1024` updates headlights and plays `START_OK`.
+- `bool OnBeforeEngineStart()` (`Motorbike.c:312-316`): Callback evaluated before allowing engine start. `MotorbikeScript.c:1573-1579` checks that operational state is `EMotorbikeOperationalState.OK`.
+- `void OnEngineStart()` (`Motorbike.c:321`, empty): invoked upon starting. The override in `MotorbikeScript.c:1018-1039` updates headlights and plays `START_OK`.
 - `void OnEngineStop()` (`Motorbike.c:326`): Invoked upon engine stopping.
 - `void OnGearChanged(int newGear, int oldGear)` (`Motorbike.c:334`): Invoked upon changing gear.
 - `void OnFluidChanged(MotorbikeFluid fluid, float newValue, float oldValue)` (`Motorbike.c:344`): Invoked on the owner upon fluid changes.
@@ -196,8 +196,8 @@ Located in `exp\scripts\scripts\3_Game\constants.c`:
 | Doors (`CarDoor`) | **Nonexistent** | No doors; `IsAreaAtDoorFree` always returns `true` (`Motorbike.c:60-68`) |
 | Radiator / Coolant circuit | **Nonexistent / Non-vital** | `IsVitalRadiator()` returns `false` (`MotorbikeScript.c:321-324`). No temperature gauge in HUD (`MotorBikeHud.c:191-194`) |
 | Oil / Brake fluid circuit | Declared in config, unused in script | `MotorbikeScript` declares capacities (`config.cpp:45-48`), but `MotorbikeScript.c` only uses `MotorbikeFluid.FUEL` |
-| Battery mandatory for ignition | **Depends on override** | `Transport.NeedElectricitySourceDevice()` returns `true` (`Transport.c:821-824`) and `MotorbikeScript` does not change it; `Motorbike_01`/`_02` override it to `false` (`Motorbike_01.c:33-36`, `Motorbike_02.c:34-37`). A bike inheriting from `MotorbikeScript` must override it |
+| Battery mandatory for ignition | **Depends on override** | `Transport.NeedElectricitySourceDevice()` returns `true` (`Transport.c:830-833`) and `MotorbikeScript` does not change it; `Motorbike_01`/`_02` override it to `false` (`Motorbike_01.c:30-33`, `Motorbike_02.c:31-34`). A bike inheriting from `MotorbikeScript` must override it |
 | Door actions (`ActionOpenCarDoors`) | **Nonexistent** | In `Motorbike_01` flip-up seat `SeatDriver` exists |
-| Parking handbrake | **Nonexistent** | Handbrake channel actuates front brake (`SetHandbrake`, `Motorbike.c:135-139`; `Brakes.Front.input = 1`, `config.cpp:257`); handbrake indicator light is hidden in HUD (`MotorBikeHud.c:196`) |
+| Parking handbrake | **Nonexistent** | Handbrake channel actuates front brake (`SetHandbrake`, `Motorbike.c:135-139`; `Brakes.Front.input = 1`, `config.cpp:261`); handbrake indicator light is hidden in HUD (`MotorBikeHud.c:196`) |
 | Symmetrical 4-wheel steering | **Nonexistent** | Simulation with dynamic lean (`maxLeanAngle[]`) and `tipoverAngle` |
 | Dismount in gear without stalling | **Nonexistent** | If driver exits in gear, engine stops (`OnDriverExit` → `EngineStop()`, `MotorbikeScript.c:217-222`) |

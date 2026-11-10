@@ -1,6 +1,6 @@
-# DayZ 1.30 Exp — PBO / binarizer deltas (build 1.30.164014)
+# DayZ 1.30 — PBO / binarizer deltas
 
-Companion to `SKILL.md` § DayZ 1.30 Exp. Folder structure, stringtable.csv,
+Companion to the `since 1.30` note at the top of `SKILL.md`. Folder structure, stringtable.csv,
 include-list, and ODOL non-determinism still hold. This file is the 1.30
 binarizer contract.
 
@@ -8,7 +8,7 @@ binarizer contract.
 
 (until 1.29: pre-build check "Duplicate class names: Same class cannot be
 defined twice" — duplicate **properties** inside one class were a silent last-
-write-wins.) (since 1.30 Exp [CHANGELOG], `work\changelog-1.30-exp-modding.md:19`):
+write-wins.) (since 1.30 [CHANGELOG], `work\changelog-1.30-exp-modding.md:19`):
 
 > Changed: Binarizer will now stop binarising if a member is defined multiple
 > times in a config file
@@ -27,7 +27,7 @@ Pre-build check 2 in `SKILL.md` now covers both class names **and** members.
 
 ## Unpacked mods do not retire the PBO gate
 
-(since 1.30 Exp [CHANGELOG]: `-mod` can point at a folder and RV configs load
+(since 1.30 [CHANGELOG]: `-mod` can point at a folder and RV configs load
 unpacked.) That is a **diag iteration** path (`dayz-test-ingame`). Workshop /
 dedicated shipping still needs a PBO. Do not skip AddonBuilder for a release
 because unpacked load exists.
@@ -40,7 +40,8 @@ does not validate `.nm` bytes (binaries are not in `exp\`).
 
 (since 1.30.164200: the PBO header property `fsShadowing=1` lets a PBO load even
 when its prefix matches one already loaded, so its files can shadow vanilla
-paths. Vanilla PBO headers do not carry it.)
+paths; whether a shadow PBO replaces single files or the whole folder is not established.
+Vanilla PBO headers do not carry it.)
 
 [EXACT][CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130] Measured on DayZDiag 1.30.164200
 (2026-11-05) for a Workbench-generated layout variant: a PBO whose
@@ -52,5 +53,6 @@ and the variant applied in game. A `config.cpp` was present; whether a
 how to author it: `skills/dayz-ui-development/references/layout-variants-130.md`.
 
 Checks for such a PBO: the header shows both properties; the `.meta` beside
-each variant `.layout` is in the file list; the PBO contains only the files it
-means to shadow.
+each variant `.layout` is in the file list (the measured PBO carried it; whether
+the game needs it is untested); the PBO contains only the files it means to
+shadow.
