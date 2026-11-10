@@ -87,7 +87,7 @@ Flag (probable broken get-in / co-driver never appears) if, in the **ViewGeo LOD
 selections `seat_driver` / `seat_codriver` are **spread over more than 1-2 components**.
 Each seat should live in its **own dedicated component** (the Croco pattern). The engine
 resolves which seat a get-in raycast hit via `CrewPositionIndex(component)`
-(`transport.c:116`) on the component the raycast strikes. If seats are smeared over the
+(`transport.c:182`) on the component the raycast strikes. If seats are smeared over the
 collision grid, the crew components are chaotic and the co-driver position never resolves.
 
 ### Check B — crew proxies are 90/45/45 isosceles triangles

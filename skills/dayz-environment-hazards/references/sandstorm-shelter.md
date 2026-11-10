@@ -74,7 +74,7 @@ Client `OnStart` requests `PPERequesterBank.REQ_SANDSTORMEFFECT` and `SetTargetI
 ## cfggameplay.json
 
 ```c
-// [EXACT] exp\scripts\scripts\3_Game\CfgGameplayDataJson.c:433
+// [EXACT] exp\scripts\scripts\3_Game\CfgGameplayDataJson.c:440
 class ITEM_SandstormData : ITEM_DataBase
 {
 	override void InitServer()
@@ -97,7 +97,7 @@ class ITEM_SandstormData : ITEM_DataBase
 };
 ```
 
-`CfgGameplayHandler.GetSandstormFrequency()` (`CfgGameplayHandler.c:518-521`) is copied to `WorldDataWeatherSettings.m_sandstormFrequency` in `SetupWeatherSettings` (`WorldData.c:427-442`).
+`CfgGameplayHandler.GetSandstormFrequency()` (`CfgGameplayHandler.c:533-536`) is copied to `WorldDataWeatherSettings.m_sandstormFrequency` in `SetupWeatherSettings` (`WorldData.c:427-442`).
 
 ## Nasdara: weather trigger
 

@@ -14,7 +14,7 @@ This document details all user actions specific to motorbikes in DayZ 1.30, the 
   - Vehicle is `MotorbikeScript` and its engine is off (`if (!vehicle || vehicle.EngineIsOn())` returns `false`, `line 33`).
   - The player is the driver (`vehicle.CrewDriver() == player`, `line 36`).
 - **Execution**:
-  - In `OnExecute` (`lines 66-75`): invokes `vehicle.OnIgnition()` (`line 74`), which plays the kickstart sound with `HandleEngineSound(MotorbikeEngineSoundState.STARTING)` (`MotorbikeScript.c:1598-1620`, called at `1619`).
+  - In `OnExecute` (`lines 66-75`): invokes `vehicle.OnIgnition()` (`line 74`), which plays the kickstart sound with `HandleEngineSound(MotorbikeEngineSoundState.STARTING)` (`MotorbikeScript.c:1613-1635`, called at `1619`).
   - In `OnFinishProgress` (`lines 39-64`): invokes `vehicle.EngineStart()` (`line 63`). According to the comment at `line 51`, validation is performed by C++ via the `Motorbike.OnBeforeEngineStart()` callback.
 - **Registration**: In `PlayerBase.c:1709` (`AddAction(ActionStartEngineMotorbike, InputActionMap);`) and in `ActionConstructor.c:223`.
 
@@ -35,7 +35,7 @@ This document details all user actions specific to motorbikes in DayZ 1.30, the 
 - **File**: `exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\Vehicles\ActionAnimateMotorbikeSeat.c:1`.
 - **Type**: `ActionAnimateSeats`.
 - **Condition**: Seat without driver (`!bike.CrewMember(VEHICLESEAT_DRIVER)`), player closer than 1 meter, and selection belongs to animation source `"SeatDriver"`.
-- **Registration**: In `Motorbike_01.c:104` (`AddAction(ActionAnimateMotorbikeSeat);`) and in `ActionConstructor.c:313`.
+- **Registration**: In `Motorbike_01.c:101` (`AddAction(ActionAnimateMotorbikeSeat);`) and in `ActionConstructor.c:313`.
 
 ### Motorbike Repair Actions
 | Action | File | Required tool | Target zone | Registration in ActionConstructor |
@@ -76,12 +76,14 @@ This document details all user actions specific to motorbikes in DayZ 1.30, the 
   m_LightsComponent.RegisterSelection("FrontOn", {new VehicleLightSelectionData(0, "frontReflectorMatOn")});
   m_LightsComponent.RegisterSelection("BrakeOn", {new VehicleLightSelectionData(1, "brakeReflectorMatOn")});
   ```
+- Those are the base registrations (`MotorbikeScript.c:114-122`); the first argument is the `SetObjectMaterial` index (`VehicleLightsComponent.c:66-81`). Since 1.30.164200 the vanilla bikes register `FrontOn`/`FrontOff` again on their own index, and `Motorbike_02` moves its brake selection from 2 to 6 (`InheritedMotorbikes\Motorbike_01.c:19-22`: front 3, brake 2; `InheritedMotorbikes\Motorbike_02.c:20-23`: front 4, brake 6).
+- Rear light off: the `else` branch sets `"BrakeOff"` only when `HasGangedTailAndBrakeLights()` returns `false` (`MotorbikeScript.c:1251-1255`). Until 1.30.164078 both vanilla bikes overrode it to `true`; since 1.30.164200 neither does, so they keep the base `false` (`MotorbikeScript.c:169-172`). The `default` case of the same switch named the unregistered key `"BrakesOff"` until 1.30.164078 and names `"BrakeOff"` since 1.30.164200 (`MotorbikeScript.c:1246-1248`).
 - Supports dedicated light profiles (`VehicleLightProfileBase`):
-  - `Motorbike_01LightProfileFront`: brightness 2, radius 30m, angle 50º, RGB color `(0.85, 0.85, 0.68)`.
+  - `Motorbike_01LightProfileFront`: brightness 8 (2 until 1.30.164078), radius 30m, angle 50º, RGB color `(0.85, 0.85, 0.68)`.
   - `Motorbike_01LightProfileRear`: brightness 4, radius 6m, angle 120º, RGB color `(0.95, 0.16, 0.05)`.
-  - `Motorbike_02LightProfileFront`: brightness 3, radius 65m, angle 65º, RGB color `(0.85, 0.85, 0.68)`.
+  - `Motorbike_02LightProfileFront`: brightness 8 (3 until 1.30.164078), radius 65m, angle 65º, RGB color `(0.85, 0.85, 0.68)`.
 - Handlebar attachment:
-  `int driveWheelIndex = GetBoneIndex("drivewheel");` and `m_LightsComponent.AttachLightOnObject("Front", GetMemoryPointPos(m_HeadLightPoint), vector.Zero, VehicleLightMode.SEGREGATED, driveWheelIndex);` (`MotorbikeScript.c:1107-1109`).
+  `int driveWheelIndex = GetBoneIndex("drivewheel");` and `m_LightsComponent.AttachLightOnObject("Front", GetMemoryPointPos(m_HeadLightPoint), vector.Zero, VehicleLightMode.SEGREGATED, driveWheelIndex);` (`MotorbikeScript.c:1122-1124`).
 
 ### `VehicleHornComponent` (`VehicleHornComponent.c:1-111`)
 - Manages modes `OFF`, `SHORT`, `LONG`.
@@ -93,7 +95,7 @@ This document details all user actions specific to motorbikes in DayZ 1.30, the 
   - `DUST_BEHIND` (`EffVehicleDust`) at `ConvertMemPointToPosition("engine")`.
   - `ENGINE_SMOKE` (`EffEngineSmoke`) at engine position.
   - `EXHAUST_SMOKE` (`EffExhaustSmoke`) oriented between `ptcExhaust_start` and `ptcExhaust_end`.
-  - Wheel groups: `WHEEL_SMOKE` (`EffWheelSmoke`) and `WHEEL_CONTACT` (`EffWheelContact`).
+  - Wheel groups: `WHEEL_SMOKE` (`EffWheelSmoke`) and `WHEEL_CONTACT` (`EffWheelContact`), with a 2.0 s cooldown (third `VehicleVFXDataParams` argument, `VehicleVFXComponent.c:82-94`; 5.0 s until 1.30.164078) (`MotorbikeScript.c:203-204`).
 
 ---
 
@@ -102,28 +104,28 @@ This document details all user actions specific to motorbikes in DayZ 1.30, the 
 Motorbike audio blocks are located in `exp\sounds_hpp\DZ\sounds\hpp\config.cpp` and cataloged in `work\soundsets-motorbike-1.30.txt`:
 
 ### Engine Shaders (RPM and Offload)
-- `Motorbike_01_Engine_Ext_Rpm0_SoundShader` through `Rpm6_SoundShader` (`exp\sounds_hpp\DZ\sounds\hpp\config.cpp:59253-59324`): acceleration layers based on `rpm` and `thrust`.
-- `Motorbike_01_Engine_Offload_Ext_Rpm1_SoundShader` through `Offload_Rpm6_SoundShader` (`config.cpp:59265-59330`): offload overrun layers upon releasing throttle.
-- Equivalents in `Motorbike_02`: 8 acceleration layers (`Rpm0` to `Rpm7`) and 7 offload layers (`Offload_Rpm1` to `Offload_Rpm7`) (`config.cpp:59571-59660`).
+- `Motorbike_01_Engine_Ext_Rpm0_SoundShader` through `Rpm6_SoundShader` (`exp\sounds_hpp\DZ\sounds\hpp\config.cpp:59340-59411`): acceleration layers based on `rpm` and `thrust`.
+- `Motorbike_01_Engine_Offload_Ext_Rpm1_SoundShader` through `Offload_Rpm6_SoundShader` (`config.cpp:59352-59417`): offload overrun layers upon releasing throttle.
+- Equivalents in `Motorbike_02`: 8 acceleration layers (`Rpm0` to `Rpm7`) and 7 offload layers (`Offload_Rpm1` to `Offload_Rpm7`) (`config.cpp:59658-59747`).
 
 ### Primary SoundSets Registered in Script
 - **Starting and stopping**:
-  - `Motorbike_01_engine_start_SoundSet` (`config.cpp:98414-98420`) -> sample `\DZ\sounds\vehicles\Motorbike_01\engine_start`.
-  - `Motorbike_01_engine_failed_start_fuel_SoundSet` (`config.cpp:98421`) -> `\DZ\sounds\vehicles\Motorbike_01\engine_failed_start_fuel`.
-  - `Motorbike_01_engine_stop_SoundSet` (`config.cpp:98428`) -> `\DZ\sounds\vehicles\Motorbike_01\engine_stop`.
-  - `Motorbike_01_engine_stop_fuel_SoundSet` (`config.cpp:98434`) -> `\DZ\sounds\vehicles\Motorbike_01\engine_stop_fuel`.
+  - `Motorbike_01_engine_start_SoundSet` (`config.cpp:99196-99202`) -> sample `\DZ\sounds\vehicles\Motorbike_01\engine_start`.
+  - `Motorbike_01_engine_failed_start_fuel_SoundSet` (`config.cpp:99203`) -> `\DZ\sounds\vehicles\Motorbike_01\engine_failed_start_fuel`.
+  - `Motorbike_01_engine_stop_SoundSet` (`config.cpp:99210`) -> `\DZ\sounds\vehicles\Motorbike_01\engine_stop`.
+  - `Motorbike_01_engine_stop_fuel_SoundSet` (`config.cpp:99216`) -> `\DZ\sounds\vehicles\Motorbike_01\engine_stop_fuel`.
 - **Kickstart**:
-  - `Motorbike_01_Kickstart_FoldOut_SoundSet` (`config.cpp:98482`) -> lever fold out.
-  - `Motorbike_01_Starting_Engine_Off_SoundSet` (`config.cpp:98486`) -> false kick sound.
+  - `Motorbike_01_Kickstart_FoldOut_SoundSet` (`config.cpp:99264`) -> lever fold out.
+  - `Motorbike_01_Starting_Engine_Off_SoundSet` (`config.cpp:99268`) -> false kick sound.
 - **Horn**:
-  - `Motorbike_01_Horn_SoundSet` (`config.cpp:98517`): continuous loop (`loop = 1`).
-  - `Motorbike_01_Horn_Short_SoundSet` (`config.cpp:98523`): short honk (`volumefactor = 0.8`).
-  - `Motorbike_01_Horn_Start_SoundSet` and `Motorbike_01_Horn_End_SoundSet` (`config.cpp:98528-98537`).
+  - `Motorbike_01_Horn_SoundSet` (`config.cpp:99299`): continuous loop (`loop = 1`).
+  - `Motorbike_01_Horn_Short_SoundSet` (`config.cpp:99305`): short honk (`volumefactor = 0.8`).
+  - `Motorbike_01_Horn_Start_SoundSet` and `Motorbike_01_Horn_End_SoundSet` (`config.cpp:99310-99319`).
 - **Flip-up seat (`Motorbike_01`)**:
-  - `Motorbike_01_Seat_FlipUp_SoundSet` and `Motorbike_01_Seat_FlipDown_SoundSet` (`Motorbike_01.c:119, 123`).
+  - `Motorbike_01_Seat_FlipUp_SoundSet` and `Motorbike_01_Seat_FlipDown_SoundSet` (`Motorbike_01.c:116, 120`).
 - **Shock Absorbers and Collision**:
-  - `Motorbike_01_damper_front_SoundSet` and `Motorbike_01_damper_rear_SoundSet` (`config.cpp:98350, 98365`), both based on `Motorbike_01_damper_SoundShader` (`config.cpp:59458`), with 10 samples `motorbike_damper_01` through `motorbike_damper_10`.
-  - `Motorbike_01_hit_character_SoundSet` and `Motorbike_01_hit_heavy_SoundSet` (`Motorbike_01.c:143, 150`).
+  - `Motorbike_01_damper_front_SoundSet` and `Motorbike_01_damper_rear_SoundSet` (`config.cpp:99132, 99147`), both based on `Motorbike_01_damper_SoundShader` (`config.cpp:59545`), with 10 samples `motorbike_damper_01` through `motorbike_damper_10`.
+  - `Motorbike_01_hit_character_SoundSet` and `Motorbike_01_hit_heavy_SoundSet` (`Motorbike_01.c:140, 147`).
 
 ## 5. Lights input: `UAToggleVehicleLights` versus `UAToggleHeadlight` (digest F, re-verified 2026-09-17 and 2026-09-19)
 

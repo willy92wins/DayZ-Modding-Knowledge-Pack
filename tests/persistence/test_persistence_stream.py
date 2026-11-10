@@ -12,7 +12,7 @@ from persistence_stream import (
 
 
 BUILD_VERSION = 1290163451
-ENERGY_FIELDS = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+ENERGY_FIELDS = (1, 2, 3, 4, 5, 6, 7, 8)
 
 
 def test_typed_stream_is_sequential_and_failed_reads_do_not_advance() -> None:

@@ -5347,7 +5347,7 @@ class TestUndefinedBuiltinMethod(unittest.TestCase):
 
     Inbox fb-20261103-150432-9f93, DayZDiag 1.30.164200 server: `gF.Cross(gR)`
     with vector locals stopped the World module with "Undefined function
-    'vector.Cross'"; only the 1.30.164014 Exp scripts declare vector.Cross.
+    'vector.Cross'"; the 1.30.164014 Exp and 1.30.164078 scripts declare it.
     """
 
     def test_ticket_repro_fails(self):

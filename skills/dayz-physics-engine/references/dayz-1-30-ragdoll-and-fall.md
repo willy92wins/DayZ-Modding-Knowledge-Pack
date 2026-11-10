@@ -1,16 +1,16 @@
-# DayZ 1.30 Exp — ragdoll data-driven and fall damage
+# DayZ 1.30 — ragdoll data-driven and fall damage
 
 Lane P04 overflow for `dayz-physics-engine`. SKILL.md keeps the 90% working set; this file holds
 1.30 physics-engine detail that would blow the 500-line cap. Character bind path (`ragdoll =` on
 `SurvivorBase`) is `dayz-characters`. Animation-graph / surrender ASI is `dayz-animation-pipeline`.
 
-Citations are under `exp/` unless marked `stable-1.29/`. `[EXACT]` blocks were copied from the
+Citations are under `exp/` unless marked `stable-1.29/`. Since 2026-11-09 the line numbers are those of stable 1.30.164289; the `exp/` paths stay (`_shared/dayz-conventions.md` §Vanilla line numbers: which build). `[EXACT]` blocks were copied from the
 opened file. `[UNVERIFIED]` = no script call-site or no in-game test.
 
 ## 1. `.ragdoll` / `RagdollDef`
 
 (hasta 1.29: player ragdoll collision/mass lived in native code; scripts only saw `PhysicsSetRagdoll`.)
-(desde 1.30 Exp: vanilla ships a text `RagdollDef` next to the body.)
+(desde 1.30: vanilla ships a text `RagdollDef` next to the body.)
 
 Workbench added a ragdoll editor for `.ragdoll` files. [CHANGELOG] `work/changelog-1.30-exp-modding.md:47`.
 
@@ -21,7 +21,7 @@ the `SurvivorBase` config bind.
 ### Infected do not ragdoll (in-game test reported by the contributor, 2026-10-16, 1.30.164078)
 
 [EXACT][CLAIM-PHYS-RAGDOLL-API-HUMAN-ONLY-130] The ragdoll API is on `Human` only: `PhysicsSetSimpleDeath` /
-`PhysicsSetRagdoll` / `PhysicsIsRagdoll` are declared in `scripts/3_Game/human.c:1449,1451-1452`, inside
+`PhysicsSetRagdoll` / `PhysicsIsRagdoll` are declared in `scripts/3_Game/human.c:1449-1452`, inside
 `class Human : Man` (`human.c:1359`). Infected inherit `DayZInfected` -> `DayZCreatureAI` ->
 `DayZCreature` -> `EntityAI` (`3_Game/Entities/DayZInfected.c:104`, `3_Game/Entities/DayZAnimal.c:24,191`), so
 none of those calls exist on an infected and a script call will not compile. The lines are the same in
@@ -94,7 +94,7 @@ the skeleton, and keeping `SurfaceProperties` on a penetration `.bisurf`. Joint 
 relative to the parent. Masses in vanilla `human.ragdoll` (kg): pelvis 17 (`:5`), spine3 15 (`:23`),
 head 6.1 (`:39`), leftarm 2.1 (`:54`), leftforearm 1.7 (`:69`), rightarm 2.1 (`:85`),
 rightforearm 1.7 (`:100`), leftupleg 7.5 (`:118`), leftleg 6.6 (`:134`), rightupleg 7.5 (`:159`),
-rightleg 6.6 (`:175`). Sum = 73.8 kg. (The 2026-06-11 live-player `dBodyGetMass` reading of 87.5 kg
+rightleg 6.6 (`:175`). Sum = 73.9 kg. (The 2026-06-11 live-player `dBodyGetMass` reading of 87.5 kg
 is a different body — the CCT/player body, not this ragdoll def.)
 
 ## 2. `PhysicsSetSimpleDeath` vs `PhysicsSetRagdoll`
@@ -120,7 +120,7 @@ Death used `PhysicsSetRagdoll(true)` at `stable-1.29/scripts/scripts/4_World/Ent
 	proto native 	bool		PhysicsIsFalling(bool pValidate);
 ```
 
-Non-command death branch (desde 1.30 Exp):
+Non-command death branch (desde 1.30):
 
 ```c
 // [EXACT] exp/scripts/scripts/4_World/Entities/DayZPlayerImplement.c:743
@@ -226,10 +226,10 @@ override the constants.
 
 Truth #2 is still true. Line drift only:
 
-- `RaycastRVProxy` (desde 1.30 Exp): `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255` (`RaycastRVParams` still defaults
+- `RaycastRVProxy` (desde 1.30): `exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:255` (`RaycastRVParams` still defaults
   `ObjIntersectView` at `exp/scripts/scripts/3_Game/global/dayzphysics.c:88`).
-- Ground fallback `RayCastBullet` + `ROADWAY|TERRAIN|WATERLAYER`: `:383-384`.
-- Liquid surface with no object: utility 0.01 at `:532-534`. `ActionTarget` ctor
+- Ground fallback `RayCastBullet` + `ROADWAY|TERRAIN|WATERLAYER`: `ActionTargets.c:383-384`.
+- Liquid surface with no object: utility 0.01 at `:535-537`. `ActionTarget` ctor
   `surfaceName` / `GetSurfaceLiquidType()` at `:125-138` and `:184-187`.
 
 ```c
@@ -244,7 +244,7 @@ Truth #2 is still true. Line drift only:
 ```
 
 ```c
-// [EXACT] exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:532
+// [EXACT] exp/scripts/scripts/4_World/Classes/UserActionsComponent/ActionTargets.c:535
 		//! surfaces with liquid source
 		if (m_SurfaceInfo && m_SurfaceInfo.GetLiquidType() != LIQUID_NONE)
 			return 0.01;
@@ -258,6 +258,6 @@ Truth #2 is still true. Line drift only:
 - `SurfaceInfo.GetSoundHitType` / `SoundHitType` — listed in the official changelog
   (`work/changelog-1.30-exp-modding.md:9`) but **not present** in extracted `exp/scripts/scripts/3_Game/surfaceinfo.c`. [CHANGELOG]
   [UNVERIFIED] in this extract.
-- Motorbike branch inside `RegisterTransportHit` (`exp/scripts/scripts/3_Game/Entities/EntityAI.c:4143-4160`) — see
+- Motorbike branch inside `RegisterTransportHit` (`exp/scripts/scripts/3_Game/Entities/EntityAI.c:4166-4183`) — see
   `dano-transporthit.md`. Vehicle authoring is `dayz-vehicles` / `dayz-motorbikes`.
 - `DayZPlayer.IsFirstRenderFrame` (`exp/scripts/scripts/3_Game/dayzplayer.c:1186-1189`) — catchup skip, not rigid-body API.

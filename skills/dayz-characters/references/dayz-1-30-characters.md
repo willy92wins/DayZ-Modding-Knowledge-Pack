@@ -1,4 +1,4 @@
-# DayZ 1.30 Exp — humanoid character delta (build 1.30.164014)
+# DayZ 1.30 — humanoid character delta
 
 Companion to `dayz-characters` SKILL.md. Mesh/rig/LOD rules in the parent skill still hold. This file is the 1.30 overlay: new classes, graph format, PPE, skinning, surrender.
 
@@ -6,7 +6,7 @@ Companion to `dayz-characters` SKILL.md. Mesh/rig/LOD rules in the parent skill 
 
 Hierarchy `DZ_LightAI → DayZInfected → ZombieBase → ZombieMaleBase / ZombieFemaleBase → variants` is still the inherit path.
 
-(desde 1.30 Exp) Female military CfgVehicles (`exp/characters_zombies/DZ/characters/zombies/config.cpp`):
+(desde 1.30) Female military CfgVehicles (`exp/characters_zombies/DZ/characters/zombies/config.cpp`):
 
 - `ZmbF_SoldierNormal_Base: ZombieFemaleBase` — `:10376` (`model = "\DZ\characters\zombies\ZmbF_SoldierNormal.p3d"`, `aiAgentTemplate = "InfectedMSoldier"`)
 - `ZmbF_SoldierNormal: ZmbF_SoldierNormal_Base` — `:10600` (`scope = 2`)
@@ -26,7 +26,7 @@ Script bases (`exp/scripts/scripts/4_World/Entities/Creatures/Infected/`):
 
 (hasta 1.29: `enfanimsys.graphname` pointed at a monolithic infected `.agr`.)
 
-(desde 1.30 Exp: that path is still `dz\anims\workspaces\infected\infected_main\infected.agr` — re-verified `exp/characters_zombies/DZ/characters/zombies/config.cpp:50-57`. The `.agr` is now Enfusion `AnimSrcGraph` text. Subgraphs are `.agf` with root `AnimSrcGraphFile` (`exp/anims_workspaces/DZ/anims/workspaces/infected/infected_main/locomotion.agf:1`).)
+(desde 1.30: that path is still `dz\anims\workspaces\infected\infected_main\infected.agr` — re-verified `exp/characters_zombies/DZ/characters/zombies/config.cpp:50-57`. The `.agr` is now Enfusion `AnimSrcGraph` text. Subgraphs are `.agf` with root `AnimSrcGraphFile` (`exp/anims_workspaces/DZ/anims/workspaces/infected/infected_main/locomotion.agf:1`).)
 
 ```
 // [EXACT] exp/anims_workspaces/DZ/anims/workspaces/infected/infected_main/infected.agr:430
@@ -58,11 +58,11 @@ Not extracted under `exp\` (`.anm`). Existence only: `work/pbo-listings/exp__Add
 
 (hasta 1.29: `SurvivorBase` `class Skinning` included `class Lard { item = "Lard"; ... }` at `stable-1.29/characters_data/DZ/characters/data/config.cpp:133-138`.)
 
-(desde 1.30 Exp: `Skinning` on `SurvivorBase` is Steaks / Guts / Bones / BloodInfectionSettings only — `exp/characters_data/DZ/characters/data/config.cpp:121-147`. No `Lard` class. Digest line `PlayerBase:337` is the pre-DeRap config.bin number; the extracted file puts this on `SurvivorBase`.)
+(desde 1.30: `Skinning` on `SurvivorBase` is Steaks / Guts / Bones / BloodInfectionSettings only — `exp/characters_data/DZ/characters/data/config.cpp:120-147`. No `Lard` class. Digest line `PlayerBase:337` is the pre-DeRap config.bin number; the extracted file puts this on `SurvivorBase`.)
 
 ## Surrender (no dummy item)
 
-(desde 1.30 Exp: `Man.IsSurrendered()` at `exp/scripts/scripts/3_Game/Entities/Man.c:67`; `PlayerBase.SetSurrenderState(bool)` at `PlayerBase.c:2116`; `EmoteManager.ForceSurrenderState` is `[Obsolete("1.30: Use PlayerBase::SetSurrenderState instead")]` at `EmoteManager.c:1255-1258`.)
+(desde 1.30: `Man.IsSurrendered()` at `exp/scripts/scripts/3_Game/Entities/Man.c:67`; `PlayerBase.SetSurrenderState(bool)` at `PlayerBase.c:2116`; `EmoteManager.ForceSurrenderState` is `[Obsolete("1.30: Use PlayerBase::SetSurrenderState instead")]` at `EmoteManager.c:1255-1258`.)
 
 The parent skill never documented `SurrenderDummyItem`. Do not detect surrender by an item-in-hands classname.
 
@@ -80,4 +80,4 @@ These sit on worn clothing, but they fire on the humanoid:
 
 ## Bone indices (rigging)
 
-See `references/character-rigging.md` § DayZ 1.30 Exp. Short: 250-bone cap gone; XML `index` unused except `EntityPosition`; names must match the `.xob`.
+See `references/character-rigging.md` § DayZ 1.30. Short: 250-bone cap gone; XML `index` unused except `EntityPosition`; names must match the `.xob`.

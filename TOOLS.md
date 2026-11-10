@@ -31,7 +31,7 @@ one.
 | [`dayz-animation-formats`](#tools-dayz-animation-formats) | Read/write/inspect RTM and SEAnim v1 | Yes |
 | [`dayz-model-preflight`](#tools-dayz-model-preflight) | Gate a `.p3d` against a contract before export | No — read-only |
 | [`dayz-odol-strict`](#tools-dayz-odol-strict) | Inspect and diff binarized ODOL models | No — read-only |
-| [`dayz-ui-lab`](#tools-dayz-ui-lab) | Parse, compose, render and diff `.layout` UIs offline | Reports only |
+| [`dayz-ui-lab`](#tools-dayz-ui-lab) | Parse, compose, render and diff `.layout` UIs offline; give the 1.30 widget IDs | Reports only |
 | [`dayz-layout-viewer`](#tools-dayz-layout-viewer) | Preview a `.layout` as HTML at four viewports | **Yes** — one `.preview.html` |
 | [`dayz-3d-viewer`](#tools-dayz-3d-viewer) | Convert MLOD `.p3d`, PAA and RVMAT to glTF + HTML | **Yes** — `.glb`, PNG, HTML |
 | [`dayz-script-validator`](#tools-dayz-script-validator) | Lint Enforce, `config.cpp`, `.layout` and `.rvmat` before packing | Reports only |
@@ -297,6 +297,9 @@ python tools/dayz-ui-lab/dayz_ui_lab/scenario.py --scenario s.json --viewport 19
 python tools/dayz-ui-lab/dayz_ui_lab/render.py --scenario s.json --viewport 1920x1080 --out render.json
 python tools/dayz-ui-lab/dayz_ui_lab/diff.py --observed render.json --expected ref.json --report diff.json
 python tools/dayz-ui-lab/dayz_ui_lab/corpus.py --root .
+python tools/dayz-ui-lab/dayz_ui_lab/widget_ids.py derive <layout> [--json]
+python tools/dayz-ui-lab/dayz_ui_lab/widget_ids.py scan <dir> [--json]
+python tools/dayz-ui-lab/dayz_ui_lab/widget_ids.py collide <layout> [--json]
 ```
 
 `diff.py` reports broken references, clipping, overlap and missing states per
@@ -304,6 +307,19 @@ widget and scenario. `corpus.py` is the regression gate: it parses the pinned
 public corpora (VPP, Expansion, TraderPlus, TraderX) plus a first-party negative
 set — **376/376 layouts, zero diagnostics** — and audits that no third-party
 layout is redistributed with the pack.
+
+`widget_ids.py` gives the IDs by which a DayZ 1.30 layout variant addresses
+vanilla widgets (`Class "{id}" { Prefab "{id}" }`; how they are derived:
+`skills/dayz-ui-development/references/layout-variants-130.md`). `derive` lists
+each widget with the ID its layout stores, the ID derived from its name and its
+ancestors' names, and whether the two match; where a layout stores an ID, that
+is the one that counts. `scan` counts the stored and the matching IDs of every
+`.layout` under a folder, and `collide` lists the IDs that two widgets of one
+layout share, such as the two `top` siblings of
+`xbox/day_z_ingamemenu_xbox.layout`. Stdlib only; it reads through `parse.py`.
+Exit 2 on a file it cannot read or parse; `scan` exits 1 when a file fails to
+parse, and `collide` when an ID is shared. On the 1.30.164200 and 1.30.164289
+vanilla layouts `scan` counts 1,438 stored IDs, 1,395 of them derived.
 
 **The offline render is not the engine.** It is a semantic model good enough to
 catch structural mistakes before a build; DayZDiag remains the golden reference

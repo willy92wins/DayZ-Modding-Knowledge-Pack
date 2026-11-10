@@ -13,7 +13,7 @@ description: >
 # DayZ PBO Build Validator
 
 Complete pre-build validation pipeline for DayZ mod addons. Catches configuration errors, missing assets, and structural problems BEFORE packing into PBOs—avoiding in-game crashes and deployment failures.
-(until 1.29: the folder structure, stringtable.csv, include-list, and "Duplicate class names" check below remain the 1.29 contract.) (since 1.30 Exp: binarizer also **stops** if a member is defined multiple times in one class; unpacked `-mod` is a diag iteration path, not a shipping substitute. Details: [dayz-1-30-pbo-build.md](references/dayz-1-30-pbo-build.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the folder structure, stringtable.csv, include-list, and "Duplicate class names" check below remain the 1.29 contract.) (since 1.30: binarizer also **stops** if a member is defined multiple times in one class; unpacked `-mod` is a diag iteration path, not a shipping substitute. Details: [dayz-1-30-pbo-build.md](references/dayz-1-30-pbo-build.md).)
 
 ## Overview
 
@@ -36,7 +36,7 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
 ### 1. Folder Structure Validation
 
 **Checks performed:**
-- **REQUIRED:** `config.cpp` exists at addon root
+- **REQUIRED:** `config.cpp` exists at addon root (a 1.30 `gui`-prefix shadow PBO holding only layouts loaded without one on 1.30.164289: `references/dayz-1-30-pbo-build.md`)
 - **REQUIRED:** `$PBOPREFIX$` file exists (single line: `mymod\myaddon` format)
 - **RECOMMENDED:** `data/` folder (for textures, .rvmat, .p3d files)
 - **RECOMMENDED:** `scripts/` folder (for .c, .cpp, .h files)
@@ -77,7 +77,7 @@ This check is critical—most DayZ mod failures start here.
 - **AnimationSources reference check:**
   - Any AnimationSource defined here must be referenced in model.cfg (if model.cfg exists)
 - **Duplicate class names:** Same class cannot be defined twice
-- **Duplicate members (since 1.30 Exp [CHANGELOG]):** Same member cannot be defined twice inside one class body — binarizer **stops** (`work\changelog-1.30-exp-modding.md:19`). Not the same as `class Foo;` forward + `class Foo: Bar {}` definition. See `references/common-validation-failures.md` and `references/dayz-1-30-pbo-build.md`.
+- **Duplicate members (since 1.30 [CHANGELOG]):** Same member cannot be defined twice inside one class body — binarizer **stops** (`work\changelog-1.30-exp-modding.md:19`). Not the same as `class Foo;` forward + `class Foo: Bar {}` definition. See `references/common-validation-failures.md` and `references/dayz-1-30-pbo-build.md`.
 - **No syntax helpers:** Reject obvious Python/macro syntax in .cpp (these get missed at compile time)
 
 **Example output:**
@@ -422,7 +422,7 @@ mymod\myaddon
 - Use backslashes `\` (not forward slashes)
 - No trailing backslash
 - No quotes or extra whitespace
-- Must be unique across all addons (namespace collision = invisible mod)
+- Must be unique across all addons (namespace collision = invisible mod), unless the PBO sets the 1.30 header property `fsShadowing=1` to shadow vanilla files on purpose (`references/dayz-1-30-pbo-build.md`)
 
 **Example folder structure:**
 ```
