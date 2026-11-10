@@ -108,9 +108,9 @@ ES_UNDEFINED_BUILTIN_METHOD_MESSAGE = (
     "({where}), no modded {builtin} of the addon or an --external-scripts "
     "root, not Class. The compiler stops with \"Undefined function "
     "'{builtin}.{method}'\" and the whole script module does not compile "
-    "(DayZ 1.30.164200, on vector.Cross, which only the 1.30.164014 Exp "
-    "scripts declare). Check the method in the scripts of the build the addon "
-    "runs on, and pass that tree as --vanilla-root."
+    "(DayZ 1.30.164200, on vector.Cross, which the 1.30.164014 Exp and "
+    "1.30.164078 scripts declare). Check the method in the scripts of the "
+    "build the addon runs on, and pass that tree as --vanilla-root."
 )
 
 
