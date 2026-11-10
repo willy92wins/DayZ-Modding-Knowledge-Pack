@@ -403,8 +403,10 @@ suspicious code could have executed before the symptom:
    regression, demonstrate that the diff executed before the symptom. If there is no prior
    marker, correlation with the build does not attribute causality: instrument the
    callback observing the effect and capture the full stack to name the
-   caller. On client, emit the stack line by line because the logger cuts
-   long messages around 255 characters. Only bisect the diff if its
+   caller. Emit the stack line by line: the 1.29 retail logger cuts long
+   messages around 255 characters, while on 1.30 neither DayZDiag nor the
+   retail server does (the 1.30 retail client was not measured)
+   [EXACT][CLAIM-WF-LOG-CUT-129-ONLY]. Only bisect the diff if its
    temporal reachability is proven and the cause remains open.
 
 ---

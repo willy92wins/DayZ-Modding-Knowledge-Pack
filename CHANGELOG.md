@@ -34,6 +34,38 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   are optional, and a shadow PBO does not hide the vanilla files it does not hold. `SKILL.md` says so where
   it requires `config.cpp`.
 
+### Fixed
+
+- From checking bzed's `dayz-dev` skill (#161) against vanilla and against the game on
+  Windows:
+  - `dayz-test-ingame`: a `serverDZ.cfg` without `instanceId` is a second cause of the
+    `termination in: N` countdown, even with `class Missions` declared (retail DayZServer
+    1.30.164289, 2026-11-10; `CLAIM-TEST-SERVERCFG-INSTANCEID-130`). "MOD PATHS MUST BE ABSOLUTE" now
+    says that it was measured on Windows, that a relative path climbing out of the server folder with
+    `..\` stops the server at an error window instead of failing silently
+    (`CLAIM-TEST-MODPATH-DOTDOT-130`), and that bzed reports the reverse rule on the native Linux
+    server (not re-measured).
+  - `enforce-script-reference`: point 21b of `references/timers-performance.md` (a `CallLater`
+    re-queued from its own callback never fires again) is scoped to client diag 1.29, where it was
+    measured: on the retail DayZServer 1.30.164289 a `CALL_CATEGORY_SYSTEM` and a
+    `CALL_CATEGORY_GAMEPLAY` chain both ran all six steps (`CLAIM-ENF-CALLLATER-REQUEUE-130`). The
+    `FindFile` directory listing of `references/verified-api-catalog.md` used `do { } while`, which
+    Enforce does not have; it is a `while` loop now.
+  - `dayz-mod-workflow` (LL-304): the cut of long log messages around 255 characters is the 1.29
+    retail logger's; neither DayZDiag 1.30 nor the 1.30 retail server cuts
+    (`CLAIM-WF-LOG-CUT-129-ONLY`).
+  - `knowledge/DAYZ_INFRA.md`: `globals.xml` lives in the mission's `db/`; the script log is
+    `script_<date>_<time>.log`, and the retail server's RPT repeats its `SCRIPT` lines; the June
+    note that the retail DayZServer never finishes loading the mission on that machine was not
+    reproduced on 1.30.164289.
+  - `knowledge/vault-notes/dayz-wiki-systems-reference.md`: DayZ Tools is Steam app 830640, not
+    1042420; `vonCodecQuality` goes up to 30, as the shipped `serverDZ.cfg` says; with `-profiles=`
+    BattlEye works from `<profiles>/BattlEye/`, keeps no `beserver_x64_active_*.cfg` copy and takes
+    `RConPort` from that cfg on every start (retail 1.30.164289).
+  - `dayz-scripts.yadz.app`, cited as a script API mirror in `dayz-ui-development`,
+    `knowledge/public-wiki-harvest-2026-09.md` and the wiki systems reference, now redirects to
+    `diff.yadz.app`, and its Doxygen pages return 404.
+
 ## [1.7.0] - 2026-11-10
 
 The pack consolidated for DayZ 1.30 stable: every vanilla script citation, and the data citations
