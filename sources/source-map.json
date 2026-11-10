@@ -1771,10 +1771,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "pack-162-resolution-165@2026-11-10",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: the Unreleased entries of ES-FORMULA-TOO-COMPLEX (pipeline inbox 7b9e/7ce1) and ES-EMPTY-IFDEF (pipeline inbox dada) say what the vanilla control measured on the owner's PC on 2026-11-10, on DayZ 1.30.164289 stable (tree digest fd826b40, 3057 files), in place of 'not run': --update moved the 7 ES-EMPTY-IFDEF hits from errors (15 to 8 entries) to warning_counts (424 to 431 warnings) and no other finding moved, the check after it and a --json run passed, and ES-FORMULA-TOO-COMPLEX gave no finding.",
+          "license": "MIT",
+          "source_hash": "88af397e47d162aa2854861685fc9c7794940255de6cce567e31d5a7f278a0fd",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-control-162@2026-11-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c96afefd80d96479da7d9649f07ffe05f0871b8f75349d4abfc69c70de763eca",
+      "output_hash": "88af397e47d162aa2854861685fc9c7794940255de6cce567e31d5a7f278a0fd",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19973,10 +19983,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "pack-162-resolution-165@2026-11-10",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: the evidence of CLAIM-ENFORCE-FORMULA-TOO-COMPLEX says that the vanilla control on the owner's PC found no finding of the rule on DayZ 1.30.164289 stable (3057 files, tree digest fd826b40), in place of 'the rule has not run on a vanilla tree'. Only that sentence changes; its range and the other claims are untouched.",
+          "license": "MIT",
+          "source_hash": "df81da6320a580c56c199934f1f659c3ba4eef0989b9bade793f3929e021e237",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-vanilla-control-162@2026-11-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "206bac172c5660fdb49f4f9642d9ad398dab263528d7f985cd453dcd6c444617",
+      "output_hash": "df81da6320a580c56c199934f1f659c3ba4eef0989b9bade793f3929e021e237",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -23398,10 +23418,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-e074@2026-11-09",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: the vanilla control on the owner's PC ran this branch's validator (00b05447023e1b3ac54581c868b572f40c5c1dc9) over P:\\scripts, DayZ 1.30.164289 stable (tree digest fd826b4016910c5ca99046158d6e07aea79b4e52722b5ad20b36ffed8e527a1e, 3057 files), three times: ES-FORMULA-TOO-COMPLEX gave no finding in any of them. The detector runs on every script file (scripts/script_validator.py:170 and :419-421). The 'Measured on 2026-10-03' paragraph says so in place of 'has not run on a vanilla tree yet'.",
+          "license": "MIT",
+          "source_hash": "ce4e19a70da831ead0ae0b0815ea12e6b4b15e66ca2c26319faff8fe7d708673",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-control-162@2026-11-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ed47e94e6d68c085d0245f20f3f6a60572f304d3c0a2c185cbe3e5125e5996f6",
+      "output_hash": "ce4e19a70da831ead0ae0b0815ea12e6b4b15e66ca2c26319faff8fe7d708673",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -24636,10 +24666,20 @@
           "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
           "source_revision": "kp-update-vanilla-164289@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-10: vanilla control re-baselined on the same tree, DayZ 1.30.164289 stable (P:\\scripts on the owner's PC, digest fd826b4016910c5ca99046158d6e07aea79b4e52722b5ad20b36ffed8e527a1e, 3057 files, 14032879 bytes), after ES-EMPTY-IFDEF became WARN (pipeline inbox dada). Run with Python 3.14 in a review clone of this branch at 00b05447023e1b3ac54581c868b572f40c5c1dc9: vanilla_control.py --update exited 0 and reported only the 7 ES-EMPTY-IFDEF entries as stale (3_game/entities/entityai.c, 3_game/gui/hints/uihintpanel.c, 3_game/ppemanager/materials/ppematclassesbase.c, 4_world/classes/bunkerbroadcasthandler.c, 4_world/classes/environment/environment.c, 4_world/classes/useractionscomponent/actionbase.c, 4_world/plugins/pluginbase/plugintransmissionagents.c) and ES-EMPTY-IFDEF as a new warning rule. It wrote errors 15 to 8 entries, warnings 424 to 431 with ES-EMPTY-IFDEF: 7 in warning_counts, and changed nothing else but elapsed_seconds (the file it wrote, sha256 fad72a1d9efe3e4dbf5596b26d0564a25b99f277b2cc0a27705b559501066daa, 4371 bytes, was rebuilt here byte for byte from the previous baseline). The check after it and a --json run exited 0 with the same digest and empty extra, missing, new-rule and count lists; ES-FORMULA-TOO-COMPLEX gave no finding. The measured block was then set by hand: date 2026-11-10 and three runs, with elapsed_seconds as --update wrote it. By the wall clock the three runs took 348.6, 349.8 and 285.8 s.",
+          "license": "MIT",
+          "source_hash": "3bcf90da8264ab17e1eced38b5fc6f9f771dee390e48da8bdfe93075edc5c3d5",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
+          "source_revision": "kp-update-vanilla-control-162@2026-11-10",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "98f9ff744a37b66437d8e13160d36c40856115ae342dc42246dd8ecc9f2fdeaa",
+      "output_hash": "3bcf90da8264ab17e1eced38b5fc6f9f771dee390e48da8bdfe93075edc5c3d5",
       "output_path": "tools/dayz-script-validator/tests/baselines/vanilla_control_baseline.json",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

@@ -396,8 +396,8 @@ counted together.
 Measured on 2026-10-03: nothing on vanilla 1.29.0.163451 (69 `%` judged) or
 on vanilla 1.30.164014 Exp (94 `%`), and on the source that failed in game,
 `vector local;`, the reserved-word rule fires on that line. Vanilla
-compiles a statement with 14 `+`. `ES-FORMULA-TOO-COMPLEX` has not run on
-a vanilla tree yet: the machine that wrote it has none.
+compiles a statement with 14 `+`. On 2026-11-10 the vanilla control found
+no `ES-FORMULA-TOO-COMPLEX` on vanilla 1.30.164289 (3057 files).
 
 ## Tests
 

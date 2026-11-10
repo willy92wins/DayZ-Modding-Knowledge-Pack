@@ -32,9 +32,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   compiler named; 14 and 17 terms, 20 numbers, and the 20 terms split across two statements give
   nothing. `enforce-script-reference` `references/pitfalls-advanced.md`: item 4 of the compile-fail
   families gives the measured limit (`CLAIM-ENFORCE-FORMULA-TERMS-130`) and the SP-080 cascade section
-  points to it; `CLAIM-ENFORCE-FORMULA-TOO-COMPLEX` covers the rule's header. The rule has not run on a
-  vanilla tree (none on the machine that wrote it); the vanilla control fails with a new warning rule if
-  it finds any on the owner's PC, and those hits must be triaged before `--update`.
+  points to it; `CLAIM-ENFORCE-FORMULA-TOO-COMPLEX` covers the rule's header. The vanilla control on the
+  owner's PC on 2026-11-10 found none on DayZ 1.30.164289 stable (3057 files).
 - `dayz-script-validator` and `enforce-script-reference`: the `%` failure measured again (pipeline inbox
   d35a), on DayZDiag 1.30.164289.70 (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, server
   only, one probe mod per run. In a mod's `4_World` script, `float x = (cell % 103) * 150 + 150 * 0.5;`
@@ -97,11 +96,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `references/pitfalls-advanced.md` section 5 and its style-guide bullet, three lines of its
   `SKILL.md` and `_shared/enscript-style.md` now say what was measured
   (`CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130`), and `dayz-pbo-build` and `dayz-mod-workflow` no longer
-  list an empty `#ifdef` among the errors that stop a build. The vanilla control was not run (no
-  vanilla tree on the machine that wrote this) and its baseline was not edited: it allows the 7
-  `ES-EMPTY-IFDEF` hits of 1.30.164289 as errors, which now come out as warnings, so the control
-  fails until `vanilla_control.py --update` runs on the owner's PC, which should move them from
-  `errors` (15 to 8 entries) to `warning_counts` (`ES-EMPTY-IFDEF`: 7, 424 to 431 warnings).
+  list an empty `#ifdef` among the errors that stop a build. The vanilla control is re-baselined on
+  the owner's PC on 2026-11-10, on the same DayZ 1.30.164289 stable tree (digest `fd826b40`):
+  `vanilla_control.py --update` moved the 7 `ES-EMPTY-IFDEF` hits from `errors` (15 to 8 entries) to
+  `warning_counts` (`ES-EMPTY-IFDEF`: 7, 424 to 431 warnings) and no other finding moved; the check
+  after it and a `--json` run pass with the same findings and digest.
 
 ### Fixed
 
