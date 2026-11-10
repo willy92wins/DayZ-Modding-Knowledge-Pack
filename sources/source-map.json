@@ -1711,10 +1711,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "claude/project-thread-l0hlko@2026-11-10",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Changed gains the entry for the GP6 measurements of layout-variants-130.md (one screen only, the layout GUID as a CRC-64 of its path, imageset and styles shadows). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2b2e8a840e0061c2061b2adb58a5f5a4c10a616be4826682214adfa1a0e501a7",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "claude/project-thread-h217et@2026-11-10",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a10b41912a97cc7f098684212127340ad44e78b579af9cc9907147b65cc7fc2e",
+      "output_hash": "2b2e8a840e0061c2061b2adb58a5f5a4c10a616be4826682214adfa1a0e501a7",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13906,10 +13916,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "pack-140-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The index line of references/layout-variants-130.md names its new sections 4 and 5 (one screen only through a layout that inherits the vanilla one by its GUID, a CRC-64 of its path; imageset and styles shadows replace the whole file). One line changed, line count unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7c23b1d9b1dfbc6999cb510f4834143353b5628240924682d864ae2ecbf174ab",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "claude/project-thread-h217et@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "cd943bdf8d3b3b1d24721215d200a1a5c58918e0ed19c777975f3763ca212a7e",
+      "output_hash": "7c23b1d9b1dfbc6999cb510f4834143353b5628240924682d864ae2ecbf174ab",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -19713,10 +19733,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "claude/project-thread-l0hlko@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Five runtime claims from runs Q1, Q2 and Q3 of the 66306aa gap test: CLAIM-UI-VARIANT-INHERIT-GUID-130, CLAIM-UI-LAYOUT-GUID-CRC64-130, CLAIM-UI-VARIANT-INHERIT-STACKS-130, CLAIM-UI-SHADOW-IMAGESET-REPLACES-130 and CLAIM-UI-SHADOW-STYLES-REPLACES-130. No other range moves: the page changes only from line 154 and SKILL.md keeps its line count. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b02b5d2ebb66e9587724e04fc6cfdfda62aec4cd1b52cc684a32fab8dfb6e2a2",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "gap-66306aa-ingame-gp6@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "065a05ef9ef7035727877913b0d8a353d6a845063c23f97271c251584fba92d8",
+      "output_hash": "b02b5d2ebb66e9587724e04fc6cfdfda62aec4cd1b52cc684a32fab8dfb6e2a2",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38685,10 +38715,20 @@
           "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
           "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, runs Q1, Q2 and Q3 (plan GP5): the section 4 of unknowns becomes section 4, one screen only (CLAIM-UI-VARIANT-INHERIT-GUID-130, CLAIM-UI-LAYOUT-GUID-CRC64-130, CLAIM-UI-VARIANT-INHERIT-STACKS-130), section 5, shadows of an imageset and of the styles (CLAIM-UI-SHADOW-IMAGESET-REPLACES-130, CLAIM-UI-SHADOW-STYLES-REPLACES-130), and section 6 with the two unknowns left. Lines 1-153 unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "81b8d065ac0c9514c85980885dd07d01756f1f1bbeedf9a322283171581bced6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+          "source_revision": "gap-66306aa-ingame-gp6@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "77db3c18b84789d154b789b9bc0f12ba55d5b53dc5fddd00d17d8eb4749d6172",
+      "output_hash": "81b8d065ac0c9514c85980885dd07d01756f1f1bbeedf9a322283171581bced6",
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
