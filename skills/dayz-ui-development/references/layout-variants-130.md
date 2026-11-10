@@ -151,8 +151,78 @@ claim: CLAIM-UI-VARIANT-NO-CONFIG-REPORT A community author reports packing each
 `config.cpp`, through an `OVERRIDE` marker file in their own tool, and says pboProject refuses such folders.
 The measurement above agrees with the first part; the pboProject refusal is not verified here.
 
-## 4. Unknowns — do not promise these
+## 4. One screen only: inherit the vanilla layout in a layout of your own
 
-- **Per-screen toggling.** No mechanism known: as measured, a loaded variant is always applied. Put
-  conditional behaviour in script, not in the variant.
-- **Variants of other resource types.** Not measured: only layout variants have been made and loaded.
+[EXACT][CLAIM-UI-VARIANT-INHERIT-GUID-130] **A layout at your own path that inherits the vanilla layout by
+its GUID gives the vanilla tree with your edits, and the vanilla layout stays as it was.** On DayZDiag
+1.30.164289 (2026-11-10), a file in the mod's own folder whose root line is
+`FrameWidgetClass : "{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout" {` and whose body is a variant in
+the format of §1 (`dayz_logo` hidden, a widget `l5p3_added` added inside `Licensing`), created by script with
+`CreateWidgets` on its own path, gave the whole vanilla tree with both edits:
+`children=8 licensing_children=3 logo_vis=0 added_p3=1@Licensing`, where the vanilla path gives
+`children=8 licensing_children=2 logo_vis=1`. The Esc menu, which creates the vanilla path, did not get those
+edits: `logo_vis=1 added_p3=0` in the same runs, and `added_p3=0` in a run where it opened after that layout
+had been created.
+
+What did not work, in the same runs:
+
+- The same root with the path and no GUID, `FrameWidgetClass : "gui/layouts/day_z_ingamemenu.layout" {`,
+  gave what the body gives with no base: a root with no name and no children (`children=0`), and one
+  `GUI (W): Overridden prefab member (GUID: '{…}' type: …) no longer exists in prefab` per entry of the body.
+- `CreateWidgets("{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout")` returned null, with
+  `SCRIPT (E): Cannot open layout '{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout'` and
+  `Cannot load layout` for the same name. The GUID form names a base inside a layout; script does not open it.
+
+[EXACT][CLAIM-UI-LAYOUT-GUID-CRC64-130] **A layout's GUID is a CRC-64 of its path, with or without a
+`.meta`.** The client log of 1.30.164289 names layouts with their GUID in `GUI : Layout load @"{GUID}path"`
+lines, also layouts packed without a `.meta`: `{D28473AC9D1FDDED}L5Probe3/gui/l5p3_noinherit.layout`,
+`{BF87DB555BA864F7}L5Probe3/gui/l5p3_inherit_path.layout`,
+`{D87638C86BF5A92A}DayZ_MCP/gui/layouts/mcp_dialog.layout`, and the Esc menu's
+`{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout` (§1). Computed offline on 2026-11-10, each of the four
+is the CRC-64/WE of the path in upper case with forward slashes (`GUI/LAYOUTS/DAY_Z_INGAMEMENU.LAYOUT` gives
+`8648FA7C9D16ED7D`): polynomial `0x42F0E1EBA9EA3693`, MSB first, no reflection, init and final XOR
+`0xFFFFFFFFFFFFFFFF` (check value of `123456789`: `62EC59E3F1A4F00A`), written as 16 upper-case hex digits.
+
+[EXACT][CLAIM-UI-VARIANT-INHERIT-STACKS-130] **With a variant of the same layout loaded, the inherited base is
+the varied layout.** With the PBO of `CLAIM-UI-VARIANT-NO-CONFIG-130` loaded, the layout above gave both its
+own edits and the variant's: `licensing_children=4 logo_vis=0 added_variant=1@Licensing added_p3=1@Licensing`.
+A variant at the vanilla path applies to every creation of that path, script included:
+`CreateWidgets("gui/layouts/day_z_ingamemenu.layout")` gave `logo_vis=0 added_variant=1@Licensing`.
+
+[INFERRED] To change one screen only, have that screen's script create a layout of your own that inherits
+the vanilla one, and ship no variant at the vanilla path: a variant there reaches every screen that uses the
+layout. The GUID of another vanilla layout is the same CRC of its path; only the Esc menu's has been used as
+a base in game.
+
+## 5. Shadows of an imageset or of the styles replace the whole file
+
+[EXACT][CLAIM-UI-SHADOW-IMAGESET-REPLACES-130] **An imageset in a `gui` shadow PBO replaces the vanilla
+imageset; it does not merge with it.** On DayZDiag 1.30.164289 (2026-11-10), a PBO with `prefix=gui` and
+`fsShadowing=1`, packed like the one of `CLAIM-UI-VARIANT-NO-CONFIG-130`, held only
+`imagesets/BleedingDrops.imageset`: the vanilla file cut to two images, `Bleeding2` resized from 128 x 128 to
+100 x 100 and a new `l5p3_added` of 64 x 64. `ImageWidget.LoadImageFile(i, "set:BleedingDrops image:<name>")`
+and `GetImageSize` gave `Bleeding2` 100 x 100 and `l5p3_added` 64 x 64, and `Bleeding1` failed. Without the PBO,
+`Bleeding1` and `Bleeding2` gave 128 x 128 and `l5p3_added` failed. The images the file did not repeat were
+gone for the game too: the log has
+`GUI (E): ImageWidget::LoadImageFile can't set image 'set:BleedingDrops image:Bleeding3'` and the same line
+for `Bleeding4` to `Bleeding16`, images the probe never loaded.
+
+[EXACT][CLAIM-UI-SHADOW-STYLES-REPLACES-130] **The widget styles behave the same.** A PBO of the same kind
+held only `looknfeel/dayzwidgets.styles`, with one `<Widget Name="TextWidget">` section of two styles:
+`Normal` moved from `gui/fonts/MetronBook` to `gui/fonts/MetronLight`, and a new `L5Style` on
+`gui/fonts/MetronLight`. `TextWidget.GetTextSize` gave the width of one 40-character text under four `style`
+values. Without the PBO the widths were `Normal 680`, `Bold 690`, `Light 670` and `L5Style 680`; with it, all
+four were `670`. So the file is read (`L5Style` draws like vanilla `Light`, which is on `MetronLight`),
+`Normal` is replaced by name, and `Bold`, which the file does not repeat, draws like the new `Normal`. A style
+name that does not exist draws like `Normal` too (`L5Style` without the PBO). No error line of that run names
+`dayzwidgets`.
+
+[INFERRED] A shadow of an imageset or of `dayzwidgets.styles` has to hold the whole vanilla file with your
+changes, and it changes those images or styles on every screen. A full copy was not loaded in game.
+
+## 6. Unknowns — do not promise these
+
+- **Resource variants made in Workbench for other types.** The shadows of §5 were plain files. Whether a
+  Workbench resource variant of an `.imageset` or of the styles merges like a layout variant is not measured.
+- **A layout inherited by a widget inside another layout** (`Class "{id}" : "{GUID}path"` on a child) is not
+  measured.

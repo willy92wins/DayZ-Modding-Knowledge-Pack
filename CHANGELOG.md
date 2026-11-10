@@ -102,6 +102,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `warning_counts` (`ES-EMPTY-IFDEF`: 7, 424 to 431 warnings) and no other finding moved; the check
   after it and a `--json` run pass with the same findings and digest.
 
+- `dayz-ui-development` `references/layout-variants-130.md`: the last two unknowns of the page, measured on
+  DayZDiag 1.30.164289 (2026-11-10). One screen only: a layout at the mod's own path whose root inherits the
+  vanilla layout by its GUID (`FrameWidgetClass : "{GUID}path" {`) gives the vanilla tree with its edits,
+  and the vanilla layout stays as it was; the same root without the GUID gives an empty tree, and
+  `CreateWidgets` does not open the `{GUID}path` form; with a variant of that layout loaded, the inherited
+  base is the varied one. A layout's GUID is the CRC-64/WE of its path in upper case, with or without a
+  `.meta` (checked against four GUIDs of the client log). Shadows of `imagesets/BleedingDrops.imageset` and
+  of `looknfeel/dayzwidgets.styles` replace the whole vanilla file: what they do not repeat is gone.
+  `CLAIM-UI-VARIANT-INHERIT-GUID-130`, `CLAIM-UI-LAYOUT-GUID-CRC64-130`, `CLAIM-UI-VARIANT-INHERIT-STACKS-130`,
+  `CLAIM-UI-SHADOW-IMAGESET-REPLACES-130`, `CLAIM-UI-SHADOW-STYLES-REPLACES-130`. Two unknowns stay:
+  Workbench resource variants of other types, and a layout inherited by a widget inside another layout.
+  `SKILL.md` names the new sections where it points to the page.
+
 ### Fixed
 
 - From checking bzed's `dayz-dev` skill (#161) against vanilla and against the game on
