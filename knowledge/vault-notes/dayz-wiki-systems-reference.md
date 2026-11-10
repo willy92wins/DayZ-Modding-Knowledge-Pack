@@ -7,7 +7,7 @@
 > 3D/vehicle modding, but captured at user request to avoid re-investigating.
 >
 > **Guardrail**: for any Enforce/config identifier, require a `community.bistudio.com` URL
-> before stating it as fact. `dayzexplorer.zeroy.com` / `dayz-scripts.yadz.app` / fandom = "plausible,
+> before stating it as fact. `dayzexplorer.zeroy.com` / `diff.yadz.app` / fandom = "plausible,
 > unverified" — label as such.
 
 ## ⚠️ ERRATA permanente (CORRECTED / DOWNGRADED) — no reintroducir
@@ -19,7 +19,8 @@
 - `Stamina.c` / `StaminaHandler.c` / `environment.c` / `m_HeatComfort` / `UniversalTemperatureSource`
   as "documented in wiki" = **false**: they only appear on third-party mirrors. (Note: they are REAL
   vanilla APIs in decompiled code — what is false is attributing them to the wiki, not their existence.)
-- `vonCodecQuality` range **0–20** (not 0–10 as some host-docs claim).
+- `vonCodecQuality` range **0–30**: the `serverDZ.cfg` shipped with the Steam DayZServer says `(values 0-30)`
+  (read 2026-11-09 on 1.30.164200); some host docs say 0–10 or 0–20.
 
 ## 1. Entorno / hazard
 
@@ -64,7 +65,7 @@
   `environmentMaxTemps[12]` (monthly arrays), `wetnessWeightModifiers[1.0,1.0,1.33,1.66,2.0]` (5
   states DRY..DRENCHED). `WorldWetTempUpdate` (globals.xml, master toggle). Enable:
   `enableCfgGameplayFile=1` in serverDZ.cfg. URL: `/wiki/DayZ:Gameplay_Settings`.
-- **VOIP** (serverDZ.cfg): `disableVoN` (0/1), `vonCodecQuality` (0–**20**).
+- **VOIP** (serverDZ.cfg): `disableVoN` (0/1), `vonCodecQuality` (0–**30**).
 
 ## 4. Surfaces / clutter / projection (terrain authoring — low reuse)
 - **CfgSurfaces** derives `DZ_SurfacesInt`/`DZ_SurfacesExt` (`DZ_Surfaces` addon). Params: `files`,
@@ -94,7 +95,11 @@
 - Diag/logging: `-doLogs`, `-adminLog`, `-netLog`, `-freezeCheck`, `-filePatching`, `-cpuCount=`
   (≤ logical cores), `-limitFPS=` (cap, max 200). `priority.txt` (SteamIDs `;`-sep, login queue).
 - BattlEye: `BEServer_x64.cfg` next to `BEServer_x64.dll`; `-bePath`; `RConPassword`, `RestrictRCon 1`.
-- Linux server: `./DayZServer` binary (SteamCMD app 223350; client 221100; Tools 1042420); mods by
+  With `-profiles=` and no `-bePath`, the retail DayZServer 1.30.164289 (Windows, 2026-11-10) used
+  `<profiles>/BattlEye/` (only `BEServer_x64.cfg` and `BEServer_x64.dll` there), left no
+  `beserver_x64_active_*.cfg` copy and took `RConPort` from that cfg on every start (moved from 27331 to
+  27332 between two runs, RCon listened on 27332).
+- Linux server: `./DayZServer` binary (SteamCMD app 223350; client 221100; DayZ Tools 830640); mods by
   workshop ID via symlinks; NOT as root; systemd unit. Discrepancy: wiki documents native Linux
   binary, but independent host-docs state stable runs Windows-under-compat → flag.
   URL: `/wiki/DayZ:Server_Configuration`, `/wiki/DayZ:Hosting_a_Linux_Server`.

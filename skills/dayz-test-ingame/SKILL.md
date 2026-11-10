@@ -153,6 +153,7 @@ The orchestrator checks these every run and fixes what it safely can. Verified o
   [EXACT — DAYZ_INFRA.md §Canonical invocation commands — Server diag]. Aliases:
   `chernarus`/`livonia`/`sakhal`. [EXACT — DAYZ_INFRA.md §Mission templates — canonical aliases]
 - **`class Missions` in `serverDZ.cfg`** — a dedicated server with a `dayzOffline.*` mission self-terminates before the mission loads (RPT countdown `[Server] :: termination in: N`) unless the config declares `class Missions { class DayZ { template="<mission>"; }; };`. With it, the server stays up with no client, which is what a server-side probe in the mission `init.c` needs. [EXACT] (measured in game, DayZ 1.30.164014 Exp, SP-434]
+- **`instanceId` in `serverDZ.cfg`** — keep it: without it a minimal config got the same countdown even though it declared `class Missions`. On the retail DayZServer 1.30.164289 (Windows, 2026-11-10) a hand-written `serverDZ.cfg` with `class Missions` and no `instanceId` counted down from `[Server] :: termination in: 10` right after `NETWORK : server: Player dpid=2 added`, with no `SteamGameServer_Init` line; the same file plus `instanceId = 1;` and nothing else passed Steam init, loaded the mission and ran until a test mod asked it to exit. Only `instanceId` was tested: whether another key of the shipped `serverDZ.cfg` would also avoid the countdown is unknown. The dev `serverDZ.cfg` the script generates already sets it (`templates/dayz-test.ps1:340`). [EXACT][CLAIM-TEST-SERVERCFG-INSTANCEID-130]
 - **AddonBuilder** — only when `-Build`. [EXACT — DAYZ_INFRA.md §Canonical invocation commands — AddonBuilder]
 - **Steam client session** — for CLIENT-launching modes only (`offline`, `client`, `all`),
   `HKCU\Software\Valve\Steam\ActiveProcess` must have both `pid != 0` and
@@ -436,6 +437,16 @@ but your mod's classes simply aren't there.
 Verified via an in-mission `ConfigIsExisting("CfgPatches LFQuad")` probe on a headless `-server`:
 - `-mod=@LFQuad` (relative, cwd=game) → `CfgPatches.LFQuad = 0` (absent).
 - `-mod=C:\...\DayZ\!Workshop\@LFQuad` (absolute) → `CfgPatches.LFQuad = 1`, `LFQuad_base = 1`.
+
+That was measured on Windows, and the failure is not always silent:
+- A relative path that climbs out of the server folder with `..\` does not mount either, and it is loud: the retail
+  DayZServer 1.30.164289 (2026-11-10, in `-serverMod`) stopped loading at an error window
+  `Cannot open file '<server>\..\..\…\@Name\addons\<pbo>'`, wrote an `ErrorMessage_DayZServer_x64_<date>.mdmp` into the
+  profile folder and never reached the mods' `PBO Load` lines; its RPT says nothing about it.
+  [EXACT][CLAIM-TEST-MODPATH-DOTDOT-130]
+- On the native Linux server the rule is reversed, as bzed reports (bzed/dayz-dev-plugin `03866175`,
+  `testing/local-server.md:273-276`, 1.29 and 1.30.164014; not re-measured for this pack): an absolute `-mod=` /
+  `-servermod=` path mounts nothing and gives no error, and the paths go relative to the server tree.
 
 `Get-ModString` now rewrites every bare `@Name` to its absolute `!Workshop` path via
 `Resolve-ModToken` (handles names with spaces like `@Dabs Framework`; passes through tokens that

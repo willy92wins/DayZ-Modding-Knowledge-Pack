@@ -442,7 +442,7 @@ advice is sound, but its `.layout` snippets are XML format (`<?xml?>` + `<Widget
 — the exact format verified to crash native CreateWidgets. NEVER copy its layout snippets**; Arma
 Reforger "Layout Creation" wiki (same early-Enfusion Layout Editor workflow DayZ uses). Bohemia wiki
 `Workbench` / `Game_Editor_(Workbench)` pages exist but block automated fetch (403) — confirm the
-exact editor menu path in-app. Searchable proto mirror: **dayz-scripts.yadz.app** (Doxygen-style
-PC-Stable script API with a "Widget UI system" group) — handy for quick signature lookups when the
-local dump is not at hand. Ecosystem hygiene: GitHub searches for "DayZ mod menu" surface
+exact editor menu path in-app. The Doxygen-style mirror once cited here, **dayz-scripts.yadz.app**,
+now redirects to **diff.yadz.app** and its class pages return 404 (checked 2026-11-09): for quick
+signature lookups use the local dump or DayZ-Script-Diff. Ecosystem hygiene: GitHub searches for "DayZ mod menu" surface
 cheat/malware template repos — never source UI code from them.

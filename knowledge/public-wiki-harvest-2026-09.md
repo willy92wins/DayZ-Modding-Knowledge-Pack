@@ -136,7 +136,7 @@ Distill: staging `distilled/BATCH-3.md`
 
 - **StarDZ** `DayZ-Modding-Wiki`: gotchas, five-layer script hierarchy, entity system, professional template, troubleshooting, first-mod tutorial (also github.io mirrors under staging `harvested/other/stardz/`).
 - **DZconfig wiki**: Understanding CE, loot balancing, types/events/globals, cfggameplay, cfgeconomycore, serverDZ.cfg, init.c.
-- **API explorers**: `dayzexplorer.zeroy.com` (1.29) + `dayz-scripts.yadz.app` — cite/browse; avoid vendoring giant class dumps into Pack zip.
+- **API explorers**: `dayzexplorer.zeroy.com` (1.29) + `diff.yadz.app` (formerly `dayz-scripts.yadz.app`, which redirects there; its Doxygen pages return 404 as of 2026-11-09) — cite/browse; avoid vendoring giant class dumps into Pack zip.
 - **GitHub +70 READMEs** via topics `dayz` / `enforce-script` / `dayz-mod` / `workbench` / `enfusion` + awesome/wiki searches (includes VPP, Epoch historical, WoozyMasta tooling, StarDZ, DayZGhost plugin, …).
 
 ### dayzmodding.dev / dayzmodding.com
@@ -148,4 +148,4 @@ Distill: staging `distilled/BATCH-3.md`
 
 - `stardz-dayz-modding-wiki-2026-09`
 - `dzconfig-wiki-2026-09`
-- `yadz-dayz-scripts-docs` / `zeroy-dayzexplorer` (URL-cite preferred)
+- `yadz-diff` / `zeroy-dayzexplorer` (URL-cite preferred)
