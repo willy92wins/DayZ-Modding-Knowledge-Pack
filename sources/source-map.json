@@ -1664,7 +1664,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4be1bf32ff6e1feab90331e149c852bc2044f2a6133bcd223ca0577ce611c6fe",
+      "output_hash": "a4adf0ea211724dfc26db3ca3b9f3e7be9213bdb6168fd33103a667a7cad2924",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6135,7 +6135,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6d7b8f1b94cab93e3e74aa323ef6122855b80aa16e1a052154c50c577c25183b",
+      "output_hash": "d7fcffa52a438a6c0fc35c467559850ee33efa218b66ca6c8e16e8a24c045098",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -6489,7 +6489,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0d7ea4576864df8328f563feba3121d6f1025b4409ebc4ef60b9a76c1c66694a",
+      "output_hash": "a91ae2c7e06f9326456ba96edb553bc3b5c93ed30292c165a8b452f03f45d09f",
       "output_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -9661,7 +9661,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "493e80c55a8b93aa6a8dfb5d88e3a9f89ceaab1eb8bbd1afc9f3aa917aa3a633",
+      "output_hash": "8e73e5c6b5285a2e4554b29bf90d2604007bb989e34dc8e39ce071233e63bd0a",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -16313,7 +16313,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "54cfd8e87703cad8ba0192e79ce61b8d399e7b5055c1a83d47bddd1d81b331d8",
+      "output_hash": "4248f8e4c325c3261d3ec3d2f80aedff91603cb5c617bacd12b63d12e78e9806",
       "output_path": "skills/dayz-weapons/references/bone-remap.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -34514,7 +34514,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "49eeef5c1c97c819091e82bde7362b23b5a63f86b84316f4a7851bced58357cd",
+      "output_hash": "92a8a9884e854e703e9b4f05490244e6b503c254727ce7dfc520389031133ddf",
       "output_path": "skills/dayz-environment-hazards/references/thermal-heatstroke.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -35096,7 +35096,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "23f04bca548b7200914d5c7ad324e22e09626f0b796a8970a60428bd28007cad",
+      "output_hash": "9625c900a4b33b13db6a2c5280e7298647dea38b1821b1fe63a84c5a52084f53",
       "output_path": "skills/dayz-physics-engine/references/dayz-1-30-ragdoll-and-fall.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "historical"

@@ -94,7 +94,7 @@ the skeleton, and keeping `SurfaceProperties` on a penetration `.bisurf`. Joint 
 relative to the parent. Masses in vanilla `human.ragdoll` (kg): pelvis 17 (`:5`), spine3 15 (`:23`),
 head 6.1 (`:39`), leftarm 2.1 (`:54`), leftforearm 1.7 (`:69`), rightarm 2.1 (`:85`),
 rightforearm 1.7 (`:100`), leftupleg 7.5 (`:118`), leftleg 6.6 (`:134`), rightupleg 7.5 (`:159`),
-rightleg 6.6 (`:175`). Sum = 73.8 kg. (The 2026-06-11 live-player `dBodyGetMass` reading of 87.5 kg
+rightleg 6.6 (`:175`). Sum = 73.9 kg. (The 2026-06-11 live-player `dBodyGetMass` reading of 87.5 kg
 is a different body — the CCT/player body, not this ragdoll def.)
 
 ## 2. `PhysicsSetSimpleDeath` vs `PhysicsSetRagdoll`

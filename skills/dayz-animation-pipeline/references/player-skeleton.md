@@ -183,7 +183,7 @@ In DayZ 1.30 Exp (build 1.30.164014), the global skeleton architecture underwent
 
 ### Physical Ragdoll Bones in `human.ragdoll` [EXACT]
 
-DayZ 1.30 introduces data-driven ragdoll physics defined in `DZ/characters/bodies/human.ragdoll` (`exp\characters_bodies\DZ\characters\bodies\human.ragdoll:1-25`, 202 lines). The physical character model comprises 11 articulated rigid body bones, totaling 73.8 kg with collision capsules/spheres assigned to `"DZ/data/data/penetration/flesh.bisurf"`:
+DayZ 1.30 introduces data-driven ragdoll physics defined in `DZ/characters/bodies/human.ragdoll` (`exp\characters_bodies\DZ\characters\bodies\human.ragdoll:1-175`, 202 lines). The physical character model comprises 11 articulated rigid body bones, totaling 73.9 kg with collision capsules/spheres assigned to `"DZ/data/data/penetration/flesh.bisurf"`:
 
 | Ragdoll Bone | Parent Bone | Mass (kg) | Collision Geometry | Joint Limits (Pitch / Roll / Yaw) | Stiffness / Damper |
 |---|---|---|---|---|---|

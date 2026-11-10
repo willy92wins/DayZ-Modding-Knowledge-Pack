@@ -92,9 +92,9 @@ fire/reload/chamber/jam-unjam, `AddItemInHandsProfileIK` IK-pose semantics, the 
 ## DayZ 1.30 — vanilla IK + extra remaps
 
 `[VERIFIED-vanilla]` `exp\scripts\scripts\4_World\Entities\ManBase\DayZPlayer\DayZPlayerCfgBase.c`.
-IK paths are entity-side registration only; `.anm` authoring stays on the anim skill. Staged weapons
-(W-STAGING1 in `dayz-1-30-weapons.md`) still have no packed `.p3d` — remap arrays below are the
-**selection names** you would cover if you shipped a stand-in model, not a debinarize source.
+IK paths are entity-side registration only; `.anm` authoring stays on the anim skill. On 1.30.164014 the staged
+weapons (W-STAGING1 in `dayz-1-30-weapons.md`) had no packed `.p3d`, so the remap arrays below were the **selection
+names** a stand-in model would cover; since 1.30.164200 their own models ship in `weapons_nasdara.pbo`.
 
 Default rifle remap still applies to anything under `Rifle_Base` (`:1579-1580`):
 `bolt`, `magazine`, `trigger`, `charging`, `bullet`, `mag_release`, `boltrelease`.

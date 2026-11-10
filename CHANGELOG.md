@@ -43,8 +43,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   built-in type (`bool`, `int`, `float`, `vector`, `string`, `typename`, `array`, `set`, `map`) does not declare, made
   on a value of one, a template of one, a typedef of one or the type itself. From pipeline inbox
   fb-20261103-150432-9f93 (LFSkateboard): `gF.Cross(gR)` on vector locals stopped a DayZ 1.30.164200 server with
-  `Undefined function 'vector.Cross'`, which only the 1.30.164014 Exp scripts declare, and the validator had passed
-  the call against either tree. `--game-root` (or `DAYZ_GAME_ROOT`) compares the vanilla tree with the game's
+  `Undefined function 'vector.Cross'`, which the 1.30.164014 Exp and 1.30.164078 scripts declare and 1.30.164200
+  dropped, and the validator had passed the call against either tree. `--game-root` (or `DAYZ_GAME_ROOT`) compares the vanilla tree with the game's
   `dta\scripts.pbo` by content, through the fail-closed reader of `dayz-vehicle-proxy-contract`, and warns with
   `VANILLA-ROOT-BUILD-MISMATCH` when they differ. `_argument_type` of `ES-CAST-UNRELATED-TYPES` takes the reader of a
   declared type as a parameter; its default, and so the three rules that already used it, are unchanged. Measured
@@ -777,6 +777,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   first seen on 1.30.164014 Exp still says so, and what describes that install names the build
   (`dayz-basebuilding`, `dayz-doors`, `dayz-mod-workflow`, `dayz-particles`). `product-spec.md` and
   `compatibility-matrix.md` now say that 1.29 was the stable branch until 2026-10-15.
+- `dayz-animation-pipeline` (`SKILL.md`, `references/player-skeleton.md`) and `dayz-physics-engine`
+  (`references/dayz-1-30-ragdoll-and-fall.md`): the eleven masses of vanilla `human.ragdoll` add up
+  to 73.9 kg, not 73.8.
 - README §4 said that every playbook is the author's and MIT. It now names the two ported skills
   of #146 and their licences (`task-observer`, CC BY 4.0, modified; `systematic-debugging`, MIT),
   and `THIRD_PARTY_NOTICES.md` lists both.

@@ -332,7 +332,7 @@ the full entry lives there. Do not remove citation: the index detects promotion 
 ### 2. Removal of the 250 Bone Limit & Dynamic Bone Hashing
 - **No Global Bone Cap**: The engine no longer limits skeletons to 250 global bones.
 - **Dynamic Hashing**: Bone indices are hashed directly from bone names at engine boot. In `skeletons.anim.xml`, manual `index` attributes are removed (retained only on `EntityPosition`), simplifying multi-mod skeleton coexistence.
-- **Physical Ragdoll Skeletons**: Physics bone rosters (e.g. `characters/bodies/human.ragdoll`, 11 physical bones, 73.8 kg) remain aligned with the primary skeleton hierarchy.
+- **Physical Ragdoll Skeletons**: Physics bone rosters (e.g. `characters/bodies/human.ragdoll`, 11 physical bones, 73.9 kg) remain aligned with the primary skeleton hierarchy.
 
 ### 3. Script Animation API Table (1.30 Additions)
 

@@ -42,7 +42,7 @@ Until 1.29 extreme heat could damage health from this modifier. Since 1.30 the *
 Since 1.30.164289, above `THRESHOLD_HEAT_COMFORT_PLUS_WARNING` a player with water at or above `SL_WATER_HIGH`
 and heat comfort at or below `THRESHOLD_HEAT_COMFORT_PLUS_CRITICAL` loses bias through the new `RecoverThermalBias`
 (`HeatComfortMdfr.c:104-107, 115-120`), and a conscious player with water between `SL_WATER_NORMAL` and
-`SL_WATER_HIGH` gains bias below `0.4 - STAGE_DEACTIVATION_BUFFER` (0.38; 0.4 on 1.30.164200) and loses it above
+`SL_WATER_HIGH` gains bias below `0.4 - STAGE_DEACTIVATION_BUFFER` (0.38; 0.4 on 1.30.164200) and loses it at or above
 (`:95-103`). That holds the bias near 0.38 only while heat comfort stays at or below
 `THRESHOLD_HEAT_COMFORT_PLUS_CRITICAL`: above it the separate feed of `:75-82` adds 0.00032 or 0.0005 × deltaT,
 more than the 0.0002 × deltaT taken off, so the bias still rises.
