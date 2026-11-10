@@ -23,12 +23,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   hides, recolours and adds vanilla widgets like a generated one; an entry whose ID no widget has is dropped
   with a `GUI (W)` warning; two mods varying one layout both apply, and where both set one property the mod
   later in `-mod=` wins; MakePbo packs the PBO, and the variant's own `CfgPatches` class is not in the game
-  config. Three unknowns leave the list: a `Prefab` that matches no widget, two mods varying one layout, two
-  `gui` shadow PBOs in one load. `CLAIM-UI-VARIANT-HAND-WRITTEN-130`, `CLAIM-UI-VARIANT-STALE-PREFAB-130`,
-  `CLAIM-UI-VARIANT-TWO-MODS-130`, `CLAIM-UI-VARIANT-MAKEPBO-PACKING-130`. `dayz-pbo-build`
-  `references/dayz-1-30-pbo-build.md`: MakePbo writes `fsShadowing=1` from `$PBOPREFIX$.txt` and AddonBuilder
-  has no option for it (`CLAIM-PBO-FSSHADOWING-MAKEPBO-130`); the `.meta` is optional, and a shadow PBO does
-  not hide the vanilla files it does not hold.
+  config; a PBO without `config.cpp`, packed by FileBank, loads and applies too. Four unknowns leave the
+  list: a `Prefab` that matches no widget, two mods varying one layout, two `gui` shadow PBOs in one load,
+  a `gui`-prefix PBO without `config.cpp` (the community report on it moves to the packing section).
+  `CLAIM-UI-VARIANT-HAND-WRITTEN-130`, `CLAIM-UI-VARIANT-STALE-PREFAB-130`, `CLAIM-UI-VARIANT-TWO-MODS-130`,
+  `CLAIM-UI-VARIANT-MAKEPBO-PACKING-130`, `CLAIM-UI-VARIANT-NO-CONFIG-130`. `dayz-pbo-build`
+  `references/dayz-1-30-pbo-build.md`: MakePbo writes `fsShadowing=1` from `$PBOPREFIX$.txt`, FileBank takes
+  it as a `-property` and packs a folder without `config.cpp`, and AddonBuilder has no option for it
+  (`CLAIM-PBO-FSSHADOWING-MAKEPBO-130`, `CLAIM-PBO-FSSHADOWING-FILEBANK-130`); the `.meta` and `config.cpp`
+  are optional, and a shadow PBO does not hide the vanilla files it does not hold. `SKILL.md` says so where
+  it requires `config.cpp`.
 
 ## [1.7.0] - 2026-11-10
 

@@ -89,8 +89,9 @@ DayZDiag 1.30.164289 (2026-11-10), a hand-written `day_z_ingamemenu.layout` in t
 vanilla tree mirrored with derived IDs, packed with MakePbo (§3) and **without a `.meta`**, recoloured
 `version`, hid `copyright`, `dayz_logo` and `vignette`, and added a widget inside `Licensing`:
 `copyright_vis=0 version_color=-65536 licensing_children=3 logo_vis=0 vignette_vis=0 added_probe4=1@Licensing`.
-The client log names the layout `{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout`, the GUID that
-Workbench writes into the `.meta`, although the PBO had none. The IDs of any layout:
+The client log, in the lines of the warning of §2, names the layout
+`{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout`, the GUID that Workbench writes into the `.meta`,
+although the PBO had none. The IDs of any layout:
 `tools/dayz-ui-lab/dayz_ui_lab/widget_ids.py` (`TOOLS.md`).
 
 ## 2. What a variant does in game
@@ -137,13 +138,21 @@ PBO unsigned, loaded on DayZDiag from a mod folder holding only the probe. Heade
 folder, with `prefix=gui` and `fsShadowing=1` as two lines of `$PBOPREFIX$.txt`, packed by MakePbo 2.16
 with `config.cpp` compiled to `config.bin`, **no `.meta`**, unsigned; the variants of §1 and §2 applied. The
 variant's own `CfgPatches` class was not in the game config: `ConfigIsExisting` returned 0 for it, and 1 for
-the probe mod's. Packing with a `config.cpp` is verified with RaG and MakePbo; without one, see §4.
+the probe mod's.
+
+[EXACT][CLAIM-UI-VARIANT-NO-CONFIG-130] **`config.cpp` is not needed.** On 1.30.164289 (2026-11-10), a PBO
+holding only `layouts/day_z_ingamemenu.layout`, a variant that hides `dayz_logo` and adds a widget inside
+`Licensing`, with no `config.cpp`, no `.meta` and no signature, packed by FileBank with the header
+`prefix=gui`, `fsShadowing=1`, loaded from its own mod folder and its variant applied:
+`logo_vis=0 added_noconfig=1@Licensing licensing_children=3`. How to pack it:
+`skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md` §"`fsShadowing`".
+
+claim: CLAIM-UI-VARIANT-NO-CONFIG-REPORT A community author reports packing each variant folder without
+`config.cpp`, through an `OVERRIDE` marker file in their own tool, and says pboProject refuses such folders.
+The measurement above agrees with the first part; the pboProject refusal is not verified here.
 
 ## 4. Unknowns — do not promise these
 
-- **A `gui`-prefix PBO without `config.cpp`.** claim: CLAIM-UI-VARIANT-NO-CONFIG-REPORT A community author
-  reports packing each variant folder without one, through an `OVERRIDE` marker file in their own tool, and
-  says pboProject refuses such folders. A report, not verified here.
 - **Per-screen toggling.** No mechanism known: as measured, a loaded variant is always applied. Put
   conditional behaviour in script, not in the variant.
 - **Variants of other resource types.** Not measured: only layout variants have been made and loaded.

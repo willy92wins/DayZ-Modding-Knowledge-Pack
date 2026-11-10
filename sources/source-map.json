@@ -1691,10 +1691,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-ingame@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10, run R3c: the [Unreleased] Changed entry adds the gui-prefix PBO without config.cpp, FileBank and the SKILL.md note of dayz-pbo-build. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "66323aae12c9c4d4f8d09fa73356955b1d5ef1d9e58224ae3b059bc182178c0e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "236df5c5cb41f07d770b440a2c25ca948167fc62c4bbd55247fdd6d4fb194a55",
+      "output_hash": "66323aae12c9c4d4f8d09fa73356955b1d5ef1d9e58224ae3b059bc182178c0e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11416,10 +11426,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, run R3c: the REQUIRED config.cpp check notes that a 1.30 gui-prefix shadow PBO holding only layouts loaded without one (CLAIM-UI-VARIANT-NO-CONFIG-130, CLAIM-PBO-FSSHADOWING-FILEBANK-130), instead of calling that case untested. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1f18d7e8e9be9b6590233ad1324c2a366c21feb9f90a33ec96a1adc3b16ff3d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "cdf15046f73fd9d7e822e80ffac9dde4b7d815d43810660c1f1e5cc604c3dc1d",
+      "output_hash": "1f18d7e8e9be9b6590233ad1324c2a366c21feb9f90a33ec96a1adc3b16ff3d6",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -19583,10 +19603,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, run R3c: two new claims, CLAIM-UI-VARIANT-NO-CONFIG-130 and CLAIM-PBO-FSSHADOWING-FILEBANK-130; CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130 ends with its own paragraph; the evidence of CLAIM-UI-VARIANT-HAND-WRITTEN-130 adds that runs without a GUI warning name the layout nowhere, and the evidence of the five claims of the previous commit names the folder of the second R5 attempt; the other claims of the two pages move with their text. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8f9a59c6c06e92805b7f45db1634ac530e5f0cc299baed95b6c32eb3fda5a54b",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "4ebdccead34fabfcd361363890f8dcd71a606f077fabfb037a8ecce73b30bf93",
+      "output_hash": "8f9a59c6c06e92805b7f45db1634ac530e5f0cc299baed95b6c32eb3fda5a54b",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -35079,10 +35109,20 @@
           "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
           "source_revision": "gap-66306aa-ingame@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, run R3c (plan L5): CLAIM-PBO-FSSHADOWING-FILEBANK-130 (FileBank takes fsShadowing=1 as a -property and packs a folder without config.cpp); CLAIM-PBO-FSSHADOWING-GUI-PREFIX-130 drops its 'not verified' remark on config.cpp and its line range ends with its own paragraph, so the checks paragraph after it, now also resting on the 2026-11-10 runs, says that the .meta and config.cpp are optional. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "98a333c6db31a93d23cc6052f9dab2449d241f483b89d6346882473db84565bb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "8116fea68de11c7ef8daa569d6066b691d3c9bda991f29ab1b6972d1d5f76cc1",
+      "output_hash": "98a333c6db31a93d23cc6052f9dab2449d241f483b89d6346882473db84565bb",
       "output_path": "skills/dayz-pbo-build/references/dayz-1-30-pbo-build.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "historical"
@@ -38535,10 +38575,20 @@
           "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
           "source_revision": "gap-66306aa-ingame@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-10 on DayZDiag 1.30.164289, run R3c (plan L5): CLAIM-UI-VARIANT-NO-CONFIG-130 in section 3, a gui-prefix PBO without config.cpp, packed by FileBank, loads and applies; the community report CLAIM-UI-VARIANT-NO-CONFIG-REPORT moves from section 4 to section 3 beside it, its last sentence saying which part the measurement agrees with; the summary sentence that pointed to section 4 is dropped; CLAIM-UI-VARIANT-HAND-WRITTEN-130 says that the log names the layout in the lines of the warning, since runs without a warning name it nowhere. Other lines unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "77db3c18b84789d154b789b9bc0f12ba55d5b53dc5fddd00d17d8eb4749d6172",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+          "source_revision": "gap-66306aa-ingame-r3@2026-11-10",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "08a251468f144ce5f297bf5c91c20d02a8bb2cc2413be461062d6e72d2967362",
+      "output_hash": "77db3c18b84789d154b789b9bc0f12ba55d5b53dc5fddd00d17d8eb4749d6172",
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
