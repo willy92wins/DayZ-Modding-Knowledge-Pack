@@ -5,6 +5,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-10
+
+The pack consolidated for DayZ 1.30 stable: every vanilla script citation, and the data citations
+the re-check could read, re-checked against 1.30.164200 on 2026-10-28 and moved to 1.30.164289 on
+2026-11-09, with what each build changed written where each skill covers it; two contributions by
+@kinkurono-dev, the 1.29 `$AnimGraph 7` to 1.30 port with the infected ragdoll note (#135) and the
+1.30 layout variants (#157); how the widget IDs of a layout variant are derived; new skills
+`task-observer` and `systematic-debugging`; new tools `dayz-pbo-diff`, `dayz-navmesh-compare` and
+the experimental `dayz-terrain-builder-runner`; nine new `dayz-script-validator` rules and its
+vanilla control on 1.30.164078, 1.30.164200 and 1.30.164289; what porting two 1.29 quads to
+1.30.164200 and importing the H2R motorbike found; ODOL v56 from the DayZ Tools of 2026-10-15; and
+fixes to `packctl` promotion, `dayz-preflight` and citations.
+
 ### Added
 
 - `systematic-debugging`, a new skill ported from obra/superpowers
