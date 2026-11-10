@@ -15,9 +15,21 @@ ES_MODULO_FLOAT_CONTEXT_RULE_ID = "ES-MODULO-FLOAT-CONTEXT"
 #     SCRIPT (E): Can't compile "Mission" script module!
 #   `float ox = (n % 4) * 0.7 - 1.05;`, DayZ 1.30 (Exp), 2026-09-24: the
 #     same error, and the mission did not compile.
+#   `float x = (cell % 103) * 150 + 150 * 0.5;` and the ticket's
+#     `float x = (cell % SIDE) * STEP + STEP * 0.5;` (static const float STEP,
+#     static const int SIDE), DayZDiag 1.30.164289, 2026-11-09, each in a
+#     mod's 4_World script (pipeline inbox d35a):
+#     SCRIPT (E): @"MCPProbeD35aB/scripts/4_World/mcpprobed35ab.c,6": Unknown operator '%'
+#     SCRIPT (E): Can't compile "World" script module!
+#     and the same at mcpprobed35ac.c,10. Both hold the literal 0.5, so
+#     whether a static const float with no literal beside it fails is not
+#     isolated. The ticket saw "Unknown operator ''" in a mission's init.c.
 #
-# Both compiled once the `%` went into an int local first. Vanilla 1.29 holds
-# 69 `%` operators and none shares an expression with a float literal.
+# The first two compiled once the `%` went into an int local first, and so
+# did the ticket's on 1.30.164289:
+#   `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;`
+# Vanilla 1.29 holds 69 `%` operators and none shares an expression with a
+# float literal.
 #
 # The expression around a `%` is walked out through grouping parentheses and
 # stops at `;` `,` `{` `}`, an assignment, a comparison or logical operator,

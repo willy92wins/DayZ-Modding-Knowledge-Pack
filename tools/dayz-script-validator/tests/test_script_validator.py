@@ -409,45 +409,56 @@ class TestEsEmptyIfdef(unittest.TestCase):
         self.assertEqual([], result["errors"])
         self.assertEqual([], result["warnings"])
 
-    def test_empty_ifdef_with_comments_fails(self):
+    # Pipeline inbox dada: on DayZDiag 1.30.164289 a block holding only a
+    # comment compiled and ran on server and client, so no crash is on record
+    # and the rule warns.
+    EMPTY_IFDEF_MEASURED = (
+        "block contains no statements (comments do not count). Such blocks "
+        "were reported to segfault, and no measurement shows it: on DayZDiag "
+        "1.30.164289 a block holding only a comment compiled and ran on server "
+        "and client, at file scope, in a class body and in a method body, with "
+        "a macro DayZDiag defines and with one nobody defines "
+        "(enforce-script-reference pitfalls-advanced.md, section 5). Not "
+        "measured: a block with nothing at all inside, a retail build, DayZ "
+        "1.29. Remove the block if it holds no code."
+    )
+
+    def test_empty_ifdef_with_comments_warns(self):
         fixture = FIXTURES / "es" / "bad_empty_ifdef_with_comments.c"
         exit_code, result = script_validator.run([str(fixture)])
         expected_message = (
-            "[FAIL] bad_empty_ifdef_with_comments.c line 1: '#ifdef MY_MOD' "
-            "block contains no statements (comments do not count). Documented "
-            "segfault per pitfalls-advanced.md:66 (\"Empty #ifdef Blocks Cause "
-            "Segfault\"). Add at least one statement (e.g., 'int _placeholder;')."
+            "[WARN] bad_empty_ifdef_with_comments.c line 1: '#ifdef MY_MOD' "
+            + self.EMPTY_IFDEF_MEASURED
         )
 
-        self.assertEqual(1, exit_code)
-        self.assertEqual("FAIL", result["status"])
-        self.assertEqual(1, len(result["errors"]))
-        self.assertEqual([], result["warnings"])
-        self.assertEqual("ES-EMPTY-IFDEF", result["errors"][0]["rule_id"])
-        self.assertEqual("FAIL", result["errors"][0]["severity"])
-        self.assertEqual("bad_empty_ifdef_with_comments.c", result["errors"][0]["file"])
-        self.assertEqual(1, result["errors"][0]["line"])
-        self.assertEqual(expected_message, result["errors"][0]["message"])
+        self.assertEqual(2, exit_code)
+        self.assertEqual("WARN", result["status"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual(1, len(result["warnings"]))
+        self.assertEqual("ES-EMPTY-IFDEF", result["warnings"][0]["rule_id"])
+        self.assertEqual("WARN", result["warnings"][0]["severity"])
+        self.assertEqual("bad_empty_ifdef_with_comments.c", result["warnings"][0]["file"])
+        self.assertEqual(1, result["warnings"][0]["line"])
+        self.assertEqual(expected_message, result["warnings"][0]["message"])
+        self.assertNotIn("Documented segfault", result["warnings"][0]["message"])
 
-    def test_empty_ifndef_with_comments_fails(self):
+    def test_empty_ifndef_with_comments_warns(self):
         fixture = FIXTURES / "es" / "bad_empty_ifndef_with_comments.c"
         exit_code, result = script_validator.run([str(fixture)])
         expected_message = (
-            "[FAIL] bad_empty_ifndef_with_comments.c line 1: '#ifndef SERVER' "
-            "block contains no statements (comments do not count). Documented "
-            "segfault per pitfalls-advanced.md:66 (\"Empty #ifdef Blocks Cause "
-            "Segfault\"). Add at least one statement (e.g., 'int _placeholder;')."
+            "[WARN] bad_empty_ifndef_with_comments.c line 1: '#ifndef SERVER' "
+            + self.EMPTY_IFDEF_MEASURED
         )
 
-        self.assertEqual(1, exit_code)
-        self.assertEqual("FAIL", result["status"])
-        self.assertEqual(1, len(result["errors"]))
-        self.assertEqual([], result["warnings"])
-        self.assertEqual("ES-EMPTY-IFDEF", result["errors"][0]["rule_id"])
-        self.assertEqual("FAIL", result["errors"][0]["severity"])
-        self.assertEqual("bad_empty_ifndef_with_comments.c", result["errors"][0]["file"])
-        self.assertEqual(1, result["errors"][0]["line"])
-        self.assertEqual(expected_message, result["errors"][0]["message"])
+        self.assertEqual(2, exit_code)
+        self.assertEqual("WARN", result["status"])
+        self.assertEqual([], result["errors"])
+        self.assertEqual(1, len(result["warnings"]))
+        self.assertEqual("ES-EMPTY-IFDEF", result["warnings"][0]["rule_id"])
+        self.assertEqual("WARN", result["warnings"][0]["severity"])
+        self.assertEqual("bad_empty_ifndef_with_comments.c", result["warnings"][0]["file"])
+        self.assertEqual(1, result["warnings"][0]["line"])
+        self.assertEqual(expected_message, result["warnings"][0]["message"])
 
     def test_ifdef_nested_passes(self):
         fixture = FIXTURES / "es" / "ok_ifdef_nested.c"
@@ -1542,8 +1553,6 @@ class TestFullCorpus(unittest.TestCase):
         }
 
         expected_errors = {
-            ("ES-EMPTY-IFDEF", "bad_empty_ifdef_with_comments.c"),
-            ("ES-EMPTY-IFDEF", "bad_empty_ifndef_with_comments.c"),
             ("ES-CTX-READ-UNCHECKED", "bad_ctx_read_unchecked_in_rpc.c"),
             (
                 "ES-CTX-READ-UNCHECKED",
@@ -1574,6 +1583,8 @@ class TestFullCorpus(unittest.TestCase):
             ),
         }
         expected_warnings = {
+            ("ES-EMPTY-IFDEF", "bad_empty_ifdef_with_comments.c"),
+            ("ES-EMPTY-IFDEF", "bad_empty_ifndef_with_comments.c"),
             ("ES-SOURCE-UNTERMINATED-BLOCK-COMMENT", "bad_unterminated_block_comment.c"),
             ("ES-SOURCE-UNTERMINATED-STRING", "bad_unterminated_string.c"),
             (
@@ -2426,23 +2437,53 @@ class TestModuloFloatContext(unittest.TestCase):
 
     `((g % 5) - 2) * 7.0` failed on DayZDiag 1.29 (2026-09-28) and
     `float ox = (n % 4) * 0.7 - 1.05;` on DayZ 1.30 Exp (2026-09-24), both
-    with "Unknown operator '%'".
+    with "Unknown operator '%'". On DayZDiag 1.30.164289 (2026-11-09,
+    pipeline inbox d35a) two more failed with it, each at its own line, and
+    the third shape, with the '%' in an int local first, compiled.
     """
+
+    def _errors_in(self, result, name):
+        return [
+            e for e in _errors_of(result, MODULO_RULE)
+            if pathlib.Path(e["file"]).name == name
+        ]
 
     def test_both_failing_shapes_fail(self):
         exit_code, result = script_validator.run([str(MODULO / "bad")])
 
         self.assertEqual(1, exit_code)
-        errors = _errors_of(result, MODULO_RULE)
+        errors = self._errors_in(result, "fx_probe_grid.c")
         self.assertEqual([7, 12], [e["line"] for e in errors])
         self.assertIn("7.0", errors[0]["message"])
         self.assertIn("0.7", errors[1]["message"])
         assert_standard_findings(self, result)
 
+    def test_the_two_d35a_statements_fail_at_the_line_the_compiler_named(self):
+        _code, result = script_validator.run([str(MODULO / "bad")])
+
+        # mcpprobed35ab.c,6 and mcpprobed35ac.c,10 in the server script logs.
+        literals = self._errors_in(result, "fx_cell_literals.c")
+        static_const = self._errors_in(result, "fx_cell_static_const.c")
+        self.assertEqual([6], [e["line"] for e in literals])
+        self.assertEqual([10], [e["line"] for e in static_const])
+        for error in literals + static_const:
+            self.assertEqual("FAIL", error["severity"])
+            self.assertIn("float literal 0.5.", error["message"])
+
     def test_integer_modulo_and_the_int_local_fix_pass(self):
         _code, result = script_validator.run([str(MODULO / "ok")])
 
         self.assertEqual([], _errors_of(result, MODULO_RULE))
+
+    def test_the_three_d35a_statements_that_compiled_give_no_finding(self):
+        exit_code, result = script_validator.run([str(MODULO / "ok")])
+
+        self.assertEqual(0, exit_code)
+        findings = [
+            f for f in result["errors"] + result["warnings"]
+            if pathlib.Path(f["file"]).name == "fx_cell_int_local.c"
+        ]
+        self.assertEqual([], findings)
 
     def test_expression_boundaries(self):
         from detectors.es_modulo_float_context import check_es_modulo_float_context
@@ -2587,6 +2628,150 @@ class TestModuloFloatContext(unittest.TestCase):
         )
         for start, end in spans:
             self.assertEqual("", stripped[start:end].strip())
+
+
+FORMULA = FIXTURES / "formula_too_complex"
+FORMULA_RULE = "ES-FORMULA-TOO-COMPLEX"
+
+
+def _formula_chain(terms):
+    """The probes' pattern: literal, int, literal, float.ToString(), ..."""
+    parts = []
+    for index in range(terms):
+        if index % 2 == 1:
+            parts.append("i0" if index % 4 == 1 else "f0.ToString()")
+        else:
+            parts.append('"%s"' % ("a" if index == 0 else " " + chr(ord("a") + index // 2)))
+    return " + ".join(parts)
+
+
+class TestFormulaTooComplex(unittest.TestCase):
+    """ES-FORMULA-TOO-COMPLEX: 18 or more terms joined by '+' with a string.
+
+    DayZDiag 1.30.164289 (2026-11-09, pipeline inbox 7b9e/7ce1): one line
+    alternating string literals with an int and a float's ToString()
+    compiled with 14 and 17 terms and failed with "Formula too complex" with
+    18 and 20.
+    """
+
+    def _flagged(self, body):
+        from detectors.es_formula_too_complex import check_es_formula_too_complex
+        from stripper import strip_enforce_comments_and_strings
+
+        source = (
+            "class C\n{\n    string F(int i0, float f0)\n    {\n%s\n    }\n}\n" % body
+        )
+        stripped, _warnings = strip_enforce_comments_and_strings(source, "x.c")
+        return [
+            w["line"] for w in check_es_formula_too_complex(source, stripped, "x.c")
+        ]
+
+    def test_the_chain_is_the_probes_pattern(self):
+        self.assertEqual(
+            '"a" + i0 + " b" + f0.ToString() + " c"', _formula_chain(5)
+        )
+        probe = (
+            '"a" + i0 + " b" + f0.ToString() + " c" + i0 + " d" + f0.ToString()'
+            ' + " e" + i0 + " f" + f0.ToString() + " g" + i0 + " h"'
+            ' + f0.ToString() + " i" + i0 + " j" + f0.ToString()'
+        )
+        self.assertEqual(probe, _formula_chain(20))
+
+    def test_18_and_20_terms_warn_at_the_line_the_compiler_named(self):
+        exit_code, result = script_validator.run([str(FORMULA / "bad")])
+
+        self.assertEqual(2, exit_code)
+        self.assertEqual([], result["errors"])
+        warnings = [w for w in result["warnings"] if w["rule_id"] == FORMULA_RULE]
+        # mcpprobeterms18.c,6 and mcpprobeterms20.c,6 in the server script logs.
+        self.assertEqual(
+            [("fx_terms18.c", 6), ("fx_terms20.c", 6)],
+            sorted((pathlib.Path(w["file"]).name, w["line"]) for w in warnings),
+        )
+        for warning in warnings:
+            self.assertEqual("WARN", warning["severity"])
+            self.assertIn("Formula too complex", warning["message"])
+            self.assertIn(
+                "Other operand types and a statement over several lines are "
+                "not measured.",
+                warning["message"],
+            )
+        self.assertIn("joins 18 terms", warnings[0]["message"])
+        assert_standard_findings(self, result)
+
+    def test_14_and_17_terms_numbers_alone_and_a_split_give_no_finding(self):
+        exit_code, result = script_validator.run([str(FORMULA / "ok")])
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual([], result["errors"] + result["warnings"])
+
+    def test_what_counts_as_a_join(self):
+        chain17 = _formula_chain(17)
+        self.assertEqual([], self._flagged("        string s = %s;" % chain17))
+        self.assertEqual(
+            [5], self._flagged("        string s = %s + i0;" % chain17)
+        )
+        # `++`, `+=` and a unary `+` join nothing.
+        self.assertEqual([], self._flagged(
+            "        int k = 0;\n"
+            "        string s = %s + (k++).ToString() + (+k).ToString();\n"
+            "        s += i0;" % _formula_chain(15)
+        ))
+        # A `+` after a postfix increment does join.
+        self.assertEqual([6], self._flagged(
+            "        int k = 0;\n"
+            "        string s = %s + k++ + i0;" % chain17[:chain17.rindex(" + ")]
+        ))
+        # A `+` in a string or a comment is none: 17 terms.
+        self.assertEqual([], self._flagged(
+            '        string s = %s + "+ + + +" /* + + + */ + i0; // + + +'
+            % _formula_chain(15)
+        ))
+        # Numbers alone are not judged, however many.
+        self.assertEqual([], self._flagged(
+            "        int n = %s;" % " + ".join(["i0"] * 30)
+        ))
+        # A `+` inside parentheses or a call's arguments counts.
+        self.assertEqual([5], self._flagged(
+            '        string s = "a" + (%s).ToString() + i0;'
+            % " + ".join(["i0"] * 16)
+        ))
+
+    def test_a_statement_over_several_lines_is_reported_at_its_first_line(self):
+        chain = _formula_chain(18).split(" + ")
+        body = "        string s = %s\n            + %s\n            + %s;" % (
+            " + ".join(chain[:6]),
+            " + ".join(chain[6:12]),
+            " + ".join(chain[12:]),
+        )
+
+        self.assertEqual([5], self._flagged(body))
+
+    def test_what_never_compiles_and_other_branches_are_not_counted(self):
+        head = _formula_chain(9)
+        tail = " + ".join(["i0"] * 6)
+        # Under #if 0: never compiled, so 9 terms.
+        self.assertEqual([], self._flagged(
+            "        string s = %s\n#if 0\n            + %s + i0 + i0 + i0\n#endif\n"
+            "            ;" % (head, tail)
+        ))
+        # Each branch of one block holds 6 more terms: 15 in either build,
+        # though the file holds 21.
+        self.assertEqual([], self._flagged(
+            "        string s = %s\n#ifdef FX_OTHER_MOD\n            + %s\n"
+            "#else\n            + %s\n#endif\n            ;" % (head, tail, tail)
+        ))
+        # Another mod's branch compiles along with the rest: 18 terms.
+        self.assertEqual([5], self._flagged(
+            "        string s = %s\n#ifdef FX_OTHER_MOD\n            + %s + i0 + i0 + i0\n"
+            "#endif\n            ;" % (head, tail)
+        ))
+        # Two blocks side by side are not counted together either: 15 terms
+        # in each view, though both can compile in one build (21).
+        self.assertEqual([], self._flagged(
+            "        string s = %s\n#ifdef FX_ONE\n            + %s\n#endif\n"
+            "#ifdef FX_TWO\n            + %s\n#endif\n            ;" % (head, tail, tail)
+        ))
 
 
 UNDEFINED = FIXTURES / "undefined_class_ref"
@@ -4345,8 +4530,20 @@ class TestProtoArgumentDowncast(unittest.TestCase):
 
     Inbox fb-20261006-030019-e074, DayZ 1.30.164014 server: an IEntity at the
     Object argument 6 of DayZPhysics.RaycastRV, "Cannot convert 'IEntity' to
-    'Object' for argument '6' to method 'RaycastRV'".
+    'Object' for argument '6' to method 'RaycastRV'". Pipeline inbox e074,
+    DayZDiag 1.30.164289: an Object at the EntityAI argument 0 of
+    ItemPreviewWidget.SetItem, "Cannot convert 'Object' to 'EntityAI' for
+    argument '0' to method 'SetItem'".
     """
+
+    RAYCAST_EVIDENCE = (
+        "(DayZ 1.30, at DayZPhysics.RaycastRV, where it also said \"Types "
+        "'IEntity' and 'Object' are unrelated\")"
+    )
+    SETITEM_EVIDENCE = (
+        "(DayZDiag 1.30.164289, at ItemPreviewWidget.SetItem, argument '0', "
+        "where it also said \"Types 'Object' and 'EntityAI' are unrelated\")"
+    )
 
     def test_ticket_repro_fails(self):
         exit_code, result = script_validator.run(
@@ -4354,7 +4551,9 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         )
 
         self.assertEqual(1, exit_code)
-        errors = _errors_of(result, PROTO_RULE)
+        errors = [
+            e for e in _errors_of(result, PROTO_RULE) if "fx_rider.c" in e["file"]
+        ]
         self.assertEqual([19, 21], [e["line"] for e in errors])
         self.assertIn(
             "argument 6 (counted from 0), 'hitEntity', is declared as IEntity",
@@ -4369,11 +4568,42 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         self.assertIn("Pass Object.Cast(hitEntity)", errors[0]["message"])
         self.assertIn("the proto Object.FX_SetOwner", errors[1]["message"])
         self.assertIn("fx_rider.c", errors[0]["file"])
+        # The RaycastRV pair keeps its own evidence.
+        for error in errors:
+            self.assertIn(self.RAYCAST_EVIDENCE, error["message"])
+            self.assertNotIn("SetItem", error["message"])
         assert_standard_findings(self, result)
 
-    def test_only_an_ientity_where_an_object_is_taken_fails(self):
-        # The ticket's pair is FAIL. A Managed where an Object is taken, and
-        # an Object or an IEntity where an EntityAI is, are not measured.
+    def test_an_object_where_setitem_takes_an_entityai_fails(self):
+        # Pipeline inbox e074, case A: the shape the rule had found in a mod,
+        # refused by DayZDiag 1.30.164289 at the probe's line 9.
+        _code, result = script_validator.run(
+            [str(PROTO / "bad"), "--vanilla-root", str(PROTO / "vanilla")]
+        )
+
+        errors = [
+            e for e in _errors_of(result, PROTO_RULE) if "fx_preview.c" in e["file"]
+        ]
+        self.assertEqual([(9, "FAIL")], [(e["line"], e["severity"]) for e in errors])
+        message = errors[0]["message"]
+        self.assertIn(
+            "argument 0 (counted from 0), 'obj', is declared as Object, and the "
+            "proto FX_ItemPreview.FX_SetItem takes EntityAI there",
+            message,
+        )
+        self.assertIn(
+            "\"Cannot convert 'Object' to 'EntityAI' for argument '0' to method "
+            "'FX_SetItem'\"",
+            message,
+        )
+        self.assertIn(self.SETITEM_EVIDENCE, message)
+        self.assertNotIn("RaycastRV", message)
+        self.assertIn("Pass EntityAI.Cast(obj)", message)
+
+    def test_only_the_two_measured_pairs_fail(self):
+        # An IEntity where an Object is taken and an Object where an EntityAI
+        # is are FAIL. A Managed where an Object is taken, and an IEntity
+        # where an EntityAI is, are not measured.
         source = (
             "void F(EntityAI s, IEntity e, Managed m, Object o)\n{\n"
             "    s.FX_SetOwner(e);\n    s.FX_SetOwner(m);\n"
@@ -4381,33 +4611,50 @@ class TestProtoArgumentDowncast(unittest.TestCase):
         )
 
         errors, warnings = _proto_findings(source)
-        self.assertEqual([(3, "FAIL")], [(e["line"], e["severity"]) for e in errors])
         self.assertEqual(
-            [(4, "WARN"), (5, "WARN"), (6, "WARN")],
+            [(3, "FAIL"), (5, "FAIL")],
+            [(e["line"], e["severity"]) for e in errors],
+        )
+        self.assertEqual(
+            [(4, "WARN"), (6, "WARN")],
             [(w["line"], w["severity"]) for w in warnings],
         )
+        self.assertIn(self.RAYCAST_EVIDENCE, errors[0]["message"])
+        self.assertIn(self.SETITEM_EVIDENCE, errors[1]["message"])
         message = warnings[1]["message"]
-        self.assertTrue(message.startswith("[WARN] scripts/4_World/x.c line 5: "))
+        self.assertTrue(message.startswith("[WARN] scripts/4_World/x.c line 6: "))
         self.assertIn(
-            "'o', is declared as Object, and the proto FX_Physics.FX_Hold takes "
+            "'e', is declared as IEntity, and the proto FX_Physics.FX_Hold takes "
             "EntityAI there",
             message,
         )
         self.assertIn(
-            "whether it refuses Object where EntityAI is taken is not measured",
+            "DayZ 1.30 refused two, an IEntity where DayZPhysics.RaycastRV takes "
+            "an Object and an Object where ItemPreviewWidget.SetItem takes an "
+            "EntityAI",
             message,
         )
-        self.assertIn("Pass EntityAI.Cast(o)", message)
-        # The validator counts them as warnings.
+        self.assertIn(
+            "whether it refuses IEntity where EntityAI is taken is not measured",
+            message,
+        )
+        self.assertIn("Pass EntityAI.Cast(e)", message)
+        self.assertIn(
+            "whether it refuses Managed where Object is taken is not measured",
+            warnings[0]["message"],
+        )
+        # The validator counts the FAILs as errors and the rest as warnings.
         with tempfile.TemporaryDirectory() as temp_dir:
             path = pathlib.Path(temp_dir) / "x.c"
             path.write_text(source, encoding="utf-8")
             _code, result = script_validator.run(
                 [str(path), "--vanilla-root", str(PROTO / "vanilla")]
             )
-        self.assertEqual([3], [e["line"] for e in _errors_of(result, PROTO_RULE)])
         self.assertEqual(
-            [4, 5, 6],
+            [3, 5], [e["line"] for e in _errors_of(result, PROTO_RULE)]
+        )
+        self.assertEqual(
+            [4, 6],
             [w["line"] for w in result["warnings"] if w["rule_id"] == PROTO_RULE],
         )
 

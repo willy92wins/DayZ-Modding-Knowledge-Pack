@@ -167,6 +167,7 @@ from detectors.es_reserved_word_identifier import (
     check_es_reserved_word_identifier,
 )
 from detectors.es_modulo_float_context import check_es_modulo_float_context
+from detectors.es_formula_too_complex import check_es_formula_too_complex
 from detectors.es_multiline_condition_operator import (
     check_es_multiline_condition_operator,
 )
@@ -414,6 +415,9 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
             errors.extend(check_es_reserved_word_identifier(stripped, rel_path))
             errors.extend(
                 check_es_modulo_float_context(source, stripped, rel_path)
+            )
+            warnings.extend(
+                check_es_formula_too_complex(source, stripped, rel_path)
             )
             if not stripper_warnings:
                 # An unterminated string or comment blanks the rest of the

@@ -16,6 +16,39 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   counts 1,438 stored IDs, 1,395 of them derived, and `collide` finds the two `top` siblings of
   `xbox/day_z_ingamemenu_xbox.layout`.
 
+- `dayz-script-validator`: `ES-FORMULA-TOO-COMPLEX` (WARN), a statement that holds a string literal and
+  joins 18 or more terms with binary `+` (pipeline inbox 7b9e/7ce1). Measured on DayZDiag 1.30.164289.70
+  (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, with one statement on one line in a mod's
+  `4_World` script that alternates string literals with an `int` and a float's `ToString()`
+  (`string s = "a" + i0 + " b" + f0.ToString() + ...`, the pattern of 7b9e's `Log(...)` line). 14 terms
+  (the control, run 06624c45) compiled; 17, 18 and 20 ran on the server alone, one probe mod per run: 17
+  compiled, and 18 and 20 failed with `Formula too complex` on the statement's line, then
+  `Incompatible parameter 'i0'` there, then `Can't compile "World" script module!`. Other operand types
+  and a statement over several lines are not measured, so the rule warns and its message says so. `++`,
+  `+=` and a unary `+` join nothing and a `+` in a string or a comment is none; every binary `+` of the
+  statement counts, one in parentheses or in a call's arguments too; a chain with no string literal is
+  not judged; what never compiles is not read, and two branches of one block are not counted together.
+  Fixtures under `tests/fixtures/formula_too_complex`: 18 and 20 terms WARN at line 6, the line the
+  compiler named; 14 and 17 terms, 20 numbers, and the 20 terms split across two statements give
+  nothing. `enforce-script-reference` `references/pitfalls-advanced.md`: item 4 of the compile-fail
+  families gives the measured limit (`CLAIM-ENFORCE-FORMULA-TERMS-130`) and the SP-080 cascade section
+  points to it; `CLAIM-ENFORCE-FORMULA-TOO-COMPLEX` covers the rule's header. The vanilla control on the
+  owner's PC on 2026-11-10 found none on DayZ 1.30.164289 stable (3057 files).
+- `dayz-script-validator` and `enforce-script-reference`: the `%` failure measured again (pipeline inbox
+  d35a), on DayZDiag 1.30.164289.70 (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, server
+  only, one probe mod per run. In a mod's `4_World` script, `float x = (cell % 103) * 150 + 150 * 0.5;`
+  and the ticket's `float x = (cell % SIDE) * STEP + STEP * 0.5;` (`static const float STEP`,
+  `static const int SIDE`) each stopped the World module with `Unknown operator '%'` at its own line
+  (`mcpprobed35ab.c,6`, `mcpprobed35ac.c,10`);
+  `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;` compiled and ran (run 06624c45).
+  Both failing statements hold the literal `0.5`, so whether a `static const float` with no literal
+  beside it fails is not isolated, and the ticket saw `Unknown operator ''` in a mission's `init.c`,
+  which was not measured again. `ES-MODULO-FLOAT-CONTEXT` does not change; it gains fixtures under
+  `tests/fixtures/modulo_float_context` (FAIL at the two lines the compiler named, no finding on the
+  three statements that compiled), and its header comment gives the error lines.
+  `references/pitfalls-advanced.md` gains a short `Unknown operator '%'` entry
+  (`CLAIM-ENFORCE-MODULO-FLOAT-LITERAL-130`), `SKILL.md` item 13 points to it, and
+  `CLAIM-ENF-MODULO-INT-ONLY` and `CLAIM-ENFORCE-MODULO-FLOAT-CONTEXT` record the measurement.
 ### Changed
 
 - `dayz-ui-development` `references/layout-variants-130.md`: layout variants written by hand, measured on
@@ -33,6 +66,41 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (`CLAIM-PBO-FSSHADOWING-MAKEPBO-130`, `CLAIM-PBO-FSSHADOWING-FILEBANK-130`); the `.meta` and `config.cpp`
   are optional, and a shadow PBO does not hide the vanilla files it does not hold. `SKILL.md` says so where
   it requires `config.cpp`.
+- `dayz-script-validator`: `ES-PROTO-ARGUMENT-DOWNCAST` reports an `Object` passed where a proto takes
+  an `EntityAI` as FAIL, no longer WARN (pipeline inbox e074). Measured on DayZDiag 1.30.164289.70 (DayZ
+  1.30.164289 stable) on the owner's PC on 2026-11-09, server only, one probe mod per run:
+  `static void Show(ItemPreviewWidget preview, Object obj) { preview.SetItem(obj); }` in a mod's
+  `4_World` script, the shape the rule had found in a mod, failed with
+  `Unsafe down-casting, use 'EntityAI.Cast' for safe down-casting`,
+  `Types 'Object' and 'EntityAI' are unrelated` and
+  `Cannot convert 'Object' to 'EntityAI' for argument '0' to method 'SetItem'`, and the World module did
+  not compile; the ticket's `RaycastRV` call, run as the control, failed as the ticket said. A retail
+  build is not measured. The FAIL message of the new pair names its own evidence
+  (`ItemPreviewWidget.SetItem`, argument '0'), the `IEntity`/`Object` pair keeps its text word for word,
+  and the WARN for any other pair names both refusals. A fixture with the probe's shape
+  (`bad/scripts/4_World/fx_preview.c`, FAIL at line 9) and a stand-in proto join the tests; the header
+  comment, the README and `CLAIM-ENFORCE-PROTO-ARGUMENT-DOWNCAST` say the same. The vanilla control is
+  not affected: its baseline holds no finding of this rule, and a first version that failed every pair
+  found none on vanilla 1.30.164078 and 1.29.0.163451.
+- `dayz-script-validator`: `ES-EMPTY-IFDEF` is WARN, no longer FAIL, and the pack no longer says
+  that an empty `#ifdef` block segfaults (pipeline inbox dada). Measured on DayZDiag 1.30.164289.70
+  (DayZ 1.30.164289 stable) on the owner's PC on 2026-11-09, dayz-mcp run 06624c45, server and
+  client, with the probe mod `@MCPProbeOk` (`scripts/4_World/MCPProbeIfdef.c`, the pack's own
+  code): six `#ifdef`/`#endif` blocks holding only a comment, at file scope, in a class body and in
+  a method body, each with `DIAG_DEVELOPER` (defined by DayZDiag on both peers) and with a macro
+  nobody defines, compiled and ran on both peers; the method's marker `MCP_PROBE_IFDEF_RAN` is in
+  both script logs and neither process hung. Vanilla 1.30 ships such a block at
+  `4_world/classes/environment/environment.c:1-3`. Not measured: a block with nothing at all inside,
+  a retail build, DayZ 1.29, so the rule stays as a WARN whose message says so. Over that probe the
+  validator gives six WARNs where it gave six FAILs. `enforce-script-reference`
+  `references/pitfalls-advanced.md` section 5 and its style-guide bullet, three lines of its
+  `SKILL.md` and `_shared/enscript-style.md` now say what was measured
+  (`CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130`), and `dayz-pbo-build` and `dayz-mod-workflow` no longer
+  list an empty `#ifdef` among the errors that stop a build. The vanilla control is re-baselined on
+  the owner's PC on 2026-11-10, on the same DayZ 1.30.164289 stable tree (digest `fd826b40`):
+  `vanilla_control.py --update` moved the 7 `ES-EMPTY-IFDEF` hits from `errors` (15 to 8 entries) to
+  `warning_counts` (`ES-EMPTY-IFDEF`: 7, 424 to 431 warnings) and no other finding moved; the check
+  after it and a `--json` run pass with the same findings and digest.
 
 ### Fixed
 
