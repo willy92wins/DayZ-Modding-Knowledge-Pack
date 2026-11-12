@@ -73,6 +73,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   was offline ended with kick 49. `SKILL.md` points to it. `CLAIM-WORKSHOP-SIGN-DSUTILS`,
   `CLAIM-WORKSHOP-PUBLISHER-FILES`, `CLAIM-WORKSHOP-STEAMCMD-LOGIN`,
   `CLAIM-WORKSHOP-STEAMCMD-CREATE`, `CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED`.
+- `knowledge/script-network-arrays.md`: local loopback runtime probe on build 26220720: `ScriptRPC` carried `array<int>` counts 1, 64, 255 and 256 (all `Write` and `Read` true, `values.Count()` matched), `ScriptInputUserData` carried counts 1, 16, 32, 36 and 37 (all true), the ACKs carried sequence and count, and the note states the scope: no wire size, no loss, no fragmentation, no universal limit. `CLAIM-NET-ARRAY-RPC`, `CLAIM-NET-ARRAY-INPUT`, `CLAIM-NET-ARRAY-ACK`, `CLAIM-NET-ARRAY-SCOPE`.
 ### Changed
 
 - `dayz-ui-development` `references/layout-variants-130.md`: layout variants written by hand, measured on

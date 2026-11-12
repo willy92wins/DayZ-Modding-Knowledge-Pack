@@ -1844,7 +1844,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "524052367276069fd830a58aeea1be4320e6dd0335fb851961795f65c2b91b97",
+      "output_hash": "44b68fa30b6b611e3bf5a74e49d0844a7b7fe9732ae162cb3cff0cf444507bc0",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -20156,7 +20156,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3a1a8949402ed3bc827ac0a800e9b996b70ed47da2d608d4cdbf52b931ed80b0",
+      "output_hash": "e639bcbb0dd0353c68183bb18f3c6b261d101f98f7b589def7b2a04637f0515a",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40472,6 +40472,28 @@
       "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/script-network-arrays.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Local dayz-mcp loopback probe on build 26220720; run ae70ec7d; PBO ca0b88c1; logs script_2026-11-12_20-11-16 and script_2026-11-12_20-11-39.",
+          "license": "MIT",
+          "source_hash": "7c4f0512488218b73d87c3dd6dbcabc5d464dcdb53271216e2baddd6f4641e4d",
+          "source_id": "obsidian-knowledge",
+          "source_path": "AI/20_Knowledge/dayz-script-network-arrays-probe.md",
+          "source_revision": "filesystem@2026-11-12",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "230ac655e3da8fb584eeb45f208a9028f49b0bad403d3721299d0dc9b4c0eda4",
+      "output_path": "knowledge/script-network-arrays.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "source_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
