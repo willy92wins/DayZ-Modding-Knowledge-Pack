@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `knowledge/workbench-scripting-api.md`: the build 119356 Workbench Enforce API map: the `#ifdef WORKBENCH` guard boundary, the exact `Workbench` entry points (`RunCmd`/`RunProcess`/`GetAbsolutePath`/`SearchResources`), the `WBModuleDef` surface and the `ResourceManager`/`ScriptEditor` modules, the `WorkbenchPlugin`/`ResourceManagerPlugin` events and `WorkbenchPluginAttribute`, `BuildResourceContext`, `WBProgressDialog`, `MetaFile` and `GeneratedResources`. `CLAIM-WORKBENCH-GUARD`, `CLAIM-WORKBENCH-ENTRYPOINTS`, `CLAIM-WORKBENCH-MODULES`, `CLAIM-WORKBENCH-PLUGINS`, `CLAIM-WORKBENCH-PROGRESS`, `CLAIM-WORKBENCH-METAFILE`, `CLAIM-WORKBENCH-GENERATED-RESOURCES`, `CLAIM-WORKBENCH-SEARCHRESOURCES`.
 - `dayz-ui-lab`: `widget_ids.py` gives the widget IDs of a DayZ 1.30 layout variant. `derive` lists
   each widget's stored ID, the ID derived from its name and its ancestors' names
   (`CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`) and whether the two match; `scan` counts them over a

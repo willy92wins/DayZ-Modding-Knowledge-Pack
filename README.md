@@ -420,6 +420,7 @@ against the vanilla source for your game version (the engine moves).
   AddonBuilder / DayZDiag commands, `serverDZ.cfg` `allowFilePatching`, mission templates, texture
   suffixes, `.p3d` named properties, Central Economy file layout, BattlEye codes, RPT triage,
   terrain pipeline.
+- **`workbench-scripting-api.md`** — the build 119356 Workbench Enforce API map: the `#ifdef WORKBENCH` guard boundary, the exact `Workbench` entry points, the `ResourceManager`/`ScriptEditor` modules, the `WorkbenchPlugin`/`ResourceManagerPlugin` events, `BuildResourceContext`, `WBProgressDialog`, `MetaFile` and `GeneratedResources`.
 - **`dayz-mcp-bridge-protocol.md`** — driving DayZDiag from an agent: the bridge's tool surface,
   the invariants that keep it safe (server-authoritative, one FIFO lease, fail-closed ingress,
   deadman-held controls), and the engine facts it cost in-game cycles to learn — client vs
