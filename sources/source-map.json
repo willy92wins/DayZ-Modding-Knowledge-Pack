@@ -1831,10 +1831,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "workshop-publish@2026-11-12",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Same review: the Unreleased entry marks the Publisher's session as inferred from its files, names who reported kick 49, and uses the renamed CLAIM-WORKSHOP-PUBLISHER-FILES.",
+          "license": "MIT",
+          "source_hash": "524052367276069fd830a58aeea1be4320e6dd0335fb851961795f65c2b91b97",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "workshop-publish-r2@2026-11-12",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "b88d69116ece99d42c4a9e68d20f593370ca547391166e0605179902b9b6f811",
+      "output_hash": "524052367276069fd830a58aeea1be4320e6dd0335fb851961795f65c2b91b97",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -20133,10 +20143,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "workshop-publish@2026-11-12",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Same review: CLAIM-WORKSHOP-* ranges follow the restructured reference, CLAIM-WORKSHOP-PUBLISHER-CLIENT-SESSION is renamed CLAIM-WORKSHOP-PUBLISHER-FILES, and three evidence locators say what was inferred, what was observed and who reported kick 49.",
+          "license": "MIT",
+          "source_hash": "3a1a8949402ed3bc827ac0a800e9b996b70ed47da2d608d4cdbf52b931ed80b0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "workshop-publish-r2@2026-11-12",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "b3afe4b78613b478cf1729778ab328757add369751610c7efed41cb9aa80eac0",
+      "output_hash": "3a1a8949402ed3bc827ac0a800e9b996b70ed47da2d608d4cdbf52b931ed80b0",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40435,10 +40455,20 @@
           "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
           "source_revision": "workshop-publish@2026-11-12",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adversarial review of PR #178 (Codex, REQUEST_CHANGES on 1562351): the SteamCMD warning moves before the login steps; the Publisher's use of the client session and the 'any login' case go to [INFERRED] paragraphs out of the [EXACT] ones; the two runscript settings keep only what was observed; the kick 49 sentence names who reported it. CLAIM-WORKSHOP-PUBLISHER-CLIENT-SESSION is renamed CLAIM-WORKSHOP-PUBLISHER-FILES.",
+          "license": "MIT",
+          "source_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+          "source_revision": "workshop-publish-r2@2026-11-12",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7a8b91ded008079e96760bc9058f9359bcd710fb50e33a7af0e23e063fac0e0",
+      "output_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
       "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "runtime_verified"

@@ -66,12 +66,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `CLAIM-ENF-MODULO-INT-ONLY` and `CLAIM-ENFORCE-MODULO-FLOAT-CONTEXT` record the measurement.
 - `dayz-pbo-build` `references/workshop-publish.md`: publishing a signed mod to the DayZ Workshop,
   measured on 2026-11-12. Signing with DsUtils leaves the PBO's sha256 unchanged; the Publisher of
-  DayZ Tools publishes with the running Steam client's session and has no command-line version;
-  SteamCMD creates a hidden item from a `.vdf` with a cached login; and a SteamCMD login with the
-  account the Steam client has signed in on the same machine kicks that client off
-  (`Session Replaced`), and DayZ clients on that machine fail to join while that client is offline.
-  `SKILL.md` points to it. `CLAIM-WORKSHOP-SIGN-DSUTILS`,
-  `CLAIM-WORKSHOP-PUBLISHER-CLIENT-SESSION`, `CLAIM-WORKSHOP-STEAMCMD-LOGIN`,
+  DayZ Tools has no command-line version and, from its files (not run), publishes with the running
+  Steam client's session; SteamCMD creates a hidden item from a `.vdf` with a cached login; and a
+  SteamCMD login with the account the Steam client has signed in on the same machine logs that
+  client off (`Session Replaced`), and the joins that other test runs on that machine tried while it
+  was offline ended with kick 49. `SKILL.md` points to it. `CLAIM-WORKSHOP-SIGN-DSUTILS`,
+  `CLAIM-WORKSHOP-PUBLISHER-FILES`, `CLAIM-WORKSHOP-STEAMCMD-LOGIN`,
   `CLAIM-WORKSHOP-STEAMCMD-CREATE`, `CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED`.
 ### Changed
 
