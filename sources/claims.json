@@ -4118,7 +4118,7 @@
       "verification_level": "source_verified",
       "license": "MIT",
       "claim_id": "CLAIM-NET-ARRAY-ACK",
-      "evidence_locator": "vault AI/20_Knowledge/dayz-script-network-arrays-probe.md:68-76",
+      "evidence_locator": "vault AI/20_Knowledge/dayz-script-network-arrays-probe.md:65-72; client log script_2026-11-12_20-11-39.log:322-347; server log script_2026-11-12_20-11-16.log:119-136",
       "line_start": 36,
       "line_end": 36
     },

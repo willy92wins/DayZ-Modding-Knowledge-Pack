@@ -20156,7 +20156,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e639bcbb0dd0353c68183bb18f3c6b261d101f98f7b589def7b2a04637f0515a",
+      "output_hash": "fb4b59b3ec88a45a4773c862006dedbae861c336b57003cc25940b5eb1609e70",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
