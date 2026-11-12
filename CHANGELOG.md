@@ -7,6 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `knowledge/entity-component-system.md`: the declared Enfusion entity component
+  system of build 119356, source-verified. `GenericEntity`, `GenericComponent` and
+  `ScriptComponent` under the `COMPONENT_SYSTEM` guard, the insert/remove/delete and
+  `EOn*`/`OnComponent*` lifecycle, the event-mask constructor caveat, and
+  `BaseSoundComponent` as the vanilla example; no runtime behaviour claimed
+  (`CLAIM-COMPONENT-GUARD`, `CLAIM-COMPONENT-GENERIC`, `CLAIM-COMPONENT-SCRIPT`,
+  `CLAIM-COMPONENT-EVENTS`, `CLAIM-COMPONENT-INSERT`, `CLAIM-COMPONENT-REMOVE`,
+  `CLAIM-COMPONENT-FIND`, `CLAIM-COMPONENT-TOUCH`, `CLAIM-COMPONENT-BASESOUND`).
+
 - `dayz-ui-lab`: `widget_ids.py` gives the widget IDs of a DayZ 1.30 layout variant. `derive` lists
   each widget's stored ID, the ID derived from its name and its ancestors' names
   (`CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`) and whether the two match; `scan` counts them over a
