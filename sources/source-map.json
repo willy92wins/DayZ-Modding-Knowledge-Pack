@@ -1791,10 +1791,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "claude/project-thread-h217et@2026-11-10",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Added entry for knowledge/entity-component-system.md (entity component system, build 119356).",
+          "license": "MIT",
+          "source_hash": "c932b77cf45ef4cc12f1fbc2378a4f9a06138feb999e22059a3bef2e05d3e485",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "entity-components-119356@2026-11-12",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b8fb3f1e6a6449bfddbeed68d37ab89a9958db6d10357628c84edeea5127ae59",
+      "output_hash": "c932b77cf45ef4cc12f1fbc2378a4f9a06138feb999e22059a3bef2e05d3e485",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -20033,10 +20043,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame-gp6@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registered the nine CLAIM-COMPONENT-* claims for knowledge/entity-component-system.md (build 119356).",
+          "license": "MIT",
+          "source_hash": "c40b15cd564eb52586f4a4eec048d6f6708028a042bb391863cca7d1e328eb97",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "entity-components-119356@2026-11-12",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a22bdc56b320572ef7ad4ced9bbc84a6a50fb30860627146296e24d67a07659a",
+      "output_hash": "a406679478f6d83ca1a558c64a2b2674ae9ffde5de6eb58947206212ecc9cfbb",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40204,6 +40224,58 @@
       "license": "MIT",
       "output_hash": "91931edf8fafc36bf3c7dd74ae14138cfaffecaf9212fb49020d5a5ab1facead",
       "output_path": "knowledge/script-input-user-data.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/entity-component-system.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "merge",
+          "decision_evidence": "Declared entity component surface paraphrased with path:line citations for build 119356; no vanilla code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "5ffaed4be8ceab6aea526118e9be61247dfb72a652ba3a71c12889af136deae9",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "2_gamelib/components/gamelibcomponents.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Declared entity component surface paraphrased with path:line citations for build 119356; no vanilla code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "defbc4011bc1d3ed310f22fad7bf1c90015a0c4d29764c8245b8805f47b835ab",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "2_gamelib/entities/gamelibentities.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Declared entity component surface paraphrased with path:line citations for build 119356; no vanilla code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "8c54e810605c758c852713cca6ea4cc4e3a81311f22601bce101231e05ea246a",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/proto/enentity.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Declared entity component surface paraphrased with path:line citations for build 119356; no vanilla code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "59e509055a4c06306871b7f41a2904e567c4ce2186878742e0ce2158b49437ac",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "staticdefinesdoc.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "085119f5720d9bd58d0890d3763fd6aa7271b01860015f118401ee39140acfa2",
+      "output_path": "knowledge/entity-component-system.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "source_verified"
     }
