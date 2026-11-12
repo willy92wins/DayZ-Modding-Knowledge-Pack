@@ -1821,10 +1821,30 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "animal-territories@2026-11-12",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Added entry for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-*).",
+          "license": "MIT",
+          "source_hash": "b88d69116ece99d42c4a9e68d20f593370ca547391166e0605179902b9b6f811",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "workshop-publish@2026-11-12",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Same review: the Unreleased entry marks the Publisher's session as inferred from its files, names who reported kick 49, and uses the renamed CLAIM-WORKSHOP-PUBLISHER-FILES.",
+          "license": "MIT",
+          "source_hash": "524052367276069fd830a58aeea1be4320e6dd0335fb851961795f65c2b91b97",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "workshop-publish-r2@2026-11-12",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "6c3ebf93f6af38204713492aef2611f2359bfb45a2ce16061373dfb0b7005d93",
+      "output_hash": "524052367276069fd830a58aeea1be4320e6dd0335fb851961795f65c2b91b97",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11686,10 +11706,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "pack-162-resolution@2026-11-10",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "One bullet under the manual release checks pointing to references/workshop-publish.md (CLAIM-WORKSHOP-*). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "56cda76abd9b59c041381a373934e997d5df0c89cc32865c8f6315cdcbe2d113",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "workshop-publish@2026-11-12",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "02fcca91b0641e2b75598b2b73d377388e1537e4a998def9f5a516ce9265f9fd",
+      "output_hash": "56cda76abd9b59c041381a373934e997d5df0c89cc32865c8f6315cdcbe2d113",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -20103,10 +20133,30 @@
           "source_path": "sources/claims.json",
           "source_revision": "animal-territories@2026-11-12",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Five claims for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-*), from the 2026-11-12 phase 0 probes of the dayz-mcp distribution plan and the vault runbook: one offline_tested, one source_verified, three runtime_verified.",
+          "license": "MIT",
+          "source_hash": "b3afe4b78613b478cf1729778ab328757add369751610c7efed41cb9aa80eac0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "workshop-publish@2026-11-12",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Same review: CLAIM-WORKSHOP-* ranges follow the restructured reference, CLAIM-WORKSHOP-PUBLISHER-CLIENT-SESSION is renamed CLAIM-WORKSHOP-PUBLISHER-FILES, and three evidence locators say what was inferred, what was observed and who reported kick 49.",
+          "license": "MIT",
+          "source_hash": "3a1a8949402ed3bc827ac0a800e9b996b70ed47da2d608d4cdbf52b931ed80b0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "workshop-publish-r2@2026-11-12",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "b9c980e10fbce413c98f8a67bd91401ad23f1350bf2d07cca9e1ecf7dce7dd4b",
+      "output_hash": "3a1a8949402ed3bc827ac0a800e9b996b70ed47da2d608d4cdbf52b931ed80b0",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40390,6 +40440,38 @@
       "output_path": "knowledge/animal-territories.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-pbo-build/references/workshop-publish.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored reference written by Claude (Anthropic) from the 2026-11-12 phase 0 probes of the dayz-mcp distribution plan (DsUtils signing without the game, a hidden Workshop item created with SteamCMD, the Steam client's Session Replaced) and the vault runbook they produced; no third-party text copied; no account name, item id or private path.",
+          "license": "MIT",
+          "source_hash": "f7a8b91ded008079e96760bc9058f9359bcd710fb50e33a7af0e23e063fac0e0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+          "source_revision": "workshop-publish@2026-11-12",
+          "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Adversarial review of PR #178 (Codex, REQUEST_CHANGES on 1562351): the SteamCMD warning moves before the login steps; the Publisher's use of the client session and the 'any login' case go to [INFERRED] paragraphs out of the [EXACT] ones; the two runscript settings keep only what was observed; the kick 49 sentence names who reported it. CLAIM-WORKSHOP-PUBLISHER-CLIENT-SESSION is renamed CLAIM-WORKSHOP-PUBLISHER-FILES.",
+          "license": "MIT",
+          "source_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+          "source_revision": "workshop-publish-r2@2026-11-12",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
+      "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+      "routing_artifact_id": "skill/dayz-pbo-build",
+      "verification_level": "runtime_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
