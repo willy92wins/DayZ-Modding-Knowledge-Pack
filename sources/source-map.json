@@ -1801,10 +1801,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "entity-components-119356@2026-11-12",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-12 (a59b, GA109): [Unreleased] Fixed entry for the dayz-clothing chiral sleeve in-game check on DayZDiag 1.30.164289.70, dayz-mcp run 9f351408 (CLAIM-CLOTHING-CHIRAL-SLEEVES-INGAME, REPORT-ga109.md) and the dayz-odol-strict README note that DayZ Tools 1.30 (BINARIZE 1.30.164289.70) wrote ODOL v56 into the three MCP_ChiralSleeves test .p3d files (REPORT.md).",
+          "license": "MIT",
+          "source_hash": "fe729e4d8f3970d65a594032541f6ca613cea7f6eea9985493ca13433bdff6b0",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-a59b@2026-11-12",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c932b77cf45ef4cc12f1fbc2378a4f9a06138feb999e22059a3bef2e05d3e485",
+      "output_hash": "fe729e4d8f3970d65a594032541f6ca613cea7f6eea9985493ca13433bdff6b0",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8340,10 +8350,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "kp-update-inbc-pbo-sp155@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-12 (a59b, GA109): Chiral in-game check adds the left/right sleeve result (CLAIM-CLOTHING-CHIRAL-SLEEVES-INGAME) and narrows Not covered to ArmorHneck itself and a female body. Measured in game on DayZDiag 1.30.164289.70 (both peers 12~1.30.164289.70), dayz-mcp run 9f351408-4d3f-4bd0-baee-93c2c9204b2d, with mod @MCP_ChiralSleeves (MCP_ChiralSleeves.pbo, 82428 B, sha256 3928f5dacf7d955b4facd68cbd8835cb5b12d8477888da2546f89228d7baace9; binarized to ODOL v56 by BINARIZE 1.30.164289.70 with DayzTemporarySkeleton, 159 bone pairs) from the offline harness REPORT.md and the in-game REPORT-ga109.md: R12 (Rule 12, py3d 1.10.1 blender_to_dayz, no selection swap) puts the spine3 relief F readable on the left chest, the cuff ring on the left arm, and each sleeve on and following its arm; OLD ((-x, z, y) with leftarm/rightarm swapped) mirrors F and ring onto the right while each sleeve follows its arm; NOSWAP ((-x, z, y) without swap) mirrors F and ring side like OLD, floats both sleeves at head height off the arms while standing still, and when the left arm rises leaves the left-side sleeve at head height and drops the right-side sleeve to the lower back; procedural colors rendered grey (untextured), read from geometry.",
+          "license": "MIT",
+          "source_hash": "6bee4274a99802cacab15293174cdfd7a3920c0d551c6e24451fb3192f588b98",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "kp-update-a59b@2026-11-12",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a56fb968089cb4931e44920a95b8354ba623fdc756bf35b14cd0d36a549de26b",
+      "output_hash": "6bee4274a99802cacab15293174cdfd7a3920c0d551c6e24451fb3192f588b98",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -20053,10 +20073,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "entity-components-119356@2026-11-12",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-12 (a59b, GA109): registers CLAIM-CLOTHING-CHIRAL-SLEEVES-INGAME for skills/dayz-clothing/SKILL.md from in-game dayz-mcp run 9f351408-4d3f-4bd0-baee-93c2c9204b2d on DayZDiag 1.30.164289.70 (REPORT-ga109.md) and the MCP_ChiralSleeves offline harness (REPORT.md); CLAIM-CLOTHING-CHIRAL-INGAME stays at its existing line.",
+          "license": "MIT",
+          "source_hash": "86aa67e63891b1420f7dc5a3bfc0e1cb862980d9434ce305a3ff0ace0df308ae",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-a59b@2026-11-12",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a406679478f6d83ca1a558c64a2b2674ae9ffde5de6eb58947206212ecc9cfbb",
+      "output_hash": "86aa67e63891b1420f7dc5a3bfc0e1cb862980d9434ce305a3ff0ace0df308ae",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -22748,10 +22778,20 @@
           "source_path": "tools/dayz-odol-strict/README.md",
           "source_revision": "kp-update-96e0@2026-10-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-12 (a59b): Strict boundary records that DayZ Tools 1.30 (BINARIZE 1.30.164289.70, from AddonBuilder.rpt via AddonBuilder 1.0.240.639) wrote ODOL v56 (header bytes 4..8 equal to 56) into the three MCP_ChiralSleeves test .p3d files (mcp_chiralsleeves_r12_m.p3d 25017 B, mcp_chiralsleeves_old_m.p3d 25070 B, mcp_chiralsleeves_noswap_m.p3d 25070 B), and that no other DayZ Tools build was measured in that harness run. Source: MCP_ChiralSleeves offline harness REPORT.md.",
+          "license": "MIT",
+          "source_hash": "c1ae5fe4a06ae5438166c255b7d5de99dd56376bcf7a09fddaa7edec127c077e",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-odol-strict/README.md",
+          "source_revision": "kp-update-a59b@2026-11-12",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "929e9aabf1a6b50b9ff614c1502ed577f0b1684385a2c3b34eee601a1762da87",
+      "output_hash": "c1ae5fe4a06ae5438166c255b7d5de99dd56376bcf7a09fddaa7edec127c077e",
       "output_path": "tools/dayz-odol-strict/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

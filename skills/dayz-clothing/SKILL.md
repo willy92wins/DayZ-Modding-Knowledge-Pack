@@ -86,8 +86,26 @@ of them wastes cycles if you chase the others first.
   L/R swap renamed nothing. dayz-mcp cannot take a worn item off the player,
   so the control was worn by a `SurvivorM_Francis` spawned beside the player,
   facing the camera with empty hands; its right side was read from its facing.
-  (claim: CLAIM-CLOTHING-CHIRAL-INGAME) Not covered: ArmorHneck itself, a
-  garment with left/right-weighted parts, a female body.
+  (claim: CLAIM-CLOTHING-CHIRAL-INGAME)
+  Result with left/right sleeves [run 2026-11-12, DayZDiag 1.30.164289.70]: on
+  `MCP_ChiralSleeves` (`Armband_ColorBase` classes in the `Armband` slot,
+  binarized to ODOL v56 with `DayzTemporarySkeleton`, driven by dayz-mcp), a
+  `spine3` torso tube with a left-chest relief "F" adds two shoulder-to-elbow
+  sleeves, one weighted to `leftarm` and one to `rightarm`, and a protruding
+  ring on the left sleeve only. Worn in turn by the player (`loadout_apply`) and
+  checked front and back standing still and during `greeting` (which raises the
+  left arm), the garment rendered grey (untextured), so the "F" and the ring
+  were read from the geometry. `R12` (Rule 12, `py3d.blender_to_dayz()`, no
+  selection swap) shows the "F" reading correctly on the left chest, the ring
+  on the left arm, and each sleeve following its arm. `OLD` (the reflected
+  `(-x, z, y)` export with `leftarm`/`rightarm` swapped) shows the "F" mirrored
+  on the right chest and the ring on the right arm, while each sleeve still
+  follows its arm. `NOSWAP` (the same `(-x, z, y)` export without the swap)
+  mirrors the "F" and ring side like `OLD`; standing still, both sleeves float
+  at head height off the arms, and with the left arm raised the left-side
+  sleeve stays at head height while the right-side sleeve drops to the lower
+  back. (claim: CLAIM-CLOTHING-CHIRAL-SLEEVES-INGAME)
+  Not covered: ArmorHneck itself, a female body.
 
 ## THE CLOTHING CONTRACT (structure of a working wearable)
 

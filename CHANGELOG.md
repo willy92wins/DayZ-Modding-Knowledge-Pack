@@ -131,6 +131,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-clothing`: the chiral in-game check now covers a garment with left/right-weighted sleeves
+  (GA109, 2026-11-12, DayZDiag 1.30.164289.70, dayz-mcp run 9f351408, mod `MCP_ChiralSleeves` in
+  the `Armband` slot, binarized to ODOL v56 with `DayzTemporarySkeleton`). On a `spine3` torso tube
+  with a left-chest relief "F", two shoulder-to-elbow sleeves (one weighted to `leftarm`, one to
+  `rightarm`) and a protruding cuff ring on the left sleeve only (worn in turn by the player via
+  `loadout_apply`, checked front and back standing still and during `greeting`; rendered grey,
+  untextured, so the "F" and ring were read from the geometry): `R12` (Rule 12,
+  `py3d.blender_to_dayz()`, no selection swap) puts the "F" readable on the left chest, the ring on
+  the left arm, and each sleeve on and following its arm; `OLD` (`(-x, z, y)` with
+  `leftarm`/`rightarm` swapped) mirrors the "F" onto the right chest and the ring onto the right
+  arm while each sleeve still follows its arm; `NOSWAP` (`(-x, z, y)` without the swap) mirrors the
+  "F" and ring side like `OLD`, leaves both sleeves floating at head height off the arms while
+  standing still, and with the left arm raised keeps the left-side sleeve at head height while
+  dropping the right-side sleeve to the lower back (`CLAIM-CLOTHING-CHIRAL-SLEEVES-INGAME`). "Not
+  covered" narrows to ArmorHneck itself and a female body. `dayz-odol-strict` `README.md`: in one
+  harness run on 2026-11-12, DayZ Tools 1.30 (`BINARIZE 1.30.164289.70`) wrote ODOL v56 into the
+  three test `.p3d` files; no other DayZ Tools build was measured in that run.
 - From checking bzed's `dayz-dev` skill (#161) against vanilla and against the game on
   Windows:
   - `dayz-test-ingame`: a `serverDZ.cfg` without `instanceId` is a second cause of the
