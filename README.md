@@ -428,6 +428,7 @@ against the vanilla source for your game version (the engine moves).
 - **`vanilla-native-surface.md`** — the `proto native` surface of DayZ scripts build 119356:
   2,758 line-start declarations (1,956 in `3_game`), the 52 `owned` and 25 `static`
   counts under that rule, and the exact `GetBoneMatrix` / `AudioSystem.BankLoad` call shapes.
+- **`mission-lifecycle.md`** — build 119356 mission bootstrap order and the exact `super` chain (`MissionBase` constructor, `MissionServer.OnInit/OnUpdate`, `MissionGameplay.OnInit/OnMissionStart`), the `m_Initialized` guard, rain-handler ownership, `DayZGame.OnRPC` → `target.OnRPC` routing, and the real persistence hooks (135 `OnStoreSave`, 148 `OnStoreLoad`, no `RegisterPersistent`).
 - **`vault-notes/`** — 18 topic notes, including: `dayz-animations-creatures-weapons`,
   `dayz-custom-infected`, `dayz-enforce-script-reference`, `dayz-mod-implementation-checklists`,
   `dayz-modded-class-server-stub-pattern`, `dayz-objectbuilder-lod-conventions`,

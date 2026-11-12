@@ -8,6 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - `knowledge/vanilla-native-surface.md`: the `proto native` surface of build 119356: 2,758 declarations, 1,956 in `3_game`, 52 `owned`, 25 `static`; the official `owned` return-value semantics (`proto.c:14-16`) and the `static` call shape, including the `static proto native owned` caveat, and the `GetBoneMatrix` four-vector array signature. `CLAIM-NATIVE-SURFACE-COUNTS`, `CLAIM-NATIVE-SURFACE-DISTRIBUTION`, `CLAIM-NATIVE-SURFACE-BONE-MATRIX`, `CLAIM-NATIVE-SURFACE-MODIFIERS`, `CLAIM-NATIVE-SURFACE-LIMITS`.
+- `knowledge/mission-lifecycle.md`: the build 119356 mission bootstrap order and `super` chain (`MissionBase` constructor, `MissionServer.OnInit/OnUpdate`, `MissionGameplay.OnInit/OnMissionStart`), the `DayZGame.OnRPC` -> `target.OnRPC` routing, and the real persistence hooks (135 `OnStoreSave`, 148 `OnStoreLoad`, no `RegisterPersistent`; the only `RegisterPersistent*` symbol is the local helper `RegisterPersistentObject` in `powergeneratorstatic.c`). `CLAIM-MISSION-BASE-CONSTRUCTOR`, `CLAIM-MISSION-SERVER-ONINIT`, `CLAIM-MISSION-SERVER-UPDATE`, `CLAIM-MISSION-GAMEPLAY-ONINIT`, `CLAIM-MISSION-GAMEPLAY-ONMISSIONSTART`, `CLAIM-MISSION-RPC-ROUTING`, `CLAIM-MISSION-PERSISTENCE-HOOKS`.
 - `dayz-ui-lab`: `widget_ids.py` gives the widget IDs of a DayZ 1.30 layout variant. `derive` lists
   each widget's stored ID, the ID derived from its name and its ancestors' names
   (`CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`) and whether the two match; `scan` counts them over a
