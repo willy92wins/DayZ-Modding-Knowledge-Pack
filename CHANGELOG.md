@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `knowledge/scripted-entity-triggers.md`: the build 119356 `ScriptedEntity`/`TriggerEvents` API map: the `TriggerShape` collision setters and which are `proto native`, the validated `SetCollisionCylinderTwoWay` wrapper, `IsInventoryVisible()` returning false, the `Object.OnEnterTrigger`/`OnLeaveTrigger` callbacks on the entering object (and their `DIAG_DEVELOPER`-only `PlayerBase` counter), and the `TriggerEvents` invokers plus Begin/server-or-client/End dispatch order. Cross-references `dayz-underground` and `dayz-environment-hazards` instead of repeating their placed-area and hazard designs. `CLAIM-SCRIPTED-ENTITY-CLASS`, `CLAIM-SCRIPTED-ENTITY-SHAPES`, `CLAIM-SCRIPTED-ENTITY-TWOWAY`, `CLAIM-SCRIPTED-ENTITY-INVENTORY`, `CLAIM-OBJECT-TRIGGER-CALLBACKS`, `CLAIM-PLAYERBASE-TRIGGER-DIAG`, `CLAIM-TRIGGEREVENTS-CLASS`, `CLAIM-TRIGGEREVENTS-INVOKERS`, `CLAIM-TRIGGEREVENTS-DISPATCH`, `CLAIM-SCRIPTED-ENTITY-USAGE`.
 - `dayz-ui-lab`: `widget_ids.py` gives the widget IDs of a DayZ 1.30 layout variant. `derive` lists
   each widget's stored ID, the ID derived from its name and its ancestors' names
   (`CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`) and whether the two match; `scan` counts them over a
