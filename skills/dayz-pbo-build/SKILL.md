@@ -47,6 +47,8 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
 - **Release package (manual; the checks above do not run it):** every class a player places, or that otherwise
   persists in the world, has an entry with an explicit lifetime in the `types.xml` the release ships. Without
   one it runs out after 30 to 60 minutes of server time (`dayz-persistence`, SP-459).
+- **Publishing to the Workshop (manual):** signing with DsUtils, the item folder, the Publisher or SteamCMD,
+  and why a SteamCMD login with the Steam client's account kicks that client off: `references/workshop-publish.md`.
 
 **Example output:**
 ```
