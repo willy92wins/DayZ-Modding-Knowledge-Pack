@@ -1794,7 +1794,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f94a1abdf50ddf20eac347062fb475dc34e66cd61e7b6dd4991c39958723b045",
+      "output_hash": "9d8cc36bf572d825f95b0bd1e83d9b5a67bcc8dee151eb5bff5277b80f671a1d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2158,7 +2158,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "df7f8e71cb98d7359b7eb89659ef9d44a0ca5b38d135646bbdd88367a51c6a1d",
+      "output_hash": "0125c11f60402aae8722d43620088b674ec1bbafcacdeac679bed0229e0b91f9",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -20036,7 +20036,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "66fa176d9111e042ffabb52ec5cf7c90400bd10a0170540d2aba4cc89fd9686e",
+      "output_hash": "25ad423bd6448a3d7672f936a83d8a01e71740baace283007c9c824a0d3a2402",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -39828,6 +39828,158 @@
       "license": "MIT",
       "output_hash": "b35f15802545fdf7a19af7e6cd6c672ec7f47fbc21ac6f058a5a88cd7c84e72d",
       "output_path": "knowledge/mission-lifecycle.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/workbench-scripting-api.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored note; every factual assertion is source-verified against the cited vanilla scripts; no code copied.",
+          "license": "MIT",
+          "source_hash": "4f86987f994dcdc7ddf577d7e6c0b45194e83cdb49bcd3724992c5dc92e9d57c",
+          "source_id": "pack-r22-authored",
+          "source_path": "knowledge/workbench-scripting-api.md",
+          "source_revision": "pack-r22-workbench-api@2026-11-12",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "948408fb312ab6d0d0d0702955227d2db85c9d6d814c2fd89174ffc867bbe599",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/buildresourcecontext.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "b21b601521b878405a3d0d017e6510d23e2c3823b7fbc7c2a4be8844ba741bce",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/generatedresources.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "edc60e151bc3d0237bb9f32ef5312a0cb9ddac8e9768b5cd2c33f4abb3e68cbc",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/metafile.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "219222daf8886d9935d70dba67f4e5aa62c217e5c08d1f1a1c8cc0bad66450e0",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/modules/resourcemanager.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "14746fdd8001b57c2f26a05a8e7f601db6f52a3fec026eb3f1602560a3986b12",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/modules/scripteditor.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "37ea6be86d4c84470f6536be861a32692d41c1994ff13d38824de042e85c50bf",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/plugins/resourcemanagerplugin.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "33fc834c18c997add9603e8bfdbd1c000be70f141593e8f8a0c1d96f5c11703c",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/plugins/workbenchplugin.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "828b05acc09e6302add842bbb55bd2d1243568f05134e933e6a642c50ee91125",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/wbprogressdialog.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "d5487ea7215d3c665ae40815e5e0a84d345eec703fd73b960c3466c3d0ba963e",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/workbench.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "8f47e75266bb87fbcfa12a6d0ba094dab6f9b384ecf70e9ac86e831caa09730e",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi/modules/wbmoduledef.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "f83a62148ba0dd198864ce0525b47e534e8b959b2cc8105bbc33ea1cba06dd7e",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "1_core/workbenchapi.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "cc52f2369de5fe60366bdc77b5f16f4146758368bf2cd13a3ca5e46b55613ba1",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "editor/workbench/resavetool.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "381ba3489666ba22b701387850a88f373f210a6e7ef32f29cf853cbe9c2da934",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "editor/workbench/checkloctool.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4f86987f994dcdc7ddf577d7e6c0b45194e83cdb49bcd3724992c5dc92e9d57c",
+      "output_path": "knowledge/workbench-scripting-api.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "source_verified"
     }
