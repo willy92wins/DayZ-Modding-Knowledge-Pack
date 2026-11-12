@@ -1801,10 +1801,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "entity-components-119356@2026-11-12",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Added entry for knowledge/animal-territories.md (CLAIM-ANIMAL-TERR-*).",
+          "license": "MIT",
+          "source_hash": "920861357937461c14a1134dd95fabeb029d452d15ad49c356dd44a94f043385",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "animal-territories@2026-11-12",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "c932b77cf45ef4cc12f1fbc2378a4f9a06138feb999e22059a3bef2e05d3e485",
+      "output_hash": "920861357937461c14a1134dd95fabeb029d452d15ad49c356dd44a94f043385",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -20053,10 +20063,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "entity-components-119356@2026-11-12",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fifteen claims for knowledge/animal-territories.md (CLAIM-ANIMAL-TERR-*), source_verified against vanilla ChernarusPlus mission XML, DayZServer buildid 26220720.",
+          "license": "MIT",
+          "source_hash": "3bee51d52c153a9ee024966c4fdcd5a1d98664790f1c2644ddad06a3e9a98d3b",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "animal-territories@2026-11-12",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a406679478f6d83ca1a558c64a2b2674ae9ffde5de6eb58947206212ecc9cfbb",
+      "output_hash": "3bee51d52c153a9ee024966c4fdcd5a1d98664790f1c2644ddad06a3e9a98d3b",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40278,6 +40298,58 @@
       "output_path": "knowledge/entity-component-system.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/animal-territories.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored note; every factual assertion is source-verified against the cited vanilla mission XML; no whole file copied.",
+          "license": "MIT",
+          "source_hash": "ac5d7c3da9beaaa14d50727efb3e6a4d4496710602fce5fc3eeb64aef0b3457f",
+          "source_id": "pack-r22-authored",
+          "source_path": "knowledge/animal-territories.md",
+          "source_revision": "pack-r22-animal-territories@2026-11-12",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against vanilla mission file; only short fragments quoted with locators, no whole file copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "3f73c9f3abe7ed3811811a147ecfcc596af6170552e372c5eaff27dd92fbf135",
+          "source_id": "dayz-mission-chernarusplus",
+          "source_path": "dayzOffline.chernarusplus/cfgenvironment.xml",
+          "source_revision": "DayZServer appmanifest buildid 26220720",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against vanilla mission file; only short fragments quoted with locators, no whole file copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "36738538717e378a13e0566b9888e58d06a80193506d8bd5a12bf57949aad935",
+          "source_id": "dayz-mission-chernarusplus",
+          "source_path": "dayzOffline.chernarusplus/env/wolf_territories.xml",
+          "source_revision": "DayZServer appmanifest buildid 26220720",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against vanilla mission file; only short fragments quoted with locators, no whole file copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "9aa16e734d49d70e835ebe8161f59f0d2386602f9cfc026b42471a1826a9bbf8",
+          "source_id": "dayz-mission-chernarusplus",
+          "source_path": "dayzOffline.chernarusplus/env/bear_territories.xml",
+          "source_revision": "DayZServer appmanifest buildid 26220720",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ac5d7c3da9beaaa14d50727efb3e6a4d4496710602fce5fc3eeb64aef0b3457f",
+      "output_path": "knowledge/animal-territories.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "source_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -41515,6 +41587,14 @@
       "notes": "Retail DayZ scripts extracted from dta/scripts.pbo (scripts.txt version=119356); UTF-8 normalized copy used for reading; no code copied.",
       "revision": "119356",
       "source_id": "dayz-vanilla-119356"
+    },
+    {
+      "kind": "filesystem",
+      "license": "Bohemia Interactive reference only",
+      "local_root_id": "dayz_server_mpmissions",
+      "notes": "Vanilla DayZServer mission dayzOffline.chernarusplus (cfgenvironment.xml and env/*_territories.xml); reference only, no whole file copied.",
+      "revision": "DayZServer appmanifest buildid 26220720",
+      "source_id": "dayz-mission-chernarusplus"
     }
   ]
 }
