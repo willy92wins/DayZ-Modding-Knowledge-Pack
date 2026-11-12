@@ -3224,6 +3224,71 @@
       "source_id": "pack-r21-authored",
       "source_revision": "claude/project-thread-l0hlko@2026-11-10",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/vanilla-native-surface.md",
+      "claim_id": "CLAIM-NATIVE-SURFACE-COUNTS",
+      "evidence_locator": "scripts/ (grep -R -E '^[[:space:]]*proto[[:space:]]+native' --include='*.c'); build 119356",
+      "license": "MIT",
+      "line_end": 9,
+      "line_start": 9,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "dayz-vanilla-119356",
+      "source_revision": "119356",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/vanilla-native-surface.md",
+      "claim_id": "CLAIM-NATIVE-SURFACE-DISTRIBUTION",
+      "evidence_locator": "scripts/ (grep -R -E '^[[:space:]]*proto[[:space:]]+native' --include='*.c' per top-level directory); build 119356",
+      "license": "MIT",
+      "line_end": 13,
+      "line_start": 13,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "dayz-vanilla-119356",
+      "source_revision": "119356",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/vanilla-native-surface.md",
+      "claim_id": "CLAIM-NATIVE-SURFACE-BONE-MATRIX",
+      "evidence_locator": "scripts/1_core/proto/envisual.c:41",
+      "license": "MIT",
+      "line_end": 68,
+      "line_start": 68,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "dayz-vanilla-119356",
+      "source_revision": "119356",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/vanilla-native-surface.md",
+      "claim_id": "CLAIM-NATIVE-SURFACE-MODIFIERS",
+      "evidence_locator": "scripts/1_core/proto/proto.c:14-16; scripts/3_game/entities/entityai.c:2882; scripts/1_core/proto/enaudio.c:5; scripts/3_game/systems/inventory/inventoryslots.c:48; scripts/1_core/proto/enscript.c:336",
+      "license": "MIT",
+      "line_end": 38,
+      "line_start": 38,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "dayz-vanilla-119356",
+      "source_revision": "119356",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/vanilla-native-surface.md",
+      "claim_id": "CLAIM-NATIVE-SURFACE-LIMITS",
+      "evidence_locator": "scripts/ (grep -R -E '^[[:space:]]*proto[[:space:]]+native' --include='*.c'); build 119356",
+      "license": "MIT",
+      "line_end": 107,
+      "line_start": 107,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "dayz-vanilla-119356",
+      "source_revision": "119356",
+      "verification_level": "source_verified"
     }
   ],
   "schema_version": 1

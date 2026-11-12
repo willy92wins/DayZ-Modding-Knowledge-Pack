@@ -425,6 +425,9 @@ against the vanilla source for your game version (the engine moves).
   deadman-held controls), and the engine facts it cost in-game cycles to learn — client vs
   server vehicle ownership, why `SetThrottle` alone never moves a car, `DIAG_DEVELOPER` vs
   `DEVELOPER`, and why freecam freezes the thing you are trying to measure.
+- **`vanilla-native-surface.md`** — the `proto native` surface of DayZ scripts build 119356:
+  2,758 line-start declarations (1,956 in `3_game`), the 52 `owned` and 25 `static`
+  counts under that rule, and the exact `GetBoneMatrix` / `AudioSystem.BankLoad` call shapes.
 - **`vault-notes/`** — 18 topic notes, including: `dayz-animations-creatures-weapons`,
   `dayz-custom-infected`, `dayz-enforce-script-reference`, `dayz-mod-implementation-checklists`,
   `dayz-modded-class-server-stub-pattern`, `dayz-objectbuilder-lod-conventions`,
