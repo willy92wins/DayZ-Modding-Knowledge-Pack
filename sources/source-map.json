@@ -1794,7 +1794,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "60b1c83f91d5a041225ad75a492c7d4e9c572937e5d6864959ce28a82102bf28",
+      "output_hash": "a9c1eafefc8fe9bf5a5eeb2fd3b42d5370743b9d492ff079a82ce61d32d9f080",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2148,7 +2148,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "26e9cac555044f5b6e44a7c5b8aa33f99078a7773a65556133dd79a154c7dc4e",
+      "output_hash": "6c63fd3917a9fa7910260f453c25cf3db8abaf3f1b85d6d861d4e4d0def002c8",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -20026,7 +20026,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "572ddd099816728022a4c54360e2d6871f9a1ffc8f874330f1b92294958100e3",
+      "output_hash": "103638025c0f76d786895b82cf9dc5749867d5745493d4ae379ffff0c26b0e69",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -39626,6 +39626,118 @@
       "output_path": "tools/dayz-ui-lab/fixtures/widget-ids/broken.layout",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/knowledge/mission-lifecycle.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored note; every factual assertion is source-verified against the cited vanilla scripts; no code copied.",
+          "license": "MIT",
+          "source_hash": "b35f15802545fdf7a19af7e6cd6c672ec7f47fbc21ac6f058a5a88cd7c84e72d",
+          "source_id": "pack-r22-authored",
+          "source_path": "knowledge/mission-lifecycle.md",
+          "source_revision": "pack-r22-mission-lifecycle@2026-11-12",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "640b0003f06fc176fbb5bfe4bee279d1e8615d61b928373aa7524d6dc93d92e0",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "3_game/cfggameplayhandler.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "c4d636570b28ceffb4e32334aa60a249f573fbc3416064409ccdfc20135f2913",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "3_game/dayzgame.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "c56a1ed22224f31766bf80b8c547eb265f98a2b7997a73f00f8b89933d6cbbe3",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "3_game/entities/entityai.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "9c406c3015a141c567e943908b1f4cc6b3c39b20854c374d3e8226bbceaa3f27",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "3_game/gameplay.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "be5c44881421ebb07685fe5a13c1431a2ecadbdb6a08ffdd82ebf09c9a50d568",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "4_world/classes/missionbaseworld.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "c1a181d4ace00e018fe926f1238aa1249d3c4b75da91010849e43350ca2c2c41",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "5_mission/mission/missionbase.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "3387b783b2f4481427486b4c68bf0cba1b46a6020eeecfad4dc72a0e09be735b",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "5_mission/mission/missiongameplay.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "8c6c37ca641ca0d912918665a0da580d7c2110b54fdf0223e6f2097dab8e2b58",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "5_mission/mission/missionserver.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Source-verified against build 119356; no code copied.",
+          "license": "Bohemia Interactive reference only",
+          "source_hash": "d96a55bb01bfbd2a8c73684b279d7f4e06d45c0d7086c7c32c85060bf2a6af59",
+          "source_id": "dayz-vanilla-119356",
+          "source_path": "4_world/entities/building/underground/powergeneratorstatic.c",
+          "source_revision": "119356",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b35f15802545fdf7a19af7e6cd6c672ec7f47fbc21ac6f058a5a88cd7c84e72d",
+      "output_path": "knowledge/mission-lifecycle.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "source_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -40848,6 +40960,21 @@
       "public_locator": "https://github.com/obra/superpowers/blob/main/skills/systematic-debugging",
       "revision": "grokbot-skills-mirror@2026-11-05",
       "source_id": "obra-superpowers-systematic-debugging"
+    },
+    {
+      "kind": "authored",
+      "license": "MIT",
+      "notes": "Reviewed knowledge addition authored for the Pack; every factual assertion cites a vanilla script.",
+      "revision": "pack-r22-mission-lifecycle@2026-11-12",
+      "source_id": "pack-r22-authored"
+    },
+    {
+      "kind": "filesystem",
+      "license": "Bohemia Interactive reference only",
+      "local_root_id": "dayz_vanilla",
+      "notes": "Retail DayZ scripts extracted from dta/scripts.pbo (scripts.txt version=119356); UTF-8 normalized copy used for reading; no code copied.",
+      "revision": "119356",
+      "source_id": "dayz-vanilla-119356"
     }
   ]
 }

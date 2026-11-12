@@ -425,6 +425,7 @@ against the vanilla source for your game version (the engine moves).
   deadman-held controls), and the engine facts it cost in-game cycles to learn — client vs
   server vehicle ownership, why `SetThrottle` alone never moves a car, `DIAG_DEVELOPER` vs
   `DEVELOPER`, and why freecam freezes the thing you are trying to measure.
+- **`mission-lifecycle.md`** — build 119356 mission bootstrap order and the exact `super` chain (`MissionBase` constructor, `MissionServer.OnInit/OnUpdate`, `MissionGameplay.OnInit/OnMissionStart`), the `m_Initialized` guard, rain-handler ownership, `DayZGame.OnRPC` → `target.OnRPC` routing, and the real persistence hooks (135 `OnStoreSave`, 148 `OnStoreLoad`, no `RegisterPersistent`).
 - **`vault-notes/`** — 18 topic notes, including: `dayz-animations-creatures-weapons`,
   `dayz-custom-infected`, `dayz-enforce-script-reference`, `dayz-mod-implementation-checklists`,
   `dayz-modded-class-server-stub-pattern`, `dayz-objectbuilder-lod-conventions`,
