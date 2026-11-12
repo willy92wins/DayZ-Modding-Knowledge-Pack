@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `knowledge/script-input-user-data.md`: the build 119356 player input channel — `ScriptInputUserData` (`3_game/gameplay.c:120-132`), the `CanStoreInputUserData()` guard and its vanilla check sites, the write/send path (mute, weapon and inventory packets), the engine-driven receive chain (`OnInputUserDataReceived` -> `OnInputUserDataProcess` -> `StoreInputUserData` -> `OnHandleStoredInputUserData`, with its client `Error`), the sibling `ScriptRemoteInputUserData`/`ScriptJunctureData` contexts, and the labelled inference separating it from `ScriptRPC` (cross-referenced to `enforce-script-reference` `references/networking.md`, not duplicated). `CLAIM-INPUT-USERDATA-CLASS`, `CLAIM-INPUT-USERDATA-GUARD`, `CLAIM-INPUT-USERDATA-SEND`, `CLAIM-INPUT-USERDATA-RECEIVE`, `CLAIM-INPUT-USERDATA-RELATED-CONTEXTS`, `CLAIM-INPUT-USERDATA-VS-SCRIPTRPC`.
 - `dayz-ui-lab`: `widget_ids.py` gives the widget IDs of a DayZ 1.30 layout variant. `derive` lists
   each widget's stored ID, the ID derived from its name and its ancestors' names
   (`CLAIM-UI-VARIANT-IDS-NAME-HASH-CHECK`) and whether the two match; `scan` counts them over a
