@@ -20178,7 +20178,7 @@
           "decision": "merge",
           "decision_evidence": "Registers the four runtime_verified claims of the 2026-11-12 GP7 test (CLAIM-UI-VARIANT-INHERIT-OTHER-LAYOUTS-130, CLAIM-UI-VARIANT-INHERIT-CHILD-130, CLAIM-UI-SHADOW-IMAGESET-FULL-130 and CLAIM-UI-SHADOW-STYLES-FULL-130, runs P0, P1 and P2 on DayZDiag 1.30.164289, probe @GP7Probe PBO sha256 55d187de3fbc2ea50307c6c05ca16c00c8f33c38a285daaaf028d0003b005935) and extends the evidence of CLAIM-UI-LAYOUT-GUID-CRC64-130 (the three Layout load GUIDs of the runs, seven checked layouts) and of CLAIM-UI-SHADOW-STYLES-REPLACES-130 (run P2: the MultilineTextWidget styles the delta does not hold measure 0 x 0); the line ranges of the claims of layout-variants-130.md follow the edited page.",
           "license": "MIT",
-          "source_hash": "80bff48f5f5166ebc98fb3d4d3c4007467cd0a2935b85ce53f234e3f526745a4",
+          "source_hash": "67fb41c07e47731003629b1a6583e29903752ca19b0318ff51021d62a5f09b3b",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
@@ -20186,7 +20186,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "80bff48f5f5166ebc98fb3d4d3c4007467cd0a2935b85ce53f234e3f526745a4",
+      "output_hash": "67fb41c07e47731003629b1a6583e29903752ca19b0318ff51021d62a5f09b3b",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
