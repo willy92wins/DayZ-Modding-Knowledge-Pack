@@ -1846,7 +1846,7 @@
           "decision": "merge",
           "decision_evidence": "[Unreleased] Changed gains the entry for the GP7 measurements of layout-variants-130.md (DayZDiag 1.30.164289, 2026-11-12, runs P0, P1 and P2: two more vanilla layouts as a base and the changed-GUID control, inheritance on a child widget, three more layout GUIDs checked, the styles delta replacing the whole file, and the two full shadow copies), naming the four new claims and the two extended ones, the Workbench unknown that stays, and the SKILL.md index line.",
           "license": "MIT",
-          "source_hash": "d6535e4dcca367c8bd32aa900ab0e6e2db55f0d44462a2f20fca024b3e762182",
+          "source_hash": "f9ab9c15a8a7c862d1b82e79bdd66824225211c5077a9d825655b5d12a8adfb9",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
@@ -1854,7 +1854,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d6535e4dcca367c8bd32aa900ab0e6e2db55f0d44462a2f20fca024b3e762182",
+      "output_hash": "f9ab9c15a8a7c862d1b82e79bdd66824225211c5077a9d825655b5d12a8adfb9",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -20178,7 +20178,7 @@
           "decision": "merge",
           "decision_evidence": "Registers the four runtime_verified claims of the 2026-11-12 GP7 test (CLAIM-UI-VARIANT-INHERIT-OTHER-LAYOUTS-130, CLAIM-UI-VARIANT-INHERIT-CHILD-130, CLAIM-UI-SHADOW-IMAGESET-FULL-130 and CLAIM-UI-SHADOW-STYLES-FULL-130, runs P0, P1 and P2 on DayZDiag 1.30.164289, probe @GP7Probe PBO sha256 55d187de3fbc2ea50307c6c05ca16c00c8f33c38a285daaaf028d0003b005935) and extends the evidence of CLAIM-UI-LAYOUT-GUID-CRC64-130 (the three Layout load GUIDs of the runs, seven checked layouts) and of CLAIM-UI-SHADOW-STYLES-REPLACES-130 (run P2: the MultilineTextWidget styles the delta does not hold measure 0 x 0); the line ranges of the claims of layout-variants-130.md follow the edited page.",
           "license": "MIT",
-          "source_hash": "2762a97098cfd92277a6d25042f28462af0d20ef373cee068767bfff4f18a924",
+          "source_hash": "80bff48f5f5166ebc98fb3d4d3c4007467cd0a2935b85ce53f234e3f526745a4",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
@@ -20186,7 +20186,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2762a97098cfd92277a6d25042f28462af0d20ef373cee068767bfff4f18a924",
+      "output_hash": "80bff48f5f5166ebc98fb3d4d3c4007467cd0a2935b85ce53f234e3f526745a4",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40512,6 +40512,28 @@
       "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/script-network-arrays.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Local dayz-mcp loopback probe on build 26220720; run ae70ec7d; PBO ca0b88c1; logs script_2026-11-12_20-11-16 and script_2026-11-12_20-11-39.",
+          "license": "MIT",
+          "source_hash": "7c4f0512488218b73d87c3dd6dbcabc5d464dcdb53271216e2baddd6f4641e4d",
+          "source_id": "obsidian-knowledge",
+          "source_path": "AI/20_Knowledge/dayz-script-network-arrays-probe.md",
+          "source_revision": "filesystem@2026-11-12",
+          "verification_level": "source_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "230ac655e3da8fb584eeb45f208a9028f49b0bad403d3721299d0dc9b4c0eda4",
+      "output_path": "knowledge/script-network-arrays.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "source_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

@@ -4134,6 +4134,58 @@
       "source_id": "obsidian-knowledge",
       "source_revision": "filesystem@2026-11-12",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/script-network-arrays.md",
+      "claim_id": "CLAIM-NET-ARRAY-RPC",
+      "evidence_locator": "vault AI/20_Knowledge/dayz-script-network-arrays-probe.md:23-45; client log script_2026-11-12_20-11-39.log:322-330; server log script_2026-11-12_20-11-16.log:119-126",
+      "license": "MIT",
+      "line_end": 18,
+      "line_start": 18,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-11-12",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/script-network-arrays.md",
+      "claim_id": "CLAIM-NET-ARRAY-INPUT",
+      "evidence_locator": "vault AI/20_Knowledge/dayz-script-network-arrays-probe.md:41-59; client log script_2026-11-12_20-11-39.log:331-347; server log script_2026-11-12_20-11-16.log:127-136",
+      "license": "MIT",
+      "line_end": 32,
+      "line_start": 32,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-11-12",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/script-network-arrays.md",
+      "claim_id": "CLAIM-NET-ARRAY-ACK",
+      "evidence_locator": "vault AI/20_Knowledge/dayz-script-network-arrays-probe.md:65-72; client log script_2026-11-12_20-11-39.log:322-347; server log script_2026-11-12_20-11-16.log:119-136",
+      "license": "MIT",
+      "line_end": 36,
+      "line_start": 36,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-11-12",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/script-network-arrays.md",
+      "claim_id": "CLAIM-NET-ARRAY-SCOPE",
+      "evidence_locator": "vault AI/20_Knowledge/dayz-script-network-arrays-probe.md:60-68",
+      "license": "MIT",
+      "line_end": 40,
+      "line_start": 40,
+      "observed_at": "2026-11-12",
+      "promotion_artifact_id": "knowledge",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-11-12",
+      "verification_level": "source_verified"
     }
   ],
   "schema_version": 1
