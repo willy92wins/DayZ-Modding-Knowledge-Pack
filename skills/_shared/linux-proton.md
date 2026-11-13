@@ -15,7 +15,7 @@ DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Ev
 |---|---|---|
 | Pack / sign a PBO (AddonBuilder, DSSignFile) | `dayzmake build` / `keygen` / `sign` (dayzmake >= 1.0.0, https://github.com/bzed/dayzmake; install below) | native; no external wrapper required |
 | Binarize models (`.p3d` MLOD → ODOL) | `dayzmake build --proton-binarize` (invokes BI binarize.exe under Proton) | recorded textured-cube comparison at fork commit `7dcb3cf`, which `v1.0.0` contains (section 4) |
-| Publish to the Workshop (Publisher) | `workshop` uploader (https://github.com/nozwock/steam-workshop-uploader) | native route; author-local publish-hint wrapper is not distributed here |
+| Publish to the Workshop (Publisher) | `workshop` uploader (https://github.com/nozwock/steam-workshop-uploader) | native route; `scripts/dayz-mod-pack.sh publish-hint` prints the commands (`dayz-pbo-build/references/dayzmake-linux.md`) |
 | Cross-check dayzmake against BI's own tools | `dayz-proton.sh tool AddonBuilder P:\<Mod> <out> -prefix=<Mod>`; `tool DSCreateKey` / `DSSignFile` / `DSCheckSignatures`; `dayz-proton.sh binarize <P-root> <addon> <out> [files]` | works (section 4); for comparisons, not the build |
 | `config.cpp` → `config.bin` (CfgConvert) | `dayzmake rapify`, or `dayz-proton.sh tool CfgConvert -bin -dst <bin> <cpp>` | both work |
 | PNG/TGA → PAA (ImageToPAA) | `dayzmake img2paa`, or `dayz-proton.sh tool ImageToPAA <in> <out.paa>` | both work |
@@ -23,8 +23,8 @@ DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Ev
 | Object Builder | `dayz-proton.sh gui ObjectBuilder [model.p3d]` | starts, loads a model; editing not exercised |
 | Workbench | `dayz-proton.sh gui Workbench` | starts and compiles the bundled scripts; game config needs `P:\dz` (section 3) |
 | Terrain Builder, DSUtils GUI, ImageToPAA GUI | `dayz-proton.sh gui <Tool>` | **not verified** |
-| Dedicated server (`DayZServer_x64.exe`) | native `DayZServer` (Steam app 223350) | native; the author-local server-tree harness is not distributed by this Pack |
-| Client (`DayZ_x64.exe`) | retail client under Proton, paired with the native server | recorded external harness; not a distributed Pack launcher. For the in-Pack diag helper, see the next row |
+| Dedicated server (`DayZServer_x64.exe`) | native `DayZServer` (Steam app 223350) from a private tree: `scripts/find-dayzserver.sh`, `make-server-tree.sh`, `free-ports.sh` | native, preferred; `dayz-test-ingame/references/linux-native-server.md` |
+| Client (`DayZ_x64.exe`) | retail client under Proton, paired with the native server: `scripts/dayz-client-headless.sh`, `dayz-client-test.sh` | works; `dayz-test-ingame/references/linux-headless-client.md` |
 | `DayZDiag_x64.exe` (client or `-server`) | `dayz-proton.sh headless start <state> DayZDiag <args>`, or experimentally managed through unmerged dayz-mcp PR #353 (last row) | both roles run; a diag client joins a diag server and reaches the world (section 5, pairing) |
 | `P:` drive (WorkDrive, `subst`) | a plain directory, mapped by `dayz-proton.sh init <dir>` | works (section 3) |
 | PowerShell scripts (`*.ps1`) | rewrite the steps in sh; `pwsh` exists on Linux but the scripts call Windows programs, the registry and `subst` | translate, do not run |
@@ -83,8 +83,8 @@ From a `Z:` path it is a Linux directory, possibly your home, and binarize then 
 (the author recorded scans of `~/.cargo` and a network mount).
 
 Vanilla data under `P:\dz` (what WorkDrive's "extract game data" does on Windows): unpack the game's
-PBOs with `dayzmake unpack` into `P/` at their prefix paths. The author-local
-`extract-dayz-sources.sh` helper is external and is not distributed here. Workbench without the
+PBOs with `dayzmake unpack` into `P/` at their prefix paths. For scripts and configs
+only, `scripts/extract-dayz-sources.sh <install> <dir>` (configs derapified; about 90 s). Workbench without the
 extracted data compiled its bundled scripts but logged `No entry 'config.bin/CfgVehicles/…'`
 for vanilla classes. Whether an extracted `P:\dz` removes those errors is **not verified**,
 and neither is a model that references vanilla textures.
@@ -132,11 +132,15 @@ repeated with the `v1.0.0` binary. This is a record of the comparison, not a new
   and hung after its constructor with it; every later start worked. `init` spends that start.
 - **Never `pkill -f <tool>`** from a shell whose command line contains that name: it kills the shell.
   Kill by PID, or stop the prefix's wineserver.
+- **`pkill`/`pgrep -x DayZServer` never match a running server.** The native server and the game rename their main
+  thread to `enfMain`, so a name-based kill or count silently finds nothing while servers of about 7.5 GB each keep
+  running (bzed, 1.30.164289). List with `ps aux | grep "[D]ayZServer"`, check the arguments (tree, ports) and kill
+  by PID; a server that must outlive an agent's tool call needs `setsid nohup`.
 - **A diag client only joins a diag server.** `DayZDiag_x64.exe` on the native `DayZServer` stops at the
   modal `CONNECTING FAILED (0x00020017): Client is using Diag exe while the server is not`, after the client
   has loaded; the log shows no error, only the screen does, and the server never sees a player. Pair them: both
   `DayZDiag` (`-server` under Proton, with `allowFilePatching = 1` in `serverDZ.cfg`), or the retail `DayZ_x64.exe`
-  with the native server (the author-local harness, not distributed here). Measured 2026-11-06, 1.30.164289.70: the diag pair joined,
+  with the native server (`dayz-test-ingame/references/linux-headless-client.md`). Measured 2026-11-06, 1.30.164289.70: the diag pair joined,
   `Player "Dev" … is connected` in the server RPT and the player in the world, from one prefix with each role
   in its own headless sway (`PROTON_ENABLE_WAYLAND=1`).
 - **An absolute `-mission` on the native server boots without a mission.** `DayZServer` 1.30 with

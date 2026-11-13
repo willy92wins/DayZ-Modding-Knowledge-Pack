@@ -7,6 +7,33 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- From bzed's `dayz-dev` plugin (https://github.com/bzed/dayz-dev-plugin at `6112ac5`), the parts its author wrote,
+  contributed to the Pack under MIT by the author (the plugin itself is GPL-3.0; its upstream DayZGhost material is not
+  taken). Measured on Linux; the author re-tested the plugin on DayZ 1.30 stable.
+  - `skills/_shared/scripts/`: `find-dayzserver.sh`, `make-server-tree.sh`, `free-ports.sh` (a private server tree,
+    random free ports), `dayz-client-headless.sh`, `dayz-client-test.sh` (the retail client headless under Proton, one
+    command from start to report), `dayz-mod-pack.sh` (dayzmake keygen, build, check, Workshop upload hints),
+    `extract-dayz-sources.sh`, `build-api-index.py`, `dayz-api.py` (a declarations index built locally; Bohemia's
+    declarations are not shipped). Tests in `skills/_shared/tests/test_linux_helpers.py` on a fake Steam tree; the
+    AutoTest build, sign and verify test runs where dayzmake is installed.
+  - `dayz-test-ingame`: `references/linux-native-server.md` (server tree, ports, RCon seed, the CF storage wipe,
+    listing servers by PID, the Game-module count and the deliberate-syntax-error probe, the space-padded
+    `SCRIPT    (E)` tag), `references/linux-headless-client.md` (headless client, the "Client is missing a mod"
+    kick, BattlEye, the Expansion spawn selector) and the self-reporting test mod `assets/autotest-mod/`. The
+    "On Linux" section carries the one-line rules whose violation fails silently or misleadingly.
+  - `dayz-pbo-build`: `references/dayzmake-linux.md` (dayzmake, `--proton-binarize`, v3 signatures byte-identical to
+    DSSignFile, `meta.cpp`/`mod.cpp`/app id from 438 Workshop items, Workshop tags, the `workshop` uploader); a
+    folder check that every PBO sits in `addons/`.
+  - `dayz-mod-workflow`: `references/dayz-1-30-server-measured.md` (the `DAYZ_1_30` define, DZEXP-134 `FindFile`
+    and removing its workarounds, `$storage:` timing, `GetMissionFolderPath()` returning `""`, backslash `files[]`
+    loading no scripts, the compile-failure segfault, `OnCEUpdate` never called, the `ERPCs` shift, the 1.30.164200
+    changes with `#ifdef WORKBENCH` breaking DabsFramework 1.51, mod load order following `requiredAddons`, CF 1.5.9
+    and the Expansion mod set). `enforce-script-reference` and `dayz-mod-workflow` say not to build a fix on a
+    position in the `modded class` chain.
+  - From the plugin's skill observations 1-5: the `addons/` rule and probe, load order, the CF wipe at the point of
+    decision, `pkill`/`pgrep` not matching `enfMain`, one server at a time.
+  - Notes that called these helpers "author-local, not distributed" now point at them.
+
 - Linux (2026-11-13): bzed's armake2 fork is now dayzmake (https://github.com/bzed/dayzmake). Every
   Linux note names `dayzmake` >= 1.0.0, pinned to the `v1.0.0` release binary or
   `cargo install --git ... --tag v1.0.0` (the tag contains the measured `7dcb3cf` and `0a0ce3b`), and

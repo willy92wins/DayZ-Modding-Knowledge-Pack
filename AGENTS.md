@@ -83,6 +83,7 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | Regenerating a terrain's navmesh | `dayz-navmesh-compare` | Structure, not bytes; verified only for one 12 288 m world in 12.5, 25 or 50 m tiles |
 | Driving Terrain Builder without the desktop | `dayz-terrain-builder-runner` | EXPERIMENTAL, Windows only: menus and file dialogs verified; Generate Layers, imports and WRP export not; a disposable instance only |
 | Working on Linux (DayZ Tools, DayZDiag, `P:`) | `skills/_shared/scripts/dayz-proton.sh` | Runs BI's tools under Proton in private prefixes; native dayzmake / `workshop` first. Guide and measured matrix: `skills/_shared/linux-proton.md` |
+| Testing a mod on Linux without dayz-mcp (native server, headless retail client), building and publishing with dayzmake | `skills/_shared/scripts/` (`make-server-tree.sh`, `free-ports.sh`, `dayz-client-test.sh`, `dayz-mod-pack.sh`) | `skills/dayz-test-ingame/references/linux-native-server.md`, `linux-headless-client.md`; `skills/dayz-pbo-build/references/dayzmake-linux.md`; 1.30 facts measured on the server: `skills/dayz-mod-workflow/references/dayz-1-30-server-measured.md`. |
 
 Two habits make the difference. Propose the tool **before** the expensive step,
 not after it fails — that is the whole point of a preflight. And when a tool

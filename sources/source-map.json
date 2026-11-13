@@ -289,10 +289,20 @@
           "source_path": "AGENTS.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "2131872fb898dfced60f8c756eeeea8f85b15f45c8e4b36a123bf54f2c401589",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "50e38e6bd000ca51bde7bb540d0edb6345b2b12cfa6431c8c5d78b326239aebd",
+      "output_hash": "2131872fb898dfced60f8c756eeeea8f85b15f45c8e4b36a123bf54f2c401589",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -1931,10 +1941,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "a09c9526d04c16f64f42a3b9a50dd876454f531cabf7ea7736e8162f3ccc5c80",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a632a9459c3f06b47b6d7228f463343620710378b72c9b9b26a2557bb50ba464",
+      "output_hash": "a09c9526d04c16f64f42a3b9a50dd876454f531cabf7ea7736e8162f3ccc5c80",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5426,10 +5446,20 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "2ddafc2797a6225710510ae1fa16f8a0e22cb24336417f5cda06da8d3b76610c",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f8c36110992594e84d2bf2d578c553b9151fc0bb1edb8d1959a3c50c8aeb1f04",
+      "output_hash": "2ddafc2797a6225710510ae1fa16f8a0e22cb24336417f5cda06da8d3b76610c",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -7626,10 +7656,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "39b481f5318eee7727840d733221505a8fa94ee685c287eec361047f37ab0c64",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3f73964ce569f468413e016935aefcd8166010d7144cef6e65acc362faf1c6fb",
+      "output_hash": "39b481f5318eee7727840d733221505a8fa94ee685c287eec361047f37ab0c64",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -8362,10 +8402,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "cae5250ede68dade58a4f740c4ea2b92e69bbcb6ac316f81af2717214b9ca6ef",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f834e2b6910a39dbf720bf91b8d5362087eed98ea719358f7011b3773688511a",
+      "output_hash": "cae5250ede68dade58a4f740c4ea2b92e69bbcb6ac316f81af2717214b9ca6ef",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -8690,10 +8740,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "ff212c695e0f9533198c8d240e330c7f95541f548d8d0f680538c33db5c957d7",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8a8c9c72520388068a208eeeecfa4245d2353139585493bdba2cdb3fa0115552",
+      "output_hash": "ff212c695e0f9533198c8d240e330c7f95541f548d8d0f680538c33db5c957d7",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -9046,10 +9106,20 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "824e5b5843866ddb0403d97274aec1ed6ad8a815fd793b0ae6a6899b7d1e55fc",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b3ca4cffb2d6934e16689dca676676a40184d3a05435b0167fd7c099c319ce53",
+      "output_hash": "824e5b5843866ddb0403d97274aec1ed6ad8a815fd793b0ae6a6899b7d1e55fc",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -10100,10 +10170,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "122fc4c3b4aba8cd962dfc23028339762c7b12c1840f513a839ec5463a06cf94",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d4794ed7789c92cfe356caa515e28224feb141bad3559647c089f4b7670f86b4",
+      "output_hash": "122fc4c3b4aba8cd962dfc23028339762c7b12c1840f513a839ec5463a06cf94",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -10448,10 +10528,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "84def38986ef11aca71d697382d8fe8ccb227494d2a53ef5cedf1103545355c4",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9547a64723ac6b89cd8843ebae73dd26656c75ebe965b5ae1d3bf1580a0824d5",
+      "output_hash": "84def38986ef11aca71d697382d8fe8ccb227494d2a53ef5cedf1103545355c4",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -11356,10 +11446,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "c2914bcf5e4de136b44067ac9db9a7acc932fa706e5c7bdb278576720008cd87",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a483bc344048f0288f971c6cb3d2230f638c7b61256acf57aab6b6fb1d544245",
+      "output_hash": "c2914bcf5e4de136b44067ac9db9a7acc932fa706e5c7bdb278576720008cd87",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -11778,10 +11878,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "550662e69d6450c9b7a21e7bff914d4e6c68783b1578bba6c2ea969085bde4ea",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b98d263241ef62278c50b57c6b8d1a20c500374903acce06c74546126ad15cb0",
+      "output_hash": "550662e69d6450c9b7a21e7bff914d4e6c68783b1578bba6c2ea969085bde4ea",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -12346,10 +12456,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "c1395da28e66afeb0a9e090b4b3c1f475cc7b2c202a49e90479981a6e0be006a",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "39c07eb6e00b32340a88a386b249728e16a13aaa2e206b242075ed29aef3a6ff",
+      "output_hash": "c1395da28e66afeb0a9e090b4b3c1f475cc7b2c202a49e90479981a6e0be006a",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13160,10 +13280,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "304e4c5eceb9bda950aa41c153a606a1b25e5f46bac7351fe59f986f26d8a2ac",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1930e6c064c1cbf017393c0bde78a6d8e5888c80b411d87e089dae95389f3690",
+      "output_hash": "304e4c5eceb9bda950aa41c153a606a1b25e5f46bac7351fe59f986f26d8a2ac",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -13836,10 +13966,20 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "eb31af27b57bd821403f97d34363bcdf20f3dd7c9a1d8542865e95a1a308abd3",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "57e6fd3bb8569a655f420e69142fab5cdb1edf6339d78d8b99c0f2ed567b6119",
+      "output_hash": "eb31af27b57bd821403f97d34363bcdf20f3dd7c9a1d8542865e95a1a308abd3",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -14150,10 +14290,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "42e94d5e5204f05cea4e7de39920c2c05f563c0e7b3a367cfdf26275d5dc9ecb",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a0f41da9ff6c2859a58fcb66ee05021651735c622f76ff904bc121245669eaaf",
+      "output_hash": "42e94d5e5204f05cea4e7de39920c2c05f563c0e7b3a367cfdf26275d5dc9ecb",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -15016,10 +15166,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "fa43234fe6d3b8e7eba336cc2770f80047463f587261fba3cf8cf1a47ac3449d",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5d3d12d6a2ea0896289dfea9c7ae96b88e9e877fa383cf85b2edd58c41e09ab5",
+      "output_hash": "fa43234fe6d3b8e7eba336cc2770f80047463f587261fba3cf8cf1a47ac3449d",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -16158,10 +16318,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "b3818f0122c667c06a4b5d7c7411969bf180a924e04e73cf65e75550a3a3ff40",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "493a80e39b6ffb0e6230b53c77beccbed117cb0812a08b5bf9ecd40d09b93571",
+      "output_hash": "b3818f0122c667c06a4b5d7c7411969bf180a924e04e73cf65e75550a3a3ff40",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -17588,10 +17758,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "7c5ed92bf6522afb4aed3baa0eef3c2342918bfff9b691e683b07eb83b760333",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1973912f52ec1a24f0d85a091fec1b5d8fcaf9aa7a805a594ccc512c8fffc9f7",
+      "output_hash": "7c5ed92bf6522afb4aed3baa0eef3c2342918bfff9b691e683b07eb83b760333",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -17958,10 +18138,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "82a2486e68b15fe0500a770c56f9a0cf438b970138f12849a5c96657106f9631",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "74b3fc43ee94f90562037488e19530f96131fbd702d64e9c9a62e62ebdfa7e59",
+      "output_hash": "82a2486e68b15fe0500a770c56f9a0cf438b970138f12849a5c96657106f9631",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -19186,10 +19376,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "07a060792789554af13de9247bf905f9ed79fa4642f8e6b04e90940e70f9f45d",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "abd76517f68c1a904e1bfce7b9a39ae08f97f6ffdf2e092d3311d495e5326900",
+      "output_hash": "07a060792789554af13de9247bf905f9ed79fa4642f8e6b04e90940e70f9f45d",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -21216,7 +21416,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a6424407262f270bb31ac2f1766d8e9dd59a263bbee5a1d1817dfe91b4aa01d6",
+      "output_hash": "95d21d7e564e2c29fb1653490d2ec0ac359cd0934ce0fd3234316a20f1469cfa",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -36569,10 +36769,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "642c254752544808a12d5a5faa4383bd111b56ba39bec025100ffc6418d2756e",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "be6e1911a04bfe30d9fecbd244e80def474becfb4059d170e8946ea0b9e1dc9b",
+      "output_hash": "642c254752544808a12d5a5faa4383bd111b56ba39bec025100ffc6418d2756e",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -41731,10 +41941,20 @@
           "source_path": "knowledge/linux-proton-findings-2026-11.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "f34ff0dc7bb597369c9ea9bc1ff33ac4d372dc7eed534b60168730d1b2aa9098",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c7fafeef6c0d3a58eb42ef972c5df5d6ce91c6015ab0e65cf02216d3bf7b90e5",
+      "output_hash": "f34ff0dc7bb597369c9ea9bc1ff33ac4d372dc7eed534b60168730d1b2aa9098",
       "output_path": "knowledge/linux-proton-findings-2026-11.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -41803,10 +42023,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
+          "license": "MIT",
+          "source_hash": "b0d424f42fafd29cb7e1c71ca631c93b05327cf3e2d1c80f55a489365ce38ac0",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "06ec13cebdd4b3ee4e8d4ba4f1bbfd7fa209132f4d071a8df8ca7816acb7a537",
+      "output_hash": "b0d424f42fafd29cb7e1c71ca631c93b05327cf3e2d1c80f55a489365ce38ac0",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -41884,6 +42114,534 @@
       "output_path": "skills/_shared/tests/test_dayz_proton.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/build-api-index.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/build-api-index.py (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "4b2ef5f6a0bb644fb926d27f726bb5f498ff39f8b414c474ec471608bb2b3fa4",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/build-api-index.py",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4b2ef5f6a0bb644fb926d27f726bb5f498ff39f8b414c474ec471608bb2b3fa4",
+      "output_path": "skills/_shared/scripts/build-api-index.py",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/dayz-api.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/dayz-api.py (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "dbe1a5647a8dc470a41e77f7c7de1ed80c952221abcf73bda1b07f9805687880",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/dayz-api.py",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "dbe1a5647a8dc470a41e77f7c7de1ed80c952221abcf73bda1b07f9805687880",
+      "output_path": "skills/_shared/scripts/dayz-api.py",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/dayz-client-headless.sh",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/dayz-client-headless.sh (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "1017eac0060df9bf2afd287e88d932c55c8fe6df87d12392d44f9e641ae14509",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/dayz-client-headless.sh",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "1017eac0060df9bf2afd287e88d932c55c8fe6df87d12392d44f9e641ae14509",
+      "output_path": "skills/_shared/scripts/dayz-client-headless.sh",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/dayz-client-test.sh",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/dayz-client-test.sh (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "bb30e28e168557dce7ba8f45bd4066d6ad7d612785f8111013098a3ad2f948f0",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/dayz-client-test.sh",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bb30e28e168557dce7ba8f45bd4066d6ad7d612785f8111013098a3ad2f948f0",
+      "output_path": "skills/_shared/scripts/dayz-client-test.sh",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/dayz-mod-pack.sh",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/dayz-mod-pack.sh (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "67c280cad374b194f07899316c3a11eca4274dac25b12ed16ca9711375963c65",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/dayz-mod-pack.sh",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "67c280cad374b194f07899316c3a11eca4274dac25b12ed16ca9711375963c65",
+      "output_path": "skills/_shared/scripts/dayz-mod-pack.sh",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/extract-dayz-sources.sh",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/extract-dayz-sources.sh (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "8122facedb45fc5bb762e6ac5bde8405200eff77b3ff063ff0c9a8584ad0bc9f",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/extract-dayz-sources.sh",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8122facedb45fc5bb762e6ac5bde8405200eff77b3ff063ff0c9a8584ad0bc9f",
+      "output_path": "skills/_shared/scripts/extract-dayz-sources.sh",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/find-dayzserver.sh",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/find-dayzserver.sh (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "e6b22604b47a91e20013342bd0c82f97810a4d728aeab55117a3d7884694cf04",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/find-dayzserver.sh",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e6b22604b47a91e20013342bd0c82f97810a4d728aeab55117a3d7884694cf04",
+      "output_path": "skills/_shared/scripts/find-dayzserver.sh",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/free-ports.sh",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/free-ports.sh (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "999a82b0cc9220422c1b88c637680ebf6bebbb5a38cce9accdc24811750747ae",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/free-ports.sh",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "999a82b0cc9220422c1b88c637680ebf6bebbb5a38cce9accdc24811750747ae",
+      "output_path": "skills/_shared/scripts/free-ports.sh",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/scripts/make-server-tree.sh",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied from the plugin's scripts/make-server-tree.sh (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
+          "license": "MIT",
+          "source_hash": "667907c43d46236be856e852d9ec42978d5f7c4a1f237b525203a9a721fb7823",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "scripts/make-server-tree.sh",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "667907c43d46236be856e852d9ec42978d5f7c4a1f237b525203a9a721fb7823",
+      "output_path": "skills/_shared/scripts/make-server-tree.sh",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/_shared/tests/test_linux_helpers.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Tests for the helper scripts taken from bzed-dayz-dev-plugin: syntax, shellcheck, free-ports, find-dayzserver and make-server-tree on a fake Steam tree, the API index on a fixture, dayz-mod-pack init, and the AutoTest build/sign/verify where dayzmake is installed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "75452752677092635c3cecddc674449dceba8f91d4a6a39b8112287e1aa75f37",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_linux_helpers.py",
+          "source_revision": "dayz-dev-integration@2026-11-13",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "75452752677092635c3cecddc674449dceba8f91d4a6a39b8112287e1aa75f37",
+      "output_path": "skills/_shared/tests/test_linux_helpers.py",
+      "routing_artifact_id": "skill/_shared",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mod-workflow/references/dayz-1-30-server-measured.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack reference rewritten by Claude (Anthropic) from the author's compatibility/version-130.md (and the author's own sections named in the source notes), adapted to Pack paths, with each measured fact's build, platform and plugin path:line. 1.30 stable re-test per the author.",
+          "license": "MIT",
+          "source_hash": "b1cbcc1462b71540974d315953ff61a793fde1da62c02a71a5f9960017d89995",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "compatibility/version-130.md",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b1cbcc1462b71540974d315953ff61a793fde1da62c02a71a5f9960017d89995",
+      "output_path": "skills/dayz-mod-workflow/references/dayz-1-30-server-measured.md",
+      "routing_artifact_id": "skill/dayz-mod-workflow",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-pbo-build/references/dayzmake-linux.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack reference rewritten by Claude (Anthropic) from the author's systems/mod-packaging.md (and the author's own sections named in the source notes), adapted to Pack paths, with each measured fact's build, platform and plugin path:line. 1.30 stable re-test per the author.",
+          "license": "MIT",
+          "source_hash": "fbd228403f4d46428123719a593e9207b667418a937e1daf26e75dd3954cde73",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "systems/mod-packaging.md",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "fbd228403f4d46428123719a593e9207b667418a937e1daf26e75dd3954cde73",
+      "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
+      "routing_artifact_id": "skill/dayz-pbo-build",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/.dayzmod",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/.dayzmod (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "3a7c3b09c553d90c0e3f43a77bd4ea9da35836bcf9d6c16243148d8b0af77b67",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/.dayzmod",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3a7c3b09c553d90c0e3f43a77bd4ea9da35836bcf9d6c16243148d8b0af77b67",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/.dayzmod",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/.gitignore",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/.gitignore (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "ca6ebd43e9ff3516c04a3efca71f08bd73e2651111ecd74410d3dfbedc8328c0",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/.gitignore",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ca6ebd43e9ff3516c04a3efca71f08bd73e2651111ecd74410d3dfbedc8328c0",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/.gitignore",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/.workshopignore",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/.workshopignore (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "57309a56e7fc5d62761b97e3ceb87749c32fbb30d27eb942d6f5ab72cce709d2",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/.workshopignore",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "57309a56e7fc5d62761b97e3ceb87749c32fbb30d27eb942d6f5ab72cce709d2",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/.workshopignore",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/mod.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/mod.cpp (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "8a4635a6340043d5b0182adf46ddb2e6613dd662cb25695f9a237687c897f114",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/mod.cpp",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8a4635a6340043d5b0182adf46ddb2e6613dd662cb25695f9a237687c897f114",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/mod.cpp",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/$PREFIX$",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/src/AutoTest/$PREFIX$ (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "3846e4cfefb2bf31a5b4424dfcc2153683579591debd279d1c527240de538e3e",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/src/AutoTest/$PREFIX$",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3846e4cfefb2bf31a5b4424dfcc2153683579591debd279d1c527240de538e3e",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/$PREFIX$",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/src/AutoTest/config.cpp (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "0a7178081f1664a13dc6fd8b75c0c82f5d98b63dfdbc845db365c26393ccf31d",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/src/AutoTest/config.cpp",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0a7178081f1664a13dc6fd8b75c0c82f5d98b63dfdbc845db365c26393ccf31d",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/config.cpp",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/3_Game/AutoTestRpc.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/src/AutoTest/scripts/3_Game/AutoTestRpc.c (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "4387e0848815490061b23a6e1c0cdd31c1d273f5394499d781606fa64714f930",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/src/AutoTest/scripts/3_Game/AutoTestRpc.c",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4387e0848815490061b23a6e1c0cdd31c1d273f5394499d781606fa64714f930",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/3_Game/AutoTestRpc.c",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestCases.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/src/AutoTest/scripts/4_World/AutoTestCases.c (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "ed82f46ba3d801973459bb5a807c10da33f93ccf4bdf4fe9a7245e654b6c2ffd",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/src/AutoTest/scripts/4_World/AutoTestCases.c",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ed82f46ba3d801973459bb5a807c10da33f93ccf4bdf4fe9a7245e654b6c2ffd",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestCases.c",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "5a294c61e5854eb1fbe2e6e9fc0560dbb1ccc9dc5be3b2f82f0a4ac147309b5b",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "5a294c61e5854eb1fbe2e6e9fc0560dbb1ccc9dc5be3b2f82f0a4ac147309b5b",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/5_Mission/AutoTestMission.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Copied unchanged from the plugin's testing/autotest-mod/src/AutoTest/scripts/5_Mission/AutoTestMission.c (sole author: bzed; the three lines of the vanilla InvokeOnConnect override signature are vanilla API). Keys, secrets and build output not taken.",
+          "license": "MIT",
+          "source_hash": "cd4da190d1ae64fe3ad702db7de6907cb06ad68f445b708e6e2bc39e0d8fc889",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/autotest-mod/src/AutoTest/scripts/5_Mission/AutoTestMission.c",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "cd4da190d1ae64fe3ad702db7de6907cb06ad68f445b708e6e2bc39e0d8fc889",
+      "output_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/5_Mission/AutoTestMission.c",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/references/linux-headless-client.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack reference rewritten by Claude (Anthropic) from the author's testing/client-testing.md (and the author's own sections named in the source notes), adapted to Pack paths, with each measured fact's build, platform and plugin path:line. 1.30 stable re-test per the author.",
+          "license": "MIT",
+          "source_hash": "3195d45d65528241789c9299cb0e36e51c05a8ab334b52276c05ffaf1e3f9716",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/client-testing.md",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "3195d45d65528241789c9299cb0e36e51c05a8ab334b52276c05ffaf1e3f9716",
+      "output_path": "skills/dayz-test-ingame/references/linux-headless-client.md",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/references/linux-native-server.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack reference rewritten by Claude (Anthropic) from the author's testing/local-server.md (and the author's own sections named in the source notes), adapted to Pack paths, with each measured fact's build, platform and plugin path:line. 1.30 stable re-test per the author.",
+          "license": "MIT",
+          "source_hash": "e31e1f4cf551c1e9c1301ffc3a14bf29acc63dc030ab35bbf7a5dfe69607f1a8",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "testing/local-server.md",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e31e1f4cf551c1e9c1301ffc3a14bf29acc63dc030ab35bbf7a5dfe69607f1a8",
+      "output_path": "skills/dayz-test-ingame/references/linux-native-server.md",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
@@ -43129,6 +43887,14 @@
       "notes": "Vanilla DayZServer mission dayzOffline.chernarusplus (cfgenvironment.xml and env/*_territories.xml); reference only, no whole file copied.",
       "revision": "DayZServer appmanifest buildid 26220720",
       "source_id": "dayz-mission-chernarusplus"
+    },
+    {
+      "kind": "git",
+      "license": "MIT (the files and sections taken here were written solely by the plugin's author, Bernd Zeimetz, who contributes them to the Pack under its licence; the plugin repository is GPL-3.0)",
+      "notes": "bzed's dayz-dev plugin. Taken: the scripts, the AutoTest test mod and the measured Linux/1.30 material the author wrote alone, checked with git blame -C -C -C -M: testing/local-server.md, testing/client-testing.md, systems/mod-packaging.md, compatibility/version-130.md, and the author's own sections of frameworks/community-framework.md, frameworks/expansion.md, scripting/client-server.md and systems/mod-structure.md, plus the plugin's skill observations 1-5. Not taken: the upstream DayZGhost/DankMindless material (GPL), the api/*.txt.xz indexes (Bohemia and mod authors' declarations), the obsolete YOURMOD_FindFilePath.c helper and the test keys. The author reports the plugin re-tested on DayZ 1.30 stable.",
+      "public_locator": "https://github.com/bzed/dayz-dev-plugin",
+      "revision": "6112ac520037443778340d9cd6cf543b180659ec",
+      "source_id": "bzed-dayz-dev-plugin"
     }
   ]
 }
