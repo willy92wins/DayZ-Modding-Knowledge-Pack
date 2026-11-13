@@ -26,7 +26,8 @@ The core SKILL.md keeps item #10 as a stub pointing here plus THE RULE; this fil
    driver-seat view is the gate. (MercedesAMGLF s14, applied; in-game pending.)
    (c) **Debug-spawn fluid gauges read RED unless you fill ALL four.** `OnDebugSpawn` must also
    `Fill(CarFluid.OIL,…)` + `Fill(CarFluid.BRAKE,…)`, not just FUEL/COOLANT, or the dash oil/brake needles spawn
-   red-empty and the car looks broken (enum order FUEL/OIL/BRAKE/COOLANT, `car.c:18-23`; capacities are
+   red-empty and the car looks broken (enum order FUEL/OIL/BRAKE/COOLANT, `transport.c:52-57`, the `ETransportFluid` that `CarFluid` aliases on 1.30;
+   1.29 `car.c:18-23`; capacities are
    engine-default, no config field needed). Extends the empty-fluids QUICK TRIAGE row.
 
    (d) **The see-through raycast winding oracle is a useful HEADLESS hint, but its RAW output is ~94% false

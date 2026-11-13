@@ -19,7 +19,7 @@ materials, animations, and all config files — using Python and Blender headles
 Primary path uses Blender for pro-grade geometry (bevel, subdiv, booleans, Smart UV,
 AO baking, auto LODs via decimate) + py3d for .p3d assembly. Fallback path uses
 py3d only for quick prototyping without Blender.
-(until 1.29: the LOD table, Rule 14 visual-LOD proxies, and AddonBuilder packing loop below remain the 1.29 contract.) (since 1.30 Exp: inventory-attachment proxies also need ViewGeometry on dedicated server; wells need ViewGeometry `liquid_source`; `-cacheP3D` for unbinarized meshes; `disableSimulation` on static houses. Details: [dayz-1-30-model-pipeline.md](references/dayz-1-30-model-pipeline.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the LOD table, Rule 14 visual-LOD proxies, and AddonBuilder packing loop below remain the 1.29 contract.) (since 1.30: inventory-attachment proxies also need ViewGeometry on dedicated server; wells need ViewGeometry `liquid_source`; `-cacheP3D` for unbinarized meshes; `disableSimulation` on static houses. Details: [dayz-1-30-model-pipeline.md](references/dayz-1-30-model-pipeline.md) and ## DayZ 1.30.)
 
 
 ## Artist-return .p3d preflight (SP-246)
@@ -75,7 +75,7 @@ door axis sat 198.8 mm behind its own leaf.
 Before doing anything, read the relevant reference file:
 
 - **Wheeled vehicle? READ FIRST, before baking** → `references/vehicle-structural-parity.md`. A from-scratch vehicle reveals the pieces a real DayZ vehicle has of stock (Geometry wheel hubs, crew proxies in ViewGeometry, FireGeometry damage zones, lights, AnimationSources) one error at a time in-game unless you extract the full anatomy up front. Debinarize the civiliansedan once, diff against it, build every missing piece in one pass — that is the anatomy a project's readiness gate expects in hand before the spec is written (LL-030).
-- **1.30 Exp vanilla P3Ds are ODOL v56 (1.29: v54), and so are the models you binarize since the DayZ Tools update of 2026-10-15 (`binarize.exe` 1.30.164.078; before it they came out v55).** Before debinarizing a 1.30 vanilla reference model or reading back one of your own, read the P3D header (bytes 4-7); a v54 reader fails on vanilla v56 with `ValueError: subsection not found`, and a v55 reader fails on your v56 models. Preflight detail: `dayz-vehicles/references/dayz-1-30-vehicles.md`; the DayZ Tools build and the v56 bytes: `references/dayz-1-30-model-pipeline.md`.
+- **1.30 vanilla P3Ds are ODOL v56 (1.29: v54), and so are the models you binarize since the DayZ Tools update of 2026-10-15 (`binarize.exe` 1.30.164.078; before it they came out v55).** Before debinarizing a 1.30 vanilla reference model or reading back one of your own, read the P3D header (bytes 4-7); a v54 reader fails on vanilla v56 with `ValueError: subsection not found`, and a v55 reader fails on your v56 models. Preflight detail: `dayz-vehicles/references/dayz-1-30-vehicles.md`; the DayZ Tools build and the v56 bytes: `references/dayz-1-30-model-pipeline.md`.
 - **Wheeled vehicle config.cpp + model.cfg (complete, worked example)** → `references/vehicle-config-and-modelcfg.md`. The full car class: SimulationModule (engine/gearbox/drive/differential/suspension), Crew, lights, DamageZones, cargo, wheel/door items + slots + proxies, sound, AnimationSources, plus the matching model.cfg (CfgSkeletons bone hierarchy + wheel/steering/damper animations). Reproduces a verified working car (Tyson89/Landrover). Read AFTER vehicle-structural-parity.md.
 - **Wheeled vehicle per-LOD content, memory points & proxies** → `references/vehicle-structural-parity.md` Addendum 2026-05-30b (what each LOD carries for a car, the full memory-point catalog, and proxy placement per LOD).
 - **Vehicle-specific work beyond assembly** (CarScript config tuning, vanilla parity debugging, wheel simulation, dedicated-server packaging failures) → delegate to the USER skill `dayz-vehicles`.
@@ -86,7 +86,7 @@ Before doing anything, read the relevant reference file:
 - **Memory points & named selections** → `references/memory-and-selections.md`
 - **Animations (model.cfg)** → `references/animations.md`
 - **Config.cpp & addon structure** → `references/config-and-packing.md`
-- **DayZ 1.30 Exp (proxies / cacheP3D / disableSimulation / liquid_source)** → `references/dayz-1-30-model-pipeline.md`
+- **DayZ 1.30 (proxies / cacheP3D / disableSimulation / liquid_source)** → `references/dayz-1-30-model-pipeline.md`
 - **Blender manual workflow (ALTERNATIVE)** → `references/blender-workflow.md`
 - **LF_PowerGrid object recipes** → `references/lfpg-recipes.md`
 - **AnswerOverflow community findings (mined 2026-05-17)** → `references/answeroverflow-2026-05-17.md` (binarize misalignment on personality meshes, nested proxy disappearance on binarized models, Maya Object Builder alternative)
@@ -226,7 +226,7 @@ For cases where the user imports a model and needs to tag parts interactively:
     - Never assume either case. Winding gates cannot see a mirror (the old recipe passes all of them): check chirality on an asymmetric feature — text, a logo, a one-sided part — in game, or compare the binarized ODOL against a vanilla model through the same reader.
 13. *(Merged into Rule 12 — the Blender/FBX map is the det=-1 reflection with negated normals, and a GLB/glTF brought through Blender takes the same one. Aligned 2026-10-03: this note ended "GLB remains a separate case.")*
 14. **Attachments require proxy system (3 parts)** — for items to render visually when attached: (a) proxy face + selection in visual LODs of the parent p3d, (b) a proxy p3d referenced by the selection, (c) `CfgNonAIVehicles` entry mapping `inventorySlot` to the proxy model. Missing any part = attachment is logically present but invisible. See `memory-and-selections.md` and `config-and-packing.md`.
-(until 1.29: visual LODs of the parent were sufficient for the server to read proxy position.) (since 1.30 Exp [CHANGELOG]: duplicate the proxy triangle in **ViewGeometry** so a dedicated server does not fall back to the parent origin — `work\changelog-1.30-exp-modding.md:39`. See `references/dayz-1-30-model-pipeline.md`.)
+(until 1.29: visual LODs of the parent were sufficient for the server to read proxy position.) (since 1.30 [CHANGELOG]: duplicate the proxy triangle in **ViewGeometry** so a dedicated server does not fall back to the parent origin — `work\changelog-1.30-exp-modding.md:39`. See `references/dayz-1-30-model-pipeline.md`.)
 15. **Proxy selections use special naming** — `proxy:addon_path\proxy_model.p3d.NNN` where NNN is a 3-digit index starting at 001. The face assigned to this selection defines position and orientation of the rendered attachment.
 16. **`autocenter=0` named property required on EVERY collision LOD** — not just Geometry. Without it on FireGeometry / ViewGeometry / Roadway / Hitpoints / LandContact, the engine recenters that LOD's mesh based on its bbox center, displacing the collision mesh from the visual mesh by half-height (typically 20-25cm Y). Empirical symptoms: bullets pass through, hologram raycast falls through to ground when stacking, action cursor doesn't register the object. Detection: `lod.properties.get("autocenter") != "0"` on any collision LOD. Fix: `lod.properties["autocenter"] = "0"` on all collision LODs, then write back. Vanilla reference: LFPG `gate_and.p3d` has `autocenter=0` on Geometry, ViewGeometry, FireGeometry uniformly.
 17. **Every face in collision LODs needs a penetration `.rvmat`** — assign `face.material = "dz\\data\\data\\penetration\\<surface>.rvmat"` (e.g. `wood_desk` for wood, `metalplate` for metal, `plastic` for plastic). The .rvmat references a `.bisurf` that defines ballistic properties (penetration thickness, deflection, damage). Without this assignment, ObjIntersectFire raycasts hit the geometry but the engine cannot resolve a surface — bullets pass through, no footstep sound. Vanilla: `wooden_case` has every collision-LOD face assigned to `wood_desk.rvmat`. Detection: `(face.material or "").strip() == ""` on any collision LOD face is a fail.
@@ -887,7 +887,7 @@ block — never by a filename that only encodes someone's intent. A name is a cl
 provenance; a count is evidence. It is cheap enough that there is no reason to skip it, and the
 failure it prevents is redoing work that was already correct.
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 The LOD resolution table, Rules 12–20, artist-return preflight (SP-246), and the py3d
 assembly path still hold. What 1.30 changes for this skill is engine/config contract
@@ -896,7 +896,7 @@ blocks: [dayz-1-30-model-pipeline.md](references/dayz-1-30-model-pipeline.md).
 
 ### What changes
 
-- **Inventory-attachment proxy on dedicated server.** (until 1.29: missing proxy in the final visual LOD could make the server report the parent origin.) (since 1.30 Exp [CHANGELOG]: server reads the View Geometry LOD.) Duplicate the proxy triangle in ViewGeometry.
+- **Inventory-attachment proxy on dedicated server.** (until 1.29: missing proxy in the final visual LOD could make the server report the parent origin.) (since 1.30 [CHANGELOG]: server reads the View Geometry LOD.) Duplicate the proxy triangle in ViewGeometry.
 - **`-cacheP3D=0/1`.** Sibling `.p3dcache` next to unbinarized `.p3d` for faster Game/Buldozer relaunches ([CHANGELOG]).
 - **`disableSimulation` on house-based entities.** Config key [CHANGELOG]; script natives `Entity.DisableSimulation` / `GetIsSimulationDisabled` in `exp\scripts\scripts\3_Game\Entities\Entity.c:3-6`. Config assignment not found in extracted configs (`[UNVERIFIED]`).
 - **`liquid_source`.** ViewGeometry selection for well/pump liquid actions (`UAMisc.LIQUID_SOURCE_SELECTION` in `ActionConstants.c:180`).
@@ -921,7 +921,7 @@ blocks: [dayz-1-30-model-pipeline.md](references/dayz-1-30-model-pipeline.md).
 
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
 
-- Pack, sign and binarize with bzed's armake2 fork, https://github.com/bzed/armake2, pinned to `7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa`: `cargo install --git https://github.com/bzed/armake2 --rev 7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa`; use `armake2 build`, `keygen`, `sign`, and `build --proton-binarize` where needed. No `dayz-dev` wrapper is required. The author's 2026-11-03 textured-cube comparison with BI binarize from a `P:` root matched byte for byte; this is not an in-game ODOL check. See `skills/_shared/linux-proton.md` for setup and limits.
+- Pack, sign and binarize with dayzmake >= 1.0.0, bzed's DayZ fork of armake2 (https://github.com/bzed/dayzmake), pinned to `v1.0.0` (the release binary `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0`): use `dayzmake build`, `keygen`, `sign`, and `build --proton-binarize` where needed. Upstream armake2 is no substitute: it leaves `*.c` files out of the signature, so a script mod's `.bisign` does not cover its scripts. No `dayz-dev` wrapper is required. The author's 2026-11-03 textured-cube comparison with BI binarize from a `P:` root matched byte for byte (fork commit `7dcb3cf`, then still named armake2; `v1.0.0` contains it); this is not an in-game ODOL check. See `skills/_shared/linux-proton.md` for setup and limits.
 - `P:\` is a plain directory mapped by `skills/_shared/scripts/dayz-proton.sh init <dir>`; a `P:\<Mod>\...` path in this skill is `<dir>/<Mod>/...`.
 - Object Builder and TexView run under Proton: `dayz-proton.sh gui ObjectBuilder <p3d>`, `gui TexView <paa>`. Object Builder opened and displayed a model; editing in it was not exercised. Offline checks (`py3d`, `dayz-model-preflight`, `dayz-3d-viewer`) are Python and run natively.
 - In-game checks: the Linux notes of `dayz-test-ingame`.

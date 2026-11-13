@@ -12,7 +12,7 @@ where the engine reads mods, and launch `DayZDiag_x64.exe` with `-filePatching` 
 and config edits are picked up without re-binarizing. Three launch modes (offline / server /
 client / all) driven by one orchestrator script and double-click `.bat` wrappers, generated
 per mod into `<Mod>_dev\tools\`.
-(until 1.29: the loop was pack PBO → deploy packed `@Mod` → DayZDiag `-filePatching`.) (since 1.30 Exp [CHANGELOG]: `-mod` may point at an **unpacked** source folder; RV configs load unpacked; new flags `-cacheP3D=0/1` and `-resolveFilePatchingUsingEnfusion=0/1`. Details: [dayz-1-30-test-ingame.md](references/dayz-1-30-test-ingame.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the loop was pack PBO → deploy packed `@Mod` → DayZDiag `-filePatching`.) (since 1.30 [CHANGELOG]: `-mod` may point at an **unpacked** source folder; RV configs load unpacked; new flags `-cacheP3D=0/1` and `-resolveFilePatchingUsingEnfusion=0/1`. Details: [dayz-1-30-test-ingame.md](references/dayz-1-30-test-ingame.md).)
 
 ## SOURCE OF TRUTH
 
@@ -88,7 +88,7 @@ With the box free of run DayZ processes and explicit user authorization, the pat
 - Recipe: agent writes `.bat` (server/client argv, literal quotes on each value with spaces) and user double-clicks to execute them in interactive session. [EXACT - this skill, SP-077] Read script.log/RPT with `FileShare.ReadWrite`. UI closure, not by PID, except agent's own zombie (then exact `Stop-Process -Id`).
 - [DESIGN] Server argv: `-server "-config=<serverDZ.cfg>" "-profiles=<server-profiles>" "-mission=<mission-abs>" "-mod=<mod-abs-semicolon-list>" -filePatching -port=2302`
 - [DESIGN] Client argv: `"-mod=<mod-abs-semicolon-list>" -connect=127.0.0.1 -port=2302 "-profiles=<client-profiles>" -name=Dev -window -filePatching`
-(since 1.30 Exp [CHANGELOG]) Optional on both: `-cacheP3D=1` (unbinarized `.p3d` sibling cache) and `-resolveFilePatchingUsingEnfusion=1` (requires `-filePatching`; always on in Workbench). `-mod=` may name an unpacked source folder, not only a packed `@Mod`. See `references/dayz-1-30-test-ingame.md`.
+(since 1.30 [CHANGELOG]) Optional on both: `-cacheP3D=1` (unbinarized `.p3d` sibling cache) and `-resolveFilePatchingUsingEnfusion=1` (requires `-filePatching`; always on in Workbench). `-mod=` may name an unpacked source folder, not only a packed `@Mod`. See `references/dayz-1-30-test-ingame.md`.
 
 Three gotchas that bite along this same path and are not from argv (SP-228, measured):
 
@@ -153,6 +153,7 @@ The orchestrator checks these every run and fixes what it safely can. Verified o
   [EXACT — DAYZ_INFRA.md §Canonical invocation commands — Server diag]. Aliases:
   `chernarus`/`livonia`/`sakhal`. [EXACT — DAYZ_INFRA.md §Mission templates — canonical aliases]
 - **`class Missions` in `serverDZ.cfg`** — a dedicated server with a `dayzOffline.*` mission self-terminates before the mission loads (RPT countdown `[Server] :: termination in: N`) unless the config declares `class Missions { class DayZ { template="<mission>"; }; };`. With it, the server stays up with no client, which is what a server-side probe in the mission `init.c` needs. [EXACT] (measured in game, DayZ 1.30.164014 Exp, SP-434]
+- **`instanceId` in `serverDZ.cfg`** — keep it: without it a minimal config got the same countdown even though it declared `class Missions`. On the retail DayZServer 1.30.164289 (Windows, 2026-11-10) a hand-written `serverDZ.cfg` with `class Missions` and no `instanceId` counted down from `[Server] :: termination in: 10` right after `NETWORK : server: Player dpid=2 added`, with no `SteamGameServer_Init` line; the same file plus `instanceId = 1;` and nothing else passed Steam init, loaded the mission and ran until a test mod asked it to exit. Only `instanceId` was tested: whether another key of the shipped `serverDZ.cfg` would also avoid the countdown is unknown. The dev `serverDZ.cfg` the script generates already sets it (`templates/dayz-test.ps1:340`). [EXACT][CLAIM-TEST-SERVERCFG-INSTANCEID-130]
 - **AddonBuilder** — only when `-Build`. [EXACT — DAYZ_INFRA.md §Canonical invocation commands — AddonBuilder]
 - **Steam client session** — for CLIENT-launching modes only (`offline`, `client`, `all`),
   `HKCU\Software\Valve\Steam\ActiveProcess` must have both `pid != 0` and
@@ -437,6 +438,16 @@ Verified via an in-mission `ConfigIsExisting("CfgPatches LFQuad")` probe on a he
 - `-mod=@LFQuad` (relative, cwd=game) → `CfgPatches.LFQuad = 0` (absent).
 - `-mod=C:\...\DayZ\!Workshop\@LFQuad` (absolute) → `CfgPatches.LFQuad = 1`, `LFQuad_base = 1`.
 
+That was measured on Windows, and the failure is not always silent:
+- A relative path that climbs out of the server folder with `..\` does not mount either, and it is loud: the retail
+  DayZServer 1.30.164289 (2026-11-10, in `-serverMod`) stopped loading at an error window
+  `Cannot open file '<server>\..\..\…\@Name\addons\<pbo>'`, wrote an `ErrorMessage_DayZServer_x64_<date>.mdmp` into the
+  profile folder and never reached the mods' `PBO Load` lines; its RPT says nothing about it.
+  [EXACT][CLAIM-TEST-MODPATH-DOTDOT-130]
+- On the native Linux server the rule is reversed, as bzed reports (bzed/dayz-dev-plugin `03866175`,
+  `testing/local-server.md:273-276`, 1.29 and 1.30.164014; not re-measured for this pack): an absolute `-mod=` /
+  `-servermod=` path mounts nothing and gives no error, and the paths go relative to the server tree.
+
 `Get-ModString` now rewrites every bare `@Name` to its absolute `!Workshop` path via
 `Resolve-ModToken` (handles names with spaces like `@Dabs Framework`; passes through tokens that
 are already rooted or not found under `!Workshop`). This applies to server, client and offline.
@@ -523,7 +534,7 @@ Croco quadbike) IN THE SAME RUN before touching geometry.
 - `WheelHasContact(i)` per wheel - `1` = touching ground, `0` = airborne. Print the
   four as a bitstring (`wc=1111` good; `wc=0000` = the whole vehicle is suspended off
   the ground, a placement/clearance problem, not a sim problem). Vanilla refs:
-  `car.c:297,349,352`.
+  `car.c:286,345,348`.
 
 So: `WheelCountPresent()=0` is the silent wheel-binding blocker (FireGeometry slot
 selection); `WheelCountPresent()=4` with `wc=0000` is geometry sitting too high or
@@ -535,7 +546,7 @@ Spawn with an explicit height flag instead of letting CE drop it:
 - `ECE_KEEPHEIGHT` (`=524288`, "no surface trace") - places at the exact Y you pass,
   no terrain snap. Spawn a known clear height and watch whether it settles.
 - `ECE_PLACE_ON_SURFACE` (`=1060`) - normal surface-trace placement.
-Vanilla refs: `centraleconomy.c:37,27`. If the vehicle is stable under KEEPHEIGHT but
+Vanilla refs: `centraleconomy.c:38,28`. If the vehicle is stable under KEEPHEIGHT but
 bounces/sinks under PLACE_ON_SURFACE, the bug is placement burying the hull (wheel-well
 clearance vs tire radius - audit check SP-023), not the model.
 
@@ -816,7 +827,7 @@ shell dies for this reason, not because the host is broken.
 - Never start Steam, or write or delete its registry keys, from the app's shells: that is what
   creates or freezes the copy, and only an offline edit of the app's hive with the app closed removes
   it (dayz-mcp's `tools/clear-app-steam-shadow.ps1`). Background in
-  `references/dayz-1-30-test-ingame.md`, "Launching the 1.30 Exp DayZDiag directly", point 2.
+  `references/dayz-1-30-test-ingame.md`, "Launching the 1.30 DayZDiag directly", point 2.
   [EXACT] (measured, LL-510 / SP-420 / LL-516)
 
 **2. The request JSON must not carry a UTF-8 BOM.** `Out-File -Encoding utf8` in Windows PowerShell
@@ -878,7 +889,7 @@ the full entry (symptom, origin, evidence) lives there. Do not remove the citati
 
 ## `dayz_test_run` with `build:true` does NOT build — and the error it returns does not say so (SP-139, added 2026-07-29)
 
-(Windows, measured 2026-07-29. On Linux `build=true` goes through armake2 and did build, 2026-11-06; see "On Linux".)
+(Windows, measured 2026-07-29. On Linux `build=true` goes through dayzmake (then still named armake2) and did build, 2026-11-06; see "On Linux".)
 
 On this box DayZDiag only starts via registered native launcher (SP-085), so
 `dayz_test_run` is the only way. **Its `build:true` is BROKEN**: returns generic
@@ -1019,41 +1030,41 @@ them again:
 
 1. **DayZDiag does NOT define DEVELOPER for scripts (DOES define DIAG and DIAG_DEVELOPER)** — measured with
    defines telemetry on connected client. Any vanilla mechanism under `#ifdef DEVELOPER`
-   (e.g. `SetGetInVehicleDebug`/`TryGetInVehicleDebug`, playerbase.c:3270-3295) DOES NOT EXIST in
+   (e.g. `SetGetInVehicleDebug`/`TryGetInVehicleDebug`, playerbase.c:3524-3549) DOES NOT EXIST in
    diag. Gate test code via command line parameter (`CommandlineGetParam`,
-   game.c:660) or via `#ifdef DIAG`, never DEVELOPER.
+   game.c:661) or via `#ifdef DIAG`, never DEVELOPER.
 2. **Automated get-in in MP: `StartCommand_Vehicle` directly from client seats a
    local GHOST** (own=true, HUD active) but server NEVER registers crew (crew0=false,
    consumed=0, ObtainState silent). The route that works: inject real ACTION —
    `ActionManagerClient.PerformActionStart(GetAction(ActionGetInTransport), target, null)`
-   (actionmanagerclient.c:762; in MP enters through ActionStart, synchronized flow mirrored by
+   (actionmanagerclient.c:804; in MP enters through ActionStart, synchronized flow mirrored by
    server). Target componentIndex is obtained iterating `CrewPositionIndex(c)` until
-   it returns desired seat (transport.c:116). Success is observed with `GetCommand_Vehicle()`
+   it returns desired seat (transport.c:182). Success is observed with `GetCommand_Vehicle()`
    on next tick (with retry), not marking done upon injecting. NOTE: `ActionCondition` is
    protected — cannot be pre-validated from outside; manager validates on both sides.
 
    **The framework reconciling this with SP-295** (measured against vanilla tree, 2026-08-18):
    crew membership and vehicle command are TWO distinct things, and only real action
    produces both. Crew is NATIVE engine state, not a script netsync:
-   `Transport` registers a single variable (`m_EngineZoneReceivedHit`, transport.c:73) and
-   `CrewMember`/`CrewDriver` are `proto native` (transport.c:111-128), readable from any
+   `Transport` registers a single variable (`m_EngineZoneReceivedHit`, transport.c:110) and
+   `CrewMember`/`CrewDriver` are `proto native` (transport.c:177-194), readable from any
    client — that is why a client wanting to get in can reject an already occupied seat
-   (actiongetintransport.c:57-60). `HumanCommandVehicle`, on the other hand, is created by
+   (actiongetintransport.c:50-52). `HumanCommandVehicle`, on the other hand, is created by
    `StartCommand_Vehicle` on THE MACHINE that calls it, and across the tree's 2,805 files there are
-   exactly three call-sites: action itself (actiongetintransport.c:91), resumption
-   after unconsciousness via `m_TransportCache` (dayzplayerimplement.c:2376) and a debug under
-   `#ifdef DEVELOPER` (playerbase.c:3287). **None starts the command upon finding out via network
+   exactly three call-sites: action itself (actiongetintransport.c:104), resumption
+   after unconsciousness via `m_TransportCache` (dayzplayerimplement.c:2395) and a debug under
+   `#ifdef DEVELOPER` (playerbase.c:3531). **None starts the command upon finding out via network
    that one is already seated.** From there arise both sides of the same fact: calling
    `StartCommand_Vehicle` directly from client gives command WITHOUT server crew (the ghost
    above); seating someone via script from server gives crew WITHOUT local command, and then
    any `ActionCondition` requiring being seated is NEVER satisfied, because they check
    `GetCommand_Vehicle()` and not `CrewMember` — as done by get-out
-   (actiongetouttransport.c:68-74) and start/stop engine (actionstartengine.c:26-37). Beware of
+   (actiongetouttransport.c:70-76) and start/stop engine (actionstartengine.c:26-37). Beware of
    `IsInVehicle()`: accepts both routes (command OR parent Transport,
-   dayzplayerimplement.c:465-468), so it is useless to distinguish them.
+   dayzplayerimplement.c:468-471), so it is useless to distinguish them.
 3. **A ASLEEP body rejects the injected get-in action** (PARKED sleep gate). If the mod
    sleeps the vehicle at rest, the cell must WAKE IT UP before get-in — simplest:
-   start the engine server-side from test mission (`EngineStart`, car.c:244) AS SOON AS
+   start the engine server-side from test mission (`EngineStart`, car.c:233) AS SOON AS
    spawned, not upon detecting crew. Furthermore, without engine/simulation OwnerState channel does not flow
    (silent ObtainState/RewindState) even if player is seated.
 4. **The real Enforce compile gate is stack STARTUP** (no offline check sees
@@ -1829,9 +1840,9 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. `dayz-test.ps1` and the approved-launcher registry are Windows-only. `dayz_test_run` runs on Linux on dayz-mcp's `linux-port` branch, for `mode=all`, `server` and `client`, with `build=true` and `dayz_test_close`/`dayz_test_stop` (measured 2026-11-06, `knowledge/linux-proton-findings-2026-11.md` section 9). The policy's `diag_executable` picks the engine: `<game>/DayZDiag_x64.exe` runs both roles under Proton in headless sway sessions, as on Windows; `DayZServer` is a server-only project in rootless podman, and a client launch on it is refused with `client_needs_diag_executable`. Without dayz-mcp, the distributed helper is `skills/_shared/scripts/dayz-proton.sh headless start <state> DayZDiag <args>` (both diag roles under Proton; the server role uses `-server`). The author-local native-server/retail-client harness and its `dayz-dev` wrappers are not distributed by this Pack.
 - `DayZDiag_x64.exe` runs under Proton: `dayz-proton.sh headless start <state> DayZDiag <args>`. Measured 2026-11-03 (1.30.164289): the client reaches the main menu, and `-server` with `-config=`/`-mission=`/`-profiles=` pointing into a Linux server tree loads the mission and runs the Central Economy. **A diag client only joins a diag server:** on the native `DayZServer` it stops at the modal `0x00020017, Client is using Diag exe while the server is not`, which only a screenshot shows. The diag pair joined and reached the world (measured 2026-11-06). `-filePatching` from an unpacked `-mod=` folder under Proton was **not verified**.
 - `DayZDiag_x64.exe` under Proton loads a mod from an absolute `-mod=Z:\<linux path>\@Mod` and writes its logs into `-profiles=Z:\<linux path>` (measured 2026-11-05, 1.30.164289.70).
-- Start the native `DayZServer` **without `-filePatching`** (with it the 1.30 server never finishes loading the landscape, measured 2026-11-04) and with a **relative `-mission=mpmissions/<name>`** (an absolute path leaves it without `init.c`'s `main`, so no player can connect, measured 2026-11-06; guide section 5). Script iteration on the native server therefore means repacking the PBO, not loose files.
+- Start the native `DayZServer` **without `-filePatching`** (with it the 1.30 server never finishes loading the landscape, measured 2026-11-04) and with a **relative `-mission=mpmissions/<name>`** (an absolute path leaves it without `init.c`'s `main`, so no player can connect, measured 2026-11-06; guide section 5). Name `-mod=` and `-servermod=` **relative to the server tree** too, through symlinks or `../` if the mods live elsewhere: on the native server an absolute mod path mounts no PBO and logs no error, the reverse of the Windows rule in "MOD PATHS MUST BE ABSOLUTE" (reported by bzed for 1.29 and 1.30.164014, not re-measured here). Script iteration on the native server therefore means repacking the PBO, not loose files.
 - A diag server and a diag client ran from one prefix with each role in its own headless Wayland sway (`PROTON_ENABLE_WAYLAND=1`, dayz-mcp, measured 2026-11-06). With `dayz-proton.sh headless`, a Wine prefix serves one display at a time, so use two `DAYZ_PROTON_HOME`s or one shared display (pitfalls in the guide).
 - Client and server must report the same game version (`dayz-proton.sh doctor`), or the join fails with `0x00020013`.
 - `%LOCALAPPDATA%\DayZ` is `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ`; pass `-profiles=<linux dir>` to keep logs where you read them. The counterpart of the Steam-session check (`HKCU\Software\Valve\Steam\ActiveProcess`) is `~/.steam/steam.pid`, read-only: dayz-mcp never repairs or restarts Steam on Linux, and a logged-out Steam passes the check and fails at the client's Steam initialisation. `steam_session_stale` with a live `steam.pid` means a dayz-mcp at or before `3a82bdc`, which still read `SteamPID` from `registry.vdf`: update it and restart the daemon; restarting Steam does not reliably help.
-- `dayz_test_close` on Linux (measured 2026-11-06): the order is right and the player logs out (`logout_finished: true`), and the server ends with `--- Termination successfully completed ---`. With a player **in the world** the client then exits with code 3 during teardown, after `Destroying game` and before its termination line, so the result is `graceful: false`, `exit_metrics_valid: false` (2 of 2 runs; the cause is unknown). Do not read client exit metrics from a Linux run; server metrics in the server's RPT are complete. A client still on its loading screen closed cleanly, with `graceful: true`. `dayz_test_stop` is a forced kill, as on Windows. `build=true` runs armake2 from `PATH` (`pack` with `pack_only`, otherwise `build --proton-binarize`) and writes `@Mod/Addons/<Mod>.pbo`; the full managed binarizing path was **not verified**, only the pack-only one. Not ported: `dayz_test_foreground` (a headless game has nothing to bring forward).
+- `dayz_test_close` on Linux (measured 2026-11-06): the order is right and the player logs out (`logout_finished: true`), and the server ends with `--- Termination successfully completed ---`. With a player **in the world** the client then exits with code 3 during teardown, after `Destroying game` and before its termination line, so the result is `graceful: false`, `exit_metrics_valid: false` (2 of 2 runs; the cause is unknown). Do not read client exit metrics from a Linux run; server metrics in the server's RPT are complete. A client still on its loading screen closed cleanly, with `graceful: true`. `dayz_test_stop` is a forced kill, as on Windows. `build=true` runs dayzmake from `PATH` (the branch now accepts only the v1.0.0 release binary; the 2026-11-06 runs used the fork under its old name armake2) (`pack` with `pack_only`, otherwise `build --proton-binarize`) and writes `@Mod/Addons/<Mod>.pbo`; the full managed binarizing path was **not verified**, only the pack-only one. Not ported: `dayz_test_foreground` (a headless game has nothing to bring forward).
 - Managed games have no input devices, so `use_state` reads `idle`, never `human`. As on Windows another session gets `run_protected` with `retry_after_s` until the 600 s abandon timer ends.

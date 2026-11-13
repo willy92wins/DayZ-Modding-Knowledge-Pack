@@ -63,31 +63,34 @@ with the actual error. This is extremely misleading.
 **Debugging strategy**: If you get a compile error in a file that looks
 correct, check if any class it references requires an addon that isn't loaded.
 
-### 5. Empty #ifdef Blocks Cause Segfault
+### 5. An #ifdef Block Holding Only a Comment Compiles (no segfault measured)
+
+[EXACT][CLAIM-ENFORCE-EMPTY-IFDEF-COMMENT-130] This entry used to say that an empty `#ifdef` block, comments or not, causes a segfault. Measured on DayZDiag 1.30.164289 (2026-11-09), in a mod's `4_World` scripts: a block holding only a comment compiled and ran on server and client, at file scope, in a class body and in a method body, each with `DIAG_DEVELOPER` (which DayZDiag defines on both peers) and with a macro nobody defines; the method's marker was printed and neither process hung (pipeline inbox dada). Vanilla 1.30 ships such a block at `4_world/classes/environment/environment.c:1-3`.
 
 ```
-// SEGFAULT — empty block (even with comments)
-#ifdef MY_MOD
-// This comment doesn't count as content
-#endif
-
-// CORRECT — at least one statement
-#ifdef MY_MOD
-int _placeholder;
+// Compiled and ran on DayZDiag 1.30.164289, server and client
+#ifdef DIAG_DEVELOPER
+// only a comment
 #endif
 ```
+
+Not measured: a block with nothing at all inside, a retail build, DayZ 1.29. `dayz-script-validator` still reports such a block, as a WARN (`ES-EMPTY-IFDEF`); remove the block if it holds no code.
 
 ### **`Expected ',' or ')', not a '0'`** + cascade (`Unexpected scope`, `Syntax error`) on a signature line (SP-364)
 
 - The lexer splits an identifier that STARTS with a reserved keyword followed by a digit: `out vector out0` is tokenized as keyword `out` + type `vector` + keyword `out` + literal `0`, so the parser sees a stray `'0'` that "does not exist" on the line at first glance. Same family as SP-073 (keyword-as-name) but the trigger is keyword+digit, not keyword alone. Affected prefixes: `out`, `ref`, `new`, `auto`, `inout`. Vanilla contains zero `out<digit>` identifiers (full grep of `P:\scripts`)
 - Rename to a non-keyword prefix: `dst0`, `res0`, `val0`, etc. Diag: if the error names a digit token (`'0'`, `'1'`, …) you cannot find on the line, suspect a parameter or variable whose name starts with a reserved keyword. [VERIFIED LF-COM S2b 2026-08-07, run `02d2ee1a` fail 284/285/288; fix `out0..out3`→`dst0..dst3` compiles clean run 3]
 
+### **`Unknown operator '%'`**: `%` in an expression with a float literal (pipeline inbox d35a)
+
+[EXACT][CLAIM-ENFORCE-MODULO-FLOAT-LITERAL-130] On DayZDiag 1.30.164289 (2026-11-09), in a mod's `4_World` script, `float x = (cell % 103) * 150 + 150 * 0.5;` and `float x = (cell % SIDE) * STEP + STEP * 0.5;` (`static const float STEP`, `static const int SIDE`) each stopped the World module with `Unknown operator '%'` at its own line, then `Can't compile "World" script module!`. With the `%` in an `int` local first, `int col = cell % SIDE; float x = col * STEP; x = x + STEP * 0.5;` compiled and ran. Both failing lines hold the literal `0.5`, so whether a `static const float` with no literal beside it fails is not isolated. The ticket that reported the second expression saw `Unknown operator ''` instead, in a mission's `init.c`, which was not measured again. `SKILL.md` item 13 gives the rule; `dayz-script-validator` reports it as `ES-MODULO-FLOAT-CONTEXT`.
+
 ### Six recurring compile-fail families (SP-208, added 2026-08-31)
 
 1. **Opaque file handles are not integers.** `FileHandle` and `FindFileHandle` are `int[]` aliases (`1_core\proto\ensystem.c:390,503`). Declare the proper type without `= 0`; test `if (!handle)` and track open state separately. The directory API is `FindFile(pattern, out name, out attr, flags)`, `FindNextFile(handle, out name, out attr)`, then `CloseFindFile(handle)` (`:520-522`). `OpenFile` returns `FileHandle` (`:417`); `ReadFile(FileHandle, void, int)` (`:425`) is not a whole-file-by-path helper. Read text with `OpenFile(READ)` + repeated `FGets` + `CloseFile` (`5_mission\gui\controlsxbox.c:297-305`).
 2. **`ScriptRPC` has no `WriteString`.** The class adds only `Reset` and `Send` to `ParamsWriteContext` (`3_game\gameplay.c:104-118`); that context is a `Serializer`, whose payload API is generic `Write` / `Read` (`1_core\proto\serializer.c:57-58`). A class member that keeps the RPC object needs a strong `ref`.
 3. **`string.Replace` mutates and returns an `int`** (`1_core\proto\enstring.c:156`). Chaining `.Replace().Replace()` tries to call `Replace` on that integer. Copy to a local, call `Replace` once per step, then return the local.
-4. **Long formulas have a compiler limit.** A JSON-style expression with roughly 30 operands can fail with `Formula too complex`. Build it incrementally (`result = result + part;`); roughly ten operands per line was safe in the measured LF-COM compile gate, not a guaranteed language boundary.
+4. **Long formulas have a compiler limit.** [EXACT][CLAIM-ENFORCE-FORMULA-TERMS-130] On DayZDiag 1.30.164289, one statement on one line that alternates string literals with an `int` and a float's `ToString()` (`string s = "a" + i0 + " b" + f0.ToString() + …`) compiled with 17 terms and failed with 18 and with 20: `Formula too complex` on its line, then `Incompatible parameter 'i0'`, then `Can't compile "World" script module!` (pipeline inbox 7b9e/7ce1). Other operand types and a statement over several lines are not measured; a JSON-style expression with roughly 30 operands also failed in the LF-COM compile gate. Build it incrementally (`result = result + part;`). `dayz-script-validator` warns on a statement that holds a string literal and joins 18 or more terms with `+` (`ES-FORMULA-TOO-COMPLEX`).
 5. **Locals have method scope, not block scope.** Reusing one local name in sibling `if` or `switch` branches produces `Multiple declaration`; rename per branch or hoist once. Separate `#ifdef` / `#else` compile views may reuse a name because only one view exists at a time.
 6. **Brace-only balance is incomplete.** `Unmatched brackets detected!` can come from parentheses or square brackets. An offline checker must balance `()`, `[]`, and `{}` after stripping strings and comments, per file. It cannot replace the game compile gate; preprocessor views, encoding failures, and these API contracts remain outside that check.
 
@@ -225,8 +228,8 @@ modded class PlayerBase
 3. Call `super.MethodName()` in overrides to preserve vanilla behavior
 4. Only ONE `modded class Hologram` can exist across ALL files — multiple declarations conflict
 
-    - **`modded class MissionServer` — `OnGameplayDataHandlerLoad` has a vanilla implementation.** It sets `m_RespawnMode`, the debug monitor, and calls `InitialiseWorldData()` (`5_mission\mission\missionserver.c:154-160`). A `modded` override that omits `super` silently breaks world data. The same applies to `OnClientPrepareEvent`, which decides `useDB` from `GetHive()` (`missionserver.c:436-450`): without `super`, character loading breaks.
-    - **CE-safe spawn timing is `GlobalsInit()`, not `OnGameplayDataHandlerLoad`.** The vanilla spawn and the comment *«CE being initialized before spawning them»* live inside `GlobalsInit()` (`3_game\dayzgame.c:1123`, opens with `if (GetCEApi())`, spawn at `:1138-1139`), queued separately at `:1063`. The Mission hook runs much earlier: `CfgGameplayHandler.LoadData()` is line 86 of `MissionServer.OnInit` (`:83-92`). Citing `dayzgame.c:1138-1139` to justify a spawn in `OnGameplayDataHandlerLoad` is a misattributed citation. The derived rule is not "always spawn late" — vanilla spawns Underground carriers in `OnInit` (`missionserver.c:89`) because they do not touch the CE. Spawn where vanilla spawns the family you are creating: items / `ItemBase` with CE lifetime go through the ObjectSpawner route.
+    - **`modded class MissionServer` — `OnGameplayDataHandlerLoad` has a vanilla implementation.** It sets `m_RespawnMode`, the debug monitor, and calls `InitialiseWorldData()` (`5_mission\mission\missionserver.c:161-167`). A `modded` override that omits `super` silently breaks world data. The same applies to `OnClientPrepareEvent`, which decides `useDB` from `GetHive()` (`missionserver.c:449-463`): without `super`, character loading breaks.
+    - **CE-safe spawn timing is `GlobalsInit()`, not `OnGameplayDataHandlerLoad`.** The vanilla spawn and the comment *«CE being initialized before spawning them»* live inside `GlobalsInit()` (`3_game\dayzgame.c:1160`, opens with `if (GetCEApi())`, spawn at `:1173-1174`), queued separately at `:1096`. The Mission hook runs much earlier: `MissionServer.OnInit` calls `CfgGameplayHandler.LoadData()` at `missionserver.c:88` (`OnInit` from `:85`, carriers at `:91`). Citing `dayzgame.c:1173-1174` to justify a spawn in `OnGameplayDataHandlerLoad` is a misattributed citation. The derived rule is not "always spawn late" — vanilla spawns Underground carriers in `OnInit` (`missionserver.c:91`) because they do not touch the CE. Spawn where vanilla spawns the family you are creating: items / `ItemBase` with CE lifetime go through the ObjectSpawner route.
 
 ### A variable named like a type (`map`) fails the whole module (SP-317)
 
@@ -398,9 +401,11 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
 
 ### Compiler / language quirks
 
-- **Empty `#ifdef` / `#ifndef` blocks segfault** — even if they only contain comments.
-  Either remove the block entirely or put at least one statement inside (`int dummy;`).
-  *(Reported by Expansion devs; engine-level, hard to verify in vanilla source.)*
+- **Empty `#ifdef` / `#ifndef` blocks were reported to segfault**, even with only comments
+  inside *(Expansion devs)*. Not reproduced: on DayZDiag 1.30.164289 a block holding only a
+  comment compiled and ran on server and client, at file scope, in a class body and in a
+  method body (section 5 above, pipeline inbox dada). A block with nothing at all inside, a
+  retail build and DayZ 1.29 are not measured. Remove a block that holds no code.
 
 - **`1 < int.MIN` returns TRUE** — and `1 < -2147483647` also returns TRUE. Integer
   comparison against `int.MIN` is broken. Always guard MIN/MAX comparisons explicitly.
@@ -442,7 +447,7 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
 ### Performance traps (verified in vanilla `P:\scripts\3_game\global\game.c`)
 
 - **`GetObjectsAtPosition` / `GetObjectsAtPosition3D` are slow** — `proto native` at
-  `game.c:922,929`. Avoid in tick paths. Prefer:
+  `game.c:923,930`. Avoid in tick paths. Prefer:
   - Static arrays on the class you're looking for (`s_AllInstances`)
   - Triggers (`ScriptedEntity`-derived with collision events)
   - `GetScene()` API for scene-graph queries
@@ -456,7 +461,7 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
   ```
 
   Vanilla itself uses both patterns (`hologram.c:1128` uses `SurfaceIsSea/Pond`,
-  `transport.c:357` and `playerbase.c:6817` use `GetWaterDepth`). When you control
+  `transport.c:540` and `playerbase.c:7138` use `GetWaterDepth`). When you control
   the call site, prefer `GetWaterDepth`.
 
   Over water objects (the vanilla river and stream pieces, the streambed kit, a roadway
@@ -472,7 +477,7 @@ against vanilla DayZ source where applicable. Each entry notes verification stat
   }
   ```
 
-### Type system — `GetType()` vs `ClassName()` (verified `object.c:473`)
+### Type system — `GetType()` vs `ClassName()` (verified `object.c:467`)
 
 For entities, `GetType()` returns the **config.cpp class name** (resolved via
 `g_Game.ObjectGetType(this, ret)`), while `ClassName()` returns the **script class
@@ -486,7 +491,7 @@ if (entity.GetType() == "MyMod_Vest") { ... }
 ```
 
 Vanilla uses `GetType()` heavily for hidden selections lookup
-(`object.c:128,134,140`) and config path construction (`object.c:430,436,442`).
+(`object.c:128,134,140`) and config path construction (`object.c:424,430,436`).
 
 ### `[Obsolete()]` attribute (verified vanilla)
 
@@ -498,7 +503,7 @@ Use when removing API would break dependent mods — soft-deprecate first.
 proto native int GetGizmoCount();
 ```
 
-Vanilla examples: `game.c:801,807,813`, `ecrewmemberstate.c:1`.
+Vanilla examples: `game.c:802,808,814`, `ecrewmemberstate.c:1`.
 
 ### `notnull` keyword for parameters
 
@@ -607,10 +612,10 @@ Anti-confabulation. Vanilla has APIs guarded by `#ifdef DEVELOPER` (e.g. `DayZPl
 
 ### PluginDeveloper is dead in release — use the retail substitutes (SP-287)
 
-`PluginDeveloper` registers ONLY under `#ifdef DIAG_DEVELOPER` (`4_World/plugins/pluginmanager.c:65,:247-252`): in `DayZServer_x64` release, `GetPlugin(PluginDeveloper)` returns null and any teleport/give built on it (`TeleportAtCursor`, `SpawnEntityInInventory`…) is DEAD even though it compiles and works in DayZDiag. The retail substitutes (the pattern VPP/COT use, which run on retail):
+`PluginDeveloper` registers ONLY under `#ifdef DIAG_DEVELOPER` (`4_World/plugins/pluginmanager.c:66,:249-254`): in `DayZServer_x64` release, `GetPlugin(PluginDeveloper)` returns null and any teleport/give built on it (`TeleportAtCursor`, `SpawnEntityInInventory`…) is DEAD even though it compiles and works in DayZDiag. The retail substitutes (the pattern VPP/COT use, which run on retail):
 
 - **Teleport**: `player.SetPosition(pos)` (if y==0, resolve `GetGame().SurfaceY(x, z)` first).
-- **Seated player + vehicle**: `HumanCommandVehicle vc = player.GetCommand_Vehicle();` (`3_game\human.c:1494`) → `Transport veh = vc.GetTransport();` (`3_game\human.c:694`) → `veh.GetTransform(mat); mat[3] = pos; veh.SetTransform(mat);` — vehicle and occupant move together. **The occupant's position lags one frame**: to report the applied position, read `veh.GetPosition()`, not `player.GetPosition()`.
+- **Seated player + vehicle**: `HumanCommandVehicle vc = player.GetCommand_Vehicle();` (`3_game\human.c:1528`) → `Transport veh = vc.GetTransport();` (`3_game\human.c:716`) → `veh.GetTransform(mat); mat[3] = pos; veh.SetTransform(mat);` — vehicle and occupant move together. **The occupant's position lags one frame**: to report the applied position, read `veh.GetPosition()`, not `player.GetPosition()`.
 - **Give**: `player.GetInventory().CreateInInventory(cls)` / `player.GetHumanInventory().CreateInHands(cls)` (`humaninventory.c:44`) with `player.GetItemInHands()` as the hands-occupied guard.
 
 ### `foreach` on getter results re-calls the getter
@@ -637,29 +642,29 @@ Do not hide the declaration with `#ifndef SERVER`. That can make the dedicated-s
 
 ### Long concatenation diagnostic cascades (SP-080, added 2026-08-31)
 
-For a long concatenation or formatting expression, `Formula too complex` is the root parser/compiler error. An `Incompatible parameter` reported on the same line can be a cascade, not a second API defect. Split the build into incremental single-line assignments (`s = s + part;`). Extract vector or matrix indexing and function-call results into typed locals before formatting them.
+For a long concatenation or formatting expression, `Formula too complex` is the root parser/compiler error. An `Incompatible parameter` reported on the same line can be a cascade, not a second API defect: the 18- and 20-term statements of item 4 in "Six recurring compile-fail families" logged that pair on one line. Split the build into incremental single-line assignments (`s = s + part;`). Extract vector or matrix indexing and function-call results into typed locals before formatting them.
 
-A physical expression longer than 400 characters is a useful offline lint signal, not a language boundary. Likewise, the roughly-ten-operands observation is empirical. The game compile remains the gate.
+A physical expression longer than 400 characters is a useful offline lint signal, not a language boundary. The limit measured in item 4 (17 terms compiled, 18 failed) holds for one pattern on one line; other operand types are not measured. `dayz-script-validator` warns from 18 terms joined by `+` in a statement that holds a string literal (`ES-FORMULA-TOO-COMPLEX`). The game compile remains the gate.
 
-## DayZ 1.30 Exp — obsolete callbacks, ID shift, hand FSM
+## DayZ 1.30 — obsolete callbacks, ID shift, hand FSM
 
 This file did not document `OnCEUpdate` at line 87 (that row is `FileHandle`; digest O mis-mapped it). 1.30 traps:
 
-- (through 1.29: `override void OnCEUpdate()`). (since 1.30 Exp: `[Obsolete]`; live tick is `OnCEIterate(float currentTime, float elapsedTime)` — `EntityAI.c:3881-3888`, `:4893-4894`.)
-- (through 1.29: hand guards auto-passed `e.m_IsJuncture || e.m_IsRemote`). (since 1.30 Exp: only `e.m_IsRemote` — `Hand_Guards.c:299,325,351`. New `HandGuardIsNotSurrendered` `:405` returns `!m_Player.IsSurrendered()`.)
-- (through 1.29: `UA_AM_PENDING` was 14). (since 1.30 Exp: `UA_AM_INIT = 14` inserted; `PENDING=15`, `ACCEPTED=16`, `REJECTED=17` — `constants.c:508-511`. Never hardcode the integers.)
-- (through 1.29: `TakeEntityToCargo` / `AsAttachment` family). (since 1.30 Exp: `[Obsolete]` `Inventory.c:1345-1386` → Target* variants.)
-- (through 1.29: `ActionFillBottleBase` in `RegisterActions`). (since 1.30 Exp: `[Obsolete]` `ActionFillBottleBase.c:28-29`; constructor inserts `ActionObtainLiquidBase` `:156`.)
+- (through 1.29: `override void OnCEUpdate()`). (since 1.30: `[Obsolete]`; live tick is `OnCEIterate(float currentTime, float elapsedTime)` — `EntityAI.c:3904-3911`, `:4924-4925`.)
+- (through 1.29: hand guards auto-passed `e.m_IsJuncture || e.m_IsRemote`). (since 1.30: only `e.m_IsRemote` — `Hand_Guards.c:299,325,351`. New `HandGuardIsNotSurrendered` `:405` returns `!m_Player.IsSurrendered()`.)
+- (through 1.29: `UA_AM_PENDING` was 14). (since 1.30: `UA_AM_INIT = 14` inserted; `PENDING=15`, `ACCEPTED=16`, `REJECTED=17` — `constants.c:508-511`. Never hardcode the integers.)
+- (through 1.29: `TakeEntityToCargo` / `AsAttachment` family). (since 1.30: `[Obsolete]` `Inventory.c:1345-1386` → Target* variants.)
+- (through 1.29: `ActionFillBottleBase` in `RegisterActions`). (since 1.30: `[Obsolete]` `ActionFillBottleBase.c:28-29`; constructor inserts `ActionObtainLiquidBase` `ActionConstructor.c:156`.)
 - `ProcessInputData` override is silent in retail (DIAG + debug flag only) — `DayZPlayerInventory.c:668-687`.
 - `World.Is3rdPersonDisabled()` `[Obsolete]` (`World.c:291`). `GetNoiseReductionByWeather` was **not** deleted (digest O false); both Weather methods exist and are `[Obsolete]` (`Weather.c:407`, `:454`).
 
 ### Looping `CombineItems`: an emptied stack is deleted only on the next frame (added 2026-09-19)
 
-`ItemBase.CombineItems` empties the donor with `AddQuantity(-used)`, which goes through `SetQuantity`. For items with `varQuantityDestroyOnMin = 1` (e.g. `Rag`), `SetQuantity` at the minimum calls `this.Delete()` (`4_world\entities\itembase.c:3354-3363`). `EntityAI.Delete()` only sets `m_PendingDelete` (`3_game\entities\entityai.c:774-778`), and `Object.Delete()` queues `ObjectDelete` for the next frame (`3_game\entities\object.c:82-85`). Until then the emptied stack is still a cargo child with quantity 0, and `CanBeCombined` (`itembase.c:2202-2262`) has no pending-delete check: an empty stack is "not full", so it is a valid target.
+`ItemBase.CombineItems` empties the donor with `AddQuantity(-used)`, which goes through `SetQuantity`. For items with `varQuantityDestroyOnMin = 1` (e.g. `Rag`), `SetQuantity` at the minimum calls `this.Delete()` (`4_world\entities\itembase.c:3333-3342`). `EntityAI.Delete()` only sets `m_PendingDelete` (`3_game\entities\entityai.c:779-782`), and `Object.Delete()` queues `ObjectDelete` for the next frame (`3_game\entities\object.c:82-85`). Until then the emptied stack is still a cargo child with quantity 0, and `CanBeCombined` (`itembase.c:2141-2201`) has no pending-delete check: an empty stack is "not full", so it is a valid target.
 
 Any loop that performs several merges in one call (auto-stack, stack-all, loot consolidation) can therefore pick the emptied stack as a later target and move live quantity into it. Everything merged into it disappears on the next frame. Rag stacks 2/2/5: A←B (B=0, pending), A←C (A full, C=3), B←C (C=0) → 9 rags become 6.
 
-[EXACT][CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE] Before each target and donor, skip entities already queued for deletion (`IsSetForDeletion`, `entityai.c:807-810`), and empty ammunition piles:
+[EXACT][CLAIM-ENFORCE-COMBINEITEMS-PENDING-DELETE] Before each target and donor, skip entities already queued for deletion (`IsSetForDeletion`, `entityai.c:812-814`), and empty ammunition piles:
 
 ```c
 if (!item || item.IsSetForDeletion())

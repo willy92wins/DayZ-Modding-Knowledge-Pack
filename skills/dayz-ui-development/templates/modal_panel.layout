@@ -42,7 +42,7 @@ FrameWidgetClass ModalRoot {
 			hexactsize 0
 			vexactsize 0
 			// PanelWidget paints ONLY through a style whose Normal Center is non-empty.
-			// rover_sim_colorable: gui/looknfeel/dayzwidgets.styles:3223
+			// rover_sim_colorable: gui/looknfeel/dayzwidgets.styles:3284
 			//   Normal Center=WhitePixel, Color=4294967295. Vanilla 577x (top Panel style).
 			// Colorable is a WindowWidget style (gui/layouts/dialog.layout:16). On
 			// PanelWidget it does not bind: no ImageSet, color never paints
@@ -117,7 +117,7 @@ FrameWidgetClass ModalRoot {
 					hexactsize 0
 					vexactsize 0
 					// BODY color, not the label. EmptyHighlight Focus Center=WhitePixel
-					// (dayzwidgets.styles:2232-2241); this red tints that pixel.
+					// (dayzwidgets.styles:2236-2245); this red tints that pixel.
 					// dialog.layout:34 and mcp_dialog.layout:315 (not distributed).
 					// Without it, Focus is white and the default white label is unreadable.
 					color 1 0 0 1

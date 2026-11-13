@@ -18,10 +18,13 @@ SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "dayz-proton.sh"
 pytestmark = pytest.mark.skipif(os.name == "nt", reason="the Linux runner script")
 
 
-def run(tmp_path: Path, *args: str, steam: bool = True) -> subprocess.CompletedProcess[str]:
+def run(
+    tmp_path: Path, *args: str, steam: bool = True, bin_dir: Path | None = None
+) -> subprocess.CompletedProcess[str]:
     home = tmp_path / "home"
     home.mkdir(exist_ok=True)
-    env = {"PATH": os.environ["PATH"], "HOME": str(home)}
+    path = os.environ["PATH"] if bin_dir is None else f"{bin_dir}{os.pathsep}{os.environ['PATH']}"
+    env = {"PATH": path, "HOME": str(home)}
     if steam:
         (tmp_path / "steam" / "steamapps").mkdir(parents=True, exist_ok=True)
         env["STEAM_ROOT"] = str(tmp_path / "steam")
@@ -64,3 +67,30 @@ def test_doctor_names_a_missing_proton_and_changes_nothing(tmp_path: Path) -> No
     done = run(tmp_path, "doctor")
     assert "no Proton found" in done.stdout + done.stderr
     assert not list((tmp_path / "home").rglob("dayz-proton"))
+
+
+def fake_dayzmake(tmp_path: Path, help_text: str, version: str) -> Path:
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir(exist_ok=True)
+    tool = bin_dir / "dayzmake"
+    tool.write_text(
+        "#!/bin/sh\n"
+        f'case "$1" in --version) echo "dayzmake {version}" ;; *) echo "{help_text}" ;; esac\n'
+    )
+    tool.chmod(0o755)
+    return bin_dir
+
+
+@pytest.mark.parametrize(
+    ("help_text", "version", "expected"),
+    [
+        ("build [--proton-binarize]", "v1.0.0", "dayzmake v1.0.0 (ok)"),
+        ("build [--proton-binarize]", "v0.3.0", "from before the rename (v0.3.0)"),
+        ("build", "v0.3.0", "is upstream armake2"),
+    ],
+)
+def test_doctor_tells_the_dayzmake_fork_from_upstream_and_old_builds(
+    tmp_path: Path, help_text: str, version: str, expected: str
+) -> None:
+    done = run(tmp_path, "doctor", bin_dir=fake_dayzmake(tmp_path, help_text, version))
+    assert expected in done.stdout

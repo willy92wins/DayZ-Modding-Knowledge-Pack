@@ -1,7 +1,7 @@
 #!/bin/sh
 # Run DayZ Tools (Steam app 830640) and DayZDiag on Linux through Proton.
 #
-#   dayz-proton.sh doctor                         what is installed, versions, prefixes, armake2
+#   dayz-proton.sh doctor                         what is installed, versions, prefixes, dayzmake
 #   dayz-proton.sh init [<P-root>]                create the private tools prefix, register the game, map P:
 #   dayz-proton.sh winpath <path>                 the Windows path a tool sees for a Linux path
 #   dayz-proton.sh tool <Tool> [args...]          run a console tool, print its output, return its exit code
@@ -69,7 +69,7 @@ libraries() {
 manifest() {
     libraries | while IFS= read -r lib; do
         [ -f "$lib/steamapps/appmanifest_$1.acf" ] && { echo "$lib/steamapps/appmanifest_$1.acf"; break; }
-    done
+    done || true  # not found: the loop's status is the failed test, which set -e turned into an exit
 }
 acf() { sed -n "s/^[[:space:]]*\"$2\"[[:space:]]*\"\(.*\)\"/\1/p" "$1" | head -n 1; }
 
@@ -435,6 +435,24 @@ do_init() {
     stop_wineserver 830640; stop_wineserver 221100
 }
 
+# check_dayzmake: the native packer is bzed's armake2 fork, renamed dayzmake at v1.0.0. Upstream
+# armake2 leaves *.c out of the signature; a fork build from before the rename is called armake2.
+check_dayzmake() {
+    url="https://github.com/bzed/dayzmake (v1.0.0 or later)"
+    b=
+    for c in dayzmake armake2; do command -v $c >/dev/null && { b=$c; break; }; done
+    if [ -z "$b" ]; then echo "dayzmake:    missing (native PBO build/sign; $url)"; return 0; fi
+    if ! $b -h 2>&1 | grep -q -- --proton-binarize; then
+        echo "dayzmake:    '$b' is upstream armake2, which leaves *.c out of signatures; install $url"
+        return 0
+    fi
+    ver=$($b --version 2>&1 | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)
+    case $ver in
+        ''|0.*) echo "dayzmake:    '$b' is the fork from before the rename (v${ver:-?}); upgrade to $url" ;;
+        *) echo "dayzmake:    $b v$ver (ok)" ;;
+    esac
+}
+
 do_doctor() {
     echo "Steam root:  $STEAM_ROOT"
     echo "Proton:      $(find_proton 2>&1)"
@@ -451,10 +469,7 @@ do_doctor() {
         flag=; [ "$st" = 4 ] || flag="  (StateFlags $st: update pending or incomplete)"
         printf '%-8s %-26s build %-9s %s%s\n' $app "$(acf "$m" name)" "$(acf "$m" buildid)" "${v:+v$v}" "$flag"
     done
-    if command -v armake2 >/dev/null; then
-        if armake2 -h 2>&1 | grep -q -- --proton-binarize; then echo "armake2:     bzed fork (ok)"
-        else echo "armake2:     upstream - signs *.c wrongly; install https://github.com/bzed/armake2"; fi
-    else echo "armake2:     missing (native PBO build/sign; https://github.com/bzed/armake2)"; fi
+    check_dayzmake
     for c in sway grim; do command -v $c >/dev/null || echo "$c:        missing (needed for headless GUI runs)"; done
     echo "Client and server must report the same v1.30.xxxxxx, or the client is refused (0x00020013)."
 }

@@ -311,7 +311,11 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
   `skills-ref==0.1.1`, and `PACK_SKILLS_REF_ROOT=<root>`.
 - Initial DayZ compatibility: `1.29.0.163451`, verified 2026-07-24. Stable
   branch moved to `1.29.0.163709` on 2026-08-15; **nothing has been re-verified
-  against that build** and the matrix states so row by row.
+  against that build** and the matrix states so row by row. Since 2026-10-15 the
+  stable branch is DayZ 1.30 (`1.30.164289` since 2026-11-04): the vanilla line
+  numbers in the skills are that build's unless a citation names another, the
+  matrix levels are still the 1.29 ones, and `compatibility-matrix.md` §DayZ 1.30
+  says what was checked on 1.30.
 - UI: VPP and Expansion pinned by commit; TraderX by manifest
   `3069958660046119589` and PBO hashes; LFPG Sorter V4 TEST as negative.
 - Audited prior art: dayz-labs `dbd6ad3e...`, Lake `ac56f369...`,
@@ -337,7 +341,7 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
 
 Evidence aliases used in plans:
 
-- `VANILLA/3_game/entities/entityai.c:2908-2925,2965-2989` — contract
+- `VANILLA/3_game/entities/entityai.c:2893-2910,2954-2978` — contract
   `OnStoreSave`/`OnStoreLoad`.
 - `VANILLA/3_game/tools/jsonfileloader.c:7-40,99-105` — `LoadFile` and
   deprecation of `JsonLoadFile`.

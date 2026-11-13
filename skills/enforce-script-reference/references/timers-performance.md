@@ -27,7 +27,7 @@ GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(MyCallback);
 - `CALL_CATEGORY_GAMEPLAY` — Standard gameplay, paused during loading
 - `CALL_CATEGORY_GUI` — UI updates
 
-21b. **`CallLater` re-queued from within its own callback never fires again** (chain pattern: `fn` re-enqueues itself) — zero RPT errors, chain dies silently after the first step; the same `CallLater` fired from OUTSIDE the queue works normally. Remedy: `Timer(CALL_CATEGORY_GAMEPLAY).Run(s, this, "fn", null, true)` + `Stop()` on completion. Measured 2026-08-19 (SUB_BRZ_NavSpike s71 CallLater dies after S1 vs s74 Timer S1–S5 complete, client diag 1.29)
+21b. **`CallLater` re-queued from within its own callback never fired again on client diag 1.29** (chain pattern: `fn` re-enqueues itself) — zero RPT errors, chain dies silently after the first step; the same `CallLater` fired from OUTSIDE the queue works normally. Remedy: `Timer(CALL_CATEGORY_GAMEPLAY).Run(s, this, "fn", null, true)` + `Stop()` on completion. Measured 2026-08-19 (SUB_BRZ_NavSpike s71 CallLater dies after S1 vs s74 Timer S1–S5 complete, client diag 1.29). Not reproduced on the retail DayZServer 1.30.164289 (2026-11-10): two chains that re-queue themselves from their own callback with `CallLater(fn, 500, false, …)`, one on `CALL_CATEGORY_SYSTEM` and one on `CALL_CATEGORY_GAMEPLAY`, both ran all six steps; the first queued step fired 14.3 s after `OnMissionStart` in both categories, the rest about 0.5 s apart. [EXACT][CLAIM-ENF-CALLLATER-REQUEUE-130]
 
 #### THE CALLLATER BUG — 4.5 Hour Precision Loss
 

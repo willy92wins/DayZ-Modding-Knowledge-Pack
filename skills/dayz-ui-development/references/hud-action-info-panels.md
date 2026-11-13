@@ -1,4 +1,4 @@
-# HUD Action Info Panels & Cursor Construction Grids — DayZ 1.30 Exp Reference
+# HUD Action Info Panels & Cursor Construction Grids — DayZ 1.30 Reference
 
 Added 2026-09-16. Source: DayZ Experimental 1.30 (build 1.30.164014) inspection of `ActionTargetsCursor.c`, `ActionInfoPanels.c`, `ActionInfoGrids.c`, `ConstructionInfoIcons.c`, `GenericIcon.c`, and layout files `action_info_spacer.layout`, `SimpleIconTemplate.layout`, `day_z_hud.layout`.
 
@@ -134,7 +134,7 @@ protected void SetControllerIcon(string pWidgetName, string pInputName)
 	w.SetText(InputUtils.GetRichtextButtonIconFromInputAction(pInputName, "", EUAINPUT_DEVICE_CONTROLLER));
 }
 ```
-*(up to 1.29: Set*XboxIcon methods with fixed Xbox images; since 1.30 Exp: SetControllerIcon with cross-platform RichText glyphs).*
+*(up to 1.29: Set*XboxIcon methods with fixed Xbox images; since 1.30: SetControllerIcon with cross-platform RichText glyphs).*
 
 ---
 

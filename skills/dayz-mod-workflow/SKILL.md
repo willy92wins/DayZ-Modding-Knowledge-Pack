@@ -19,7 +19,7 @@ description: >
 Process skill for implementing and fixing DayZ mods. Does not contain domain
 knowledge (that lives in domain skills). Ensures domain knowledge is correctly
 applied and gaps are detected before they become bugs.
-(until 1.29: the six-layer debug hierarchy, SyncVar rules, and E01–E20 catalog below remain the 1.29 contract.) (since 1.30 Exp: client start also gates on `CanBeStarted()`; vanilla water uses `CCTLiquid`; CE adds `MotorbikeScript`/`HouseDestructible`; `cfggameplay.json` gained lock/sandstorm keys. Details: [dayz-1-30-mod-workflow.md](references/dayz-1-30-mod-workflow.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the six-layer debug hierarchy, SyncVar rules, and E01–E20 catalog below remain the 1.29 contract.) (since 1.30: client start also gates on `CanBeStarted()`; vanilla water uses `CCTLiquid`; CE adds `MotorbikeScript`/`HouseDestructible`; `cfggameplay.json` gained lock/sandstorm keys. Details: [dayz-1-30-mod-workflow.md](references/dayz-1-30-mod-workflow.md).)
 
 ---
 
@@ -110,16 +110,16 @@ Run the **mandatory structural gate** (`script_validator.py`, and `ui_reconcile.
   same order. Mismatch corrupts ALL synced data silently.
 - **ActionCondition()** runs on BOTH sides: on the CLIENT for action menu
   display AND on the SERVER as the action-start gate
-  (`actionmanagerserver.c:142` calls `pickedAction.Can(...)`; `Can()` calls
-  `ActionCondition(player, target, item)` at `actionbase.c:898`).
+  (`actionmanagerserver.c:168` calls `pickedAction.Can(...)`; `Can()` calls
+  `ActionCondition(player, target, item)` at `actionbase.c:954`).
   ActionCondition must only rely on data available on BOTH sides; a
   client-only cache passes the menu but the server rejects the action
   start silently.
-(until 1.29: a listed action was assumed startable once `Can()` passed.) (since 1.30 Exp: the widget can still **show** an action whose `CanBeStarted()` is false; `ActionManagerClient.c:336` does not call `ActionStart`. Info actions override to false — `ActionPartInfo.c:18-21`. See `references/dayz-1-30-mod-workflow.md`.)
+(until 1.29: a listed action was assumed startable once `Can()` passed.) (since 1.30: the widget can still **show** an action whose `CanBeStarted()` is false; `ActionManagerClient.c:336` does not call `ActionStart`. Info actions override to false — `ActionPartInfo.c:18-21`. See `references/dayz-1-30-mod-workflow.md`.)
 - **OnStart/OnFinish/OnUpdate with "Server" suffix** runs on SERVER.
   Use server-only data here.
 - Server DOES re-execute `Can()` (and therefore `ActionCondition()`) before
-  starting the delivered action (`actionmanagerserver.c:142`) - it does NOT
+  starting the delivered action (`actionmanagerserver.c:168`) - it does NOT
   blindly trust client selection.
 - If you need a string on client -> use ScriptRPC to populate a client
   cache, or encode as int hash via SyncVar. For data read inside
@@ -242,14 +242,14 @@ Defer to `enforce-script-reference` for full rules. Key verified restrictions:
 3. Target owner   - if target belongs to another player -> reject
 4. CCT.Can()      - ConditionTarget (CCTObject=range, CCTCursor, CCTNone)
 5. CCI.Can()      - ConditionItem (CCINone, CCIDummy)
-6. ActionCondition()  - custom override, runs CLIENT (menu) AND SERVER (start gate, actionmanagerserver.c:142)
+6. ActionCondition()  - custom override, runs CLIENT (menu) AND SERVER (start gate, actionmanagerserver.c:168)
 7. FullBody stance    - if full body, verify stance transition
 ```
-(until 1.29: steps 1–7 were treated as the full client start gate.) (since 1.30 Exp: after the widget lists the action, `CanBeStarted()` must be true or the client never calls `ActionStart` — `ActionManagerClient.c:336`. Vanilla pond wash/drink/fill uses `CCTLiquid`, not `CCTWaterSurfaceEx` — `ActionWashHandsWater.c:28`.)
+(until 1.29: steps 1–7 were treated as the full client start gate.) (since 1.30: after the widget lists the action, `CanBeStarted()` must be true or the client never calls `ActionStart` — `ActionManagerClient.c:336`. Vanilla pond wash/drink/fill uses `CCTLiquid`, not `CCTWaterSurfaceEx` — `ActionWashHandsWater.c:28`.)
 
 - [ ] CreateConditionComponents overridden with correct CCT/CCI
-- [ ] (since 1.30 Exp) `CanBeStarted()` returns true for performable actions; info-only overrides return false
-- [ ] (since 1.30 Exp) Water/wash/fill on sea/pond: `CCTLiquid` unless you intentionally diverge
+- [ ] (since 1.30) `CanBeStarted()` returns true for performable actions; info-only overrides return false
+- [ ] (since 1.30) Water/wash/fill on sea/pond: `CCTLiquid` unless you intentionally diverge
 - [ ] ActionCondition uses ONLY data available on BOTH client and server (see 2.5)
 - [ ] Target type: `GetType()` for exact, `IsKindOf()` for inheritance
 - [ ] **Non-pickupable items**: Use `RemoveAction(ActionTakeItem)` +
@@ -328,8 +328,8 @@ Verified errors committed more than once. Check ACTIVELY during implementation. 
 - **E18** — `IsServer()`/`IsClient()` for server/client guard
 - **E19** — Version field manually serialized in persistence
 - **E20** — modded vehicle won't drive, `WheelCountPresent()=0` while `WheelCount()=N` — `CfgSlots.<wheel-slot>.selection` must exist in the body FireGeometry LOD with a wheel proxy
-- **E21** — (since 1.30 Exp) custom-map `cfgeconomycore.xml` missing `MotorbikeScript` / `HouseDestructible` rootclasses — `exp\worlds_chernarusplus_ce\DZ\worlds\chernarusplus\ce\cfgeconomycore.xml:17-18`
-- **E22** — (since 1.30 Exp) visible action widget but F does nothing, or custom pond drink never lists — `CanBeStarted()` / `CCTLiquid` (see E21/E22 in `references/error-catalog.md` and `references/dayz-1-30-mod-workflow.md`)
+- **E21** — (since 1.30) custom-map `cfgeconomycore.xml` missing `MotorbikeScript` / `HouseDestructible` rootclasses — `exp\worlds_chernarusplus_ce\DZ\worlds\chernarusplus\ce\cfgeconomycore.xml:17-18`
+- **E22** — (since 1.30) visible action widget but F does nothing, or custom pond drink never lists — `CanBeStarted()` / `CCTLiquid` (see E21/E22 in `references/error-catalog.md` and `references/dayz-1-30-mod-workflow.md`)
 - **E23** — (measured on 1.30 Exp) a `HumanCommandScript` subclass declared in `4_World` and started two or more times crashes every orderly exit of client and server; an empty such class exits clean from `3_Game`, and the workaround is open (see E23 in `references/error-catalog.md`)
 
 ---
@@ -403,8 +403,10 @@ suspicious code could have executed before the symptom:
    regression, demonstrate that the diff executed before the symptom. If there is no prior
    marker, correlation with the build does not attribute causality: instrument the
    callback observing the effect and capture the full stack to name the
-   caller. On client, emit the stack line by line because the logger cuts
-   long messages around 255 characters. Only bisect the diff if its
+   caller. Emit the stack line by line: the 1.29 retail logger cuts long
+   messages around 255 characters, while on 1.30 neither DayZDiag nor the
+   retail server does (the 1.30 retail client was not measured)
+   [EXACT][CLAIM-WF-LOG-CUT-129-ONLY]. Only bisect the diff if its
    temporal reachability is proven and the cause remains open.
 
 ---
@@ -412,7 +414,8 @@ suspicious code could have executed before the symptom:
 ## 6. TESTING WITH FILEPATCHING (DayZDiag fast loop)
 
 > Populated 2026-06-06 from source-verified deep-dive (vanilla v1.24; see
-> LF_RollingStone_dev/research/deep-dive-2026-06-06/08-workbench-diagnostico.md). Line refs +-3.
+> LF_RollingStone_dev/research/deep-dive-2026-06-06/08-workbench-diagnostico.md). Line refs +-3, re-checked on
+> 1.30.164200 (2026-10-28).
 
 ### The fast loop (script-only iteration in seconds)
 
@@ -455,11 +458,11 @@ be re-created.
 
 | Tool | Build | Use |
 |---|---|---|
-| `Shape.Create*` / `Debug.Draw*` | ALL builds (retail too) | 3D overlay: spheres/lines/bbox/matrix. `ShapeFlags.ONCE` auto-destroys — never keep that pointer (`endebug.c:133`) |
+| `Shape.Create*` / `Debug.Draw*` | ALL builds (retail too) | 3D overlay: spheres/lines/bbox/matrix. `ShapeFlags.ONCE` auto-destroys — never keep that pointer (`endebug.c:132`) |
 | `DbgUI.Begin/Text/Check/SliderFloat/Button/PlotLive` | all builds; call every frame in OnUpdate | live tuning panels (`1_core/proto/dbgui.c:59-126`) |
 | `DiagMenu` (WIN+ALT in-game) | `DIAG_DEVELOPER` only | register via `modded class PluginDiagMenu` overriding `RegisterModdedDiagsIDs()` (ids via `GetModdedDiagID()`) + `RegisterModdedDiags()`; hard limit 512 IDs (`plugindiagmenumodding.c:52`); wrap mod code in `#ifdef DIAG_DEVELOPER` or it silently no-ops |
 | `EnProfiler` | diag/developer builds | `SetModule(EnProfilerModule.WORLD)` -> `Enable(true)` -> `Dump()` to RPT (`1_core/proto/enprofiler.c`); proto natives are not tracked individually (:70) |
-| `LogManager` CLI switches | all | `-doLogs -doSyncLog -doInvMoveLog -doActionLog -doWeaponLog -doWeatherLog ...` read at boot, zero recompile (`3_game/tools/debug.c:714-723`) |
+| `LogManager` CLI switches | all | `-doLogs -doSyncLog -doInvMoveLog -doActionLog -doWeaponLog -doWeatherLog ...` read at boot, zero recompile (`3_game/tools/debug.c:726-735`) |
 
 ### Logging discipline
 
@@ -467,7 +470,7 @@ be re-created.
   must survive a crash (`endebug.c:98`).
 - `ErrorEx(msg, severity)` auto-prefixes `[Class::Method] :: [SEVERITY]`.
 - Server adminlog: `server.cfg` `adminLogPlayerHitsOnly/adminLogPlacement/adminLogBuildActions` +
-  `g_Game.AdminLog(text)` (`game.c:668`).
+  `g_Game.AdminLog(text)` (`game.c:669`).
 
 ### Known limits (verified)
 
@@ -475,7 +478,7 @@ be re-created.
 - Workbench ScriptEditor has **no verified breakpoint/step-debug API** — debugging is prints +
   shapes + DbgUI + DiagMenu.
 - `GetDiagDrawMode` physics-view indices are engine-side enums, not exposed to script
-  (`game.c:780-793`) — drive them from the native DiagMenu.
+  (`game.c:781-794`) — drive them from the native DiagMenu.
 
 ---
 
@@ -517,7 +520,7 @@ opening the menu.
 Costs under one second on a full addon, so **there is no cost excuse**:
 runs on every pass, not just at the end. Catches the family of errors that only
 manifests when compiling the module at boot (`Unknown type`, local redeclaration,
-missing method override, `delete`, empty `#ifdef`, item override in wrong
+missing method override, `delete`, item override in wrong
 `CfgXxx`) and which otherwise is paid for with a multi-minute in-game cycle.
 
 **What this gate does NOT authorize**, and is the whole point of this section: green here
@@ -987,6 +990,6 @@ shipped configuration.
 
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
 
-- Build and sign with armake2 (bzed's fork, https://github.com/bzed/armake2) instead of AddonBuilder; publish with the `workshop` uploader.
+- Build and sign with dayzmake >= 1.0.0 (bzed's DayZ fork of armake2, https://github.com/bzed/dayzmake, pinned to tag `v1.0.0`; upstream armake2 leaves `*.c` files out of the signature) instead of AddonBuilder; publish with the `workshop` uploader.
 - Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. Test loop: `dayz_test_run` on dayz-mcp's `linux-port` branch (`dayz-test-ingame`, "On Linux"), or by hand either pair that can join: `DayZDiag` client and `DayZDiag -server` under Proton, or a manually configured retail Proton client and the native `DayZServer` (a diag client on the native server is refused with `0x00020017`). The native server hangs before the landscape with `-filePatching` (measured 2026-11-04), so start it without the flag and repack; the `-filePatching` loop of section 6 with loose files under Proton was **not verified**.
 - `%LOCALAPPDATA%` and `.ps1` steps: see the guide's pitfalls; translate scripts to `sh`.

@@ -122,7 +122,7 @@ Base class list includes `HouseNoDestruct`, `Motorcycle`, `Helicopter`, `Vehicle
 - Sole SUSPECT: SKILL.md:61 states `IsClient()` returns FALSE on client during load (asymmetric pair of verified IsServer()=TRUE). Conventions doc only says "prefer IsDedicatedServer()". Advice is correct, mechanism of advice cannot be verified.
 
 ### `dayz-ui-development`
-- SKILL.md:317-322 — `COLOR_DAYZ_RED` "exactly ONE place — mainmenupromo.c:158" is **claim repeated verbatim** from conventions doc, no source verifiable without P:\. **If it is wrong, it is wrong in two places.**
+- SKILL.md:317-322 — `COLOR_DAYZ_RED` "exactly ONE place — mainmenupromo.c:157" is **claim repeated verbatim** from conventions doc, no source verifiable without P:\. **If it is wrong, it is wrong in two places.**
 - SKILL.md:482-512 — Dabs WidgetAnimator, LinearColor, NotifyPropertyChanged: line refs (e.g. `ViewController.c:84-117`) unverifiable. Dabs repo exists; line refs and claims "30 easing curves / 140+ named colors" are SUSPECT until adding permalinks.
 
 ---
@@ -148,7 +148,7 @@ Base class list includes `HouseNoDestruct`, `Motorcycle`, `Helicopter`, `Vehicle
 12. **Add permalinks** to Dabs Framework refs in `dayz-ui-development`.
 
 ### Requires P:\ manual check (does not block but recommended)
-- `dayz-ui-development`: confirm `COLOR_DAYZ_RED` only in `mainmenupromo.c:158`.
+- `dayz-ui-development`: confirm `COLOR_DAYZ_RED` only in `mainmenupromo.c:157`.
 - `dayz-p3d-audit`: confirm script-side gotchas lines 312-319.
 - `dayz-particles`: validate GUIDs and AddonBuilder defaults.
 - Total ~30+ items P:\-pending — all marked `SUSPECT(P:\)` in the individual reports.

@@ -8,7 +8,7 @@ description: "Use when: clothing mod, worn model, ClothingTypes, chaleco, armadu
 Distilled from ArmorHneck (2026-08-03): third-party body armor RAR → fully working
 worn item, ~6 in-game cycles to isolate three independent SILENT failure modes.
 Everything below is in-game verified on DayZ 1.29 diag unless labeled otherwise.
-(until 1.29: the worn pipeline below is the 1.29-diag contract.) (since 1.30 Exp: killers #1–#3 and the worn p3d/model.cfg contract still hold. Config-side NBC layering, mask-filter protection, ItemBaseType wet/hide keys, shoe `itemSize`, Waterskin rename, and wash/wet actions: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the worn pipeline below is the 1.29-diag contract.) (since 1.30: killers #1–#3 and the worn p3d/model.cfg contract still hold. Config-side NBC layering, mask-filter protection, ItemBaseType wet/hide keys, shoe `itemSize`, Waterskin rename, and wash/wet actions: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md) and ## DayZ 1.30.)
 
 ## THE THREE SILENT KILLERS (check these FIRST, in this order)
 
@@ -86,8 +86,26 @@ of them wastes cycles if you chase the others first.
   L/R swap renamed nothing. dayz-mcp cannot take a worn item off the player,
   so the control was worn by a `SurvivorM_Francis` spawned beside the player,
   facing the camera with empty hands; its right side was read from its facing.
-  (claim: CLAIM-CLOTHING-CHIRAL-INGAME) Not covered: ArmorHneck itself, a
-  garment with left/right-weighted parts, a female body.
+  (claim: CLAIM-CLOTHING-CHIRAL-INGAME)
+  Result with left/right sleeves [run 2026-11-12, DayZDiag 1.30.164289.70]: on
+  `MCP_ChiralSleeves` (`Armband_ColorBase` classes in the `Armband` slot,
+  binarized to ODOL v56 with `DayzTemporarySkeleton`, driven by dayz-mcp), a
+  `spine3` torso tube with a left-chest relief "F" adds two shoulder-to-elbow
+  sleeves, one weighted to `leftarm` and one to `rightarm`, and a protruding
+  ring on the left sleeve only. Worn in turn by the player (`loadout_apply`) and
+  checked front and back standing still and during `greeting` (which raises the
+  left arm), the garment rendered grey (untextured), so the "F" and the ring
+  were read from the geometry. `R12` (Rule 12, `py3d.blender_to_dayz()`, no
+  selection swap) shows the "F" reading correctly on the left chest, the ring
+  on the left arm, and each sleeve following its arm. `OLD` (the reflected
+  `(-x, z, y)` export with `leftarm`/`rightarm` swapped) shows the "F" mirrored
+  on the right chest and the ring on the right arm, while each sleeve still
+  follows its arm. `NOSWAP` (the same `(-x, z, y)` export without the swap)
+  mirrors the "F" and ring side like `OLD`; standing still, both sleeves float
+  at head height off the arms, and with the left arm raised the left-side
+  sleeve stays at head height while the right-side sleeve drops to the lower
+  back. (claim: CLAIM-CLOTHING-CHIRAL-SLEEVES-INGAME)
+  Not covered: ArmorHneck itself, a female body.
 
 ## THE CLOTHING CONTRACT (structure of a working wearable)
 
@@ -95,9 +113,9 @@ config.cpp (text!):
 - Class inherits a vanilla clothing base for the slot (`Armband_ColorBase`,
   `Chainmail`, vest/top bases...). `model=` the GROUND p3d (`*_g.p3d`).
 - `class ClothingTypes { male="..._m.p3d"; female="..._f.p3d"; };`
-- `inventorySlot[]` names the worn slots. (until 1.29: NBC pieces listed only the primary slot — `"Headgear"`, `"Body"`, `"Legs"`, `"Feet"`, `"Gloves"`.) (since 1.30 Exp: those NBC bases also list secondary slots `"NBCHead"`, `"NBCTop"`, `"NBCPants"`, `"NBCBoots"`, `"NBCGloves"` so they can coexist with regular clothing.)
+- `inventorySlot[]` names the worn slots. (until 1.29: NBC pieces listed only the primary slot — `"Headgear"`, `"Body"`, `"Legs"`, `"Feet"`, `"Gloves"`.) (since 1.30: those NBC bases also list secondary slots `"NBCHead"`, `"NBCTop"`, `"NBCPants"`, `"NBCBoots"`, `"NBCGloves"` so they can coexist with regular clothing.)
 - `hiddenSelections[]` per model section; textures/materials arrays aligned.
-- (since 1.30 Exp) Type metadata lives on `ItemBaseType`: `headSelectionsToHide[]`, `hideSelectionsByinventorySlot`, `varWetMax`, `temperaturePerQuantityWeight`, `EnvironmentWetnessIncrements`. The config keys existed in 1.29 (parsed on `ItemBase`); 1.30 centralizes them on the type. Dual-slot headgear (bandana/shemag) still uses `hideSelectionsByinventorySlot = 1` plus `simpleHiddenSelections[]`.
+- (since 1.30) Type metadata lives on `ItemBaseType`: `headSelectionsToHide[]`, `hideSelectionsByinventorySlot`, `varWetMax`, `temperaturePerQuantityWeight`, `EnvironmentWetnessIncrements`. The config keys existed in 1.29 (parsed on `ItemBase`); 1.30 centralizes them on the type. Dual-slot headgear (bandana/shemag) still uses `hideSelectionsByinventorySlot = 1` plus `simpleHiddenSelections[]`.
 - Damage rvmats referenced only from healthLevels must be re-added at pack
   time (AddonBuilder whitelist gap — see dayz-pbo-build SP-155).
 
@@ -148,8 +166,8 @@ model.cfg:
 | Fits but plates misaligned (arms/legs) | rip proportions vs canonical bind | alignment viewer (below) or artist pass |
 | Body/arms invisible when equipped | expected: torso-slot hide (Body/Vest classes hide skin) | wear it with the intended slot class |
 | Coarse joints while moving | 0/1 plate weights, no transition bones | optional weight-smoothing pass |
-| Gas mask worn, still takes bio/gas damage | (since 1.30 Exp) GP5/Airborne `Protection` no longer carries biological/dust_particle_breath; those come from attached `GasMask_Filter` | config `class Protection` vs slot `GasMaskFilter` |
-| Custom backpack cannot attach NBC pack | (since 1.30 Exp) backpack `attachments[]` missing `"NBCBag"` (not every vanilla bag has it) | compare `TaloonBag_ColorBase` vs `SmershBag` / `ChildBag_ColorBase` |
+| Gas mask worn, still takes bio/gas damage | (since 1.30) GP5/Airborne `Protection` no longer carries biological/dust_particle_breath; those come from attached `GasMask_Filter` | config `class Protection` vs slot `GasMaskFilter` |
+| Custom backpack cannot attach NBC pack | (since 1.30) backpack `attachments[]` missing `"NBCBag"` (not every vanilla bag has it) | compare `TaloonBag_ColorBase` vs `SmershBag` / `ChildBag_ColorBase` |
 
 **Config-vs-p3d bisection (one config-only rebuild, answers "which side is broken"):**
 add two test classes — {your slot class + a VANILLA worn p3d (chainmail)} and
@@ -212,7 +230,7 @@ measurement + transform prescription). Cross-refs: dayz-characters §2026-08-03
 (same finding, humanoid context), dayz-pbo-build SP-155 (staged build + rvmat
 gap), dayz-test-ingame (launch/lifecycle), external ODOL parsing (converter not distributed).
 
-## DayZ 1.30 Exp (build 1.30.164014)
+## DayZ 1.30
 
 Worn-mesh killers #1–#3, the canonical frame, `DayzTemporarySkeleton`, and the
 staged packonly build are unchanged. What 1.30 adds is **config/script contract**
@@ -223,7 +241,7 @@ blocks: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md).
 
 - **NBC secondary slots.** Vanilla NBC hood/jacket/pants/boots/gloves list both
   the primary clothing slot and `NBCHead` / `NBCTop` / `NBCPants` / `NBCBoots` /
-  `NBCGloves` (`CfgSlots` in `exp\scripts\scripts\config.cpp:3124-3159`).
+  `NBCGloves` (`CfgSlots` in `exp\scripts\scripts\config.cpp:3115-3150`).
 - **`NBCBag` on some backpacks, not all.** `TaloonBag_ColorBase`, `TortillaBag`,
   `DryBag_ColorBase`, `HuntingBag`, `MountainBag_ColorBase`, `AssaultBag_ColorBase`,
   `Attack2Bag_ColorBase`, `CoyoteBag_ColorBase`, `AliceBag_ColorBase` append
@@ -232,7 +250,7 @@ blocks: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md).
   (`Container_Base`); its `CfgVehicles` entry is not in this extract (`[UNVERIFIED]`).
 - **GP5 / Airborne protection moved to the filter.** (until 1.29: `class Protection`
   on both masks included `biological = 1` and `dust_particle_breath = 1`.) (since
-  1.30 Exp: those two keys are omitted; only `dust_particle_eyes = 1` remains.
+  1.30: those two keys are omitted; only `dust_particle_eyes = 1` remains.
   `GetProtectionLevel` reads the attached `GasMask_Filter`. The sealed `GasMask`
   class still has full passive Protection. There is no class named `FilterBase`.)
 - **`ItemBaseType`** parses `headSelectionsToHide`, `hideSelectionsByinventorySlot`,
@@ -287,7 +305,7 @@ blocks: [dayz-1-30-clothing.md](references/dayz-1-30-clothing.md).
 
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
 
-- Pack, sign and binarize with bzed's armake2 fork, https://github.com/bzed/armake2, pinned to `7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa`: `cargo install --git https://github.com/bzed/armake2 --rev 7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa`; use `armake2 build`, `keygen`, `sign`, and `build --proton-binarize` where needed. No `dayz-dev` wrapper is required. The author's 2026-11-03 textured-cube comparison with BI binarize from a `P:` root matched byte for byte; this is not an in-game ODOL check. See `skills/_shared/linux-proton.md` for setup and limits.
+- Pack, sign and binarize with dayzmake >= 1.0.0, bzed's DayZ fork of armake2 (https://github.com/bzed/dayzmake), pinned to `v1.0.0` (the release binary `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0`): use `dayzmake build`, `keygen`, `sign`, and `build --proton-binarize` where needed. Upstream armake2 is no substitute: it leaves `*.c` files out of the signature, so a script mod's `.bisign` does not cover its scripts. No `dayz-dev` wrapper is required. The author's 2026-11-03 textured-cube comparison with BI binarize from a `P:` root matched byte for byte (fork commit `7dcb3cf`, then still named armake2; `v1.0.0` contains it); this is not an in-game ODOL check. See `skills/_shared/linux-proton.md` for setup and limits.
 - `P:\` is a plain directory mapped by `skills/_shared/scripts/dayz-proton.sh init <dir>`; a `P:\<Mod>\...` path in this skill is `<dir>/<Mod>/...`.
 - Object Builder and TexView run under Proton: `dayz-proton.sh gui ObjectBuilder <p3d>`, `gui TexView <paa>`. Object Builder opened and displayed a model; editing in it was not exercised. Offline checks (`py3d`, `dayz-model-preflight`, `dayz-3d-viewer`) are Python and run natively.
 - In-game checks: the Linux notes of `dayz-test-ingame`.

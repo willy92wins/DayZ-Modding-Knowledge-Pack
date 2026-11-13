@@ -12,7 +12,7 @@ It contains three things:
 
 | Part | What it is |
 |---|---|
-| `skills/` | 42 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
+| `skills/` | 44 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
 | `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, the pre-PBO script/config linter, the vehicle-proxy gate, UI lab, `.layout` previewer and 3D-viewer tools, a PBO entry diff, a structural navmesh comparison and an experimental Terrain Builder runner. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
@@ -168,7 +168,7 @@ back to it.
 | Skill | Use when |
 |---|---|
 | `dayz-vehicles` | Authoring, importing or debugging a **drivable ground/water vehicle** (car, truck, quad/ATV, motorbike, boat) on the CarScript/Boat base. Owns the full `config.cpp` + `model.cfg` contract (SimulationModule drivetrain, Axles/Wheels, Crew, AnimationSources, `wheel_1_1..2_2`), structural parity vs a vanilla vehicle, and the packaging failures that pass local filepatching but break on a dedicated server (white/untextured, reversed wheel spin). **Invoke before writing any ground-vehicle entity/config.** |
-| `dayz-motorbikes` | **Single-track vehicles (motorbikes / motorcycles)** in DayZ 1.30 Experimental build 1.30.164014. Covers `MotorbikeScript`, `simulation = "motorbike"`, 2-wheel physics (Wheels block without Axles, Brakes split Front/Rear, lean/steering/tipover), kickstand/kickstart, 3rd person camera (ID 32), and 1.30 modular refactor (`VehicleLightsComponent`, `VehicleHornComponent`, `VehicleVFXComponent`). |
+| `dayz-motorbikes` | **Single-track vehicles (motorbikes / motorcycles)** in DayZ 1.30 (stable build 1.30.164200). Covers `MotorbikeScript`, `simulation = "motorbike"`, 2-wheel physics (Wheels block without Axles, Brakes split Front/Rear, lean/steering/tipover), kickstand/kickstart, 3rd person camera (ID 32), and 1.30 modular refactor (`VehicleLightsComponent`, `VehicleHornComponent`, `VehicleVFXComponent`). |
 | `dayz-aviation` | **Planes, seaplanes, and helicopters** via the CarScript-as-aviation pattern. Real aerodynamics in Enforce Script (lift/drag/stall, ISA atmosphere), NaN-safe physics, PID auto-stabilization, flight-control AnimationSources, aviation memory points, script-driven dials, Buoyancy for seaplanes, retractable gear, RPM-band sound. Documents 5 flight-model implementations across 4 authors. |
 | `rip-vehicle-import` | Converting a **racing-game rip** (source-game Grub: `.modelbin`/`.carbin`) into a drivable, textured DayZ CarScript car. A 12-step pipeline + day-1 checklist + winding/glass/interior/material rules distilled from ~30 sessions on the first car. Pairs with `dayz-vehicles`. |
 
@@ -216,7 +216,7 @@ back to it.
 | `dayz-physics-engine` | **Rigid bodies, layers, raycasts, contacts**: `dBody*`/`dGeom*`/`dJoint*`, `PhxInteractionLayers`, `RaycastRV` vs `*Bullet`, `EOnContact`, TransportHit, "player walks through my object". |
 | `dayz-environment-hazards` | **Environmental hazards and weather events**: sandstorms (`sandstormFrequency`, `ScriptedSandstormController`, shelter fade, `DEF_DUST_PARTICLE`), temperature and solar exposure (`ThermalBias`, `HeatStroke`, `IsInShadow`), oil pits (`OilPitArea`), silicosis, irritated eyes, `AGT_AIRBOURNE_SOLID`, `WashHead`, Badlands, and Nasdara. |
 | `dayz-persistence` | **Entity persistence and data safety**: designing, implementing, debugging, or auditing `OnStoreSave`/`OnStoreLoad` streams, CF `ModStorage` and `storageVersion`, format migration/rollback, sidecar JSON, recoverable file replacement, `CombinationLock` stream v143, code lock, `ThermalBiasHandler`, `GAME_STORAGE_VERSION`, and `BunkerBroadcastPersistenceStorage.bin`. |
-| `dayz-underground` | **Underground areas and terrain holes** in DayZ 1.30 Exp (1.30.164014): bunkers, tunnels, caves, `SurfaceIsHole`, `holes.cfg`, `CfgWorlds Holes` (`tiles[]`), Buldozer `MarkUnderground`/`CopyTileCoord`, `cfgundergroundtriggers.json` (`UndergroundTrigger`, `EyeAccommodation`, `EUndergroundPresence`, `INPUT_UDT_UNDERGROUND_SYNC`), and `cfgbunkerbroadcast.json`. |
+| `dayz-underground` | **Underground areas and terrain holes** in DayZ 1.30 (stable 1.30.164200): bunkers, tunnels, caves, `SurfaceIsHole`, `holes.cfg`, `CfgWorlds Holes` (`tiles[]`), Buldozer `MarkUnderground`/`CopyTileCoord`, `cfgundergroundtriggers.json` (`UndergroundTrigger`, `EyeAccommodation`, `EUndergroundPresence`, `INPUT_UDT_UNDERGROUND_SYNC`), and `cfgbunkerbroadcast.json`. |
 
 **Process, QA & tooling** (domain-agnostic — use them across all of the above)
 | Skill | Use when |
@@ -229,14 +229,20 @@ back to it.
 | `rigorous-data-audit` | **Before releasing data-critical code** (persistence, state machines, admin commands, async multi-tick queues) — anything where a bug means lost player progression. A multi-angle parallel audit + adversarial verification for invariant violations, races, path inconsistencies, and recovery-path defects. |
 | `dayz-test-ingame` | **Building, deploying and launching a mod locally** with `DayZDiag_x64.exe` + filepatching (server+client on one box, or single-exe offline). Generates a parametrized test orchestrator. *Assumes a specific Windows/DayZ tooling layout — see §8.* |
 | `dayz-mcp-verify` | **Auto-testing a mod in-game** by driving it with MCP tools (spawn a classname, orbit the camera, screenshot, raycast, read telemetry) and the drivable-car acceptance ladder. *Drives the game through [DayZ-MCP](https://github.com/willy92wins/dayz-mcp), published separately — see §8 for the wiring.* |
+| `systematic-debugging` | **A bug, a failing test or unexpected behaviour**: find the root cause before proposing a fix. Ported from obra/superpowers (MIT); see its `SOURCE.md`. |
+| `task-observer` | **During multi-step work with tools**: watches for patterns, user corrections and methods worth turning into skills, and keeps an observation log. Ported from rebelytics' "One Skill to Rule Them All" (CC BY 4.0) and modified; see its `SOURCE.md`. |
 
 ---
 
 ## 4. What is in the pack, and what you still install separately
 
-These playbooks are the author's. The local plugin folder they were installed under happened
-to be named `anthropic-skills`; that is a namespace on one machine, not a licence or an
-upstream. They ship under the same MIT licence as the rest of the pack.
+These playbooks are the author's, apart from two ported skills. The local plugin folder they
+were installed under happened to be named `anthropic-skills`; that is a namespace on one
+machine, not a licence or an upstream. They ship under the same MIT licence as the rest of the
+pack. The two ported skills keep their own licence and ship their `LICENSE` and `SOURCE.md`:
+`task-observer`, adapted from rebelytics' "One Skill to Rule Them All" (Eoghan Henn, CC BY 4.0,
+modified), and `systematic-debugging`, from obra/superpowers (MIT, Copyright (c) 2025 Jesse
+Vincent). See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ### Shipped in this pack
 
@@ -414,11 +420,16 @@ against the vanilla source for your game version (the engine moves).
   AddonBuilder / DayZDiag commands, `serverDZ.cfg` `allowFilePatching`, mission templates, texture
   suffixes, `.p3d` named properties, Central Economy file layout, BattlEye codes, RPT triage,
   terrain pipeline.
+- **`workbench-scripting-api.md`** — the build 119356 Workbench Enforce API map: the `#ifdef WORKBENCH` guard boundary, the exact `Workbench` entry points, the `ResourceManager`/`ScriptEditor` modules, the `WorkbenchPlugin`/`ResourceManagerPlugin` events, `BuildResourceContext`, `WBProgressDialog`, `MetaFile` and `GeneratedResources`.
 - **`dayz-mcp-bridge-protocol.md`** — driving DayZDiag from an agent: the bridge's tool surface,
   the invariants that keep it safe (server-authoritative, one FIFO lease, fail-closed ingress,
   deadman-held controls), and the engine facts it cost in-game cycles to learn — client vs
   server vehicle ownership, why `SetThrottle` alone never moves a car, `DIAG_DEVELOPER` vs
   `DEVELOPER`, and why freecam freezes the thing you are trying to measure.
+- **`vanilla-native-surface.md`** — the `proto native` surface of DayZ scripts build 119356:
+  2,758 line-start declarations (1,956 in `3_game`), the 52 `owned` and 25 `static`
+  counts under that rule, and the exact `GetBoneMatrix` / `AudioSystem.BankLoad` call shapes.
+- **`mission-lifecycle.md`** — build 119356 mission bootstrap order and the exact `super` chain (`MissionBase` constructor, `MissionServer.OnInit/OnUpdate`, `MissionGameplay.OnInit/OnMissionStart`), the `m_Initialized` guard, rain-handler ownership, `DayZGame.OnRPC` → `target.OnRPC` routing, and the real persistence hooks (135 `OnStoreSave`, 148 `OnStoreLoad`, no `RegisterPersistent`).
 - **`vault-notes/`** — 18 topic notes, including: `dayz-animations-creatures-weapons`,
   `dayz-custom-infected`, `dayz-enforce-script-reference`, `dayz-mod-implementation-checklists`,
   `dayz-modded-class-server-stub-pattern`, `dayz-objectbuilder-lod-conventions`,
@@ -537,12 +548,18 @@ representative in-game matrix. Record evidence and unknowns in
 [`CHANGELOG.md`](CHANGELOG.md). Contribution and privacy requirements are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-**Build coverage (2026-10-01).** The compatibility matrix is pinned to stable
-`1.29.0.163451`. 28 skills also carry sections for **DayZ 1.30 Experimental**
-(build `1.30.164014`), each labelled as such, and `dayz-motorbikes` targets 1.30
-only. 1.30 has not reached stable on this date; when it does, those sections are
-re-checked against the stable build before their labels change. Where each 1.30
-section lives: [`compatibility-matrix.md`](compatibility-matrix.md) §DayZ 1.30 Experimental.
+**Build coverage (2026-11-09).** The per-skill levels of the compatibility matrix are
+pinned to stable `1.29.0.163451`. DayZ 1.30 reached stable on 2026-10-15. 28 skills
+carry 1.30 sections, written on Experimental build `1.30.164014`, and `dayz-motorbikes`
+targets 1.30 only. On 2026-10-28 the vanilla `path:line` citations in the skills were
+re-checked against stable `1.30.164200`: every script citation whose text some build
+has, and the data citations the re-check could read. On 2026-11-09 they moved to
+`1.30.164289`, the stable build since 2026-11-04, which changed 27 script files and no
+data file's text. Line numbers with no build named are that build's, but for the data citations that
+[`skills/_shared/dayz-conventions.md`](skills/_shared/dayz-conventions.md) §Vanilla line
+numbers: which build lists. Measurements keep the build they were made on.
+Where each 1.30 section lives: [`compatibility-matrix.md`](compatibility-matrix.md)
+§DayZ 1.30.
 
 ---
 

@@ -3,7 +3,7 @@
 > **⚠️ This is a DIAGNOSTIC harness, not a pattern to copy.** It calls
 > `Widget.SetLV(0)` on purpose, to measure. A mod must **not** do this: those APIs
 > are `proto static` and global, and vanilla uses them to apply the brightness chosen by
-> the player (`dayzgame.c:3778-3782`). If you run this test, leave the value as it was
+> the player (`dayzgame.c:3910-3914`). If you run this test, leave the value as it was
 > upon closing it. See SKILL.md §COLOR SYSTEM.
 
 ## What it does

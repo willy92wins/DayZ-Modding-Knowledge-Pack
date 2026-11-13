@@ -25,22 +25,22 @@ accepts a seat only when all four links pass:
    distance and applies a default 1 m horizontal limit.
 
 (hasta 1.29: the four gates above, with door clearance via `IsAreaAtDoorFree`.)
-(desde 1.30 Exp: `ActionGetInTransport.ActionCondition` first rejects when `!transport.CanGetIn()` (`ActionGetInTransport.c:36`; default `true` on `Transport` at `exp\scripts\scripts\3_Game\Vehicles\Transport.c:672-675`). Gate 3 in this build is `IsAreaAtDoorFreeDiag(crewIndex)` combined with `CrewCanGetThrough` (`ActionGetInTransport.c:54`). Gate 4 **is called from script** — see the block after the 1.29 anchors. Motorbikes that inherit `Motorbike_01_ColorBase` additionally require `GetAnimationPhase("SeatDriver") == 0.0` inside `CanGetIn()` (`Motorbike_01.c:92-98`).)
+(desde 1.30: `ActionGetInTransport.ActionCondition` first rejects when `!transport.CanGetIn()` (`ActionGetInTransport.c:36`; default `true` on `Transport` at `exp\scripts\scripts\3_Game\Vehicles\Transport.c:675-678`). Gate 3 in this build is `IsAreaAtDoorFreeDiag(crewIndex)` combined with `CrewCanGetThrough` (`ActionGetInTransport.c:54`). Gate 4 **is called from script** — see the block after the 1.29 anchors. Motorbikes that inherit `Motorbike_01_ColorBase` additionally require `GetAnimationPhase("SeatDriver") == 0.0` inside `CanGetIn()` (`Motorbike_01.c:89-95`).)
 
 Inspect and fix them in that order. Rebuilding `seat_con_*` cannot help while
 the cursor resolves an envelope component, and script changes cannot help while
 the model lacks the final memory point.
 
-Source anchors (DayZ stable `1.29.0.163451`):
+Source anchors (1.30.164200 line numbers; on 1.29.0.163451 the condition was 1.29 `actiongetintransport.c:26-80`):
 
-- `scripts/4_world/classes/useractionscomponent/actions/interact/actiongetintransport.c:26-80`
-- `scripts/3_game/vehicles/transport.c:114-116,493-500,634-676`
-- `scripts/4_world/entities/vehicles/carscript.c:2674-2693,2710-2732`
+- `scripts/4_world/classes/useractionscomponent/actions/interact/actiongetintransport.c:26-69`
+- `scripts/3_game/vehicles/transport.c:180-182,727-734,853-895`
+- `scripts/4_world/entities/vehicles/carscript.c:2141-2160,2177-2199`
 
-(desde 1.30 Exp, re-opened 2026-09-17:)
+(desde 1.30, re-opened 2026-09-17:)
 
 - `exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:26-69`
-- `CanGetIn` default: `exp\scripts\scripts\3_Game\Vehicles\Transport.c:672-675`
+- `CanGetIn` default: `exp\scripts\scripts\3_Game\Vehicles\Transport.c:675-678`
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:36-37
@@ -72,8 +72,8 @@ each marker identifies the dead link without changing the condition blindly.
 
 Source anchors:
 
-- `scripts/4_world/classes/useractionscomponent/actionconstructor.c:27-34,279-285`
-- `scripts/4_world/entities/manbase/playerbase.c:1655-1658`
+- `scripts/4_world/classes/useractionscomponent/actionconstructor.c:27-34,297-303`
+- `scripts/4_world/entities/manbase/playerbase.c:1695-1745`
 
 ## Multi-LOD submodel instantiated by proxy
 
@@ -104,12 +104,12 @@ claim that every single-LOD engine proxy follows the same path.
 ## The 1 m limit is a signature default, not what the caller passes (added 2026-09-07)
 
 Gate 4 above says `CanReachSeatFromDoors` "applies a default 1 m horizontal limit". That number
-is the **default in the signature** (`carscript.c:2710`), and it is not evidence about what runs:
+is the **default in the signature** (`carscript.c:2177`), and it is not evidence about what runs:
 **no vanilla script calls that method**. The engine invokes it natively, so neither `pDistance`
 nor `pFromPos` are observable from script.
 
 (hasta 1.29: the two sentences above — "no vanilla script calls that method"; native-only.)
-(desde 1.30 Exp: **false**. `ActionGetInTransport.ActionCondition` loops selections and calls `transport.CanReachSeatFromDoors(selections[i], playerPosition, 1.0)` at `exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:62-66`. The third argument vanilla passes is `1.0`. The LFQuad2 measurement below remains a valid warning against guessing `pFromPos` from memory-point choice; instrument the 1.30 call if you change `GetDoorConditionPointFromSelection`.)
+(desde 1.30: **false**. `ActionGetInTransport.ActionCondition` loops selections and calls `transport.CanReachSeatFromDoors(selections[i], playerPosition, 1.0)` at `exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:62-66`. The third argument vanilla passes is `1.0`. The LFQuad2 measurement below remains a valid warning against guessing `pFromPos` from memory-point choice; instrument the 1.30 call if you change `GetDoorConditionPointFromSelection`.)
 
 ```c
 // [EXACT] exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:62-66
@@ -123,8 +123,8 @@ nor `pFromPos` are observable from script.
 Measured cost of taking it at face value (LFQuad2, 2026-09-07): a quad whose
 `GetDoorConditionPointFromSelection` returned the approach points `pos_driver`/`pos_codriver`
 instead of centred ones was "corrected" to return the centred crew points. The change had three
-true supports — two vanilla vehicles return centred points (`van_01.c:257`,
-`offroadhatchback.c:358`), the sibling mod does the same, and the offline arithmetic gave 0.85 m
+true supports — two vanilla vehicles return centred points (`van_01.c:274`,
+`offroadhatchback.c:371`), the sibling mod does the same, and the offline arithmetic gave 0.85 m
 and 0.83 m against the 1 m limit. In game it broke two things at once: the driver entering from
 the right ended up yawed 15-20 degrees, and the codriver became unreachable from **both** sides.
 Reverted.

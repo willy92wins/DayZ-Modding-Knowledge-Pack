@@ -13,7 +13,7 @@ description: >
 # DayZ PBO Build Validator
 
 Complete pre-build validation pipeline for DayZ mod addons. Catches configuration errors, missing assets, and structural problems BEFORE packing into PBOs—avoiding in-game crashes and deployment failures.
-(until 1.29: the folder structure, stringtable.csv, include-list, and "Duplicate class names" check below remain the 1.29 contract.) (since 1.30 Exp: binarizer also **stops** if a member is defined multiple times in one class; unpacked `-mod` is a diag iteration path, not a shipping substitute. Details: [dayz-1-30-pbo-build.md](references/dayz-1-30-pbo-build.md) and ## DayZ 1.30 Exp.)
+(until 1.29: the folder structure, stringtable.csv, include-list, and "Duplicate class names" check below remain the 1.29 contract.) (since 1.30: binarizer also **stops** if a member is defined multiple times in one class; unpacked `-mod` is a diag iteration path, not a shipping substitute. Details: [dayz-1-30-pbo-build.md](references/dayz-1-30-pbo-build.md).)
 
 ## Overview
 
@@ -36,7 +36,7 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
 ### 1. Folder Structure Validation
 
 **Checks performed:**
-- **REQUIRED:** `config.cpp` exists at addon root
+- **REQUIRED:** `config.cpp` exists at addon root (a 1.30 `gui`-prefix shadow PBO holding only layouts loaded without one on 1.30.164289: `references/dayz-1-30-pbo-build.md`)
 - **REQUIRED:** `$PBOPREFIX$` file exists (single line: `mymod\myaddon` format)
 - **RECOMMENDED:** `data/` folder (for textures, .rvmat, .p3d files)
 - **RECOMMENDED:** `scripts/` folder (for .c, .cpp, .h files)
@@ -47,6 +47,8 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
 - **Release package (manual; the checks above do not run it):** every class a player places, or that otherwise
   persists in the world, has an entry with an explicit lifetime in the `types.xml` the release ships. Without
   one it runs out after 30 to 60 minutes of server time (`dayz-persistence`, SP-459).
+- **Publishing to the Workshop (manual):** signing with DsUtils, the item folder, the Publisher or SteamCMD,
+  and why a SteamCMD login with the Steam client's account kicks that client off: `references/workshop-publish.md`.
 
 **Example output:**
 ```
@@ -77,7 +79,7 @@ This check is critical—most DayZ mod failures start here.
 - **AnimationSources reference check:**
   - Any AnimationSource defined here must be referenced in model.cfg (if model.cfg exists)
 - **Duplicate class names:** Same class cannot be defined twice
-- **Duplicate members (since 1.30 Exp [CHANGELOG]):** Same member cannot be defined twice inside one class body — binarizer **stops** (`work\changelog-1.30-exp-modding.md:19`). Not the same as `class Foo;` forward + `class Foo: Bar {}` definition. See `references/common-validation-failures.md` and `references/dayz-1-30-pbo-build.md`.
+- **Duplicate members (since 1.30 [CHANGELOG]):** Same member cannot be defined twice inside one class body — binarizer **stops** (`work\changelog-1.30-exp-modding.md:19`). Not the same as `class Foo;` forward + `class Foo: Bar {}` definition. See `references/common-validation-failures.md` and `references/dayz-1-30-pbo-build.md`.
 - **No syntax helpers:** Reject obvious Python/macro syntax in .cpp (these get missed at compile time)
 
 **Example output:**
@@ -422,7 +424,7 @@ mymod\myaddon
 - Use backslashes `\` (not forward slashes)
 - No trailing backslash
 - No quotes or extra whitespace
-- Must be unique across all addons (namespace collision = invisible mod)
+- Must be unique across all addons (namespace collision = invisible mod), unless the PBO sets the 1.30 header property `fsShadowing=1` to shadow vanilla files on purpose (`references/dayz-1-30-pbo-build.md`)
 
 **Example folder structure:**
 ```
@@ -924,7 +926,7 @@ For the authoritative Enforce Script rule set, see the `enforce-script-reference
 python tools/dayz-script-validator/scripts/script_validator.py <addon_root>
 ```
 
-Exit `0` PASS / `1` FAIL / `2` WARN. **Do not build a PBO on exit 1**: the errors it catches (`Unknown type`, local redeclaration, override of an absent method, `delete`, empty `#ifdef`, item declared under the wrong `CfgXxx`) only surface when the script module compiles at boot, so packing first turns a one-second check into a full in-game cycle. Add `ui_reconcile.py <addon_root>` when the mod ships UI.
+Exit `0` PASS / `1` FAIL / `2` WARN. **Do not build a PBO on exit 1**: the errors it catches (`Unknown type`, local redeclaration, override of an absent method, `delete`, item declared under the wrong `CfgXxx`) only surface when the script module compiles at boot, so packing first turns a one-second check into a full in-game cycle. Add `ui_reconcile.py <addon_root>` when the mod ships UI.
 
 Green here means the module should COMPILE and the asset should LOAD. It says nothing about engine behaviour — see `dayz-mod-workflow` §"Gates offline" for the full contract and the known coverage limits.
 
@@ -1225,9 +1227,9 @@ compilation: there gate measures what it shouldn't, here it measures something a
 
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
 
-- Build with armake2 (https://github.com/bzed/armake2), pinned with `cargo install --git https://github.com/bzed/armake2 --rev 7dcb3cfbd34e62e7b89e8ffd5ea27b603a092daa`: use `armake2 build`, `keygen` and `sign`; `build --proton-binarize` invokes BI binarize under Proton. The author-local `dayz-mod-pack.sh` wrapper is not distributed or required. The validation checks of this skill (prefix, `config.cpp`, `$PBOPREFIX$`, duplicates, stringtable) do not depend on the packer and apply unchanged.
+- Build with dayzmake >= 1.0.0, bzed's DayZ fork of armake2 (https://github.com/bzed/dayzmake), pinned to `v1.0.0` (the release binary `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0`): use `dayzmake build`, `keygen` and `sign`; Upstream armake2 is no substitute: it leaves `*.c` files out of the signature, so a script mod's `.bisign` does not cover its scripts. Check an installed binary with `dayzmake -h | grep -- --proton-binarize` (no hit: not the fork) and `dayzmake --version`; `build --proton-binarize` invokes BI binarize under Proton. The author-local `dayz-mod-pack.sh` wrapper is not distributed or required. The validation checks of this skill (prefix, `config.cpp`, `$PBOPREFIX$`, duplicates, stringtable) do not depend on the packer and apply unchanged.
 - `--proton-binarize` keeps texture alpha in the fork's GitHub `master` (commit `0a0ce3b` and later, verified 2026-11-03); older local builds lose it. Reinstall from GitHub when in doubt: `--version` prints `v0.3.0` for both.
 - To compare against BI's AddonBuilder, it runs under Proton: `dayz-proton.sh tool AddonBuilder <P-root>/<Mod> <out> -prefix=<Mod>` (`-packonly` and full builds measured, `-clear` too). The binarize rules above hold: build from `P:\<Mod>`, never from a path whose parent is a large Linux directory, because binarize scans the parent. AddonBuilder exits 0 on a failed build; `dayz-proton.sh` returns the `[ResultCode]` from `DayZ Tools/Bin/Logs/AddonBuilder.rpt` instead.
 - `build_*.ps1`, `robocopy` and junctions: read the script for the source tree, then do the same with `sh`, `rsync` and symlinks. Do not run the `.ps1` under `pwsh`: it calls Windows programs and the registry.
 - Publishing: the `workshop` uploader (nozwock/steam-workshop-uploader) instead of Publisher; `dayz-mod-pack.sh publish-hint` prints the command.
-- Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. `dayz_test_run build=true` on dayz-mcp's `linux-port` branch drives the same armake2 from `PATH` and writes `@Mod/Addons/<Mod>.pbo`; both the native server and `DayZDiag` load that spelling (measured 2026-11-06).
+- Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. `dayz_test_run build=true` on dayz-mcp's `linux-port` branch now drives the dayzmake v1.0.0 release binary from `PATH` and refuses any other build (`dayzmake_pin_mismatch`); the 2026-11-06 run used the fork under its old name armake2. It writes `@Mod/Addons/<Mod>.pbo`; both the native server and `DayZDiag` load that spelling (measured 2026-11-06).

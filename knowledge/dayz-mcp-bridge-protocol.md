@@ -85,7 +85,7 @@ leaves the client without `GetCommand_Vehicle()`. The client takes ownership by
 calling `StartCommand_Vehicle` on *its own* player; the engine then hands control
 over in `PlayerBase.OnVehicleSeatDriverEnter`, which casts the parent to a `Pawn`
 and calls `identity.Possess(pawn)` — under `FEATURE_NETWORK_RECONCILIATION`
-(`4_world/entities/manbase/playerbase.c:4266-4280`).
+(`4_world/entities/manbase/playerbase.c:4561-4577`).
 
 **A car with no client owner is driven by the server.** Under PHYSICS the
 throttle is applied by whoever owns the vehicle. On a single-box test setup an
@@ -95,9 +95,9 @@ client ownership measures the wrong thing.
 
 **`SetThrottle` and `SetSteering` set *future* input, and `super` overwrites
 them.** The vanilla headers say so literally — "Sets the future throttle value"
-(`3_game/vehicles/car.c:201-202`), same for steering at `:195-196`. Calling them
+(`3_game/vehicles/car.c:190-191`), same for steering at `:184-185`. Calling them
 from a mission-side tick does nothing visible, because `CarScript.OnInput`
-(`4_world/entities/vehicles/carscript.c:1303`) runs afterwards and re-reads the
+(`4_world/entities/vehicles/carscript.c:1041`) runs afterwards and re-reads the
 local driver's input, which is zero. The working shape is to apply the values
 **after** `super` inside a `modded class CarScript.OnInput`, mirroring how the
 vanilla debug autopilot does it.
