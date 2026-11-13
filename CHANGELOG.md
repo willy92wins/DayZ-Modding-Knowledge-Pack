@@ -33,6 +33,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - From the plugin's skill observations 1-5: the `addons/` rule and probe, load order, the CF wipe at the point of
     decision, `pkill`/`pgrep` not matching `enfMain`, one server at a time.
   - Notes that called these helpers "author-local, not distributed" now point at them.
+- Server config, Central Economy files and API facts, verified on DayZ 1.30.164289 (Steam build 26220720): the vanilla
+  scripts and configs, the server's mission files, native Linux server boots with a probe `init.c`, and CF `0763e7e` /
+  Expansion-Scripts `14fd692`. New: `dayz-test-ingame` `references/server-and-mission-config.md`, `dayz-persistence`
+  `references/central-economy-files.md`; additions to `enforce-script-reference` (`verified-api-catalog.md`,
+  `networking.md`, `memory-management.md`, `config-cpp.md`), `dayz-weapons`, `dayz-aviation`, `dayz-ui-development`,
+  `dayz-animation-pipeline`. Written without access to third-party text; facts that could not be verified, or held only
+  before 1.30, were left out.
+
+### Fixed
+
+- `ref` keeps a class without a `Managed` ancestor alive too; a member field without `ref` is weak for both kinds
+  and reads `NULL`; assigning `new` to a non-`ref` field does not compile ("not strong ref"); a two-object `ref` cycle
+  is never destroyed (measured on 1.30.164289; `enforce-script-reference` `references/memory-management.md`,
+  `_shared/enscript-style.md`).
+- `RegisterNetSyncVariableFloat`'s last argument is the number of decimal digits, not bits
+  (`3_Game/Entities/EntityAI.c:2853-2861`).
+- `scope = 1` classes can be created by script (vanilla spawns `LargeTentClutterCutter` that way); three notes said
+  "editor only".
+- Expansion: `ExpansionVehicleBase` is an obsolete stub on `Transport`; current Expansion vehicles derive from `CarScript`.
 
 - Linux (2026-11-13): bzed's armake2 fork is now dayzmake (https://github.com/bzed/dayzmake). Every
   Linux note names `dayzmake` >= 1.0.0, pinned to the `v1.0.0` release binary or

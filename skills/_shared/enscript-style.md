@@ -480,13 +480,13 @@ class MyClass : Managed
 }
 ```
 
-**Note:** Anything in `3_Game` and up is **automatically managed** - no need to explicitly inherit from `Managed`.
+**Note:** `ref` keeps a plain class (no `Managed` ancestor) alive as well; measured on DayZ 1.30.164289 for a class declared in the mission module, so explicit `Managed` inheritance is not needed for `ref` to work. A member field without `ref` is weak for both kinds. Details: `enforce-script-reference/references/memory-management.md`.
 
 ### Garbage Collection
 
 **Understanding EnScript Garbage Collection:**
 
-- Everything (except `Managed`) is a **weak reference by default**
+- Class member fields are **weak references by default**, whether or not the class is `Managed`
 - The garbage collector is **very aggressive** - instances in function scope are destroyed immediately when scope ends
 - All instances (Managed or not) are garbage collected when reference count reaches zero
 

@@ -36,7 +36,7 @@ class LF_MyDevice extends ItemBase
         RegisterNetSyncVariableInt(varLoad, 0, 100);  // min, max for compression
 
         string varTemp = "m_Temperature";
-        RegisterNetSyncVariableFloat(varTemp, 0.0, 200.0, 2);  // min, max, precision bits
+        RegisterNetSyncVariableFloat(varTemp, 0.0, 200.0, 2);  // min, max, digits after the decimal point
     }
 }
 ```
@@ -44,7 +44,7 @@ class LF_MyDevice extends ItemBase
 **Registration variants:**
 - `RegisterNetSyncVariableBool(string varName)` — 1 bit
 - `RegisterNetSyncVariableInt(string varName, int min, int max)` — compressed int
-- `RegisterNetSyncVariableFloat(string varName, float min, float max, int precision)` — compressed float
+- `RegisterNetSyncVariableFloat(string varName, float min = 0, float max = 0, int precision = 1)` — compressed float. `precision` is the number of digits kept after the decimal point, not a bit count; `min == max` turns quantization off (`scripts/3_Game/Entities/EntityAI.c:2853-2861`, DayZ 1.30.164289). Vanilla passes `2` for the effect-area radius and heights (`scripts/4_World/Classes/ContaminatedArea/EffectArea.c:99-101`) and `5` for an animation phase in 0..1 (`scripts/4_World/Entities/Building/Underground/Entrance/Land_Underground_Entrance.c:76`).
 
 ### Writing SyncVars — Server Only
 
@@ -215,6 +215,23 @@ override void OnRPC(PlayerIdentity sender, int rpc_type, ParamsReadContext ctx)
 6. **Rate-limit client RPCs** — anti-spam cooldown on server side
 7. **Resolve targets by NetworkID**, not by DeviceId or reference caching
 
+### Where an RPC lands, and what the server must check (DayZ 1.30.164289)
+
+- `ScriptRPC.Send(Object target, int rpc_type, bool guaranteed, PlayerIdentity recipient = NULL)`: sent from a
+  client it goes to the server; sent from the server with `recipient == NULL` it goes to **every** client. A
+  `null` target makes it a global RPC handled by the game object instead of an entity. `Send` does not reset
+  the buffer: calling it again resends the same data until `Reset()` (`scripts/3_Game/gameplay.c:104-117`).
+- Two receivers. An entity gets `OnRPC(PlayerIdentity sender, int rpc_type, ParamsReadContext ctx)`
+  (`scripts/3_Game/Entities/Object.c:860`, overridden in `EntityAI.c:3507`). The game gets the four-argument
+  form with `Object target` (`scripts/3_Game/DayZGame.c:3141`), which forwards to the target's `OnRPC` when
+  `target` is set. Read values in exactly the order they were written.
+- Server-side checklist for a request handler, in this order: return unless this is the server; return on a
+  `null` sender; find the acting `PlayerBase` from the sender identity, never from a value in the payload; return
+  if that player is dead; before spawning a class name that came from a client, check it with
+  `g_Game.IsKindOf(name, "Inventory_Base")` or a narrower parent (`scripts/3_Game/Global/Game.c:1437`, which
+  walks `CfgVehicles` then `CfgAmmo` parents); check the distance between the player and the target; and
+  apply a per-player cooldown (rule 6).
+
 ### NetworkID Pattern
 
 ```
@@ -298,6 +315,31 @@ trust client-supplied entities). Fail-closed on unknown/invalid payloads (`G6`).
 - **Do NOT derive mod RPC IDs from `ERPCs.RPC_END`.** The enum contains **96 lines conditioned on `#ifdef DIAG_DEVELOPER`** (`3_game\enums\erpcs.c:110-205`) **before** `RPC_END` (`:225`), so its numeric value **differs between diag and retail builds**. A derived ID mismatches in a client-diag / server-retail pair and fails **silently**: the RPC is sent, nobody handles it, no error. Use fixed high literals (`const int` with hex is vanilla idiom: `1_core\constants.c:35`, `:63-72`). Supporting fact: the `switch` in `DayZGame.OnRPC` has **no `default:`**, so an unknown `rpc_type` produces no engine error.
 - **Hooking `Event_OnRPC` does NOT require `modded class DayZGame`.** `Event_OnRPC` is `static` and accessed by class name — vanilla idiom: `DayZGame.MISSION_STATE_GAME` (`dayzplayerimplement.c:846`), `DayZGame.DeferredInit` (`ppemanager.c:83`) — which avoids collision with another mod that overrides `OnRPC`. The `Insert` must NOT copy vanilla's timing: `SyncEvents.RegisterEvents()` lives in the `MissionGameplay` constructor (`missiongameplay.c:82`), which is **client-side and late**; it can afford that because its RPCs fire in `ClientNew`. A document sent in `ClientPrepare` (`missionserver.c:307-313`) arrives **before** that mission exists and is lost without trace.
 
+### Community Framework: module events and single-player RPC dispatch (CF 1.5.8 source)
+
+Read from `Arkensor/DayZ-CommunityFramework@0763e7e` (2026-09-09, `config.cpp` version 1.5.8), paths under
+`JM/CF/Scripts/`; not measured in game.
+
+- Register a module with the class attribute `[CF_RegisterModule(MyModule)]` above its declaration; the
+  attribute's constructor inserts the type into the module manager (`1_Core/CommunityFramework/Module/CF_RegisterModule.c:1-6`,
+  used at `4_World/CommunityFramework/ModStorage/CF_ModStorageModule.c:6`).
+- Every event handler takes `(Class sender, CF_EventArgs args)` and only fires after its `Enable...()` call in
+  `OnInit()`. On `CF_ModuleCore` (`1_Core/CommunityFramework/Module/CF_ModuleCore.c:76-238`): `OnMissionStart`,
+  `OnMissionFinish`, `OnMissionLoaded`, `OnUpdate`, `OnSettingsChanged`, `OnPermissionsChanged`,
+  `OnWorldCleanup`, the `OnMPSession*` / `OnMPConnect*` events, `OnRespawn`, `OnLoginTime`, `OnLoginStatus`,
+  `OnLogout`, `OnChat`. `OnUpdate` receives a `CF_EventUpdateArgs`; cast it and read `DeltaTime`
+  (`1_Core/CommunityFramework/EventArgs/CF_EventUpdateArgs.c:1-7`). The mission keeps one instance and reuses it
+  (`5_Mission/CommunityFramework/Mission/MissionBase.c:7`), so do not store it.
+- `CF_ModuleWorld` adds the server-side client lifecycle (`4_World/CommunityFramework/Module/CF_ModuleWorld.c`):
+  `OnInvokeConnect`, `OnInvokeDisconnect`, `OnClientNew`, `OnClientRespawn`, `OnClientReady`, `OnClientPrepare`,
+  `OnClientReconnect`, `OnClientLogout`, `OnClientDisconnect` (fires when the player has left; no reconnect
+  follows), `OnClientLogoutCancelled`, each with its `Enable...()` (`:3-101`).
+- `SingleplayerExecutionType` only matters when one process is both server and client (offline, not
+  multiplayer). There, `Server` runs the handler once as the server call, `Client` once as the client call, and
+  `Both` runs it twice, server call first. In multiplayer the value is ignored: the server always handles,
+  and clients always handle (`3_Game/CommunityFramework/RPC/RPCManager.c:8-13`, `:89-98`). `SendRPCs` does
+  not support `Both` and logs a warning (`:142`, `:162-164`).
+
 ### `Event_OnRPC`: filter before the first context read (SP-338, added 2026-08-31)
 
 The bus above is safe because it rejects the RPC id before `ctx.Read`. `ParamsReadContext` is a `Serializer` (`3_game\gameplay.c:15`), and a read consumes its stream even when the requested payload type is wrong; there is no seek or rewind (`1_core\proto\serializer.c:55-65`). `DayZGame.Event_OnRPC` receives every RPC on both processes (`3_game\dayzgame.c:3141-3155`), so the id and applicable side must be rejected before any read.
@@ -329,7 +371,7 @@ The following results were measured from a dedicated server to an already connec
 | `SetPosition(vector)` | Yes | `3_game\entities\object.c:294` |
 | `SetScale(float)` | **No** | `1_core\proto\enentity.c:448` |
 
-Replicate scale explicitly, for example with `RegisterNetSyncVariableFloat` (`3_game\entities\entityai.c:2881` on 1.29.0.163451; `:2838` on 1.30.164014 Exp) [EXACT], then apply the synchronized value on the client. The earlier registration example labels `precision` as bits; that label is not the contract for this API. The argument is decimal digits and defaults to `1`. Raise it when values such as `1.25` must survive range quantization, or pass equal minimum and maximum values when the unbounded form is intended. Scale also affects collision: otherwise identical LFProbe boxes at scale `1` and `0.5` produced vertical ray distances of `0.2018 m` and `0.1018 m` (ratio `0.5045`).
+Replicate scale explicitly, for example with `RegisterNetSyncVariableFloat` (`3_game\entities\entityai.c:2881` on 1.29.0.163451; `:2838` on 1.30.164014 Exp; `:2861` on 1.30.164289) [EXACT], then apply the synchronized value on the client. The argument is decimal digits and defaults to `1`. Raise it when values such as `1.25` must survive range quantization, or pass equal minimum and maximum values when the unbounded form is intended. Scale also affects collision: otherwise identical LFProbe boxes at scale `1` and `0.5` produced vertical ray distances of `0.2018 m` and `0.1018 m` (ratio `0.5045`).
 
 Measured replication does not establish late-join reconstruction or behavior for map-placed objects; both remain unverified. Animation state is also model-specific: `Barrel_ColorBase` drives its two caps from the phase (`4_world\entities\itembase\barrel_colorbase.c:148-154`), and phase `0.5` exposed both in the LFProbe measurement. `GetAnimationPhase` immediately after a write also returned the previous value in that probe. Verify the target model and the required observation timing.
 

@@ -587,7 +587,7 @@ folders. For a structured script-failure diagnosis, hand off to `dayz-mod-workfl
 
 ## OUT OF SCOPE
 
-Authoring the mod, production server config, Central Economy / persistence tuning beyond the
+Authoring the mod, production server config (stock 1.30 formats: [`references/server-and-mission-config.md`](references/server-and-mission-config.md)), Central Economy / persistence tuning beyond the
 minimal dev `serverDZ.cfg`, signing for Workshop release. PBO validation/packaging internals
 are planned for `dayz-pbo-build` / `dayz-workshop-release` in r21 Phase 04 — this skill calls
 AddonBuilder and records their required handoff contract; it does not re-implement the checks.

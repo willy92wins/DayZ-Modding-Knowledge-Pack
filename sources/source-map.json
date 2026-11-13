@@ -1946,7 +1946,7 @@
           "decision": "merge",
           "decision_evidence": "dayz-dev plugin integration (2026-11-13): the author's helpers now ship in skills/_shared/scripts, so 'author-local, not distributed' notes point at them; the plugin's skill observations (PBO in addons/, load order, CF wipe, pkill/pgrep, one server at a time) placed where they apply. Written by Claude (Anthropic) from bzed-dayz-dev-plugin.",
           "license": "MIT",
-          "source_hash": "a09c9526d04c16f64f42a3b9a50dd876454f531cabf7ea7736e8162f3ccc5c80",
+          "source_hash": "b61eaea093282ef1c1866bdf1a3baf359698db198a2037820f5dc10da69c4efd",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
@@ -1954,7 +1954,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a09c9526d04c16f64f42a3b9a50dd876454f531cabf7ea7736e8162f3ccc5c80",
+      "output_hash": "b61eaea093282ef1c1866bdf1a3baf359698db198a2037820f5dc10da69c4efd",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5236,10 +5236,20 @@
           "source_path": "skills/_shared/enscript-style.md",
           "source_revision": "pack-162-resolution@2026-11-10",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "3107c3fde984a3af251db7ca80a0d97094a605b4c4c111224a875614d714a859",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/enscript-style.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "5fa1f46275862aac9a3ef9b13b3f6481dc887d70384f7f6e9e0d9c6b01948d11",
+      "output_hash": "3107c3fde984a3af251db7ca80a0d97094a605b4c4c111224a875614d714a859",
       "output_path": "skills/_shared/enscript-style.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -6798,10 +6808,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "f5b93444ce8bd5a0c4286d5e91fc16d9d21008a181228a76e096fbf52b8fc734",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "bd82d0f8f20016ffa0dcf83f87b965b9aa6a2492baa5ee0ec0ae2ff48ad87a66",
+      "output_hash": "f5b93444ce8bd5a0c4286d5e91fc16d9d21008a181228a76e096fbf52b8fc734",
       "output_path": "skills/dayz-animation-pipeline/references/config-driven-animation.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7876,10 +7896,20 @@
           "source_path": "skills/dayz-aviation/references/helicopters.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "b728c2a776367e5743b10ec65f0e207a362981ee8219950a687edb282a4574c0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/references/helicopters.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "cdddfb6b1324d20386157372689644d994729de1377b50a07820b90b5fb87ebf",
+      "output_hash": "b728c2a776367e5743b10ec65f0e207a362981ee8219950a687edb282a4574c0",
       "output_path": "skills/dayz-aviation/references/helicopters.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -9148,10 +9178,20 @@
           "source_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
           "source_revision": "kp-update-doors-provenance@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "5c14cda5f4d06354443b075bc81fff1fae61b4242e36930a53da92631c38b001",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "6e02c4be65093df33d2950fc7036585ad49b6f8bf48fa8e9f17bf8086c491cdb",
+      "output_hash": "5c14cda5f4d06354443b075bc81fff1fae61b4242e36930a53da92631c38b001",
       "output_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -10180,10 +10220,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "26b786df6a8bbf91aff14ff747ed258679251eb337c50f073deab6574c39cc2d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "122fc4c3b4aba8cd962dfc23028339762c7b12c1840f513a839ec5463a06cf94",
+      "output_hash": "26b786df6a8bbf91aff14ff747ed258679251eb337c50f073deab6574c39cc2d",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -12748,10 +12798,20 @@
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "kp-update-persistence-ce-lifetime@2026-10-04",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "a3eb81e7b5c56f5ed81747854124629ac01041637b711b7aa7ce0a5164b8389a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "56c2292b17bdfff984a4aeff508dc1888933ab7505106133ee09355b8832ed9d",
+      "output_hash": "a3eb81e7b5c56f5ed81747854124629ac01041637b711b7aa7ce0a5164b8389a",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -14300,10 +14360,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "64a8de47ad2fb3c8f89ee4708ec8ee3f23ef01644d378a13fb9fc2ce1cd82a0c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "42e94d5e5204f05cea4e7de39920c2c05f563c0e7b3a367cfdf26275d5dc9ecb",
+      "output_hash": "64a8de47ad2fb3c8f89ee4708ec8ee3f23ef01644d378a13fb9fc2ce1cd82a0c",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -15390,10 +15460,20 @@
           "source_path": "skills/dayz-ui-development/references/expansion-market-menu-pattern.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "5df7d656a6702b42eb0e840ad19bca6d0df3cdf3761ac73f54535a518ef9ed9a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/expansion-market-menu-pattern.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a846f02c8fc7d256cbeecfe9653295b4eafa293afe42ea4586ad5939198359c3",
+      "output_hash": "5df7d656a6702b42eb0e840ad19bca6d0df3cdf3761ac73f54535a518ef9ed9a",
       "output_path": "skills/dayz-ui-development/references/expansion-market-menu-pattern.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -17852,10 +17932,20 @@
           "source_path": "skills/dayz-weapons/references/cfgweapons-contract.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "35914e914c9ff922075409450cd559d85bdf2ba6dcddb0c280574e557b7195de",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/references/cfgweapons-contract.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a1763c85ef401fbd146f9c0750f41889ddf9a0c417b1b28e77297a45219278c3",
+      "output_hash": "35914e914c9ff922075409450cd559d85bdf2ba6dcddb0c280574e557b7195de",
       "output_path": "skills/dayz-weapons/references/cfgweapons-contract.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -18170,10 +18260,20 @@
           "source_path": "enforce-script-reference/references/config-cpp.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "9805d239532367ba03587bc824d1fa87a60399e4e4807297f7fcd44f3173369d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/config-cpp.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "5d1c0d041487ab755b315bd0f526c0cb516a3052e3977ac960a78f948259b777",
+      "output_hash": "9805d239532367ba03587bc824d1fa87a60399e4e4807297f7fcd44f3173369d",
       "output_path": "skills/enforce-script-reference/references/config-cpp.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -18214,10 +18314,20 @@
           "source_path": "enforce-script-reference/references/llama-extraction-patterns.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "e5acbd5007b416f91a05df335eec7941d3bca44520c70faf6916205c7649eb66",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/llama-extraction-patterns.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "25154bef9386f235721e24aca353bfef106eae6c3e05ef30857e60451b75c431",
+      "output_hash": "e5acbd5007b416f91a05df335eec7941d3bca44520c70faf6916205c7649eb66",
       "output_path": "skills/enforce-script-reference/references/llama-extraction-patterns.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -18236,10 +18346,20 @@
           "source_path": "enforce-script-reference/references/memory-management.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "03d638286890c136c1f9d5c6f8210355d1f9eabd542e0a8f58e6d67c56b43664",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/memory-management.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "f84cd92a1f26b4861022de2d53a46568bedc939721635d580f6b94839a9e93b5",
+      "output_hash": "03d638286890c136c1f9d5c6f8210355d1f9eabd542e0a8f58e6d67c56b43664",
       "output_path": "skills/enforce-script-reference/references/memory-management.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -18268,10 +18388,20 @@
           "source_path": "skills/enforce-script-reference/references/networking.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "318088a934da4909ff871179816ea67b43f5e3cfc4f02019da1969ed8fc61b8e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/networking.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "956b29ec394a4361ea347e499b2888f5903618cc1bdaa251380516c1830736c7",
+      "output_hash": "318088a934da4909ff871179816ea67b43f5e3cfc4f02019da1969ed8fc61b8e",
       "output_path": "skills/enforce-script-reference/references/networking.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -18520,10 +18650,20 @@
           "source_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
           "source_revision": "claude/project-thread-l0hlko@2026-11-10",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Clean-room additions and corrections (2026-11-13), verified against DayZ 1.30.164289 (vanilla scripts/configs, native Linux server probes, CF 0763e7e, Expansion-Scripts 14fd692): new verified facts, and fixes where the Pack was wrong (ref keeps non-Managed classes alive; RegisterNetSyncVariableFloat's last argument is decimal digits; scope=1 classes can be created by script; ExpansionVehicleBase is an obsolete Transport stub). Written by Claude (Anthropic) without access to the third-party text.",
+          "license": "MIT",
+          "source_hash": "5bb610e7b446e8f57bbf0d46fbec60463d0da7f19bdf0be7954b61b79cca97b2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "2abfd49659fe7af9e3cc11de4589b6d298139cadb43b213066c53fed182b6242",
+      "output_hash": "5bb610e7b446e8f57bbf0d46fbec60463d0da7f19bdf0be7954b61b79cca97b2",
       "output_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -42642,6 +42782,50 @@
       "output_path": "skills/dayz-test-ingame/references/linux-native-server.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-persistence/references/central-economy-files.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Clean-room reference: written by a Claude (Anthropic) agent that never saw the dayz-dev plugin, from a factual spec another agent made of the plugin's third-party parts; every fact re-verified against DayZ 1.30.164289 (Steam build 26220720): the extracted vanilla scripts and configs, the server's mission files, native Linux server boots with a probe init.c, and pinned CF 0763e7e / Expansion-Scripts 14fd692 sources. Unverifiable, outdated and pre-1.30-only items were dropped.",
+          "license": "MIT",
+          "source_hash": "c356c1b7c630bd98b972384c3fed0bf0738cd8a6c20c3030556dc42885cbf62c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/references/central-economy-files.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c356c1b7c630bd98b972384c3fed0bf0738cd8a6c20c3030556dc42885cbf62c",
+      "output_path": "skills/dayz-persistence/references/central-economy-files.md",
+      "routing_artifact_id": "skill/dayz-persistence",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/references/server-and-mission-config.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Clean-room reference: written by a Claude (Anthropic) agent that never saw the dayz-dev plugin, from a factual spec another agent made of the plugin's third-party parts; every fact re-verified against DayZ 1.30.164289 (Steam build 26220720): the extracted vanilla scripts and configs, the server's mission files, native Linux server boots with a probe init.c, and pinned CF 0763e7e / Expansion-Scripts 14fd692 sources. Unverifiable, outdated and pre-1.30-only items were dropped.",
+          "license": "MIT",
+          "source_hash": "a44a4806dc505db560d0b81ff71b3d030aa0f4facdca6de19341d2cbcd42d3ae",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/server-and-mission-config.md",
+          "source_revision": "cleanroom-1.30.164289@2026-11-13",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a44a4806dc505db560d0b81ff71b3d030aa0f4facdca6de19341d2cbcd42d3ae",
+      "output_path": "skills/dayz-test-ingame/references/server-and-mission-config.md",
+      "routing_artifact_id": "skill/dayz-test-ingame",
+      "verification_level": "runtime_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

@@ -150,7 +150,7 @@ For static structures (HouseNoDestruct base) with animated doors:
 ```cpp
 class land_MyBuilding: HouseNoDestruct
 {
-    scope = 1;          // 1 = editor only, 2 = player-spawnable
+    scope = 1;          // 1 = script/terrain only (not in spawn lists), 2 = public
     model = "MyMod\MyBuilding\MyBuilding.p3d";
     class Doors
     {

@@ -9,12 +9,13 @@ destroyed immediately when their reference count hits zero.
 ### Two Class Families
 
 **Managed classes** (inherit from `Managed`):
-- Use strong references by default
-- Most DayZ game objects inherit from Managed (EntityAI → Object → Managed)
+- Entities are Managed: `Object extends IEntity` and `IEntity: Managed`
+  (`scripts/3_Game/Entities/Object.c:64`, `scripts/1_Core/proto/EnEntity.c:164`, DayZ 1.30.164289)
 - Instances survive as long as at least one strong reference exists
+- A class **field** without `ref` is weak here too (measured below)
 
 **Non-Managed classes** (plain classes, no Managed ancestor):
-- **Class fields** default to **weak** pointers — must use `ref` to keep target alive; without `ref` the field dangles when the referenced object is destroyed. This is where ref bugs actually live.
+- **Class fields** default to **weak** pointers — must use `ref` to keep target alive. This is where ref bugs actually live.
 - **Local variables** default to **strong** references (per Bohemia's official Enforce Script wiki). ARC keeps them alive to end of scope. `new X()` assigned to a plain local survives the enclosing scope without needing `ref`.
 - Summary: the "weak by default" rule applies to CLASS FIELDS specifically, not to locals.
 
@@ -62,8 +63,21 @@ has both `ref InventoryLocation` and plain `InventoryLocation` locals).
 The plain form is idiomatic and shorter; `ref` on local is legal but adds
 no extra semantics.
 
-**Rule summary**: `ref` is REQUIRED on non-Managed class member fields
-(otherwise they dangle). NEVER on params/returns. On locals it's optional
+**Measured on the dedicated server, DayZ 1.30.164289** (a probe in the mission `init.c`, i.e. a class
+declared in the mission module, with a destructor that prints):
+
+- `ref` works on a plain class with no `Managed` ancestor: a `ref` field kept its object alive until the
+  holder was released, then the destructor ran. You do not need to inherit `Managed` for `ref` to work.
+- A field without `ref` is weak for **both** families: once the only strong local was set to `null`, the
+  object was destroyed and the weak field read `NULL` (for a plain class and for a `Managed` one alike). It
+  was cleared, not left dangling.
+- Assigning `new` straight into a non-`ref` field does not compile:
+  `Variable 'm_X' is not strong ref (missing 'ref'?) !`, followed by `Can't compile mission init script`.
+- Two plain objects holding `ref` to each other were never destroyed after both locals were released:
+  no destructor line was printed for the rest of that run, so the cycle rule below holds.
+
+**Rule summary**: `ref` is REQUIRED on class member fields that should own their target
+(otherwise the target dies with its last strong reference and the field reads `NULL`). NEVER on params/returns. On locals it's optional
 style — don't mass-refactor existing code just to remove them.
 
 ### `autoptr` — Scoped Strong References

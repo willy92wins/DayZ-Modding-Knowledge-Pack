@@ -190,10 +190,10 @@ Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/08-tutoria
 - [ ] `CfgPatches` class name matches addon folder name
 - [ ] `requiredAddons` uses CfgPatches class names:
   - CommunityFramework: `"JM_CF_Scripts"` (NOT `"CommunityFramework"`)
-  - DabsFramework: `"DF_Scripts"` or `"DF_GUI"` (NOT `"DabsFramework"`)
+  - DabsFramework: `"DF_Scripts"` or `"DF_GUI"` (NOT `"DabsFramework"`). Expansion: `"DayZExpansion_Core"` for Core; a module's scripts patch is `"DayZExpansion_<Module>_Scripts"` (e.g. `_Market_Scripts`, `_AI_Scripts`, `_Quests_Scripts`, `_Vehicles_Scripts`, `_BaseBuilding_Scripts`), not `"DayZExpansion_<Module>"` (`salutesh/DayZ-Expansion-Scripts@14fd692`: `DayZExpansion/Core/Stub/config.cpp:3`, `DayZExpansion/Market/Scripts/config.cpp:3`)
   - Vanilla: `"DZ_Data"`, `"DZ_Scripts"`
 - [ ] `hiddenSelections[]` count matches `hiddenSelectionsTextures[]` count
-- [ ] `scope = 2` spawnable, `1` reference, `0` abstract
+- [ ] `scope = 2` public, `1` protected (script can still create it, e.g. vanilla `LargeTentClutterCutter`), `0` abstract
 - [ ] Inheritance: verify parent exists or is in requiredAddons
 - [ ] `inventorySlot` = string for single, `inventorySlot[]` = array for multiple
 - [ ] `ghostIcon`: `"set:setname image:imagename"` - verify imageset exists

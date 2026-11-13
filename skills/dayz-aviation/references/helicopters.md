@@ -1208,6 +1208,14 @@ ctor, `ExpansionVehicleModule.c:36-42`) still binds to *either* base: it casts t
 one** (`ExpansionHelicopterScript : CarScript`); the `Transport`-based `ExpansionVehicleBase` is the
 legacy era, kept for towing/compatibility.
 
+Current state (`salutesh/DayZ-Expansion-Scripts@14fd692`, 2026-10-15): the vehicle classes Expansion still
+builds on are `CarScript` children, `ExpansionHelicopterScript : CarScript` and `ExpansionBoatScript : CarScript`
+(`DayZExpansion/Vehicles/Scripts/4_World/DayZExpansion_Vehicles/Entities/Vehicles/expansionhelicopterscript.c:17`,
+`expansionboatscript.c:16`). `ExpansionVehicleBase` survives only as a stub in an `OBSOLETE/` folder that derives
+from `Transport` directly (no `ExpansionVehicleBaseBase` any more) and exists, per its own comment, only so
+third-party mods that still name the type keep compiling; its methods are `[Obsolete]` and return empty values
+(`.../Entities/Vehicles/OBSOLETE/ExpansionVehicleBase.c:1-12`). Write new code against the `CarScript` classes.
+
 ## 5. Clean inheritance — one base, many aircraft
 
 [VERIFIED-EXP] Concrete aircraft are thin subclasses of `ExpansionHelicopterScript` carrying almost only

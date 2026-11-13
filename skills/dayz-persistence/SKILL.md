@@ -361,3 +361,5 @@ not persistence.
 - [ ] Do not clone vanilla's unchecked `$mission:` `FileSerializer` overwrite.
 - [ ] Classify CombinationLock 142→144 as gated known/legacy; classify
       ThermalBias 142→144 as failed/truncated unless Bohemia wipes characters.
+
+The format of the CE files a mod or server edits (`types.xml`, `cfgspawnabletypes.xml`, `events.xml`, `globals.xml`, `economy.xml`, `cfglimitsdefinition.xml`) on 1.30, with stock values: [references/central-economy-files.md](references/central-economy-files.md).

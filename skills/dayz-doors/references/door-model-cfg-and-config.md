@@ -99,7 +99,7 @@ The button is absent from its skeleton because it does not animate (**Door_w_But
 | **model** | Addon-relative P3D path. | Every real **config.cpp:15**. |
 | **class Doors** | Door subsystem under the entity. | Every real **config.cpp:16**. |
 
-**Verified: `scope` = 0 private / 1 protected / 2 public.** BI CfgVehicles Config Reference. In DayZ practice, 1 = protected (placed via Terrain Builder or inherited, not directly spawnable) and 2 = player/admin-spawnable (user's `enforce-script-reference/references/config-cpp.md:123`). Buildings ship `scope = 1`, matching the tutorial's intent. (Verified 2026-07-14.)
+**Verified: `scope` = 0 private / 1 protected / 2 public.** BI CfgVehicles Config Reference. In DayZ practice, 1 = protected (placed via Terrain Builder, inherited, or created by script, but not offered as a public spawnable class: vanilla DayZ 1.30.164289 gives `LargeTentClutterCutter` `scope = 1` (`DZ/gear/camping/config.cpp:719-722`) and creates it from script with `CreateObjectEx` (`scripts/4_World/Entities/ItemBase/TentBase/LargeTent.c:140`)) and 2 = player/admin-spawnable (user's `enforce-script-reference/references/config-cpp.md:123`). Buildings ship `scope = 1`, matching the tutorial's intent. (Verified 2026-07-14.)
 
 ### Per-door entry
 
