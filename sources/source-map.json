@@ -1841,10 +1841,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "workshop-publish-r2@2026-11-12",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Changed gains the entry for the GP7 measurements of layout-variants-130.md (DayZDiag 1.30.164289, 2026-11-12, runs P0, P1 and P2: two more vanilla layouts as a base and the changed-GUID control, inheritance on a child widget, three more layout GUIDs checked, the styles delta replacing the whole file, and the two full shadow copies), naming the four new claims and the two extended ones, the Workbench unknown that stays, and the SKILL.md index line.",
+          "license": "MIT",
+          "source_hash": "d6535e4dcca367c8bd32aa900ab0e6e2db55f0d44462a2f20fca024b3e762182",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "524052367276069fd830a58aeea1be4320e6dd0335fb851961795f65c2b91b97",
+      "output_hash": "d6535e4dcca367c8bd32aa900ab0e6e2db55f0d44462a2f20fca024b3e762182",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -14146,10 +14156,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "claude/project-thread-h217et@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The index line of references/layout-variants-130.md (line 138) gains the measured span 2026-11-05 to 2026-11-12 and says that the inheritance also works on a child widget and that a full copy with your changes works for the imageset and styles shadows, from the GP7 runs P0, P1 and P2 on DayZDiag 1.30.164289 (claims CLAIM-UI-VARIANT-INHERIT-CHILD-130, CLAIM-UI-SHADOW-IMAGESET-FULL-130 and CLAIM-UI-SHADOW-STYLES-FULL-130). One line changed, line count unchanged.",
+          "license": "MIT",
+          "source_hash": "02f461cb642a84ebc163104ff13645304a3425b1a6bfb1f500a0eb127b626344",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "7c23b1d9b1dfbc6999cb510f4834143353b5628240924682d864ae2ecbf174ab",
+      "output_hash": "02f461cb642a84ebc163104ff13645304a3425b1a6bfb1f500a0eb127b626344",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -20153,10 +20173,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "workshop-publish-r2@2026-11-12",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers the four runtime_verified claims of the 2026-11-12 GP7 test (CLAIM-UI-VARIANT-INHERIT-OTHER-LAYOUTS-130, CLAIM-UI-VARIANT-INHERIT-CHILD-130, CLAIM-UI-SHADOW-IMAGESET-FULL-130 and CLAIM-UI-SHADOW-STYLES-FULL-130, runs P0, P1 and P2 on DayZDiag 1.30.164289, probe @GP7Probe PBO sha256 55d187de3fbc2ea50307c6c05ca16c00c8f33c38a285daaaf028d0003b005935) and extends the evidence of CLAIM-UI-LAYOUT-GUID-CRC64-130 (the three Layout load GUIDs of the runs, seven checked layouts) and of CLAIM-UI-SHADOW-STYLES-REPLACES-130 (run P2: the MultilineTextWidget styles the delta does not hold measure 0 x 0); the line ranges of the claims of layout-variants-130.md follow the edited page.",
+          "license": "MIT",
+          "source_hash": "2762a97098cfd92277a6d25042f28462af0d20ef373cee068767bfff4f18a924",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "3a1a8949402ed3bc827ac0a800e9b996b70ed47da2d608d4cdbf52b931ed80b0",
+      "output_hash": "2762a97098cfd92277a6d25042f28462af0d20ef373cee068767bfff4f18a924",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -39275,10 +39305,20 @@
           "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
           "source_revision": "gap-66306aa-ingame-gp6@2026-11-10",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, in-game test of 2026-11-12 on DayZDiag 1.30.164289 (plan GP7, runs P0, P1 and P2): section 4 gains CLAIM-UI-VARIANT-INHERIT-OTHER-LAYOUTS-130 (day_z_chat_item.layout and notification_info.layout as a base, the changed-GUID control and the no-base control) and CLAIM-UI-VARIANT-INHERIT-CHILD-130 (the same inheritance on a child widget), CLAIM-UI-LAYOUT-GUID-CRC64-130 gains the three GUI : Layout load GUIDs of the runs (seven checked layouts in all), and its section 4 inferred paragraph is rewritten for root or child inheritance; section 5 gains the whole-file reading of CLAIM-UI-SHADOW-STYLES-REPLACES-130 from run P2 (the MultilineTextWidget section the delta does not hold measures 0 x 0), CLAIM-UI-SHADOW-IMAGESET-FULL-130 and CLAIM-UI-SHADOW-STYLES-FULL-130 from run P1, and its inferred paragraph now rests on both full copies and both deltas; the unknown for a layout inherited by a widget inside another layout leaves section 6, the Workbench unknown stays, and the header date gains 2026-11-12. Lines 1-153 unchanged apart from that date.",
+          "license": "MIT",
+          "source_hash": "22ce61429b9ab60f7387de213f477d74774aa3c3bb8869822e9855bc7539e466",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+          "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "81b8d065ac0c9514c85980885dd07d01756f1f1bbeedf9a322283171581bced6",
+      "output_hash": "22ce61429b9ab60f7387de213f477d74774aa3c3bb8869822e9855bc7539e466",
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"

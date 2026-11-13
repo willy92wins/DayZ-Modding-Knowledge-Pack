@@ -139,6 +139,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Workbench resource variants of other types, and a layout inherited by a widget inside another layout.
   `SKILL.md` names the new sections where it points to the page.
 
+- `dayz-ui-development` `references/layout-variants-130.md`: two more measurements on DayZDiag
+  1.30.164289 (2026-11-12). A layout of your own that inherits a vanilla layout by its GUID works as a base
+  for `day_z_chat_item.layout` and `notification_info.layout` too, and on a child widget of another layout;
+  the same body with the last bit of the GUID changed gave the same trees, so those runs do not show that
+  the GUID's value is what finds the base. A layout's GUID is checked on seven layouts in all. The styles
+  delta replaces the whole file: the `MultilineTextWidget` styles it does not hold measure 0 x 0, and a
+  full copy of `BleedingDrops.imageset` and of `dayzwidgets.styles`, each with its changes, works.
+  `CLAIM-UI-VARIANT-INHERIT-OTHER-LAYOUTS-130`, `CLAIM-UI-VARIANT-INHERIT-CHILD-130`,
+  `CLAIM-UI-SHADOW-IMAGESET-FULL-130`, `CLAIM-UI-SHADOW-STYLES-FULL-130`; extended
+  `CLAIM-UI-LAYOUT-GUID-CRC64-130`, `CLAIM-UI-SHADOW-STYLES-REPLACES-130`. One unknown stays: Workbench
+  resource variants of other types. `SKILL.md` changes its index line for the page.
+
 ### Fixed
 
 - `dayz-clothing`: the chiral in-game check now covers a garment with left/right-weighted sleeves

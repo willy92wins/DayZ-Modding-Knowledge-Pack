@@ -1,7 +1,7 @@
 # Layout variants on DayZ 1.30 — change a vanilla `.layout` without replacing it
 
 Measured on DayZ 1.30.164200 (stable, DayZDiag), 2026-10-27 and 2026-11-05, and on 1.30.164289 with variants
-written by hand, 2026-11-10 (their evidence is in each claim of `sources/claims.json`). Target:
+written by hand, 2026-11-10 and 2026-11-12 (their evidence is in each claim of `sources/claims.json`). Target:
 `VANILLA/gui/layouts/day_z_ingamemenu.layout`, the Esc menu, created by
 `VANILLA/scripts/5_mission/GUI/InGameMenu.c:38`. Evidence: `VAULT/reviews/2026-10-26-dayz-130-variants-and-fsshadowing.md`
 (sections "Results (2026-10-27)", "Workbench-generated variants (2026-11-05)", "Probe 4 results (2026-11-05)")
@@ -173,15 +173,22 @@ What did not work, in the same runs:
   `SCRIPT (E): Cannot open layout '{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout'` and
   `Cannot load layout` for the same name. The GUID form names a base inside a layout; script does not open it.
 
-[EXACT][CLAIM-UI-LAYOUT-GUID-CRC64-130] **A layout's GUID is a CRC-64 of its path, with or without a
-`.meta`.** The client log of 1.30.164289 names layouts with their GUID in `GUI : Layout load @"{GUID}path"`
-lines, also layouts packed without a `.meta`: `{D28473AC9D1FDDED}L5Probe3/gui/l5p3_noinherit.layout`,
+[EXACT][CLAIM-UI-LAYOUT-GUID-CRC64-130] **A layout's GUID is a CRC-64 of its path, checked on seven
+layouts, with or without a `.meta`.** The client log of 1.30.164289 names layouts with their GUID in
+`GUI : Layout load @"{GUID}path"` lines, also layouts packed without a `.meta`:
+`{D28473AC9D1FDDED}L5Probe3/gui/l5p3_noinherit.layout`,
 `{BF87DB555BA864F7}L5Probe3/gui/l5p3_inherit_path.layout`,
 `{D87638C86BF5A92A}DayZ_MCP/gui/layouts/mcp_dialog.layout`, and the Esc menu's
 `{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout` (§1). Computed offline on 2026-11-10, each of the four
 is the CRC-64/WE of the path in upper case with forward slashes (`GUI/LAYOUTS/DAY_Z_INGAMEMENU.LAYOUT` gives
 `8648FA7C9D16ED7D`): polynomial `0x42F0E1EBA9EA3693`, MSB first, no reflection, init and final XOR
 `0xFFFFFFFFFFFFFFFF` (check value of `123456789`: `62EC59E3F1A4F00A`), written as 16 upper-case hex digits.
+The client log of 2026-11-12 adds `GUI : Layout load @"{F374C13E7501FC6E}GP7Probe/gui/gp7_chat_nobase.layout"`,
+`GUI : Layout load @"{0DFA45C5E9E90A3A}GP7Probe/gui/gp7_notice_nobase.layout"` and
+`GUI : Layout load @"{BCEF4C226FD9C108}GP7Probe/gui/gp7_child_nobase.layout"`, and computed offline on
+2026-11-12 each of the three is the CRC-64/WE of its path in upper case. The GUIDs of the two bases of
+`CLAIM-UI-VARIANT-INHERIT-OTHER-LAYOUTS-130` were computed the same way and used as a base, but no log line
+names them, so they do not count among the seven checked here.
 
 [EXACT][CLAIM-UI-VARIANT-INHERIT-STACKS-130] **With a variant of the same layout loaded, the inherited base is
 the varied layout.** With the PBO of `CLAIM-UI-VARIANT-NO-CONFIG-130` loaded, the layout above gave both its
@@ -189,10 +196,37 @@ own edits and the variant's: `licensing_children=4 logo_vis=0 added_variant=1@Li
 A variant at the vanilla path applies to every creation of that path, script included:
 `CreateWidgets("gui/layouts/day_z_ingamemenu.layout")` gave `logo_vis=0 added_variant=1@Licensing`.
 
+[EXACT][CLAIM-UI-VARIANT-INHERIT-OTHER-LAYOUTS-130] **Two more vanilla layouts work as a base the same
+way.** On DayZDiag 1.30.164289 (2026-11-12), a layout at the mod's own path whose root has the class of the
+vanilla root and inherits `"{GUID}gui/layouts/<name>.layout"`, with the GUID computed as in
+`CLAIM-UI-LAYOUT-GUID-CRC64-130`, gave the vanilla tree with its edits for `gui/layouts/day_z_chat_item.layout`
+(`WrapSpacerWidgetClass`, GUID `80E5A5B93003BC87`) and `gui/layouts/notification_info.layout`
+(`WindowWidgetClass`, GUID `3D8F7B52AA108BD5`). The body, in the format of §1, hides one vanilla widget
+(`ChatItemSenderWidget`; `BackgroundWidget`) and adds `gp7_added` at the root. In each of the three runs the
+root kept its vanilla name (`ChatItemWidget`; `connectionWarningWindowWidget`), held one child more than the
+vanilla path gave (3 against 2; 4 against 3), held the hidden widget with visibility 0, kept the other vanilla
+widget (`ChatItemTextWidget`; `NotificationMultilineTextWidget`) and held `gp7_added` under the root, and the
+vanilla path, created before and after, gave its own tree with no edit. The same root with the last bit of the
+GUID changed (`80E5A5B93003BC86`; `3D8F7B52AA108BD4`) and the same path gave the same trees, with no warning
+and no log line naming those GUIDs, so these runs do not show that the GUID's value is what finds the base.
+The same body with no base gave a root with no name holding only `gp7_added`, and one
+`Overridden prefab member (GUID: '{…}' type: …) no longer exists in prefab` warning per `Prefab` entry.
+
+[EXACT][CLAIM-UI-VARIANT-INHERIT-CHILD-130] **A child widget can inherit a vanilla layout the same way.**
+On DayZDiag 1.30.164289 (2026-11-12), in a layout of your own whose root `gp7_host_root` holds one child,
+`FrameWidgetClass "{7A07000000000004}" : "{8648FA7C9D16ED7D}gui/layouts/day_z_ingamemenu.layout" {` with
+`Name "gp7_slot"`, the child held the Esc menu's tree: with no edit inside, 8 children, `Licensing` with 2
+and `dayz_logo` visible; with the body of the root-level variant of this section inside (`dayz_logo` hidden,
+`gp7_added` added inside `Licensing`), the tree with both edits, as the root-level inheritance gave in the
+same runs (8 children, `Licensing` with 3, `dayz_logo` hidden, `gp7_added` inside `Licensing`). The host root
+kept one child, the slot, in both cases; the same child with that body and no base held no children, and the
+Esc menu the game created in the same runs had neither edit (`Licensing` with 2, `dayz_logo` visible).
+
 [INFERRED] To change one screen only, have that screen's script create a layout of your own that inherits
-the vanilla one, and ship no variant at the vanilla path: a variant there reaches every screen that uses the
-layout. The GUID of another vanilla layout is the same CRC of its path; only the Esc menu's has been used as
-a base in game.
+the vanilla one, at its root or in a child widget, and ship no variant at the vanilla path, because a variant
+there reaches every screen that uses the layout; three vanilla layouts have been used as a base in game, and
+another vanilla layout's GUID is the same CRC of its path; write the computed GUID, because a wrong one
+giving the same base is what these runs measured, not a rule.
 
 ## 5. Shadows of an imageset or of the styles replace the whole file
 
@@ -215,14 +249,37 @@ values. Without the PBO the widths were `Normal 680`, `Bold 690`, `Light 670` an
 four were `670`. So the file is read (`L5Style` draws like vanilla `Light`, which is on `MetronLight`),
 `Normal` is replaced by name, and `Bold`, which the file does not repeat, draws like the new `Normal`. A style
 name that does not exist draws like `Normal` too (`L5Style` without the PBO). No error line of that run names
-`dayzwidgets`.
+`dayzwidgets`. The whole file is replaced, not only the section the delta holds: on 2026-11-12 the same PBO,
+loaded alone again, gave 670 for the four `TextWidget` styles, and three `MultilineTextWidget`s with
+`DayZNormal`, `DayZBold` (two styles of the vanilla `MultilineTextWidget` section,
+`VANILLA/gui/looknfeel/dayzwidgets.styles:10`, which the delta does not hold) and a style name that does not
+exist gave `GetTextSize` 0 x 0, where without the PBO they gave 540, 550
+and 540, height 22. Without the PBO, a style name that does not exist measured like `DayZNormal` in that class.
+
+[EXACT][CLAIM-UI-SHADOW-IMAGESET-FULL-130] **A full copy of an imageset shadow works.** On DayZDiag
+1.30.164289 (2026-11-12), `@L5ShadowImgFull`, packed by FileBank with header `prefix=gui` and `fsShadowing=1`
+and one file, `imagesets/BleedingDrops.imageset` (1955 bytes; PBO 2097 bytes, sha256
+`a2a1af2b87c2b0c1ff3c2c6b0d18dc49299b7e3429a13c8dbbb3e13ef2d7aee5`), held the vanilla `BleedingDrops.imageset`
+with `Bleeding2` resized to 100 x 100 and a new `l5p3_added` of 64 x 64. Loaded together with the full styles
+copy of `CLAIM-UI-SHADOW-STYLES-FULL-130` in one run, it gave `Bleeding1` 128 x 128, `Bleeding2` 100 x 100 and
+`l5p3_added` 64 x 64, where without it `Bleeding1` and `Bleeding2` gave 128 x 128 and `l5p3_added` failed. That
+run's log has no `LoadImageFile` error, where the delta of `CLAIM-UI-SHADOW-IMAGESET-REPLACES-130` logged one
+per image it did not repeat.
+
+[EXACT][CLAIM-UI-SHADOW-STYLES-FULL-130] **A full copy of the styles shadow works.** On DayZDiag 1.30.164289
+(2026-11-12), `@L5ShadowStyFull`, packed by FileBank with header `prefix=gui` and `fsShadowing=1` and one file,
+`looknfeel/dayzwidgets.styles` (242674 bytes; PBO 242812 bytes, sha256
+`b702f3ddbad8b58e88753abe32ab658ec500b702effc55c7f494900ac5b94f4e`), held the vanilla `dayzwidgets.styles`
+with the `TextWidget` `Normal` on `gui/fonts/MetronLight` and a new `L5Style` on `gui/fonts/MetronLight`. It
+gave `Normal` 670, `Bold` 690, `Light` 670 and `L5Style` 670, where without it they were 680, 690, 670 and
+680, and the `MultilineTextWidget` styles kept their widths (540, 550 and 540, as without it). So the changed
+and the new style apply, and the styles the copy repeats keep drawing as before.
 
 [INFERRED] A shadow of an imageset or of `dayzwidgets.styles` has to hold the whole vanilla file with your
-changes, and it changes those images or styles on every screen. A full copy was not loaded in game.
+changes (both full copies worked, both deltas lost what they did not repeat), and it changes those images or
+styles on every screen; only `BleedingDrops.imageset` and `dayzwidgets.styles` were measured.
 
 ## 6. Unknowns — do not promise these
 
 - **Resource variants made in Workbench for other types.** The shadows of §5 were plain files. Whether a
   Workbench resource variant of an `.imageset` or of the styles merges like a layout variant is not measured.
-- **A layout inherited by a widget inside another layout** (`Class "{id}" : "{GUID}path"` on a child) is not
-  measured.
