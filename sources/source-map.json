@@ -1844,7 +1844,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "44b68fa30b6b611e3bf5a74e49d0844a7b7fe9732ae162cb3cff0cf444507bc0",
+      "output_hash": "6cf71712d3c8ee4d42e9ae3798e5f60e537a1a6d9e7c5895016afb063a3a6a8e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -20156,7 +20156,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "97b173ad5a427c24e9f5cf4e525a8670ff0ecce32a026005eb132b981a7e8645",
+      "output_hash": "7e188c90ddab6f766274c19edb28ae792fd40b89bcb093448bd060db62a4466a",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40480,20 +40480,20 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Local dayz-mcp loopback probe on build 26220720; run ae70ec7d; PBO ca0b88c1; logs script_2026-11-12_20-11-16 and script_2026-11-12_20-11-39.",
-          "license": "MIT",
+          "decision_evidence": "The note is a reviewed English projection of the vault note VAULT/AI/20_Knowledge/dayz-script-network-arrays-probe.md and the raw records named in its evidence lines (server and client script logs script_2026-11-12_20-11-16.log and script_2026-11-12_20-11-39.log, the client RPT header, audit-events-excerpt.txt, netprobe-build4.log, the Steam appmanifest record and the probe source files NetProbeGame.c and NetProbePlayer.c). This review replaced build 26220720 with the DayZDiag 1.30.164289.70 executable version, cited loopback from the client launch line, stated that the probe's ACK is sent unconditionally after the read attempt and that the server read_ok lines prove the read, said the input ACK travels as a ScriptRPC, and moved the idempotency and anti-cheat bullet to labelled design advice.",
+          "license": "Private evidence; reference only",
           "source_hash": "7c4f0512488218b73d87c3dd6dbcabc5d464dcdb53271216e2baddd6f4641e4d",
           "source_id": "obsidian-knowledge",
           "source_path": "AI/20_Knowledge/dayz-script-network-arrays-probe.md",
           "source_revision": "filesystem@2026-11-12",
-          "verification_level": "source_verified"
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "230ac655e3da8fb584eeb45f208a9028f49b0bad403d3721299d0dc9b4c0eda4",
+      "output_hash": "c8b5c2c91343ca77f9662d1dec9ab9c2870c7720365414a16b63dd363248495f",
       "output_path": "knowledge/script-network-arrays.md",
       "routing_artifact_id": "knowledge",
-      "verification_level": "source_verified"
+      "verification_level": "runtime_verified"
     },
     {
       "artifact_id": "file/knowledge/script-network-limits.md",
@@ -40502,7 +40502,7 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Runtime probe of a local DayZ diag client/server pair on build 26220720; the English Pack note is a reviewed projection of the vault note, keeping the measured numbers and dropping local-only detail.",
+          "decision_evidence": "The note is a reviewed English projection of the vault note VAULT/AI/20_Knowledge/dayz-script-network-limits-probe.md and the raw script logs and RPT headers named in its evidence lines (runs 446a5b58, 9cb3d0d9, 10faabb7, b94c5a20 and d894a1b8, plus the Steam appmanifest records). This review corrected the queue count to four sent and six not sent, removed the stated 144-byte input limit and the byte-budget denial, separated the RPC and input sweeps, replaced build 26220720 with the DayZDiag 1.30.164289.70 executable version, dropped unverified probe source and PBO hashes, labelled unmeasured advice as design, and named the ACK as the probe's own ACK sent after the read attempt.",
           "license": "Private evidence; reference only",
           "source_hash": "932faa4d992cda726bef9b2dcb9a7d51dd36f5903e8ad7a3602dc0192cc46219",
           "source_id": "obsidian-knowledge",
@@ -40512,7 +40512,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e12a921259cb268c5376aaebc3eb23e562896cd307459a2afa922147b7e6d6b2",
+      "output_hash": "c1aa658835e5df3722819d0dc4cf9067e348dded2aa21d0416416a74fd4d54a1",
       "output_path": "knowledge/script-network-limits.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "runtime_verified"
