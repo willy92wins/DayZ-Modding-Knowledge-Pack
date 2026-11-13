@@ -20156,7 +20156,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "fb4b59b3ec88a45a4773c862006dedbae861c336b57003cc25940b5eb1609e70",
+      "output_hash": "97b173ad5a427c24e9f5cf4e525a8670ff0ecce32a026005eb132b981a7e8645",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40494,6 +40494,28 @@
       "output_path": "knowledge/script-network-arrays.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/script-network-limits.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Runtime probe of a local DayZ diag client/server pair on build 26220720; the English Pack note is a reviewed projection of the vault note, keeping the measured numbers and dropping local-only detail.",
+          "license": "Private evidence; reference only",
+          "source_hash": "932faa4d992cda726bef9b2dcb9a7d51dd36f5903e8ad7a3602dc0192cc46219",
+          "source_id": "obsidian-knowledge",
+          "source_path": "AI/20_Knowledge/dayz-script-network-limits-probe.md",
+          "source_revision": "filesystem@2026-11-12",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "e12a921259cb268c5376aaebc3eb23e562896cd307459a2afa922147b7e6d6b2",
+      "output_path": "knowledge/script-network-limits.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "runtime_verified"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
