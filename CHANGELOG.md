@@ -141,8 +141,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `SKILL.md` names the new sections where it points to the page.
 
 - `dayz-ui-development` `references/layout-variants-130.md`: two more measurements on DayZDiag
-  1.30.164289 (2026-11-12). A layout of your own that inherits a vanilla layout by its GUID works as a base
-  for `day_z_chat_item.layout` and `notification_info.layout` too, and on a child widget of another layout;
+  1.30.164289 (2026-11-12). The Esc menu layout can be inherited in a child widget of another layout.
+  A layout at the mod's own path can also inherit `day_z_chat_item.layout` or `notification_info.layout`;
   the same body with the last bit of the GUID changed gave the same trees, so those runs do not show that
   the GUID's value is what finds the base. A layout's GUID is checked on seven layouts in all. The styles
   delta replaces the whole file: the `MultilineTextWidget` styles it does not hold measure 0 x 0, and a

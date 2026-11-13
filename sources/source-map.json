@@ -1846,7 +1846,7 @@
           "decision": "merge",
           "decision_evidence": "[Unreleased] Changed gains the entry for the GP7 measurements of layout-variants-130.md (DayZDiag 1.30.164289, 2026-11-12, runs P0, P1 and P2: two more vanilla layouts as a base and the changed-GUID control, inheritance on a child widget, three more layout GUIDs checked, the styles delta replacing the whole file, and the two full shadow copies), naming the four new claims and the two extended ones, the Workbench unknown that stays, and the SKILL.md index line.",
           "license": "MIT",
-          "source_hash": "f9ab9c15a8a7c862d1b82e79bdd66824225211c5077a9d825655b5d12a8adfb9",
+          "source_hash": "cb8b509cf8f69f00e8111a7bd460b2ad83d6b84924cd52a7003abc29065d1e7e",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
@@ -1854,7 +1854,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f9ab9c15a8a7c862d1b82e79bdd66824225211c5077a9d825655b5d12a8adfb9",
+      "output_hash": "cb8b509cf8f69f00e8111a7bd460b2ad83d6b84924cd52a7003abc29065d1e7e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
