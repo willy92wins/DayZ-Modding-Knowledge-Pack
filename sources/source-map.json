@@ -1851,10 +1851,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Added bullet for knowledge/script-network-array-types.md: the measured array<int>, array<string> and nested-array results on DayZDiag 1.30.164289.70 (DayZ Server appmanifest buildid 26220720) and the eight CLAIM-NET-* claims (CLAIM-NET-ARRAY-TYPES-RPC, CLAIM-NET-ARRAY-TYPES-INPUT, CLAIM-NET-STRING-ARRAY-RPC, CLAIM-NET-STRING-ARRAY-INPUT, CLAIM-NET-NESTED-ARRAY, CLAIM-NET-NESTED-DECL, CLAIM-NET-ARRAY-TYPES-ACK, CLAIM-NET-ARRAY-TYPES-SCOPE).",
+          "license": "MIT",
+          "source_hash": "804011c5774d51d4a18474c37a92b827dc31a6b9a80d57daacd6457db5e3a386",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "script-network-array-types@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "804011c5774d51d4a18474c37a92b827dc31a6b9a80d57daacd6457db5e3a386",
+      "output_hash": "9167c9435b6a577e5ace16cda517403614418e17b62fe6a2b1dace9145521290",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -20183,10 +20193,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers the eight runtime_verified claims of knowledge/script-network-array-types.md (CLAIM-NET-ARRAY-TYPES-RPC, CLAIM-NET-ARRAY-TYPES-INPUT, CLAIM-NET-STRING-ARRAY-RPC, CLAIM-NET-STRING-ARRAY-INPUT, CLAIM-NET-NESTED-ARRAY, CLAIM-NET-NESTED-DECL, CLAIM-NET-ARRAY-TYPES-ACK, CLAIM-NET-ARRAY-TYPES-SCOPE) from the local loopback probe on DayZDiag_x64.exe 1.30.164289.70 (DayZ Server appmanifest buildid 26220720; DayZ client appmanifest buildid 26403755), run 33141e55-0737-4c29-8ced-05b4c20178d5.",
+          "license": "MIT",
+          "source_hash": "6b72a100573d86cac5d0ea249e6b55513be889187e0e85b8644ddaa3dbba930c",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "script-network-array-types@2026-11-13",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "6b72a100573d86cac5d0ea249e6b55513be889187e0e85b8644ddaa3dbba930c",
+      "output_hash": "da0aecacb57e3a475834391753fadff517f8a83b5ef46ae8e0cd74fddef925d1",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40554,6 +40574,28 @@
       "license": "MIT",
       "output_hash": "c1aa658835e5df3722819d0dc4cf9067e348dded2aa21d0416416a74fd4d54a1",
       "output_path": "knowledge/script-network-limits.md",
+      "routing_artifact_id": "knowledge",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/knowledge/script-network-array-types.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Local loopback runtime probe on DayZDiag_x64.exe 1.30.164289.70 (client RPT P:/DayZ_MCP_dev/_client/profiles/DayZDiag_x64_2026-11-13_14-06-36.RPT:2,7; server RPT P:/DayZ_MCP_dev/_server/profiles/DayZDiag_x64_2026-11-13_14-06-18.RPT:2,7; DayZ Server appmanifest buildid 26220720; DayZ client appmanifest buildid 26403755), run 33141e55-0737-4c29-8ced-05b4c20178d5 (diag client and server on one machine; final PBO built with AddonBuilder, Build Successful, SHA-256 6660d5be63325f8b51594bbeda234f06bc833e55b5601e324aecd9b41b6023fb); the English Pack note is a reviewed projection of the vault note, keeping the measured numbers and scope.",
+          "license": "MIT",
+          "source_hash": "d68201cb197fcd989aff71b1175426b8e36f9a00ccc142677fb8c523e1e3b67e",
+          "source_id": "obsidian-knowledge",
+          "source_path": "AI/20_Knowledge/dayz-script-network-array-types-probe.md",
+          "source_revision": "filesystem@2026-11-13",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "973e7dfd2b63a434a30d0d9d19b7309ba2ac6380d06ab587a7769539c81b82a9",
+      "output_path": "knowledge/script-network-array-types.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "runtime_verified"
     }
