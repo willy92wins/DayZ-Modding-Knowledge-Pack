@@ -18,9 +18,9 @@ were not tested; where a Windows rule differs, `dayz-test-ingame` says so. The r
 
 - The engine defines only the current version: the `defines:` of a 1.30 server's `Module:` lines contain
   `DAYZ_1_30`, and 1.30 does **not** define `DAYZ_1_29` (1.29 did not define `DAYZ_1_28`) (`V:30-34`).
-- So write plain 1.30 code without a version `#ifdef`. A mod that must still load on 1.29 puts the **old** code
-  under `#ifdef DAYZ_1_29` and the new code in `#else`, so the new code stays the default on 1.31+;
-  `#ifdef DAYZ_1_30` would drop the code again on 1.31 (`V:36-39`).
+- So write plain current code without a version `#ifdef`; `#ifdef DAYZ_1_30` would drop the code again on the
+  next release. Only if the user asks for a mod that must still load on an older server: put the **old** code under
+  that version's define and the current code in `#else`, so the current code stays the default (`V:36-39`).
 - `string v; g_Game.GetVersion(v);` gives the full runtime build, e.g. `"1.30.164014.27"`; use it for logging. It
   cannot select code that would not compile; only a define can (`V:40-41`).
 - A mod's own `defines[] = {"MYMOD"};` in `CfgMods` works with `#ifdef MYMOD` (`V:42`). The mod name of a loaded
@@ -87,7 +87,7 @@ file function worked with the placeholders on those builds (`V:117-128`).
 
 With `files[] = {"MyMod\scripts\4_World"};` a 1.30.164014 server loads the mod's config and shows its `CfgMods`
 defines, but compiles **none** of its scripts and prints no error: the World module count stays at vanilla (2321).
-`files[] = {"MyMod/scripts/4_World"};` fixes it; 1.29 loaded the backslash form. The folder name's case made no
+`files[] = {"MyMod/scripts/4_World"};` fixes it. The folder name's case made no
 difference. Found in Haralds Armory (Workshop 3325200572), whose five PBOs all used backslashes. Check every
 `worldScriptModule`/`gameScriptModule`/`missionScriptModule`, also in a debinarized `config.bin`. Not re-tested on
 25963285 and not tested on Windows (`V:140-146`, `V:88-89`).
@@ -106,8 +106,6 @@ difference. Found in Haralds Armory (Workshop 3325200572), whose five PBOs all u
 - `modded class` must live in the **same script module as the class it modifies**: `Transport` is a `3_Game` class,
   so `modded class Transport` in `4_World` fails with `Unknown type 'Transport'`; hook `CarScript`/`BoatScript`/
   `MotorbikeScript` instead (`EX:73-74`).
-- A string built with `"x" + (bool expression)` crashed a 1.29 server during World compile, with no script error,
-  only a crash dump. Use `bool.ToString()` (`EX:75`).
 
 ## 5. Silent breakers, measured
 

@@ -5,9 +5,9 @@ sees after a server change, RPCs both ways) needs a real client. This page runs 
 without a monitor, joins it to a local native server, and lets a test mod report its own results.
 
 Source: bzed's own measurements, from `bzed/dayz-dev-plugin@6112ac5` `testing/client-testing.md` (cited as
-`CT:<line>`), contributed to this Pack under its MIT licence by the author. **Measured** on Linux with client and
-server 1.29.163709 (app 221100) and, unless a line says otherwise, the 1.30.164014.27 pre-release, then on the
-Experimental apps (1024020); GE-Proton11-1, an AMD GPU on Vulkan/RADV, sway 1.12 (`CT:8-11`). 1.30 is stable now.
+`CT:<line>`), contributed to this Pack under its MIT licence by the author. **Measured** on Linux with the
+1.30.164014.27 pre-release (then on the Experimental apps, 1024020) unless a line says otherwise; GE-Proton11-1, an AMD
+GPU on Vulkan/RADV, sway 1.12 (`CT:8-11`). The Pack targets DayZ 1.30 or later.
 The author re-tested the whole plugin on DayZ 1.30 stable (the author's report, 2026-11-13; build not recorded here).
 
 Scripts: `skills/_shared/scripts/dayz-client-headless.sh`, `dayz-client-test.sh`, `dayz-mod-pack.sh`. Test mod:
@@ -50,6 +50,8 @@ the launch to the running Steam and land on your desktop (reasoned, not run) (`C
 - `-name=<x>` shows in the server's admin log, the cheapest "client connected" check;
 - DayZ's arguments go one per line into a file, because sway's parser would cut `-mod=@a;@b` at the `;`;
 - `PROTON` (default `GE-Proton11-1`) and `STEAM_ROOT` select the Proton tool; `PROTON_ENABLE_WAYLAND=1` is set.
+  `STEAM_ROOT` (default `~/.steam/debian-installation`) must be the library that holds the client; unlike
+  `find-dayzserver.sh`, the client scripts do not search other library folders.
 
 ## 2. Mods on the client
 
@@ -111,8 +113,6 @@ hunger, thirst or cold (`CT:205-223`).
 
 **Pitfalls found building it** (`CT:225-235`):
 
-- Do not `foreach` directly over a function's return value (`foreach (T t : Registry.All())`): on the client it
-  worked once, then threw `NULL pointer to instance` on the second call (1.29). Assign it to a local first.
 - Pick RPC ids no other mod uses (the example uses 74010 and 74011; there is no registry).
 - The runner starts 20 s after `InvokeOnConnect`, because the client is still loading.
 - Several players need several clients; this runs one.
@@ -128,7 +128,8 @@ skills/_shared/scripts/dayz-client-test.sh -t "$TREE" -s "@AutoTest" -c "@AutoTe
 # [AUTOTEST] DONE passed=4 failed=0
 ```
 
-Free ports, server, headless client, wait for `DONE`, collect `[AUTOTEST]` lines, final screenshot, teardown.
+Free ports, server, headless client, wait for `DONE`, collect `[AUTOTEST]` lines, final screenshot, teardown. With
+CF in the server's mod list pass `-m mpmissions/<mission>` (relative): CF resolves `$mission:`/`$storage:` from it.
 Exit 0 = `DONE` seen and no `FAIL`; 1 = a failure or the timeout (default 300 s; a cold client start alone takes
 about 60 s), which saves `timeout.png` (`CT:237-253`). Build and sign the example first:
 `dayz-mod-pack.sh -C <copy of assets/autotest-mod> keygen`, then `build`; link `build/@AutoTest` and
@@ -168,10 +169,9 @@ joins (measured 1.30.164078.38: the client then joined straight into the world, 
 3. Delete `mpmissions/<mission>/storage_1/players.db` (a stored character skips the fresh-spawn path).
 4. Start the server again, then join.
 
-Repeat it for every new server config that loads the bundle. The bundle already contains Spawn-Selection. The mod
-set, in load order: CF 1559212036, Dabs Framework 2545327648, DayZ-Expansion-Licensed 2116157322,
-DayZ-Expansion-Bundle 2572331007, plus DayZ-Expansion-Animations 2918418331 to drive Expansion cars or helicopters
-(`CT:299-318`; the requirements behind that order are in `dayz-mod-workflow`, `references/dayz-1-30-server-measured.md`).
+Repeat it for every new server config that loads the bundle. The bundle already contains Spawn-Selection. The mod set
+and its load order: `dayz-mod-workflow`, `references/dayz-1-30-server-measured.md`, section 8; on the client use the
+client-side folder names of the same mods (`CT:299-318`).
 
 ## Not covered
 

@@ -118,6 +118,15 @@ def test_make_server_tree_refuses_a_tree_inside_the_install(tmp_path: Path) -> N
     done = run("make-server-tree.sh", str(install / "tree"), str(install), env=isolated_env(tmp_path, steam))
     assert done.returncode == 2
     assert "outside the Steam install" in done.stderr
+    assert not (install / "tree").exists()
+
+
+def test_experimental_workshop_falls_back_to_the_stable_items(tmp_path: Path) -> None:
+    steam = fake_steam(tmp_path, appid=221100, installdir="DayZ")
+    (steam / "steamapps" / "workshop" / "content" / "221100" / "1559212036").mkdir(parents=True)
+    done = run("find-dayzserver.sh", "-e", "-w", env=isolated_env(tmp_path, steam))
+    assert done.returncode == 0, done.stderr
+    assert done.stdout.strip().endswith("workshop/content/221100")
 
 
 def test_api_index_builds_and_answers(tmp_path: Path) -> None:

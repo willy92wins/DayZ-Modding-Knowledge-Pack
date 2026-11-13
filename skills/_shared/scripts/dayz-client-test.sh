@@ -13,6 +13,8 @@
 #   -d REGEX    line that ends the test run (default '\[AUTOTEST\] DONE')
 #   -o DIR      keep screenshots/logs here (default: a new temp dir, path printed)
 #   -k PREFIX   result-line prefix to print (default '[AUTOTEST]')
+#   -m MISSION  server -mission=, relative to the tree (e.g. mpmissions/dayzOffline.chernarusplus);
+#               needed with CF, whose path resolution reads it
 #
 # Exit status: 0 = the DONE line appeared and no result line contains FAIL, 1 = FAIL line or timeout.
 # The mod decides what a test is; this only starts, waits, collects and stops (see
@@ -21,15 +23,15 @@
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd -P)
-eflag='' tree='' smods='' cmods='' wait_s=300 done_re='\[AUTOTEST\] DONE' out='' prefix='[AUTOTEST]'
-while getopts et:s:c:w:d:o:k: o; do
+eflag='' tree='' smods='' cmods='' mission='' wait_s=300 done_re='\[AUTOTEST\] DONE' out='' prefix='[AUTOTEST]'
+while getopts et:s:c:w:d:o:k:m: o; do
     case $o in
         e) eflag=-e;; t) tree=$OPTARG;; s) smods=$OPTARG;; c) cmods=$OPTARG;; w) wait_s=$OPTARG;;
-        d) done_re=$OPTARG;; o) out=$OPTARG;; k) prefix=$OPTARG;;
-        *) sed -n '2,16p' "$0" >&2; exit 2;;
+        d) done_re=$OPTARG;; o) out=$OPTARG;; k) prefix=$OPTARG;; m) mission=$OPTARG;;
+        *) sed -n '2,18p' "$0" >&2; exit 2;;
     esac
 done
-[ -n "$tree" ] && [ -n "$smods" ] && [ -n "$cmods" ] || { sed -n '2,16p' "$0" >&2; exit 2; }
+[ -n "$tree" ] && [ -n "$smods" ] && [ -n "$cmods" ] || { sed -n '2,18p' "$0" >&2; exit 2; }
 [ -x "$tree/DayZServer" ] || { echo "no DayZServer in $tree (make-server-tree.sh first)" >&2; exit 2; }
 tree=$(cd "$tree" && pwd -P)
 # One game at a time: check before spending a server start on a client that would be refused.
@@ -58,7 +60,7 @@ trap cleanup EXIT INT TERM
 echo "== server: game port $game, mods $smods"
 # shellcheck disable=SC3045  # dash and bash both have ulimit -c
 (cd "$tree" && ulimit -c 0 && exec ./DayZServer -config=serverDZ.cfg -profiles=profiles \
-    "-mod=$smods" -port="$game" -nosplash -nopause -dologs -adminlog) > "$out/server.log" 2>&1 &
+    "-mod=$smods" ${mission:+"-mission=$mission"} -port="$game" -nosplash -nopause -dologs -adminlog) > "$out/server.log" 2>&1 &
 spid=$!
 n=0
 until grep -q '__SERVER__ CREATED -> CONNECTED' "$out/server.log" 2>/dev/null; do

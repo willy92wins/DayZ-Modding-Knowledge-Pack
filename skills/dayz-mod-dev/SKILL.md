@@ -1,6 +1,6 @@
 ---
 name: dayz-mod-dev
-description: "Entry point for DayZ mod development on 1.30 or later: writing, reviewing or porting a mod in Enforce Script (vanilla, Community Framework, Expansion) end to end, and the rules that apply to every such task. Use it when a request is about a DayZ mod as a whole rather than one domain: 'write/fix/review my mod', 'port this mod to 1.30 or later', 'does this class or method exist', config.cpp/CfgMods/requiredAddons, types.xml, serverDZ.cfg, RPCs, CF or Expansion dependencies, 'the mod does not load', 'start a local DayZ server with/without mods', 'check that the server starts', build/sign/publish (PBO, .bikey, .bisign, dayzmake, Workshop), on Windows or Linux. It routes to the domain skills (vehicles, weapons, UI, persistence, models, ...) and carries the build-test-publish loop; invoke it alongside them whenever the work has to end in a mod that loads."
+description: "Entry point for DayZ mod development on 1.30 or later, for a mod as a whole: writing, reviewing or porting a mod in Enforce Script (vanilla, Community Framework, Expansion) and taking it through build, local server boot, in-game check and Workshop release, on Windows or Linux. Use it for 'write/fix/review my mod', 'port this mod to 1.30 or later', 'set up a new mod', 'my mod builds but does not work', a mod that spans several domains, CF or Expansion dependencies and load order, or 'what is the workflow from code to Workshop'. It routes to the domain skills (vehicles, weapons, UI, persistence, models, testing, packaging, ...) and carries the rules every mod task needs; invoke it alongside them whenever the work has to end in a mod that loads."
 ---
 
 # DayZ mod development: the entry point
@@ -43,6 +43,8 @@ re-check a fact against that build's sources before relying on it (next sections
   before anything else when a server dies at boot.
 - **`FindFile` works on 1.30 stable and later**; `CF.FindFileEx` and copied `FindFile` path helpers are leftovers to remove.
 - **Never write into Steam's directories** (server, client, workshop). Test servers run from a tree of their own.
+  The one exception is a symlink to the test mod in the client's install folder, which a client needs to load it;
+  remove it after the run (`dayz-test-ingame/references/linux-headless-client.md`, section 2).
 - **Uploading to the Workshop is the user's call**; prepare the commands, never run them unprompted.
 - On Linux, build and sign with **dayzmake >= 1.0.0**, never upstream armake2 (it leaves `*.c` out of the signature).
 
@@ -86,12 +88,16 @@ Match the request, read that skill first; read more than one when the request sp
 | PBO, prefix, signing, keys, Workshop | `dayz-pbo-build` |
 | Environment check: `P:`, DayZ Tools, workshop folder | `dayz-preflight` |
 | UI, `.layout`, widgets, HUD, Dabs | `dayz-ui-development` |
-| Cars, trucks, boats / motorbikes / aircraft | `dayz-vehicles` / `dayz-motorbikes` / `dayz-aviation` |
+| Cars, trucks, boats / motorbikes (read both) / aircraft | `dayz-vehicles` / `dayz-motorbikes` + `dayz-vehicles` / `dayz-aviation` |
 | Firearms / clothing / doors and locks / base building | `dayz-weapons` / `dayz-clothing` / `dayz-doors` / `dayz-basebuilding` |
 | Characters and infected / AI (Expansion eAI) | `dayz-characters` / `dayz-ai-patterns` |
 | Physics, collisions, ragdoll / sound / particles | `dayz-physics-engine` / `dayz-sound-system` / `dayz-particles` |
 | Sandstorm, heat, oil pits / terrain holes, bunkers | `dayz-environment-hazards` / `dayz-underground` |
 | Models `.p3d`, LODs, memory points / textures `.paa`, `.rvmat` / animations | `dayz-model-pipeline`, `dayz-p3d-audit`, `dayz-p3d-inspector` / `dayz-texture-pipeline` / `dayz-animation-pipeline` |
+| Proxies on a host model / previewing `.p3d`, `.paa`, `.rvmat` / UV atlases | `dayz-proxy-align` / `dayz-3d-viewer` / `uv-clean-atlas` |
+| Assets from AI generation or a ripped vehicle | `ai-3d-to-dayz` / `rip-vehicle-import` |
+| Animation authoring in Blender, Mixamo retargeting, realistic motion | `blender-animation`, `mixamo-retarget`, `dayz-realistic-animation-director` |
+| Blender geometry, render review | `blender-assembly`, `blender-visual-review` |
 | Reading a third-party mod | `dayz-pbo-reverse-engineering` |
 | Verifying in game through dayz-mcp | `dayz-mcp-verify` |
 
@@ -113,8 +119,8 @@ Match the request, read that skill first; read more than one when the request sp
 
 - CF: the regular Workshop CF 1.5.9 or newer (1559212036), one dependency `JM_CF_Scripts`; `#ifdef CF_MODULES` detects
   it without a hard dependency. Changing whether a test tree runs CF means wiping its `storage_1` first.
-- Expansion: load CF, Dabs Framework, DayZ-Expansion-Licensed, then the Bundle, then your mod. Without Dabs the Game
-  module fails with `Undefined function 'Math.Exp'`.
+- Expansion needs CF, Dabs Framework and DayZ-Expansion-Licensed before the Bundle; the ids, the order and the
+  failure without Dabs are in section 8 of the reference below (the one copy to keep current).
 - Details: `dayz-mod-workflow/references/dayz-1-30-server-measured.md` sections 8-9; CF storage:
   `dayz-persistence/references/cf-modstorage.md`; Expansion AI: `dayz-ai-patterns`; Expansion market UI:
   `dayz-ui-development`.

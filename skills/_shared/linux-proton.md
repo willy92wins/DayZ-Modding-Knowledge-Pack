@@ -151,7 +151,7 @@ repeated with the `v1.0.0` binary. This is a record of the comparison, not a new
 - **Absolute `-mod=` / `-servermod=` paths mount nothing on the native server.** The engine probes the folder,
   loads no PBO from it and prints no error; the server starts and the mod is simply absent. Give mod paths relative
   to the server tree (symlinks or `../` work). This is the reverse of the Windows rule in `dayz-test-ingame`
-  ("MOD PATHS MUST BE ABSOLUTE"); reported by bzed for 1.29 and 1.30.164014, not re-measured for this note.
+  ("MOD PATHS MUST BE ABSOLUTE"); evidence: `dayz-test-ingame/references/linux-native-server.md`, section 3.
   `-config` and `-profiles` take absolute paths; `DayZDiag` under Proton loads an absolute `-mod=Z:\…` (`dayz-test-ingame`).
 - **Which PID is Steam**: `~/.steam/steam.pid`, the file `steam.sh` itself checks. `SteamPID` in
   `~/.steam/registry.vdf` can name a start-up process that is already gone (measured 2026-11-06: `SteamPID`

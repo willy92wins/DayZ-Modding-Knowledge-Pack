@@ -22,13 +22,9 @@ DROP = {'autoptr', 'ref', 'owned', 'external', 'volatile', 'local', 'reference',
 LAYERS = {'1_Core': '1', '2_GameLib': '2', '3_Game': '3', '4_World': '4', '5_Mission': '5'}
 DOC_MAX = 90
 # Defines of a stable dedicated server (script log "Module: ... defines:"), used to pick the active base of
-# classes declared as `#ifdef X class A extends B #else class A extends C #endif`.
-ACTIVE = {'DAYZ_1_30', 'SERVER', 'PLATFORM_LINUX', 'RELEASE', 'FEATURE_CURSOR',
-          'FEATURE_NETWORK_RECONCILIATION', 'FEATURE_NETWORK_RECONCILATION'}
-LAYERS = {'1_Core': '1', '2_GameLib': '2', '3_Game': '3', '4_World': '4', '5_Mission': '5'}
-DOC_MAX = 90
-# Defines of a stable dedicated server (script log "Module: ... defines:"), used to pick the active base of
-# classes declared as `#ifdef X class A extends B #else class A extends C #endif`.
+# classes declared as `#ifdef X class A extends B #else class A extends C #endif`. These are the Linux server's;
+# a Windows server defines PLATFORM_WINDOWS instead (it only matters where a base depends on the platform).
+# After a new DayZ release, replace DAYZ_1_30 with that release's version define.
 ACTIVE = {'DAYZ_1_30', 'SERVER', 'PLATFORM_LINUX', 'RELEASE', 'FEATURE_CURSOR',
           'FEATURE_NETWORK_RECONCILIATION', 'FEATURE_NETWORK_RECONCILATION'}
 VARIANT = re.compile(r'#if(n?)def\s+(\w+)\s*\r?\n(?:\s*//[^\n]*\n)*\s*(?:modded\s+)?class\s+(\w+)\s*(?:extends|:)\s*([\w.]+)\s*\r?\n'

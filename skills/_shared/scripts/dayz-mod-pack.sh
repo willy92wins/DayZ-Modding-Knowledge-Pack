@@ -105,7 +105,7 @@ cmd_keygen() {
         die "key $KEY_NAME already exists. Replacing it makes every server owner install a new .bikey and breaks existing signatures; delete both files by hand if you really mean it."
     fi
     git -C "$PROJECT" check-ignore -q "secrets/$KEY_NAME.biprivatekey" 2>/dev/null \
-        || [ ! -d "$PROJECT/.git" ] \
+        || ! git -C "$PROJECT" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
         || die "secrets/ is not git-ignored; run init (or add 'secrets/' and '*.biprivatekey' to .gitignore) first"
     mkdir -p "$PROJECT/secrets" "$PROJECT/keys"
     ( umask 077; "$DAYZMAKE" keygen "$PROJECT/secrets/$KEY_NAME" )
@@ -198,11 +198,11 @@ TYPE_TAGS="Mod Server"
 CONTENT_TAGS="Animation Character Economy Environment Equipment Mechanics Sound Props Terrain Vehicle Weapon"
 check_tags() {
     local t ntype=0
-    for t in $WORKSHOP_TAGS; do
+    for t in $(printf '%s' "$WORKSHOP_TAGS" | sed 's/Tag Review//'); do
         case " $TYPE_TAGS " in *" $t "*) ntype=$((ntype + 1)); continue;; esac
         case " $CONTENT_TAGS " in *" $t "*) ;; *) echo "warn: tag '$t' is not a known DayZ tag ($TYPE_TAGS $CONTENT_TAGS)"; ;; esac
-        [ "$t" = "Tag Review" ] && echo "warn: 'Tag Review' is a moderation tag; do not set it yourself"
     done
+    case " $WORKSHOP_TAGS " in *" Tag Review "*) echo "warn: 'Tag Review' is a moderation tag; do not set it yourself";; esac
     if [ "$ntype" = 1 ]; then echo "ok: tags: $WORKSHOP_TAGS"; else echo "FAIL: WORKSHOP_TAGS must contain exactly one of: $TYPE_TAGS (got $ntype)" >&2; return 1; fi
 }
 

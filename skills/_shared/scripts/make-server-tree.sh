@@ -22,6 +22,9 @@ set -eu
 tree=$1
 src=${2:-$("$(dirname "$0")/find-dayzserver.sh")}
 src=$(cd "$src" && pwd -P)
+# Resolve the tree's real path before creating it, so nothing is ever made inside Steam.
+parent=$(dirname "$tree")
+case "$(cd "$parent" 2>/dev/null && pwd -P)/" in "$src"/*) echo "error: the tree must be outside the Steam install" >&2; exit 2;; esac
 mkdir -p "$tree"
 tree=$(cd "$tree" && pwd -P)
 case "$tree/" in "$src"/*) echo "error: the tree must be outside the Steam install" >&2; exit 2;; esac

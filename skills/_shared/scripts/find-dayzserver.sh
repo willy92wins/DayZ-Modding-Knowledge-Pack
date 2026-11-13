@@ -12,7 +12,8 @@
 #        find-dayzserver.sh [-e] -w     print the DayZ client's workshop directory instead
 #                                       (steamapps/workshop/content/221100, one dir per mod id)
 #        -e  Experimental branch: server app 1042420 ("DayZ Server Exp"), client app 1024020
-#            ("DayZ Exp"), whose workshop items live under content/1024020
+#            ("DayZ Exp"). Experimental has no Workshop of its own: -e -w prints content/1024020
+#            if it exists (some installs link it to 221100), else the stable content/221100
 # Env:   STEAM_ROOT   check this Steam root first
 set -eu
 
@@ -55,15 +56,16 @@ libraries=$(
 )
 
 if [ "$workshop" = 1 ]; then
-    while IFS= read -r lib; do
-        dir="$lib/steamapps/workshop/content/$CLIENT_APPID"
-        if [ -f "$lib/steamapps/appmanifest_$CLIENT_APPID.acf" ] && [ -d "$dir" ]; then
-            printf '%s\n' "$dir"
-            exit 0
-        fi
-    done <<EOF
+    for id in $CLIENT_APPID 221100; do
+        while IFS= read -r lib; do
+            dir="$lib/steamapps/workshop/content/$id"
+            if [ -f "$lib/steamapps/appmanifest_$id.acf" ] || [ -f "$lib/steamapps/appmanifest_$CLIENT_APPID.acf" ]; then
+                [ -d "$dir" ] && { printf '%s\n' "$dir"; exit 0; }
+            fi
+        done <<EOF
 $libraries
 EOF
+    done
     echo "No DayZ workshop items found: install DayZ (app $CLIENT_APPID) and subscribe to the mods" \
         "in the Steam Workshop, then start the DayZ launcher once so Steam downloads them." >&2
     exit 1

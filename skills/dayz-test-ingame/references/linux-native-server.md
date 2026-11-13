@@ -6,9 +6,9 @@ the scripts at all. A local dedicated server answers all three in about a minute
 
 Source: bzed's own measurements, from `bzed/dayz-dev-plugin@6112ac5` `testing/local-server.md`
 (cited below as `LS:<line>`), contributed to this Pack under its MIT licence by the author. Platform:
-Debian, the native Linux `DayZServer` (Steam app 223350). 1.30 is the stable release. The author re-tested the whole plugin on DayZ 1.30 stable (the author's report, 2026-11-13; build not recorded here). Build numbers in
-the text say where a detail was first measured: 1.29.163709, the 1.30.164014 pre-release (then on Experimental),
-1.30.164200 or 1.30.164289. The Windows server
+Debian, the native Linux `DayZServer` (Steam app 223350). The Pack targets DayZ 1.30 or later. The author re-tested all of it on DayZ 1.30 stable (1.30.164289, the
+author's report, 2026-11-13); build numbers in the text say where a detail was first measured: the 1.30.164014
+pre-release (then on Experimental), 1.30.164200 or 1.30.164289. The Windows server
 (`DayZServer_x64.exe`) takes the same parameters, but where Linux and Windows differ the Windows rules in
 `../SKILL.md` win on Windows (mod paths, mission path). This is the route without dayz-mcp; the managed
 route is the "On Linux" section of `../SKILL.md`.
@@ -38,7 +38,7 @@ found; `StateFlags` other than 4 means Steam is still installing or updating, an
 | | Server | Client | Workshop items |
 |---|---|---|---|
 | Stable | 223350, `DayZServer` | 221100, `DayZ` | `workshop/content/221100` |
-| Experimental | 1042420, `DayZ Server Exp` | 1024020, `DayZ Exp` | `workshop/content/1024020` |
+| Experimental | 1042420, `DayZ Server Exp` | 1024020, `DayZ Exp` | none of its own: the stable `content/221100` (`-e -w` falls back to it) |
 
 Stable (223350) is the default, since 1.30 is stable; Experimental carries the next build and is only for testing a
 mod ahead of that release.
@@ -149,9 +149,8 @@ What each direction looks like, and why it misleads:
 - **Adding CF** (1.30): the boot died with `Unknown type 'CF_Trace'` and `Can't compile "Engine" script module`.
   That reads like a CF/Expansion version conflict, not stale storage. Rebuilding the trees fresh with their
   final mod sets booted at once. When a CF change coincides with "version conflict" compile errors, wipe or
-  rebuild before debugging versions. An attempt to reproduce it on 1.29.163709 (vanilla storage, one saved
-  player, then CF) did not show it; mods that persist their own state remain the likely trigger
-  (`LS:263-278`).
+  rebuild before debugging versions. Mods that persist their own item, vehicle or tent state are the likely
+  trigger; the exact conditions are not pinned down (`LS:263-278`).
 
 ## 3. Run it headless
 
@@ -200,13 +199,13 @@ grep -h 'SCRIPT.*(E)' "$TREE"/profiles/script_*.log            # compile errors
 grep -h 'MyMod' "$TREE"/profiles/script_*.log                  # your own Print lines
 ```
 
-1. **Did the scripts load at all?** Boot once without the mod for the vanilla baseline: 440 Game-module files
-   on 1.30.164014 (416 on 1.29.163709). With the mod the count must rise by its script files in that module.
+1. **Did the scripts load at all?** Boot once without the mod for the vanilla baseline (440 Game-module files
+   on 1.30.164014; take your own baseline on the build you test). With the mod the count must rise by its script files in that module.
    **An unchanged count means the mod's scripts were not loaded**, though the server started and printed no
    error (`LS:349-352`). Silent causes seen (`LS:354-366`):
    - the PBO at the mod folder root (`@MyMod/MyMod.pbo`) instead of `@MyMod/addons/MyMod.pbo`: silently
      ignored, while the folder still shows in the `ANIMATION (E): Can't load @MyMod/...` pass, which is
-     **not** loading (`dayz-pbo-build`, "PBO outside `addons/`");
+     **not** loading (`dayz-pbo-build` SKILL.md, "Folder Structure Validation");
    - an absolute mod path (section 3);
    - on 1.30, backslashes in the `CfgMods` script module paths (`files[] = {"MyMod\scripts\4_World"}`): the
      defines appear, no script compiles, no error (`dayz-mod-workflow`, `references/dayz-1-30-server-measured.md`);
@@ -223,8 +222,8 @@ grep -h 'MyMod' "$TREE"/profiles/script_*.log                  # your own Print 
 
 Only a boot catches: engine classes that cannot be `modded` (for example `DayZPlayerInventory`), `proto native`
 methods that cannot be overridden (for example `SendSyncJuncture`), and wrong override signatures
-(`LS:376-380`). A server that "works" also proves nothing about load order: see "Mod load order" in
-`dayz-mod-workflow`.
+(`LS:376-380`). A server that "works" also proves nothing about load order: see "Script compile order and
+load order" in `dayz-mod-workflow` SKILL.md.
 
 ## 5. Code that needs players
 

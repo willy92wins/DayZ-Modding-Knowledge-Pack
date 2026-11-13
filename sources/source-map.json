@@ -10370,10 +10370,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e9bfaf636b3e1c33de29893f552c65383196019b6051483c384cfffde521c014",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "71989bd90235cc31aa6f12c99a85e70dfabc9c2c8835ffacb0bea9cbab431cab",
+      "output_hash": "e9bfaf636b3e1c33de29893f552c65383196019b6051483c384cfffde521c014",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -14630,10 +14640,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8da5e217542bb385dab91fab1ef0d4e4b8964c79a140d9c7fa912ba4eeae47fe",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f26df3afbce70bd1aa106d4f5118062582c0e0d423ee0c9884f2fb90ce3672d6",
+      "output_hash": "8da5e217542bb385dab91fab1ef0d4e4b8964c79a140d9c7fa912ba4eeae47fe",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -18548,10 +18568,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0feca012113d50086c7e6bb5f1e1a4792c3af0df72ac34bbe7563ab306ec4806",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9c3b0e500acae59bd1bba4ddb2dd49f9134d16110ada8fb6378223e2793c4113",
+      "output_hash": "0feca012113d50086c7e6bb5f1e1a4792c3af0df72ac34bbe7563ab306ec4806",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -42533,10 +42563,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "530f792e633dc17c712a348f4ab5eb6a328ce889a88d67356aaed066f1517a0e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b0d424f42fafd29cb7e1c71ca631c93b05327cf3e2d1c80f55a489365ce38ac0",
+      "output_hash": "530f792e633dc17c712a348f4ab5eb6a328ce889a88d67356aaed066f1517a0e",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -42629,10 +42669,20 @@
           "source_path": "scripts/build-api-index.py",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8e1e014c46ba2cb9090ebe3a04d8291a4d7bc4540e955a5771102fb3f7aed06a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/build-api-index.py",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4b2ef5f6a0bb644fb926d27f726bb5f498ff39f8b414c474ec471608bb2b3fa4",
+      "output_hash": "8e1e014c46ba2cb9090ebe3a04d8291a4d7bc4540e955a5771102fb3f7aed06a",
       "output_path": "skills/_shared/scripts/build-api-index.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -42695,10 +42745,20 @@
           "source_path": "scripts/dayz-client-test.sh",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bd08898daeda2410528be1b7c6748d1227455e3493ecf2240a39f632f66bb2bf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-client-test.sh",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bb30e28e168557dce7ba8f45bd4066d6ad7d612785f8111013098a3ad2f948f0",
+      "output_hash": "bd08898daeda2410528be1b7c6748d1227455e3493ecf2240a39f632f66bb2bf",
       "output_path": "skills/_shared/scripts/dayz-client-test.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -42717,10 +42777,20 @@
           "source_path": "scripts/dayz-mod-pack.sh",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d08fd28272bd011ed9c317446e2e73f5741f5edb3023a54f3ce11e77c428b36f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-mod-pack.sh",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "67c280cad374b194f07899316c3a11eca4274dac25b12ed16ca9711375963c65",
+      "output_hash": "d08fd28272bd011ed9c317446e2e73f5741f5edb3023a54f3ce11e77c428b36f",
       "output_path": "skills/_shared/scripts/dayz-mod-pack.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -42761,10 +42831,20 @@
           "source_path": "scripts/find-dayzserver.sh",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7cc271f59d7e85ba86cb14a1d185b85d1165445c74b833b9e464ee2b88114b1e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/find-dayzserver.sh",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e6b22604b47a91e20013342bd0c82f97810a4d728aeab55117a3d7884694cf04",
+      "output_hash": "7cc271f59d7e85ba86cb14a1d185b85d1165445c74b833b9e464ee2b88114b1e",
       "output_path": "skills/_shared/scripts/find-dayzserver.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -42805,10 +42885,20 @@
           "source_path": "scripts/make-server-tree.sh",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1e8c466033a07d7a3522cafdc8af59b57b13c82bd9efaabc02807cf5de9e95c9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/make-server-tree.sh",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "667907c43d46236be856e852d9ec42978d5f7c4a1f237b525203a9a721fb7823",
+      "output_hash": "1e8c466033a07d7a3522cafdc8af59b57b13c82bd9efaabc02807cf5de9e95c9",
       "output_path": "skills/_shared/scripts/make-server-tree.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -42827,10 +42917,20 @@
           "source_path": "skills/_shared/tests/test_linux_helpers.py",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "28a25181c7342f391eabed58ea12f4e467c403bdb6e728b12b7093955bbdc55e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_linux_helpers.py",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "75452752677092635c3cecddc674449dceba8f91d4a6a39b8112287e1aa75f37",
+      "output_hash": "28a25181c7342f391eabed58ea12f4e467c403bdb6e728b12b7093955bbdc55e",
       "output_path": "skills/_shared/tests/test_linux_helpers.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -42849,10 +42949,20 @@
           "source_path": "compatibility/version-130.md",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cd76278c26422b116fd6d5bada772e6ef688cb449bb6da33fc9767ce1c97338a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/references/dayz-1-30-server-measured.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b1cbcc1462b71540974d315953ff61a793fde1da62c02a71a5f9960017d89995",
+      "output_hash": "cd76278c26422b116fd6d5bada772e6ef688cb449bb6da33fc9767ce1c97338a",
       "output_path": "skills/dayz-mod-workflow/references/dayz-1-30-server-measured.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -42871,10 +42981,20 @@
           "source_path": "systems/mod-packaging.md",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d3407c0449f012ad5c5a1110ab73915177f1c5dcf39b3a398897998febfca30e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fbd228403f4d46428123719a593e9207b667418a937e1daf26e75dd3954cde73",
+      "output_hash": "d3407c0449f012ad5c5a1110ab73915177f1c5dcf39b3a398897998febfca30e",
       "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -43113,10 +43233,20 @@
           "source_path": "testing/client-testing.md",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "17d5c405193a9e15a505a378be80ea9fc4bc5dc40c37a67164a23e39598c1e05",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/linux-headless-client.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3195d45d65528241789c9299cb0e36e51c05a8ab334b52276c05ffaf1e3f9716",
+      "output_hash": "17d5c405193a9e15a505a378be80ea9fc4bc5dc40c37a67164a23e39598c1e05",
       "output_path": "skills/dayz-test-ingame/references/linux-headless-client.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -43135,10 +43265,20 @@
           "source_path": "testing/local-server.md",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9e42be7d688fda4432b3347c141bd16147dc64ca95659c20fe706468aeb11fc5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/linux-native-server.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e31e1f4cf551c1e9c1301ffc3a14bf29acc63dc030ab35bbf7a5dfe69607f1a8",
+      "output_hash": "9e42be7d688fda4432b3347c141bd16147dc64ca95659c20fe706468aeb11fc5",
       "output_path": "skills/dayz-test-ingame/references/linux-native-server.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -43201,10 +43341,20 @@
           "source_path": "SKILL.md",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d8dd2e61bab8aca7ea364d20236c57920a5eaeecf9640ff3e13cded76297a917",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-dev/SKILL.md",
+          "source_revision": "integration-review@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9572418578916dd96fda69afa7a32e05998ffc47998d53135210622fac844974",
+      "output_hash": "d8dd2e61bab8aca7ea364d20236c57920a5eaeecf9640ff3e13cded76297a917",
       "output_path": "skills/dayz-mod-dev/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-dev",
       "verification_level": "cross_checked"

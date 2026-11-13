@@ -7,8 +7,8 @@ Publisher, SteamCMD) is the rest of this skill and `workshop-publish.md`.
 
 Source: bzed's own measurements, from `bzed/dayz-dev-plugin@6112ac5` `systems/mod-packaging.md` (cited as
 `MP:<line>`), contributed to this Pack under its MIT licence by the author, who also wrote dayzmake. Platform:
-Debian, Proton Hotfix for the DayZ Tools comparisons. The end-to-end server test used DayZ Server 1.29.163709 (a PBO
-built, signed and verified this way loaded with `-mod=@Mod` and `verifySignatures = 2`, and its scripts ran); The author re-tested the whole plugin on DayZ 1.30 stable (the author's report, 2026-11-13; build not recorded here). Not verified: the v3-against-v2 signature check on a real client (`MP:9-14`). The AutoTest mod
+Debian, Proton Hotfix for the DayZ Tools comparisons. End to end, a PBO built, signed and verified this way loaded
+on a server with `-mod=@Mod` and `verifySignatures = 2`, and its scripts ran; The author re-tested the whole plugin on DayZ 1.30 stable (the author's report, 2026-11-13; build not recorded here). Not verified: the v3-against-v2 signature check on a real client (`MP:9-14`). The AutoTest mod
 (`dayz-test-ingame/assets/autotest-mod`) builds, signs and verifies with this flow and dayzmake 1.0.0 in
 `skills/_shared/tests/test_linux_helpers.py`.
 
@@ -27,7 +27,7 @@ dayzmake --version                             # v1.0.0; pre-rename fork builds 
 
 The version string does not tell builds apart. If in doubt, reinstall from the tag, or binarize one textured model
 both ways and `cmp` the results (`MP:45-49`). `dayz-mod-pack.sh` runs the same check: it uses `dayzmake` from `PATH`
-(or `$DAYZMAKE`), falls back to a pre-rename `armake2`, refuses upstream and warns below 1.0.0.
+(or the binary named by `$DAYZMAKE`, or the older `$ARMAKE2`), falls back to a pre-rename `armake2`, refuses upstream and warns below 1.0.0.
 
 ## Quick start (`dayz-mod-pack.sh`)
 
@@ -41,10 +41,10 @@ $S check                      # no key in git, history or the upload folder; eve
 $S publish-hint               # prints the `workshop create|update` commands; does not run them
 ```
 
-One `src/<Addon>/` per PBO; `ModName` becomes the key name and the default prefix (letters, digits, `_`); `-C <dir>`
+One `src/<Addon>/` per PBO; `ModName` becomes the key name (letters, digits, `_`); each addon's `$PREFIX$` defaults to its `src/<Addon>` folder name; `-C <dir>`
 works on another project (`MP:55-90`). The private key lives in `secrets/`, outside everything that is packed or
-uploaded: `build` aborts if one turns up in the content folder, `keygen` refuses unless `secrets/` is git-ignored and
-never overwrites a key, and `check` fails if a `.biprivatekey` is tracked or anywhere in history. A key that reached
+uploaded: `build` aborts if one turns up in the content folder, `keygen` refuses unless `secrets/` is git-ignored (when the
+project is inside a git work tree) and never overwrites a key, and `check` fails if a `.biprivatekey` is tracked or anywhere in history. A key that reached
 git history or the Workshop is leaked: rotate it under a new name (`MyMod_V2`) so old and new coexist in `keys/`.
 Do not commit `build/`: a signature is only valid for the exact PBO bytes (`MP:92-102`).
 

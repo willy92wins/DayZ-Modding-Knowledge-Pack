@@ -357,7 +357,7 @@ the result (bool) down to 4_World. The 4_World class never references
 
 - **DO NOT** reference `MissionGameplay` from 4_World — won't compile or will crash
 - **DO NOT** reference `IngameHud` from 4_World — class not available at that layer
-- **DO NOT** put entity logic in 5_Mission — server doesn't load 5_Mission scripts
+- **DO NOT** put entity logic in 5_Mission — entity classes live in 4_World, and a `modded class` belongs to the module of the class it modifies (the server does load 5_Mission: `MissionServer` lives there)
 - **DO NOT** put 109 files in 4_World and 1 in 5_Mission when 15 are pure UI (current LFPG state — works but limits future HUD features)
 - **The `modded class` chain has no order you can rely on.** It follows `requiredAddons` compile order, not the `-mod=`/`-servermod=` string (measured on a 1.30 server). Counteract another mod from an event that runs after it (`EEInit()` after the constructor chain), never by assuming you are outermost: `dayz-mod-workflow/references/dayz-1-30-server-measured.md`, section 7. Likewise `modded class Transport` (a `3_Game` class) from `4_World` fails with `Unknown type 'Transport'`: mod a class in its own module.
 - **DO NOT** declare `modded class MissionServer` / `modded class MissionGameplay` / `modded class Chat` from 4_World — these are Mission-layer classes. The compile may succeed silently (depending on parse order), but the override is **never bound** to the live instance, so hooks like `OnInit`, `OnMissionStart`, `OnMissionLoaded`, `InvokeOnConnect` never fire from your code. Symptom: no log output, no error, total no-op.
