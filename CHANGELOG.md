@@ -7,6 +7,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `knowledge/script-network-limits.md`: local DayZDiag 1.30.164289.70 string probe, corrected after review: ScriptRPC and ScriptInputUserData sizes, four admitted queue messages, RPC burst order and the probe's ACK.
+  `CLAIM-NET-RPC-ASCII`, `CLAIM-NET-RPC-UTF8`, `CLAIM-NET-INPUT-ASCII`, `CLAIM-NET-INPUT-UTF8`, `CLAIM-NET-QUEUE`, `CLAIM-NET-ORDER`, `CLAIM-NET-ACK`, `CLAIM-NET-SCOPE`.
+
 - `knowledge/vanilla-native-surface.md`: the `proto native` surface of build 119356: 2,758 declarations, 1,956 in `3_game`, 52 `owned`, 25 `static`; the official `owned` return-value semantics (`proto.c:14-16`) and the `static` call shape, including the `static proto native owned` caveat, and the `GetBoneMatrix` four-vector array signature. `CLAIM-NATIVE-SURFACE-COUNTS`, `CLAIM-NATIVE-SURFACE-DISTRIBUTION`, `CLAIM-NATIVE-SURFACE-BONE-MATRIX`, `CLAIM-NATIVE-SURFACE-MODIFIERS`, `CLAIM-NATIVE-SURFACE-LIMITS`.
 - `knowledge/mission-lifecycle.md`: the build 119356 mission bootstrap order and `super` chain (`MissionBase` constructor, `MissionServer.OnInit/OnUpdate`, `MissionGameplay.OnInit/OnMissionStart`), the `DayZGame.OnRPC` -> `target.OnRPC` routing, and the real persistence hooks (135 `OnStoreSave`, 148 `OnStoreLoad`, no `RegisterPersistent`; the only `RegisterPersistent*` symbol is the local helper `RegisterPersistentObject` in `powergeneratorstatic.c`). `CLAIM-MISSION-BASE-CONSTRUCTOR`, `CLAIM-MISSION-SERVER-ONINIT`, `CLAIM-MISSION-SERVER-UPDATE`, `CLAIM-MISSION-GAMEPLAY-ONINIT`, `CLAIM-MISSION-GAMEPLAY-ONMISSIONSTART`, `CLAIM-MISSION-RPC-ROUTING`, `CLAIM-MISSION-PERSISTENCE-HOOKS`.
 - `knowledge/workbench-scripting-api.md`: the build 119356 Workbench Enforce API map: the `#ifdef WORKBENCH` guard boundary, the exact `Workbench` entry points (`RunCmd`/`RunProcess`/`GetAbsolutePath`/`SearchResources`), the `WBModuleDef` surface and the `ResourceManager`/`ScriptEditor` modules, the `WorkbenchPlugin`/`ResourceManagerPlugin` events and `WorkbenchPluginAttribute`, `BuildResourceContext`, `WBProgressDialog`, `MetaFile` and `GeneratedResources`. `CLAIM-WORKBENCH-GUARD`, `CLAIM-WORKBENCH-ENTRYPOINTS`, `CLAIM-WORKBENCH-MODULES`, `CLAIM-WORKBENCH-PLUGINS`, `CLAIM-WORKBENCH-PROGRESS`, `CLAIM-WORKBENCH-METAFILE`, `CLAIM-WORKBENCH-GENERATED-RESOURCES`, `CLAIM-WORKBENCH-SEARCHRESOURCES`.
@@ -73,7 +76,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   was offline ended with kick 49. `SKILL.md` points to it. `CLAIM-WORKSHOP-SIGN-DSUTILS`,
   `CLAIM-WORKSHOP-PUBLISHER-FILES`, `CLAIM-WORKSHOP-STEAMCMD-LOGIN`,
   `CLAIM-WORKSHOP-STEAMCMD-CREATE`, `CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED`.
-- `knowledge/script-network-arrays.md`: local loopback runtime probe on build 26220720: `ScriptRPC` carried `array<int>` counts 1, 64, 255 and 256 (all `Write` and `Read` true, `values.Count()` matched), `ScriptInputUserData` carried counts 1, 16, 32, 36 and 37 (all true), the ACKs carried sequence and count, and the note states the scope: no wire size, no loss, no fragmentation, no universal limit. `CLAIM-NET-ARRAY-RPC`, `CLAIM-NET-ARRAY-INPUT`, `CLAIM-NET-ARRAY-ACK`, `CLAIM-NET-ARRAY-SCOPE`.
+- `knowledge/script-network-arrays.md`: local DayZDiag 1.30.164289.70 loopback probe, corrected after review: `array<int>` counts over ScriptRPC and ScriptInputUserData, and the probe's unconditional ACK.
+  `CLAIM-NET-ARRAY-RPC`, `CLAIM-NET-ARRAY-INPUT`, `CLAIM-NET-ARRAY-ACK`, `CLAIM-NET-ARRAY-SCOPE`.
+
 ### Changed
 
 - `dayz-ui-development` `references/layout-variants-130.md`: layout variants written by hand, measured on
