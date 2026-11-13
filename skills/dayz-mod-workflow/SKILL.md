@@ -994,3 +994,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. Test loop: `dayz_test_run` on dayz-mcp's `linux-port` branch (`dayz-test-ingame`, "On Linux"), or by hand either pair that can join: `DayZDiag` client and `DayZDiag -server` under Proton, or a manually configured retail Proton client and the native `DayZServer` (a diag client on the native server is refused with `0x00020017`). The native server hangs before the landscape with `-filePatching` (measured 2026-11-04), so start it without the flag and repack; the `-filePatching` loop of section 6 with loose files under Proton was **not verified**.
 - `%LOCALAPPDATA%` and `.ps1` steps: see the guide's pitfalls; translate scripts to `sh`.
 - Testing without dayz-mcp: the native `DayZServer` and the retail client under Proton, `dayz-test-ingame/references/linux-native-server.md` and `linux-headless-client.md`. 1.30 facts measured on that server: [`references/dayz-1-30-server-measured.md`](references/dayz-1-30-server-measured.md).
+
+## The rest of the mod loop
+
+This skill governs how code is written and debugged. Scoping, API lookup, building, the local server boot and publishing, and which domain skill to read, are in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

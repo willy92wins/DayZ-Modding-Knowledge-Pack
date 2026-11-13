@@ -1,6 +1,6 @@
 ---
 name: dayz-test-ingame
-description: "Use when: lanzar el juego con el mod, probar el mod in-game, filepatching, DayZDiag, arrancar server local, connect 127.0.0.1, the mod doesn't load. Not packaging-only: dayz-pbo-build; not env check: dayz-preflight."
+description: "Use when: lanzar el juego con el mod, probar el mod in-game, filepatching, DayZDiag, arrancar server local, connect 127.0.0.1, the mod doesn't load. Not packaging-only: dayz-pbo-build; not env check: dayz-preflight. Also: start or check a local DayZ dedicated server with or without mods (serverDZ.cfg, ports, -mod/-servermod, script logs, RPT), on Windows or native Linux, headless client under Proton."
 ---
 
 # DayZ test in-game (filepatching launch)
@@ -1847,3 +1847,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - `%LOCALAPPDATA%\DayZ` is `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ`; pass `-profiles=<linux dir>` to keep logs where you read them. The counterpart of the Steam-session check (`HKCU\Software\Valve\Steam\ActiveProcess`) is `~/.steam/steam.pid`, read-only: dayz-mcp never repairs or restarts Steam on Linux, and a logged-out Steam passes the check and fails at the client's Steam initialisation. `steam_session_stale` with a live `steam.pid` means a dayz-mcp at or before `3a82bdc`, which still read `SteamPID` from `registry.vdf`: update it and restart the daemon; restarting Steam does not reliably help.
 - `dayz_test_close` on Linux (measured 2026-11-06): the order is right and the player logs out (`logout_finished: true`), and the server ends with `--- Termination successfully completed ---`. With a player **in the world** the client then exits with code 3 during teardown, after `Destroying game` and before its termination line, so the result is `graceful: false`, `exit_metrics_valid: false` (2 of 2 runs; the cause is unknown). Do not read client exit metrics from a Linux run; server metrics in the server's RPT are complete. A client still on its loading screen closed cleanly, with `graceful: true`. `dayz_test_stop` is a forced kill, as on Windows. `build=true` runs dayzmake from `PATH` (the branch now accepts only the v1.0.0 release binary; the 2026-11-06 runs used the fork under its old name armake2) (`pack` with `pack_only`, otherwise `build --proton-binarize`) and writes `@Mod/Addons/<Mod>.pbo`; the full managed binarizing path was **not verified**, only the pack-only one. Not ported: `dayz_test_foreground` (a headless game has nothing to bring forward).
 - Managed games have no input devices, so `use_state` reads `idle`, never `human`. As on Windows another session gets `run_protected` with `retry_after_s` until the 600 s abandon timer ends.
+
+## The rest of the mod loop
+
+Testing is one step of the loop in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md) (look up, write, build, boot, verify, publish), which also routes a failing mod to the domain skill that owns the broken part.

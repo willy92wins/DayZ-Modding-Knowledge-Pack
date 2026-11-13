@@ -338,3 +338,7 @@ Digest J (`work/out2/digest-J-construction-locks-bunker.md` §§1,3–5). Every 
 ### Detail
 
 `references/dayz-1-30-construction-rebuilding.md` (EXACT blocks), `references/persistence-audit.md` §8, `references/config-contract.md` §8, `references/entity-lifecycle.md` §2/§4, `references/fence-gate-case.md` §6.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

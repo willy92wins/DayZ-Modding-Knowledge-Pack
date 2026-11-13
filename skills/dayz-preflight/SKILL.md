@@ -143,3 +143,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 | Registry values | do not exist on the host; `init` writes what the tools read into its private prefix |
 
 `init` is the Linux counterpart of mounting `P:`. The rule above still holds: do not run it unasked; tell the user what it does (private prefixes under `~/.local/share/dayz-proton`, about two minutes) and let them run it. The SP-374 Object Builder viewer key lives in the tools prefix's registry; that check was not run on Linux.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

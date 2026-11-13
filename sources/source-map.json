@@ -299,10 +299,20 @@
           "source_path": "AGENTS.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ddb52a17c6063c42fd146e2dd8d11682288db64fd05a5a45dc7d5eb3ddbc3a79",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2131872fb898dfced60f8c756eeeea8f85b15f45c8e4b36a123bf54f2c401589",
+      "output_hash": "ddb52a17c6063c42fd146e2dd8d11682288db64fd05a5a45dc7d5eb3ddbc3a79",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -1951,10 +1961,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5d3269472fea23918cf551bff4e964140690fa83db51185665983014b7091319",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b61eaea093282ef1c1866bdf1a3baf359698db198a2037820f5dc10da69c4efd",
+      "output_hash": "5d3269472fea23918cf551bff4e964140690fa83db51185665983014b7091319",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2315,10 +2335,20 @@
           "source_path": "README.md",
           "source_revision": "pack-r22-native-surface@2026-11-12",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "17e9e8b814d2b4e9647424fa095a3c9d640c261d799ac64617553e812e48e2f9",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0125c11f60402aae8722d43620088b674ec1bbafcacdeac679bed0229e0b91f9",
+      "output_hash": "17e9e8b814d2b4e9647424fa095a3c9d640c261d799ac64617553e812e48e2f9",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -5466,10 +5496,20 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0845c27d54f09a7eaa182a26c3503468e50a7cca75a8a6d9fe2aaa099bcce8f2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2ddafc2797a6225710510ae1fa16f8a0e22cb24336417f5cda06da8d3b76610c",
+      "output_hash": "0845c27d54f09a7eaa182a26c3503468e50a7cca75a8a6d9fe2aaa099bcce8f2",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -6366,10 +6406,20 @@
           "source_path": "dayz-ai-patterns/SKILL.md",
           "source_revision": "filesystem@2026-08-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c502d42c45e8258d08f0daf81e0232fbebad4b0a64b5a8a8f3e200a9841c31cb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ai-patterns/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "41caa7fec5f5301b902a9c34869cf942af9a1896a3e326d640692f446ff9271c",
+      "output_hash": "c502d42c45e8258d08f0daf81e0232fbebad4b0a64b5a8a8f3e200a9841c31cb",
       "output_path": "skills/dayz-ai-patterns/SKILL.md",
       "routing_artifact_id": "skill/dayz-ai-patterns",
       "verification_level": "cross_checked"
@@ -6602,10 +6652,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d09d58846606fa4c5232616f8240b85c02cc1363d9f8693dfcc9171fcbed807e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "39889cba661e499a4d6022d3c2079e037d521fa97348038a01fcb19ae90e1e4f",
+      "output_hash": "d09d58846606fa4c5232616f8240b85c02cc1363d9f8693dfcc9171fcbed807e",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7686,10 +7746,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9657c418d722ae6aa41f1c4fc7979c6090e4280de8b9e9727dfebad62410cdfa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "39b481f5318eee7727840d733221505a8fa94ee685c287eec361047f37ab0c64",
+      "output_hash": "9657c418d722ae6aa41f1c4fc7979c6090e4280de8b9e9727dfebad62410cdfa",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -8102,10 +8172,20 @@
           "source_path": "skills/dayz-basebuilding/SKILL.md",
           "source_revision": "pack-140-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "83d25bf7bf4efcf67cfc55eab599dbf3dda289fc3293101d0cfa6830dbea55a5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-basebuilding/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2d4df81860e50c025ea83c4e078153412ce4cb89c8d677da015fe1598c4a7046",
+      "output_hash": "83d25bf7bf4efcf67cfc55eab599dbf3dda289fc3293101d0cfa6830dbea55a5",
       "output_path": "skills/dayz-basebuilding/SKILL.md",
       "routing_artifact_id": "skill/dayz-basebuilding",
       "verification_level": "cross_checked"
@@ -8442,10 +8522,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ed7936282c1612fa9ab62ba6f73589c7674f4116c834f9141b2370930043cad3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cae5250ede68dade58a4f740c4ea2b92e69bbcb6ac316f81af2717214b9ca6ef",
+      "output_hash": "ed7936282c1612fa9ab62ba6f73589c7674f4116c834f9141b2370930043cad3",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -8780,10 +8870,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "55fe803c45066f77ad005aefe87ab502cafbc6f0259eec0a04324ce645213d9d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ff212c695e0f9533198c8d240e330c7f95541f548d8d0f680538c33db5c957d7",
+      "output_hash": "55fe803c45066f77ad005aefe87ab502cafbc6f0259eec0a04324ce645213d9d",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -9146,10 +9246,20 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "172785fe19f4e6a229d8ea9e4250fc0ca5dc522e3536496f8b717a7da33789db",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "824e5b5843866ddb0403d97274aec1ed6ad8a815fd793b0ae6a6899b7d1e55fc",
+      "output_hash": "172785fe19f4e6a229d8ea9e4250fc0ca5dc522e3536496f8b717a7da33789db",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -9364,10 +9474,20 @@
           "source_path": "skills/dayz-feature-spec/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "925e4ca1372739f9975755d2bd9c9c71ea4e51a980448eba7ceae5dce1b62628",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-feature-spec/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "97a37cf2e0fd4ddf483ee25e361979624e8c0c7ac713bc4169ecf44cb21ed001",
+      "output_hash": "925e4ca1372739f9975755d2bd9c9c71ea4e51a980448eba7ceae5dce1b62628",
       "output_path": "skills/dayz-feature-spec/SKILL.md",
       "routing_artifact_id": "skill/dayz-feature-spec",
       "verification_level": "cross_checked"
@@ -9842,10 +9962,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "82cbe7e4c7ac69a26d84dfff59954dba101b09dbe72d4471e4871fbcf2cd7b41",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a5cd70d2aaa256edbc669548db2e63ecbc757c0865732a53b5ff2ba2bf9e8f66",
+      "output_hash": "82cbe7e4c7ac69a26d84dfff59954dba101b09dbe72d4471e4871fbcf2cd7b41",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -10230,10 +10360,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "cleanroom-1.30.164289@2026-11-13",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "71989bd90235cc31aa6f12c99a85e70dfabc9c2c8835ffacb0bea9cbab431cab",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "26b786df6a8bbf91aff14ff747ed258679251eb337c50f073deab6574c39cc2d",
+      "output_hash": "71989bd90235cc31aa6f12c99a85e70dfabc9c2c8835ffacb0bea9cbab431cab",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -10588,10 +10728,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "66ed03cabc28910500931071d9c9496e059012a8ec69d322f114818547019e9a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "84def38986ef11aca71d697382d8fe8ccb227494d2a53ef5cedf1103545355c4",
+      "output_hash": "66ed03cabc28910500931071d9c9496e059012a8ec69d322f114818547019e9a",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -11506,10 +11656,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fddff0eab7801fb3bffe9226fba1f3b222c8a70fde7ab3f21a0e275375ae029d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c2914bcf5e4de136b44067ac9db9a7acc932fa706e5c7bdb278576720008cd87",
+      "output_hash": "fddff0eab7801fb3bffe9226fba1f3b222c8a70fde7ab3f21a0e275375ae029d",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -11938,10 +12098,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c538e8f0fe623ee1b515f632d4997b95b9bf468895b50a218f7e5c81822b8673",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "550662e69d6450c9b7a21e7bff914d4e6c68783b1578bba6c2ea969085bde4ea",
+      "output_hash": "c538e8f0fe623ee1b515f632d4997b95b9bf468895b50a218f7e5c81822b8673",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -12056,10 +12226,20 @@
           "source_path": "skills/dayz-particles/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "36c8b4eb92968114826ba5cedf81b9ba1e8a2f41abed77f6f6c5ae35ec9d54b4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-particles/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "68005dab5390951949e3df7a2dcee41988eb78ceab9440d88d310ae47873c723",
+      "output_hash": "36c8b4eb92968114826ba5cedf81b9ba1e8a2f41abed77f6f6c5ae35ec9d54b4",
       "output_path": "skills/dayz-particles/SKILL.md",
       "routing_artifact_id": "skill/dayz-particles",
       "verification_level": "cross_checked"
@@ -12516,10 +12696,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "53ae00d223559cd057ad91ed69fb08977e6832f14453af5d397c4e7d8331d4e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c1395da28e66afeb0a9e090b4b3c1f475cc7b2c202a49e90479981a6e0be006a",
+      "output_hash": "53ae00d223559cd057ad91ed69fb08977e6832f14453af5d397c4e7d8331d4e8",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -12808,10 +12998,20 @@
           "source_path": "skills/dayz-persistence/SKILL.md",
           "source_revision": "cleanroom-1.30.164289@2026-11-13",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "75a0c9f6f0b6ff68bd20f615f2689a75ada6556febfdc8f7d55ec9ffc85df9c7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a3eb81e7b5c56f5ed81747854124629ac01041637b711b7aa7ce0a5164b8389a",
+      "output_hash": "75a0c9f6f0b6ff68bd20f615f2689a75ada6556febfdc8f7d55ec9ffc85df9c7",
       "output_path": "skills/dayz-persistence/SKILL.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "cross_checked"
@@ -13078,10 +13278,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "update/pr-135-review-4@2026-10-28",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "acaf125c3455bb8b3c2a8c1e2ce29836593b2b2bbfcb1ef6d28684b0be08bbe3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "436bcb57c6fc876cbd16081f7b0fee2081ae99a86bc1f476eb9baf1b3e735472",
+      "output_hash": "acaf125c3455bb8b3c2a8c1e2ce29836593b2b2bbfcb1ef6d28684b0be08bbe3",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -13206,10 +13416,20 @@
           "source_path": "skills/dayz-preflight/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d10bf4bd3a6ea1df17e0216cc71c41ab2e9069853a1803314682769b339844b7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-preflight/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6b58a75d4bfe11425722169a3f323446e93bdab5d0b4aef7e04f378384ce1e5a",
+      "output_hash": "d10bf4bd3a6ea1df17e0216cc71c41ab2e9069853a1803314682769b339844b7",
       "output_path": "skills/dayz-preflight/SKILL.md",
       "routing_artifact_id": "skill/dayz-preflight",
       "verification_level": "cross_checked"
@@ -13350,10 +13570,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7e841a4f71be547e31db4dfb43ebb7ce33db4a66ca20fa7bf51f25b42a1abd53",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "304e4c5eceb9bda950aa41c153a606a1b25e5f46bac7351fe59f986f26d8a2ac",
+      "output_hash": "7e841a4f71be547e31db4dfb43ebb7ce33db4a66ca20fa7bf51f25b42a1abd53",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -13524,10 +13754,20 @@
           "source_path": "skills/dayz-realistic-animation-director/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c899a362966296560aba96f07b3499ef6babb5332b161001aaee5d3b4ee02eac",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-realistic-animation-director/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7269b6d83fe1c0abeb181a20803a3e168872b461059a254456f432e3582dbe3b",
+      "output_hash": "c899a362966296560aba96f07b3499ef6babb5332b161001aaee5d3b4ee02eac",
       "output_path": "skills/dayz-realistic-animation-director/SKILL.md",
       "routing_artifact_id": "skill/dayz-realistic-animation-director",
       "verification_level": "cross_checked"
@@ -14036,10 +14276,20 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d640b5e0d020b99dac2965cb43ef1e7fdfeb3f9ce0e5677e0c30f233bd9a0890",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "eb31af27b57bd821403f97d34363bcdf20f3dd7c9a1d8542865e95a1a308abd3",
+      "output_hash": "d640b5e0d020b99dac2965cb43ef1e7fdfeb3f9ce0e5677e0c30f233bd9a0890",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -14370,10 +14620,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "cleanroom-1.30.164289@2026-11-13",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f26df3afbce70bd1aa106d4f5118062582c0e0d423ee0c9884f2fb90ce3672d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "64a8de47ad2fb3c8f89ee4708ec8ee3f23ef01644d378a13fb9fc2ce1cd82a0c",
+      "output_hash": "f26df3afbce70bd1aa106d4f5118062582c0e0d423ee0c9884f2fb90ce3672d6",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -14742,10 +15002,20 @@
           "source_path": "skills/dayz-texture-pipeline/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9eb22a5ef8e93d41511e726217966786bef9f10e2103b9f99962d8e52f8bf356",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-texture-pipeline/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e4d5810243af647d6924cdbb061699ee7eedcca7081e5144505593438bc1fedd",
+      "output_hash": "9eb22a5ef8e93d41511e726217966786bef9f10e2103b9f99962d8e52f8bf356",
       "output_path": "skills/dayz-texture-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-texture-pipeline",
       "verification_level": "cross_checked"
@@ -15246,10 +15516,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "82e4f855cc14cb0870b988682712b4b80636a1acca18fbaf457b17f3c8eb6da0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fa43234fe6d3b8e7eba336cc2770f80047463f587261fba3cf8cf1a47ac3449d",
+      "output_hash": "82e4f855cc14cb0870b988682712b4b80636a1acca18fbaf457b17f3c8eb6da0",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -16408,10 +16688,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "813524960b1b90da0bc2df4a82387ffc42f8214c01bc75f7740f9ae86dd71971",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b3818f0122c667c06a4b5d7c7411969bf180a924e04e73cf65e75550a3a3ff40",
+      "output_hash": "813524960b1b90da0bc2df4a82387ffc42f8214c01bc75f7740f9ae86dd71971",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -17848,10 +18138,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "44351ca7b419ea7562343415a60876c16990deb4b55b0cf5d047c531aa70d9d9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7c5ed92bf6522afb4aed3baa0eef3c2342918bfff9b691e683b07eb83b760333",
+      "output_hash": "44351ca7b419ea7562343415a60876c16990deb4b55b0cf5d047c531aa70d9d9",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -18238,10 +18538,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9c3b0e500acae59bd1bba4ddb2dd49f9134d16110ada8fb6378223e2793c4113",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "82a2486e68b15fe0500a770c56f9a0cf438b970138f12849a5c96657106f9631",
+      "output_hash": "9c3b0e500acae59bd1bba4ddb2dd49f9134d16110ada8fb6378223e2793c4113",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -18862,10 +19172,20 @@
           "source_path": "skills/rigorous-data-audit/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "53f69df51c00474ec40f1fdc5b78b5ad528d267545353aa69df56b1e8b354c25",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "efb295cf9012f909532c2973d8b1d892fc81dd4cc59f8bbd3b15a75591974837",
+      "output_hash": "53f69df51c00474ec40f1fdc5b78b5ad528d267545353aa69df56b1e8b354c25",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -19526,10 +19846,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d405481e39d8cf911406d9df8853e886273542bcb394e7467e9a9b04b414e0e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "07a060792789554af13de9247bf905f9ed79fa4642f8e6b04e90940e70f9f45d",
+      "output_hash": "d405481e39d8cf911406d9df8853e886273542bcb394e7467e9a9b04b414e0e5",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -36501,10 +36831,20 @@
           "source_path": "skills/dayz-environment-hazards/SKILL.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "417e73f2af1e43250badbcd241fdd60f4c9d4b72f75911e710fdb2a59e0c7059",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-environment-hazards/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "03a53604ec8f5c4fd19fbc3ba7d32ed10b23cfc5be39693f7872b70ed5c86ec1",
+      "output_hash": "417e73f2af1e43250badbcd241fdd60f4c9d4b72f75911e710fdb2a59e0c7059",
       "output_path": "skills/dayz-environment-hazards/SKILL.md",
       "routing_artifact_id": "skill/dayz-environment-hazards",
       "verification_level": "historical"
@@ -36919,10 +37259,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "092dd2d882607e2f84ca79b687436774a6cbc19f235a27bf68d9d7fd18821ba9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "642c254752544808a12d5a5faa4383bd111b56ba39bec025100ffc6418d2756e",
+      "output_hash": "092dd2d882607e2f84ca79b687436774a6cbc19f235a27bf68d9d7fd18821ba9",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -38015,10 +38365,20 @@
           "source_path": "skills/dayz-underground/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayz-mod-dev integration (2026-11-13): link to the new entry-point skill for the mod loop; trigger additions in descriptions; README/AGENTS counts and routing. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b95b710efcb60c8bc65d2b47a9aa58012d7620e3c14d3303c2e9e3953819c1b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-underground/SKILL.md",
+          "source_revision": "dayz-mod-dev@2026-11-13",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c2caf4835848375205747d98c98e4b5ad063bcd2c4ca4cf95c61c142dd875366",
+      "output_hash": "b95b710efcb60c8bc65d2b47a9aa58012d7620e3c14d3303c2e9e3953819c1b9",
       "output_path": "skills/dayz-underground/SKILL.md",
       "routing_artifact_id": "skill/dayz-underground",
       "verification_level": "source_verified"
@@ -42826,6 +43186,28 @@
       "output_path": "skills/dayz-test-ingame/references/server-and-mission-config.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-mod-dev/SKILL.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Entry-point skill for mod development on DayZ 1.30 or later, written by Claude (Anthropic) from bzed's own sections of the dayz-dev plugin's SKILL.md (1.30 essentials, request router, testing and packaging rules; contributed under MIT by the author, authorship checked with git blame -C) and Pack material; no third-party plugin text. Every skill it routes to and every path it names exists in the Pack.",
+          "license": "MIT",
+          "source_hash": "9572418578916dd96fda69afa7a32e05998ffc47998d53135210622fac844974",
+          "source_id": "bzed-dayz-dev-plugin",
+          "source_path": "SKILL.md",
+          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "9572418578916dd96fda69afa7a32e05998ffc47998d53135210622fac844974",
+      "output_path": "skills/dayz-mod-dev/SKILL.md",
+      "routing_artifact_id": "skill/dayz-mod-dev",
+      "verification_level": "cross_checked"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",

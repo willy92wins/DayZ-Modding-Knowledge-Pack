@@ -362,3 +362,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - Workbench starts under Proton (`dayz-proton.sh gui Workbench`) and compiles its bundled scripts; the Animation Editor, `.agr`/`.asi` editing and the `.txa` → `.anm` import were **not verified** there. Without `P:\dz` extracted it logs missing vanilla config entries.
 - Object Builder: `dayz-proton.sh gui ObjectBuilder`. `dayz-animation-formats` (RTM/SEAnim inspection) is Python and runs natively.
 - In-game checks: the Linux notes of `dayz-test-ingame`. `.ps1` helpers: translate to `sh`.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

@@ -7,6 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-mod-dev`, a new skill: the entry point for mod development on DayZ 1.30 or later. It routes a mod task to the
+  domain skills, carries the rules every mod task needs (look up every API, the version define, forward slashes,
+  PBOs in `addons/`, load order following `requiredAddons`, no writes into Steam's directories, publishing is the
+  user's call), the look-up order with the local API index (`_shared/scripts/dayz-api.py`), the 1.30 porting walk,
+  CF and Expansion essentials, and the build, boot, verify and publish loop on Windows and Linux. Built from bzed's
+  own `dayz-dev` sections (contributed under MIT) and Pack material. 33 DayZ skills link to it for the mod loop;
+  `dayz-test-ingame` and `enforce-script-reference` gain triggers for local servers, API lookups, CF and load order.
+  `AGENTS.md` names it as the entry point; README and `AGENTS.md` count 45 skills.
+
 - From bzed's `dayz-dev` plugin (https://github.com/bzed/dayz-dev-plugin at `6112ac5`), the parts its author wrote,
   contributed to the Pack under MIT by the author (the plugin itself is GPL-3.0; its upstream DayZGhost material is not
   taken). Measured on Linux; the author re-tested the plugin on DayZ 1.30 stable.

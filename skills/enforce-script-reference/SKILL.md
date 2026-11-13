@@ -1,6 +1,6 @@
 ---
 name: enforce-script-reference
-description: "Use when: Enforce Script, config.cpp, ScriptRPC, SyncVars, OnStoreSave, CallLater, modded class, inputs.xml, crash/segfault. Language+config. Full UI/layout/Dabs: dayz-ui-development; persistence deep-dive: dayz-persistence."
+description: "Use when: Enforce Script, config.cpp, ScriptRPC, SyncVars, OnStoreSave, CallLater, modded class, inputs.xml, crash/segfault. Language+config. Full UI/layout/Dabs: dayz-ui-development; persistence deep-dive: dayz-persistence. Also: does this class/method/enum exist (local API index, diff.yadz.app), Community Framework RPCs/modules, mod load order."
 ---
 
 # Enforce Script Reference — Complete DayZ Modding Guide
@@ -1157,3 +1157,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - Vanilla scripts (`P:\scripts\…`): use `dayzmake unpack` on the installed script PBOs, preserving their prefix paths, and cite the extracted file plus the game build. `skills/_shared/scripts/extract-dayz-sources.sh <install> <dir>` extracts every script and derapified config (about 90 s for the vanilla install); `build-api-index.py <dir>/scripts ~/.cache/dayz-api` then builds a declarations index that `dayz-api.py class|find|chain|sub|enum|src NAME` queries (the index holds Bohemia's declarations, so it is built locally, never shipped). Online, https://diff.yadz.app/api/classes/<Name>.json gives one class of the latest build as JSON (`base`, `bases` with the define a base depends on, `methods`, `members`, file and line; `api/enums/<Name>.json`, `api/globals.json`; `api.json` is only a name index), per bzed's 2026-10-18 check against site build 1.30.164078 (`bzed/dayz-dev-plugin@6112ac5` `scripting/api-lookup.md:113-131`).
 - Script logs: native server → its `-profiles` directory; Proton client → `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ` (or the `-profiles=` directory).
 - The native Linux server defines `PLATFORM_LINUX` and also `SERVER_FOR_WINDOWS` (observed); DayZDiag and the client under Proton define `PLATFORM_WINDOWS`. Do not use either define to mean "Windows host".
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

@@ -6,7 +6,7 @@ This is the canonical agent file; `CLAUDE.md`, `GEMINI.md`, `.cursorrules` and
 
 ## What this repository is
 
-A knowledge pack for **DayZ (Enfusion) modding**: 44 domain playbooks, thirteen
+A knowledge pack for **DayZ (Enfusion) modding**: 45 domain playbooks, thirteen
 Python tools, and verified reference notes, assembled from shipped mods. It is
 written to be handed to a coding agent, not read cover to cover by a human.
 
@@ -30,7 +30,11 @@ you don't.
 1. Read every `skills/*/SKILL.md` **front-matter only** (`name` + `description`).
    The `description` is written as trigger conditions — read it as "invoke me
    when…". Concatenated, they are your routing table.
-2. When the task matches one, load **that whole `SKILL.md`** and follow it.
+2. When the task matches one, load **that whole `SKILL.md`** and follow it. For mod
+   work as a whole (write, review or port a mod, build it, boot it, publish it),
+   `skills/dayz-mod-dev/SKILL.md` is the entry point: it routes to the domain
+   skills and carries the rules every mod task needs. The Pack targets DayZ 1.30
+   or later.
 3. Open a file under that skill's `references/` **only when the procedure names
    it**. They are large and deliberately not loaded up front.
 4. `skills/_shared/` holds conventions several skills cite. Keep it alongside
@@ -128,7 +132,7 @@ Obsidian's.
 
 | Path | What it is |
 |---|---|
-| `skills/` | 44 playbooks + `_shared/`. The primary content. |
+| `skills/` | 45 playbooks + `_shared/`. The primary content. |
 | `tools/` | Thirteen Python tools. See [`TOOLS.md`](TOOLS.md). |
 | `examples/` | Worked examples that chain the tools on synthetic inputs. |
 | `knowledge/` | Verified reference notes: engine facts, infra, topic syntheses. |

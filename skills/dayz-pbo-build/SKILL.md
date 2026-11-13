@@ -1241,3 +1241,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - `build_*.ps1`, `robocopy` and junctions: read the script for the source tree, then do the same with `sh`, `rsync` and symlinks. Do not run the `.ps1` under `pwsh`: it calls Windows programs and the registry.
 - Publishing: the `workshop` uploader (nozwock/steam-workshop-uploader) instead of Publisher; `dayz-mod-pack.sh publish-hint` prints the command.
 - Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. `dayz_test_run build=true` on dayz-mcp's `linux-port` branch now drives the dayzmake v1.0.0 release binary from `PATH` and refuses any other build (`dayzmake_pin_mismatch`); the 2026-11-06 run used the fork under its old name armake2. It writes `@Mod/Addons/<Mod>.pbo`; both the native server and `DayZDiag` load that spelling (measured 2026-11-06).
+
+## The rest of the mod loop
+
+Building is one step of the loop in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md) (look up, write, build, boot on a local server, verify, publish), the Pack's entry point for mod development.

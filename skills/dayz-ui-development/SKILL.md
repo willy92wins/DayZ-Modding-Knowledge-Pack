@@ -1775,3 +1775,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - `dayz-ui-lab` (`.layout` parse/check, offline render) is Python and runs natively.
 - Workbench starts under Proton (`dayz-proton.sh gui Workbench`); its layout and imageset editors were **not verified** there. `P:\gui\...` is the extracted vanilla data under the directory mapped by `dayz-proton.sh init`.
 - Packing: dayzmake >= 1.0.0 (https://github.com/bzed/dayzmake) instead of AddonBuilder/MakePbo. For the distributed diag client helper see `skills/_shared/scripts/dayz-proton.sh` and `skills/_shared/linux-proton.md`. Retail-client screenshots against the native server: `skills/_shared/scripts/dayz-client-headless.sh` (`dayz-test-ingame/references/linux-headless-client.md`; with the Expansion bundle, switch the spawn selector off first). An HTML preview is not in-game sign-off; retain the widget/binding and runtime gates of this skill.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

@@ -924,3 +924,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - `P:\` is a plain directory mapped by `skills/_shared/scripts/dayz-proton.sh init <dir>`; a `P:\<Mod>\...` path in this skill is `<dir>/<Mod>/...`.
 - Object Builder and TexView run under Proton: `dayz-proton.sh gui ObjectBuilder <p3d>`, `gui TexView <paa>`. Object Builder opened and displayed a model; editing in it was not exercised. Offline checks (`py3d`, `dayz-model-preflight`, `dayz-3d-viewer`) are Python and run natively.
 - In-game checks: the Linux notes of `dayz-test-ingame`.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.
