@@ -1956,7 +1956,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "1e1d3318339fec78151dd30f6c86bcd1623e408739392ded779f83866f6f5919",
+          "source_hash": "eee7a94dec4107f2b88cc00bdc247a7aee78e30b3879f6728ebe43b5092fb90b",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -1964,7 +1964,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "1e1d3318339fec78151dd30f6c86bcd1623e408739392ded779f83866f6f5919",
+      "output_hash": "eee7a94dec4107f2b88cc00bdc247a7aee78e30b3879f6728ebe43b5092fb90b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -21598,7 +21598,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "423f8957a2856b0f961ccf9609fa80a98053c46296c37764cd1aaa3030b8ebbb",
+          "source_hash": "371cb5dfcfb258fa605ec42d8866515888ea2402a9a762e828215a103a5aab1d",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -21606,7 +21606,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "423f8957a2856b0f961ccf9609fa80a98053c46296c37764cd1aaa3030b8ebbb",
+      "output_hash": "371cb5dfcfb258fa605ec42d8866515888ea2402a9a762e828215a103a5aab1d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -42272,7 +42272,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "2d7a4527d328e862e6bb5b06da0a53f6d040e794691c9cd2a08673b2efd6d815",
+          "source_hash": "42c6c436643bc22236146455b4de4e9921f7efe0b05128a6a55cb9bd0ab79e7b",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -42280,7 +42280,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "2d7a4527d328e862e6bb5b06da0a53f6d040e794691c9cd2a08673b2efd6d815",
+      "output_hash": "42c6c436643bc22236146455b4de4e9921f7efe0b05128a6a55cb9bd0ab79e7b",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -42334,7 +42334,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "134dba56ca25f072b90f99063cb3157d9cee17bc3243a00527b548c688347d8d",
+          "source_hash": "5d52cf69985d337109f69f7ba01f7cc5aa567f70bee84e88bf8b220991478a4f",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/scripts/dayz-proton.sh",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -42342,7 +42342,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "134dba56ca25f072b90f99063cb3157d9cee17bc3243a00527b548c688347d8d",
+      "output_hash": "5d52cf69985d337109f69f7ba01f7cc5aa567f70bee84e88bf8b220991478a4f",
       "output_path": "skills/_shared/scripts/dayz-proton.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -42376,7 +42376,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "d8ccd30ed0ebe6a04b05e2bf628319d1b6bc7355940f8fbd29f1bb9c0a8ec381",
+          "source_hash": "7ad6cb22a8bf2cd56463e6a3f7e3d594a0abbb411a6ea04728bf5759bf3f448c",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/tests/test_dayz_proton.py",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -42384,7 +42384,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d8ccd30ed0ebe6a04b05e2bf628319d1b6bc7355940f8fbd29f1bb9c0a8ec381",
+      "output_hash": "7ad6cb22a8bf2cd56463e6a3f7e3d594a0abbb411a6ea04728bf5759bf3f448c",
       "output_path": "skills/_shared/tests/test_dayz_proton.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
