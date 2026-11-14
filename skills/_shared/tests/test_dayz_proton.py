@@ -7,8 +7,10 @@ skills/_shared/linux-proton.md. POSIX only: the script is the Linux route.
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
+import time
 from pathlib import Path
 
 import pytest
@@ -19,7 +21,11 @@ pytestmark = pytest.mark.skipif(os.name == "nt", reason="the Linux runner script
 
 
 def run(
-    tmp_path: Path, *args: str, steam: bool = True, bin_dir: Path | None = None
+    tmp_path: Path,
+    *args: str,
+    steam: bool = True,
+    bin_dir: Path | None = None,
+    extra_env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
     home = tmp_path / "home"
     home.mkdir(exist_ok=True)
@@ -28,8 +34,10 @@ def run(
     if steam:
         (tmp_path / "steam" / "steamapps").mkdir(parents=True, exist_ok=True)
         env["STEAM_ROOT"] = str(tmp_path / "steam")
+    if extra_env:
+        env.update(extra_env)
     return subprocess.run(
-        ["sh", str(SCRIPT), *args], env=env, capture_output=True, text=True, timeout=30, check=False
+        ["sh", str(SCRIPT), *args], env=env, capture_output=True, text=True, timeout=60, check=False
     )
 
 
@@ -94,3 +102,429 @@ def test_doctor_tells_the_dayzmake_fork_from_upstream_and_old_builds(
 ) -> None:
     done = run(tmp_path, "doctor", bin_dir=fake_dayzmake(tmp_path, help_text, version))
     assert expected in done.stdout
+
+
+# --- fakes for binarize / tool / headless / init -----------------------------
+
+def _write(path: Path, text: str, exe: bool = False) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+    if exe:
+        path.chmod(0o755)
+    return path
+
+
+def fake_proton(tmp_path: Path, spawn_wineserver_from: Path | None = None) -> tuple[Path, Path, Path]:
+    """A `proton` that records its argv and any .bat it is handed, and fakes
+    the prefix layout. Returns (proton_dir, calls_file, bats_file)."""
+    proton_dir = tmp_path / "proton-tool"
+    calls = tmp_path / "proton-calls.txt"
+    bats = tmp_path / "proton-bats.txt"
+    lines = [
+        "#!/bin/sh",
+        f"printf 'CALL\\n' >> '{calls}'",
+        f"for a in \"$@\"; do printf 'ARG %s\\n' \"$a\" >> '{calls}'; done",
+        'if [ -n "${STEAM_COMPAT_DATA_PATH:-}" ]; then mkdir -p "$STEAM_COMPAT_DATA_PATH/pfx/dosdevices"; fi',
+        "for a in \"$@\"; do case $a in *.bat)",
+        "  _p=$(printf '%s' \"$a\" | sed 's/^Z://; s/\\\\/\\//g')",
+        f"  [ -f \"$_p\" ] && {{ printf 'BAT %s\\n' \"$_p\" >> '{bats}'; cat \"$_p\" >> '{bats}'; }} ;;",
+        "esac; done",
+        'if [ -f "${DAYZ_PROTON_HOME:-}/binarize/run.bat" ]; then',
+        f"  printf 'BAT run.bat\\n' >> '{bats}'; cat \"$DAYZ_PROTON_HOME/binarize/run.bat\" >> '{bats}'",
+        '  mkdir -p "$DAYZ_PROTON_HOME/binarize/out"; printf \'done\\n\' > "$DAYZ_PROTON_HOME/binarize/out/binarize.log"',
+        "fi",
+    ]
+    if spawn_wineserver_from is not None:
+        new_pid = tmp_path / "spawned-wineserver.pid"
+        # Spawn via a foreground python3 helper, not shell `&`: a
+        # non-interactive sh starts async commands with SIGINT/SIGQUIT
+        # ignored and ignored dispositions survive exec, so the child
+        # would shrug off the script's kill -INT. The helper runs in the
+        # foreground (SIGINT caught/default), and exec resets a caught
+        # SIGINT to the default in the wineserver child.
+        lines += [
+            'for a in "$@"; do if [ "$a" = regedit ]; then',
+            f"  WINEPREFIX=\"$STEAM_COMPAT_DATA_PATH/pfx\" WAYLAND_DISPLAY=wayland-test "
+            f"python3 -c 'import subprocess,sys; p=subprocess.Popen([sys.argv[1], \"30\"]); print(p.pid)' "
+            f"'{spawn_wineserver_from}' > '{new_pid}'",
+            "fi; done",
+        ]
+    lines += ["exit 0", ""]
+    _write(proton_dir / "proton", "\n".join(lines), exe=True)
+    return proton_dir, calls, bats
+
+
+def fake_steam_with_tools(tmp_path: Path) -> Path:
+    steam = tmp_path / "steam"
+    tools = steam / "steamapps" / "common" / "DayZ Tools"
+    _write(
+        steam / "steamapps" / "appmanifest_830640.acf",
+        '"AppState"\n{\n"appid" "830640"\n"name" "DayZ Tools"\n'
+        '"installdir" "DayZ Tools"\n"StateFlags" "4"\n"buildid" "1"\n}\n',
+    )
+    _write(tools / "installscript.vdf", '"InstallScript"\n{\n}\n')
+    _write(tools / "Bin" / "Binarize" / "binarize.exe", "fake\n")
+    _write(tools / "Bin" / "DsUtils" / "DSSignFile.exe", "fake\n")
+    return steam
+
+
+def parse_calls(calls: Path) -> list[list[str]]:
+    if not calls.exists():
+        return []
+    out: list[list[str]] = []
+    current: list[str] | None = None
+    for line in calls.read_text().splitlines():
+        if line == "CALL":
+            current = []
+            out.append(current)
+        elif line.startswith("ARG ") and current is not None:
+            current.append(line[4:])
+    return out
+
+
+def expected_bat_quote(value: str) -> str:
+    pct = value.replace("%", "%%")
+    cut = len(pct)
+    while cut > 0 and pct[cut - 1] == "\\":
+        cut -= 1
+    trail = pct[cut:]
+    return '"' + pct[:cut] + trail + trail + '"'
+
+
+def binarize_setup(tmp_path: Path) -> dict[str, object]:
+    fake_steam_with_tools(tmp_path)
+    proton_dir, calls, bats = fake_proton(tmp_path)
+    proot = tmp_path / "P"
+    (proot / "MyMod").mkdir(parents=True)
+    dzhome = tmp_path / "dzhome"
+    env = {"PROTON": str(proton_dir), "DAYZ_PROTON_HOME": str(dzhome)}
+    return {"proot": proot, "dzhome": dzhome, "env": env, "calls": calls, "bats": bats}
+
+
+# --- F1: binarize batch serialization ----------------------------------------
+# These prove how the .bat is serialized, not how cmd.exe / binarize.exe
+# parse it.
+
+SPECIAL_ARGS = [
+    "my cube.p3d",
+    "cube.p3d & del P:\\MyMod\\important.txt & rem .p3d",
+    "a&b.p3d",
+    "a|b.p3d",
+    "a^b.p3d",
+    "a(b).p3d",
+    "a;b.p3d",
+    "a,b.p3d",
+    "a!X!b.p3d",
+    "%PATH%",
+    "%1",
+    "%%",
+    "100%.p3d",
+    "dir\\",
+    "dir\\\\",
+]
+
+
+def test_binarize_bat_quotes_every_user_argument(tmp_path: Path) -> None:
+    s = binarize_setup(tmp_path)
+    done = run(
+        tmp_path, "binarize", str(s["proot"]), "MyMod", str(tmp_path / "out"),
+        *SPECIAL_ARGS, extra_env=s["env"],  # type: ignore[arg-type]
+    )
+    assert done.returncode == 0, done.stderr
+    calls = parse_calls(s["calls"])  # type: ignore[arg-type]
+    bat_calls = [c for c in calls if "Z:\\run.bat" in c]
+    assert bat_calls, calls
+    # The cmd.exe /c argument is a single .bat path and carries no user text.
+    assert bat_calls[-1] == ["run", "cmd.exe", "/c", "Z:\\run.bat"]
+    for call in calls:
+        for arg in SPECIAL_ARGS:
+            assert arg not in call
+    bat = (s["dzhome"] / "binarize" / "run.bat").read_text()  # type: ignore[operator]
+    lines = bat.splitlines()
+    assert lines[0] == "@echo off"
+    assert lines[1] == "setlocal DisableDelayedExpansion"
+    assert expected_bat_quote("P:\\MyMod") in bat
+    for arg in SPECIAL_ARGS:
+        assert expected_bat_quote(arg) in bat, arg
+    # Outside the quoted spans the user's metacharacters do not appear: strip
+    # every "..." span and check the injection text is gone with it.
+    stripped = re.sub(r'"[^"]*"', '""', bat)
+    assert "del P:" not in stripped
+    assert "a&b" not in stripped and "a|b" not in stripped
+
+
+def test_binarize_with_no_file_arguments_is_valid(tmp_path: Path) -> None:
+    s = binarize_setup(tmp_path)
+    done = run(
+        tmp_path, "binarize", str(s["proot"]), "MyMod/", str(tmp_path / "out"),
+        extra_env=s["env"],  # type: ignore[arg-type]
+    )
+    assert done.returncode == 0, done.stderr
+    bat = (s["dzhome"] / "binarize" / "run.bat").read_text()  # type: ignore[operator]
+    # Trailing / stripped: P:\MyMod, not P:\MyMod\ before the closing quote.
+    assert '"P:\\MyMod" "Z:\\out"' in bat
+
+
+@pytest.mark.parametrize("bad", ['a"b.p3d', "a\nb.p3d", "a\rb.p3d", "a\n", ""])
+def test_binarize_refuses_bad_arguments_before_any_side_effect(tmp_path: Path, bad: str) -> None:
+    s = binarize_setup(tmp_path)
+    marker = s["dzhome"] / "binarize" / "out" / "marker.txt"  # type: ignore[operator]
+    marker.parent.mkdir(parents=True)
+    marker.write_text("keep\n")
+    done = run(
+        tmp_path, "binarize", str(s["proot"]), "MyMod", str(tmp_path / "out"),
+        bad, extra_env=s["env"],  # type: ignore[arg-type]
+    )
+    assert done.returncode != 0
+    assert not (s["calls"]).exists()  # type: ignore[union-attr]
+    assert not (s["dzhome"] / "binarize" / "run.bat").exists()  # type: ignore[operator]
+    assert marker.read_text() == "keep\n"
+
+
+def test_binarize_refuses_a_bad_addon_before_any_side_effect(tmp_path: Path) -> None:
+    s = binarize_setup(tmp_path)
+    done = run(
+        tmp_path, "binarize", str(s["proot"]), 'Bad"Mod', str(tmp_path / "out"),
+        "cube.p3d", extra_env=s["env"],  # type: ignore[arg-type]
+    )
+    assert done.returncode != 0
+    assert "double quote" in done.stderr
+    assert not (s["calls"]).exists()  # type: ignore[union-attr]
+
+
+def test_run_tool_bat_quoting_is_unchanged(tmp_path: Path) -> None:
+    fake_steam_with_tools(tmp_path)
+    proton_dir, _calls, bats = fake_proton(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    (dzhome / "tools" / "pfx" / "dosdevices").mkdir(parents=True)
+    done = run(
+        tmp_path, "tool", "DSSignFile", "a & b.pbo", "100%.pbo", "sp ace.pbo",
+        extra_env={"PROTON": str(proton_dir), "DAYZ_PROTON_HOME": str(dzhome)},
+    )
+    assert done.returncode == 0, done.stderr
+    bat = bats.read_text()
+    assert '"a & b.pbo"' in bat
+    assert "100%%.pbo" in bat
+    assert '"sp ace.pbo"' in bat
+
+
+# --- F3: headless identity and wineserver stops ------------------------------
+
+def fake_sway(tmp_path: Path) -> Path:
+    bin_dir = tmp_path / "fakebin"
+    record = tmp_path / "sway-args.txt"
+    _write(
+        bin_dir / "sway",
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$@\" > '{record}'\n"
+        "sleep 30 &\n_c=$!\n"
+        "trap 'kill $_c 2>/dev/null; exit 0' TERM INT\n"
+        "wait $_c\n",
+        exe=True,
+    )
+    return bin_dir
+
+
+def pid_gone(pid: int) -> bool:
+    stat = Path(f"/proc/{pid}/stat")
+    if not stat.exists():
+        return True
+    try:
+        return stat.read_text().rsplit(")", 1)[1].split()[0] == "Z"
+    except (OSError, IndexError):
+        return True
+
+
+def wait_gone(pid: int, seconds: float = 5.0) -> bool:
+    deadline = time.time() + seconds
+    while time.time() < deadline:
+        if pid_gone(pid):
+            return True
+        time.sleep(0.05)
+    return pid_gone(pid)
+
+
+def start_fake_wineserver(tmp_path: Path, name: str, wineprefix: Path, display: str) -> subprocess.Popen[bytes]:
+    sleep_bin = shutil.which("sleep")
+    assert sleep_bin is not None
+    exe_dir = tmp_path / name
+    exe_dir.mkdir(parents=True, exist_ok=True)
+    exe = exe_dir / "wineserver"
+    shutil.copy(sleep_bin, exe)
+    exe.chmod(0o755)
+    env = {"PATH": os.environ["PATH"], "WINEPREFIX": str(wineprefix), "WAYLAND_DISPLAY": display}
+    return subprocess.Popen([str(exe), "30"], env=env)
+
+
+def headless_start(tmp_path: Path, state: Path, bin_dir: Path, dzhome: Path) -> subprocess.CompletedProcess[str]:
+    return run(
+        tmp_path, "headless", "start", str(state), "ObjectBuilder",
+        bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+    )
+
+
+def test_headless_start_then_stop_signals_our_sway(tmp_path: Path) -> None:
+    bin_dir = fake_sway(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    pid = -1
+    try:
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode == 0, done.stderr
+        pid = int((state / "sway.pid").read_text().strip())
+        assert not pid_gone(pid)
+        assert (state / "sway.identity").exists()
+        assert "-c" in (tmp_path / "sway-args.txt").read_text()
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert wait_gone(pid), "our sway was not signalled"
+        assert not (state / "sway.pid").exists()
+    finally:
+        if pid > 0 and not pid_gone(pid):
+            os.kill(pid, 9)
+
+
+def test_headless_stop_does_not_kill_an_unrelated_live_process(tmp_path: Path) -> None:
+    sleeper = subprocess.Popen(["sleep", "30"])
+    try:
+        state = tmp_path / "state"
+        state.mkdir()
+        (state / "sway.pid").write_text(f"{sleeper.pid}\n")
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            extra_env={"DAYZ_PROTON_HOME": str(tmp_path / "dzhome")},
+        )
+        assert done.returncode == 0, done.stderr
+        assert sleeper.poll() is None, "unrelated process was killed"
+        assert "not verified" in done.stderr
+        assert not (state / "sway.pid").exists()
+    finally:
+        sleeper.kill()
+        sleeper.wait()
+
+
+@pytest.mark.parametrize("tamper", ["starttime", "conf"])
+def test_headless_stop_rejects_a_tampered_identity(tmp_path: Path, tamper: str) -> None:
+    bin_dir = fake_sway(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    pid = -1
+    try:
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode == 0, done.stderr
+        pid = int((state / "sway.pid").read_text().strip())
+        lines = (state / "sway.identity").read_text().splitlines()
+        if tamper == "starttime":
+            lines[0] = "1"
+        else:
+            lines[-1] = "/somewhere/else/sway.conf"
+        (state / "sway.identity").write_text("\n".join(lines) + "\n")
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert not pid_gone(pid), f"sway with a tampered {tamper} was signalled"
+    finally:
+        if pid > 0 and not pid_gone(pid):
+            os.kill(pid, 15)
+            wait_gone(pid)
+
+
+def test_headless_stop_signals_only_the_sessions_wineserver(tmp_path: Path) -> None:
+    bin_dir = fake_sway(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    for display, should_die in [("wayland-2", False), ("wayland-1", True)]:
+        state = tmp_path / f"state-{display}"
+        server: subprocess.Popen[bytes] | None = None
+        pid = -1
+        try:
+            done = headless_start(tmp_path, state, bin_dir, dzhome)
+            assert done.returncode == 0, done.stderr
+            pid = int((state / "sway.pid").read_text().strip())
+            server = start_fake_wineserver(tmp_path, f"ws-{display}", dzhome / "tools" / "pfx", display)
+            (state / "wayland-display").write_text("wayland-1\n")
+            done = run(
+                tmp_path, "headless", "stop", str(state),
+                bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+            )
+            assert done.returncode == 0, done.stderr
+            assert wait_gone(pid)
+            assert server is not None
+            if should_die:
+                assert server.wait(timeout=5) is not None
+            else:
+                assert server.poll() is None, "wineserver of another display was signalled"
+        finally:
+            if pid > 0 and not pid_gone(pid):
+                os.kill(pid, 9)
+            if server is not None and server.poll() is None:
+                server.kill()
+                server.wait()
+
+
+def test_headless_stop_with_dead_sway_leaves_the_wineserver_alone(tmp_path: Path) -> None:
+    dzhome = tmp_path / "dzhome"
+    server = start_fake_wineserver(tmp_path, "ws-dead", dzhome / "tools" / "pfx", "wayland-1")
+    try:
+        dead = subprocess.Popen(["sleep", "0.1"])
+        dead.wait()
+        state = tmp_path / "state"
+        state.mkdir()
+        (state / "sway.pid").write_text(f"{dead.pid}\n")
+        (state / "app").write_text("830640\n")
+        (state / "wayland-display").write_text("wayland-1\n")
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert "leaving its wineserver alone" in done.stderr
+        assert server.poll() is None
+    finally:
+        if server.poll() is None:
+            server.kill()
+            server.wait()
+
+
+def test_init_leaves_a_busy_prefix_running_and_stops_only_new_wineservers(tmp_path: Path) -> None:
+    fake_steam_with_tools(tmp_path)
+    dzhome = tmp_path / "dz[1]"
+    tools_prefix = dzhome / "tools"
+    (tools_prefix / "pfx" / "dosdevices").mkdir(parents=True)
+    mfc = tools_prefix / "pfx" / "drive_c" / "windows" / "syswow64" / "mfc140.dll"
+    mfc.parent.mkdir(parents=True)
+    mfc.write_text("fake\n")
+    busy = start_fake_wineserver(tmp_path, "ws-busy", tools_prefix / "pfx", "wayland-test")
+    sleeper_dir = tmp_path / "ws-new"
+    sleeper_dir.mkdir()
+    sleeper = sleeper_dir / "wineserver"
+    shutil.copy(shutil.which("sleep") or "/bin/sleep", sleeper)
+    sleeper.chmod(0o755)
+    proton_dir, _calls, _bats = fake_proton(tmp_path, spawn_wineserver_from=sleeper)
+    try:
+        done = run(
+            tmp_path, "init",
+            extra_env={"PROTON": str(proton_dir), "DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr + done.stdout
+        assert busy.poll() is None, "the already-running wineserver was signalled"
+        assert "left running" in done.stderr
+        new_pid_file = tmp_path / "spawned-wineserver.pid"
+        assert new_pid_file.exists(), "the fake Proton did not spawn a wineserver"
+        assert wait_gone(int(new_pid_file.read_text().strip())), "the new wineserver was not signalled"
+    finally:
+        if busy.poll() is None:
+            busy.kill()
+            busy.wait()
+        new_pid_file = tmp_path / "spawned-wineserver.pid"
+        if new_pid_file.exists():
+            try:
+                new_pid = int(new_pid_file.read_text().strip())
+            except ValueError:
+                new_pid = -1
+            if new_pid > 0 and not pid_gone(new_pid):
+                os.kill(new_pid, 9)

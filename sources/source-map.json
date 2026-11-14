@@ -1951,10 +1951,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "33ce8b9e7df93d69a19e2b3c66ac2632d1febeb9130ad9668bb0ef21aeb7536e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6c8dc8c0cac3493ecd6efb00f0400e23aa9266fc94837287687ab0ea8eece3e8",
+      "output_hash": "33ce8b9e7df93d69a19e2b3c66ac2632d1febeb9130ad9668bb0ef21aeb7536e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -12466,10 +12476,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "88bebd4c3ed9e7fa09951b853ecf1490fe62cfac812e005f94e07d214ba8c609",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "25d382ef90e044c175a939335e5a2ef128502c5380105ece364cf1c23b06c7de",
+      "output_hash": "88bebd4c3ed9e7fa09951b853ecf1490fe62cfac812e005f94e07d214ba8c609",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -12676,10 +12696,20 @@
           "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "c43764531009e16823d13bd835d8788108a5559ca13ec16f0c3b2f6b727f2aa0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "825237760b086ef5f716dece426b947b75e3ea757cbc1921b175aabd7732bcd4",
+      "output_hash": "c43764531009e16823d13bd835d8788108a5559ca13ec16f0c3b2f6b727f2aa0",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -21393,10 +21423,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "pack-161-resolution@2026-11-08",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3054b571821f6f872aecc77b3c77e3d8e9dad12ff569773706f7286d78f9281d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "92dfb74f53b9446510815acfb5b50284e9dc33a4beffae45d418342166493440",
+      "output_hash": "3054b571821f6f872aecc77b3c77e3d8e9dad12ff569773706f7286d78f9281d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -42025,10 +42065,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d205413406d4e5eea1b4ed95cf39e69a48725752f2aa472da6f799810eff5682",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "aa3fe27ce9073adf194bef4235552a848b6984ff9c19a16a16e956b9b5136fde",
+      "output_hash": "d205413406d4e5eea1b4ed95cf39e69a48725752f2aa472da6f799810eff5682",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -42077,10 +42127,20 @@
           "source_path": "skills/_shared/scripts/dayz-proton.sh",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "97315cb4de09aff7140d7d51d7c37b64057070cb7b8c9b2b10fd1ba370a5f540",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-proton.sh",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b2f525000d913fedf36d2f96f1de50b41bf8ebc8f4ea21857e1fc0e8d2889f2c",
+      "output_hash": "97315cb4de09aff7140d7d51d7c37b64057070cb7b8c9b2b10fd1ba370a5f540",
       "output_path": "skills/_shared/scripts/dayz-proton.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -42109,10 +42169,20 @@
           "source_path": "skills/_shared/tests/test_dayz_proton.py",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3de63cca78566b2dba18b47016d361e6663c254417c00a2e70ee22b2474b2151",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_dayz_proton.py",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "40e5b093c34ba8f9533ee1c004dd038585ebcc3683c0e8d00bcd53ad7f79643f",
+      "output_hash": "3de63cca78566b2dba18b47016d361e6663c254417c00a2e70ee22b2474b2151",
       "output_path": "skills/_shared/tests/test_dayz_proton.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"

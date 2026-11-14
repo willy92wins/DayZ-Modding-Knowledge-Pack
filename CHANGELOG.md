@@ -111,6 +111,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `CLAIM-NET-ARRAY-RPC`, `CLAIM-NET-ARRAY-INPUT`, `CLAIM-NET-ARRAY-ACK`, `CLAIM-NET-ARRAY-SCOPE`.
 - `knowledge/script-network-array-types.md`: local loopback runtime probe on DayZDiag 1.30.164289.70 (DayZ Server appmanifest buildid 26220720): `ScriptRPC` read `array<int>` counts 512, 1024 and 2048 with matching checksums and 4096 with `values.Count()=4096` (checksum not logged); `ScriptInputUserData` accepted `array<int>` counts 40, 48, 64, 96 and 128 and rejected 140, 143, 144, 192, 255 and 256 at `Write` despite `CanStoreInputUserData()` true; `ScriptRPC` read `array<string>` counts 1, 16 and 64 of 16 characters and `ScriptInputUserData` read 1, 8 and 16 of 8 characters while 32 of 8 characters (256 bytes) failed `Write`; a manually built `array<array<int>>` read back `outer=4`, `inner=0`, while `array<ref array<int>>` preserved a 4x4 matrix with checksum 120 over both channels; the ACK carried sequence and count, not a content hash. `CLAIM-NET-ARRAY-TYPES-RPC`, `CLAIM-NET-ARRAY-TYPES-INPUT`, `CLAIM-NET-STRING-ARRAY-RPC`, `CLAIM-NET-STRING-ARRAY-INPUT`, `CLAIM-NET-NESTED-ARRAY`, `CLAIM-NET-NESTED-DECL`, `CLAIM-NET-ARRAY-TYPES-ACK`, `CLAIM-NET-ARRAY-TYPES-SCOPE`.
 
+### Fixed
+
+- Linux/Proton review fixes (2026-11-14) for the Linux support above:
+  `dayz-proton.sh binarize` no longer interpolates user arguments into a `cmd.exe /c` string; it
+  writes them double-quoted into a sandbox `Z:\run.bat` (`%` and trailing backslashes doubled,
+  delayed expansion off) and refuses a double quote, CR, LF or an empty argument before any side
+  effect (`CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION`, batch serialization only). `headless stop`
+  signals only a sway whose recorded `/proc` start time and full argv still match, then only that
+  session's wineserver by PID; `init` and the .NET warm-up stop only wineservers that were not
+  running when they began, matching `WINEPREFIX` literally (`CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY`).
+  `dayz-pbo-reverse-engineering` no longer recommends `dayzmake unpack --force` for third-party PBOs:
+  dayzmake v1.0.0 has no containment check on entry names (`CLAIM-DAYZMAKE-UNPACK-NO-CONTAINMENT`),
+  so an unchecked PBO is copied to a private folder, its names are checked, and only that copy is
+  unpacked into a fresh empty directory. `dayzmake inspect` on models shows LODs, textures,
+  materials, properties and selections only for an editable MLOD (`CLAIM-DAYZMAKE-INSPECT-ODOL-SCOPE`),
+  and upstream armake2's `*.c` exclusion is stated for the V3 filehash (`CLAIM-ARMAKE2-V3-SIGN-OMITS-C`).
+  The stale `--proton-binarize` version text and the `dayz-mod-pack.sh publish-hint` line in
+  `dayz-pbo-build` are corrected, and the unclaimed author measurements in the Linux guide are
+  labelled as such. New offline tests cover the `binarize` .bat and the headless/init stops.
+
 ### Changed
 
 - `dayz-ui-development` `references/layout-variants-130.md`: layout variants written by hand, measured on

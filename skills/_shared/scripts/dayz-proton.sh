@@ -28,7 +28,11 @@
 # Rules learned the hard way (2026-11-03, Proton Hotfix and GE-Proton11-1, Debian testing):
 # - One display per prefix at a time: a prefix's wineserver is bound to the display its first
 #   program used; others die with "X Error ... BadWindow ... X_UnmapWindow". `headless start`
-#   refuses a busy prefix and `headless stop` stops its wineserver.
+#   refuses a busy (or untellable) prefix; `headless stop` signals only a sway whose recorded
+#   /proc identity (start time + full argv) still matches, then only that session's wineserver.
+#   `binarize` writes its arguments only into a quoted .bat (Z:\run.bat) and refuses any with
+#   a double quote, CR, LF or empty before doing anything. `init` stops only the wineservers
+#   that were not running when it began, in the prefixes it used.
 # - 32-bit tools run with PROTON_USE_WOW64=1 (default here), or GDI dialogs show no text when the
 #   host has no i386 FreeType. DAYZ_PROTON_RUNTIME=1 starts Proton inside the Steam Linux Runtime
 #   instead, as Steam does; GDI tools crashed there on this host.
@@ -47,6 +51,35 @@ set -eu
 
 me=$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")
 die() { echo "dayz-proton: $*" >&2; exit 1; }
+CR=$(printf '\r')
+# Literal newline: $(printf '\n') is empty, as $() strips trailing newlines.
+LF='
+'
+
+# --- batch-file quoting (binarize) -------------------------------------------
+# bat_validate <value>: refuse values a .bat cannot carry safely. Called on the
+# original arguments before any side effect.
+bat_validate() {
+    [ -n "$1" ] || die "binarize: an empty argument is not allowed"
+    case $1 in
+        *'"'*) die "binarize: an argument containing a double quote is not allowed" ;;
+        *"$CR"*|*"$LF"*) die "binarize: an argument containing CR or LF is not allowed" ;;
+    esac
+}
+# bat_quote <value>: print it double-quoted for a .bat: % doubled, and the whole
+# run of trailing backslashes doubled (MS C runtime rule, so \" is not an
+# escaped quote). No validation here; call bat_validate first.
+bat_quote() {
+    _bq_v=$(printf '%s' "$1" | sed 's/%/%%/g')
+    _bq_tail=
+    while :; do
+        case $_bq_v in
+            *\\) _bq_tail="$_bq_tail\\"; _bq_v=${_bq_v%\\} ;;
+            *) break ;;
+        esac
+    done
+    printf '"%s%s%s"' "$_bq_v" "$_bq_tail" "$_bq_tail"
+}
 
 # ---------------------------------------------------------------- Steam, apps, Proton
 find_steam() {
@@ -205,12 +238,17 @@ ensure_prefix() {   # ensure_prefix <appid>: create the Wine prefix once
 warm_dotnet() {
     ab=$(appdir 830640)/Bin/AddonBuilder/AddonBuilder.exe
     [ -f "$ab" ] || return 0
+    # Executable guard for the wineserver stop below: snapshot this prefix's
+    # wineserver PIDs first; afterwards signal only PIDs that are new. An
+    # unknown snapshot means signal nothing. (A fresh prefix has no dosdevices
+    # yet, but that alone does not prove no server serves its path.)
+    if _wd_snap=$(prefix_wineserver "$STEAM_COMPAT_DATA_PATH"); then _wd_ok=1; else _wd_snap=; _wd_ok=0; fi
     wd=$(mktemp -d "${TMPDIR:-/tmp}/dayz-proton-warm.XXXXXX"); mkdir -p "$wd/src" "$wd/out"
     echo warm > "$wd/src/readme.txt"
     echo "dayz-proton: warming up .NET in the new prefix (once, up to 90 s)" >&2
     ( cd "$(dirname "$ab")" && timeout 90 sh -c 'PROTON_USE_WOW64=${PROTON_USE_WOW64:-1} "$1" run "$2" "$3" "$4" -packonly -prefix=warm' \
         sh "$PROTON_BIN" "$ab" "$(winpath "$wd/src")" "$(winpath "$wd/out")" ) >/dev/null 2>&1 || true
-    WINEPREFIX=$STEAM_COMPAT_DATA_PATH/pfx "$(dirname "$PROTON_BIN")/files/bin/wineserver" -k >/dev/null 2>&1 || true
+    signal_new_wineservers "$STEAM_COMPAT_DATA_PATH" "$_wd_snap" "$_wd_ok" ""
     rm -rf "$wd"
 }
 
@@ -257,15 +295,86 @@ import_registry() {
 # prefix started on. Programs started later on another display (or after that display is gone, e.g.
 # a stopped headless sway) die with "X Error ... BadWindow ... X_UnmapWindow". So: one display per
 # prefix at a time, and stop the wineserver whenever a session ends.
-prefix_wineserver() {   # pids of the wineserver serving prefix $1 (a compatdata dir)
-    for p in $(pgrep -x wineserver 2>/dev/null); do
-        tr '\0' '\n' < "/proc/$p/environ" 2>/dev/null | grep -qx "WINEPREFIX=$1/pfx/\{0,1\}" && echo "$p"
-    done
+# norm_path <path>: print it without trailing slashes ("/" stays "/").
+norm_path() {
+    _np=$1
+    while :; do case $_np in */) _np=${_np%/} ;; *) break ;; esac; done
+    printf '%s\n' "${_np:-/}"
+}
+# wineserver_serves <pid> <prefix> <display|"">: 0 = environ readable and the
+# WINEPREFIX matches the prefix literally (the value may be the compatdata dir
+# or its pfx subdir, with or without a trailing slash; no regex, so a prefix
+# containing [ ] . * cannot mis-match) and, when a display is given,
+# WAYLAND_DISPLAY equals it. 1 = no match. 2 = environ unreadable (unknown).
+wineserver_serves() {
+    _ws_tmp=$(mktemp) || return 2
+    if ! tr '\0' '\n' < "/proc/$1/environ" > "$_ws_tmp" 2>/dev/null; then rm -f "$_ws_tmp"; return 2; fi
+    _ws_wp=; _ws_disp=; _ws_have_disp=0
+    while IFS= read -r _ws_line; do
+        case $_ws_line in
+            WINEPREFIX=*) _ws_wp=${_ws_line#WINEPREFIX=} ;;
+            WAYLAND_DISPLAY=*) _ws_disp=${_ws_line#WAYLAND_DISPLAY=}; _ws_have_disp=1 ;;
+        esac
+    done < "$_ws_tmp"
+    rm -f "$_ws_tmp"
+    [ -n "$_ws_wp" ] || return 1
+    _ws_wp=$(norm_path "$_ws_wp"); _ws_pfx=$(norm_path "$2")
+    [ "$_ws_wp" = "$_ws_pfx" ] || [ "$_ws_wp" = "$_ws_pfx/pfx" ] || return 1
+    if [ -n "$3" ]; then
+        if [ "$_ws_have_disp" != 1 ] || [ "$_ws_disp" != "$3" ]; then return 1; fi
+    fi
     return 0
 }
-stop_wineserver() {   # stop_wineserver <appid>
-    pfx=$(prefix_dir "$1"); PROTON_BIN=${PROTON_BIN:-$(find_proton)}
-    WINEPREFIX=$pfx/pfx "$(dirname "$PROTON_BIN")/files/bin/wineserver" -k >/dev/null 2>&1 || true
+# prefix_wineserver <compatdata dir>: print the PIDs serving it, one per line.
+# Returns 1 when that cannot be told (pgrep failed, or a wineserver's environ
+# was unreadable): unknown is never reported as free; callers treat it as busy.
+prefix_wineserver() {
+    if _pw_list=$(pgrep -x wineserver 2>/dev/null); then _pw_rc=0; else _pw_rc=$?; fi
+    [ "$_pw_rc" = 1 ] && return 0
+    [ "$_pw_rc" = 0 ] || return 1
+    _pw_unknown=0
+    for _pw_p in $_pw_list; do
+        if wineserver_serves "$_pw_p" "$1" ""; then
+            echo "$_pw_p"
+        elif [ $? = 2 ]; then
+            _pw_unknown=1
+        fi
+    done
+    [ "$_pw_unknown" = 0 ]
+}
+# signal_new_wineservers <prefix> <snapshot pids> <snapshot ok 1|0> <display|"">:
+# kill -INT (what wineserver -k sends) only PIDs serving the prefix that were
+# not in the snapshot, re-verified immediately before signalling. An unknown
+# snapshot or scan signals nothing.
+signal_new_wineservers() {
+    if [ "$3" != 1 ]; then
+        echo "dayz-proton: could not tell which wineservers served $1 before; leaving them running" >&2
+        return 0
+    fi
+    if ! _sn_now=$(prefix_wineserver "$1"); then
+        echo "dayz-proton: could not tell which wineservers serve $1 now; leaving them running" >&2
+        return 0
+    fi
+    for _sn_pid in $_sn_now; do
+        _sn_old=0
+        for _sn_o in $2; do [ "$_sn_o" = "$_sn_pid" ] && _sn_old=1; done
+        [ "$_sn_old" = 1 ] && continue
+        if wineserver_serves "$_sn_pid" "$1" "$4"; then
+            kill -INT "$_sn_pid" 2>/dev/null || true
+        fi
+    done
+    [ -n "$2" ] && echo "dayz-proton: wineserver for $1 was already running; left running" >&2
+    return 0
+}
+stop_wineserver() {   # stop_wineserver <appid>: kept for compatibility; by PID now
+    pfx=$(prefix_dir "$1")
+    if ! _sw_pids=$(prefix_wineserver "$pfx"); then
+        echo "dayz-proton: could not tell which wineservers serve $pfx; leaving them running" >&2
+        return 0
+    fi
+    for _sw_pid in $_sw_pids; do
+        if wineserver_serves "$_sw_pid" "$pfx" ""; then kill -INT "$_sw_pid" 2>/dev/null || true; fi
+    done
 }
 
 # The VC++ runtime with MFC (Object Builder needs mfc140.dll). Steam installs it from Steamworks
@@ -343,7 +452,19 @@ run_tool() {   # run_tool con|gui <Tool> [args]
 # must run from the P: root or alpha textures are silently lost.
 do_binarize() {
     [ $# -ge 3 ] || die "usage: binarize <P-root> <addon path under P:> <out dir> [files...]"
+    # Validate the original addon and file arguments before anything is
+    # created, copied, linked, removed or run (see bat_validate).
+    bat_validate "$2"
+    _bz_i=0
+    for _bz_a in "$@"; do
+        _bz_i=$((_bz_i + 1))
+        if [ "$_bz_i" -gt 3 ]; then bat_validate "$_bz_a"; fi
+    done
     proot=$(cd "$1" && pwd -P); addon=$2; out=$3; shift 3
+    # Strip trailing / from the addon before it becomes a backslash path (a
+    # trailing \" would read as an escaped quote in the .bat).
+    while :; do case $addon in */) addon=${addon%/} ;; *) break ;; esac; done
+    [ -n "$addon" ] || die "binarize: an empty argument is not allowed"
     [ -d "$proot/$addon" ] || die "$proot/$addon does not exist"
     T=$(appdir 830640)/Bin/Binarize; [ -f "$T/binarize.exe" ] || die "DayZ Tools Binarize not found"
     sb=$H/binarize; mkdir -p "$sb/out" "$sb/prefix"
@@ -358,10 +479,22 @@ do_binarize() {
     ln -sfn "$proot" "$sb/prefix/pfx/dosdevices/p:"
     rm -rf "$sb/out"/*
     waddon=$(printf '%s' "$addon" | tr / '\\')
+    # A .bat under the sandbox (Z:\run.bat, never under the wiped $sb/out):
+    # no user text reaches the cmd.exe /c string. Every user value is written
+    # double-quoted by bat_quote; DisableDelayedExpansion keeps ! literal.
+    {
+        printf '@echo off\r\n'
+        printf 'setlocal DisableDelayedExpansion\r\n'
+        printf '"Z:\\Binarize\\binarize.exe" -norecurse -always -maxProcesses=0 '
+        printf '%s ' "$(bat_quote "P:\\$waddon")"
+        printf '"Z:\\out"'
+        for _bz_a in "$@"; do printf ' %s' "$(bat_quote "$_bz_a")"; done
+        printf ' > "Z:\\out\\binarize.log" 2>&1\r\n'
+        printf 'exit /b %%errorlevel%%\r\n'
+    } > "$sb/run.bat"
     cd "$proot"
     rc=0
-    prun cmd.exe /c "Z:\\Binarize\\binarize.exe -norecurse -always -maxProcesses=0 P:\\$waddon Z:\\out $* > Z:\\out\\binarize.log 2>&1" \
-        > /dev/null 2>&1 || rc=$?
+    prun cmd.exe /c 'Z:\run.bat' > /dev/null 2>&1 || rc=$?
     mkdir -p "$out"
     tr -d '\r' < "$sb/out/binarize.log" 2>/dev/null | grep -v '^$' | tail -n 40 || true
     rm -f "$sb/out/binarize.log"
@@ -371,6 +504,53 @@ do_binarize() {
 }
 
 # ---------------------------------------------------------------- headless sway
+# The sway identity is its /proc start time (field 22 of /proc/<pid>/stat,
+# parsed after the last ')' so a comm with spaces or parens cannot shift it)
+# plus its full argv, both recorded by `start` itself in sway.identity (first
+# line the start time, then one argv entry per line). `stop` re-reads both and
+# signals only on an exact match. The PID is written by the child that execs
+# sway, so it survives exec; $! of a setsid launcher would not under job
+# control, where setsid forks and $! names the exiting parent.
+proc_starttime() {
+    _ps_stat=$(cat "/proc/$1/stat" 2>/dev/null) || return 1
+    _ps_rest=${_ps_stat##*)}
+    _ps_i=0
+    for _ps_f in $_ps_rest; do
+        _ps_i=$((_ps_i + 1))
+        if [ "$_ps_i" = 20 ]; then printf '%s\n' "$_ps_f"; return 0; fi
+    done
+    return 1
+}
+# sway_identity_ok <pid> <state>: pid alive, recorded start time and full argv
+# still match, and the argv names sway with -c <state>/sway.conf.
+sway_identity_ok() {
+    [ -d "/proc/$1" ] || return 1
+    [ -f "$2/sway.identity" ] || return 1
+    _si_recorded=$(head -n 1 "$2/sway.identity" 2>/dev/null) || return 1
+    [ -n "$_si_recorded" ] || return 1
+    _si_now=$(proc_starttime "$1") || return 1
+    [ "$_si_now" = "$_si_recorded" ] || return 1
+    _si_cur=$(mktemp) || return 1
+    _si_rec=$(mktemp) || { rm -f "$_si_cur"; return 1; }
+    if ! tr '\0' '\n' < "/proc/$1/cmdline" > "$_si_cur" 2>/dev/null; then
+        rm -f "$_si_cur" "$_si_rec"; return 1
+    fi
+    tail -n +2 "$2/sway.identity" > "$_si_rec"
+    if ! cmp -s "$_si_cur" "$_si_rec"; then rm -f "$_si_cur" "$_si_rec"; return 1; fi
+    awk -v conf="$2/sway.conf" '
+        function base(p,   n, a) { n = split(p, a, "/"); return a[n] }
+        NR == 1 { first = $0 } NR == 2 { second = $0 }
+        { prev2 = prev1; prev1 = $0; n = NR }
+        END {
+            if (n < 3 || prev2 != "-c" || prev1 != conf) exit 1
+            if (base(first) == "sway") exit 0
+            if (n >= 4 && base(second) == "sway") exit 0
+            exit 1
+        }' "$_si_cur"
+    _si_rc=$?
+    rm -f "$_si_cur" "$_si_rec"
+    [ "$_si_rc" = 0 ]
+}
 do_headless() {
     sub=${1:-}; state=${2:-}
     [ -n "$sub" ] && [ -n "$state" ] || die "usage: headless start|shot|stop <state> ..."
@@ -380,7 +560,9 @@ do_headless() {
         [ $# -ge 1 ] || die "usage: headless start <state> <Tool> [args...]"
         command -v sway >/dev/null || die "sway is needed for headless runs"
         app=830640; [ "$1" = DayZDiag ] && app=221100
-        busy=$(prefix_wineserver "$(prefix_dir $app)")
+        if ! busy=$(prefix_wineserver "$(prefix_dir $app)"); then
+            die "cannot tell whether prefix $(prefix_dir $app) is in use; treating it as busy: one display per prefix"
+        fi
         [ -z "$busy" ] || die "prefix $(prefix_dir $app) is in use (wineserver $busy): one display per prefix; stop that session first"
         echo $app > "$state/app"
         : > "$state/args"; for a in "$@"; do printf '%s\n' "$a" >> "$state/args"; done
@@ -394,19 +576,59 @@ EOF
         chmod +x "$state/run.sh"
         printf 'output HEADLESS-1 resolution %s position 0 0\nxwayland enable\nexec %s/run.sh > %s/run.log 2>&1\n' \
             "${RES:-1600x900}" "$state" "$state" > "$state/sway.conf"
-        rm -f "$state/wayland-display"
-        WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid nohup sway -c "$state/sway.conf" \
+        rm -f "$state/wayland-display" "$state/sway.pid" "$state/sway.identity"
+        # The child writes its own PID before exec, so the recorded PID is the
+        # sway process itself even when setsid forks under job control.
+        WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid nohup sh -c 'echo $$ > "$1/sway.pid"; exec sway -c "$1/sway.conf"' sh "$state" \
             > "$state/sway.log" 2>&1 &
-        echo $! > "$state/sway.pid"
-        echo "headless sway $(cat "$state/sway.pid"), log $state/run.log" ;;
+        _hl_i=0
+        while [ "$_hl_i" -lt 50 ]; do
+            if [ -s "$state/sway.pid" ]; then
+                pid=$(cat "$state/sway.pid")
+                # Wait until the launcher shell has exec'd sway: its own
+                # cmdline still holds the 'exec sway' command string.
+                _hl_cmd=$(tr '\0' '\n' < "/proc/$pid/cmdline" 2>/dev/null) || _hl_cmd=
+                case $_hl_cmd in *'exec sway'*) ;; *) break ;; esac
+            fi
+            sleep 0.1; _hl_i=$((_hl_i + 1))
+        done
+        [ -s "$state/sway.pid" ] || die "sway did not start (see $state/sway.log)"
+        pid=$(cat "$state/sway.pid")
+        _hl_start=$(proc_starttime "$pid") || die "sway did not stay up (see $state/sway.log)"
+        {
+            printf '%s\n' "$_hl_start"
+            tr '\0' '\n' < "/proc/$pid/cmdline"
+        } > "$state/sway.identity"
+        echo "headless sway $pid, log $state/run.log" ;;
     shot)
         [ -s "$state/wayland-display" ] || die "no session in $state"
         command -v grim >/dev/null || die "grim is needed for screenshots"
         WAYLAND_DISPLAY=$(cat "$state/wayland-display") grim "${1:?usage: headless shot <state> <out.png>}" ;;
     stop)
+        [ -f "$state/sway.pid" ] || die "no session in $state"
         pid=$(cat "$state/sway.pid" 2>/dev/null) || die "no session in $state"
-        kill "$pid" 2>/dev/null || true; rm -f "$state/sway.pid"
-        [ -f "$state/app" ] && stop_wineserver "$(cat "$state/app")" ;;
+        if ! sway_identity_ok "$pid" "$state"; then
+            echo "dayz-proton: the sway in $state is not verified as this session's (stale or foreign pid $pid); not signalling it, and leaving its wineserver alone" >&2
+            rm -f "$state/sway.pid" "$state/sway.identity"
+            return 0
+        fi
+        kill "$pid" 2>/dev/null || true
+        rm -f "$state/sway.pid" "$state/sway.identity"
+        if [ -f "$state/app" ] && [ -s "$state/wayland-display" ]; then
+            _hl_app=$(cat "$state/app"); _hl_disp=$(cat "$state/wayland-display")
+            _hl_pfx=$(prefix_dir "$_hl_app")
+            if ! _hl_pids=$(prefix_wineserver "$_hl_pfx"); then
+                echo "dayz-proton: could not tell which wineservers serve $_hl_pfx; leaving them running" >&2
+            else
+                for _hl_pid in $_hl_pids; do
+                    if wineserver_serves "$_hl_pid" "$_hl_pfx" "$_hl_disp"; then
+                        kill -INT "$_hl_pid" 2>/dev/null || true
+                    fi
+                done
+            fi
+        else
+            echo "dayz-proton: no recorded display for $state; leaving the wineserver alone" >&2
+        fi ;;
     *) die "unknown headless command '$sub'" ;;
     esac
 }
@@ -416,6 +638,16 @@ do_init() {
     if [ $# -ge 1 ]; then
         pr=$(cd "$1" && pwd -P) || die "$1 does not exist"
         mkdir -p "$H"; printf '%s\n' "$pr" > "$H/p-root"
+    fi
+    # Snapshot the wineservers of the prefixes this init actually uses
+    # (830640 always; 221100 only when a P: root maps it) before creating
+    # anything. At the end only wineservers that were not running when init
+    # began are stopped, in those prefixes; an unknown snapshot never signals.
+    if _in_snap830=$(prefix_wineserver "$(prefix_dir 830640)"); then _in_ok830=1; else _in_snap830=; _in_ok830=0; fi
+    _in_use221=0; _in_snap221=; _in_ok221=0
+    if [ -n "$(p_root)" ]; then
+        _in_use221=1
+        if _in_snap221=$(prefix_wineserver "$(prefix_dir 221100)"); then _in_ok221=1; else _in_snap221=; _in_ok221=0; fi
     fi
     ensure_prefix 830640
     import_registry
@@ -432,7 +664,10 @@ do_init() {
     else
         echo "no P: root given; run '$me init <dir>' to map P:"
     fi
-    stop_wineserver 830640; stop_wineserver 221100
+    signal_new_wineservers "$(prefix_dir 830640)" "$_in_snap830" "$_in_ok830" ""
+    if [ "$_in_use221" = 1 ]; then
+        signal_new_wineservers "$(prefix_dir 221100)" "$_in_snap221" "$_in_ok221" ""
+    fi
 }
 
 # check_dayzmake: the native packer is bzed's armake2 fork, renamed dayzmake at v1.0.0. Upstream
