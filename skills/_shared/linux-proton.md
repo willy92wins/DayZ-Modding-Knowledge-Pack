@@ -49,8 +49,8 @@ https://github.com/bzed/dayzmake/releases/tag/v1.0.0 (the one dayz-mcp's `linux-
 or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0` (needs `libssl-dev`). The fork
 is required, not a preference, and it is moving away from upstream on purpose: it implements more and
 more functions that only DayZ needs, or that DayZ needs differently from Arma. Upstream armake2
-(KoffeinFlummi/armake2) is built for Arma: [EXACT][CLAIM-ARMAKE2-V3-SIGN-OMITS-C] it leaves `*.c` files out of the V3 signature filehash, so the `.bisign` of
-a script mod does not cover its scripts, and it fails on DayZ configs. What the fork adds (the author's
+(KoffeinFlummi/armake2) is built for Arma: [EXACT][CLAIM-ARMAKE2-V3-SIGN-OMITS-C] the V3 file hash omits `.c` files in upstream armake2 and includes them in dayzmake v1.0.0.
+Author-reported and not claimed: upstream fails on DayZ configs. What the fork adds (the author's
 list): preprocessor grammar fixes (`#include` directives, nested macro arguments), `$PREFIX$` accepted when
 building PBOs, `img2paa` / `paa2img`, a `binarize` command, texture and material checks in `build` (`missing-texture`,
 `missing-material`) and opt-in `build --proton-binarize` (models through BI's binarize under Proton).
@@ -87,9 +87,16 @@ in the sandbox holding every user value double-quoted (`%` doubled, a run of tra
 doubled, `setlocal DisableDelayedExpansion` so `!` stays literal), and it refuses an argument with
 a double quote, CR, LF or an empty argument before anything is created, copied, linked, removed
 or run. [EXACT][CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION] The offline tests prove that .bat serialization only, not how `cmd.exe` or binarize.exe parse it (that parsing is not claimed).
-[EXACT][CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY] `headless stop` signals only a sway whose recorded /proc start time and full argv still match, and then only the wineserver serving that session's recorded display; if the sway is gone or foreign it signals nothing and says so.
-`init` stops the wineservers that were not running when `init` began, in the prefixes it used; a
-program someone else starts in those prefixes meanwhile cannot be told apart (not claimed).
+[EXACT][CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY] `headless stop` signals only a sway whose recorded /proc start time and full argv still match, and then only the wineserver serving that session's recorded display, as a pid:starttime pair re-checked (/proc comm and start time) just before the signal; if the sway is gone or foreign it signals nothing and says so.
+`headless start` refuses a state that already has a live, verified session, succeeds only once
+the recorded pid's /proc comm is `sway` with the expected `sway -c <state>/sway.conf` argv
+(the wait is `DAYZ_PROTON_START_WAIT_TENTHS` tenths of a second, default 50), and signals no
+wineserver at all when the recorded display is empty or unreadable. `init` stops the
+wineservers that were not running when `init` began, in the prefixes it used, by the same
+pid:starttime pairs; a program someone else starts in those prefixes meanwhile cannot be
+told apart (not claimed). These stops reduce but do not eliminate the check-then-signal
+race: the identity check and the signal are not atomic, and a pid reused in between can
+still be signalled. Real Proton, sway and `cmd.exe` were not run by these offline tests.
 
 ## 3. `P:` on Linux
 

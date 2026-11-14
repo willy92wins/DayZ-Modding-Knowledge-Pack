@@ -4450,7 +4450,7 @@
     {
       "artifact_id": "file/skills/_shared/linux-proton.md",
       "claim_id": "CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY",
-      "evidence_locator": "skills/_shared/tests/test_dayz_proton.py: test_headless_start_then_stop_signals_our_sway, test_headless_stop_does_not_kill_an_unrelated_live_process, test_headless_stop_rejects_a_tampered_identity, test_headless_stop_signals_only_the_sessions_wineserver, test_headless_stop_with_dead_sway_leaves_the_wineserver_alone, test_init_leaves_a_busy_prefix_running_and_stops_only_new_wineservers (offline, Linux CI/WSL)",
+      "evidence_locator": "skills/_shared/tests/test_dayz_proton.py: test_headless_start_then_stop_signals_our_sway, test_headless_stop_does_not_kill_an_unrelated_live_process, test_headless_stop_rejects_a_tampered_identity, test_headless_stop_signals_only_the_sessions_wineserver, test_headless_stop_with_dead_sway_leaves_the_wineserver_alone, test_headless_stop_with_empty_display_leaves_other_display_wineserver, test_headless_second_start_is_refused_and_first_stays_stoppable, test_headless_start_fails_when_sway_never_appears, test_wineserver_with_a_stale_starttime_is_not_signalled, test_init_leaves_a_busy_prefix_running_and_stops_only_new_wineservers (offline, Linux CI/WSL)",
       "license": "MIT",
       "line_end": 90,
       "line_start": 90,

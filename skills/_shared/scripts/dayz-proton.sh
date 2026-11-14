@@ -28,11 +28,18 @@
 # Rules learned the hard way (2026-11-03, Proton Hotfix and GE-Proton11-1, Debian testing):
 # - One display per prefix at a time: a prefix's wineserver is bound to the display its first
 #   program used; others die with "X Error ... BadWindow ... X_UnmapWindow". `headless start`
-#   refuses a busy (or untellable) prefix; `headless stop` signals only a sway whose recorded
-#   /proc identity (start time + full argv) still matches, then only that session's wineserver.
+#   refuses a busy (or untellable) prefix, refuses a state that already has a live session, and
+#   succeeds only when the recorded pid's /proc comm is sway with the expected argv; `headless
+#   stop` signals only a sway whose recorded /proc identity (start time + full argv) still
+#   matches, then only that session's wineserver (by pid:starttime, re-checked before each
+#   signal; an empty or unreadable recorded display signals no wineserver). These checks and
+#   the signal are not atomic: they reduce, but do not eliminate, the check-then-signal race.
 #   `binarize` writes its arguments only into a quoted .bat (Z:\run.bat) and refuses any with
 #   a double quote, CR, LF or empty before doing anything. `init` stops only the wineservers
-#   that were not running when it began, in the prefixes it used.
+#   that were not running when it began, in the prefixes it used. Real Proton, sway and
+#   cmd.exe were not run by the offline tests.
+#   DAYZ_PROTON_START_WAIT_TENTHS bounds the `headless start` wait for sway to appear, in
+#   tenths of a second (default 50).
 # - 32-bit tools run with PROTON_USE_WOW64=1 (default here), or GDI dialogs show no text when the
 #   host has no i386 FreeType. DAYZ_PROTON_RUNTIME=1 starts Proton inside the Steam Linux Runtime
 #   instead, as Steam does; GDI tools crashed there on this host.
@@ -325,9 +332,22 @@ wineserver_serves() {
     fi
     return 0
 }
-# prefix_wineserver <compatdata dir>: print the PIDs serving it, one per line.
+# wineserver_identity_ok <pid> <starttime>: /proc comm is wineserver and the
+# live start time (field 22) still equals the recorded one. The check and a
+# following kill are still not atomic: a pid can exit and be reused between
+# them, so this narrows but does not eliminate the check-then-signal race.
+wineserver_identity_ok() {
+    [ -n "$2" ] || return 1
+    _wi_comm=$(cat "/proc/$1/comm" 2>/dev/null) || return 1
+    [ "$_wi_comm" = wineserver ] || return 1
+    _wi_now=$(proc_starttime "$1") || return 1
+    [ "$_wi_now" = "$2" ]
+}
+# prefix_wineserver <compatdata dir>: print pid:starttime pairs serving it,
+# one per line (the start time is taken as each candidate is enumerated).
 # Returns 1 when that cannot be told (pgrep failed, or a wineserver's environ
-# was unreadable): unknown is never reported as free; callers treat it as busy.
+# or start time was unreadable): unknown is never reported as free; callers
+# treat it as busy.
 prefix_wineserver() {
     if _pw_list=$(pgrep -x wineserver 2>/dev/null); then _pw_rc=0; else _pw_rc=$?; fi
     [ "$_pw_rc" = 1 ] && return 0
@@ -335,17 +355,45 @@ prefix_wineserver() {
     _pw_unknown=0
     for _pw_p in $_pw_list; do
         if wineserver_serves "$_pw_p" "$1" ""; then
-            echo "$_pw_p"
+            if _pw_start=$(proc_starttime "$_pw_p"); then
+                printf '%s:%s\n' "$_pw_p" "$_pw_start"
+            else
+                _pw_unknown=1
+            fi
         elif [ $? = 2 ]; then
             _pw_unknown=1
         fi
     done
     [ "$_pw_unknown" = 0 ]
 }
-# signal_new_wineservers <prefix> <snapshot pids> <snapshot ok 1|0> <display|"">:
-# kill -INT (what wineserver -k sends) only PIDs serving the prefix that were
-# not in the snapshot, re-verified immediately before signalling. An unknown
-# snapshot or scan signals nothing.
+# signal_session_wineservers <prefix> <display>: kill -INT only the
+# pid:starttime pairs serving the prefix on exactly this display, each
+# re-checked (environ, comm, start time) immediately before its signal.
+# Guard: an empty display signals nothing here, whatever the caller passed;
+# wineserver_serves is never reached with an empty session display.
+signal_session_wineservers() {
+    if [ -z "$2" ]; then
+        echo "dayz-proton: no recorded display; leaving the wineserver alone" >&2
+        return 0
+    fi
+    if ! _ss_pairs=$(prefix_wineserver "$1"); then
+        echo "dayz-proton: could not tell which wineservers serve $1; leaving them running" >&2
+        return 0
+    fi
+    for _ss_pair in $_ss_pairs; do
+        _ss_pid=${_ss_pair%%:*}; _ss_start=${_ss_pair#*:}
+        if wineserver_serves "$_ss_pid" "$1" "$2" && wineserver_identity_ok "$_ss_pid" "$_ss_start"; then
+            kill -INT "$_ss_pid" 2>/dev/null || true
+        fi
+    done
+    return 0
+}
+# signal_new_wineservers <prefix> <snapshot pid:starttime pairs> <ok 1|0>
+# <display|"">: kill -INT (what wineserver -k sends) only pairs serving the
+# prefix that were not in the snapshot, re-verified (environ, comm, start
+# time) immediately before signalling. An unknown snapshot or scan signals
+# nothing. The re-check and the signal are still not atomic (see
+# wineserver_identity_ok).
 signal_new_wineservers() {
     if [ "$3" != 1 ]; then
         echo "dayz-proton: could not tell which wineservers served $1 before; leaving them running" >&2
@@ -355,11 +403,12 @@ signal_new_wineservers() {
         echo "dayz-proton: could not tell which wineservers serve $1 now; leaving them running" >&2
         return 0
     fi
-    for _sn_pid in $_sn_now; do
+    for _sn_pair in $_sn_now; do
+        _sn_pid=${_sn_pair%%:*}; _sn_start=${_sn_pair#*:}
         _sn_old=0
-        for _sn_o in $2; do [ "$_sn_o" = "$_sn_pid" ] && _sn_old=1; done
+        for _sn_o in $2; do [ "$_sn_o" = "$_sn_pair" ] && _sn_old=1; done
         [ "$_sn_old" = 1 ] && continue
-        if wineserver_serves "$_sn_pid" "$1" "$4"; then
+        if wineserver_serves "$_sn_pid" "$1" "$4" && wineserver_identity_ok "$_sn_pid" "$_sn_start"; then
             kill -INT "$_sn_pid" 2>/dev/null || true
         fi
     done
@@ -368,12 +417,15 @@ signal_new_wineservers() {
 }
 stop_wineserver() {   # stop_wineserver <appid>: kept for compatibility; by PID now
     pfx=$(prefix_dir "$1")
-    if ! _sw_pids=$(prefix_wineserver "$pfx"); then
+    if ! _sw_pairs=$(prefix_wineserver "$pfx"); then
         echo "dayz-proton: could not tell which wineservers serve $pfx; leaving them running" >&2
         return 0
     fi
-    for _sw_pid in $_sw_pids; do
-        if wineserver_serves "$_sw_pid" "$pfx" ""; then kill -INT "$_sw_pid" 2>/dev/null || true; fi
+    for _sw_pair in $_sw_pairs; do
+        _sw_pid=${_sw_pair%%:*}; _sw_start=${_sw_pair#*:}
+        if wineserver_serves "$_sw_pid" "$pfx" "" && wineserver_identity_ok "$_sw_pid" "$_sw_start"; then
+            kill -INT "$_sw_pid" 2>/dev/null || true
+        fi
     done
 }
 
@@ -551,6 +603,29 @@ sway_identity_ok() {
     rm -f "$_si_cur" "$_si_rec"
     [ "$_si_rc" = 0 ]
 }
+# sway_cmdline_matches <pid> <state>: the live argv is exactly
+# sway -c <state>/sway.conf. A script sway carries one extra leading
+# interpreter entry (kernel argv for a #! file), so that 4-entry form,
+# with the sway path second, is also exact; nothing else is.
+sway_cmdline_matches() {
+    _sc_cur=$(mktemp) || return 1
+    if ! tr '\0' '\n' < "/proc/$1/cmdline" > "$_sc_cur" 2>/dev/null; then
+        rm -f "$_sc_cur"; return 1
+    fi
+    awk -v conf="$2/sway.conf" '
+        function base(p,   n, a) { n = split(p, a, "/"); return a[n] }
+        NR == 1 { first = $0 } NR == 2 { second = $0 }
+        { prev2 = prev1; prev1 = $0; n = NR }
+        END {
+            if (prev2 != "-c" || prev1 != conf) exit 1
+            if (n == 3 && base(first) == "sway") exit 0
+            if (n == 4 && base(second) == "sway") exit 0
+            exit 1
+        }' "$_sc_cur"
+    _sc_rc=$?
+    rm -f "$_sc_cur"
+    [ "$_sc_rc" = 0 ]
+}
 do_headless() {
     sub=${1:-}; state=${2:-}
     [ -n "$sub" ] && [ -n "$state" ] || die "usage: headless start|shot|stop <state> ..."
@@ -559,6 +634,18 @@ do_headless() {
     start)
         [ $# -ge 1 ] || die "usage: headless start <state> <Tool> [args...]"
         command -v sway >/dev/null || die "sway is needed for headless runs"
+        case ${DAYZ_PROTON_START_WAIT_TENTHS:-50} in ''|*[!0-9]*) die "DAYZ_PROTON_START_WAIT_TENTHS must be a non-negative integer (tenths of a second)" ;; esac
+        # Before writing anything: a state with a live, verified sway is
+        # already a session; overwriting it would leave that sway untracked.
+        # A stale or foreign pid file is removed and the start continues.
+        if [ -f "$state/sway.pid" ]; then
+            _hl_old=$(cat "$state/sway.pid" 2>/dev/null) || _hl_old=
+            if [ -n "$_hl_old" ] && sway_identity_ok "$_hl_old" "$state"; then
+                die "state $state already has a live session; stop it first"
+            fi
+            echo "dayz-proton: removing stale sway pid file in $state" >&2
+            rm -f "$state/sway.pid" "$state/sway.identity"
+        fi
         app=830640; [ "$1" = DayZDiag ] && app=221100
         if ! busy=$(prefix_wineserver "$(prefix_dir $app)"); then
             die "cannot tell whether prefix $(prefix_dir $app) is in use; treating it as busy: one display per prefix"
@@ -581,20 +668,42 @@ EOF
         # sway process itself even when setsid forks under job control.
         WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid nohup sh -c 'echo $$ > "$1/sway.pid"; exec sway -c "$1/sway.conf"' sh "$state" \
             > "$state/sway.log" 2>&1 &
-        _hl_i=0
-        while [ "$_hl_i" -lt 50 ]; do
+        _hl_wait=${DAYZ_PROTON_START_WAIT_TENTHS:-50}
+        case $_hl_wait in ''|*[!0-9]*) die "DAYZ_PROTON_START_WAIT_TENTHS must be a non-negative integer (tenths of a second)" ;; esac
+        # Success requires the exec to have happened: comm is sway and the
+        # argv is exactly sway -c <state>/sway.conf. Exhausting the wait is
+        # a failed start, and no identity is published for the launcher.
+        _hl_i=0; _hl_ready=0; pid=
+        while [ "$_hl_i" -lt "$_hl_wait" ]; do
             if [ -s "$state/sway.pid" ]; then
-                pid=$(cat "$state/sway.pid")
-                # Wait until the launcher shell has exec'd sway: its own
-                # cmdline still holds the 'exec sway' command string.
-                _hl_cmd=$(tr '\0' '\n' < "/proc/$pid/cmdline" 2>/dev/null) || _hl_cmd=
-                case $_hl_cmd in *'exec sway'*) ;; *) break ;; esac
+                pid=$(cat "$state/sway.pid" 2>/dev/null) || pid=
+                if [ -n "$pid" ] && [ -d "/proc/$pid" ]; then
+                    _hl_comm=$(cat "/proc/$pid/comm" 2>/dev/null) || _hl_comm=
+                    if [ "$_hl_comm" = sway ] && sway_cmdline_matches "$pid" "$state"; then
+                        _hl_ready=1; break
+                    fi
+                fi
             fi
             sleep 0.1; _hl_i=$((_hl_i + 1))
         done
-        [ -s "$state/sway.pid" ] || die "sway did not start (see $state/sway.log)"
-        pid=$(cat "$state/sway.pid")
-        _hl_start=$(proc_starttime "$pid") || die "sway did not stay up (see $state/sway.log)"
+        if [ "$_hl_ready" != 1 ]; then
+            # Stop only the launcher this start launched, and only while it
+            # still is that launcher (its cmdline holds the 'exec sway'
+            # command string); never signal whatever the pid became.
+            if [ -s "$state/sway.pid" ]; then
+                pid=$(cat "$state/sway.pid" 2>/dev/null) || pid=
+                if [ -n "$pid" ] && [ -d "/proc/$pid" ]; then
+                    _hl_cmd=$(tr '\0' '\n' < "/proc/$pid/cmdline" 2>/dev/null) || _hl_cmd=
+                    case $_hl_cmd in *'exec sway'*) kill "$pid" 2>/dev/null || true ;; esac
+                fi
+            fi
+            rm -f "$state/sway.pid" "$state/sway.identity"
+            die "sway did not start in $state (see $state/sway.log)"
+        fi
+        _hl_comm=$(cat "/proc/$pid/comm" 2>/dev/null) || _hl_comm=
+        [ "$_hl_comm" = sway ] && sway_cmdline_matches "$pid" "$state" \
+            || { rm -f "$state/sway.pid" "$state/sway.identity"; die "sway did not start in $state (see $state/sway.log)"; }
+        _hl_start=$(proc_starttime "$pid") || { rm -f "$state/sway.pid" "$state/sway.identity"; die "sway did not stay up (see $state/sway.log)"; }
         {
             printf '%s\n' "$_hl_start"
             tr '\0' '\n' < "/proc/$pid/cmdline"
@@ -614,17 +723,24 @@ EOF
         fi
         kill "$pid" 2>/dev/null || true
         rm -f "$state/sway.pid" "$state/sway.identity"
-        if [ -f "$state/app" ] && [ -s "$state/wayland-display" ]; then
-            _hl_app=$(cat "$state/app"); _hl_disp=$(cat "$state/wayland-display")
-            _hl_pfx=$(prefix_dir "$_hl_app")
-            if ! _hl_pids=$(prefix_wineserver "$_hl_pfx"); then
-                echo "dayz-proton: could not tell which wineservers serve $_hl_pfx; leaving them running" >&2
+        if [ -f "$state/app" ]; then
+            _hl_app=$(cat "$state/app" 2>/dev/null) || _hl_app=
+            # The recorded display is its first line only. A file holding
+            # just a newline has bytes, but $(...) strips it to empty, and
+            # an empty display must signal no wineserver at all (an empty
+            # display would otherwise mean "do not filter").
+            _hl_disp=
+            if [ -f "$state/wayland-display" ]; then
+                _hl_disp=$(head -n 1 "$state/wayland-display" 2>/dev/null) || _hl_disp=
+            fi
+            if [ -n "$_hl_app" ] && [ -n "$_hl_disp" ]; then
+                signal_session_wineservers "$(prefix_dir "$_hl_app")" "$_hl_disp"
+            elif [ -n "$_hl_app" ]; then
+                # Guard also lives in signal_session_wineservers; this
+                # branch only chooses the one-line message.
+                echo "dayz-proton: no recorded display for $state; leaving the wineserver alone" >&2
             else
-                for _hl_pid in $_hl_pids; do
-                    if wineserver_serves "$_hl_pid" "$_hl_pfx" "$_hl_disp"; then
-                        kill -INT "$_hl_pid" 2>/dev/null || true
-                    fi
-                done
+                echo "dayz-proton: no recorded app for $state; leaving the wineserver alone" >&2
             fi
         else
             echo "dayz-proton: no recorded display for $state; leaving the wineserver alone" >&2
@@ -671,7 +787,7 @@ do_init() {
 }
 
 # check_dayzmake: the native packer is bzed's armake2 fork, renamed dayzmake at v1.0.0. Upstream
-# armake2 is built for Arma (it leaves *.c out of the signature, and dayzmake adds DayZ-only functions);
+# armake2 is built for Arma (its V3 file hash omits *.c, and dayzmake adds DayZ-only functions);
 # a fork build from before the rename is called armake2.
 check_dayzmake() {
     url="https://github.com/bzed/dayzmake (v1.0.0 or later)"
@@ -679,7 +795,7 @@ check_dayzmake() {
     for c in dayzmake armake2; do command -v $c >/dev/null && { b=$c; break; }; done
     if [ -z "$b" ]; then echo "dayzmake:    missing (native PBO build/sign; $url)"; return 0; fi
     if ! $b -h 2>&1 | grep -q -- --proton-binarize; then
-        echo "dayzmake:    '$b' is upstream armake2, which leaves *.c out of signatures; install $url"
+        echo "dayzmake:    '$b' is upstream armake2, whose V3 file hash omits *.c; install $url"
         return 0
     fi
     ver=$($b --version 2>&1 | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)

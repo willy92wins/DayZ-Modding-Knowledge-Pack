@@ -10,8 +10,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Linux (2026-11-13): bzed's armake2 fork is now dayzmake (https://github.com/bzed/dayzmake). Every
   Linux note names `dayzmake` >= 1.0.0, pinned to the `v1.0.0` release binary or
   `cargo install --git ... --tag v1.0.0` (the tag contains the measured `7dcb3cf` and `0a0ce3b`), and
-  says why the fork is required: upstream armake2 is built for Arma, leaves `*.c` files out of the signature
-  and lacks the DayZ-only functions dayzmake keeps adding (listed in `_shared/linux-proton.md`).
+  says why the fork is required: upstream armake2 is built for Arma, its V3 file hash omits `*.c` files
+  (dayzmake v1.0.0 includes them) and it lacks the DayZ-only functions dayzmake keeps adding (listed in `_shared/linux-proton.md`).
   `dayz-proton.sh doctor` checks for dayzmake, falls back to a pre-rename `armake2` fork build and
   flags upstream armake2 or a pre-1.0 build; it no longer stops at the first Steam app that is not
   installed (`manifest` failed under `set -e`). The native `DayZServer` ignores absolute `-mod=` /
@@ -119,8 +119,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   delayed expansion off) and refuses a double quote, CR, LF or an empty argument before any side
   effect (`CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION`, batch serialization only). `headless stop`
   signals only a sway whose recorded `/proc` start time and full argv still match, then only that
-  session's wineserver by PID; `init` and the .NET warm-up stop only wineservers that were not
-  running when they began, matching `WINEPREFIX` literally (`CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY`).
+  session's wineserver by pid:starttime pair (comm and start time re-checked before the signal;
+  an empty recorded display signals no wineserver); `headless start` refuses a state with a live
+  session and succeeds only when the recorded pid is `sway` with the expected argv
+  (`DAYZ_PROTON_START_WAIT_TENTHS`, default 50 tenths). `init` and the .NET warm-up stop only
+  wineservers that were not running when they began, matching `WINEPREFIX` literally
+  (`CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY`). These stops reduce but do not eliminate the
+  check-then-signal race, and real Proton, sway and `cmd.exe` were not run by the offline tests.
   `dayz-pbo-reverse-engineering` no longer recommends `dayzmake unpack --force` for third-party PBOs:
   dayzmake v1.0.0 has no containment check on entry names (`CLAIM-DAYZMAKE-UNPACK-NO-CONTAINMENT`),
   so an unchecked PBO is copied to a private folder, its names are checked, and only that copy is

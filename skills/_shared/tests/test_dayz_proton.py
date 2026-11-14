@@ -310,18 +310,31 @@ def test_run_tool_bat_quoting_is_unchanged(tmp_path: Path) -> None:
 
 # --- F3: headless identity and wineserver stops ------------------------------
 
+def _fake_sway_binary(path: Path) -> None:
+    """A tiny x86_64 ELF named sway that pauses forever (comm is sway and
+    argv is exactly what the launcher passed; a #! script would run as the
+    interpreter instead). Falls back to a script off x86_64."""
+    import platform
+    import struct
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if platform.machine() not in ("x86_64", "AMD64"):
+        _write(path, "#!/bin/sh\nsleep 30 &\n_c=$!\ntrap 'kill $_c 2>/dev/null; exit 0' TERM INT\nwait $_c\n", exe=True)
+        return
+    code = bytes.fromhex("b8220000000f05ebf7")  # pause(); jmp back
+    total = 64 + 56 + len(code)
+    elf = struct.pack(
+        "<16sHHIQQQIHHHHHH",
+        b"\x7fELF\x02\x01\x01" + b"\x00" * 9, 2, 62, 1, 0x400078, 64, 0, 0, 64, 56, 1, 0, 0, 0,
+    ) + struct.pack("<IIQQQQQQ", 1, 5, 0, 0x400000, 0x400000, total, total, 0x1000) + code
+    path.write_bytes(elf)
+    path.chmod(0o755)
+
+
 def fake_sway(tmp_path: Path) -> Path:
     bin_dir = tmp_path / "fakebin"
-    record = tmp_path / "sway-args.txt"
-    _write(
-        bin_dir / "sway",
-        "#!/bin/sh\n"
-        f"printf '%s\\n' \"$@\" > '{record}'\n"
-        "sleep 30 &\n_c=$!\n"
-        "trap 'kill $_c 2>/dev/null; exit 0' TERM INT\n"
-        "wait $_c\n",
-        exe=True,
-    )
+    bin_dir.mkdir(parents=True, exist_ok=True)
+    _fake_sway_binary(bin_dir / "sway")
     return bin_dir
 
 
@@ -344,6 +357,38 @@ def wait_gone(pid: int, seconds: float = 5.0) -> bool:
     return pid_gone(pid)
 
 
+def kill_process_tree(pid: int) -> None:
+    """Kill a process and every descendant (via pgrep -P), leaves first."""
+    if pid <= 0:
+        return
+    children: list[int] = []
+    try:
+        out = subprocess.run(
+            ["pgrep", "-P", str(pid)], capture_output=True, text=True, check=False
+        )
+        children = [int(x) for x in out.stdout.split()]
+    except (OSError, ValueError):
+        children = []
+    for child in children:
+        kill_process_tree(child)
+    if not pid_gone(pid):
+        try:
+            os.kill(pid, 9)
+        except OSError:
+            pass
+    wait_gone(pid, 2.0)
+
+
+def kill_popen(proc: subprocess.Popen[bytes] | None) -> None:
+    if proc is None:
+        return
+    kill_process_tree(proc.pid)
+    try:
+        proc.wait(timeout=5)
+    except Exception:
+        pass
+
+
 def start_fake_wineserver(tmp_path: Path, name: str, wineprefix: Path, display: str) -> subprocess.Popen[bytes]:
     sleep_bin = shutil.which("sleep")
     assert sleep_bin is not None
@@ -356,10 +401,16 @@ def start_fake_wineserver(tmp_path: Path, name: str, wineprefix: Path, display: 
     return subprocess.Popen([str(exe), "30"], env=env)
 
 
-def headless_start(tmp_path: Path, state: Path, bin_dir: Path, dzhome: Path) -> subprocess.CompletedProcess[str]:
+def headless_start(
+    tmp_path: Path, state: Path, bin_dir: Path, dzhome: Path,
+    tool: str = "ObjectBuilder", extra_env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    env = {"DAYZ_PROTON_HOME": str(dzhome)}
+    if extra_env:
+        env.update(extra_env)
     return run(
-        tmp_path, "headless", "start", str(state), "ObjectBuilder",
-        bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        tmp_path, "headless", "start", str(state), tool,
+        bin_dir=bin_dir, extra_env=env,
     )
 
 
@@ -374,7 +425,8 @@ def test_headless_start_then_stop_signals_our_sway(tmp_path: Path) -> None:
         pid = int((state / "sway.pid").read_text().strip())
         assert not pid_gone(pid)
         assert (state / "sway.identity").exists()
-        assert "-c" in (tmp_path / "sway-args.txt").read_text()
+        identity = (state / "sway.identity").read_text().splitlines()
+        assert identity[-2] == "-c" and identity[-1].endswith("/sway.conf")
         done = run(
             tmp_path, "headless", "stop", str(state),
             bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
@@ -383,8 +435,7 @@ def test_headless_start_then_stop_signals_our_sway(tmp_path: Path) -> None:
         assert wait_gone(pid), "our sway was not signalled"
         assert not (state / "sway.pid").exists()
     finally:
-        if pid > 0 and not pid_gone(pid):
-            os.kill(pid, 9)
+        kill_process_tree(pid)
 
 
 def test_headless_stop_does_not_kill_an_unrelated_live_process(tmp_path: Path) -> None:
@@ -402,8 +453,7 @@ def test_headless_stop_does_not_kill_an_unrelated_live_process(tmp_path: Path) -
         assert "not verified" in done.stderr
         assert not (state / "sway.pid").exists()
     finally:
-        sleeper.kill()
-        sleeper.wait()
+        kill_popen(sleeper)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize("tamper", ["starttime", "conf"])
@@ -429,9 +479,7 @@ def test_headless_stop_rejects_a_tampered_identity(tmp_path: Path, tamper: str) 
         assert done.returncode == 0, done.stderr
         assert not pid_gone(pid), f"sway with a tampered {tamper} was signalled"
     finally:
-        if pid > 0 and not pid_gone(pid):
-            os.kill(pid, 15)
-            wait_gone(pid)
+        kill_process_tree(pid)
 
 
 def test_headless_stop_signals_only_the_sessions_wineserver(tmp_path: Path) -> None:
@@ -459,35 +507,160 @@ def test_headless_stop_signals_only_the_sessions_wineserver(tmp_path: Path) -> N
             else:
                 assert server.poll() is None, "wineserver of another display was signalled"
         finally:
-            if pid > 0 and not pid_gone(pid):
-                os.kill(pid, 9)
-            if server is not None and server.poll() is None:
-                server.kill()
-                server.wait()
+            kill_process_tree(pid)
+            kill_popen(server)
 
 
 def test_headless_stop_with_dead_sway_leaves_the_wineserver_alone(tmp_path: Path) -> None:
+    bin_dir = fake_sway(tmp_path)
     dzhome = tmp_path / "dzhome"
-    server = start_fake_wineserver(tmp_path, "ws-dead", dzhome / "tools" / "pfx", "wayland-1")
+    state = tmp_path / "state"
+    server: subprocess.Popen[bytes] | None = None
+    pid = -1
     try:
-        dead = subprocess.Popen(["sleep", "0.1"])
-        dead.wait()
-        state = tmp_path / "state"
-        state.mkdir()
-        (state / "sway.pid").write_text(f"{dead.pid}\n")
-        (state / "app").write_text("830640\n")
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode == 0, done.stderr
+        pid = int((state / "sway.pid").read_text().strip())
+        server = start_fake_wineserver(tmp_path, "ws-dead", dzhome / "tools" / "pfx", "wayland-1")
         (state / "wayland-display").write_text("wayland-1\n")
+        # Kill the real fake sway from the test; stop must then leave the
+        # same-display wineserver alone and say so.
+        kill_process_tree(pid)
+        assert wait_gone(pid)
         done = run(
             tmp_path, "headless", "stop", str(state),
-            extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
         )
         assert done.returncode == 0, done.stderr
         assert "leaving its wineserver alone" in done.stderr
         assert server.poll() is None
     finally:
-        if server.poll() is None:
-            server.kill()
-            server.wait()
+        kill_process_tree(pid)
+        kill_popen(server)
+
+
+def test_headless_stop_with_empty_display_leaves_other_display_wineserver(tmp_path: Path) -> None:
+    bin_dir = fake_sway(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    server: subprocess.Popen[bytes] | None = None
+    pid = -1
+    try:
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode == 0, done.stderr
+        pid = int((state / "sway.pid").read_text().strip())
+        server = start_fake_wineserver(tmp_path, "ws-empty", dzhome / "tools" / "pfx", "wayland-2")
+        # Only a newline: bytes on disk, but an empty recorded display.
+        (state / "wayland-display").write_text("\n")
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert wait_gone(pid), "our sway was not signalled"
+        assert "leaving the wineserver alone" in done.stderr
+        assert server.poll() is None, "wineserver on another display was signalled on an empty display"
+    finally:
+        kill_process_tree(pid)
+        kill_popen(server)
+
+
+def test_headless_second_start_is_refused_and_first_stays_stoppable(tmp_path: Path) -> None:
+    bin_dir = fake_sway(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    pid = -1
+    try:
+        done = headless_start(tmp_path, state, bin_dir, dzhome, tool="ObjectBuilder")
+        assert done.returncode == 0, done.stderr
+        pid = int((state / "sway.pid").read_text().strip())
+        done = headless_start(tmp_path, state, bin_dir, dzhome, tool="DayZDiag")
+        assert done.returncode != 0
+        assert "already has a live session; stop it first" in done.stderr
+        assert not pid_gone(pid), "first sway died on the refused second start"
+        assert int((state / "sway.pid").read_text().strip()) == pid
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert wait_gone(pid), "first sway was not stoppable after the refused start"
+    finally:
+        kill_process_tree(pid)
+
+
+def test_headless_start_fails_when_sway_never_appears(tmp_path: Path) -> None:
+    bin_dir = tmp_path / "fakebin"
+    record = tmp_path / "never-sway.pid"
+    _write(
+        bin_dir / "sway",
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$$\" > '{record}'\n"
+        "exec sleep 30\n",
+        exe=True,
+    )
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    recorded = -1
+    try:
+        done = headless_start(
+            tmp_path, state, bin_dir, dzhome,
+            extra_env={"DAYZ_PROTON_START_WAIT_TENTHS": "5"},
+        )
+        assert done.returncode != 0
+        assert "sway did not start" in done.stderr
+        assert not (state / "sway.identity").exists(), "an identity was published for the launcher"
+        assert not (state / "sway.pid").exists()
+        if record.exists():
+            recorded = int(record.read_text().strip())
+    finally:
+        if record.exists():
+            try:
+                recorded = int(record.read_text().strip())
+            except ValueError:
+                recorded = -1
+        kill_process_tree(recorded)
+        # The sway.pid was removed by the failed start; also clean any pid
+        # the failed run left in the state dir before finally ran.
+        pid_file = state / "sway.pid"
+        if pid_file.exists():
+            try:
+                kill_process_tree(int(pid_file.read_text().strip()))
+            except ValueError:
+                pass
+
+
+def test_wineserver_with_a_stale_starttime_is_not_signalled(tmp_path: Path) -> None:
+    # Drive the script's own signal_session_wineservers with an enumeration
+    # stub that returns a pid:starttime pair whose start time is stale (1):
+    # the re-check before the signal must refuse it. The script body up to
+    # its command dispatch is sourced; only prefix_wineserver is stubbed.
+    fake_steam_with_tools(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    prefix = dzhome / "tools" / "pfx"
+    server = start_fake_wineserver(tmp_path, "ws-stale", prefix, "wayland-1")
+    try:
+        source = SCRIPT.read_text()
+        body = source.split("\ncmd=${1:-}", 1)[0]
+        driver = tmp_path / "driver.sh"
+        driver.write_text(
+            body
+            + "\nprefix_wineserver() { printf '%s:1\\n' \"$FAKE_WS_PID\"; }\n"
+            + "signal_session_wineservers \"$FAKE_WS_PREFIX\" \"wayland-1\"\n"
+        )
+        env = {
+            "PATH": os.environ["PATH"], "HOME": str(tmp_path / "home"),
+            "STEAM_ROOT": str(tmp_path / "steam"),
+            "FAKE_WS_PID": str(server.pid), "FAKE_WS_PREFIX": str(prefix),
+        }
+        (tmp_path / "home").mkdir(exist_ok=True)
+        done = subprocess.run(
+            ["sh", str(driver)], env=env, capture_output=True, text=True, timeout=30, check=False
+        )
+        assert done.returncode == 0, done.stderr
+        assert server.poll() is None, "a wineserver whose start time changed was signalled"
+    finally:
+        kill_popen(server)
 
 
 def test_init_leaves_a_busy_prefix_running_and_stops_only_new_wineservers(tmp_path: Path) -> None:
@@ -517,14 +690,11 @@ def test_init_leaves_a_busy_prefix_running_and_stops_only_new_wineservers(tmp_pa
         assert new_pid_file.exists(), "the fake Proton did not spawn a wineserver"
         assert wait_gone(int(new_pid_file.read_text().strip())), "the new wineserver was not signalled"
     finally:
-        if busy.poll() is None:
-            busy.kill()
-            busy.wait()
+        kill_popen(busy)
         new_pid_file = tmp_path / "spawned-wineserver.pid"
         if new_pid_file.exists():
             try:
                 new_pid = int(new_pid_file.read_text().strip())
             except ValueError:
                 new_pid = -1
-            if new_pid > 0 and not pid_gone(new_pid):
-                os.kill(new_pid, 9)
+            kill_process_tree(new_pid)
