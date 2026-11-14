@@ -9567,7 +9567,7 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-doors/references/door-model-cfg-and-config.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
-          "verification_level": "runtime_verified"
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -19199,7 +19199,7 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/enforce-script-reference/references/config-cpp.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
-          "verification_level": "runtime_verified"
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -19263,7 +19263,7 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/enforce-script-reference/references/llama-extraction-patterns.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
-          "verification_level": "runtime_verified"
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -19357,7 +19357,7 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/enforce-script-reference/references/networking.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
-          "verification_level": "runtime_verified"
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -19629,7 +19629,7 @@
           "source_id": "pack-r21-authored",
           "source_path": "skills/enforce-script-reference/references/verified-api-catalog.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
-          "verification_level": "runtime_verified"
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
@@ -43743,8 +43743,8 @@
           "decision_evidence": "Review fixes for the dayz-dev integration: helper hardening, AutoTest, corrected content, claims and provenance. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "7c428ea7955a07b8e5a8b43b7e09cbef4771f81a259e8d1b2653dfe0ef0b213c",
-          "source_id": "bzed-dayz-dev-plugin",
-          "source_path": "scripts/free-ports.sh",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/free-ports.sh",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "offline_tested"
         }
@@ -44129,10 +44129,10 @@
           "decision_evidence": "Review fixes for the dayz-dev integration: helper hardening, AutoTest, corrected content, claims and provenance. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "23a6579c20cf3459e78ae209dc04f8cdbc613d730bba8311082004af2bb1afd3",
-          "source_id": "bzed-dayz-dev-plugin",
-          "source_path": "testing/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
-          "verification_level": "offline_tested"
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
