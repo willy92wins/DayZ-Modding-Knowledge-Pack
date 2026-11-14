@@ -4769,10 +4769,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-adjudications@2026-11-14",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion of main cc34f74 (#185) on 2026-11-14, authorised by the owner (adjudicate the four PROMOTION-TARGET-UNEXPLAINED targets in favour of the Pack and continue). promote --check from a fresh checkout of cc34f74 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=113, 125 operations (45 agents_user_skills, 45 claude_user_skills, 75 obsidian_snapshots). Before the apply the plan was compared with a read-only preview of c1508c0: the 50 skill-root operations identical, the 75 vault operations identical except the commit in their paths and the after_digest of repo/promotions and repo/sources, which equal an independent digest of those trees at cc34f74. promote --apply PASS, transaction 3ec77337e2b3e05cafe62b57, COMMIT event 341, completed_at 2026-11-14T17:29:55.708434+00:00. packctl rewrote this file at that COMMIT (packctl/promotion.py:1064-1106): 62 of 84 adjudicated pairs (31 skills on both skill roots, including skill/dayz-mcp-verify and skill/dayz-preflight) advanced from the before_digest to the after_digest of their operation, exactly the pairs whose pin equalled the before_digest of a changing operation; the other 22 pairs are unchanged. The file stays canonical JSON.",
+          "license": "MIT",
+          "source_hash": "f2fb1c5e04b75490638020a90eb60ced8b4a19a2bcc6dfee8b475a80b11d5ca8",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-cc34f74@2026-11-14",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ade3127b20b6602ca9e79857d95c56547b1a6ca95f7b563833e871f6f64c96d9",
+      "output_hash": "f2fb1c5e04b75490638020a90eb60ced8b4a19a2bcc6dfee8b475a80b11d5ca8",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -36598,6 +36608,28 @@
       "license": "MIT",
       "output_hash": "a52455aaf0c3355cf5c4ebd8eb793aad86d7af1853c4d4b031fc5f2cc2a1f463",
       "output_path": "promotions/receipts/ca6a553e92e09e4ce3b86993.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/3ec77337e2b3e05cafe62b57.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "promotion of main cc34f74 (#185) on 2026-11-14, authorised by the owner (adjudicate the four PROMOTION-TARGET-UNEXPLAINED targets in favour of the Pack and continue). promote --check from a fresh checkout of cc34f74 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=113, 125 operations (45 agents_user_skills, 45 claude_user_skills, 75 obsidian_snapshots). Before the apply the plan was compared with a read-only preview of c1508c0: the 50 skill-root operations identical, the 75 vault operations identical except the commit in their paths and the after_digest of repo/promotions and repo/sources, which equal an independent digest of those trees at cc34f74. promote --apply PASS, transaction 3ec77337e2b3e05cafe62b57, COMMIT event 341, completed_at 2026-11-14T17:29:55.708434+00:00. Verified after the apply: 125/125 destinations at their after_digest; the receipt's sha256 equals the COMMIT receipt_hash and its completed_at the COMMIT event's; its source_commit and its 125 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue in the three target roots; the transaction backup of skill/dayz-mcp-verify holds the six pre-image files byte for byte, including the hand-edited references/dayz-1-30-mcp-verify.md and its .bak copy; dayz-preflight's preflight.py compiles in both skill roots.",
+          "license": "MIT",
+          "source_hash": "14eea2348cdcc497956f701ebef9b7e713693a3d7d8f67b26d1e545c98c9ed8f",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/3ec77337e2b3e05cafe62b57.json",
+          "source_revision": "promotion-cc34f74@2026-11-14",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "14eea2348cdcc497956f701ebef9b7e713693a3d7d8f67b26d1e545c98c9ed8f",
+      "output_path": "promotions/receipts/3ec77337e2b3e05cafe62b57.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
