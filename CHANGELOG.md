@@ -7,6 +7,92 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-mod-dev`, a new skill: the entry point for mod development on DayZ 1.30 or later. It routes a mod task to the
+  domain skills, carries the rules every mod task needs (look up every API, the version define, forward slashes,
+  PBOs in `addons/`, load order following `requiredAddons`, no writes into Steam's directories, publishing is the
+  user's call), the look-up order with the local API index (`_shared/scripts/dayz-api.py`), the 1.30 porting walk,
+  CF and Expansion essentials, and the build, boot, verify and publish loop on Windows and Linux. Built from bzed's
+  own `dayz-dev` sections (contributed under MIT) and Pack material. 33 DayZ skills link to it for the mod loop;
+  `dayz-test-ingame` and `enforce-script-reference` gain triggers for local servers, API lookups, CF and load order.
+  `AGENTS.md` names it as the entry point; README and `AGENTS.md` count 45 skills.
+
+- From bzed's `dayz-dev` plugin (https://github.com/bzed/dayz-dev-plugin at `6112ac5`), the parts its author wrote,
+  contributed to the Pack under MIT by the author (the plugin itself is GPL-3.0; its upstream DayZGhost material is not
+  taken). Measured on Linux; the author re-tested the plugin on DayZ 1.30 stable.
+  - `skills/_shared/scripts/`: `find-dayzserver.sh`, `make-server-tree.sh`, `free-ports.sh` (a private server tree,
+    random free ports), `dayz-client-headless.sh`, `dayz-client-test.sh` (the retail client headless under Proton, one
+    command from start to report), `dayz-mod-pack.sh` (dayzmake keygen, build, check, Workshop upload hints),
+    `extract-dayz-sources.sh`, `build-api-index.py`, `dayz-api.py` (a declarations index built locally; Bohemia's
+    declarations are not shipped). Tests in `skills/_shared/tests/test_linux_helpers.py` on a fake Steam tree; the
+    AutoTest build, sign and verify test runs where dayzmake is installed.
+  - `dayz-test-ingame`: `references/linux-native-server.md` (server tree, ports, RCon seed, the CF storage wipe,
+    listing servers by PID, the Game-module count and the deliberate-syntax-error probe, the space-padded
+    `SCRIPT    (E)` tag), `references/linux-headless-client.md` (headless client, the "Client is missing a mod"
+    kick, BattlEye, the Expansion spawn selector) and the self-reporting test mod `assets/autotest-mod/`. The
+    "On Linux" section carries the one-line rules whose violation fails silently or misleadingly.
+  - `dayz-pbo-build`: `references/dayzmake-linux.md` (dayzmake, `--proton-binarize`, v3 signatures byte-identical to
+    DSSignFile, `meta.cpp`/`mod.cpp`/app id from 438 Workshop items, Workshop tags, the `workshop` uploader); a
+    folder check that every PBO sits in `addons/`.
+  - `dayz-mod-workflow`: `references/dayz-1-30-server-measured.md` (the `DAYZ_1_30` define, DZEXP-134 `FindFile`
+    and removing its workarounds, `$storage:` timing, `GetMissionFolderPath()` returning `""`, backslash `files[]`
+    loading no scripts, the compile-failure segfault, `OnCEUpdate` never called, the `ERPCs` shift, the 1.30.164200
+    changes with `#ifdef WORKBENCH` breaking DabsFramework 1.51, mod load order following `requiredAddons`, CF 1.5.9
+    and the Expansion mod set). `enforce-script-reference` and `dayz-mod-workflow` say not to build a fix on a
+    position in the `modded class` chain.
+  - From the plugin's skill observations 1-5: the `addons/` rule and probe, load order, the CF wipe at the point of
+    decision, `pkill`/`pgrep` not matching `enfMain`, one server at a time.
+  - Notes that called these helpers "author-local, not distributed" now point at them.
+- Server config, Central Economy files and API facts, verified on DayZ 1.30.164289 (Steam build 26220720): the vanilla
+  scripts and configs, the server's mission files, native Linux server boots with a probe `init.c`, and CF `0763e7e` /
+  Expansion-Scripts `14fd692`. New: `dayz-test-ingame` `references/server-and-mission-config.md`, `dayz-persistence`
+  `references/central-economy-files.md`; additions to `enforce-script-reference` (`verified-api-catalog.md`,
+  `networking.md`, `memory-management.md`, `config-cpp.md`), `dayz-weapons`, `dayz-aviation`, `dayz-ui-development`,
+  `dayz-animation-pipeline`. Written without access to third-party text; facts that could not be verified, or held only
+  before 1.30, were left out.
+
+### Fixed
+
+- `ref` keeps a class without a `Managed` ancestor alive too; a member field without `ref` is weak for both kinds
+  and reads `NULL`; assigning `new` to a non-`ref` field does not compile ("not strong ref"); a two-object `ref` cycle
+  is never destroyed (measured on 1.30.164289; `enforce-script-reference` `references/memory-management.md`,
+  `_shared/enscript-style.md`).
+- `RegisterNetSyncVariableFloat`'s last argument is the number of decimal digits, not bits
+  (`3_Game/Entities/EntityAI.c:2853-2861`).
+- `scope = 1` classes can be created by script (vanilla spawns `LargeTentClutterCutter` that way); three notes said
+  "editor only".
+- Expansion: `ExpansionVehicleBase` is an obsolete stub on `Transport`; current Expansion vehicles derive from `CarScript`.
+
+- Linux (2026-11-13): bzed's armake2 fork is now dayzmake (https://github.com/bzed/dayzmake). Every
+  Linux note names `dayzmake` >= 1.0.0, pinned to the `v1.0.0` release binary or
+  `cargo install --git ... --tag v1.0.0` (the tag contains the measured `7dcb3cf` and `0a0ce3b`), and
+  says why the fork is required: upstream armake2 is built for Arma, leaves `*.c` files out of the signature
+  and lacks the DayZ-only functions dayzmake keeps adding (listed in `_shared/linux-proton.md`).
+  `dayz-proton.sh doctor` checks for dayzmake, falls back to a pre-rename `armake2` fork build and
+  flags upstream armake2 or a pre-1.0 build; it no longer stops at the first Steam app that is not
+  installed (`manifest` failed under `set -e`). The native `DayZServer` ignores absolute `-mod=` /
+  `-servermod=` paths, the reverse of the Windows rule; `dayz-test-ingame`'s Linux notes and the
+  guide's pitfalls say so.
+- CI: a `linux` job (validation, `packctl` and skill tests off Windows) and tests for
+  `skills/_shared/scripts/dayz-proton.sh`, which had none.
+- Linux findings (2026-11-06): the pack-only managed `dayz_test_run` cycle was measured on the
+  unmerged dayz-mcp `linux-port` branch (PR #353), not upstream main. Managed binarization with
+  assets was not verified. A diag client only joins a diag server (`0x00020017`); an absolute
+  `-mission` leaves the native server without `init.c`'s `main`; Steam's PID is `~/.steam/steam.pid`.
+  Windows guidance is preserved; see the additive Linux qualifications in `dayz-test-ingame`.
+- Linux support notes (2026-11-03), append-only: Windows instructions are unchanged.
+  `skills/_shared/linux-proton.md` maps each Windows step to its Linux route (native dayzmake and
+  `workshop` first, BI's tools under Proton where there is no native equivalent) and records what was
+  measured: ImageToPAA, CfgConvert, the DS tools, AddonBuilder, binarize, TexView, Object Builder,
+  Workbench and DayZDiag (client and `-server`) under Proton Hotfix / GE-Proton11-1, plus the
+  cross-app quirk (DayZ 221100 and DayZ Tools 830640 get separate Wine prefixes: no shared `P:`, an
+  empty game key, no install-script registry or VC++ runtime in a private prefix) and the pitfalls
+  (one display per prefix, WoW64 for the 32-bit tools, the first .NET start, AddonBuilder's exit code).
+  `skills/_shared/scripts/dayz-proton.sh` sets up private prefixes and runs the tools
+  (`doctor`, `init`, `tool`, `gui`, `binarize`, `headless`). An `## On Linux` section was appended to
+  30 skills that depend on a Windows-only step; `AGENTS.md` gains a routing row.
+  `knowledge/linux-proton-findings-2026-11.md` holds the raw findings and the dayz-mcp port status.
+  Not verified: Terrain Builder, Publisher, Workbench's editors, `-filePatching` under Proton, an ODOL
+  made under Proton loaded in game.
 - `knowledge/script-network-limits.md`: local DayZDiag 1.30.164289.70 string probe, corrected after review: ScriptRPC and ScriptInputUserData sizes, four admitted queue messages, RPC burst order and the probe's ACK.
   `CLAIM-NET-RPC-ASCII`, `CLAIM-NET-RPC-UTF8`, `CLAIM-NET-INPUT-ASCII`, `CLAIM-NET-INPUT-UTF8`, `CLAIM-NET-QUEUE`, `CLAIM-NET-ORDER`, `CLAIM-NET-ACK`, `CLAIM-NET-SCOPE`.
 

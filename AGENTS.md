@@ -6,7 +6,7 @@ This is the canonical agent file; `CLAUDE.md`, `GEMINI.md`, `.cursorrules` and
 
 ## What this repository is
 
-A knowledge pack for **DayZ (Enfusion) modding**: 44 domain playbooks, thirteen
+A knowledge pack for **DayZ (Enfusion) modding**: 45 domain playbooks, thirteen
 Python tools, and verified reference notes, assembled from shipped mods. It is
 written to be handed to a coding agent, not read cover to cover by a human.
 
@@ -30,7 +30,11 @@ you don't.
 1. Read every `skills/*/SKILL.md` **front-matter only** (`name` + `description`).
    The `description` is written as trigger conditions — read it as "invoke me
    when…". Concatenated, they are your routing table.
-2. When the task matches one, load **that whole `SKILL.md`** and follow it.
+2. When the task matches one, load **that whole `SKILL.md`** and follow it. For mod
+   work as a whole (write, review or port a mod, build it, boot it, publish it),
+   `skills/dayz-mod-dev/SKILL.md` is the entry point: it routes to the domain
+   skills and carries the rules every mod task needs. The Pack targets DayZ 1.30
+   or later.
 3. Open a file under that skill's `references/` **only when the procedure names
    it**. They are large and deliberately not loaded up front.
 4. `skills/_shared/` holds conventions several skills cite. Keep it alongside
@@ -82,6 +86,8 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | Rebuilding or patching a PBO | `dayz-pbo-diff` | Payload SHA-256 per entry; between two builds a different `.p3d` entry proves nothing by itself |
 | Regenerating a terrain's navmesh | `dayz-navmesh-compare` | Structure, not bytes; verified only for one 12 288 m world in 12.5, 25 or 50 m tiles |
 | Driving Terrain Builder without the desktop | `dayz-terrain-builder-runner` | EXPERIMENTAL, Windows only: menus and file dialogs verified; Generate Layers, imports and WRP export not; a disposable instance only |
+| Working on Linux (DayZ Tools, DayZDiag, `P:`) | `skills/_shared/scripts/dayz-proton.sh` | Runs BI's tools under Proton in private prefixes; native dayzmake / `workshop` first. Guide and measured matrix: `skills/_shared/linux-proton.md` |
+| Testing a mod on Linux without dayz-mcp (native server, headless retail client), building and publishing with dayzmake | `skills/_shared/scripts/` (`make-server-tree.sh`, `free-ports.sh`, `dayz-client-test.sh`, `dayz-mod-pack.sh`) | `skills/dayz-test-ingame/references/linux-native-server.md`, `linux-headless-client.md`; `skills/dayz-pbo-build/references/dayzmake-linux.md`; 1.30 facts measured on the server: `skills/dayz-mod-workflow/references/dayz-1-30-server-measured.md`. |
 
 Two habits make the difference. Propose the tool **before** the expensive step,
 not after it fails — that is the whole point of a preflight. And when a tool
@@ -126,7 +132,7 @@ Obsidian's.
 
 | Path | What it is |
 |---|---|
-| `skills/` | 44 playbooks + `_shared/`. The primary content. |
+| `skills/` | 45 playbooks + `_shared/`. The primary content. |
 | `tools/` | Thirteen Python tools. See [`TOOLS.md`](TOOLS.md). |
 | `examples/` | Worked examples that chain the tools on synthetic inputs. |
 | `knowledge/` | Verified reference notes: engine facts, infra, topic syntheses. |

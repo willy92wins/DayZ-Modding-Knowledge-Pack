@@ -583,3 +583,16 @@ What breaks: 1.29 custom infected animation workspaces; `EmoteManager.ForceSurre
 Migration: keep inheriting `ZombieMaleBase`/`ZombieFemaleBase` (or a 1.30 female-soldier base); re-save infected `.aw` in Workbench 1.30; if you replace a survivor body, keep/override the `ragdoll` path; do not author correlative bone `index` values in `skeletons.anim.xml`.
 Checklist: [ ] workspace re-saved [ ] ragdoll path on survivors [ ] no `Lard` in human `Skinning` [ ] PPE constants if the character wears masks/eyewear [ ] `MINDSTATE_COWER` if you patch infected AI.
 Detail: `references/character-ragdoll.md`, `references/dayz-1-30-characters.md`, `references/character-rigging.md`.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Pack, sign and binarize with dayzmake >= 1.0.0, bzed's DayZ fork of armake2 (https://github.com/bzed/dayzmake), pinned to `v1.0.0` (the release binary `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0`): use `dayzmake build`, `keygen`, `sign`, and `build --proton-binarize` where needed. Upstream armake2 is no substitute: it is built for Arma, leaves `*.c` files out of the signature (so a script mod's `.bisign` does not cover its scripts) and lacks the DayZ-only functions dayzmake keeps adding. `skills/_shared/scripts/dayz-mod-pack.sh` wraps them (`init`, `keygen`, `build [--binarize-models]`, `check`, `publish-hint`; `dayz-pbo-build/references/dayzmake-linux.md`). The author's 2026-11-03 textured-cube comparison with BI binarize from a `P:` root matched byte for byte (fork commit `7dcb3cf`, then still named armake2; `v1.0.0` contains it); this is not an in-game ODOL check. See `skills/_shared/linux-proton.md` for setup and limits.
+- `P:\` is a plain directory mapped by `skills/_shared/scripts/dayz-proton.sh init <dir>`; a `P:\<Mod>\...` path in this skill is `<dir>/<Mod>/...`.
+- Object Builder and TexView run under Proton: `dayz-proton.sh gui ObjectBuilder <p3d>`, `gui TexView <paa>`. Object Builder opened and displayed a model; editing in it was not exercised. Offline checks (`py3d`, `dayz-model-preflight`, `dayz-3d-viewer`) are Python and run natively.
+- In-game checks: the Linux notes of `dayz-test-ingame`.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

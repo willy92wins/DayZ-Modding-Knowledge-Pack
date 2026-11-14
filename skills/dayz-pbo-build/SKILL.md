@@ -49,6 +49,14 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
   one it runs out after 30 to 60 minutes of server time (`dayz-persistence`, SP-459).
 - **Publishing to the Workshop (manual):** signing with DsUtils, the item folder, the Publisher or SteamCMD,
   and why a SteamCMD login with the Steam client's account kicks that client off: `references/workshop-publish.md`.
+  On Linux (dayzmake, `meta.cpp`, Workshop tags, the `workshop` uploader): `references/dayzmake-linux.md`.
+- **REQUIRED (the mod folder, after the build):** every PBO sits in `@Mod/addons/`. A PBO at the mod folder root
+  (`@MyMod/MyMod.pbo`) is silently ignored: no config, no scripts, no error, while the folder still shows in the
+  boot log's `ANIMATION (E): Can't load @MyMod/...` pass, which is not loading. Its `modded class` overrides then
+  silently never run, and an A/B test of a fix reads as "the fix did not work". Measured by bzed on the native
+  Linux 1.30 server (`bzed/dayz-dev-plugin@6112ac5` `systems/mod-structure.md`, PBO Packaging); the probe that
+  proves it is in `dayz-test-ingame/references/linux-native-server.md`, section 4. The Workshop Publisher also
+  refuses an upload with PBOs outside `addons/`.
 
 **Example output:**
 ```
@@ -1222,3 +1230,18 @@ discriminate and one on a pre-existing symbol did not, with the same command.
 
 Sibling to what this section already says about gates proving form and not
 compilation: there gate measures what it shouldn't, here it measures something already there.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Build with dayzmake >= 1.0.0, bzed's DayZ fork of armake2 (https://github.com/bzed/dayzmake), pinned to `v1.0.0` (the release binary `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0`): use `dayzmake build`, `keygen` and `sign`; Upstream armake2 is no substitute: it is built for Arma, leaves `*.c` files out of the signature (so a script mod's `.bisign` does not cover its scripts) and lacks the DayZ-only functions dayzmake keeps adding. Check an installed binary with `dayzmake -h | grep -- --proton-binarize` (no hit: not the fork) and `dayzmake --version`; `build --proton-binarize` invokes BI binarize under Proton. `skills/_shared/scripts/dayz-mod-pack.sh` wraps keygen, build, sign, check and the Workshop upload commands; the whole Linux route (signatures, `meta.cpp`, tags, `workshop` uploader) is in [`references/dayzmake-linux.md`](references/dayzmake-linux.md). The validation checks of this skill (prefix, `config.cpp`, `$PBOPREFIX$`, duplicates, stringtable) do not depend on the packer and apply unchanged.
+- `--proton-binarize` keeps texture alpha in the fork's GitHub `master` (commit `0a0ce3b` and later, verified 2026-11-03); older local builds lose it. Reinstall from GitHub when in doubt: `--version` prints `v0.3.0` for both.
+- To compare against BI's AddonBuilder, it runs under Proton: `dayz-proton.sh tool AddonBuilder <P-root>/<Mod> <out> -prefix=<Mod>` (`-packonly` and full builds measured, `-clear` too). The binarize rules above hold: build from `P:\<Mod>`, never from a path whose parent is a large Linux directory, because binarize scans the parent. AddonBuilder exits 0 on a failed build; `dayz-proton.sh` returns the `[ResultCode]` from `DayZ Tools/Bin/Logs/AddonBuilder.rpt` instead.
+- `build_*.ps1`, `robocopy` and junctions: read the script for the source tree, then do the same with `sh`, `rsync` and symlinks. Do not run the `.ps1` under `pwsh`: it calls Windows programs and the registry.
+- Publishing: the `workshop` uploader (nozwock/steam-workshop-uploader) instead of Publisher; `dayz-mod-pack.sh publish-hint` prints the command.
+- Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. `dayz_test_run build=true` on dayz-mcp's `linux-port` branch now drives the dayzmake v1.0.0 release binary from `PATH` and refuses any other build (`dayzmake_pin_mismatch`); the 2026-11-06 run used the fork under its old name armake2. It writes `@Mod/Addons/<Mod>.pbo`; both the native server and `DayZDiag` load that spelling (measured 2026-11-06).
+
+## The rest of the mod loop
+
+Building is one step of the loop in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md) (look up, write, build, boot on a local server, verify, publish), the Pack's entry point for mod development.

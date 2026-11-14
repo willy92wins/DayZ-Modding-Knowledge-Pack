@@ -1,6 +1,6 @@
 ---
 name: enforce-script-reference
-description: "Use when: Enforce Script, config.cpp, ScriptRPC, SyncVars, OnStoreSave, CallLater, modded class, inputs.xml, crash/segfault. Language+config. Full UI/layout/Dabs: dayz-ui-development; persistence deep-dive: dayz-persistence."
+description: "Use when: Enforce Script, config.cpp, ScriptRPC, SyncVars, OnStoreSave, CallLater, modded class, inputs.xml, crash/segfault. Language+config. Full UI/layout/Dabs: dayz-ui-development; persistence deep-dive: dayz-persistence. Also: does this class/method/enum exist (local API index, diff.yadz.app), Community Framework RPCs/modules, mod load order."
 ---
 
 # Enforce Script Reference — Complete DayZ Modding Guide
@@ -357,8 +357,9 @@ the result (bool) down to 4_World. The 4_World class never references
 
 - **DO NOT** reference `MissionGameplay` from 4_World — won't compile or will crash
 - **DO NOT** reference `IngameHud` from 4_World — class not available at that layer
-- **DO NOT** put entity logic in 5_Mission — server doesn't load 5_Mission scripts
+- **DO NOT** put entity logic in 5_Mission — entity classes live in 4_World, and a `modded class` belongs to the module of the class it modifies (the server does load 5_Mission: `MissionServer` lives there)
 - **DO NOT** put 109 files in 4_World and 1 in 5_Mission when 15 are pure UI (current LFPG state — works but limits future HUD features)
+- **The `modded class` chain has no order you can rely on.** It follows `requiredAddons` compile order, not the `-mod=`/`-servermod=` string (measured on a 1.30 server). Counteract another mod from an event that runs after it (`EEInit()` after the constructor chain), never by assuming you are outermost: `dayz-mod-workflow/references/dayz-1-30-server-measured.md`, section 7. Likewise `modded class Transport` (a `3_Game` class) from `4_World` fails with `Unknown type 'Transport'`: mod a class in its own module.
 - **DO NOT** declare `modded class MissionServer` / `modded class MissionGameplay` / `modded class Chat` from 4_World — these are Mission-layer classes. The compile may succeed silently (depending on parse order), but the override is **never bound** to the live instance, so hooks like `OnInit`, `OnMissionStart`, `OnMissionLoaded`, `InvokeOnConnect` never fire from your code. Symptom: no log output, no error, total no-op.
 
   **Detection**: if you wrote `modded class MissionServer { override void OnInit() { Print("hooked"); ... } }` and the `Print` never appears in `script_*.log` despite the server reaching mission load, check the file's layer. The `config.cpp::CfgMods::missionScriptModule` only loads `Scripts/5_Mission/` — files anywhere else cannot mod `MissionServer`.
@@ -1148,3 +1149,15 @@ before queueing a 30 min batch is not caution, it is arithmetic.
 [EXACT] Enforce `protected` reaches only the declaring class and its descendants. A body moved into `5_Mission` (facade + impl split) reaches device state through parameters (`dev.m_Field`), and that compiles only if the field is PUBLIC — the impl class is not a descendant of the state owner. Measured: a tree with linter 48 warnings / 0 errors and a passing isolated binarize still killed the first server boot with `Variable 'm_DeviceId' is protected` → `Can't compile "Mission" script module!`; the fields were public on the branch where the bodies were written, and that visibility change did not travel with the bodies (measured in game, LFPowerGrid, DayZDiag).
 
 [DESIGN] In a cross-module body move, the move list includes the visibility of every field the body touches, not only the helpers it calls; resolve the type of every variable and require public before declaring the tree good. The gate is the ENGINE, not the linter: on 2026-09-26 the offline linter run in that project returned the identical verdict on the broken and the fixed tree, and cross-review missed it because its rounds read the branch where the field WAS public. The Pack's validator has a tree-level check for this pattern, `ES-PROTECTED-CROSS-MODULE` (`tools/dayz-script-validator/README.md`); run it, and still boot the server before declaring a cross-module move good — whether that check catches a receiver reached through a parameter, as here, was not measured.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Vanilla scripts (`P:\scripts\…`): use `dayzmake unpack` on the installed script PBOs, preserving their prefix paths, and cite the extracted file plus the game build. `skills/_shared/scripts/extract-dayz-sources.sh <install> <dir>` extracts every script and derapified config (about 90 s for the vanilla install); `build-api-index.py <dir>/scripts ~/.cache/dayz-api` then builds a declarations index that `dayz-api.py class|find|chain|sub|enum|src NAME` queries (the index holds Bohemia's declarations, so it is built locally, never shipped). Online, https://diff.yadz.app/api/classes/<Name>.json gives one class of the latest build as JSON (`base`, `bases` with the define a base depends on, `methods`, `members`, file and line; `api/enums/<Name>.json`, `api/globals.json`; `api.json` is only a name index), per bzed's 2026-10-18 check against site build 1.30.164078 (`bzed/dayz-dev-plugin@6112ac5` `scripting/api-lookup.md:113-131`).
+- Script logs: native server → its `-profiles` directory; Proton client → `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ` (or the `-profiles=` directory).
+- The native Linux server defines `PLATFORM_LINUX` and also `SERVER_FOR_WINDOWS` (observed); DayZDiag and the client under Proton define `PLATFORM_WINDOWS`. Do not use either define to mean "Windows host".
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

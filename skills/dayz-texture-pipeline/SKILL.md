@@ -507,3 +507,16 @@ not self-illuminate at night. DXT5 preserves alpha but softens edges.
 Recomposition from a DECAL source (icon in alpha channel): RGB = swatch color per pixel,
 ALPHA = actual alpha. Never flatten alpha onto RGB — white-on-black bake was precisely that
 error, producing the opaque decal looking like a shader issue.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- PNG/TGA → PAA: `dayzmake img2paa` natively, or BI's converter under Proton with `dayz-proton.sh tool ImageToPAA <in.png> <out.paa>` (suffix rules `_co`, `_ca`, `_nohq`, … apply as on Windows; a `_ca` PNG became DXT5). PAA → PNG: `dayzmake paa2img`.
+- TexView: `dayz-proton.sh gui TexView <paa>` opened a DXT5 PAA and showed format, size and average colour.
+- Workbench (`.edds` / `.emat` import) starts under Proton; the import steps were **not verified** there.
+- `P:\` paths in rvmats are paths under the directory mapped by `dayz-proton.sh init`.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

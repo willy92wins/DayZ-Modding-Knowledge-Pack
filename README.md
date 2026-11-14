@@ -12,7 +12,7 @@ It contains three things:
 
 | Part | What it is |
 |---|---|
-| `skills/` | 44 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
+| `skills/` | 45 structured **playbooks** ("skills") — one Markdown procedure per domain, with on-demand `references/`. |
 | `tools/` | The **py3d DayZ fork** plus strict RTM/SEAnim inspection, MLOD pre-export, ODOL parity, the pre-PBO script/config linter, the vehicle-proxy gate, UI lab, `.layout` previewer and 3D-viewer tools, a PBO entry diff, a structural navmesh comparison and an experimental Terrain Builder runner. |
 | `knowledge/` | **Verified reference notes** — technical facts, infra, and cross-project pattern syntheses. |
 
@@ -64,7 +64,11 @@ DayZ-Modding-Knowledge-Pack/
 ├── skills/
 │   ├── _shared/                  ← conventions referenced by several skills
 │   │   ├── dayz-conventions.md
-│   │   └── enscript-style.md
+│   │   ├── enscript-style.md
+│   │   ├── linux-proton.md       ← the Linux route: native tools, BI's tools under Proton
+│   │   ├── scripts/              ← dayz-proton.sh, local server/client test harness, dayz-mod-pack.sh, API index
+│   │   └── tests/
+│   ├── dayz-mod-dev/             ← entry point for mod work: routing, rules, build-test-publish loop
 │   ├── enforce-script-reference/ ← Enforce Script + config.cpp reference
 │   ├── dayz-ai-patterns/         ← Expansion eAI FSM / targeting / groups
 │   ├── dayz-mod-workflow/        ← implement/debug protocol (client/server, anti-confabulation)
@@ -221,6 +225,7 @@ back to it.
 **Process, QA & tooling** (domain-agnostic — use them across all of the above)
 | Skill | Use when |
 |---|---|
+| `dayz-mod-dev` | **Start here for mod work as a whole**: writing, reviewing or porting a mod for DayZ 1.30 or later, then building, booting on a local server and publishing it. Routes to the domain skills, holds the rules every mod task needs (look up every API, forward slashes, PBOs in `addons/`, load order), and the local API index. |
 | `dayz-feature-spec` | **Before coding a non-trivial feature.** Writes a lightweight spec with measurable success criteria and Given/When/Then acceptance scenarios (incl. in-game repro), plus a **Forward Contract** — every classname / `model.cfg` selection / `.p3d` proxy / stringtable key the next phase will consume — and a read-only cross-artifact consistency gate. Adapted from github/spec-kit. |
 | `dayz-mod-workflow` | **How to implement and debug**, not what. Client/server data mapping before each feature, anti-confabulation, top-down six-layer diagnosis, edge-case checklists, the verified error catalog. Use alongside the domain skills, not instead of them. |
 | `dayz-preflight` | **Before any other DayZ skill.** Read-only check that `P:\` is mounted, DayZ Tools and vanilla data are locatable, and `P:\Mods` is the workshop junction. Hard-fails if `P:\` is missing. |

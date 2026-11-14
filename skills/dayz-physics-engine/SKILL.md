@@ -414,3 +414,7 @@ Migration checklist:
 - [ ] Death path: `PhysicsSetSimpleDeath(true)` is the script-visible non-ragdoll death branch.
 
 Detail: `references/dayz-1-30-ragdoll-and-fall.md`. Action-cursor line drift also patched in `references/fisica-engine-deep-dive.md`.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

@@ -138,3 +138,7 @@ Paths relative to `E:\DayZ-Exp-Extract\1.30.164014\` (the `exp\` prefix). Since 
 5. **Runtime**: no tick was measured in-game.
 
 FIN-SKILL-DRAFT
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

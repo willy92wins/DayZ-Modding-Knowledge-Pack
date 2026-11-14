@@ -361,3 +361,9 @@ not persistence.
 - [ ] Do not clone vanilla's unchecked `$mission:` `FileSerializer` overwrite.
 - [ ] Classify CombinationLock 142→144 as gated known/legacy; classify
       ThermalBias 142→144 as failed/truncated unless Bohemia wipes characters.
+
+The format of the CE files a mod or server edits (`types.xml`, `cfgspawnabletypes.xml`, `events.xml`, `globals.xml`, `economy.xml`, `cfglimitsdefinition.xml`) on 1.30, with stock values: [references/central-economy-files.md](references/central-economy-files.md).
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

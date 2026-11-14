@@ -1386,3 +1386,14 @@ extra mod, all but the first also with a test-only driver) [EXACT][CLAIM-MCPV-IN
 - The player keeps what it carried between runs (gotcha 4 above). A plank left in the hands by the
   previous run turned the next take from a slot into a swap.
 
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. The Linux setup for the game and DayZ Tools is in [`_shared/linux-proton.md`](../_shared/linux-proton.md); the state of the bridge on Linux, measured 2026-11-06, is:
+
+- The `@DayZ_MCP` addon works on the native Linux `DayZServer` and on `DayZDiag` under Proton, client and server: packed and signed with bzed's armake2 fork, now dayzmake (https://github.com/bzed/dayzmake, use >= 1.0.0; `dayzmake build addon <out>/addons/DayZ_MCP.pbo`, prefix from `$PBOPREFIX$`), polling the daemon on `127.0.0.1` at about 1 Hz.
+- Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. The Python side runs on dayz-mcp branch `linux-port`: `--daemon`/`--client` with leases and `session_*`, `dayz_test_run` (`mode=all/server/client`, `build=true`), `dayz_test_close` and `dayz_test_stop`. After a close with a player in the world, the client's exit metrics are not valid (`dayz-test-ingame`, "On Linux"). With `mode=all`, `bridge_status` reached `ready` with `server_bound_last_poll_age_s` and `client_bound_last_poll_age_s` set, about 34 s after `dayz_test_run` returned. `ready` can precede the join (one run showed the client still on its loading screen at that moment), so wait for `is connected` in the server RPT before spawning at the player. `dayz-test.ps1`, `install-mcp.ps1` and the native launcher are Windows-only. Which bridge tools work in the world on Linux, beyond `bridge_status`, was **not verified** tool by tool.
+- A game started by hand polls as `LEGACY_UNBOUND` (reads only; mutations refused with `game_not_ready:reason=legacy_unbound`), and `bridge_status` also waits for a client peer. So start the game through `dayz_test_run`. A managed client runs in a headless sway: take a screenshot of it with `WAYLAND_DISPLAY=$(cat <state>/DayZ_MCP/proton-clients/<session>/wayland-display) grim out.png` when logs show nothing, as the `0x00020017` modal did. Details and what remains: `knowledge/linux-proton-findings-2026-11.md` section 9.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

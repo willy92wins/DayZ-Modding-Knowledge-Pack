@@ -715,3 +715,13 @@ base-to-descendants proves that no overriding child bypasses it.
 1. [EXACT] A regex-generated inventory is closed with an independent census before auditors see it: the LFPowerGrid save/load-body table listed 11 files while 25 contained `ctx.Read` or `ctx.Write`, missing an entire hook family (`LFPG_OnStore*Device`, 10 classes). Auditors treat the handed table as complete.
 2. [DESIGN] "Deployed artifact ≠ source" is checked in DayZ by extracting the PBO and comparing by content (EOL-normalized) against each candidate tag: a release tag differed from the published PBO in 51 of 144 scripts.
 3. [EXACT] Do not count entities by searching class names in `storage_1\data\*.bin` (nor in `types.bin`): the positive control returns 0 matches in a world that does contain those classes. Count them in game.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- The PowerShell snippets in `references/` are search-and-tabulate recipes; the audit method does not depend on them. Use `rg`/`grep -rn` for `Select-String`, `find` for `Get-ChildItem -Recurse`, and Python for the tables. Paths: forward slashes, case-sensitive file system (see the guide).
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.
