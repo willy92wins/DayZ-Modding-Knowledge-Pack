@@ -123,8 +123,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   an empty recorded display signals no wineserver); `headless start` refuses a state with a live
   session and succeeds only when the recorded pid is `sway` with the exact three-entry sway argv
   (a script named `sway` does not pass; `DAYZ_PROTON_START_WAIT_TENTHS`, default 50 tenths, checked
-  again after the last sleep; on failure it signals only its own launcher or that exact sway, then
-  deletes its tracking). `init` and the .NET warm-up stop only
+  again after the last sleep). After `start` returns, success or failure, either the recorded sway
+  is tracked with a verified identity or no sway of that state is running: a failed start writes
+  `sway.cancel` first (the launcher child checks it before and just after writing `sway.pid`),
+  signals only its own launcher or that exact sway, waits five tenths of a second re-checking for
+  a pid published in that window, and only then deletes its tracking; the marker stays after a
+  failure and is removed by the next start or a successful one, so a wait of 0 fails cleanly
+  without leaving a sway. The sway config path is passed to awk through its environment, not
+  `awk -v`, so a state path holding a literal `\t` or `\n` still matches. `init` and the .NET warm-up stop only
   wineservers that were not running when they began, matching `WINEPREFIX` literally
   (`CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY`). These stops reduce but do not eliminate the
   check-then-signal race, and real Proton, sway and `cmd.exe` were not run by the offline tests.

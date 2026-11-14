@@ -361,6 +361,71 @@ def wait_gone(pid: int, seconds: float = 5.0) -> bool:
     return pid_gone(pid)
 
 
+def wait_for_pid_file(path: Path, seconds: float = 10.0) -> int:
+    """The pid recorded in a file another process writes, waiting (bounded)
+    until the file exists and holds a complete pid instead of reading it
+    once; -1 when no pid appears within the bound. A file can be visible
+    before its writer's printf lands, so an unparsable read also retries."""
+    deadline = time.time() + seconds
+    while time.time() < deadline:
+        try:
+            text = path.read_text().strip()
+        except OSError:
+            text = ""
+        if text:
+            try:
+                return int(text)
+            except ValueError:
+                pass
+        time.sleep(0.01)
+    return -1
+
+
+def state_sway_pids(state: Path) -> list[int]:
+    """Live pids whose argv is exactly sway -c <state>/sway.conf, found by
+    scanning /proc for this state's unique conf path (not by sway.pid, so a
+    sway whose tracking was removed is still found)."""
+    conf = str(state / "sway.conf")
+    found: list[int] = []
+    proc = Path("/proc")
+    if not proc.exists():
+        return found
+    for entry in proc.iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            argv = (entry / "cmdline").read_bytes().split(b"\0")
+        except OSError:
+            continue
+        argv = [a.decode(errors="surrogateescape") for a in argv if a]
+        if len(argv) == 3 and argv[0].rsplit("/", 1)[-1] == "sway" and argv[1] == "-c" and argv[2] == conf:
+            found.append(int(entry.name))
+    return found
+
+
+def wait_no_state_sway(state: Path, seconds: float = 3.0) -> bool:
+    deadline = time.time() + seconds
+    while time.time() < deadline:
+        if not state_sway_pids(state):
+            return True
+        time.sleep(0.05)
+    return not state_sway_pids(state)
+
+
+def kill_state_sways(state: Path) -> None:
+    """Last-resort cleanup: kill every sway of this state found via /proc,
+    plus whatever pid sway.pid names, even if no test captured a pid."""
+    pids = set(state_sway_pids(state))
+    pid_file = state / "sway.pid"
+    if pid_file.exists():
+        try:
+            pids.add(int(pid_file.read_text().strip()))
+        except ValueError:
+            pass
+    for pid in pids:
+        kill_process_tree(pid)
+
+
 def kill_process_tree(pid: int) -> None:
     """Kill a process and every descendant (via pgrep -P), leaves first."""
     if pid <= 0:
@@ -640,13 +705,148 @@ def test_headless_start_fails_when_sway_never_appears(tmp_path: Path) -> None:
                 pass
 
 
+@pytest.mark.parametrize(
+    ("wait_tenths", "delay"),
+    [("0", "0.2"), ("1", "0.2"), ("0", "1.5")],
+)
+@requires_real_sway
+def test_headless_start_with_slow_launcher_and_tiny_wait_leaves_no_sway(
+    tmp_path: Path, wait_tenths: str, delay: str
+) -> None:
+    # A setsid shim that sleeps `delay` seconds before exec'ing the real
+    # setsid makes the launcher child slower than the parent's wait (0, and
+    # 0.1s). The failed start must not leave a sway it cannot stop: it
+    # cancels first, so the child never execs sway. On the old code the
+    # parent removed its tracking before the child wrote sway.pid and that
+    # sway lived on. The 0.2s cases sit inside failed_start_cleanup's
+    # bounded 0.5s re-check window (5 x 0.1s in dayz-proton.sh), so the
+    # parent's late-pid signal could still catch a child that ignored the
+    # cancel. The 1.5s case is slower than that window: the parent has
+    # removed sway.pid/sway.identity long before the child would write its
+    # pid, so only the child's own sway.cancel checks (in the launcher
+    # `sh -c`) can prevent the sway from starting. Removing those checks
+    # must make the 1.5s case fail.
+    bin_dir = fake_sway(tmp_path)
+    real_setsid = shutil.which("setsid")
+    assert real_setsid is not None
+    record = tmp_path / "setsid-shim.pid"
+    _write(
+        bin_dir / "setsid",
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$$\" > '{record}'\n"
+        f"sleep {delay}\n"
+        f"exec '{real_setsid}' \"$@\"\n",
+        exe=True,
+    )
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    shim_pid = -1
+    try:
+        done = headless_start(
+            tmp_path, state, bin_dir, dzhome,
+            extra_env={"DAYZ_PROTON_START_WAIT_TENTHS": wait_tenths},
+        )
+        assert done.returncode != 0
+        assert "sway did not start" in done.stderr
+        # The shim is a child process: under load it may not have written
+        # its pid record yet when the failed start returns, so wait
+        # (bounded) for the record instead of reading it once. Waiting for
+        # it also makes the poll below non-vacuous: the shim has actually
+        # started before we poll for it to settle (its sleep, its exec of
+        # the real setsid, and the launcher's cancel check).
+        # Both bounded waits are comfortably longer than the largest shim
+        # delay (delay + 5s; 6.5s for the 1.5s case), so a sway that only
+        # appears after the delay cannot slip past them as "not there yet".
+        settle = float(delay) + 5.0
+        shim_pid = wait_for_pid_file(record, seconds=settle)
+        assert shim_pid > 0, "the setsid shim never wrote its pid record"
+        # Observe the whole settle window, not just its first instant:
+        # wait_no_state_sway alone returns at the first empty scan, which
+        # for a still-sleeping shim is before any sway could appear and
+        # would pass vacuously even without the child's cancel check. Poll
+        # for the full window (the shim's sleep, its exec of the real
+        # setsid, and the launcher's cancel check all fall inside it) and
+        # fail if a sway of this state appears at any point; only then is
+        # the final empty check meaningful.
+        deadline = time.time() + settle
+        while time.time() < deadline:
+            assert not state_sway_pids(state), (
+                f"failed start (wait {wait_tenths}, delay {delay}) "
+                "left a running sway of this state"
+            )
+            time.sleep(0.05)
+        # Bounded poll for the child to settle, then no sway of this state
+        # may exist (a `headless stop` could not end an untracked one).
+        assert wait_no_state_sway(state, seconds=settle), (
+            f"failed start (wait {wait_tenths}, delay {delay}) "
+            "left a running sway of this state"
+        )
+        assert not (state / "sway.pid").exists()
+        assert not (state / "sway.identity").exists()
+    finally:
+        kill_process_tree(shim_pid)
+        kill_state_sways(state)
+
+
+@requires_real_sway
+@pytest.mark.parametrize("dirname", [r"state\test", r"state\ntest", r"state\test\nboth"])
+def test_headless_start_stop_with_backslash_in_state_path(tmp_path: Path, dirname: str) -> None:
+    # The state path holds a literal backslash-t / backslash-n. Passing it
+    # to awk with -v would interpret those escapes (a real TAB / newline)
+    # and the sway argv would never match, so readiness and stop would
+    # fail; the path now goes through ENVIRON instead.
+    bin_dir = fake_sway(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / dirname
+    pid = -1
+    try:
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode == 0, done.stderr
+        # sway.pid is written by the launcher child, not by the parent, so
+        # read it through the bounded wait rather than a single read (the
+        # successful start has in fact already read it, but the test does
+        # not rely on that ordering to see a complete pid).
+        pid = wait_for_pid_file(state / "sway.pid")
+        assert pid > 0, "the launcher child never wrote sway.pid"
+        assert not pid_gone(pid)
+        assert (state / "sway.identity").exists()
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert wait_gone(pid), "stop did not signal the sway of a backslash state path"
+        assert not (state / "sway.pid").exists()
+    finally:
+        kill_process_tree(pid)
+        kill_state_sways(state)
+
+
 @requires_real_sway
 def test_headless_start_checks_again_after_the_last_wait(tmp_path: Path) -> None:
-    # The fake sway only becomes the real (ELF) sway after a marker appears,
-    # ~0.44s in: with a 0.5s wait that is inside the last sleep, after the
-    # check a check-before-sleep loop would make at ~0.4s. The start must
-    # still succeed and track it, so a later stop can signal it; no live
-    # sway of this state may be left untracked.
+    # Deterministic, not timed: the fake sway only becomes the real (ELF)
+    # sway once a marker file appears, and the marker is created by the
+    # test hook (DAYZ_PROTON_TEST_HOOK) exactly when the parent reports its
+    # last wait iteration. The hook is the barrier, in this order: FIRST it
+    # waits (bounded) until the child's pid record exists and holds a pid,
+    # only THEN does it create the marker, and then it waits (bounded)
+    # until that pid has exec'd the real ELF sway before returning:
+    # /proc/<pid>/exe resolving to the realbin/sway fixture, or argv[0]
+    # being that path. /proc/<pid>/comm cannot tell that moment: comm is
+    # the executed file's name, so the fake script named sway already has
+    # comm sway before its exec of the ELF, and a comm wait returned while
+    # the pid was still the script (/bin/sh .../fakebin/sway -c conf),
+    # whose argv the parent's strict final check rightly refuses. Reading
+    # the record before that wait raced the child's exec chain: an empty
+    # pid made the hook's wait unmatchable, so the hook returned
+    # before the child was ready and the parent's final check failed the
+    # start under load. If the record never appears the hook leaves the
+    # marker uncreated, so the start fails with its own "sway did not
+    # start" instead of the hook silently timing out. So the sway becomes
+    # ready after the parent's last sleep and only a loop that checks
+    # again after that sleep can see it: a check-before-sleep loop made
+    # its last check before the marker existed and fails this test. The
+    # start must still succeed and track it, so a later stop can signal it.
     real_dir = tmp_path / "realbin"
     _fake_sway_binary(real_dir / "sway")
     bin_dir = tmp_path / "fakebin"
@@ -656,9 +856,54 @@ def test_headless_start_checks_again_after_the_last_wait(tmp_path: Path) -> None
         bin_dir / "sway",
         "#!/bin/sh\n"
         f"printf '%s\\n' \"$$\" > '{record}'\n"
-        f"( sleep 0.44; : > '{marker}' ) &\n"
-        f"while [ ! -e '{marker}' ]; do sleep 0.01; done\n"
+        # Bounded (~20 s): if the hook never creates the marker (its pid
+        # wait expired, or the test failed earlier) exit instead of
+        # spinning forever on a marker that will never appear.
+        "_n=0\n"
+        f"while [ ! -e '{marker}' ]; do\n"
+        "    _n=$((_n + 1)); [ \"$_n\" -lt 2000 ] || exit 1\n"
+        "    sleep 0.01\n"
+        "done\n"
         f"exec '{real_dir / 'sway'}' \"$@\"\n",
+        exe=True,
+    )
+    hook = _write(
+        tmp_path / "test-hook.sh",
+        "#!/bin/sh\n"
+        "# $1 = wait iteration, $2 = total iterations (see dayz-proton.sh).\n"
+        "# The script ignores this hook's exit status, so a bound expiring\n"
+        "# is made visible by leaving the marker uncreated (the parent then\n"
+        "# fails the start with its own message), never by exit code.\n"
+        '[ "$1" = "$2" ] || exit 0\n'
+        "# 1) Bounded (~10 s in 10 ms steps) wait until the child's pid\n"
+        "# record exists and holds a pid. The record is written by the\n"
+        "# fake sway, the second stage of the child's exec chain, so it\n"
+        "# may not exist yet when this hook first runs.\n"
+        "_pid=; _i=0\n"
+        'while [ "$_i" -lt 1000 ]; do\n'
+        f"    if [ -s '{record}' ]; then\n"
+        f"        _pid=$(cat '{record}' 2>/dev/null) || _pid=\n"
+        '        [ -n "$_pid" ] && break\n'
+        "    fi\n"
+        "    sleep 0.01; _i=$((_i + 1))\n"
+        "done\n"
+        "# No pid within the bound: leave the marker uncreated and return.\n"
+        '[ -n "$_pid" ] || exit 0\n'
+        "# 2) Only now release the child, then wait (bounded, ~10 s in\n"
+        "# 10 ms steps) until that pid has exec'd the real ELF: its\n"
+        "# /proc/<pid>/exe resolves to the ELF fixture, or argv[0] (the\n"
+        "# first /proc/<pid>/cmdline field) is that path. Not comm: the\n"
+        "# fake script named sway already has comm sway before the exec.\n"
+        f": > '{marker}'\n"
+        "_i=0\n"
+        'while [ "$_i" -lt 1000 ]; do\n'
+        '    _exe=$(readlink "/proc/$_pid/exe" 2>/dev/null) || _exe=\n'
+        f"    [ \"$_exe\" = '{real_dir / 'sway'}' ] && exit 0\n"
+        "    _a0=$(tr '\\0' '\\n' < \"/proc/$_pid/cmdline\" 2>/dev/null | head -n 1) || _a0=\n"
+        f"    [ \"$_a0\" = '{real_dir / 'sway'}' ] && exit 0\n"
+        "    sleep 0.01; _i=$((_i + 1))\n"
+        "done\n"
+        "exit 0\n",
         exe=True,
     )
     dzhome = tmp_path / "dzhome"
@@ -667,7 +912,10 @@ def test_headless_start_checks_again_after_the_last_wait(tmp_path: Path) -> None
     try:
         done = headless_start(
             tmp_path, state, bin_dir, dzhome,
-            extra_env={"DAYZ_PROTON_START_WAIT_TENTHS": "5"},
+            extra_env={
+                "DAYZ_PROTON_START_WAIT_TENTHS": "5",
+                "DAYZ_PROTON_TEST_HOOK": str(hook),
+            },
         )
         assert done.returncode == 0, done.stderr
         assert (state / "sway.pid").exists(), "sway that became ready in the last wait was left untracked"
@@ -682,6 +930,7 @@ def test_headless_start_checks_again_after_the_last_wait(tmp_path: Path) -> None
         assert wait_gone(pid), "tracked late sway was not signalled by stop"
     finally:
         kill_process_tree(pid)
+        kill_state_sways(state)
         if record.exists():
             try:
                 kill_process_tree(int(record.read_text().strip()))

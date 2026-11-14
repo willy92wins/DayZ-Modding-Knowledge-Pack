@@ -34,6 +34,16 @@
 #   matches, then only that session's wineserver (by pid:starttime, re-checked before each
 #   signal; an empty or unreadable recorded display signals no wineserver). These checks and
 #   the signal are not atomic: they reduce, but do not eliminate, the check-then-signal race.
+#   Invariant for `headless start`: after it returns (success or failure) either the recorded
+#   sway is tracked with a verified identity, or no sway of this state is running. A failed
+#   start first writes $state/sway.cancel, which the launcher child checks before writing
+#   sway.pid and again just after; the failed start signals the published pid, waits five
+#   tenths of a second re-checking for a pid published in that window, and only then removes
+#   sway.pid/sway.identity. The cancel marker is left behind after a failure (a slower child
+#   still sees it and exits without exec'ing sway); the next start removes it before it
+#   launches, and a successful start removes it once the identity is recorded. The sway.conf
+#   path is passed to awk through the environment (ENVIRON), never `awk -v`, whose escape
+#   handling would turn a `\t` in a state path into a TAB and break the comparison.
 #   `binarize` writes its arguments only into a quoted .bat (Z:\run.bat) and refuses any with
 #   a double quote, CR, LF or empty before doing anything. `init` stops only the wineservers
 #   that were not running when it began, in the prefixes it used. Real Proton, sway and
@@ -589,12 +599,14 @@ sway_identity_ok() {
     fi
     tail -n +2 "$2/sway.identity" > "$_si_rec"
     if ! cmp -s "$_si_cur" "$_si_rec"; then rm -f "$_si_cur" "$_si_rec"; return 1; fi
-    awk -v conf="$2/sway.conf" '
+    # ENVIRON, not awk -v: -v interprets escapes, so a state path holding a
+    # literal backslash-t would reach awk with a TAB in it and never match.
+    SWAYCONF="$2/sway.conf" awk '
         function base(p,   n, a) { n = split(p, a, "/"); return a[n] }
         NR == 1 { first = $0 }
         { prev2 = prev1; prev1 = $0; n = NR }
         END {
-            if (n != 3 || prev2 != "-c" || prev1 != conf) exit 1
+            if (n != 3 || prev2 != "-c" || prev1 != ENVIRON["SWAYCONF"]) exit 1
             if (base(first) == "sway") exit 0
             exit 1
         }' "$_si_cur"
@@ -611,18 +623,55 @@ sway_cmdline_matches() {
     if ! tr '\0' '\n' < "/proc/$1/cmdline" > "$_sc_cur" 2>/dev/null; then
         rm -f "$_sc_cur"; return 1
     fi
-    awk -v conf="$2/sway.conf" '
+    SWAYCONF="$2/sway.conf" awk '
         function base(p,   n, a) { n = split(p, a, "/"); return a[n] }
         NR == 1 { first = $0 }
         { prev2 = prev1; prev1 = $0; n = NR }
         END {
-            if (n != 3 || prev2 != "-c" || prev1 != conf) exit 1
+            if (n != 3 || prev2 != "-c" || prev1 != ENVIRON["SWAYCONF"]) exit 1
             if (base(first) == "sway") exit 0
             exit 1
         }' "$_sc_cur"
     _sc_rc=$?
     rm -f "$_sc_cur"
     [ "$_sc_rc" = 0 ]
+}
+# failed_start_signal <state>: TERM the pid in sway.pid, but only while it
+# is either still this start's launcher (its cmdline holds the 'exec sway'
+# command string) or already the definitive sway of this state (exact
+# sway -c <state>/sway.conf; the conf path is unique to this state and the
+# pid file was written by this start's child). Never signal anything else
+# the pid may have become.
+failed_start_signal() {
+    [ -s "$1/sway.pid" ] || return 0
+    _fs_pid=$(cat "$1/sway.pid" 2>/dev/null) || _fs_pid=
+    [ -n "$_fs_pid" ] || return 0
+    [ -d "/proc/$_fs_pid" ] || return 0
+    _fs_cmd=$(tr '\0' '\n' < "/proc/$_fs_pid/cmdline" 2>/dev/null) || _fs_cmd=
+    case $_fs_cmd in
+        *'exec sway'*) kill "$_fs_pid" 2>/dev/null || true ;;
+        *) if sway_cmdline_matches "$_fs_pid" "$1"; then kill "$_fs_pid" 2>/dev/null || true; fi ;;
+    esac
+    return 0
+}
+# failed_start_cleanup <state>: give up on a start without leaving a sway
+# this state cannot stop. The cancel marker comes FIRST: the launcher child
+# checks it before writing sway.pid and again just after, so a child that
+# has not reached sway yet exits instead of exec'ing it. Then signal the
+# published pid, wait five tenths of a second (the documented bounded
+# window) re-running the signal for a pid published inside that window, and
+# only then remove the tracking files. sway.cancel stays in place after a
+# failure (see the header invariant); the next start removes it before it
+# launches, and a successful start removes it.
+failed_start_cleanup() {
+    : > "$1/sway.cancel"
+    failed_start_signal "$1"
+    _fc_i=0
+    while [ "$_fc_i" -lt 5 ]; do
+        sleep 0.1; _fc_i=$((_fc_i + 1))
+        failed_start_signal "$1"
+    done
+    rm -f "$1/sway.pid" "$1/sway.identity"
 }
 do_headless() {
     sub=${1:-}; state=${2:-}
@@ -661,10 +710,13 @@ EOF
         chmod +x "$state/run.sh"
         printf 'output HEADLESS-1 resolution %s position 0 0\nxwayland enable\nexec %s/run.sh > %s/run.log 2>&1\n' \
             "${RES:-1600x900}" "$state" "$state" > "$state/sway.conf"
-        rm -f "$state/wayland-display" "$state/sway.pid" "$state/sway.identity"
+        rm -f "$state/wayland-display" "$state/sway.pid" "$state/sway.identity" "$state/sway.cancel"
         # The child writes its own PID before exec, so the recorded PID is the
-        # sway process itself even when setsid forks under job control.
-        WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid nohup sh -c 'echo $$ > "$1/sway.pid"; exec sway -c "$1/sway.conf"' sh "$state" \
+        # sway process itself even when setsid forks under job control. It
+        # checks sway.cancel before writing sway.pid and again just after:
+        # if a failed start has cancelled, it removes its pid and exits
+        # instead of exec'ing a sway the parent can no longer track.
+        WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid nohup sh -c '[ ! -e "$1/sway.cancel" ] || exit 0; echo $$ > "$1/sway.pid"; if [ -e "$1/sway.cancel" ]; then rm -f "$1/sway.pid"; exit 0; fi; exec sway -c "$1/sway.conf"' sh "$state" \
             > "$state/sway.log" 2>&1 &
         _hl_wait=${DAYZ_PROTON_START_WAIT_TENTHS:-50}
         case $_hl_wait in ''|*[!0-9]*) die "DAYZ_PROTON_START_WAIT_TENTHS must be a non-negative integer (tenths of a second)" ;; esac
@@ -674,6 +726,13 @@ EOF
         _hl_i=0; _hl_ready=0; pid=
         while [ "$_hl_i" -lt "$_hl_wait" ]; do
             sleep 0.1; _hl_i=$((_hl_i + 1))
+            # Test-only hook: when DAYZ_PROTON_TEST_HOOK is set it names a
+            # command run once per wait iteration with the iteration number
+            # and the total, so a test can synchronise on the parent reaching
+            # its last iteration. Inert when unset; not a user knob.
+            if [ -n "${DAYZ_PROTON_TEST_HOOK:-}" ]; then
+                "$DAYZ_PROTON_TEST_HOOK" "$_hl_i" "$_hl_wait" || true
+            fi
             if [ -s "$state/sway.pid" ]; then
                 pid=$(cat "$state/sway.pid" 2>/dev/null) || pid=
                 if [ -n "$pid" ] && [ -d "/proc/$pid" ]; then
@@ -685,34 +744,23 @@ EOF
             fi
         done
         if [ "$_hl_ready" != 1 ]; then
-            # Stop only the child this start launched: signal (TERM) the pid
-            # in sway.pid while it is either still that launcher (its cmdline
-            # holds the 'exec sway' command string) or already the definitive
-            # sway of this state (exact sway -c <state>/sway.conf; the conf
-            # path is unique to this state and the pid file was written by
-            # this start's child). Never signal anything else the pid became,
-            # and delete the tracking files only after this.
-            if [ -s "$state/sway.pid" ]; then
-                pid=$(cat "$state/sway.pid" 2>/dev/null) || pid=
-                if [ -n "$pid" ] && [ -d "/proc/$pid" ]; then
-                    _hl_cmd=$(tr '\0' '\n' < "/proc/$pid/cmdline" 2>/dev/null) || _hl_cmd=
-                    case $_hl_cmd in
-                        *'exec sway'*) kill "$pid" 2>/dev/null || true ;;
-                        *) if sway_cmdline_matches "$pid" "$state"; then kill "$pid" 2>/dev/null || true; fi ;;
-                    esac
-                fi
-            fi
-            rm -f "$state/sway.pid" "$state/sway.identity"
+            # Cancel first, then signal only the child this start launched,
+            # re-check for a pid published in the bounded window, and only
+            # then remove tracking (see failed_start_cleanup). This is what
+            # makes DAYZ_PROTON_START_WAIT_TENTHS=0 fail cleanly too: the
+            # child sees sway.cancel and never execs sway.
+            failed_start_cleanup "$state"
             die "sway did not start in $state (see $state/sway.log)"
         fi
         _hl_comm=$(cat "/proc/$pid/comm" 2>/dev/null) || _hl_comm=
         [ "$_hl_comm" = sway ] && sway_cmdline_matches "$pid" "$state" \
-            || { rm -f "$state/sway.pid" "$state/sway.identity"; die "sway did not start in $state (see $state/sway.log)"; }
-        _hl_start=$(proc_starttime "$pid") || { rm -f "$state/sway.pid" "$state/sway.identity"; die "sway did not stay up (see $state/sway.log)"; }
+            || { failed_start_cleanup "$state"; die "sway did not start in $state (see $state/sway.log)"; }
+        _hl_start=$(proc_starttime "$pid") || { failed_start_cleanup "$state"; die "sway did not stay up (see $state/sway.log)"; }
         {
             printf '%s\n' "$_hl_start"
             tr '\0' '\n' < "/proc/$pid/cmdline"
         } > "$state/sway.identity"
+        rm -f "$state/sway.cancel"
         echo "headless sway $pid, log $state/run.log" ;;
     shot)
         [ -s "$state/wayland-display" ] || die "no session in $state"

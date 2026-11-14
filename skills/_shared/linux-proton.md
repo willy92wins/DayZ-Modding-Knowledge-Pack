@@ -91,9 +91,18 @@ or run. [EXACT][CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION] The offline tests 
 `headless start` refuses a state that already has a live, verified session, succeeds only once
 the recorded pid's /proc comm is `sway` with the exact three-entry `sway -c <state>/sway.conf`
 argv (a script named `sway` does not pass; the wait is `DAYZ_PROTON_START_WAIT_TENTHS` tenths of
-a second, default 50, checked again after the last sleep; on failure it signals only its own
-launcher or that exact sway, then deletes its tracking), and signals no wineserver at all when
-the recorded display is empty or unreadable. `init` stops the
+a second, default 50, checked again after the last sleep), and signals no wineserver at all when
+the recorded display is empty or unreadable. After `start` returns, success or failure, either
+the recorded sway is tracked with a verified identity or no sway of that state is running: on
+failure it first writes `sway.cancel`, which the launcher child checks before writing `sway.pid`
+and again just after (removing its pid and exiting instead of `exec`ing sway), then signals only
+its own launcher or that exact sway, waits five tenths of a second re-checking for a pid
+published in that window, and only then deletes its tracking. The marker stays after a failure
+so a slower child still cancels; the next `start` removes it before launching and a successful
+`start` removes it, so `DAYZ_PROTON_START_WAIT_TENTHS=0` fails cleanly without leaving a sway.
+The `sway.conf` path is compared literally through awk's `ENVIRON`, not `awk -v` (whose escape
+handling turned a `\t` in a state path into a TAB), so a state directory named with a literal
+`\t` or `\n` still starts and stops. `init` stops the
 wineservers that were not running when `init` began, in the prefixes it used, by the same
 pid:starttime pairs; a program someone else starts in those prefixes meanwhile cannot be
 told apart (not claimed). These stops reduce but do not eliminate the check-then-signal
