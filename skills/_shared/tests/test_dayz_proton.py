@@ -151,7 +151,7 @@ def fake_proton(tmp_path: Path, spawn_wineserver_from: Path | None = None) -> tu
         lines += [
             'for a in "$@"; do if [ "$a" = regedit ]; then',
             f"  WINEPREFIX=\"$STEAM_COMPAT_DATA_PATH/pfx\" WAYLAND_DISPLAY=wayland-test "
-            f"python3 -c 'import subprocess,sys; p=subprocess.Popen([sys.argv[1], \"30\"]); print(p.pid)' "
+            f"python3 -c 'import subprocess,sys; p=subprocess.Popen([sys.argv[1]]); print(p.pid)' "
             f"'{spawn_wineserver_from}' > '{new_pid}'",
             "fi; done",
         ]
@@ -316,10 +316,11 @@ def test_run_tool_bat_quoting_is_unchanged(tmp_path: Path) -> None:
 
 # --- F3: headless identity and wineserver stops ------------------------------
 
-def _fake_sway_binary(path: Path) -> None:
-    """A tiny x86_64 ELF named sway that pauses forever (comm is sway and
-    argv is exactly what the launcher passed; a #! script would run as the
-    interpreter instead and is not accepted as sway). Only built on x86_64;
+def _fake_pause_binary(path: Path) -> None:
+    """A tiny x86_64 ELF that pauses forever, ignoring argv; its comm is
+    the file name it is written under (sway, wineserver). Never copy a
+    system binary for this: a copied multi-call binary (uutils sleep on
+    newer runners) exits at once under another name. Only built on x86_64;
     tests using it are skipped elsewhere (requires_real_sway)."""
     import struct
 
@@ -333,6 +334,13 @@ def _fake_sway_binary(path: Path) -> None:
     ) + struct.pack("<IIQQQQQQ", 1, 5, 0, 0x400000, 0x400000, total, total, 0x1000) + code
     path.write_bytes(elf)
     path.chmod(0o755)
+
+
+def _fake_sway_binary(path: Path) -> None:
+    """The pause ELF named sway (comm is sway and argv is exactly what the
+    launcher passed; a #! script would run as the interpreter instead and
+    is not accepted as sway)."""
+    _fake_pause_binary(path)
 
 
 def fake_sway(tmp_path: Path) -> Path:
@@ -482,15 +490,12 @@ def kill_popen(proc: subprocess.Popen[bytes] | None) -> None:
 
 
 def start_fake_wineserver(tmp_path: Path, name: str, wineprefix: Path, display: str) -> subprocess.Popen[bytes]:
-    sleep_bin = shutil.which("sleep")
-    assert sleep_bin is not None
     exe_dir = tmp_path / name
     exe_dir.mkdir(parents=True, exist_ok=True)
     exe = exe_dir / "wineserver"
-    shutil.copy(sleep_bin, exe)
-    exe.chmod(0o755)
+    _fake_pause_binary(exe)
     env = {"PATH": os.environ["PATH"], "WINEPREFIX": str(wineprefix), "WAYLAND_DISPLAY": display}
-    return subprocess.Popen([str(exe), "30"], env=env)
+    return subprocess.Popen([str(exe)], env=env)
 
 
 def headless_start(
@@ -1197,6 +1202,7 @@ def test_headless_start_checks_again_after_the_last_wait(tmp_path: Path) -> None
                 pass
 
 
+@requires_real_sway
 def test_wineserver_with_a_stale_starttime_is_not_signalled(tmp_path: Path) -> None:
     # Drive the script's own signal_session_wineservers with an enumeration
     # stub that returns a pid:starttime pair whose start time is stale (1):
@@ -1205,8 +1211,10 @@ def test_wineserver_with_a_stale_starttime_is_not_signalled(tmp_path: Path) -> N
     fake_steam_with_tools(tmp_path)
     dzhome = tmp_path / "dzhome"
     prefix = dzhome / "tools" / "pfx"
-    server = start_fake_wineserver(tmp_path, "ws-stale", prefix, "wayland-1")
+    server: subprocess.Popen[bytes] | None = None
     try:
+        server = start_fake_wineserver(tmp_path, "ws-stale", prefix, "wayland-1")
+        assert server is not None
         source = SCRIPT.read_text()
         body = source.split("\ncmd=${1:-}", 1)[0]
         driver = tmp_path / "driver.sh"
@@ -1230,6 +1238,7 @@ def test_wineserver_with_a_stale_starttime_is_not_signalled(tmp_path: Path) -> N
         kill_popen(server)
 
 
+@requires_real_sway
 def test_init_leaves_a_busy_prefix_running_and_stops_only_new_wineservers(tmp_path: Path) -> None:
     fake_steam_with_tools(tmp_path)
     dzhome = tmp_path / "dz[1]"
@@ -1238,14 +1247,15 @@ def test_init_leaves_a_busy_prefix_running_and_stops_only_new_wineservers(tmp_pa
     mfc = tools_prefix / "pfx" / "drive_c" / "windows" / "syswow64" / "mfc140.dll"
     mfc.parent.mkdir(parents=True)
     mfc.write_text("fake\n")
-    busy = start_fake_wineserver(tmp_path, "ws-busy", tools_prefix / "pfx", "wayland-test")
-    sleeper_dir = tmp_path / "ws-new"
-    sleeper_dir.mkdir()
-    sleeper = sleeper_dir / "wineserver"
-    shutil.copy(shutil.which("sleep") or "/bin/sleep", sleeper)
-    sleeper.chmod(0o755)
-    proton_dir, _calls, _bats = fake_proton(tmp_path, spawn_wineserver_from=sleeper)
+    busy: subprocess.Popen[bytes] | None = None
     try:
+        busy = start_fake_wineserver(tmp_path, "ws-busy", tools_prefix / "pfx", "wayland-test")
+        assert busy is not None
+        sleeper_dir = tmp_path / "ws-new"
+        sleeper_dir.mkdir()
+        sleeper = sleeper_dir / "wineserver"
+        _fake_pause_binary(sleeper)
+        proton_dir, _calls, _bats = fake_proton(tmp_path, spawn_wineserver_from=sleeper)
         done = run(
             tmp_path, "init",
             extra_env={"PROTON": str(proton_dir), "DAYZ_PROTON_HOME": str(dzhome)},
