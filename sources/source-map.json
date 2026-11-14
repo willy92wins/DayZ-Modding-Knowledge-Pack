@@ -4855,10 +4855,20 @@
           "source_path": "promotions/promotion-map.json",
           "source_revision": "kp-update@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion-route-ported-skills 2026-11-14: artifacts skill/systematic-debugging and skill/task-observer (tree, domain_invariant) join the map with the claude_user_skills, agents_user_skills and obsidian_snapshots targets, like skill/dayz-preflight. #146 (f0c149e) ported both skills and named these routes as the routing_artifact_id of their 16 source-map outputs but added no route, so promote --check failed with PROMOTION-UNROUTED. Routed, both skills take this repository as their editable source (CONTRIBUTING.md, Required workflow, step 7).",
+          "license": "MIT",
+          "source_hash": "4754d54b3962263203842389e559ea8812fdbcb88770b3062fa19e479ef927f1",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/promotion-map.json",
+          "source_revision": "promotion-route-ported-skills@2026-11-14",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9208065a89903ab99cbefcae14d68ed061115d2b9029413bf0c2fd4b1f30ad03",
+      "output_hash": "4754d54b3962263203842389e559ea8812fdbcb88770b3062fa19e479ef927f1",
       "output_path": "promotions/promotion-map.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
