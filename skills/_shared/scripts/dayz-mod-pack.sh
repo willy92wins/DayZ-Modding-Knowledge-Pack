@@ -44,6 +44,7 @@ CMD=${1:-}; [ $# -gt 0 ] && shift
 
 DAYZMAKE=${DAYZMAKE:-${ARMAKE2:-$(command -v dayzmake || command -v armake2 || echo dayzmake)}}
 APP_ID=${WORKSHOP_APP_ID:-221100}
+case $APP_ID in ''|*[!0-9]*) die "WORKSHOP_APP_ID must contain digits only: $APP_ID" ;; esac
 
 # Files that must never end up inside a PBO or the Workshop upload.
 PBO_EXCLUDES=('*.psd' '*.xcf' '*.kra' '*.blend' '*.blend1' '*.bak' '*.tmp' '*.biprivatekey' 'Thumbs.db' '.DS_Store')
@@ -52,6 +53,7 @@ load_conf() {
     [ -f "$PROJECT/.dayzmod" ] || die "no $PROJECT/.dayzmod; run: $0 init <ModName>"
     # Parse .dayzmod as data, never source it: KEY=value, value bare or in one pair of
     # single/double quotes, no escapes, no $ ` ; | & , blank and # comment lines only.
+    local _env_key_name=${KEY_NAME:-}
     MOD_NAME=; KEY_NAME=; WORKSHOP_TAGS=
     local _line _key _val _lineno=0 _seen=""
     while IFS= read -r _line || [ -n "$_line" ]; do
@@ -77,7 +79,7 @@ load_conf() {
         printf -v "$_key" '%s' "$_val"
     done < "$PROJECT/.dayzmod"
     [ -n "${MOD_NAME:-}" ] || die ".dayzmod does not set MOD_NAME"
-    KEY_NAME=${KEY_NAME:-$MOD_NAME}
+    KEY_NAME=${KEY_NAME:-${_env_key_name:-$MOD_NAME}}
     WORKSHOP_TAGS=${WORKSHOP_TAGS:-Mod}
     case $MOD_NAME in .|..) die "MOD_NAME must not be . or .." ;; esac
     case $MOD_NAME in *[!A-Za-z0-9_.-]*|'') die "MOD_NAME may only contain letters, digits, _ . -" ;; esac
@@ -94,19 +96,26 @@ check_content_confinement() {
     local _proj_real
     _proj_real=$(cd "$PROJECT" && pwd -P) || die "project $PROJECT not found"
     if [ -e "$PROJECT/build" ] || [ -L "$PROJECT/build" ]; then
-        [ -d "$PROJECT/build" ] && [ ! -L "$PROJECT/build" ] || die "$PROJECT/build is not a real directory under the project; refusing"
+        if [ ! -d "$PROJECT/build" ] || [ -L "$PROJECT/build" ]; then
+            die "$PROJECT/build is not a real directory under the project; refusing"
+        fi
         case "$(cd "$PROJECT/build" && pwd -P)/" in "$_proj_real"/*) ;; *) die "$PROJECT/build resolves outside the project; refusing" ;; esac
     fi
     if [ -e "$CONTENT" ] || [ -L "$CONTENT" ]; then
-        [ -d "$CONTENT" ] && [ ! -L "$CONTENT" ] || die "$CONTENT is not a real directory under the project; refusing"
+        if [ ! -d "$CONTENT" ] || [ -L "$CONTENT" ]; then
+            die "$CONTENT is not a real directory under the project; refusing"
+        fi
         case "$(cd "$CONTENT" && pwd -P)/" in "$_proj_real"/*) ;; *) die "$CONTENT resolves outside the project; refusing" ;; esac
     fi
 }
 scan_static() {
     [ -e "$PROJECT/static" ] || [ -L "$PROJECT/static" ] || return 0
     [ -L "$PROJECT/static" ] && die "static/ is a symlink; refusing to copy it"
-    if find "$PROJECT/static" -type l | grep -q .; then die "static/ contains a symlink; refusing to copy it"; fi
-    if find "$PROJECT/static" -type f -iname '*.biprivatekey' | grep -q .; then die "a .biprivatekey is inside static/; refusing before any copy"; fi
+    local _hit
+    _hit=$(find "$PROJECT/static" -type l -print -quit) || die "scan of static/ failed"
+    [ -z "$_hit" ] || die "static/ contains a symlink; refusing to copy it: $_hit"
+    _hit=$(find "$PROJECT/static" -type f -iname '*.biprivatekey' -print -quit) || die "scan of static/ failed"
+    [ -z "$_hit" ] || die "a .biprivatekey is inside static/; refusing before any copy: $_hit"
 }
 
 # Use the dayzmake found in PATH first (or $DAYZMAKE). bzed's fork (https://github.com/bzed/dayzmake) is detected by its --proton-binarize option:
@@ -117,9 +126,11 @@ need_dayzmake() {
     # Upstream armake2 leaves *.c files out of the PBO signature hash, so signed script mods fail the server's check.
     case "$help" in *--proton-binarize*) ;; *) die "$(command -v "$DAYZMAKE") is not bzed's fork (no --proton-binarize in -h); upstream armake2 signs wrongly. Install dayzmake >= 1.0.0: cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0" ;; esac
     # bzed's fork built before the rename (binary called armake2, version v0.3.0) still works, but may carry bugs fixed since.
-    local ver; ver=$("$DAYZMAKE" --version 2>/dev/null | head -1)
+    local ver
+    ver=$("$DAYZMAKE" --version 2>/dev/null || true)
+    ver=${ver%%$'\n'*}
     case "$ver" in
-        v1.*|v[2-9].*|v[1-9][0-9].*) ;;
+        v1.*|v[2-9].*|v[1-9][0-9].*|*" v1."* ) ;;
         *) echo "warning: $DAYZMAKE reports '$ver'; dayzmake >= 1.0.0 is recommended (the pre-rename armake2 binary may have bugs)" >&2 ;;
     esac
 }
@@ -171,14 +182,25 @@ cmd_keygen() {
 # We still write it, so the folder is complete for local tests: publishedid is 0
 # until workshop.toml holds an item_id, which is what the Windows tools upload on a first publish; 0 breaks client mods.
 # timestamp = .NET DateTime.ToBinary() of the UTC time: (unix + 62135596800) * 1e7 + 2^62 (checked against CF's meta.cpp).
+copy_atomic() {
+    local _src=$1 _dst=$2 _tmp
+    _tmp=$(mktemp "$(dirname "$_dst")/.pack.XXXXXX")
+    cp -p -- "$_src" "$_tmp"
+    mv -f -- "$_tmp" "$_dst"
+}
+
 write_meta() {
-    local toml="$CONTENT/workshop.toml" id=0
-    if [ -f "$toml" ]; then
-        id=$(sed -n 's/^ *item_id *= *\([0-9][0-9]*\).*/\1/p' "$toml" | head -1)
+    local toml="$CONTENT/workshop.toml" id=0 _tmp_meta
+    if [ -f "$toml" ] && [ ! -L "$toml" ]; then
+        id=$(sed -n 's/^ *item_id *= *\([0-9][0-9]*\).*/\1/p' "$toml") || die "could not read $toml"
+        id=${id%%$'\n'*}
         id=${id:-0}
     fi
+    _tmp_meta=$(mktemp "$CONTENT/.meta.cpp.XXXXXX")
     printf 'protocol = 1;\npublishedid = %s;\nname = "%s";\ntimestamp = %s;\n' \
-        "$id" "$MOD_NAME" "$(( ($(date -u +%s) + 62135596800) * 10000000 + 4611686018427387904 ))" > "$CONTENT/meta.cpp"
+        "$id" "$MOD_NAME" "$(( ($(date -u +%s) + 62135596800) * 10000000 + 4611686018427387904 ))" > "$_tmp_meta"
+    chmod 0644 "$_tmp_meta"
+    mv -f -- "$_tmp_meta" "$CONTENT/meta.cpp"
     if [ "$id" = 0 ]; then say "meta.cpp written with publishedid = 0 (item not created yet)"
     else say "meta.cpp written for Workshop item $id"; fi
 }
@@ -193,14 +215,23 @@ cmd_build() {
             *) die "unknown option: $a" ;;
         esac
     done
-    load_conf; check_content_confinement; scan_static
-    # A private key left in the upload folder by an earlier build is removed (regular files only).
+    load_conf
+    check_content_confinement
+    # Clean stale private keys (regular files) and any symlinks inside the upload folder FIRST, before scanning static/.
     if [ -d "$CONTENT" ]; then
-        local _stale
-        while IFS= read -r _stale; do [ -n "$_stale" ] || continue; echo "removing stale private key from content folder: $_stale" >&2; rm -f "$_stale"; done <<EOF2
-$(find "$CONTENT" -type f -iname '*.biprivatekey')
-EOF2
+        local _stale_key _stale_link
+        _stale_key=$(find "$CONTENT" -type f -iname '*.biprivatekey' -print -quit) || die "scan of $CONTENT failed"
+        if [ -n "$_stale_key" ]; then
+            echo "removing stale private key(s) from content folder: $CONTENT" >&2
+            find "$CONTENT" -type f -iname '*.biprivatekey' -delete || die "removing stale private keys from $CONTENT failed"
+        fi
+        _stale_link=$(find "$CONTENT" -type l -print -quit) || die "scan of $CONTENT failed"
+        if [ -n "$_stale_link" ]; then
+            echo "removing symlink(s) from content folder: $CONTENT" >&2
+            find "$CONTENT" -type l -delete || die "removing symlinks from $CONTENT failed"
+        fi
     fi
+    scan_static
     need_dayzmake
     local priv="$PROJECT/secrets/$KEY_NAME.biprivatekey"
     [ -f "$priv" ] || die "no private key at $priv; run: $0 keygen"
@@ -238,14 +269,18 @@ EOF2
             || die "signature of $addon.pbo does not verify against keys/$KEY_NAME.bikey"
     done
 
-    cp "$PROJECT/keys/$KEY_NAME.bikey" "$CONTENT/keys/"
-    [ -f "$PROJECT/mod.cpp" ] && cp "$PROJECT/mod.cpp" "$CONTENT/mod.cpp"
-    [ -f "$PROJECT/workshop.toml" ] && [ ! -f "$CONTENT/workshop.toml" ] && cp "$PROJECT/workshop.toml" "$CONTENT/workshop.toml"
+    copy_atomic "$PROJECT/keys/$KEY_NAME.bikey" "$CONTENT/keys/$KEY_NAME.bikey"
     if [ -d "$PROJECT/static" ]; then cp -a "$PROJECT/static/." "$CONTENT/"; fi
+    if [ -f "$PROJECT/mod.cpp" ]; then copy_atomic "$PROJECT/mod.cpp" "$CONTENT/mod.cpp"; fi
+    if [ -f "$PROJECT/workshop.toml" ] && [ ! -e "$CONTENT/workshop.toml" ] && [ ! -L "$CONTENT/workshop.toml" ]; then
+        copy_atomic "$PROJECT/workshop.toml" "$CONTENT/workshop.toml"
+    fi
     write_meta
 
     # The one rule that matters: the private key must not be anywhere under the upload folder.
-    if find "$CONTENT" -iname '*.biprivatekey' | grep -q .; then
+    local _final_leak
+    _final_leak=$(find "$CONTENT" -iname '*.biprivatekey' -print -quit) || die "scan of $CONTENT failed"
+    if [ -n "$_final_leak" ]; then
         die "a .biprivatekey is inside $CONTENT; refusing to continue"
     fi
     say "content folder ready: $CONTENT"
@@ -269,11 +304,13 @@ cmd_check() {
     load_conf; need_dayzmake
     local bad=0 f
     if [ -d "$PROJECT/.git" ] || git -C "$PROJECT" rev-parse --git-dir >/dev/null 2>&1; then
-        if git -C "$PROJECT" ls-files | grep -q 'biprivatekey'; then
+        local _tracked_keys
+        _tracked_keys=$(git -C "$PROJECT" ls-files | awk 'tolower($0) ~ /biprivatekey/ { print }') || die "git ls-files failed"
+        if [ -n "$_tracked_keys" ]; then
             echo "FAIL: a .biprivatekey is tracked by git:" >&2
-            git -C "$PROJECT" ls-files | grep 'biprivatekey' >&2; bad=1
+            printf '%s\n' "$_tracked_keys" >&2; bad=1
         else echo "ok: no private key tracked by git"; fi
-        if git -C "$PROJECT" log --all --name-only --format= 2>/dev/null | grep -q 'biprivatekey'; then
+        if ( set +o pipefail; git -C "$PROJECT" log --all --name-only --format= 2>/dev/null | awk 'tolower($0) ~ /biprivatekey/ { found=1 } END { exit !found }' ); then
             echo "FAIL: a .biprivatekey exists in git history; treat the key as leaked and rotate it" >&2; bad=1
         else echo "ok: no private key in git history"; fi
         git -C "$PROJECT" check-ignore -q "secrets/$KEY_NAME.biprivatekey" \
@@ -281,13 +318,19 @@ cmd_check() {
     else
         echo "note: $PROJECT is not a git repository; skipping git checks"
     fi
-    if find "$CONTENT" -name '*.biprivatekey' 2>/dev/null | grep -q .; then
-        echo "FAIL: private key inside the content folder" >&2; bad=1
+    if [ -d "$CONTENT" ]; then
+        local _chk_leak
+        _chk_leak=$(find "$CONTENT" -iname '*.biprivatekey' -print -quit) || die "scan of $CONTENT failed"
+        if [ -n "$_chk_leak" ]; then
+            echo "FAIL: private key inside the content folder" >&2; bad=1
+        fi
     fi
     # Rules the official Publisher enforces (strings in Publisher.exe): addons/ in the root, PBOs only under addons/.
     if [ -d "$CONTENT" ]; then
         if [ -d "$CONTENT/addons" ]; then echo "ok: addons/ is in the content root"; else echo "FAIL: no addons/ folder in the content root" >&2; bad=1; fi
-        if find "$CONTENT" -iname '*.pbo' -not -ipath "$CONTENT/addons/*" | grep -q .; then
+        local _outside_pbo
+        _outside_pbo=$(find "$CONTENT" -iname '*.pbo' -not -ipath "$CONTENT/addons/*" -print -quit) || die "scan of $CONTENT failed"
+        if [ -n "$_outside_pbo" ]; then
             echo "FAIL: .pbo files outside addons/" >&2; bad=1; fi
         if [ -f "$CONTENT/mod.cpp" ] && grep -q '^ *name *=' "$CONTENT/mod.cpp"; then echo "ok: mod.cpp has a name"
         else echo "note: no mod.cpp with a name in the content folder (optional; the mod works without)"; fi
@@ -306,28 +349,35 @@ cmd_check() {
 
 cmd_publish_hint() {
     load_conf
+    case $APP_ID in ''|*[!0-9]*) die "WORKSHOP_APP_ID must contain digits only: $APP_ID" ;; esac
     local tagargs="" t
     for t in $WORKSHOP_TAGS; do tagargs="$tagargs -t $(printf '%q' "$t")"; done
-    local q_content q_ignore q_mod
-    q_content=$(printf '%q' "$CONTENT"); q_ignore=$(printf '%q' "$PROJECT/.workshopignore"); q_mod=$(printf '%q' "$MOD_NAME")
+    local q_app q_content q_ignore q_mod q_ctoml q_ptoml q_tags
+    q_app=$(printf '%q' "$APP_ID")
+    q_content=$(printf '%q' "$CONTENT")
+    q_ignore=$(printf '%q' "$PROJECT/.workshopignore")
+    q_mod=$(printf '%q' "$MOD_NAME")
+    q_ctoml=$(printf '%q' "$CONTENT/workshop.toml")
+    q_ptoml=$(printf '%q' "$PROJECT/workshop.toml")
+    q_tags=$(printf '%q' "$WORKSHOP_TAGS")
     cat <<EOF
-Upload needs the Steam client running and logged in as the account that owns DayZ (app $APP_ID).
-It is a deliberate manual step; review the content folder first:  $CONTENT
+Upload needs the Steam client running and logged in as the account that owns DayZ (app $q_app).
+It is a deliberate manual step; review the content folder first:  $q_content
 
-The app id ($APP_ID) is NOT part of mod.cpp: it is passed here and stored in workshop.toml.
+The app id ($q_app) is NOT part of mod.cpp: it is passed here and stored in workshop.toml.
 EOF
     local wbin; wbin=$(command -v workshop 2>/dev/null || true)
     if [ -z "$wbin" ]; then echo "WARNING: 'workshop' not found in PATH. Install it: https://github.com/nozwock/steam-workshop-uploader"
     fi
     cat <<EOF
 
-First upload (creates the item and writes $CONTENT/workshop.toml; copy it to $PROJECT/workshop.toml and commit it).
+First upload (creates the item and writes $q_ctoml; copy it to $q_ptoml and commit it).
 The uploader fills the new item id into meta.cpp before uploading the content. Create it private and make it public in
 Steam after checking it:
-  workshop create --app-id $APP_ID --content $q_content --title $q_mod \\
+  workshop create --app-id $q_app --content $q_content --title $q_mod \\
       --ignore-file $q_ignore --glob '!*.biprivatekey' --visibility private$tagargs -m "first upload"
 
-Tags ($WORKSHOP_TAGS) are stored in workshop.toml by create; update reuses them (Steam drops tags that are not sent).
+Tags ($q_tags) are stored in workshop.toml by create; update reuses them (Steam drops tags that are not sent).
 Updates (item id comes from workshop.toml in the content folder):
   workshop --no-prompt update --content $q_content --ignore-file $q_ignore --glob '!*.biprivatekey' -m "changelog"
 EOF

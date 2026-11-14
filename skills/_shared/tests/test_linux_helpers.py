@@ -165,10 +165,14 @@ def test_api_lookup_without_an_index_says_how_to_build_one(tmp_path: Path) -> No
 def test_mod_pack_init_keeps_secrets_out_of_git(tmp_path: Path) -> None:
     project = tmp_path / "MyMod"
     project.mkdir()
+    subprocess.run(["git", "init", "-q", str(project)], check=True)
     done = run("dayz-mod-pack.sh", "-C", str(project), "init", "MyMod", env=isolated_env(tmp_path, None))
     assert done.returncode == 0, done.stderr
-    ignored = (project / ".gitignore").read_text().split()
-    assert "secrets/" in ignored and "*.biprivatekey" in ignored
+    for secret_path in ("secrets/MyMod.biprivatekey", "root_leak.biprivatekey", "build/@MyMod/addons/x.pbo"):
+        chk = subprocess.run(["git", "-C", str(project), "check-ignore", "-q", secret_path], check=False)
+        assert chk.returncode == 0, f"{secret_path} is not git-ignored"
+    not_ignored = subprocess.run(["git", "-C", str(project), "check-ignore", "-q", "keys/MyMod.bikey"], check=False)
+    assert not_ignored.returncode != 0
     assert 'WORKSHOP_TAGS="Mod"' in (project / ".dayzmod").read_text()
 
 
@@ -209,22 +213,53 @@ def _wait_gone(pid: int, seconds: float = 5.0) -> bool:
     return False
 
 
-def _kill_matching(needle: str) -> None:
-    proc = Path("/proc")
-    if not proc.exists():
+def _kill_process_tree(pid: int) -> None:
+    if pid <= 0 or pid == os.getpid():
         return
-    for entry in proc.iterdir():
-        if not entry.name.isdigit() or int(entry.name) == os.getpid():
-            continue
-        try:
-            argv = (entry / "cmdline").read_bytes().decode(errors="surrogateescape")
-        except OSError:
-            continue
-        if needle in argv:
+    proc = Path("/proc")
+    children: list[int] = []
+    if proc.exists():
+        for entry in proc.iterdir():
+            if not entry.name.isdigit():
+                continue
+            cpid = int(entry.name)
+            if cpid in (pid, os.getpid()):
+                continue
             try:
-                os.kill(int(entry.name), 9)
+                ppid = int((entry / "stat").read_text().rsplit(")", 1)[1].split()[1])
+            except (OSError, IndexError, ValueError):
+                continue
+            if ppid == pid:
+                children.append(cpid)
+    for child in children:
+        _kill_process_tree(child)
+    try:
+        os.kill(pid, 9)
+    except OSError:
+        pass
+    _wait_gone(pid, 2.0)
+
+
+def _kill_matching(needle: str, pids_file: Path | None = None) -> None:
+    roots: set[int] = set()
+    if pids_file is not None and pids_file.exists():
+        for line in pids_file.read_text(errors="replace").splitlines():
+            line = line.strip()
+            if line.isdigit():
+                roots.add(int(line))
+    proc = Path("/proc")
+    if proc.exists():
+        for entry in proc.iterdir():
+            if not entry.name.isdigit() or int(entry.name) == os.getpid():
+                continue
+            try:
+                argv = (entry / "cmdline").read_bytes().decode(errors="surrogateescape")
             except OSError:
-                pass
+                continue
+            if needle in argv:
+                roots.add(int(entry.name))
+    for pid in roots:
+        _kill_process_tree(pid)
 
 
 def _env_with_bin(tmp_path: Path, steam: Path | None, bin_dir: Path) -> dict[str, str]:
@@ -236,11 +271,10 @@ def _env_with_bin(tmp_path: Path, steam: Path | None, bin_dir: Path) -> dict[str
 def _fake_dayzmake(tmp_path: Path, entries: dict) -> Path:
     bin_dir = tmp_path / "fakebin"
     bin_dir.mkdir(exist_ok=True)
-    listing_file = tmp_path / "listing.txt"
     tool = bin_dir / "dayzmake"
     tool.write_text(
         "#!/usr/bin/env python3\n"
-        "import os, sys\n"
+        "import os, pathlib, sys\n"
         f"ENTRIES = {entries!r}\n"
         "a = sys.argv[1:]\n"
         "if a and a[0] in ('-h', '--help'): print('--proton-binarize')\n"
@@ -250,17 +284,46 @@ def _fake_dayzmake(tmp_path: Path, entries: dict) -> Path:
         "    inner, target = a[2], a[3]\n"
         "    act = ENTRIES.get(inner)\n"
         "    if act is None or act[0] == 'missing': print('not found')\n"
+        "    elif act[0] == 'ioerror':\n"
+        "        open(target, 'w').write(act[1])\n"
+        "        sys.stderr.write('I/O error\\n')\n"
+        "        sys.exit(1)\n"
         "    elif act[0] == 'link':\n"
-        "        import pathlib; p = pathlib.Path(target); p.write_text('link-entry'); os.symlink(act[1], str(p.parent / act[2]))\n"
+        "        p = pathlib.Path(target); p.write_text('link-entry'); os.symlink(act[1], str(p.parent / act[2]))\n"
         "    else: open(target, 'w').write(act[1])\n"
         "elif a and a[0] == 'derapify': open(a[3], 'w').write('derapified\\n')\n"
+        "elif a and a[0] == 'keygen':\n"
+        "    stem = a[-1]\n"
+        "    open(stem + '.biprivatekey', 'w').write('priv\\n')\n"
+        "    open(stem + '.bikey', 'w').write('pub\\n')\n"
         "elif a and a[0] in ('build', 'pack'):\n"
         "    open(a[-1], 'w').write('pbo')\n"
-        "elif a and a[0] == 'sign': pass\n"
-        "elif a and a[0] == 'verify': pass\n"
+        "elif a and a[0] == 'sign':\n"
+        "    priv, pbo = pathlib.Path(a[-2]), pathlib.Path(a[-1])\n"
+        "    (pbo.parent / f'{pbo.name}.{priv.stem}.bisign').write_text('sig\\n')\n"
+        "elif a and a[0] == 'verify':\n"
+        "    for req in a[1:4]:\n"
+        "        if not pathlib.Path(req).is_file():\n"
+        "            sys.stderr.write(f'missing {req}\\n')\n"
+        "            sys.exit(1)\n"
     )
     tool.chmod(0o755)
     return bin_dir
+
+
+def _valid_mod_project(tmp_path: Path, mod_name: str = "MyMod") -> tuple[Path, dict[str, str]]:
+    bin_dir = _fake_dayzmake(tmp_path, {})
+    project = tmp_path / mod_name
+    (project / "src" / "Addon").mkdir(parents=True, exist_ok=True)
+    (project / "src" / "Addon" / "config.cpp").write_text("class CfgPatches {};\n")
+    (project / "keys").mkdir(exist_ok=True)
+    (project / "keys" / f"{mod_name}.bikey").write_text("pub\n")
+    (project / "secrets").mkdir(exist_ok=True)
+    (project / "secrets" / f"{mod_name}.biprivatekey").write_text("priv\n")
+    (project / ".dayzmod").write_text(f"MOD_NAME={mod_name}\n")
+    env = _env_with_bin(tmp_path, None, bin_dir)
+    env["DAYZMAKE"] = "dayzmake"
+    return project, env
 
 
 def _make_install(tmp_path: Path) -> Path:
@@ -279,25 +342,125 @@ def _extract(tmp_path: Path, bin_dir: Path, install: Path, out: Path, *extra: st
 
 def test_extract_rejects_pbo_prefix_escape(tmp_path: Path) -> None:
     bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    (tmp_path / "listing.txt").write_text("- prefix=../../../escape\n====\n" + r"scripts\a.c" + " stored 9 9\n")
+    (tmp_path / "listing.txt").write_text("- prefix=../../../escape\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
     install = _make_install(tmp_path)
     out = tmp_path / "out"
     done = _extract(tmp_path, bin_dir, install, out)
     assert done.returncode != 0
+    assert "invalid PBO prefix" in done.stderr
     assert not (tmp_path / "escape").exists()
     assert not (out / "pbo-map.tsv").exists()
 
 
 def test_extract_rejects_entry_escape_and_lf_listing(tmp_path: Path) -> None:
     bin_dir = _fake_dayzmake(tmp_path, {})
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n====\n" + r"..\..\victim.c" + " stored 9 9\n")
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"..\..\victim.c" + " stored 9 9\n")
     install = _make_install(tmp_path)
     done = _extract(tmp_path, bin_dir, install, tmp_path / "out")
     assert done.returncode != 0
+    assert "invalid entry name" in done.stderr
     assert not (tmp_path / "victim.c").exists()
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n====\nbad row with\nembedded lf stored 9 9\n")
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\nbad row with\nembedded lf stored 9 9\n")
     done = _extract(tmp_path, bin_dir, install, tmp_path / "out2")
     assert done.returncode != 0
+    assert "invalid listing structure" in done.stderr
+
+
+def test_extract_rejects_lf_forged_row_count_and_duplicate_names(tmp_path: Path) -> None:
+    entries = {
+        r"scripts\good.c": ("content", "class Good {}\n"),
+        r"scripts\a.c": ("content", "class A {}\n"),
+        r"scripts\b.c": ("content", "class B {}\n"),
+        r"scripts\c.c": ("content", "class C {}\n"),
+        r"scripts\forged.c": ("content", "class Forged {}\n"),
+        "scripts/a.c": ("content", "class A2 {}\n"),
+    }
+    bin_dir = _fake_dayzmake(tmp_path, entries)
+    install = _make_install(tmp_path)
+    out = tmp_path / "out"
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\good.c" + " stored 9 9\n")
+    assert _extract(tmp_path, bin_dir, install, out).returncode == 0
+    # Fake inspect prints '# Files: 3' and four valid-looking rows (as when an LF in entry 3 forges row 4).
+    (tmp_path / "listing.txt").write_text(
+        "- prefix=scripts\n# Files: 3\n====\n"
+        + r"scripts\a.c" + " stored 9 9\n"
+        + r"scripts\b.c" + " stored 9 9\n"
+        + r"scripts\c.c" + " stored 1 1\n"
+        + r"scripts\forged.c" + " stored 9 9\n"
+    )
+    done = _extract(tmp_path, bin_dir, install, out)
+    assert done.returncode != 0
+    assert "invalid listing structure" in done.stderr
+    assert not list(out.rglob("forged.c"))
+    assert list(out.rglob("good.c"))
+    # Duplicate normalised names (backslash vs slash) with matching '# Files: 2' are also rejected.
+    (tmp_path / "listing.txt").write_text(
+        "- prefix=scripts\n# Files: 2\n====\n"
+        + r"scripts\a.c" + " stored 9 9\n"
+        + "scripts/a.c stored 9 9\n"
+    )
+    done = _extract(tmp_path, bin_dir, install, out)
+    assert done.returncode != 0
+    assert "invalid listing structure" in done.stderr
+
+
+def test_extract_cat_partial_ioerror_and_unreadable_dir_fail_without_promoting(tmp_path: Path) -> None:
+    entries = {
+        r"scripts\good.c": ("content", "class Good {}\n"),
+        r"scripts\bad.c": ("ioerror", "partial"),
+    }
+    bin_dir = _fake_dayzmake(tmp_path, entries)
+    install = _make_install(tmp_path)
+    out = tmp_path / "out"
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\good.c" + " stored 9 9\n")
+    assert _extract(tmp_path, bin_dir, install, out).returncode == 0
+    assert list(out.rglob("good.c"))
+    # Partial write + exit 1 ('I/O error') must fail the run and never promote over prior out.
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\bad.c" + " stored 9 9\n")
+    done = _extract(tmp_path, bin_dir, install, out)
+    assert done.returncode != 0
+    assert "cat failed" in done.stderr
+    assert list(out.rglob("good.c"))
+    assert not list(out.rglob("bad.c"))
+    if hasattr(os, "geteuid") and os.geteuid() != 0:
+        (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\good.c" + " stored 9 9\n")
+        (install / "dta").chmod(0o000)
+        try:
+            done_perm = _extract(tmp_path, bin_dir, install, out)
+            assert done_perm.returncode != 0
+            assert list(out.rglob("good.c"))
+        finally:
+            (install / "dta").chmod(0o755)
+
+
+def test_extract_staging_does_not_reuse_preexisting_pid_dir(tmp_path: Path) -> None:
+    bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
+    install = _make_install(tmp_path)
+    out = tmp_path / "out"
+    env = _env_with_bin(tmp_path, None, bin_dir)
+    env["DAYZMAKE"] = "dayzmake"
+    env["FAKE_LISTING"] = str(tmp_path / "listing.txt")
+    # Pre-create "$out.new.$$" with a stale file and exec into extract-dayz-sources.sh (keeping PID $$).
+    done = subprocess.run(
+        [
+            "sh",
+            "-c",
+            'mkdir -p "$1.new.$$" && printf poisoned > "$1.new.$$/poisoned.c" && exec bash "$2" "$3" "$1"',
+            "sh",
+            str(out),
+            str(SCRIPTS / "extract-dayz-sources.sh"),
+            str(install),
+        ],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    assert done.returncode == 0, done.stderr
+    assert list(out.rglob("a.c"))
+    assert not list(out.rglob("poisoned.c"))
 
 
 def test_extract_refuses_symlink_destination(tmp_path: Path) -> None:
@@ -305,10 +468,11 @@ def test_extract_refuses_symlink_destination(tmp_path: Path) -> None:
     victim.write_text("original")
     entries = {r"scripts\link.c": ("link", str(victim), "victim.c"), r"scripts\victim.c": ("content", "pwned\n")}
     bin_dir = _fake_dayzmake(tmp_path, entries)
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n====\n" + r"scripts\link.c" + " stored 9 9\n" + r"scripts\victim.c" + " stored 9 9\n")
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 2\n====\n" + r"scripts\link.c" + " stored 9 9\n" + r"scripts\victim.c" + " stored 9 9\n")
     install = _make_install(tmp_path)
     done = _extract(tmp_path, bin_dir, install, tmp_path / "out")
     assert done.returncode != 0
+    assert "symlink" in done.stderr
     assert victim.read_text() == "original"
 
 
@@ -317,19 +481,19 @@ def test_extract_reextract_drops_stale_and_failure_keeps_old(tmp_path: Path) -> 
     bin_dir = _fake_dayzmake(tmp_path, entries)
     install = _make_install(tmp_path)
     out = tmp_path / "out"
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n====\n" + r"scripts\a.c" + " stored 9 9\n" + r"scripts\stale.c" + " stored 9 9\n")
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 2\n====\n" + r"scripts\a.c" + " stored 9 9\n" + r"scripts\stale.c" + " stored 9 9\n")
     done = _extract(tmp_path, bin_dir, install, out)
     assert done.returncode == 0, done.stderr
     assert (out / "scripts" / "scripts" / "stale.c").exists() or (out / "scripts" / "stale.c").exists() or list(out.rglob("stale.c"))
     # Second run: stale removed, no duplicate map rows.
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n====\n" + r"scripts\a.c" + " stored 9 9\n")
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
     done = _extract(tmp_path, bin_dir, install, out)
     assert done.returncode == 0, done.stderr
     assert not list(out.rglob("stale.c"))
     rows = (out / "pbo-map.tsv").read_text().strip().splitlines()
     assert len(rows) == 1
     # Failed run (cat prints not found, exits 0 in real dayzmake) keeps the old tree.
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n====\n" + r"scripts\missing.c" + " stored 9 9\n")
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\missing.c" + " stored 9 9\n")
     done = _extract(tmp_path, bin_dir, install, out)
     assert done.returncode != 0
     assert list(out.rglob("a.c"))
@@ -342,7 +506,7 @@ def test_extract_reextract_drops_stale_and_failure_keeps_old(tmp_path: Path) -> 
 
 def test_extract_refuses_nonowned_out_without_force(tmp_path: Path) -> None:
     bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n====\n" + r"scripts\a.c" + " stored 9 9\n")
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
     install = _make_install(tmp_path)
     out = tmp_path / "out"
     out.mkdir()
@@ -386,6 +550,41 @@ def test_make_server_tree_inside_install_with_missing_parents_creates_nothing(tm
     done = run("make-server-tree.sh", str(install / "new" / "sub" / "tree"), str(install), env=isolated_env(tmp_path, steam))
     assert done.returncode == 2
     assert not (install / "new").exists()
+
+
+def test_make_server_tree_dotdot_in_missing_tail_creates_nothing(tmp_path: Path) -> None:
+    steam = fake_steam(tmp_path)
+    install = steam / "steamapps" / "common" / "DayZServer"
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    tricky = f"{outside}/missing/../../steam/steamapps/common/DayZServer/new/tree"
+    done = run("make-server-tree.sh", tricky, str(install), env=isolated_env(tmp_path, steam))
+    assert done.returncode == 2
+    assert not (outside / "missing").exists()
+    assert not (install / "new").exists()
+
+
+def test_make_server_tree_reused_mission_symlink_without_storage_is_replaced(tmp_path: Path) -> None:
+    steam = fake_steam(tmp_path)
+    install = steam / "steamapps" / "common" / "DayZServer"
+    empty_mission = install / "mpmissions" / "EmptyMission"
+    empty_mission.mkdir(parents=True)
+    (empty_mission / "init.c").write_text("void main() {}\n")
+    tree = tmp_path / "tree"
+    done = run("make-server-tree.sh", str(tree), str(install), env=isolated_env(tmp_path, steam))
+    assert done.returncode == 0, done.stderr
+    # Plant an extra directory symlink 'alias' into an install mission that has no storage_* yet.
+    (tree / "mpmissions" / "alias").symlink_to(empty_mission)
+    (tree / "keys" / "sub").symlink_to(install / "keys")
+    done = run("make-server-tree.sh", str(tree), str(install), env=isolated_env(tmp_path, steam))
+    assert done.returncode == 0, done.stderr
+    assert "replacing directory symlink" in done.stderr
+    alias = tree / "mpmissions" / "alias"
+    assert alias.is_dir() and not alias.is_symlink()
+    assert (alias / "init.c").is_symlink()
+    (alias / "storage_1").mkdir()
+    assert not (empty_mission / "storage_1").exists()
+    assert (tree / "keys" / "sub").is_dir() and not (tree / "keys" / "sub").is_symlink()
 
 
 def _fake_client_steam(tmp_path: Path) -> Path:
@@ -440,16 +639,104 @@ def test_headless_start_then_stop_signals_our_sway(tmp_path: Path) -> None:
 
 
 @requires_x86
-def test_headless_state_with_spaces_and_metachars_quotes_safely(tmp_path: Path) -> None:
+def test_headless_refuses_disallowed_state_path_and_newline_symlink(tmp_path: Path) -> None:
     steam = _fake_client_steam(tmp_path)
+    bin_dir = tmp_path / "fakebin"
+    bin_dir.mkdir()
+    _pause_binary(bin_dir / "sway")
+    env = _env_with_bin(tmp_path, steam, bin_dir)
+    for bad_name in ("st a'te $(touch x) `tick`", "state\nwith-newline", r"a\tb"):
+        bad_state = tmp_path / bad_name
+        done = run("dayz-client-headless.sh", "start", str(bad_state), env=env)
+        assert done.returncode != 0
+        assert "may only contain" in done.stderr
+        assert not bad_state.exists()
+        assert not (tmp_path / "x").exists()
+    # A symlink to a directory whose name ends in a newline must be refused (not truncated to sibling 'state').
+    sibling = tmp_path / "state"
+    nl_dir = tmp_path / "state\n"
+    nl_dir.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(nl_dir)
+    pid = -1
+    try:
+        done = run("dayz-client-headless.sh", "start", str(sibling), env=env)
+        assert done.returncode == 0, done.stderr
+        pid = int((sibling / "sway.pid").read_text().strip())
+        done_stop = run("dayz-client-headless.sh", "stop", str(alias), env=env)
+        assert done_stop.returncode != 0
+        assert "may only contain" in done_stop.stderr
+        assert not _wait_gone(pid, 0.1), "sibling session in 'state' was signalled through newline symlink"
+        assert (sibling / "sway.pid").exists()
+        done_start = run("dayz-client-headless.sh", "start", str(alias), env=env)
+        assert done_start.returncode != 0
+        assert "may only contain" in done_start.stderr
+        assert not list(nl_dir.iterdir())
+        assert not _wait_gone(pid, 0.1)
+        done_clean = run("dayz-client-headless.sh", "stop", str(sibling), env=env)
+        assert done_clean.returncode == 0, done_clean.stderr
+        assert _wait_gone(pid)
+    finally:
+        _kill_process_tree(pid)
+        _kill_matching(str(tmp_path))
+
+
+@requires_x86
+def test_headless_invalid_wait_env_launches_nothing(tmp_path: Path) -> None:
+    steam = _fake_client_steam(tmp_path)
+    bin_dir = tmp_path / "fakebin"
+    bin_dir.mkdir()
+    marker = tmp_path / "launched.marker"
+    for cmd_name in ("setsid", "sway"):
+        p = bin_dir / cmd_name
+        p.write_text(f"#!/bin/sh\n: > '{marker}'\nexit 0\n")
+        p.chmod(0o755)
+    state = tmp_path / "state"
+    env = _env_with_bin(tmp_path, steam, bin_dir)
+    env["DAYZ_CLIENT_START_WAIT_TENTHS"] = "abc"
+    try:
+        done = run("dayz-client-headless.sh", "start", str(state), env=env)
+        assert done.returncode != 0
+        assert "DAYZ_CLIENT_START_WAIT_TENTHS" in done.stderr
+        assert not marker.exists(), "setsid or sway was launched despite invalid wait env"
+        assert not (state / "sway.pid").exists()
+        # Post-launch failure (wait=0) routes through failed_start_cleanup (sway.cancel + signal).
+        real_bin = tmp_path / "realbin"
+        real_bin.mkdir()
+        _pause_binary(real_bin / "sway")
+        env2 = _env_with_bin(tmp_path, steam, real_bin)
+        env2["DAYZ_CLIENT_START_WAIT_TENTHS"] = "0"
+        done_zero = run("dayz-client-headless.sh", "start", str(state), env=env2)
+        assert done_zero.returncode != 0
+        assert (state / "sway.cancel").exists()
+        assert not (state / "sway.pid").exists()
+        assert not (state / "sway.identity").exists()
+    finally:
+        _kill_matching(str(tmp_path))
+
+
+@requires_x86
+def test_headless_steam_root_with_spaces_and_metachars_quotes_safely(tmp_path: Path) -> None:
+    steam_holder = tmp_path / "st eam ' $(touch x) `tick`"
+    steam_holder.mkdir()
+    steam = _fake_client_steam(steam_holder)
     capture = tmp_path / "capture.txt"
+    pids_file = tmp_path / "pids.txt"
     runtime = steam / "steamapps" / "common" / "SteamLinuxRuntime_4"
     runtime.mkdir(parents=True)
     entry = runtime / "_v2-entry-point"
-    entry.write_text("#!/bin/sh\nwhile [ \"$1\" != \"--\" ]; do shift; done; shift; exec \"$@\"\n")
+    entry.write_text(
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$$\" >> '{pids_file}'\n"
+        "while [ \"$1\" != \"--\" ]; do shift; done; shift; exec \"$@\"\n"
+    )
     entry.chmod(0o755)
     tool = steam / "compatibilitytools.d" / "GE-Proton11-1" / "proton"
-    tool.write_text(f"#!/bin/sh\nprintf '%s\\n' \"$STEAM_COMPAT_INSTALL_PATH\" \"$@\" > '{capture}'\n")
+    tool.write_text(
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$$\" >> '{pids_file}'\n"
+        f"printf '%s\\n' \"$STEAM_COMPAT_INSTALL_PATH\" \"$@\" > '{capture}'\n"
+    )
     tool.chmod(0o755)
     realbin = tmp_path / "realbin"
     realbin.mkdir()
@@ -459,29 +746,37 @@ def test_headless_state_with_spaces_and_metachars_quotes_safely(tmp_path: Path) 
     fake_sway = bin_dir / "sway"
     fake_sway.write_text(
         "#!/bin/sh\n"
+        f"printf '%s\\n' \"$$\" >> '{pids_file}'\n"
         "conf=$2\n"
         "line=$(sed -n 's/^exec //p' \"$conf\")\n"
         "( sh -c \"$line\" )\n"
         f"exec '{realbin}/sway' \"$@\"\n"
     )
     fake_sway.chmod(0o755)
-    state = tmp_path / "st a'te $(touch x) `tick`"
+    state = tmp_path / "state"
     env = _env_with_bin(tmp_path, steam, bin_dir)
+    pid = -1
     try:
         done = run("dayz-client-headless.sh", "start", str(state), "-mod=@a;@b", env=env)
         assert done.returncode == 0, done.stderr
+        pid = int((state / "sway.pid").read_text().strip())
         assert capture.exists(), "game.sh did not reach the fake proton"
         text = capture.read_text()
-        assert "DayZ" in text and "-mod=@a;@b" in text
+        assert str(steam / "steamapps" / "common" / "DayZ") in text
+        assert "-mod=@a;@b" in text
         assert not (state / "x").exists()
         assert not (tmp_path / "x").exists()
-        assert str(state) not in (state / "game.sh").read_text()
+        assert not (steam_holder / "x").exists()
+        assert str(steam) not in (state / "game.sh").read_text()
         assert "exec ./game.sh" in (state / "sway.conf").read_text()
         subprocess.run(["sh", "-n", str(state / "game.sh")], check=True)
         done = run("dayz-client-headless.sh", "stop", str(state), env=env)
         assert done.returncode == 0, done.stderr
+        assert _wait_gone(pid)
+        pid = -1
     finally:
-        _kill_matching(str(state))
+        _kill_process_tree(pid)
+        _kill_matching(str(tmp_path), pids_file)
 
 
 def test_dayzmod_code_is_rejected_not_executed(tmp_path: Path) -> None:
@@ -499,48 +794,128 @@ def test_dayzmod_code_is_rejected_not_executed(tmp_path: Path) -> None:
 
 
 def test_dayzmod_symlinked_content_is_not_deleted_through(tmp_path: Path) -> None:
-    project = tmp_path / "MyMod"
+    project, env = _valid_mod_project(tmp_path, "Safe")
     (project / "build").mkdir(parents=True)
-    (project / ".dayzmod").write_text("MOD_NAME=Safe\n")
     victim = tmp_path / "victim"
     (victim / "addons").mkdir(parents=True)
     (victim / "addons" / "keep.txt").write_text("keep")
     (project / "build" / "@Safe").symlink_to(victim)
-    done = run("dayz-mod-pack.sh", "-C", str(project), "build", env=isolated_env(tmp_path, None))
+    done = run("dayz-mod-pack.sh", "-C", str(project), "build", env=env)
     assert done.returncode != 0
+    assert "is not a real directory under the project; refusing" in done.stderr
     assert (victim / "addons" / "keep.txt").read_text() == "keep"
 
 
 def test_static_private_key_aborts_before_any_copy(tmp_path: Path) -> None:
-    project = tmp_path / "MyMod"
+    project, env = _valid_mod_project(tmp_path, "MyMod")
+    content = project / "build" / "@MyMod"
+    content.mkdir(parents=True)
+    # Item 18: stale key in content must be cleaned BEFORE static/ scan aborts.
+    (content / "old.biprivatekey").write_text("stale")
     (project / "static").mkdir(parents=True)
-    (project / ".dayzmod").write_text("MOD_NAME=MyMod\n")
     (project / "static" / "leak.biprivatekey").write_text("secret")
     (project / "static" / "logo.txt").write_text("logo")
-    done = run("dayz-mod-pack.sh", "-C", str(project), "build", env=isolated_env(tmp_path, None))
+    done = run("dayz-mod-pack.sh", "-C", str(project), "build", env=env)
     assert done.returncode != 0
+    assert "a .biprivatekey is inside static/; refusing before any copy" in done.stderr
+    assert not (content / "logo.txt").exists()
+    assert not (content / "old.biprivatekey").exists()
+    assert not list(content.rglob("*.biprivatekey"))
+
+
+def test_static_scan_with_many_files_does_not_miss_key_under_pipefail(tmp_path: Path) -> None:
+    project, env = _valid_mod_project(tmp_path, "MyMod")
+    static = project / "static"
+    static.mkdir(parents=True)
+    # Exceed a 64 KiB pipe buffer so an early-closing 'find ... | grep -q .' would SIGPIPE under pipefail.
+    for idx in range(4000):
+        (static / f"leak_{idx:04d}.biprivatekey").write_text("secret")
+    done = run("dayz-mod-pack.sh", "-C", str(project), "build", env=env)
+    assert done.returncode != 0
+    assert "a .biprivatekey is inside static/; refusing before any copy" in done.stderr
     assert not (project / "build" / "@MyMod").exists()
 
 
 def test_build_removes_stale_private_key_from_content(tmp_path: Path) -> None:
-    bin_dir = _fake_dayzmake(tmp_path, {})
-    # dayzmake fake needs the packaging subcommands; reuse its build/sign/verify arms.
-    project = tmp_path / "MyMod"
-    (project / "src" / "Addon").mkdir(parents=True)
-    (project / "src" / "Addon" / "config.cpp").write_text("class CfgPatches {};\n")
-    (project / "keys").mkdir()
-    (project / "keys" / "MyMod.bikey").write_text("pub")
-    (project / "secrets").mkdir()
-    (project / "secrets" / "MyMod.biprivatekey").write_text("priv")
-    (project / ".dayzmod").write_text("MOD_NAME=MyMod\n")
+    project, env = _valid_mod_project(tmp_path, "MyMod")
+    victim = tmp_path / "victim.biprivatekey"
+    victim.write_text("outside-keep")
     content = project / "build" / "@MyMod"
     content.mkdir(parents=True)
     (content / "old.biprivatekey").write_text("stale")
-    env = _env_with_bin(tmp_path, None, bin_dir)
-    env["DAYZMAKE"] = "dayzmake"
+    # Item 1: path containing an embedded newline whose second line is the absolute path of 'victim'.
+    tricky = content.joinpath("split\n", *victim.parts[1:])
+    tricky.parent.mkdir(parents=True, exist_ok=True)
+    tricky.write_text("stale-nl")
     done = run("dayz-mod-pack.sh", "-C", str(project), "build", env=env)
     assert done.returncode == 0, done.stdout + done.stderr
     assert not list(content.rglob("*.biprivatekey"))
+    assert victim.read_text() == "outside-keep"
+
+
+def test_build_replaces_retained_symlinks_in_content_without_following(tmp_path: Path) -> None:
+    project, env = _valid_mod_project(tmp_path, "MyMod")
+    (project / "mod.cpp").write_text('name = "MyMod";\n')
+    victim_meta = tmp_path / "victim_meta.cpp"
+    victim_meta.write_text("original-meta")
+    victim_mod = tmp_path / "victim_mod.cpp"
+    victim_mod.write_text("original-mod")
+    content = project / "build" / "@MyMod"
+    content.mkdir(parents=True)
+    (content / "meta.cpp").symlink_to(victim_meta)
+    (content / "mod.cpp").symlink_to(victim_mod)
+    done = run("dayz-mod-pack.sh", "-C", str(project), "build", env=env)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "removing symlink" in done.stderr
+    assert (content / "meta.cpp").is_file() and not (content / "meta.cpp").is_symlink()
+    assert (content / "mod.cpp").is_file() and not (content / "mod.cpp").is_symlink()
+    assert victim_meta.read_text() == "original-meta"
+    assert victim_mod.read_text() == "original-mod"
+
+
+def test_mod_pack_key_name_env_override_and_dayzmod_precedence(tmp_path: Path) -> None:
+    bin_dir = _fake_dayzmake(tmp_path, {})
+    project = tmp_path / "autotest"
+    shutil.copytree(AUTOTEST, project)
+    subprocess.run(["git", "init", "-q", str(project)], check=True)
+    env = _env_with_bin(tmp_path, None, bin_dir)
+    env["DAYZMAKE"] = "dayzmake"
+    env["KEY_NAME"] = "ExternalKey"
+    for step in ("keygen", "build", "check"):
+        done = run("dayz-mod-pack.sh", "-C", str(project), step, env=env)
+        assert done.returncode == 0, f"{step}: {done.stdout}{done.stderr}"
+    assert (project / "secrets" / "ExternalKey.biprivatekey").is_file()
+    assert (project / "keys" / "ExternalKey.bikey").is_file()
+    assert (project / "build" / "@AutoTest" / "addons" / "AutoTest.pbo.ExternalKey.bisign").is_file()
+    # Explicit KEY_NAME in .dayzmod wins over environment KEY_NAME.
+    project2 = tmp_path / "override_test"
+    shutil.copytree(AUTOTEST, project2)
+    subprocess.run(["git", "init", "-q", str(project2)], check=True)
+    with (project2 / ".dayzmod").open("a") as fh:
+        fh.write("KEY_NAME=FromConf\n")
+    done = run("dayz-mod-pack.sh", "-C", str(project2), "keygen", env=env)
+    assert done.returncode == 0, done.stderr
+    assert (project2 / "keys" / "FromConf.bikey").is_file()
+    assert not (project2 / "keys" / "ExternalKey.bikey").exists()
+
+
+def test_publish_hint_validates_app_id_and_quotes_values(tmp_path: Path) -> None:
+    holder = tmp_path / "dir with space"
+    project = holder / "MyMod"
+    project.mkdir(parents=True)
+    (project / ".dayzmod").write_text('MOD_NAME=MyMod\nWORKSHOP_TAGS="Mod Mechanics"\n')
+    bad_env = isolated_env(tmp_path, None)
+    bad_env["WORKSHOP_APP_ID"] = "221100; printf X #"
+    bad = run("dayz-mod-pack.sh", "-C", str(project), "publish-hint", env=bad_env)
+    assert bad.returncode != 0
+    assert "WORKSHOP_APP_ID" in bad.stderr
+    assert "printf X" not in bad.stdout
+    ok_env = isolated_env(tmp_path, None)
+    ok_env["WORKSHOP_APP_ID"] = "221100"
+    ok = run("dayz-mod-pack.sh", "-C", str(project), "publish-hint", env=ok_env)
+    assert ok.returncode == 0, ok.stderr
+    assert "--app-id 221100" in ok.stdout
+    assert "dir\\ with\\ space" in ok.stdout or "'dir with space" in ok.stdout
 
 
 @pytest.mark.parametrize("bad", ["x/../../victim", "..", "/abs", "a\\b", "a/b"])
@@ -565,6 +940,13 @@ def test_api_index_refuses_symlink_output(tmp_path: Path) -> None:
     (out / "mod-good.txt.xz").symlink_to(victim)
     done = subprocess.run([sys.executable, str(SCRIPTS / "build-api-index.py"), str(scripts), str(out), "--mod", "good"], capture_output=True, text=True)
     assert done.returncode == 2
+    assert "symlink" in done.stderr
+    assert victim.read_text() == "victim"
+    # Default output (without --mod) must also refuse a pre-existing symlink.
+    (out / "dayz-api.txt.xz").symlink_to(victim)
+    done_default = subprocess.run([sys.executable, str(SCRIPTS / "build-api-index.py"), str(scripts), str(out)], capture_output=True, text=True)
+    assert done_default.returncode == 2
+    assert "symlink" in done_default.stderr
     assert victim.read_text() == "victim"
 
 

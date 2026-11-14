@@ -344,14 +344,16 @@ def main():
     if a.mod:
         if not re.fullmatch(r'[A-Za-z0-9_.-]+', a.mod) or a.mod in ('.', '..'):
             ap.error("--mod must match [A-Za-z0-9_.-]+ and must not be . or ..")
-        _out_dir = os.path.realpath(a.out)
-        _target = os.path.join(a.out, 'mod-' + a.mod + '.txt.xz')
-        if os.path.islink(_target):
-            ap.error("output path is a symlink; refusing")
-        if os.path.lexists(_target):
-            _resolved = os.path.realpath(_target)
-            if os.path.commonpath([_out_dir, _resolved]) != _out_dir:
-                ap.error("output path resolves outside --out; refusing")
+    if os.path.islink(a.out) and not os.path.isdir(a.out):
+        ap.error("--out is a non-directory or broken symlink; refusing")
+    _out_dir = os.path.realpath(a.out)
+    _target = os.path.join(a.out, 'mod-' + a.mod + '.txt.xz' if a.mod else 'dayz-api.txt.xz')
+    if os.path.islink(_target):
+        ap.error("output path is a symlink; refusing")
+    if os.path.lexists(_target):
+        _resolved = os.path.realpath(_target)
+        if os.path.commonpath([_out_dir, _resolved]) != _out_dir:
+            ap.error("output path resolves outside --out; refusing")
     classes, enums, globs = {}, {}, {'typedef': [], 'fn': [], 'var': []}
     ids = module_ids(a.scripts) if a.mod else {'.': ''}
     pbos = {}
@@ -417,6 +419,8 @@ def main():
     lines = [l for l in lines if l.strip() or l == '']
     os.makedirs(a.out, exist_ok=True)
     out = os.path.join(a.out, 'mod-' + a.mod + '.txt.xz' if a.mod else 'dayz-api.txt.xz')
+    if os.path.islink(out):
+        ap.error("output path is a symlink; refusing")
     with lzma.open(out, 'wt', encoding='utf-8', preset=9 | lzma.PRESET_EXTREME) as f:
         f.write('\n'.join(lines) + '\n')
     print(out, os.path.getsize(out), 'bytes', len(classes), 'classes', len(enums), 'enums')

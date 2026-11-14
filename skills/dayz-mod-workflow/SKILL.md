@@ -204,7 +204,7 @@ Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/08-tutoria
 Defer to `enforce-script-reference` for full rules. Key verified restrictions:
 
 - [ ] No ternary operators (`? :` does not compile)
-- [ ] `ref` only on member fields, never on locals/params/returns
+- [ ] `ref` on owning member fields; never on params/returns/typedefs or `new ref` (valid and redundant on locals)
 - [ ] Never use `delete` keyword (segfault if references still exist)
 - [ ] `foreach`: works, but NEVER directly on getter returns (NPE on 2nd item).
       Assign to local variable first, then iterate.

@@ -458,7 +458,7 @@ Before delivering ANY Enforce Script code, verify:
 - [ ] foreach used on stored collections (not temporary method returns)
 - [ ] All variables hoisted before loops/conditionals
 - [ ] `m_` prefix on all member fields
-- [ ] `ref` only on class member fields (never params/locals/returns)
+- [ ] `ref` on owning class member fields; never on params/returns/typedefs or `new ref` (valid and redundant on locals)
 - [ ] No `new` allocations inside repeated timer callbacks
 - [ ] `GetGame()` null-checked in all destructors
 - [ ] All `Cast()` results null-checked before use

@@ -47,7 +47,7 @@ works on another project (`MP:55-90`). The private key lives in `secrets/`, outs
 uploaded: `build` aborts if one turns up in the content folder, `keygen` refuses unless `secrets/` is git-ignored (when the
 project is inside a git work tree) and never overwrites a key, and `check` fails if a `.biprivatekey` is tracked or anywhere in history. A key that reached
 git history or the Workshop is leaked: rotate it under a new name (`MyMod_V2`) so old and new coexist in `keys/`.
-Do not commit `build/`: a signature is only valid for the exact PBO bytes (`MP:92-102`).
+Do not commit `build/`: `dayzmake verify` checks the full-PBO SHA-1 checksum (`Hash 1`) as well as the v3 file hash, so any byte or header-timestamp change fails `dayzmake verify` against an older `.bisign` (`MP:92-102`).
 
 ## What `build` and `pack` do
 
@@ -113,11 +113,11 @@ a PBO that `inspect`/`unpack` refused with `failed to fill whole buffer`; older 
   and in the signature's file name).
 - `dayzmake sign <key.biprivatekey> <x.pbo>` writes `x.pbo.<KeyName>.bisign` beside the PBO, in the same `addons/`.
   Default is **v3**; `--v2` writes the older form (`build --v2` in the script), only if v3 is rejected.
-- `dayzmake verify <Name.bikey> <x.pbo> [sig]` exits 0 for a valid signature.
+- `dayzmake verify <Name.bikey> <x.pbo> [sig]` exits 0 for a valid signature [EXACT][CLAIM-DAYZMAKE-SIGN-CLI].
 - For a PBO with `config.bin`, a `.c` script and an rvmat, the fork's v3 `.bisign` was **byte-identical** to
   `DSSignFile.exe`'s, and `DSCheckSignatures.exe -deep` reported it OK (2026-10-31, under Proton). For a negative
   control see `dayz-test-ingame`, "A signature negative control that cannot fail".
-- Sign after the final build. Not every byte change invalidates a v3 signature: the v3 file hash covers only part of each entry (a byte of an uncompressed `.paa` entry is not hashed by v3; `pbo.rs:311-314`, `sign.rs:157-177`), while a changed script also changes the signed PBO checksum. A rebuild with another timestamp can therefore still verify for uncovered entries. Sign every PBO of a mod with one key, so one `.bikey` covers all.
+- Sign after the final build. In v3 signatures, the v3 file hash (`Hash 3`) selects entries by extension (`sqf`, `c`, `inc`, `bikb`, `ext`, `fsm`, `sqm`, `hpp`, `cfg`, `sqs`, `h` in dayzmake v1.0.0 `src/sign.rs:157-177`) and hashes each selected entry's whole stored content, omitting other extensions such as `.paa` or `.p3d`, while `Hash 1` signs the PBO's SHA-1 checksum over headers and all entry bytes (`src/pbo.rs:311-314,548-563`) [EXACT][CLAIM-DAYZMAKE-V3-HASH-VERIFY]. `dayzmake verify` (`src/sign.rs:202-234,475-521`) checks `Hash 1`, `Hash 2` and `Hash 3`, so a changed header timestamp or modified `.paa` with a recomputed PBO trailer and the old `.bisign` is rejected by `dayzmake verify`; the Pack's historical negative controls where uncovered-entry edits still verified were run with Bohemia's `DSCheckSignatures` (see `dayz-test-ingame`, "A signature negative control that cannot fail", `CLAIM-SIGN-NEGATIVE-CONTROL`). Sign every PBO of a mod with one key, so one `.bikey` covers all.
 
 ## Other commands
 

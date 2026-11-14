@@ -244,6 +244,6 @@ class MyManager
 |---|---|---|---|
 | Class member field | YES — keeps alive | YES — auto-cleanup | Weak ref, may GC |
 | Function parameter | NEVER | NEVER | Always plain |
-| Local variable | NEVER | OK for scoped lifetime | Weak ref |
+| Local variable | Redundant (valid; omit by style) | OK for scoped lifetime | Strong ref (preferred) |
 | Return type | NEVER | NEVER | Always plain |
 | `new` expression | NEVER (`new ref X` is wrong) | NEVER | `new X` |

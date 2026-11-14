@@ -41,7 +41,7 @@ re-check a fact against that build's sources before relying on it (next sections
 - **A `modded class` lives in the script module of the class it modifies** (`Transport` is `3_Game`).
 - **A compile error can crash the server** right after `Can't compile ... script module!`: read `script_*.log`
   before anything else when a server dies at boot.
-- **`FindFile` works from 1.30.164200** (measured on build 25963285; the first stable release was broken, see `dayz-1-30-server-measured.md`); `CF.FindFileEx` and copied `FindFile` path helpers are leftovers to remove on that build or later.
+- **`FindFile` works from 1.30.164200**: its signature in `1_core/proto/ensystem.c:520-522` (`FindFile`, `FindNextFile`, `CloseFindFile`) is unchanged [EXACT][CLAIM-130-FINDFILE-PROTO], and on Linux build 25963285 the author measured `$profile:`/`$mission:`/`$saves:`/`$storage:` working again (the first stable release was broken, see `dayz-1-30-server-measured.md`); `CF.FindFileEx` and copied `FindFile` path helpers are leftovers to remove on that build or later.
 - **Never write into Steam's directories for test servers or Workshop folders.** Test servers run from a tree of their own.
   The exceptions are the client's own prefix and mod symlink, which `dayz-client-headless.sh` uses
   (`compatdata/<appid>` of the real prefix and a symlink to the test mod in the client's install folder,
@@ -69,7 +69,7 @@ In this order:
    python3 $S/dayz-api.py chain PlayerBase               # base class chain
    python3 $S/dayz-api.py sub Weapon_Base                # subclasses;  enum X / src X likewise
    ```
-   `src X` names the declaring file; read the body in `/var/tmp/dz-src/scripts/...` and cite `path:line`. The index holds
+   `src X` names the declaring file; read the body in `/var/tmp/dz-src/scripts/...` and cite `path:line`. Pass `--force` to `extract-dayz-sources.sh` only to replace a non-empty `<out-dir>` that has no `pbo-map.tsv` (otherwise refused so an unrelated directory is not overwritten) [EXACT][CLAIM-EXTRACT-FORCE]. The index holds
    Bohemia's declarations, so it is built locally and never committed to a mod or to this Pack.
 3. **Online**: `https://diff.yadz.app/api/classes/<Name>.json` (latest build, one class as JSON) and
    BohemiaInteractive/DayZ-Script-Diff for exact bodies. Remote mirrors can lag a release; the local index cannot.

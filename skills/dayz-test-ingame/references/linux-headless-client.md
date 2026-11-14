@@ -105,14 +105,14 @@ a known order and prints results an outside script can grep; it ran green on bot
 mod name is also a script define (`#ifdef AutoTest`, visible in the `Module: ...; defines:` line) (`CT:167-203`).
 
 **Godmode.** The runner records `player.GetAllowDamage()` before it first calls
-`player.SetAllowDamage(false)`, sets godmode between tests, and restores the recorded value when the run
+`player.SetAllowDamage(false)` (`3_game/entities/object.c:1191-1196`) [EXACT][CLAIM-OBJECT-ALLOWDAMAGE-130], sets godmode between tests, and restores the recorded value when the run
 finishes, times out or is aborted; a test that overrides `NeedsDamage()` to `true` gets damage for itself
 only. Results (`AUTOTEST_RPC_RESULT`) are accepted only from the identity of the player the run was
 scheduled for; other senders are ignored with a `Print`. A server-side melee hit left health `100 -> 100`
 and the same hit with damage allowed gave `100 -> 95` (both builds, measured by the author before this
 change). Only the harness's own `ProcessDirectDamage` with `MeleeZombie` was tried, not real zombies,
-animals, falls, hunger, thirst or cold (`CT:205-223`). The sender-binding and restore change in this Pack
-was checked by the offline script linter only, not run in game.
+animals, falls, hunger, thirst or cold (`CT:205-223`). The sender-binding and restore change in this Pack (`AutoTestRunner.c`)
+was checked by the offline script linter only, not run in game [EXACT][CLAIM-AUTOTEST-RUNNER-UNVERIFIED].
 
 **Pitfalls found building it** (`CT:225-235`):
 

@@ -47,6 +47,44 @@ sh_quote() {
 no_newline() {
     case $1 in *"$LF"*) die "a path or value containing a newline is not allowed" ;; esac
 }
+# headless_state_path_ok <path>: only A-Z a-z 0-9 / . _ - are allowed.
+headless_state_path_ok() {
+    case $1 in
+        ''|*[!A-Za-z0-9/._-]*) return 1 ;;
+        *) return 0 ;;
+    esac
+}
+die_bad_state_path() {
+    die "state path '$1' is not allowed: a state path may only contain A-Z a-z 0-9 / . _ -"
+}
+# Physical-path capture with a sentinel: plain $(cd ... && pwd -P), $(dirname ...) or
+# $(basename ...) strips ALL trailing newlines, which would truncate a directory name ending
+# in LF (e.g. a symlink to "state<LF>" resolving to ".../state"). Strip the trailing x and
+# then exactly one newline so any real newline in the name survives in _phys.
+_phys_dir() {
+    _pd_raw=$(cd "$1" 2>/dev/null && pwd -P && printf x) || return 1
+    _pd_raw=${_pd_raw%x}
+    case $_pd_raw in
+        *"$LF") _phys=${_pd_raw%?} ;;
+        *) return 1 ;;
+    esac
+}
+_phys_dirname() {
+    _pd_raw=$(dirname "$1" && printf x) || return 1
+    _pd_raw=${_pd_raw%x}
+    case $_pd_raw in
+        *"$LF") _phys=${_pd_raw%?} ;;
+        *) return 1 ;;
+    esac
+}
+_phys_basename() {
+    _pd_raw=$(basename "$1" && printf x) || return 1
+    _pd_raw=${_pd_raw%x}
+    case $_pd_raw in
+        *"$LF") _phys=${_pd_raw%?} ;;
+        *) return 1 ;;
+    esac
+}
 proc_starttime() {
     _ps_stat=$(cat "/proc/$1/stat" 2>/dev/null) || return 1
     _ps_rest=${_ps_stat##*)}
@@ -60,12 +98,12 @@ proc_starttime() {
 sway_cmdline_matches() {
     _sc_cur=$(mktemp) || return 1
     if ! tr '\0' '\n' < "/proc/$1/cmdline" > "$_sc_cur" 2>/dev/null; then rm -f "$_sc_cur"; return 1; fi
+    _sc_rc=0
     SWAYCONF="$2/sway.conf" awk '
         function base(p,   n, a) { n = split(p, a, "/"); return a[n] }
         NR == 1 { first = $0 }
         { prev2 = prev1; prev1 = $0; n = NR }
-        END { if (n != 3 || prev2 != "-c" || prev1 != ENVIRON["SWAYCONF"]) exit 1; if (base(first) == "sway") exit 0; exit 1 }' "$_sc_cur"
-    _sc_rc=$?
+        END { if (n != 3 || prev2 != "-c" || prev1 != ENVIRON["SWAYCONF"]) exit 1; if (base(first) == "sway") exit 0; exit 1 }' "$_sc_cur" || _sc_rc=$?
     rm -f "$_sc_cur"
     [ "$_sc_rc" = 0 ]
 }
@@ -138,43 +176,67 @@ if [ "$cmd" = status ]; then
     echo "$g" | cut -c1-120; exit 1
 fi
 [ -n "$cmd" ] && [ -n "$state" ] || { sed -n "2,13p" "$0" >&2; exit 2; }
-no_newline "$state"
-shift 2
-# Resolve state without creating it yet (for start's pre-scan).
-case $state in /*) _abs=$state ;; *) _abs=$(pwd -P)/$state ;; esac
-_work=$_abs; _suffix=
-while [ ! -d "$_work" ]; do _b=$(basename "$_work"); _suffix=/$_b$_suffix; _p=$(dirname "$_work"); [ "$_p" != "$_work" ] || break; _work=$_p; done
-if [ -d "$_work" ]; then _anc=$(cd "$_work" && pwd -P); if [ "$_anc" = / ]; then _resolved=$_suffix; else _resolved=$_anc$_suffix; fi; [ -n "$_resolved" ] || _resolved=/; else _resolved=$_abs; fi
-no_newline "$_resolved"
-
-if [ "$cmd" = start ]; then
-    _alive_rc=0; state_launcher_alive "$_resolved" || _alive_rc=$?
-    if [ "$_alive_rc" != 1 ]; then die "state $_resolved still has a running sway or launcher; run stop first or wait"; fi
-    if [ -e "$_resolved/sway.pid" ] || [ -e "$_resolved/sway.identity" ] || [ -e "$_resolved/sway.cancel" ]; then
-        echo "dayz-client-headless: removing stale sway files in $_resolved" >&2
-        rm -f "$_resolved/sway.pid" "$_resolved/sway.identity" "$_resolved/sway.cancel"
-    fi
+case "$cmd" in start|shot|stop) ;; *) echo "unknown command: $cmd" >&2; exit 2 ;; esac
+# Whitelist first, before any side effect (before mkdir and before reading or writing any
+# file in the state dir): both the given path and the pwd -P resolved path must match.
+headless_state_path_ok "$state" || die_bad_state_path "$state"
+case $state in
+    /*) _hl_abs=$state ;;
+    *) _phys_dir . || die_bad_state_path "$state"
+       if [ "$_phys" = / ]; then _hl_abs=/$state; else _hl_abs=$_phys/$state; fi ;;
+esac
+_hl_work=$_hl_abs; _hl_suffix=
+while [ ! -d "$_hl_work" ]; do
+    _phys_basename "$_hl_work" || die_bad_state_path "$state"
+    case $_phys in ..) die_bad_state_path "$state" ;; .|'') ;; *) _hl_suffix=/$_phys$_hl_suffix ;; esac
+    _phys_dirname "$_hl_work" || die_bad_state_path "$state"
+    _hl_parent=$_phys
+    [ "$_hl_parent" != "$_hl_work" ] || break
+    _hl_work=$_hl_parent
+done
+_hl_resolved=$_hl_abs
+if [ -d "$_hl_work" ]; then
+    _phys_dir "$_hl_work" || die_bad_state_path "$state"
+    _hl_base=$_phys
+    if [ "$_hl_base" = / ]; then _hl_resolved=$_hl_suffix; else _hl_resolved=$_hl_base$_hl_suffix; fi
+    [ -n "$_hl_resolved" ] || _hl_resolved=/
 fi
-mkdir -p "$state"
-state=$(cd "$state" && pwd -P)
-no_newline "$state"
+headless_state_path_ok "$_hl_resolved" || die_bad_state_path "$_hl_resolved"
+shift 2
 
 case "$cmd" in
 start)
+    # Validate all environment and CLI inputs BEFORE touching state or starting any process.
+    _wait=${DAYZ_CLIENT_START_WAIT_TENTHS:-50}
+    case $_wait in ''|*[!0-9]*) die "DAYZ_CLIENT_START_WAIT_TENTHS must be a non-negative integer" ;; esac
+    no_newline "$RES"; no_newline "$STEAM_ROOT"; no_newline "$PROTON"; no_newline "$app"
+    case $RES in *[!0-9x]*|*[!0-9]x*|*x*[!0-9]*|'') die "RES must match <width>x<height>" ;; esac
+    case $RES in [0-9]*x[0-9]*) ;; *) die "RES must match <width>x<height>" ;; esac
+    case ${RES#*x} in *x*) die "RES must match <width>x<height>" ;; esac
+    for a in "$@"; do no_newline "$a"; done
     g=$(running_games)
     if [ -n "$g" ]; then echo "a DayZ client is already running; one game at a time. Stop it first:" >&2; echo "$g" | cut -c1-120 >&2; exit 1; fi
     command -v sway >/dev/null 2>&1 || die "sway is needed for headless runs"
     command -v setsid >/dev/null 2>&1 || die "setsid is needed for headless runs"
-    case $RES in *[!0-9x]*|*[!0-9]x*|*x*[!0-9]*|'') die "RES must match <width>x<height>" ;; esac
-    case $RES in [0-9]*x[0-9]*) ;; *) die "RES must match <width>x<height>" ;; esac
     game=$STEAM_ROOT/steamapps/common/$dir
     [ -f "$game/DayZ_x64.exe" ] || { echo "no DayZ client in $game" >&2; exit 1; }
     tool=$STEAM_ROOT/compatibilitytools.d/$PROTON
     [ -d "$tool" ] || tool=$STEAM_ROOT/steamapps/common/$PROTON
     [ -d "$tool" ] || { echo "Proton tool '$PROTON' not found (set PROTON=)" >&2; exit 1; }
-    no_newline "$STEAM_ROOT"; no_newline "$game"; no_newline "$tool"
+    no_newline "$game"; no_newline "$tool"
+
+    _alive_rc=0; state_launcher_alive "$_hl_resolved" || _alive_rc=$?
+    if [ "$_alive_rc" != 1 ]; then die "state $_hl_resolved still has a running sway or launcher; run stop first or wait"; fi
+    if [ -e "$_hl_resolved/sway.pid" ] || [ -e "$_hl_resolved/sway.identity" ] || [ -e "$_hl_resolved/sway.cancel" ]; then
+        echo "dayz-client-headless: removing stale sway files in $_hl_resolved" >&2
+        rm -f "$_hl_resolved/sway.pid" "$_hl_resolved/sway.identity" "$_hl_resolved/sway.cancel"
+    fi
+    mkdir -p "$state"
+    _phys_dir "$state" || die_bad_state_path "$state"
+    state=$_phys
+    headless_state_path_ok "$state" || die_bad_state_path "$state"
     : > "$state/args"
-    for a in -nolauncher -skipintro -window -nosplash -noPause "$@"; do no_newline "$a"; printf '%s\n' "$a" >> "$state/args"; done
+    for a in -nolauncher -skipintro -window -nosplash -noPause "$@"; do printf '%s\n' "$a" >> "$state/args"; done
     {
         printf 'STATE=%s\n' "$(sh_quote "$state")"
         printf 'GAME=%s\n' "$(sh_quote "$game")"
@@ -207,11 +269,11 @@ EOS
     } > "$state/sway.conf"
     rm -f "$state/wayland-display"
     ( cd "$state" && WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid sh -c '[ ! -e "$1/sway.cancel" ] || exit 0; echo $$ > "$1/sway.pid"; if [ -e "$1/sway.cancel" ]; then rm -f "$1/sway.pid"; exit 0; fi; exec sway -c "$1/sway.conf"' sh "$state" > "$state/sway.log" 2>&1 & )
-    _wait=${DAYZ_CLIENT_START_WAIT_TENTHS:-50}
-    case $_wait in ''|*[!0-9]*) die "DAYZ_CLIENT_START_WAIT_TENTHS must be a non-negative integer" ;; esac
+    # Every error exit after launching setsid MUST route through failed_start_cleanup.
     _i=0; _ready=0; pid=
     while [ "$_i" -lt "$_wait" ]; do
-        sleep 0.1; _i=$((_i + 1))
+        sleep 0.1 || true
+        _i=$((_i + 1))
         if [ -s "$state/sway.pid" ]; then
             pid=$(cat "$state/sway.pid" 2>/dev/null) || pid=
             case $pid in ''|*[!0-9]*) pid= ;; esac
@@ -222,17 +284,31 @@ EOS
         fi
     done
     if [ "$_ready" != 1 ]; then failed_start_cleanup "$state"; die "sway did not start in $state (see $state/sway.log)"; fi
+    _comm=$(cat "/proc/$pid/comm" 2>/dev/null) || _comm=
+    if [ "$_comm" != sway ] || ! sway_cmdline_matches "$pid" "$state"; then
+        failed_start_cleanup "$state"; die "sway did not start in $state (see $state/sway.log)"
+    fi
     _start=$(proc_starttime "$pid") || { failed_start_cleanup "$state"; die "sway did not stay up (see $state/sway.log)"; }
-    { printf '%s\n' "$_start"; cat "/proc/$pid/cmdline"; } > "$state/sway.identity"
-    rm -f "$state/sway.cancel"
+    if ! { printf '%s\n' "$_start" && cat "/proc/$pid/cmdline" 2>/dev/null; } > "$state/sway.identity"; then
+        failed_start_cleanup "$state"; die "sway did not stay up (see $state/sway.log)"
+    fi
+    rm -f "$state/sway.cancel" || { failed_start_cleanup "$state"; die "could not clear cancel marker in $state"; }
     echo "sway pid $pid, state in $state"
     ;;
 shot)
+    [ -d "$state" ] || { echo "no session in $_hl_resolved" >&2; exit 1; }
+    _phys_dir "$state" || die_bad_state_path "$state"
+    state=$_phys
+    headless_state_path_ok "$state" || die_bad_state_path "$state"
     [ -s "$state/wayland-display" ] || { echo "no session in $state" >&2; exit 1; }
     out=${1:?usage: shot <state-dir> <out.png>}
     WAYLAND_DISPLAY=$(cat "$state/wayland-display") grim "$out"
     ;;
 stop)
+    [ -d "$state" ] || { echo "no session in $_hl_resolved" >&2; exit 1; }
+    _phys_dir "$state" || die_bad_state_path "$state"
+    state=$_phys
+    headless_state_path_ok "$state" || die_bad_state_path "$state"
     pid=$(cat "$state/sway.pid" 2>/dev/null || true)
     [ -n "$pid" ] || { echo "no session in $state" >&2; exit 1; }
     case $pid in ''|*[!0-9]*)
@@ -247,6 +323,4 @@ stop)
     kill "$pid" 2>/dev/null || true
     rm -f "$state/sway.pid" "$state/sway.identity"
     ;;
-*)
-    echo "unknown command: $cmd" >&2; exit 2;;
 esac

@@ -587,10 +587,10 @@ MyClass GetObject()
 ```
 void MyMethod()
 {
-    // WRONG - Unnecessary ref on local variable
-    ref MyClass3 myClass3 = new ref MyClass3();
+    // AVOID - Redundant ref on local variable (valid, locals are already strong; never write 'new ref')
+    ref MyClass3 myClass3 = new MyClass3();
 
-    // CORRECT - No ref on local variables
+    // PREFERRED - Plain local variable
     MyClass3 myClass3 = new MyClass3();
 }
 ```
@@ -694,7 +694,7 @@ ref array<EntityAI> GetVehicles()
 #### Quick Reference Rules
 
 1. **USE `ref` (or `autoptr`) for:** Member variables ONLY
-2. **NEVER use `ref` for:** Method parameters, return types, local variables, typedefs
+2. **NEVER use `ref` for:** Method parameters, return types, typedefs (on local variables `ref` is valid and redundant — omit by style)
 3. **NEVER use:** `new ref ClassName()`
 4. **ALWAYS use:** `new ClassName()`
 5. **Goal:** One strong reference per object when possible
@@ -2017,7 +2017,7 @@ This style guide reflects the conventions used in professional DayZ modding. Con
 - Follow the modded class pattern for extending vanilla code
 - Where possible, use proto methods over custom methods for expensive logic
 - CfgMod class names are defines in script as of 1.26
-- **NEVER use `ref` in method parameters, return types, or local variables** - only on member variables and templates
+- **NEVER use `ref` in method parameters, return types, typedefs, or `new ref`** - use `ref` on owning member variables and templates (on local variables it is valid and redundant)
 - **NEVER add inheritance (`: ParentClass`) to `modded` classes** - they already inherit from the original class
 
 ### References

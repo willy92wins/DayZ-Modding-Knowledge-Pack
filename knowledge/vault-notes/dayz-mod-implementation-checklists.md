@@ -54,7 +54,7 @@ Reglas duras (verificadas contra `vanilla EntityAI.c`):
 Full rules live in `enforce-script-reference` skill. Key verified restrictions:
 
 - [ ] **No ternary operators** (`? :` does not compile).
-- [ ] `ref` **only** on member fields, never on locals/params/returns/typedefs.
+- [ ] `ref` on owning member fields; never on params/returns/typedefs or `new ref` (valid and redundant on locals — omit by style).
 - [ ] **Never** use `delete` keyword (segfault if references remain).
 - [ ] `foreach` works, but **never** directly on a getter return (NPE on 2nd iteration). Assign to local first.
 - [ ] Prefix `m_` on all member fields.

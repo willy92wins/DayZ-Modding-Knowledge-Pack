@@ -5,7 +5,7 @@
 # usage: extract-dayz-sources.sh [--force] <DayZ-install-dir | mod-dir> <out-dir>
 #   e.g. extract-dayz-sources.sh ~/.steam/debian-installation/steamapps/common/DayZ /var/tmp/dayz-sources
 #   a Workshop mod dir (steamapps/workshop/content/221100/<id>, with an addons/ folder) works the same way
-#   --force allows replacing a non-empty <out-dir> that has no pbo-map.tsv (not an earlier extraction). [EXACT][CLAIM-EXTRACT-FORCE]
+#   --force allows replacing a non-empty <out-dir> that has no pbo-map.tsv (not an earlier extraction).
 #
 # Searches <install>/dta and <install>/Addons plus the DLC folders <install>/*/addons (case-insensitive).
 # Workshop mods are symlinked into the install dir as @xxxx; find does not follow symlinks, so they are skipped.
@@ -23,27 +23,38 @@ force=0
 if [ "${1:-}" = "--force" ]; then force=1; shift; fi
 [ $# -eq 2 ] || { sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 install=$1 out=$2
+while [ "${#install}" -gt 1 ] && [ "${install%/}" != "$install" ]; do install=${install%/}; done
+while [ "${#out}" -gt 1 ] && [ "${out%/}" != "$out" ]; do out=${out%/}; done
+[ "$out" != "/" ] || { echo "error: refusing '/' as output directory" >&2; exit 1; }
 DZPBO=${DAYZMAKE:-}
 if [ -z "$DZPBO" ]; then
   for c in dayzmake armake2; do
-    if command -v "$c" >/dev/null 2>&1 && "$c" -h 2>&1 | grep -q -- --proton-binarize; then DZPBO=$c; break; fi
+    if command -v "$c" >/dev/null 2>&1; then
+      _dz_help=$("$c" -h 2>&1 || true)
+      case $_dz_help in *--proton-binarize*) DZPBO=$c; break ;; esac
+    fi
   done
 fi
 [ -n "$DZPBO" ] || { echo "dayzmake not found on PATH (upstream armake2 will not do: bzed's fork has --proton-binarize)" >&2; exit 1; }
 [ "$DZPBO" = dayzmake ] || echo "note: using $DZPBO; dayzmake >= 1.0.0 is recommended (the pre-rename armake2 binary may have bugs)" >&2
-[ -d "$install" ] || { echo "$install is not a directory" >&2; exit 1; }
+if [ ! -d "$install" ] || [ ! -r "$install" ] || [ ! -x "$install" ]; then
+  echo "error: $install is not a readable directory" >&2
+  exit 1
+fi
 
 # Interrupted promotion from an earlier run: refuse and name the recovery.
 for old in "$out".old.*; do
-  [ -e "$old" ] || continue
+  [ -e "$old" ] || [ -L "$old" ] || continue
   echo "error: a previous promotion was interrupted; recover with: mv -- $(printf '%q' "$old") $(printf '%q' "$out")" >&2
   exit 1
 done
-if [ -e "$out" ] && [ ! -f "$out/pbo-map.tsv" ] && [ "$force" != 1 ]; then
-  if [ -d "$out" ] && [ -n "$(ls -A "$out" 2>/dev/null)" ]; then
-    echo "error: $out is non-empty and has no pbo-map.tsv (not an earlier extraction); refusing to replace it (use --force to override)" >&2; exit 1
-  fi
-  if [ ! -d "$out" ]; then
+if { [ -e "$out" ] || [ -L "$out" ]; } && [ ! -f "$out/pbo-map.tsv" ] && [ "$force" != 1 ]; then
+  if [ -d "$out" ] && [ ! -L "$out" ]; then
+    _nonempty=$(find "$out" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null || echo unreadable)
+    if [ -n "$_nonempty" ]; then
+      echo "error: $out is non-empty and has no pbo-map.tsv (not an earlier extraction); refusing to replace it (use --force to override)" >&2; exit 1
+    fi
+  else
     echo "error: $out exists and is not an earlier extraction; refusing to replace it (use --force to override)" >&2; exit 1
   fi
 fi
@@ -52,22 +63,24 @@ out_parent=$(dirname "$out")
 mkdir -p "$out_parent"
 lock="$out.lock"
 if ! mkdir "$lock" 2>/dev/null; then echo "error: another extraction is running (lock $lock exists)" >&2; exit 1; fi
-staging="$out.new.$$"
 tmp=$(mktemp -d /var/tmp/dayz-extract.XXXXXX)
 cleanup() { rm -rf "$tmp"; rm -rf "$lock"; }
 trap cleanup EXIT
-mkdir -p "$staging"
+staging=$(mktemp -d "$out.new.XXXXXX") || { echo "error: could not create staging directory next to $out" >&2; exit 1; }
+if [ ! -d "$staging" ] || [ -L "$staging" ]; then
+  echo "error: staging path is not a real directory: $staging" >&2
+  exit 1
+fi
 
 failed=0
 note_fail() { echo "error: $*" >&2; failed=1; }
 
-# valid_name <name-after-backslash-conversion>: reject empty, absolute, drive, .. segment, controls.
+# valid_name <name-after-backslash-conversion>: reject empty, absolute, drive, ./.. or empty segment, controls.
 valid_name() {
   local s=$1
   [ -n "$s" ] || return 1
-  case $s in /*|[A-Za-z]:*) return 1 ;; esac
-  case "/$s/" in */../*) return 1 ;; esac
-  case $s in */) return 1 ;; esac
+  case $s in /*|[A-Za-z]:*|*/) return 1 ;; esac
+  case "/$s/" in */../*|*/./*|*//*) return 1 ;; esac
   if [[ $s =~ [[:cntrl:]] ]]; then return 1; fi
   return 0
 }
@@ -86,72 +99,124 @@ dest_ok() {
 }
 
 : > "$staging/pbo-map.tsv"
-while IFS= read -r -d '' dir; do
-  while IFS= read -r -d '' pbo; do
-    if ! "$DZPBO" inspect "$pbo" > "$tmp/list" 2>/dev/null; then echo "skip (unreadable): $pbo" >&2; failed=1; continue; fi
-    prefix=$(sed -n 's/^- prefix=//p' "$tmp/list" | tr -d '\r' | tr '\\' '/')
-    [ -n "$prefix" ] || prefix=$(basename "$pbo" .pbo)
-    if ! valid_name "$prefix"; then note_fail "invalid PBO prefix '$prefix' in $pbo; skipping PBO"; continue; fi
-    # Validate listing structure; parse rows after ====.
-    : > "$tmp/want"
-    listing_bad=0
-    seen_rows=0
-    while IFS= read -r row || [ -n "$row" ]; do
-      if [ "$seen_rows" = 0 ]; then case $row in ====*) seen_rows=1 ;; *) continue ;; esac; continue; fi
-      row=${row%$'\r'}
-      [ -n "$row" ] || continue
-      if [[ $row =~ ^(.*)[[:space:]]+([^[:space:]]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]*$ ]]; then
-        inner_raw=${BASH_REMATCH[1]}
-        orig_size=${BASH_REMATCH[3]}
-        # trim trailing whitespace of inner
-        inner_raw=${inner_raw%"${inner_raw##*[![:space:]]}"}
-        printf '%s\t%s\n' "$orig_size" "$inner_raw" >> "$tmp/want"
-      else
+if ! find "$install" -maxdepth 2 -type d \( -name dta -o -iname addons \) -print0 > "$tmp/dirs"; then
+  note_fail "failed to enumerate directories under $install"
+fi
+if [ "$failed" = 0 ] && [ ! -s "$tmp/dirs" ]; then
+  note_fail "no dta/ or addons/ directories found under $install"
+fi
+sort -z "$tmp/dirs" > "$tmp/dirs.sorted"
+total_pbos=0
+if [ "$failed" = 0 ]; then
+  while IFS= read -r -d '' dir; do
+    if [ ! -r "$dir" ] || [ ! -x "$dir" ]; then
+      note_fail "directory is not readable: $dir"
+      continue
+    fi
+    if ! find "$dir" -maxdepth 1 -type f -name '*.pbo' -print0 > "$tmp/pbos"; then
+      note_fail "failed to enumerate PBOs in $dir"
+      continue
+    fi
+    sort -z "$tmp/pbos" > "$tmp/pbos.sorted"
+    while IFS= read -r -d '' pbo; do
+      total_pbos=$((total_pbos + 1))
+      if ! "$DZPBO" inspect "$pbo" > "$tmp/list" 2>/dev/null; then note_fail "inspect failed (unreadable): $pbo"; continue; fi
+      prefix=$(sed -n 's/^- prefix=//p' "$tmp/list" | tr -d '\r' | tr '\\' '/')
+      [ -n "$prefix" ] || prefix=$(basename "$pbo" .pbo)
+      if ! valid_name "$prefix"; then note_fail "invalid PBO prefix '$prefix' in $pbo; skipping PBO"; continue; fi
+      # Cross-check listing: parse '# Files: N', require exact row count after '====', shape, and unique normalised names.
+      : > "$tmp/want"
+      : > "$tmp/names"
+      listing_bad=0
+      seen_rows=0
+      has_expected=0
+      expected_rows=0
+      actual_rows=0
+      while IFS= read -r row || [ -n "$row" ]; do
+        row=${row%$'\r'}
+        if [ "$seen_rows" = 0 ]; then
+          if [[ $row =~ ^#[[:space:]]*Files:[[:space:]]*([0-9]+)$ ]]; then
+            if [ "$has_expected" = 1 ]; then listing_bad=1; else expected_rows=${BASH_REMATCH[1]}; has_expected=1; fi
+          else
+            case $row in ====*) seen_rows=1 ;; esac
+          fi
+          continue
+        fi
+        actual_rows=$((actual_rows + 1))
+        if [[ $row =~ [[:cntrl:]] ]]; then listing_bad=1; continue; fi
+        if [[ $row =~ ^(.*)[[:space:]]+([^[:space:]]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]*$ ]]; then
+          inner_raw=${BASH_REMATCH[1]}
+          orig_size=${BASH_REMATCH[3]}
+          inner_raw=${inner_raw%"${inner_raw##*[![:space:]]}"}
+          if [ -z "$inner_raw" ]; then listing_bad=1; continue; fi
+          norm_name=$(printf '%s' "$inner_raw" | tr '\\' '/')
+          while [[ $norm_name == *//* ]]; do norm_name="${norm_name%%//*}/${norm_name#*//}"; done
+          printf '%s\n' "$norm_name" >> "$tmp/names"
+          printf '%s\t%s\n' "$orig_size" "$inner_raw" >> "$tmp/want"
+        else
+          listing_bad=1
+        fi
+      done < "$tmp/list"
+      if [ "$seen_rows" != 1 ] || [ "$has_expected" != 1 ] || [ "$actual_rows" -ne "$expected_rows" ]; then
         listing_bad=1
       fi
-    done < "$tmp/list"
-    if [ "$listing_bad" = 1 ]; then note_fail "invalid listing structure in $pbo; skipping PBO"; continue; fi
-    n=0
-    pbo_failed=0
-    while IFS=$'\t' read -r orig_size inner; do
-      rel=$(printf '%s' "$inner" | tr '\\' '/')
-      lower=${rel,,}
-      case $lower in
-        *.c|*.cpp|*.h|*.hpp|*.inc|*.json|*.cfg|*.txt|*config.bin) ;;
-        *) continue ;;
-      esac
-      if ! valid_name "$rel"; then note_fail "invalid entry name '$inner' in $pbo; skipping entry"; pbo_failed=1; continue; fi
-      is_config=0
-      dest_rel=$rel
-      case $lower in *config.bin) is_config=1; dest_rel=${rel%.[bB][iI][nN]}.cpp; dest_rel=${rel%.*}.cpp ;; esac
-      dest="$staging/$prefix/$dest_rel"
-      if ! dest_ok "$(dirname "$dest")"; then note_fail "destination escapes staging for '$inner' in $pbo"; pbo_failed=1; continue; fi
-      if [ -L "$dest" ]; then note_fail "destination is a symlink for '$inner' in $pbo"; pbo_failed=1; continue; fi
-      mkdir -p "$(dirname "$dest")"
-      if [ -L "$dest" ]; then note_fail "destination is a symlink for '$inner' in $pbo"; pbo_failed=1; continue; fi
-      if [ "$is_config" = 1 ]; then
-        rm -f "$tmp/config.bin"
-        cat_out=$("$DZPBO" cat "$pbo" "$inner" "$tmp/config.bin" 2>&1) || cat_out="$cat_out"
-        if [ ! -f "$tmp/config.bin" ] || { [ "$orig_size" != 0 ] && [ ! -s "$tmp/config.bin" ]; } || case $cat_out in *"not found"*) true;; *) false;; esac; then
-          note_fail "cat failed: $pbo $inner"; pbo_failed=1; continue
-        fi
-        if ! "$DZPBO" derapify -f "$tmp/config.bin" "$dest" >/dev/null 2>&1 || [ ! -f "$dest" ]; then
-          note_fail "derapify failed: $pbo $inner"; pbo_failed=1; continue
-        fi
-      else
-        cat_out=$("$DZPBO" cat "$pbo" "$inner" "$dest" 2>&1) || cat_out="$cat_out"
-        if case $cat_out in *"not found"*) true;; *) false;; esac || [ ! -f "$dest" ] || { [ "$orig_size" != 0 ] && [ ! -s "$dest" ]; }; then
-          note_fail "cat failed: $pbo $inner"; pbo_failed=1; continue
-        fi
+      if [ "$listing_bad" = 0 ]; then
+        unique_rows=$(LC_ALL=C sort -u "$tmp/names" | wc -l)
+        unique_rows=${unique_rows//[[:space:]]/}
+        if [ "$unique_rows" -ne "$actual_rows" ]; then listing_bad=1; fi
       fi
-      n=$((n + 1))
-    done < "$tmp/want"
-    if [ "$pbo_failed" = 1 ]; then failed=1; fi
-    [ "$n" -gt 0 ] || continue
-    echo "$n files  $prefix  <- ${pbo#"$install"/}"
-    printf '%s\t%s\n' "$prefix" "${pbo#"$install"/}" >> "$staging/pbo-map.tsv"
-  done < <(find "$dir" -maxdepth 1 -type f -name '*.pbo' -print0 | sort -z)
-done < <(find "$install" -maxdepth 2 -type d \( -name dta -o -iname addons \) -print0 | sort -z)
+      if [ "$listing_bad" = 1 ]; then note_fail "invalid listing structure in $pbo; skipping PBO"; continue; fi
+      n=0
+      pbo_failed=0
+      while IFS=$'\t' read -r orig_size inner; do
+        rel=$(printf '%s' "$inner" | tr '\\' '/')
+        lower=${rel,,}
+        case $lower in
+          *.c|*.cpp|*.h|*.hpp|*.inc|*.json|*.cfg|*.txt|*config.bin) ;;
+          *) continue ;;
+        esac
+        if ! valid_name "$rel"; then note_fail "invalid entry name '$inner' in $pbo; skipping entry"; pbo_failed=1; continue; fi
+        is_config=0
+        dest_rel=$rel
+        case $lower in *config.bin) is_config=1; dest_rel=${rel%.*}.cpp ;; esac
+        dest="$staging/$prefix/$dest_rel"
+        if ! dest_ok "$(dirname "$dest")"; then note_fail "destination escapes staging for '$inner' in $pbo"; pbo_failed=1; continue; fi
+        if [ -L "$dest" ]; then note_fail "destination is a symlink for '$inner' in $pbo"; pbo_failed=1; continue; fi
+        mkdir -p "$(dirname "$dest")"
+        if [ -L "$dest" ]; then note_fail "destination is a symlink for '$inner' in $pbo"; pbo_failed=1; continue; fi
+        if [ "$is_config" = 1 ]; then
+          rm -f "$tmp/config.bin"
+          cat_rc=0
+          cat_out=$("$DZPBO" cat "$pbo" "$inner" "$tmp/config.bin" 2>&1) || cat_rc=$?
+          if [ "$cat_rc" -ne 0 ] || [[ $cat_out == *"not found"* ]] || [ ! -f "$tmp/config.bin" ] || { [ "$orig_size" != 0 ] && [ ! -s "$tmp/config.bin" ]; }; then
+            rm -f "$tmp/config.bin"
+            note_fail "cat failed (exit $cat_rc): $pbo $inner"; pbo_failed=1; continue
+          fi
+          if ! "$DZPBO" derapify -f "$tmp/config.bin" "$dest" >/dev/null 2>&1 || [ ! -f "$dest" ]; then
+            rm -f "$dest"
+            note_fail "derapify failed: $pbo $inner"; pbo_failed=1; continue
+          fi
+        else
+          rm -f "$dest"
+          cat_rc=0
+          cat_out=$("$DZPBO" cat "$pbo" "$inner" "$dest" 2>&1) || cat_rc=$?
+          if [ "$cat_rc" -ne 0 ] || [[ $cat_out == *"not found"* ]] || [ ! -f "$dest" ] || { [ "$orig_size" != 0 ] && [ ! -s "$dest" ]; }; then
+            rm -f "$dest"
+            note_fail "cat failed (exit $cat_rc): $pbo $inner"; pbo_failed=1; continue
+          fi
+        fi
+        n=$((n + 1))
+      done < "$tmp/want"
+      if [ "$pbo_failed" = 1 ]; then failed=1; fi
+      [ "$n" -gt 0 ] || continue
+      echo "$n files  $prefix  <- ${pbo#"$install"/}"
+      printf '%s\t%s\n' "$prefix" "${pbo#"$install"/}" >> "$staging/pbo-map.tsv"
+    done < "$tmp/pbos.sorted"
+  done < "$tmp/dirs.sorted"
+fi
+if [ "$failed" = 0 ] && [ "$total_pbos" -eq 0 ]; then
+  note_fail "no .pbo files found under $install"
+fi
 
 if [ "$failed" != 0 ]; then
   echo "error: extraction failed; partial staging kept at $staging (nothing was promoted)" >&2
@@ -159,10 +224,14 @@ if [ "$failed" != 0 ]; then
   exit 1
 fi
 
-# Promote: move old aside, rename new in, then remove old.
+# Promote: move old aside to a unique non-existent backup name, rename new in, then remove old.
 old_backup=
 if [ -e "$out" ] || [ -L "$out" ]; then
-  old_backup="$out.old.$$"
+  old_backup=$(mktemp -u "$out.old.XXXXXX") || { echo "error: could not allocate backup name for $out" >&2; exit 1; }
+  if [ -e "$old_backup" ] || [ -L "$old_backup" ]; then
+    echo "error: backup path already exists ($old_backup); leaving $out intact" >&2
+    exit 1
+  fi
   if ! mv -- "$out" "$old_backup"; then echo "error: could not move $out aside; leaving it intact" >&2; exit 1; fi
 fi
 if ! mv -- "$staging" "$out"; then
