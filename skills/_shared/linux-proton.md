@@ -88,7 +88,15 @@ doubled, `setlocal DisableDelayedExpansion` so `!` stays literal), and it refuse
 a double quote, CR, LF or an empty argument before anything is created, copied, linked, removed
 or run. [EXACT][CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION] The offline tests prove that .bat serialization only, not how `cmd.exe` or binarize.exe parse it (that parsing is not claimed).
 [EXACT][CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY] `headless stop` signals only a sway whose recorded /proc start time and full argv still match, and then only the wineserver serving that session's recorded display, as a pid:starttime pair re-checked (/proc comm and start time) just before the signal; if the sway is gone or foreign it signals nothing and says so.
-`headless start` refuses a state that already has a live, verified session, succeeds only once
+A headless state path may only contain `A-Z a-z 0-9 / . _ -`: `headless start`, `stop` and
+`shot` check the path as given and once `pwd -P` resolved, before any side effect, and refuse
+one with (for example) a space, backslash, newline, tab, quote, `$` or backtick. `headless
+start` requires `setsid` (one launcher form, no `nohup`), refuses while a launcher or sway of
+the same state may still be running (it finds a launcher from the pid in `sway.pid` or by
+scanning `/proc/*/cmdline` for this state's `sway.conf` or launcher form, and an incomplete
+scan counts as running) and touches nothing in that case; if `sway.pid`/`sway.cancel` exist
+but no such process is alive, they are stale and `start` removes `sway.pid`, `sway.identity`
+and `sway.cancel` with one stderr line before continuing. It succeeds only once
 the recorded pid's /proc comm is `sway` with the exact three-entry `sway -c <state>/sway.conf`
 argv (a script named `sway` does not pass; the wait is `DAYZ_PROTON_START_WAIT_TENTHS` tenths of
 a second, default 50, checked again after the last sleep), and signals no wineserver at all when
@@ -98,11 +106,12 @@ failure it first writes `sway.cancel`, which the launcher child checks before wr
 and again just after (removing its pid and exiting instead of `exec`ing sway), then signals only
 its own launcher or that exact sway, waits five tenths of a second re-checking for a pid
 published in that window, and only then deletes its tracking. The marker stays after a failure
-so a slower child still cancels; the next `start` removes it before launching and a successful
-`start` removes it, so `DAYZ_PROTON_START_WAIT_TENTHS=0` fails cleanly without leaving a sway.
+so a slower child still cancels; the next `start` removes it only after proving no launcher of
+this state is alive, and a successful `start` removes it, so `DAYZ_PROTON_START_WAIT_TENTHS=0`
+fails cleanly without leaving a sway.
 The `sway.conf` path is compared literally through awk's `ENVIRON`, not `awk -v` (whose escape
-handling turned a `\t` in a state path into a TAB), so a state directory named with a literal
-`\t` or `\n` still starts and stops. `init` stops the
+handling would mis-compare some state paths), and an allowed state name with `.` and `-` still
+starts and stops. `init` stops the
 wineservers that were not running when `init` began, in the prefixes it used, by the same
 pid:starttime pairs; a program someone else starts in those prefixes meanwhile cannot be
 told apart (not claimed). These stops reduce but do not eliminate the check-then-signal

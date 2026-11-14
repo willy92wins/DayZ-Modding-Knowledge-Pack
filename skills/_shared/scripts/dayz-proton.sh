@@ -27,23 +27,28 @@
 #
 # Rules learned the hard way (2026-11-03, Proton Hotfix and GE-Proton11-1, Debian testing):
 # - One display per prefix at a time: a prefix's wineserver is bound to the display its first
-#   program used; others die with "X Error ... BadWindow ... X_UnmapWindow". `headless start`
-#   refuses a busy (or untellable) prefix, refuses a state that already has a live session, and
-#   succeeds only when the recorded pid's /proc comm is sway with the exact three-entry sway argv; `headless
-#   stop` signals only a sway whose recorded /proc identity (start time + full argv) still
-#   matches, then only that session's wineserver (by pid:starttime, re-checked before each
-#   signal; an empty or unreadable recorded display signals no wineserver). These checks and
-#   the signal are not atomic: they reduce, but do not eliminate, the check-then-signal race.
+#   program used; others die with "X Error ... BadWindow ... X_UnmapWindow". A headless state
+#   path may only contain A-Z a-z 0-9 / . _ - (checked as given and once resolved, before any
+#   side effect, in `start`, `stop` and `shot`). `headless start` requires `setsid`, refuses a
+#   busy (or untellable) prefix, and refuses while a launcher or sway of the same state may
+#   still be running (see the stale-file rule at the start case): if sway.pid or sway.cancel
+#   exists and no launcher or sway of this state is alive, those files are stale and are
+#   removed with one stderr line before continuing. It succeeds only when the recorded pid's
+#   /proc comm is sway with the exact three-entry sway argv; `headless stop` signals only a
+#   sway whose recorded /proc identity (start time + full argv) still matches, then only that
+#   session's wineserver (by pid:starttime, re-checked before each signal; an empty or
+#   unreadable recorded display signals no wineserver). These checks and the signal are not
+#   atomic: they reduce, but do not eliminate, the check-then-signal race.
 #   Invariant for `headless start`: after it returns (success or failure) either the recorded
 #   sway is tracked with a verified identity, or no sway of this state is running. A failed
 #   start first writes $state/sway.cancel, which the launcher child checks before writing
 #   sway.pid and again just after; the failed start signals the published pid, waits five
 #   tenths of a second re-checking for a pid published in that window, and only then removes
 #   sway.pid/sway.identity. The cancel marker is left behind after a failure (a slower child
-#   still sees it and exits without exec'ing sway); the next start removes it before it
-#   launches, and a successful start removes it once the identity is recorded. The sway.conf
-#   path is passed to awk through the environment (ENVIRON), never `awk -v`, whose escape
-#   handling would turn a `\t` in a state path into a TAB and break the comparison.
+#   still sees it and exits without exec'ing sway); it is removed by the next start only after
+#   that start has proved no launcher of this state is alive, and by a successful start once
+#   the identity is recorded. The sway.conf path is passed to awk through the environment
+#   (ENVIRON), never `awk -v`, whose escape handling would mis-compare some state paths.
 #   `binarize` writes its arguments only into a quoted .bat (Z:\run.bat) and refuses any with
 #   a double quote, CR, LF or empty before doing anything. `init` stops only the wineservers
 #   that were not running when it began, in the prefixes it used. Real Proton, sway and
@@ -616,8 +621,6 @@ sway_identity_ok() {
 }
 # sway_cmdline_matches <pid> <state>: the live argv is exactly the three
 # entries sway, -c, <state>/sway.conf (first entry's basename is sway).
-# The interpreter form of a script named sway (/bin/sh <path>/sway -c ...)
-# is not accepted: a script is not sway.
 sway_cmdline_matches() {
     _sc_cur=$(mktemp) || return 1
     if ! tr '\0' '\n' < "/proc/$1/cmdline" > "$_sc_cur" 2>/dev/null; then
@@ -661,8 +664,9 @@ failed_start_signal() {
 # published pid, wait five tenths of a second (the documented bounded
 # window) re-running the signal for a pid published inside that window, and
 # only then remove the tracking files. sway.cancel stays in place after a
-# failure (see the header invariant); the next start removes it before it
-# launches, and a successful start removes it.
+# failure (see the header invariant); the next start removes it only after
+# proving no launcher of this state is alive, and a successful start
+# removes it.
 failed_start_cleanup() {
     : > "$1/sway.cancel"
     failed_start_signal "$1"
@@ -673,25 +677,112 @@ failed_start_cleanup() {
     done
     rm -f "$1/sway.pid" "$1/sway.identity"
 }
+# headless_state_path_ok <path>: only A-Z a-z 0-9 / . _ - are allowed.
+headless_state_path_ok() {
+    case $1 in
+        ''|*[!A-Za-z0-9/._-]*) return 1 ;;
+        *) return 0 ;;
+    esac
+}
+die_bad_state_path() {
+    die "headless: state path '$1' is not allowed: a state path may only contain A-Z a-z 0-9 / . _ -"
+}
+# state_launcher_alive <state>: 0 = a launcher or sway of this state is
+# alive, 1 = none is, 2 = that cannot be told (a scan that cannot be
+# completed counts as alive to the caller). Rule: (i) the pid in sway.pid,
+# when present, is alive as the launcher form (its cmdline contains
+# 'exec sway' with this state as its $1) or as the exact sway form
+# sway -c <state>/sway.conf; (ii) a scan of /proc/*/cmdline finds any
+# process whose argv contains this state's sway.conf path, or whose
+# cmdline is the launcher sh -c ... exec sway ... with this state as $1
+# (this finds a launcher that has not yet published sway.pid).
+state_launcher_alive() {
+    _la_state=$1
+    _la_tmp=$(mktemp) || return 2
+    if [ -f "$_la_state/sway.pid" ]; then
+        _la_pid=$(cat "$_la_state/sway.pid" 2>/dev/null) || _la_pid=
+        if [ -n "$_la_pid" ] && [ -d "/proc/$_la_pid" ]; then
+            if sway_cmdline_matches "$_la_pid" "$_la_state"; then rm -f "$_la_tmp"; return 0; fi
+            if tr '\0' '\n' < "/proc/$_la_pid/cmdline" > "$_la_tmp" 2>/dev/null; then
+                if grep -Fq 'exec sway' "$_la_tmp" && grep -Fxq "$_la_state" "$_la_tmp"; then
+                    rm -f "$_la_tmp"; return 0
+                fi
+            elif [ -d "/proc/$_la_pid" ]; then
+                rm -f "$_la_tmp"; return 2
+            fi
+        fi
+    fi
+    [ -d /proc ] || { rm -f "$_la_tmp"; return 2; }
+    _la_unknown=0
+    for _la_entry in /proc/[0-9]*; do
+        [ -d "$_la_entry" ] || continue
+        if ! tr '\0' '\n' < "$_la_entry/cmdline" > "$_la_tmp" 2>/dev/null; then
+            [ -d "$_la_entry" ] && _la_unknown=1
+            continue
+        fi
+        [ -s "$_la_tmp" ] || continue
+        if grep -Fq "$_la_state/sway.conf" "$_la_tmp"; then rm -f "$_la_tmp"; return 0; fi
+        if grep -Fq 'exec sway' "$_la_tmp" && grep -Fxq "$_la_state" "$_la_tmp"; then
+            rm -f "$_la_tmp"; return 0
+        fi
+    done
+    rm -f "$_la_tmp"
+    if [ "$_la_unknown" = 1 ]; then return 2; fi
+    return 1
+}
 do_headless() {
     sub=${1:-}; state=${2:-}
     [ -n "$sub" ] && [ -n "$state" ] || die "usage: headless start|shot|stop <state> ..."
+    # Whitelist first, before any side effect (before mkdir and before
+    # reading or writing any file in the state dir): the path as given must
+    # match it, and so must the pwd -P resolved path (an empty string and a
+    # path with a .. component after resolution are fine). Resolving the
+    # existing parent chain here keeps a disallowed resolved path from
+    # creating anything either.
+    headless_state_path_ok "$state" || die_bad_state_path "$state"
+    case $state in
+        /*) _hl_abs=$state ;;
+        *) _hl_abs=$(pwd -P)/$state ;;
+    esac
+    _hl_work=$_hl_abs; _hl_suffix=
+    while [ ! -d "$_hl_work" ]; do
+        _hl_suffix=/$(basename "$_hl_work")$_hl_suffix
+        _hl_parent=$(dirname "$_hl_work")
+        [ "$_hl_parent" != "$_hl_work" ] || break
+        _hl_work=$_hl_parent
+    done
+    if [ -d "$_hl_work" ]; then
+        _hl_base=$(cd "$_hl_work" && pwd -P) || die_bad_state_path "$state"
+        if [ "$_hl_base" = / ]; then _hl_resolved=$_hl_suffix; else _hl_resolved=$_hl_base$_hl_suffix; fi
+        [ -n "$_hl_resolved" ] || _hl_resolved=/
+        headless_state_path_ok "$_hl_resolved" || die_bad_state_path "$_hl_resolved"
+    fi
     shift 2; mkdir -p "$state"; state=$(cd "$state" && pwd -P)
+    headless_state_path_ok "$state" || die_bad_state_path "$state"
     case $sub in
     start)
         [ $# -ge 1 ] || die "usage: headless start <state> <Tool> [args...]"
         command -v sway >/dev/null || die "sway is needed for headless runs"
+        command -v setsid >/dev/null || die "setsid is needed for headless runs"
         case ${DAYZ_PROTON_START_WAIT_TENTHS:-50} in ''|*[!0-9]*) die "DAYZ_PROTON_START_WAIT_TENTHS must be a non-negative integer (tenths of a second)" ;; esac
-        # Before writing anything: a state with a live, verified sway is
-        # already a session; overwriting it would leave that sway untracked.
-        # A stale or foreign pid file is removed and the start continues.
-        if [ -f "$state/sway.pid" ]; then
-            _hl_old=$(cat "$state/sway.pid" 2>/dev/null) || _hl_old=
-            if [ -n "$_hl_old" ] && sway_identity_ok "$_hl_old" "$state"; then
-                die "state $state already has a live session; stop it first"
+        # Stale-file rule: while a launcher of this state may still be
+        # running, refuse and touch nothing. If sway.pid or sway.cancel
+        # exists, state_launcher_alive decides (see its comment: the pid
+        # file first, then a /proc scan that also finds a launcher which
+        # has not published its pid yet; an incomplete scan counts as
+        # alive). Only when none is alive are sway.pid, sway.identity and
+        # sway.cancel stale: remove them with one stderr line and continue.
+        # With this rule sway.cancel is only ever created by the failed
+        # start of the same call and removed by a later start only after
+        # that later start proved no launcher is alive.
+        if [ -e "$state/sway.pid" ] || [ -e "$state/sway.cancel" ]; then
+            _hl_alive_rc=0
+            state_launcher_alive "$state" || _hl_alive_rc=$?
+            if [ "$_hl_alive_rc" != 1 ]; then
+                die "state $state still has a running sway or launcher; run \`headless stop $state\` or wait"
             fi
-            echo "dayz-proton: removing stale sway pid file in $state" >&2
-            rm -f "$state/sway.pid" "$state/sway.identity"
+            echo "dayz-proton: removing stale sway files in $state" >&2
+            rm -f "$state/sway.pid" "$state/sway.identity" "$state/sway.cancel"
         fi
         app=830640; [ "$1" = DayZDiag ] && app=221100
         if ! busy=$(prefix_wineserver "$(prefix_dir $app)"); then
@@ -710,13 +801,15 @@ EOF
         chmod +x "$state/run.sh"
         printf 'output HEADLESS-1 resolution %s position 0 0\nxwayland enable\nexec %s/run.sh > %s/run.log 2>&1\n' \
             "${RES:-1600x900}" "$state" "$state" > "$state/sway.conf"
-        rm -f "$state/wayland-display" "$state/sway.pid" "$state/sway.identity" "$state/sway.cancel"
-        # The child writes its own PID before exec, so the recorded PID is the
-        # sway process itself even when setsid forks under job control. It
-        # checks sway.cancel before writing sway.pid and again just after:
+        rm -f "$state/wayland-display"
+        # One launcher form only, with setsid required above (no nohup: a
+        # setsid session is not reached by the terminal's SIGHUP anyway).
+        # The child writes its own PID before exec, so the recorded PID is
+        # the sway process itself even when setsid forks under job control.
+        # It checks sway.cancel before writing sway.pid and again just after:
         # if a failed start has cancelled, it removes its pid and exits
         # instead of exec'ing a sway the parent can no longer track.
-        WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid nohup sh -c '[ ! -e "$1/sway.cancel" ] || exit 0; echo $$ > "$1/sway.pid"; if [ -e "$1/sway.cancel" ]; then rm -f "$1/sway.pid"; exit 0; fi; exec sway -c "$1/sway.conf"' sh "$state" \
+        WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid sh -c '[ ! -e "$1/sway.cancel" ] || exit 0; echo $$ > "$1/sway.pid"; if [ -e "$1/sway.cancel" ]; then rm -f "$1/sway.pid"; exit 0; fi; exec sway -c "$1/sway.conf"' sh "$state" \
             > "$state/sway.log" 2>&1 &
         _hl_wait=${DAYZ_PROTON_START_WAIT_TENTHS:-50}
         case $_hl_wait in ''|*[!0-9]*) die "DAYZ_PROTON_START_WAIT_TENTHS must be a non-negative integer (tenths of a second)" ;; esac

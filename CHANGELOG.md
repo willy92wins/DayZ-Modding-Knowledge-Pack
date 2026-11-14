@@ -120,17 +120,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   effect (`CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION`, batch serialization only). `headless stop`
   signals only a sway whose recorded `/proc` start time and full argv still match, then only that
   session's wineserver by pid:starttime pair (comm and start time re-checked before the signal;
-  an empty recorded display signals no wineserver); `headless start` refuses a state with a live
-  session and succeeds only when the recorded pid is `sway` with the exact three-entry sway argv
+  an empty recorded display signals no wineserver); a headless state path may only contain
+  `A-Z a-z 0-9 / . _ -` (`start`/`stop`/`shot` check it as given and once resolved, before any
+  side effect), `headless start` requires `setsid` (one launcher form, no `nohup`), refuses
+  while a launcher or sway of the same state may still be running and touches nothing then
+  (stale `sway.pid`/`sway.identity`/`sway.cancel` are removed with one stderr line only after
+  no such process is alive), and succeeds only when the recorded pid is `sway` with the exact
+  three-entry sway argv
   (a script named `sway` does not pass; `DAYZ_PROTON_START_WAIT_TENTHS`, default 50 tenths, checked
   again after the last sleep). After `start` returns, success or failure, either the recorded sway
   is tracked with a verified identity or no sway of that state is running: a failed start writes
   `sway.cancel` first (the launcher child checks it before and just after writing `sway.pid`),
   signals only its own launcher or that exact sway, waits five tenths of a second re-checking for
   a pid published in that window, and only then deletes its tracking; the marker stays after a
-  failure and is removed by the next start or a successful one, so a wait of 0 fails cleanly
+  failure and is removed by the next start only after it proved no launcher is alive, or by a
+  successful one, so a wait of 0 fails cleanly
   without leaving a sway. The sway config path is passed to awk through its environment, not
-  `awk -v`, so a state path holding a literal `\t` or `\n` still matches. `init` and the .NET warm-up stop only
+  `awk -v`. `init` and the .NET warm-up stop only
   wineservers that were not running when they began, matching `WINEPREFIX` literally
   (`CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY`). These stops reduce but do not eliminate the
   check-then-signal race, and real Proton, sway and `cmd.exe` were not run by the offline tests.

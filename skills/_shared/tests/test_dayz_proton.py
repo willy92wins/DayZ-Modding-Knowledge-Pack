@@ -403,6 +403,29 @@ def state_sway_pids(state: Path) -> list[int]:
     return found
 
 
+def state_launcher_pids(state: Path) -> list[int]:
+    """Live pids that look like this state's launcher (argv holds the
+    launcher `exec sway` form with the state as an entry) or its sway."""
+    conf = str(state / "sway.conf")
+    found: list[int] = []
+    proc = Path("/proc")
+    if not proc.exists():
+        return found
+    for entry in proc.iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            argv = (entry / "cmdline").read_bytes().split(b"\0")
+        except OSError:
+            continue
+        argv = [a.decode(errors="surrogateescape") for a in argv if a]
+        if any(conf in a for a in argv) or (
+            any("exec sway" in a for a in argv) and str(state) in argv
+        ):
+            found.append(int(entry.name))
+    return found
+
+
 def wait_no_state_sway(state: Path, seconds: float = 3.0) -> bool:
     deadline = time.time() + seconds
     while time.time() < deadline:
@@ -651,7 +674,7 @@ def test_headless_second_start_is_refused_and_first_stays_stoppable(tmp_path: Pa
         pid = int((state / "sway.pid").read_text().strip())
         done = headless_start(tmp_path, state, bin_dir, dzhome, tool="DayZDiag")
         assert done.returncode != 0
-        assert "already has a live session; stop it first" in done.stderr
+        assert "still has a running sway or launcher" in done.stderr
         assert not pid_gone(pid), "first sway died on the refused second start"
         assert int((state / "sway.pid").read_text().strip()) == pid
         done = run(
@@ -788,24 +811,36 @@ def test_headless_start_with_slow_launcher_and_tiny_wait_leaves_no_sway(
         kill_state_sways(state)
 
 
-@requires_real_sway
-@pytest.mark.parametrize("dirname", [r"state\test", r"state\ntest", r"state\test\nboth"])
-def test_headless_start_stop_with_backslash_in_state_path(tmp_path: Path, dirname: str) -> None:
-    # The state path holds a literal backslash-t / backslash-n. Passing it
-    # to awk with -v would interpret those escapes (a real TAB / newline)
-    # and the sway argv would never match, so readiness and stop would
-    # fail; the path now goes through ENVIRON instead.
-    bin_dir = fake_sway(tmp_path)
+@pytest.mark.parametrize("dirname", ["state\nwith-newline", r"a\tb", "state with space"])
+def test_headless_start_refuses_a_disallowed_state_path(tmp_path: Path, dirname: str) -> None:
+    # A newline, a backslash or a space in the state path is refused before
+    # any side effect: the directory is not created and no file is written.
+    # The parent directory already exists (it is tmp_path itself).
+    bin_dir = tmp_path / "fakebin"
+    bin_dir.mkdir(exist_ok=True)
     dzhome = tmp_path / "dzhome"
     state = tmp_path / dirname
+    done = headless_start(tmp_path, state, bin_dir, dzhome)
+    assert done.returncode != 0
+    assert "may only contain" in done.stderr
+    assert not state.exists(), "a refused state path created its directory"
+    assert not list(tmp_path.glob("state*")) or dirname.startswith("a"), (
+        "a refused state path wrote a file"
+    )
+
+
+@requires_real_sway
+def test_headless_start_stop_with_dotted_dashed_state_path(tmp_path: Path) -> None:
+    # An allowed name with . and - still starts and stops; the conf path
+    # reaches awk through ENVIRON (passing it with awk -v would let escape
+    # handling mis-compare some state paths).
+    bin_dir = fake_sway(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state.v1-test"
     pid = -1
     try:
         done = headless_start(tmp_path, state, bin_dir, dzhome)
         assert done.returncode == 0, done.stderr
-        # sway.pid is written by the launcher child, not by the parent, so
-        # read it through the bounded wait rather than a single read (the
-        # successful start has in fact already read it, but the test does
-        # not rely on that ordering to see a complete pid).
         pid = wait_for_pid_file(state / "sway.pid")
         assert pid > 0, "the launcher child never wrote sway.pid"
         assert not pid_gone(pid)
@@ -815,9 +850,89 @@ def test_headless_start_stop_with_backslash_in_state_path(tmp_path: Path, dirnam
             bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
         )
         assert done.returncode == 0, done.stderr
-        assert wait_gone(pid), "stop did not signal the sway of a backslash state path"
+        assert wait_gone(pid), "stop did not signal the sway of a dotted/dashed state path"
         assert not (state / "sway.pid").exists()
     finally:
+        kill_process_tree(pid)
+        kill_state_sways(state)
+
+
+@requires_real_sway
+def test_headless_retry_is_refused_while_first_launcher_is_pending(tmp_path: Path) -> None:
+    # A setsid shim waits for a release file instead of exec'ing the real
+    # setsid, so launcher A stays pending with no timing luck. The first
+    # start (wait 0) fails; a retry must be refused with the state
+    # untouched while A is still pending; after release A sees sway.cancel
+    # and leaves no untracked sway; then a fresh start succeeds and stop
+    # ends it, and no process of the state is alive at the end.
+    bin_dir = fake_sway(tmp_path)
+    real_setsid = shutil.which("setsid")
+    assert real_setsid is not None
+    release = tmp_path / "release-a"
+    record = tmp_path / "setsid-shim.pid"
+    _write(
+        bin_dir / "setsid",
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$$\" > '{record}'\n"
+        "_n=0\n"
+        f"while [ ! -e '{release}' ]; do\n"
+        "    _n=$((_n + 1)); [ \"$_n\" -lt 2000 ] || exit 1\n"
+        "    sleep 0.01\n"
+        "done\n"
+        f"exec '{real_setsid}' \"$@\"\n",
+        exe=True,
+    )
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    shim_pid = -1
+    pid = -1
+    try:
+        done = headless_start(
+            tmp_path, state, bin_dir, dzhome,
+            extra_env={"DAYZ_PROTON_START_WAIT_TENTHS": "0"},
+        )
+        assert done.returncode != 0
+        assert "sway did not start" in done.stderr
+        shim_pid = wait_for_pid_file(record, seconds=5.0)
+        assert shim_pid > 0, "the setsid shim never wrote its pid record"
+        before = {
+            p.name: p.read_bytes() for p in sorted(state.iterdir()) if p.is_file()
+        }
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode != 0
+        assert "still has a running sway or launcher" in done.stderr
+        after = {
+            p.name: p.read_bytes() for p in sorted(state.iterdir()) if p.is_file()
+        }
+        assert after == before, "the refused retry changed the state"
+        assert not pid_gone(shim_pid), "launcher A died on the refused retry"
+        release.write_text("go\n")
+        assert wait_gone(shim_pid, seconds=10.0), "launcher A did not settle after release"
+        deadline = time.time() + 10.0
+        while state_launcher_pids(state) and time.time() < deadline:
+            time.sleep(0.05)
+        assert not state_launcher_pids(state), "launcher A is still running after release"
+        assert wait_no_state_sway(state, seconds=5.0), (
+            "released launcher A left an untracked sway"
+        )
+        assert not state_sway_pids(state)
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode == 0, done.stderr
+        pid = wait_for_pid_file(state / "sway.pid")
+        assert pid > 0 and not pid_gone(pid)
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert wait_gone(pid), "stop did not end the sway started after release"
+        assert wait_no_state_sway(state, seconds=5.0)
+        assert not state_sway_pids(state)
+    finally:
+        # Create the release so a still-waiting shim can exit, then kill
+        # only this test's own processes.
+        release.write_text("go\n")
+        kill_process_tree(shim_pid)
         kill_process_tree(pid)
         kill_state_sways(state)
 
