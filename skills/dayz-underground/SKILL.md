@@ -255,3 +255,10 @@ DayZDiag 1.30 (`dayz-test-ingame`, `dayz-mcp-verify`):
 - Sakhal: its world is stored in an encrypted `.ebo` and could not be read.
 - Exactly where the engine looks for `holes.cfg` and whether a config-only mod opens holes.
 - What the engine does with `ECE_OBJECT_SPAWNER`.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- Terrain Builder was **not** started under Proton; treat any `.wrp` step as Windows-only until it is measured. String searches in `DayZDiag_x64.exe` work natively with `strings` and `strings -el` (UTF-16).
+- In-game checks: native server and Proton client (`dayz-test-ingame`, Linux notes).

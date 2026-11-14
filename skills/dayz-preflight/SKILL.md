@@ -129,3 +129,17 @@ What 1.30 adds is Tools/launch awareness (not new `preflight.py` probes — thos
 - SP-374 Buldozer viewer path is unchanged as a check. Pair it with `-cacheP3D` only after Tools 1.30 is the installed tree.
 
 Operational flags and argv: `dayz-test-ingame` / `dayz-test-ingame/references/dayz-1-30-test-ingame.md`. Mesh cache: `dayz-model-pipeline` / `dayz-model-pipeline/references/dayz-1-30-model-pipeline.md`.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+| Check | Linux equivalent |
+|---|---|
+| DayZ Tools / DayZ / DayZ Server located | `dayz-proton.sh doctor` (reads `libraryfolders.vdf` and the app manifests; prints game versions and pending updates) |
+| `P:\` mounted | a directory recorded by `dayz-proton.sh init <dir>`; `doctor` prints it |
+| `DayZDiag_x64.exe` locatable | in the DayZ (221100) folder; runs under Proton |
+| Workshop folder | `<library>/steamapps/workshop/content/221100/<id>` |
+| Registry values | do not exist on the host; `init` writes what the tools read into its private prefix |
+
+`init` is the Linux counterpart of mounting `P:`. The rule above still holds: do not run it unasked; tell the user what it does (private prefixes under `~/.local/share/dayz-proton`, about two minutes) and let them run it. The SP-374 Object Builder viewer key lives in the tools prefix's registry; that check was not run on Linux.

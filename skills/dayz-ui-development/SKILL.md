@@ -1768,3 +1768,10 @@ To resume them, having the display turned on is enough: load `$profile:uiprobe.l
 
 
 
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- `dayz-ui-lab` (`.layout` parse/check, offline render) is Python and runs natively.
+- Workbench starts under Proton (`dayz-proton.sh gui Workbench`); its layout and imageset editors were **not verified** there. `P:\gui\...` is the extracted vanilla data under the directory mapped by `dayz-proton.sh init`.
+- Packing: dayzmake >= 1.0.0 (https://github.com/bzed/dayzmake) instead of AddonBuilder/MakePbo. For the distributed diag client helper see `skills/_shared/scripts/dayz-proton.sh` and `skills/_shared/linux-proton.md`. The author-local retail-client screenshot harness is not distributed here. An HTML preview is not in-game sign-off; retain the widget/binding and runtime gates of this skill.

@@ -7,6 +7,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Linux (2026-11-13): bzed's armake2 fork is now dayzmake (https://github.com/bzed/dayzmake). Every
+  Linux note names `dayzmake` >= 1.0.0, pinned to the `v1.0.0` release binary or
+  `cargo install --git ... --tag v1.0.0` (the tag contains the measured `7dcb3cf` and `0a0ce3b`), and
+  says why the fork is required: upstream armake2 is built for Arma, leaves `*.c` files out of the signature
+  and lacks the DayZ-only functions dayzmake keeps adding (listed in `_shared/linux-proton.md`).
+  `dayz-proton.sh doctor` checks for dayzmake, falls back to a pre-rename `armake2` fork build and
+  flags upstream armake2 or a pre-1.0 build; it no longer stops at the first Steam app that is not
+  installed (`manifest` failed under `set -e`). The native `DayZServer` ignores absolute `-mod=` /
+  `-servermod=` paths, the reverse of the Windows rule; `dayz-test-ingame`'s Linux notes and the
+  guide's pitfalls say so.
+- CI: a `linux` job (validation, `packctl` and skill tests off Windows) and tests for
+  `skills/_shared/scripts/dayz-proton.sh`, which had none.
+- Linux findings (2026-11-06): the pack-only managed `dayz_test_run` cycle was measured on the
+  unmerged dayz-mcp `linux-port` branch (PR #353), not upstream main. Managed binarization with
+  assets was not verified. A diag client only joins a diag server (`0x00020017`); an absolute
+  `-mission` leaves the native server without `init.c`'s `main`; Steam's PID is `~/.steam/steam.pid`.
+  Windows guidance is preserved; see the additive Linux qualifications in `dayz-test-ingame`.
+- Linux support notes (2026-11-03), append-only: Windows instructions are unchanged.
+  `skills/_shared/linux-proton.md` maps each Windows step to its Linux route (native dayzmake and
+  `workshop` first, BI's tools under Proton where there is no native equivalent) and records what was
+  measured: ImageToPAA, CfgConvert, the DS tools, AddonBuilder, binarize, TexView, Object Builder,
+  Workbench and DayZDiag (client and `-server`) under Proton Hotfix / GE-Proton11-1, plus the
+  cross-app quirk (DayZ 221100 and DayZ Tools 830640 get separate Wine prefixes: no shared `P:`, an
+  empty game key, no install-script registry or VC++ runtime in a private prefix) and the pitfalls
+  (one display per prefix, WoW64 for the 32-bit tools, the first .NET start, AddonBuilder's exit code).
+  `skills/_shared/scripts/dayz-proton.sh` sets up private prefixes and runs the tools
+  (`doctor`, `init`, `tool`, `gui`, `binarize`, `headless`). An `## On Linux` section was appended to
+  30 skills that depend on a Windows-only step; `AGENTS.md` gains a routing row.
+  `knowledge/linux-proton-findings-2026-11.md` holds the raw findings and the dayz-mcp port status.
+  Not verified: Terrain Builder, Publisher, Workbench's editors, `-filePatching` under Proton, an ODOL
+  made under Proton loaded in game.
 - `knowledge/script-network-limits.md`: local DayZDiag 1.30.164289.70 string probe, corrected after review: ScriptRPC and ScriptInputUserData sizes, four admitted queue messages, RPC burst order and the probe's ACK.
   `CLAIM-NET-RPC-ASCII`, `CLAIM-NET-RPC-UTF8`, `CLAIM-NET-INPUT-ASCII`, `CLAIM-NET-INPUT-UTF8`, `CLAIM-NET-QUEUE`, `CLAIM-NET-ORDER`, `CLAIM-NET-ACK`, `CLAIM-NET-SCOPE`.
 
