@@ -253,3 +253,7 @@ An animation is not "done" when the code ran — it is done when you have LOOKED
   and anything needing a window stays broken there (§2.7).
 - Big outputs (MP4s, stills) go to the session scratchpad or a user-named folder — never
   into the skill tree.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there; the Linux setup for DayZ tools is in [`_shared/linux-proton.md`](../_shared/linux-proton.md). For this skill only the headless fallback changes: Blender is native, so the batch call is `blender -b --factory-startup --python script.py` (checked 2026-11-03 with Blender 5.2.2 LTS: a script that adds a cube ran and `sys.platform` was `linux`). The MCP route and the `bpy` code are the same. The `.txa` → Workbench → `.anm` hand-off is covered by the Linux notes of `dayz-animation-pipeline`.

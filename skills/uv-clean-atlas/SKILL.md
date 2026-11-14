@@ -338,3 +338,9 @@ Statue 2026-09-01 (1 shell, Quadriflow 5.7k): Track B at 80° gave SAT=0 / 215 i
 Guillermo: few islands + by views does NOT license wrap-stretch. Density p05/p95 must stay within ~0.8-1.5 of median. A 1-shell statue that view-clusters to 25 charts and then dust-merges to 5 (p05=0.00, p95=3.95) is a FAIL even though island count looks like a livery.
 
 Do not dust-merge a view chart into its neighbor if that merge would make the island wrap past the density gate. Keep the extra view island. Minimize islands against Track B hundreds, not against this gate.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- The WSL2 steps are Linux already: run them natively and skip the Windows → WSL plumbing (CRLF stripping, PowerShell → bash quoting). Headless Blender is `blender -b <file.blend> --python <script> -- <args>`. `project_atlas.py`'s PNG step (`render_atlas_pngs`) calls `powershell.exe` with `draw_atlas_fallback.ps1`, a script that is not shipped in this pack on any OS; on Linux skip that step or draw the atlas PNGs with PIL.

@@ -433,3 +433,11 @@ Treat a baseline mismatch as an extraction failure. Stop the sweep instead of dr
 from bytes whose decoding has not been proved.
 
 **ODOL version preflight (1.30):** a 1.30 vanilla `.p3d` is ODOL v56 (1.29: v54). Read header bytes 4-7 before parsing a binarized model; a v54 reader fails with `ValueError: subsection not found`. Detail: `dayz-vehicles/references/dayz-1-30-vehicles.md`.
+
+## On Linux
+
+Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
+
+- [EXACT][CLAIM-DAYZMAKE-UNPACK-NO-CONTAINMENT] `dayzmake unpack` is only for a PBO you built yourself or whose entry names you have already checked: dayzmake v1.0.0 (`src/pbo.rs:724,731-733`) joins each entry name onto the output folder with no containment check, then creates parent folders and the file, so a `..\x` entry escapes and an absolute name replaces the base; the tool is external and unchanged here, and dropping `--force` alone is not a fix. Safe recipe for any other PBO: copy it to a private directory first (so it cannot change between check and extract), list **all** entry names of that same copy with `dayzmake inspect <pbo>`, and refuse it if any name holds a control character (byte below 0x20, or 0x7f), starts with `/` or `\`, has a `..` segment (with `/` or `\`), or has a drive letter (`X:`); then unpack that copy into a fresh, empty directory. Keep `--force` only where its reason is the `$PBOPREFIX$` collision and the names are already checked. Reading one file with `dayzmake cat <pbo> <name>` (to stdout, nothing written to disk) is an alternative to extracting that file, never a check of the rest of the PBO. Rapified configs: `dayzmake derapify`. Whole-install extraction helpers mentioned by the author are external, not distributed by this Pack.
+- Obfuscated PBOs are not covered by this; see `japm-pbo-recovery`.
+- PowerShell loops (`Get-ChildItem … | ForEach-Object`) become `find … -name '*.pbo' -exec …`.

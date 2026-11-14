@@ -82,6 +82,7 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | Rebuilding or patching a PBO | `dayz-pbo-diff` | Payload SHA-256 per entry; between two builds a different `.p3d` entry proves nothing by itself |
 | Regenerating a terrain's navmesh | `dayz-navmesh-compare` | Structure, not bytes; verified only for one 12 288 m world in 12.5, 25 or 50 m tiles |
 | Driving Terrain Builder without the desktop | `dayz-terrain-builder-runner` | EXPERIMENTAL, Windows only: menus and file dialogs verified; Generate Layers, imports and WRP export not; a disposable instance only |
+| Working on Linux (DayZ Tools, DayZDiag, `P:`) | `skills/_shared/scripts/dayz-proton.sh` | Runs BI's tools under Proton in private prefixes; native dayzmake / `workshop` first. Guide and measured matrix: `skills/_shared/linux-proton.md` |
 
 Two habits make the difference. Propose the tool **before** the expensive step,
 not after it fails — that is the whole point of a preflight. And when a tool

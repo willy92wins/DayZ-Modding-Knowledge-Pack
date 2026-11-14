@@ -7,6 +7,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Linux (2026-11-13): bzed's armake2 fork is now dayzmake (https://github.com/bzed/dayzmake). Every
+  Linux note names `dayzmake` >= 1.0.0, pinned to the `v1.0.0` release binary or
+  `cargo install --git ... --tag v1.0.0` (the tag contains the measured `7dcb3cf` and `0a0ce3b`), and
+  says why the fork is required: upstream armake2 is built for Arma, its V3 file hash omits `*.c` files
+  (dayzmake v1.0.0 includes them) and it lacks the DayZ-only functions dayzmake keeps adding (listed in `_shared/linux-proton.md`).
+  `dayz-proton.sh doctor` checks for dayzmake, falls back to a pre-rename `armake2` fork build and
+  flags upstream armake2 or a pre-1.0 build; it no longer stops at the first Steam app that is not
+  installed (`manifest` failed under `set -e`). The native `DayZServer` ignores absolute `-mod=` /
+  `-servermod=` paths, the reverse of the Windows rule; `dayz-test-ingame`'s Linux notes and the
+  guide's pitfalls say so.
+- CI: a `linux` job (validation, `packctl` and skill tests off Windows) and tests for
+  `skills/_shared/scripts/dayz-proton.sh`, which had none.
+- Linux findings (2026-11-06): the pack-only managed `dayz_test_run` cycle was measured on the
+  unmerged dayz-mcp `linux-port` branch (PR #353), not upstream main. Managed binarization with
+  assets was not verified. A diag client only joins a diag server (`0x00020017`); an absolute
+  `-mission` leaves the native server without `init.c`'s `main`; Steam's PID is `~/.steam/steam.pid`.
+  Windows guidance is preserved; see the additive Linux qualifications in `dayz-test-ingame`.
+- Linux support notes (2026-11-03), append-only: Windows instructions are unchanged.
+  `skills/_shared/linux-proton.md` maps each Windows step to its Linux route (native dayzmake and
+  `workshop` first, BI's tools under Proton where there is no native equivalent) and records what was
+  measured: ImageToPAA, CfgConvert, the DS tools, AddonBuilder, binarize, TexView, Object Builder,
+  Workbench and DayZDiag (client and `-server`) under Proton Hotfix / GE-Proton11-1, plus the
+  cross-app quirk (DayZ 221100 and DayZ Tools 830640 get separate Wine prefixes: no shared `P:`, an
+  empty game key, no install-script registry or VC++ runtime in a private prefix) and the pitfalls
+  (one display per prefix, WoW64 for the 32-bit tools, the first .NET start, AddonBuilder's exit code).
+  `skills/_shared/scripts/dayz-proton.sh` sets up private prefixes and runs the tools
+  (`doctor`, `init`, `tool`, `gui`, `binarize`, `headless`). An `## On Linux` section was appended to
+  30 skills that depend on a Windows-only step; `AGENTS.md` gains a routing row.
+  `knowledge/linux-proton-findings-2026-11.md` holds the raw findings and the dayz-mcp port status.
+  Not verified: Terrain Builder, Publisher, Workbench's editors, `-filePatching` under Proton, an ODOL
+  made under Proton loaded in game.
 - `knowledge/script-network-limits.md`: local DayZDiag 1.30.164289.70 string probe, corrected after review: ScriptRPC and ScriptInputUserData sizes, four admitted queue messages, RPC burst order and the probe's ACK.
   `CLAIM-NET-RPC-ASCII`, `CLAIM-NET-RPC-UTF8`, `CLAIM-NET-INPUT-ASCII`, `CLAIM-NET-INPUT-UTF8`, `CLAIM-NET-QUEUE`, `CLAIM-NET-ORDER`, `CLAIM-NET-ACK`, `CLAIM-NET-SCOPE`.
 
@@ -79,6 +110,45 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `knowledge/script-network-arrays.md`: local DayZDiag 1.30.164289.70 loopback probe, corrected after review: `array<int>` counts over ScriptRPC and ScriptInputUserData, and the probe's unconditional ACK.
   `CLAIM-NET-ARRAY-RPC`, `CLAIM-NET-ARRAY-INPUT`, `CLAIM-NET-ARRAY-ACK`, `CLAIM-NET-ARRAY-SCOPE`.
 - `knowledge/script-network-array-types.md`: local loopback runtime probe on DayZDiag 1.30.164289.70 (DayZ Server appmanifest buildid 26220720): `ScriptRPC` read `array<int>` counts 512, 1024 and 2048 with matching checksums and 4096 with `values.Count()=4096` (checksum not logged); `ScriptInputUserData` accepted `array<int>` counts 40, 48, 64, 96 and 128 and rejected 140, 143, 144, 192, 255 and 256 at `Write` despite `CanStoreInputUserData()` true; `ScriptRPC` read `array<string>` counts 1, 16 and 64 of 16 characters and `ScriptInputUserData` read 1, 8 and 16 of 8 characters while 32 of 8 characters (256 bytes) failed `Write`; a manually built `array<array<int>>` read back `outer=4`, `inner=0`, while `array<ref array<int>>` preserved a 4x4 matrix with checksum 120 over both channels; the ACK carried sequence and count, not a content hash. `CLAIM-NET-ARRAY-TYPES-RPC`, `CLAIM-NET-ARRAY-TYPES-INPUT`, `CLAIM-NET-STRING-ARRAY-RPC`, `CLAIM-NET-STRING-ARRAY-INPUT`, `CLAIM-NET-NESTED-ARRAY`, `CLAIM-NET-NESTED-DECL`, `CLAIM-NET-ARRAY-TYPES-ACK`, `CLAIM-NET-ARRAY-TYPES-SCOPE`.
+
+### Fixed
+
+- Linux/Proton review fixes (2026-11-14) for the Linux support above:
+  `dayz-proton.sh binarize` no longer interpolates user arguments into a `cmd.exe /c` string; it
+  writes them double-quoted into a sandbox `Z:\run.bat` (`%` and trailing backslashes doubled,
+  delayed expansion off) and refuses a double quote, CR, LF or an empty argument before any side
+  effect (`CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION`, batch serialization only). `headless stop`
+  signals only a sway whose recorded `/proc` start time and full argv still match, then only that
+  session's wineserver by pid:starttime pair (comm and start time re-checked before the signal;
+  an empty recorded display signals no wineserver); a headless state path may only contain
+  `A-Z a-z 0-9 / . _ -` (`start`/`stop`/`shot` check it as given and once resolved, before any
+  side effect), `headless start` requires `setsid` (one launcher form, no `nohup`), refuses
+  while a launcher or sway of the same state may still be running and touches nothing then
+  (stale `sway.pid`/`sway.identity`/`sway.cancel` are removed with one stderr line only after
+  no such process is alive), and succeeds only when the recorded pid is `sway` with the exact
+  three-entry sway argv
+  (a script named `sway` does not pass; `DAYZ_PROTON_START_WAIT_TENTHS`, default 50 tenths, checked
+  again after the last sleep). After `start` returns, success or failure, either the recorded sway
+  is tracked with a verified identity or no sway of that state is running: a failed start writes
+  `sway.cancel` first (the launcher child checks it before and just after writing `sway.pid`),
+  signals only its own launcher or that exact sway, waits five tenths of a second re-checking for
+  a pid published in that window, and only then deletes its tracking; the marker stays after a
+  failure and is removed by the next start only after it proved no launcher is alive, or by a
+  successful one, so a wait of 0 fails cleanly
+  without leaving a sway. The sway config path is passed to awk through its environment, not
+  `awk -v`. `init` and the .NET warm-up stop only
+  wineservers that were not running when they began, matching `WINEPREFIX` literally
+  (`CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY`). These stops reduce but do not eliminate the
+  check-then-signal race, and real Proton, sway and `cmd.exe` were not run by the offline tests.
+  `dayz-pbo-reverse-engineering` no longer recommends `dayzmake unpack --force` for third-party PBOs:
+  dayzmake v1.0.0 has no containment check on entry names (`CLAIM-DAYZMAKE-UNPACK-NO-CONTAINMENT`),
+  so an unchecked PBO is copied to a private folder, its names are checked, and only that copy is
+  unpacked into a fresh empty directory. `dayzmake inspect` on models shows LODs, textures,
+  materials, properties and selections only for an editable MLOD (`CLAIM-DAYZMAKE-INSPECT-ODOL-SCOPE`),
+  and upstream armake2's `*.c` exclusion is stated for the V3 filehash (`CLAIM-ARMAKE2-V3-SIGN-OMITS-C`).
+  The stale `--proton-binarize` version text and the `dayz-mod-pack.sh publish-hint` line in
+  `dayz-pbo-build` are corrected, and the unclaimed author measurements in the Linux guide are
+  labelled as such. New offline tests cover the `binarize` .bat and the headless/init stops.
 
 ### Changed
 
