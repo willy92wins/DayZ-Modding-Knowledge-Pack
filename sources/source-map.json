@@ -4759,10 +4759,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "kp-update-promotion-8f3e874@2026-10-07",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion-adjudications 2026-11-14: the owner decided to adjudicate in favour of this repository the four targets that promote --check of c1508c0 (#184) reported as PROMOTION-TARGET-UNEXPLAINED, and to promote. skill/dayz-mcp-verify on agents_user_skills and claude_user_skills (one directory through a junction) is re-pinned from 9cd836d8... to the observed e51492d2... (a hand edit of 2026-11-01 and a .bak file since receipt ca6a553e92e09e4ce3b86993); skill/systematic-debugging and skill/task-observer on claude_user_skills get their first adjudication, at 12c3a8d4... and e0a3ead8..., which equal the head's projection. The file stays canonical JSON (packctl.common.canonical_json_bytes); promote reads artifact_id, target_id, observed_digest and a non-empty reason (packctl/promotion.py:994-1048) and explains a target whose digest equals its adjudication (packctl/promotion.py:1805).",
+          "license": "MIT",
+          "source_hash": "ade3127b20b6602ca9e79857d95c56547b1a6ca95f7b563833e871f6f64c96d9",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-adjudications@2026-11-14",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "38ef4542aafea1e360d79621097ce30555a5cdfb9cec38b7941f1b7264e66d9d",
+      "output_hash": "ade3127b20b6602ca9e79857d95c56547b1a6ca95f7b563833e871f6f64c96d9",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
