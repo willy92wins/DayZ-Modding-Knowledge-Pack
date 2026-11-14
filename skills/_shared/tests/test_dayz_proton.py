@@ -506,6 +506,27 @@ def headless_start(
     )
 
 
+def popen_headless_start(
+    tmp_path: Path, state: Path, bin_dir: Path, dzhome: Path,
+    extra_env: dict[str, str] | None = None,
+) -> subprocess.Popen[str]:
+    home = tmp_path / "home"
+    home.mkdir(exist_ok=True)
+    (tmp_path / "steam" / "steamapps").mkdir(parents=True, exist_ok=True)
+    env = {
+        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+        "HOME": str(home),
+        "STEAM_ROOT": str(tmp_path / "steam"),
+        "DAYZ_PROTON_HOME": str(dzhome),
+    }
+    if extra_env:
+        env.update(extra_env)
+    return subprocess.Popen(
+        ["sh", str(SCRIPT), "headless", "start", str(state), "ObjectBuilder"],
+        env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+    )
+
+
 @requires_real_sway
 def test_headless_start_then_stop_signals_our_sway(tmp_path: Path) -> None:
     bin_dir = fake_sway(tmp_path)
@@ -933,6 +954,129 @@ def test_headless_retry_is_refused_while_first_launcher_is_pending(tmp_path: Pat
         # only this test's own processes.
         release.write_text("go\n")
         kill_process_tree(shim_pid)
+        kill_process_tree(pid)
+        kill_state_sways(state)
+
+
+@requires_real_sway
+def test_headless_second_start_refused_while_first_launcher_is_still_pending(
+    tmp_path: Path,
+) -> None:
+    # Synchronised, no timing luck: a setsid shim writes a READY file and
+    # then waits for a RELEASE file before exec-ing the real setsid, so the
+    # first start stays pending -- with neither sway.pid nor sway.cancel in
+    # the state yet -- although its launcher is already alive. A second
+    # start on the same state must be refused without creating or changing
+    # any file in the state; releasing the first launcher must then let it
+    # succeed and be tracked, and stop must end it with nothing left.
+    bin_dir = fake_sway(tmp_path)
+    real_setsid = shutil.which("setsid")
+    assert real_setsid is not None
+    ready = tmp_path / "launcher-ready"
+    release = tmp_path / "launcher-release"
+    _write(
+        bin_dir / "setsid",
+        "#!/bin/sh\n"
+        f": > '{ready}'\n"
+        "_n=0\n"
+        f"while [ ! -e '{release}' ]; do\n"
+        "    _n=$((_n + 1)); [ \"$_n\" -lt 2000 ] || exit 1\n"
+        "    sleep 0.01\n"
+        "done\n"
+        f"exec '{real_setsid}' \"$@\"\n",
+        exe=True,
+    )
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    state.mkdir()
+    first: subprocess.Popen[str] | None = None
+    pid = -1
+    try:
+        first = popen_headless_start(
+            tmp_path, state, bin_dir, dzhome,
+            extra_env={"DAYZ_PROTON_START_WAIT_TENTHS": "200"},
+        )
+        deadline = time.time() + 10.0
+        while not ready.exists() and time.time() < deadline:
+            time.sleep(0.01)
+        assert ready.exists(), "the first launcher never reached the setsid shim"
+        before_names = sorted(p.name for p in state.iterdir())
+        before = {p.name: p.read_bytes() for p in state.iterdir() if p.is_file()}
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode != 0
+        assert "still has a running sway or launcher" in done.stderr
+        after_names = sorted(p.name for p in state.iterdir())
+        after = {p.name: p.read_bytes() for p in state.iterdir() if p.is_file()}
+        assert after_names == before_names, "the refused second start changed the state listing"
+        assert after == before, "the refused second start changed a file in the state"
+        release.write_text("go\n")
+        _out, err = first.communicate(timeout=30)
+        assert first.returncode == 0, err
+        pid = wait_for_pid_file(state / "sway.pid")
+        assert pid > 0 and not pid_gone(pid), "the released first launcher was not tracked"
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert wait_gone(pid), "stop did not end the released first sway"
+        assert wait_no_state_sway(state, seconds=5.0)
+        assert not state_sway_pids(state)
+        assert not state_launcher_pids(state)
+    finally:
+        release.write_text("go\n")
+        if first is not None and first.poll() is None:
+            kill_process_tree(first.pid)
+            try:
+                first.wait(timeout=5)
+            except Exception:
+                pass
+        kill_process_tree(pid)
+        kill_state_sways(state)
+
+
+@requires_real_sway
+def test_headless_alias_to_a_newline_directory_is_refused(tmp_path: Path) -> None:
+    # A symlink `alias` to a directory named "state<LF>": resolving it must
+    # keep the newline (a plain $(cd ... && pwd -P) strips it and would
+    # resolve to the normal session's `state`). stop and start through the
+    # alias must be refused before anything is read, created or signalled,
+    # and the normal session must stay running and untouched.
+    bin_dir = fake_sway(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    newline_dir = tmp_path / "state\n"
+    newline_dir.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(newline_dir, target_is_directory=True)
+    pid = -1
+    try:
+        done = headless_start(tmp_path, state, bin_dir, dzhome)
+        assert done.returncode == 0, done.stderr
+        pid = wait_for_pid_file(state / "sway.pid")
+        assert pid > 0 and not pid_gone(pid)
+        pid_bytes = (state / "sway.pid").read_bytes()
+        done = run(
+            tmp_path, "headless", "stop", str(alias),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode != 0
+        assert "may only contain" in done.stderr
+        assert not pid_gone(pid), "stop through the alias signalled the normal session"
+        assert (state / "sway.pid").read_bytes() == pid_bytes
+        done = headless_start(tmp_path, alias, bin_dir, dzhome)
+        assert done.returncode != 0
+        assert "may only contain" in done.stderr
+        assert not pid_gone(pid), "start through the alias touched the normal session"
+        assert (state / "sway.pid").read_bytes() == pid_bytes
+        assert list(newline_dir.iterdir()) == [], "the refused alias wrote into its target"
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert wait_gone(pid), "the normal session was not stoppable afterwards"
+    finally:
         kill_process_tree(pid)
         kill_state_sways(state)
 

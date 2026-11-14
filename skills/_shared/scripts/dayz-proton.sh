@@ -31,10 +31,10 @@
 #   path may only contain A-Z a-z 0-9 / . _ - (checked as given and once resolved, before any
 #   side effect, in `start`, `stop` and `shot`). `headless start` requires `setsid`, refuses a
 #   busy (or untellable) prefix, and refuses while a launcher or sway of the same state may
-#   still be running (see the stale-file rule at the start case): if sway.pid or sway.cancel
-#   exists and no launcher or sway of this state is alive, those files are stale and are
-#   removed with one stderr line before continuing. It succeeds only when the recorded pid's
-#   /proc comm is sway with the exact three-entry sway argv; `headless stop` signals only a
+#   still be running: it always scans for one before touching the state, and if sway.pid,
+#   sway.identity or sway.cancel exists and no launcher or sway of this state is alive,
+#   those files are stale and are removed with one stderr line before continuing. It succeeds
+#   only when the recorded pid's /proc comm is sway with the exact three-entry sway argv; `headless stop` signals only a
 #   sway whose recorded /proc identity (start time + full argv) still matches, then only that
 #   session's wineserver (by pid:starttime, re-checked before each signal; an empty or
 #   unreadable recorded display signals no wineserver). These checks and the signal are not
@@ -730,6 +730,37 @@ state_launcher_alive() {
     if [ "$_la_unknown" = 1 ]; then return 2; fi
     return 1
 }
+# Physical-path capture with a sentinel: a plain $(cd ... && pwd -P) (or
+# $(dirname ...) / $(basename ...)) strips ALL trailing newlines, so a name
+# ending in a newline would be silently truncated before the whitelist
+# check below (a symlink to a directory named "state<LF>" would resolve to
+# ".../state"). Capture with a trailing x inside the substitution, remove
+# the x, then remove exactly one trailing newline -- the one the command
+# itself adds -- so a real newline in the name survives in _phys.
+_phys_dir() {
+    _pd_raw=$(cd "$1" 2>/dev/null && pwd -P && printf x) || return 1
+    _pd_raw=${_pd_raw%x}
+    case $_pd_raw in
+        *"$LF") _phys=${_pd_raw%?} ;;
+        *) return 1 ;;
+    esac
+}
+_phys_dirname() {
+    _pd_raw=$(dirname "$1" && printf x) || return 1
+    _pd_raw=${_pd_raw%x}
+    case $_pd_raw in
+        *"$LF") _phys=${_pd_raw%?} ;;
+        *) return 1 ;;
+    esac
+}
+_phys_basename() {
+    _pd_raw=$(basename "$1" && printf x) || return 1
+    _pd_raw=${_pd_raw%x}
+    case $_pd_raw in
+        *"$LF") _phys=${_pd_raw%?} ;;
+        *) return 1 ;;
+    esac
+}
 do_headless() {
     sub=${1:-}; state=${2:-}
     [ -n "$sub" ] && [ -n "$state" ] || die "usage: headless start|shot|stop <state> ..."
@@ -742,22 +773,51 @@ do_headless() {
     headless_state_path_ok "$state" || die_bad_state_path "$state"
     case $state in
         /*) _hl_abs=$state ;;
-        *) _hl_abs=$(pwd -P)/$state ;;
+        *) _phys_dir . || die_bad_state_path "$state"
+           if [ "$_phys" = / ]; then _hl_abs=/$state; else _hl_abs=$_phys/$state; fi ;;
     esac
     _hl_work=$_hl_abs; _hl_suffix=
     while [ ! -d "$_hl_work" ]; do
-        _hl_suffix=/$(basename "$_hl_work")$_hl_suffix
-        _hl_parent=$(dirname "$_hl_work")
+        _phys_basename "$_hl_work" || die_bad_state_path "$state"
+        _hl_suffix=/$_phys$_hl_suffix
+        _phys_dirname "$_hl_work" || die_bad_state_path "$state"
+        _hl_parent=$_phys
         [ "$_hl_parent" != "$_hl_work" ] || break
         _hl_work=$_hl_parent
     done
+    _hl_resolved=$_hl_abs
     if [ -d "$_hl_work" ]; then
-        _hl_base=$(cd "$_hl_work" && pwd -P) || die_bad_state_path "$state"
+        _phys_dir "$_hl_work" || die_bad_state_path "$state"
+        _hl_base=$_phys
         if [ "$_hl_base" = / ]; then _hl_resolved=$_hl_suffix; else _hl_resolved=$_hl_base$_hl_suffix; fi
         [ -n "$_hl_resolved" ] || _hl_resolved=/
         headless_state_path_ok "$_hl_resolved" || die_bad_state_path "$_hl_resolved"
     fi
-    shift 2; mkdir -p "$state"; state=$(cd "$state" && pwd -P)
+    shift 2
+    if [ "$sub" = start ]; then
+        # Always scan for a launcher/sway of this state before touching
+        # the state (before mkdir, before writing app/args/run.sh/
+        # sway.conf, before removing anything): during a first start
+        # that is still pending neither sway.pid nor sway.cancel may
+        # exist yet although its launcher is already alive, so gating
+        # the scan on those files would let a second start in and the
+        # first launcher would later overwrite sway.pid, leaving a sway
+        # untracked. Alive or unknown: refuse and touch nothing.
+        # Stale-file removal happens only when the scan says none is
+        # alive AND one of the stale files exists.
+        _hl_alive_rc=0
+        state_launcher_alive "$_hl_resolved" || _hl_alive_rc=$?
+        if [ "$_hl_alive_rc" != 1 ]; then
+            die "state $_hl_resolved still has a running sway or launcher; run \`headless stop $_hl_resolved\` or wait"
+        fi
+        if [ -e "$_hl_resolved/sway.pid" ] || [ -e "$_hl_resolved/sway.identity" ] || [ -e "$_hl_resolved/sway.cancel" ]; then
+            echo "dayz-proton: removing stale sway files in $_hl_resolved" >&2
+            rm -f "$_hl_resolved/sway.pid" "$_hl_resolved/sway.identity" "$_hl_resolved/sway.cancel"
+        fi
+    fi
+    mkdir -p "$state"
+    _phys_dir "$state" || die_bad_state_path "$state"
+    state=$_phys
     headless_state_path_ok "$state" || die_bad_state_path "$state"
     case $sub in
     start)
@@ -765,25 +825,8 @@ do_headless() {
         command -v sway >/dev/null || die "sway is needed for headless runs"
         command -v setsid >/dev/null || die "setsid is needed for headless runs"
         case ${DAYZ_PROTON_START_WAIT_TENTHS:-50} in ''|*[!0-9]*) die "DAYZ_PROTON_START_WAIT_TENTHS must be a non-negative integer (tenths of a second)" ;; esac
-        # Stale-file rule: while a launcher of this state may still be
-        # running, refuse and touch nothing. If sway.pid or sway.cancel
-        # exists, state_launcher_alive decides (see its comment: the pid
-        # file first, then a /proc scan that also finds a launcher which
-        # has not published its pid yet; an incomplete scan counts as
-        # alive). Only when none is alive are sway.pid, sway.identity and
-        # sway.cancel stale: remove them with one stderr line and continue.
-        # With this rule sway.cancel is only ever created by the failed
-        # start of the same call and removed by a later start only after
-        # that later start proved no launcher is alive.
-        if [ -e "$state/sway.pid" ] || [ -e "$state/sway.cancel" ]; then
-            _hl_alive_rc=0
-            state_launcher_alive "$state" || _hl_alive_rc=$?
-            if [ "$_hl_alive_rc" != 1 ]; then
-                die "state $state still has a running sway or launcher; run \`headless stop $state\` or wait"
-            fi
-            echo "dayz-proton: removing stale sway files in $state" >&2
-            rm -f "$state/sway.pid" "$state/sway.identity" "$state/sway.cancel"
-        fi
+        # The launcher scan and the stale-file rule ran above, before
+        # the state was touched (see do_headless, before mkdir -p).
         app=830640; [ "$1" = DayZDiag ] && app=221100
         if ! busy=$(prefix_wineserver "$(prefix_dir $app)"); then
             die "cannot tell whether prefix $(prefix_dir $app) is in use; treating it as busy: one display per prefix"
