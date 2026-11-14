@@ -1931,10 +1931,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1053bbd743e672601cf81acde0c030f6a44cc4f9c13c55306237bbfaa79862c0",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a632a9459c3f06b47b6d7228f463343620710378b72c9b9b26a2557bb50ba464",
+      "output_hash": "1053bbd743e672601cf81acde0c030f6a44cc4f9c13c55306237bbfaa79862c0",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5426,10 +5436,20 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8fe7d967f62c023df5c6466b72a67f60c5cf1f04230fdeefee861cff72776d11",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f8c36110992594e84d2bf2d578c553b9151fc0bb1edb8d1959a3c50c8aeb1f04",
+      "output_hash": "8fe7d967f62c023df5c6466b72a67f60c5cf1f04230fdeefee861cff72776d11",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -7626,10 +7646,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a622788d411aee0d3e857f4c32a75bd5f88b18eba2ca71c5740dd37b30def54c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3f73964ce569f468413e016935aefcd8166010d7144cef6e65acc362faf1c6fb",
+      "output_hash": "a622788d411aee0d3e857f4c32a75bd5f88b18eba2ca71c5740dd37b30def54c",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -8362,10 +8392,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a8d6f6c4d3df28f6f51b3805b0722d78935497485e9bb6614b79160863b5a6d9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f834e2b6910a39dbf720bf91b8d5362087eed98ea719358f7011b3773688511a",
+      "output_hash": "a8d6f6c4d3df28f6f51b3805b0722d78935497485e9bb6614b79160863b5a6d9",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -8690,10 +8730,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "691e807b1635e9c470c2116e2f228c7d88002480391008182785f6704d217305",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8a8c9c72520388068a208eeeecfa4245d2353139585493bdba2cdb3fa0115552",
+      "output_hash": "691e807b1635e9c470c2116e2f228c7d88002480391008182785f6704d217305",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -9046,10 +9096,20 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2dec6e1eefb853d02aa937f991c9193f2396821ac0e0eaed0c56c2d615d51eae",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b3ca4cffb2d6934e16689dca676676a40184d3a05435b0167fd7c099c319ce53",
+      "output_hash": "2dec6e1eefb853d02aa937f991c9193f2396821ac0e0eaed0c56c2d615d51eae",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -10100,10 +10160,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "26de5c17ffce690c2ab986915e87de04459e2900924645aa348ecbe8ae8548f1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d4794ed7789c92cfe356caa515e28224feb141bad3559647c089f4b7670f86b4",
+      "output_hash": "26de5c17ffce690c2ab986915e87de04459e2900924645aa348ecbe8ae8548f1",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -10448,10 +10518,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "24eef1a8fb8771cd1716e71b0a05f0c5f073fea18d9105d40c2509d65f4f027c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9547a64723ac6b89cd8843ebae73dd26656c75ebe965b5ae1d3bf1580a0824d5",
+      "output_hash": "24eef1a8fb8771cd1716e71b0a05f0c5f073fea18d9105d40c2509d65f4f027c",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -11356,10 +11436,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "99d7d3abfeaad57db09cefd914998d57d88e7565440d47596f97c68caf3be4a6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a483bc344048f0288f971c6cb3d2230f638c7b61256acf57aab6b6fb1d544245",
+      "output_hash": "99d7d3abfeaad57db09cefd914998d57d88e7565440d47596f97c68caf3be4a6",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -11778,10 +11868,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "31edf5a708b72f01759a3a74200cf94af6a00701162deadd8f6335c36daf81d5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b98d263241ef62278c50b57c6b8d1a20c500374903acce06c74546126ad15cb0",
+      "output_hash": "31edf5a708b72f01759a3a74200cf94af6a00701162deadd8f6335c36daf81d5",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -12346,10 +12446,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "25d382ef90e044c175a939335e5a2ef128502c5380105ece364cf1c23b06c7de",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "39c07eb6e00b32340a88a386b249728e16a13aaa2e206b242075ed29aef3a6ff",
+      "output_hash": "25d382ef90e044c175a939335e5a2ef128502c5380105ece364cf1c23b06c7de",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13160,10 +13270,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "251c6a7043567d4acb85b0ad50f753932aed8e840d58051d857cecca7725e4cd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1930e6c064c1cbf017393c0bde78a6d8e5888c80b411d87e089dae95389f3690",
+      "output_hash": "251c6a7043567d4acb85b0ad50f753932aed8e840d58051d857cecca7725e4cd",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -13836,10 +13956,20 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "039c0d566009447900027594405657a67766dbc51e00731ebd979bd0dad14de8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "57e6fd3bb8569a655f420e69142fab5cdb1edf6339d78d8b99c0f2ed567b6119",
+      "output_hash": "039c0d566009447900027594405657a67766dbc51e00731ebd979bd0dad14de8",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -16158,10 +16288,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "856e7169a070efe377172a6e122aeebfe5e0d0d9832304da1079afdb33ab11ac",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "493a80e39b6ffb0e6230b53c77beccbed117cb0812a08b5bf9ecd40d09b93571",
+      "output_hash": "856e7169a070efe377172a6e122aeebfe5e0d0d9832304da1079afdb33ab11ac",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -17588,10 +17728,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9b516f415fbd58d0de01fded51f5b2538178b96b0efaa69d986d65dc80ac5d53",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1973912f52ec1a24f0d85a091fec1b5d8fcaf9aa7a805a594ccc512c8fffc9f7",
+      "output_hash": "9b516f415fbd58d0de01fded51f5b2538178b96b0efaa69d986d65dc80ac5d53",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -19186,10 +19336,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "808bc64b4a9290d805fe47a8bdab9be39e6dbf8304302804b19b147b5df99536",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "abd76517f68c1a904e1bfce7b9a39ae08f97f6ffdf2e092d3311d495e5326900",
+      "output_hash": "808bc64b4a9290d805fe47a8bdab9be39e6dbf8304302804b19b147b5df99536",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -36569,10 +36729,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e3cc36c21c67cd8567b79711e0a3a915e088adb84063f49f7252b73404737bcf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "be6e1911a04bfe30d9fecbd244e80def474becfb4059d170e8946ea0b9e1dc9b",
+      "output_hash": "e3cc36c21c67cd8567b79711e0a3a915e088adb84063f49f7252b73404737bcf",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -41803,10 +41973,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "aa3fe27ce9073adf194bef4235552a848b6984ff9c19a16a16e956b9b5136fde",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "06ec13cebdd4b3ee4e8d4ba4f1bbfd7fa209132f4d071a8df8ca7816acb7a537",
+      "output_hash": "aa3fe27ce9073adf194bef4235552a848b6984ff9c19a16a16e956b9b5136fde",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -41845,10 +42025,20 @@
           "source_path": "skills/_shared/scripts/dayz-proton.sh",
           "source_revision": "linux-dayzmake@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Why the dayzmake fork is required, completed per the author (2026-11-14): upstream armake2 is built for Arma, and dayzmake adds more and more DayZ-only functions or DayZ-specific behaviour; the list of what it adds so far. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b2f525000d913fedf36d2f96f1de50b41bf8ebc8f4ea21857e1fc0e8d2889f2c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-proton.sh",
+          "source_revision": "dayzmake-why@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "644058d4441114a6ae80158650c798480a8752262a8c58796e7015a4da42f47d",
+      "output_hash": "b2f525000d913fedf36d2f96f1de50b41bf8ebc8f4ea21857e1fc0e8d2889f2c",
       "output_path": "skills/_shared/scripts/dayz-proton.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"

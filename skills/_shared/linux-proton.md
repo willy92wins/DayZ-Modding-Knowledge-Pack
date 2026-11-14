@@ -41,9 +41,15 @@ the old URL https://github.com/bzed/armake2 redirects there). Use `v1.0.0` or la
 the release binary `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from
 https://github.com/bzed/dayzmake/releases/tag/v1.0.0 (the one dayz-mcp's `linux-port` branch accepts),
 or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0` (needs `libssl-dev`). The fork
-is required, not a preference: upstream armake2 (KoffeinFlummi/armake2) leaves `*.c` files out of the
-signature, so the `.bisign` of a script mod does not cover its scripts, and it fails on DayZ configs
-(reported by the author, who wrote the fork). An installed binary is the fork when `dayzmake -h`
+is required, not a preference, and it is moving away from upstream on purpose: it implements more and
+more functions that only DayZ needs, or that DayZ needs differently from Arma. Upstream armake2
+(KoffeinFlummi/armake2) is built for Arma: it leaves `*.c` files out of the signature, so the `.bisign` of
+a script mod does not cover its scripts, and it fails on DayZ configs. What the fork adds (the author's
+list): preprocessor grammar fixes (`#include` directives, nested macro arguments), `$PREFIX$` accepted when
+building PBOs, `img2paa` / `paa2img`, `inspect` of models (MLOD/ODOL: format, LODs, textures, materials,
+selections), a `binarize` command, texture and material checks in `build` (`missing-texture`,
+`missing-material`) and opt-in `build --proton-binarize` (models through BI's binarize under Proton).
+Expect new DayZ-only behaviour in later releases; read the release notes before upgrading a pinned build. An installed binary is the fork when `dayzmake -h`
 lists `--proton-binarize`; `dayzmake --version` prints `v1.0.0`, while builds from before the rename
 are called `armake2` and print `v0.3.0` whatever their commit.
 

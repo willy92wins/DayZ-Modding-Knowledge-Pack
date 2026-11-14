@@ -436,7 +436,8 @@ do_init() {
 }
 
 # check_dayzmake: the native packer is bzed's armake2 fork, renamed dayzmake at v1.0.0. Upstream
-# armake2 leaves *.c out of the signature; a fork build from before the rename is called armake2.
+# armake2 is built for Arma (it leaves *.c out of the signature, and dayzmake adds DayZ-only functions);
+# a fork build from before the rename is called armake2.
 check_dayzmake() {
     url="https://github.com/bzed/dayzmake (v1.0.0 or later)"
     b=
