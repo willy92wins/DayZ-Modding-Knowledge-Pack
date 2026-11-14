@@ -14,8 +14,8 @@ on a server with `-mod=@Mod` and `verifySignatures = 2`, and its scripts ran; Th
 
 ## Get the right dayzmake
 
-dayzmake is bzed's DayZ fork of armake2, renamed at `v1.0.0` (https://github.com/bzed/dayzmake). **Upstream armake2
-leaves `*.c` files out of the signature**, so a script mod's `.bisign` does not cover its scripts, and it fails on
+dayzmake is bzed's DayZ fork of armake2, renamed at `v1.0.0` (https://github.com/bzed/dayzmake). **Upstream armake2's
+V3 file hash omits `*.c` files** (dayzmake's includes them; a changed script also changes the signed PBO checksum), and it fails on
 DayZ configs (`MP:16-20`). The fork keeps moving away from upstream on purpose, with functions only DayZ
 needs or needs differently from Arma; what it adds so far is listed in `_shared/linux-proton.md`, section 1. Use dayzmake >= 1.0.0, pinned: the release binary
 `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or
@@ -117,8 +117,7 @@ a PBO that `inspect`/`unpack` refused with `failed to fill whole buffer`; older 
 - For a PBO with `config.bin`, a `.c` script and an rvmat, the fork's v3 `.bisign` was **byte-identical** to
   `DSSignFile.exe`'s, and `DSCheckSignatures.exe -deep` reported it OK (2026-10-31, under Proton). For a negative
   control see `dayz-test-ingame`, "A signature negative control that cannot fail".
-- Sign after the final build; any change to the PBO, even a rebuild with another timestamp, invalidates the
-  signature. Sign every PBO of a mod with one key, so one `.bikey` covers all.
+- Sign after the final build. Not every byte change invalidates a v3 signature: the v3 file hash covers only part of each entry (a byte of an uncompressed `.paa` entry is not hashed by v3; `pbo.rs:311-314`, `sign.rs:157-177`), while a changed script also changes the signed PBO checksum. A rebuild with another timestamp can therefore still verify for uncovered entries. Sign every PBO of a mod with one key, so one `.bikey` covers all.
 
 ## Other commands
 

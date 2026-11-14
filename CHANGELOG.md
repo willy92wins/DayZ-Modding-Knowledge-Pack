@@ -52,6 +52,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- PR #183 integration review fixes: the Linux helper scripts no longer write outside their target trees (PBO prefix/entry validation and staged promotion in `extract-dayz-sources.sh` with a new `--force` flag, private `profiles/` and symlink handling in `make-server-tree.sh`, verified sway identity and path-free `sway.conf`/`game.sh` in `dayz-client-headless.sh`, `.dayzmod` parsed as data and `static/` private-key scan in `dayz-mod-pack.sh`, `--mod` validation in `build-api-index.py`, and a feasibility bound in `free-ports.sh`); the AutoTest runner binds results to the test player and restores its initial damage state; and the 1.30 migration, scope, Workbench-guard, CF-storage, module-count, `CCTWaterSurface`, `EffectAreaLoader` and signature-coverage statements were corrected to their cited sources.
 - `ref` keeps a class without a `Managed` ancestor alive too; a member field without `ref` is weak for both kinds
   and reads `NULL`; assigning `new` to a non-`ref` field does not compile ("not strong ref"); a two-object `ref` cycle
   is never destroyed (measured on 1.30.164289; `enforce-script-reference` `references/memory-management.md`,

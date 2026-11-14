@@ -470,7 +470,7 @@ Full `[EXACT]` bodies: `references/dayz-1-30-enforce-script.md`.
 ## DayZ 1.30.164289 — language limits, typedefs, weather, players, inventory, actions, mission hooks
 
 Paths are relative to the extracted vanilla `scripts/` tree of DayZ 1.30.164289 (Steam build 26220720 of the
-dedicated server). "Measured" means a probe in a dedicated server's mission `init.c` on that build.
+dedicated server), read from the source (path:line cited inline). "Measured" below means measured at runtime by the author in a dedicated server's mission `init.c` on that build (probe not in the Pack).
 
 ### Language limits and built-ins
 
@@ -559,7 +559,7 @@ server: overcast 0.484, rain 0, fog 0, wind speed 10.
   `CCINotPresent`, `CCINonRuined`, `CCINotEmpty`, `CCINotRuinedAndEmpty`, `CCINotRuinedAndDry`. Target
   conditions in `TargetConditionsComponents/`: `CCTNone`, `CCTDummy`, `CCTSelf`, `CCTMan`, `CCTObject(dist)`,
   `CCTParent`, `CCTCursor(dist)` and its `NoRuinCheck` / `Inherited` / `Parent` / `NoObject` variants,
-  `CCTNonRuined`, `CCTSurface`, `CCTTree`, `CCTWaterSurface`, `CCTWaterSurfaceEx`, `CCTLiquid`. Distances come
+  `CCTNonRuined`, `CCTSurface`, `CCTTree`, `CCTWaterSurface` ([EXACT][CLAIM-CCTWATER-OBSOLETE] `[Obsolete("1.30: replaced by CCTLiquid")]` at `4_world/classes/useractionscomponent/targetconditionscomponents/cctwatersurface.c:2` in 164200; use `CCTLiquid`), `CCTWaterSurfaceEx`, `CCTLiquid`. Distances come
   from `UAMaxDistances` (`Actions/ActionConstants.c:111-122`: `SMALL` 1.3, `DEFAULT` 2.0, `REPAIR` 3.0,
   `LARGE` 8.0, ...).
 - Overrides: `GetText()` (returns `m_Text`, `ActionBase.c:330-333`), `ActionCondition(PlayerBase, ActionTarget,
@@ -581,12 +581,13 @@ server: overcast 0.484, rain 0, fog 0, wind speed 10.
 
 ### `MissionServer` hooks (`scripts/5_Mission/mission/missionServer.c`)
 
+[EXACT][CLAIM-MISSIONSERVER-CREATED] `MissionServer` is created by the server from `5_mission/somemission.c:1-9` and declared at `5_mission/mission/missionserver.c:5` (read from the 164200 source).
+
 `OnEvent` (`:309`) dispatches the client events: `OnClientPrepareEvent` `:449`; `OnClientNewEvent` `:549` (which
 calls `CreateCharacter(PlayerIdentity, vector pos, ParamsReadContext, string characterName)` `:499`, returning the
 new `PlayerBase`) followed by `InvokeOnConnect`; `OnClientReadyEvent(PlayerIdentity, PlayerBase)` `:599` for a
 character loaded from the database, also followed by `InvokeOnConnect(PlayerBase, PlayerIdentity)` `:435`;
 `OnClientRespawnEvent` `:611`; `OnClientReconnectEvent` `:633`; `OnClientDisconnectedEvent(identity, player,
 int logoutTime, bool authFailed)` `:641`. That one either starts the logout timer or, for an instant logout, calls
-`PlayerDisconnected(PlayerBase, PlayerIdentity, string uid)` `:690`, which runs `InvokeOnDisconnect`, saves the
-player and removes it. `uid` is `identity.GetId()`, and the source warns that `identity` may already be deleted
+`PlayerDisconnected(PlayerBase, PlayerIdentity, string uid)` `:690`, which runs `InvokeOnDisconnect` and handles the player according to its alive state (`HandleBody`, `missionserver.c:748-763` distinguishes the alive state; a corpse is not removed that way). `uid` is `identity.GetId()`, and the source warns that `identity` may already be deleted
 there (`:692`), so key any save on `uid`.

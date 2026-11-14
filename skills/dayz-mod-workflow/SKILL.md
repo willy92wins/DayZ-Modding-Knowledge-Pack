@@ -193,7 +193,7 @@ Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/08-tutoria
   - DabsFramework: `"DF_Scripts"` or `"DF_GUI"` (NOT `"DabsFramework"`). Expansion: `"DayZExpansion_Core"` for Core; a module's scripts patch is `"DayZExpansion_<Module>_Scripts"` (e.g. `_Market_Scripts`, `_AI_Scripts`, `_Quests_Scripts`, `_Vehicles_Scripts`, `_BaseBuilding_Scripts`), not `"DayZExpansion_<Module>"` (`salutesh/DayZ-Expansion-Scripts@14fd692`: `DayZExpansion/Core/Stub/config.cpp:3`, `DayZExpansion/Market/Scripts/config.cpp:3`)
   - Vanilla: `"DZ_Data"`, `"DZ_Scripts"`
 - [ ] `hiddenSelections[]` count matches `hiddenSelectionsTextures[]` count
-- [ ] `scope = 2` public, `1` protected (script can still create it, e.g. vanilla `LargeTentClutterCutter`), `0` abstract
+- [ ] `scope = 2` for exposure in public lists/tools that filter by scope 2, `1` protected (script can still create it, e.g. vanilla `LargeTentClutterCutter`), `0` abstract
 - [ ] Inheritance: verify parent exists or is in requiredAddons
 - [ ] `inventorySlot` = string for single, `inventorySlot[]` = array for multiple
 - [ ] `ghostIcon`: `"set:setname image:imagename"` - verify imageset exists

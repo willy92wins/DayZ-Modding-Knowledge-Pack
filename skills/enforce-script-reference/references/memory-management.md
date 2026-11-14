@@ -63,8 +63,8 @@ has both `ref InventoryLocation` and plain `InventoryLocation` locals).
 The plain form is idiomatic and shorter; `ref` on local is legal but adds
 no extra semantics.
 
-**Measured on the dedicated server, DayZ 1.30.164289** (a probe in the mission `init.c`, i.e. a class
-declared in the mission module, with a destructor that prints):
+**Measured at runtime by the author on the dedicated server, DayZ 1.30.164289** (probe not in the Pack: a probe in the mission `init.c`, i.e. a class
+declared in the mission module, with a destructor that prints). The class-family statements around it were read from the 164289 source (paths cited inline):
 
 - `ref` works on a plain class with no `Managed` ancestor: a `ref` field kept its object alive until the
   holder was released, then the destructor ran. You do not need to inherit `Managed` for `ref` to work.

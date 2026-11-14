@@ -101,8 +101,8 @@ The script also knows `ExternalLockData` and `SandstormData`, which the Chernaru
 
 ## 4. `cfgeffectarea.json`
 
-Read by `ContaminatedAreaLoader` from `$mission:cfgeffectarea.json`, with the same `dz/worlds/<world>/ce/`
-fallback (`scripts/4_World/Classes/ContaminatedArea/ContaminatedAreaLoader.c:4`, `:18`). The top level has two
+Read by `EffectAreaLoader` (the class in 164200, `4_world/classes/contaminatedarea/contaminatedarealoader.c:2`; the file name keeps the old `ContaminatedAreaLoader` name) from `$mission:cfgeffectarea.json`, with the same `dz/worlds/<world>/ce/`
+fallback (`scripts/4_World/Classes/ContaminatedArea/ContaminatedAreaLoader.c:4`, `:18`). Not verified on 164289. The top level has two
 arrays (`JsonDataContaminatedArea.c:1-6`):
 
 - `Areas`: one object per zone with `AreaName`, `Type` (the entity class, e.g. `ContaminatedArea_Static`),
@@ -113,7 +113,7 @@ arrays (`JsonDataContaminatedArea.c:1-6`):
 `OuterPartDist`, `OuterOffset`, `VerticalLayers`, `VerticalOffset`, `ParticleName`, `EffectInterval`,
 `EffectDuration`, `EffectModifier`; `PlayerData` holds `AroundPartName`, `TinyPartName`, `PPERequesterType`
 (`JsonDataContaminatedArea.c:17-41`). A `Radius` of 0 or less is rejected with an error naming the area
-(`ContaminatedAreaLoader.c:48`). Chernarus ships nine `ContaminatedArea_Static` zones.
+(`ContaminatedAreaLoader.c:48`, the `EffectAreaLoader` file). Chernarus ships nine `ContaminatedArea_Static` zones.
 
 ## 5. `db/messages.xml`
 
@@ -127,5 +127,5 @@ only commented examples (`MISSION/db/messages.xml:3-45`).
 
 With `-profiles=<dir>` the server writes `DayZServer_<date>_<time>.RPT` (engine), `script_<date>_<time>.log`
 and `error_<date>_<time>.log`. With `-adminlog` it also writes `DayZServer_<date>_<time>.ADM`, which starts with
-an `AdminLog started on <date> at <time>` header; without the switch no `.ADM` file appears (both measured on the
-native Linux server, 1.30.164289, 2026-11-13).
+an `AdminLog started on <date> at <time>` header; without the switch no `.ADM` file appears (both measured at runtime by the author on the
+native Linux server, 1.30.164289, 2026-11-13; probe not in the Pack). The rest of this page was read from the 164289 source (paths cited inline), not measured at runtime.

@@ -120,7 +120,7 @@ class CfgVehicles
 
 ### Important config.cpp Rules
 
-1. **`scope = 2`** — Required for items to be spawnable/visible. `scope = 0` hides them.
+1. **`scope`** — Creation by script works with `scope = 1`: [EXACT][CLAIM-SCOPE1-SCRIPT-CREATE] vanilla gives `LargeTentClutterCutter` `scope = 1` (`data/gear_camping/DZ/gear/camping/config.cpp:914-916`) and creates it from script with `CreateObjectEx` (`4_world/entities/itembase/tentbase/largetent.c:140`). Exposure in public lists/tools that filter by scope 2 needs `scope = 2`. `scope = 0` hides them.
 2. **`units[]`** — List ALL your classes here. Missing = not loaded.
 3. **`requiredAddons[]`** — Must include addons your classes inherit from.
 4. **Forward declare parent classes** — `class Inventory_Base;` before using as parent.

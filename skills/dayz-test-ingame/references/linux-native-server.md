@@ -129,28 +129,26 @@ ln -sfn "$W/1559212036/keys/"*.bikey "$TREE/keys/"
 Only subscribed items are in the workshop directory. If a mod is missing, ask the user to subscribe and start
 the launcher once; never `steamcmd +workshop_download_item` into Steam's directories (`LS:215-229`).
 
-### Wipe the storage whenever CF is added or removed
+### Storage and CF: removing CF is observed, adding CF is a hypothesis
 
-If a tree already ran (or an existing storage is reused) and CF enters or leaves the mod set, delete the
-storage **before** the next boot. CF's ModStorage writes extra data into every saved entity, so storage
-written with CF and read without it, or the reverse, fails (`LS:231-249`):
+CF's ModStorage writes extra data into every saved entity. The two directions have different evidence:
 
-```sh
-find "$TREE/mpmissions" -maxdepth 2 -name storage_1 -exec rm -rf {} +   # only in a tree you built
-```
-
-What each direction looks like, and why it misleads:
-
-- **Removing CF** (1.30.164200.56): a tree booted once with `-mod=@CF` and then vanilla logged about 24,000
+- **Removing CF** (observed, 1.30.164200.56): a tree booted once with `-mod=@CF` and then vanilla logged about 24,000
   `Virtual Machine Exception`s during the CE load, all
   `[EntityAI::OnStoreLoad] :: [WARNING] :: Scripted variables corrupted upon "PileOfWoodenPlanks". Entity will not be loaded correctly.`
   The server kept running, so a boot that "works" proves nothing: grep for `Scripted variables corrupted`
   (`LS:251-261`).
-- **Adding CF** (1.30): the boot died with `Unknown type 'CF_Trace'` and `Can't compile "Engine" script module`.
-  That reads like a CF/Expansion version conflict, not stale storage. Rebuilding the trees fresh with their
-  final mod sets booted at once. When a CF change coincides with "version conflict" compile errors, wipe or
-  rebuild before debugging versions. Mods that persist their own item, vehicle or tent state are the likely
-  trigger; the exact conditions are not pinned down (`LS:263-278`).
+- **Adding CF** (hypothesis, not isolated): a boot died with `Unknown type 'CF_Trace'` and `Can't compile "Engine" script module`.
+  That is a compile error of the "Engine" module, not a storage read error, and the trees were rebuilt at the
+  same time, so storage was not isolated as the cause. It reads like a CF/Expansion version conflict. Before
+  wiping, isolate: rebuild with the same storage kept, or copy the storage aside and retry (`LS:263-278`).
+
+Do not delete storage to act on the hypothesis. With processes stopped, rotate it to a destination name that
+does not exist yet (rename, never delete; deletion only applies to a disposable test tree you built):
+
+```sh
+mv "$TREE/mpmissions/<mission>/storage_1" "$TREE/mpmissions/<mission>/storage_1.<tag>"   # processes stopped; <tag> must not exist yet
+```
 
 ## 3. Run it headless
 
@@ -200,9 +198,11 @@ grep -h 'MyMod' "$TREE"/profiles/script_*.log                  # your own Print 
 ```
 
 1. **Did the scripts load at all?** Boot once without the mod for the vanilla baseline (440 Game-module files
-   on 1.30.164014; take your own baseline on the build you test). With the mod the count must rise by its script files in that module.
-   **An unchanged count means the mod's scripts were not loaded**, though the server started and printed no
-   error (`LS:349-352`). Silent causes seen (`LS:354-366`):
+   on 1.30.164014; take your own baseline on the build you test). Compare each script module the mod contributes
+   files to (3_Game, 4_World, 5_Mission, ...) against that baseline: an unchanged count in a module where the mod
+   has files is the signal its scripts were not loaded there (a mod with only 4_World/5_Mission files legitimately
+   leaves the Game count unchanged). The counter is an indicator only: a rise can come from other mods and does
+   not by itself prove this mod loaded (`LS:349-352`). Silent causes seen (`LS:354-366`):
    - the PBO at the mod folder root (`@MyMod/MyMod.pbo`) instead of `@MyMod/addons/MyMod.pbo`: silently
      ignored, while the folder still shows in the `ANIMATION (E): Can't load @MyMod/...` pass, which is
      **not** loading (`dayz-pbo-build` SKILL.md, "Folder Structure Validation");

@@ -19,8 +19,7 @@ joins a `DayZDiag` server (`0x00020017`); that pairing, and the managed dayz-mcp
 
 - A running, logged-in Steam that owns DayZ (the game talks to it), the client installed, a Proton tool,
   `sway` and `grim` (`CT:15-20`).
-- A server tree (`linux-native-server.md`) with the mods and their `.bikey`s; wipe its `storage_1` first if CF
-  entered or left the mod set since it last ran.
+- A server tree (`linux-native-server.md`) with the mods and their `.bikey`s; removing CF since it last ran is an observed storage breakage, while adding CF needing a wipe is an unisolated hypothesis — isolate first before rotating its `storage_1` (see `linux-native-server.md`, "Storage and CF").
 - **One game at a time.** A Steam account runs one game, and a second client would fight the first over GPU,
   Wine prefix and Steam connection, including the user's own game: if they are playing, wait or ask. Servers
   can run side by side (`CT:24-27`).
@@ -105,11 +104,15 @@ a known order and prints results an outside script can grep; it ran green on bot
 (`@MyMod_Test`) that depends on yours, load it with `-mod=` on both sides, and keep it out of the release. The
 mod name is also a script define (`#ifdef AutoTest`, visible in the `Module: ...; defines:` line) (`CT:167-203`).
 
-**Godmode.** The runner sets `player.SetAllowDamage(false)` as soon as it is scheduled and between tests, so a
-zombie or a fall does not fail an unrelated test. A server-side melee hit left health `100 -> 100`; a test that
-overrides `NeedsDamage()` to `true` gets damage for itself only, and the same hit gave `100 -> 95` (both builds).
-Only the harness's own `ProcessDirectDamage` with `MeleeZombie` was tried, not real zombies, animals, falls,
-hunger, thirst or cold (`CT:205-223`).
+**Godmode.** The runner records `player.GetAllowDamage()` before it first calls
+`player.SetAllowDamage(false)`, sets godmode between tests, and restores the recorded value when the run
+finishes, times out or is aborted; a test that overrides `NeedsDamage()` to `true` gets damage for itself
+only. Results (`AUTOTEST_RPC_RESULT`) are accepted only from the identity of the player the run was
+scheduled for; other senders are ignored with a `Print`. A server-side melee hit left health `100 -> 100`
+and the same hit with damage allowed gave `100 -> 95` (both builds, measured by the author before this
+change). Only the harness's own `ProcessDirectDamage` with `MeleeZombie` was tried, not real zombies,
+animals, falls, hunger, thirst or cold (`CT:205-223`). The sender-binding and restore change in this Pack
+was checked by the offline script linter only, not run in game.
 
 **Pitfalls found building it** (`CT:225-235`):
 

@@ -50,12 +50,63 @@ PBO_EXCLUDES=('*.psd' '*.xcf' '*.kra' '*.blend' '*.blend1' '*.bak' '*.tmp' '*.bi
 
 load_conf() {
     [ -f "$PROJECT/.dayzmod" ] || die "no $PROJECT/.dayzmod; run: $0 init <ModName>"
-    # shellcheck disable=SC1091
-    . "$PROJECT/.dayzmod"
+    # Parse .dayzmod as data, never source it: KEY=value, value bare or in one pair of
+    # single/double quotes, no escapes, no $ ` ; | & , blank and # comment lines only.
+    MOD_NAME=; KEY_NAME=; WORKSHOP_TAGS=
+    local _line _key _val _lineno=0 _seen=""
+    while IFS= read -r _line || [ -n "$_line" ]; do
+        _lineno=$((_lineno + 1))
+        case $_line in ''|'#'*) continue ;; esac
+        case $_line in *=*) ;; *) die ".dayzmod line $_lineno: unsupported syntax (expected KEY=value)" ;; esac
+        _key=${_line%%=*}; _val=${_line#*=}
+        case $_key in MOD_NAME|KEY_NAME|WORKSHOP_TAGS) ;; *) die ".dayzmod line $_lineno: unknown key '$_key'" ;; esac
+        case " $_seen " in *" $_key "*) die ".dayzmod line $_lineno: duplicate key '$_key'" ;; esac
+        _seen="$_seen $_key"
+        case $_val in
+            *'$'*|*'`'*|*';'*|*'|'*|*'&'*|*'\'*) die ".dayzmod line $_lineno: unsupported character in value" ;;
+        esac
+        if [ "${#_val}" -ge 2 ] && [ "${_val:0:1}" = "'" ] && [ "${_val: -1}" = "'" ]; then
+            _val=${_val:1:-1}
+            case $_val in *"'"*) die ".dayzmod line $_lineno: unsupported quote in value" ;; esac
+        elif [ "${#_val}" -ge 2 ] && [ "${_val:0:1}" = '"' ] && [ "${_val: -1}" = '"' ]; then
+            _val=${_val:1:-1}
+            case $_val in *'"'*) die ".dayzmod line $_lineno: unsupported quote in value" ;; esac
+        else
+            case $_val in *[!A-Za-z0-9_.,:+-]*|'') die ".dayzmod line $_lineno: unsupported unquoted value" ;; esac
+        fi
+        printf -v "$_key" '%s' "$_val"
+    done < "$PROJECT/.dayzmod"
     [ -n "${MOD_NAME:-}" ] || die ".dayzmod does not set MOD_NAME"
     KEY_NAME=${KEY_NAME:-$MOD_NAME}
     WORKSHOP_TAGS=${WORKSHOP_TAGS:-Mod}
+    case $MOD_NAME in .|..) die "MOD_NAME must not be . or .." ;; esac
+    case $MOD_NAME in *[!A-Za-z0-9_.-]*|'') die "MOD_NAME may only contain letters, digits, _ . -" ;; esac
+    case $KEY_NAME in .|..) die "KEY_NAME must not be . or .." ;; esac
+    case $KEY_NAME in *[!A-Za-z0-9_.-]*|'') die "KEY_NAME may only contain letters, digits, _ . -" ;; esac
+    local _tag
+    for _tag in $WORKSHOP_TAGS; do
+        case $_tag in *[!A-Za-z0-9_-]*|'') die "WORKSHOP_TAGS tag '$_tag' may only contain letters, digits, _ -" ;; esac
+    done
     CONTENT="$PROJECT/build/@$MOD_NAME"
+}
+# Refuse a symlinked build/content path before any rm -rf or delete under it.
+check_content_confinement() {
+    local _proj_real
+    _proj_real=$(cd "$PROJECT" && pwd -P) || die "project $PROJECT not found"
+    if [ -e "$PROJECT/build" ] || [ -L "$PROJECT/build" ]; then
+        [ -d "$PROJECT/build" ] && [ ! -L "$PROJECT/build" ] || die "$PROJECT/build is not a real directory under the project; refusing"
+        case "$(cd "$PROJECT/build" && pwd -P)/" in "$_proj_real"/*) ;; *) die "$PROJECT/build resolves outside the project; refusing" ;; esac
+    fi
+    if [ -e "$CONTENT" ] || [ -L "$CONTENT" ]; then
+        [ -d "$CONTENT" ] && [ ! -L "$CONTENT" ] || die "$CONTENT is not a real directory under the project; refusing"
+        case "$(cd "$CONTENT" && pwd -P)/" in "$_proj_real"/*) ;; *) die "$CONTENT resolves outside the project; refusing" ;; esac
+    fi
+}
+scan_static() {
+    [ -e "$PROJECT/static" ] || [ -L "$PROJECT/static" ] || return 0
+    [ -L "$PROJECT/static" ] && die "static/ is a symlink; refusing to copy it"
+    if find "$PROJECT/static" -type l | grep -q .; then die "static/ contains a symlink; refusing to copy it"; fi
+    if find "$PROJECT/static" -type f -iname '*.biprivatekey' | grep -q .; then die "a .biprivatekey is inside static/; refusing before any copy"; fi
 }
 
 # Use the dayzmake found in PATH first (or $DAYZMAKE). bzed's fork (https://github.com/bzed/dayzmake) is detected by its --proton-binarize option:
@@ -142,7 +193,15 @@ cmd_build() {
             *) die "unknown option: $a" ;;
         esac
     done
-    load_conf; need_dayzmake
+    load_conf; check_content_confinement; scan_static
+    # A private key left in the upload folder by an earlier build is removed (regular files only).
+    if [ -d "$CONTENT" ]; then
+        local _stale
+        while IFS= read -r _stale; do [ -n "$_stale" ] || continue; echo "removing stale private key from content folder: $_stale" >&2; rm -f "$_stale"; done <<EOF2
+$(find "$CONTENT" -type f -iname '*.biprivatekey')
+EOF2
+    fi
+    need_dayzmake
     local priv="$PROJECT/secrets/$KEY_NAME.biprivatekey"
     [ -f "$priv" ] || die "no private key at $priv; run: $0 keygen"
     local addons=()
@@ -186,7 +245,7 @@ cmd_build() {
     write_meta
 
     # The one rule that matters: the private key must not be anywhere under the upload folder.
-    if find "$CONTENT" -name '*.biprivatekey' | grep -q .; then
+    if find "$CONTENT" -iname '*.biprivatekey' | grep -q .; then
         die "a .biprivatekey is inside $CONTENT; refusing to continue"
     fi
     say "content folder ready: $CONTENT"
@@ -248,7 +307,9 @@ cmd_check() {
 cmd_publish_hint() {
     load_conf
     local tagargs="" t
-    for t in $WORKSHOP_TAGS; do tagargs="$tagargs -t '$t'"; done
+    for t in $WORKSHOP_TAGS; do tagargs="$tagargs -t $(printf '%q' "$t")"; done
+    local q_content q_ignore q_mod
+    q_content=$(printf '%q' "$CONTENT"); q_ignore=$(printf '%q' "$PROJECT/.workshopignore"); q_mod=$(printf '%q' "$MOD_NAME")
     cat <<EOF
 Upload needs the Steam client running and logged in as the account that owns DayZ (app $APP_ID).
 It is a deliberate manual step; review the content folder first:  $CONTENT
@@ -263,12 +324,12 @@ EOF
 First upload (creates the item and writes $CONTENT/workshop.toml; copy it to $PROJECT/workshop.toml and commit it).
 The uploader fills the new item id into meta.cpp before uploading the content. Create it private and make it public in
 Steam after checking it:
-  workshop create --app-id $APP_ID --content "$CONTENT" --title "$MOD_NAME" \\
-      --ignore-file "$PROJECT/.workshopignore" --glob '!*.biprivatekey' --visibility private$tagargs -m "first upload"
+  workshop create --app-id $APP_ID --content $q_content --title $q_mod \\
+      --ignore-file $q_ignore --glob '!*.biprivatekey' --visibility private$tagargs -m "first upload"
 
 Tags ($WORKSHOP_TAGS) are stored in workshop.toml by create; update reuses them (Steam drops tags that are not sent).
 Updates (item id comes from workshop.toml in the content folder):
-  workshop --no-prompt update --content "$CONTENT" --ignore-file "$PROJECT/.workshopignore" --glob '!*.biprivatekey' -m "changelog"
+  workshop --no-prompt update --content $q_content --ignore-file $q_ignore --glob '!*.biprivatekey' -m "changelog"
 EOF
 }
 

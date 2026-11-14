@@ -44,7 +44,7 @@ class LF_MyDevice extends ItemBase
 **Registration variants:**
 - `RegisterNetSyncVariableBool(string varName)` — 1 bit
 - `RegisterNetSyncVariableInt(string varName, int min, int max)` — compressed int
-- `RegisterNetSyncVariableFloat(string varName, float min = 0, float max = 0, int precision = 1)` — compressed float. `precision` is the number of digits kept after the decimal point, not a bit count; `min == max` turns quantization off (`scripts/3_Game/Entities/EntityAI.c:2853-2861`, DayZ 1.30.164289). Vanilla passes `2` for the effect-area radius and heights (`scripts/4_World/Classes/ContaminatedArea/EffectArea.c:99-101`) and `5` for an animation phase in 0..1 (`scripts/4_World/Entities/Building/Underground/Entrance/Land_Underground_Entrance.c:76`).
+- [EXACT][CLAIM-NETSYNC-FLOAT-DIGITS] `RegisterNetSyncVariableFloat(string varName, float min = 0, float max = 0, int precision = 1)` — compressed float. `precision` is the number of digits kept after the decimal point, not a bit count; `min == max` turns quantization off (`scripts/3_Game/Entities/EntityAI.c:2853-2861`, DayZ 1.30.164289; the last parameter is digits after the decimal point at `3_game/entities/entityai.c:2859,2861` in 164200). Vanilla passes `2` for the effect-area radius and heights (`scripts/4_World/Classes/ContaminatedArea/EffectArea.c:99-101`) and `5` for an animation phase in 0..1 (`scripts/4_World/Entities/Building/Underground/Entrance/Land_Underground_Entrance.c:76`).
 
 ### Writing SyncVars — Server Only
 

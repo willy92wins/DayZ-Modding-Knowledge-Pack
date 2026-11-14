@@ -136,8 +136,7 @@ Script can read any of them with `GetCEApi().GetCEGlobalInt(name)` / `GetCEGloba
 - `FlagRefreshFrequency` and `FlagRefreshMaxDuration` (seconds; 5 and 40 days stock): the territory flag's
   refresh interval and cap, used only when greater than 0
   (`scripts/4_World/Entities/ItemBase/BaseBuildingBase/Totem.c:34-46`).
-- `CleanupLifetimeDeadPlayer`: the lifetime of a dead body; 0 or less falls back to 3600
-  (`scripts/4_World/Entities/DayZPlayerImplement.c:640-643`).
+- `CleanupLifetimeDeadPlayer`: read from the 164289 source; its cited consumer in `scripts/4_World/Entities/DayZPlayerImplement.c:608-646` is inside `DeathDropHandEntity` and adjusts the lifetime of the item dropped from the hands, not the corpse. No corpse-lifetime consumer is claimed here.
 - `FoodDecay`: read as a float, and as an integer if the float read returns `float.MIN`, so both `type`
   values work (`scripts/3_Game/DayZGame.c:1164-1170`).
 - `WorldWetTempUpdate`: world wetness/temperature updates are on only when it equals 1 (`DayZGame.c:1162`).

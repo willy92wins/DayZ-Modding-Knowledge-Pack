@@ -81,10 +81,10 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
 
 ### Memory Management Rules
 
-12. **`ref` ONLY on class member fields** — never on function params, local vars, or return types. DayZDiag STRICT compiler makes `ref` on a method param a FATAL compile error while retail tolerates it (see TROUBLESHOOTING, SP-047 row)
+12. **`ref` on class member fields keeps the target alive; on locals it is valid and redundant** (locals are strong by default) — never on function params or return types. DayZDiag STRICT compiler makes `ref` on a method param a FATAL compile error while retail tolerates it (see TROUBLESHOOTING, SP-047 row)
 13. **Never combine `ref` and `autoptr`** on the same field — pick one
 14. **Never use `delete` keyword** — GC handles everything; `delete` on live object = segfault
-15. **Non-Managed class instances are weak refs by default** — destroyed when scope ends
+15. **A class field without `ref` is weak for both Managed and plain classes** and reads `NULL` once the last strong reference goes; locals are strong by default, and `ref` keeps a plain class alive too (measured on one probe; see `references/memory-management.md`)
 16. **Break circular references in destructors** — refcount GC cannot collect cycles
 
 ### Networking Rules

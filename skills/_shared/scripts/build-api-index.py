@@ -341,6 +341,17 @@ def main():
     ap.add_argument('--build', default='')
     ap.add_argument('--mod', default='', help='index a mod extraction instead of the vanilla scripts; writes mod-NAME.txt.xz')
     a = ap.parse_args()
+    if a.mod:
+        if not re.fullmatch(r'[A-Za-z0-9_.-]+', a.mod) or a.mod in ('.', '..'):
+            ap.error("--mod must match [A-Za-z0-9_.-]+ and must not be . or ..")
+        _out_dir = os.path.realpath(a.out)
+        _target = os.path.join(a.out, 'mod-' + a.mod + '.txt.xz')
+        if os.path.islink(_target):
+            ap.error("output path is a symlink; refusing")
+        if os.path.lexists(_target):
+            _resolved = os.path.realpath(_target)
+            if os.path.commonpath([_out_dir, _resolved]) != _out_dir:
+                ap.error("output path resolves outside --out; refusing")
     classes, enums, globs = {}, {}, {'typedef': [], 'fn': [], 'var': []}
     ids = module_ids(a.scripts) if a.mod else {'.': ''}
     pbos = {}

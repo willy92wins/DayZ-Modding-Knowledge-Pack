@@ -47,7 +47,7 @@ the same (`V:58-72`):
 | `FindFile(..., -1)` | same as `ALL` |
 | `CF.FindFileEx` (Workshop CF 1.5.9 of 2026-10-12) | passes through to `FindFile` |
 
-**Removing the workarounds** (every 1.30 stable server is on 164200 or later, since clients must match)
+**Removing the workarounds** (measured on 1.30.164200; this does not by itself prove the behaviour of every later 1.30 build)
 (`V:74-93`):
 
 - `CF.FindFileEx(...)` → `FindFile(...)`, same arguments. Leaving it costs only a test file
@@ -102,7 +102,7 @@ difference. Found in Haralds Armory (Workshop 3325200572), whose five PBOs all u
   `Construction.SetParent(BaseBuildingBase)` → `SetParent(EntityAI)` (`Construction` now extends
   `ConstructionBase : ConstructionBasic`); `CarScript.ToggleHeadlights()` is gone, use `LightToggle()` on `Transport`
   (`V:219-242`). Adding a parameter, even with a default, changes the signature.
-- `Settings`/`GameSettings`/`SettingsMenu` (2_GameLib) were always under `#ifdef GAME_TEMPLATE`: unknown type (`V:253`).
+- Historical, uncorroborated: an earlier note said `Settings`/`GameSettings`/`SettingsMenu` (2_GameLib) were always under `#ifdef GAME_TEMPLATE`. The 164200 and 164078 `2_gamelib/settings.c:1` only says `// removed due to mod conflicts`; do not use the sentence as a current rule.
 - `modded class` must live in the **same script module as the class it modifies**: `Transport` is a `3_Game` class,
   so `modded class Transport` in `4_World` fails with `Unknown type 'Transport'`; hook `CarScript`/`BoatScript`/
   `MotorbikeScript` instead (`EX:73-74`).
@@ -121,7 +121,7 @@ difference. Found in Haralds Armory (Workshop 3325200572), whose five PBOs all u
 
 ## 6. The 1.30.164200 update (25956772 → 25963285)
 
-From diffing the shipped API index of both builds; only the Workbench row was run on a server (`V:271-289`):
+From diffing the shipped API index of both builds; only the Workbench row was run on a server (`V:271-289`). This table was derived from an index diff; each remaining row has its vanilla cite in the review record. Two earlier rows were removed as false: [EXACT][CLAIM-130-FILTER-GROUPING-PRESENT] `FilterObstructedObjectsByGrouping` is present in 164200 (`4_world/static/miscgameplayfunctions.c:1438`), and [EXACT][CLAIM-130-ISLOCK-PRESENT-164078] `IsLockTargetOnUse` is already present in 164078 (`4_world/classes/useractionscomponent/actionbase.c:102`); both are present in both builds, not removed or new in 164200:
 
 | Before | Now | Effect |
 |---|---|---|
@@ -130,10 +130,8 @@ From diffing the shipped API index of both builds; only the Workbench row was ru
 | `ConstructionPartTypeData.m_UtilityAutomaticBuild`, `GetPartTypeUtilityAutobuildPartsList()` | removed | `TriggersUtilityPartsUpdate()` instead |
 | — | `InvertSupportBehavior()`, `ConstructionPartRebuildInvertedSupport`, `ConstructionBase.IgnoreHouseCollisions()` | new |
 | `CarScript.IsMoving()` | declared on `Transport`; new `Transport.HasCrew()` | calls keep working |
-| `ActionBase` | adds `IsLockTargetOnUse()` | clashes only with a same-named method of another signature |
-| `MiscGameplayFunctions.FilterObstructedObjectsByGrouping` | removed | |
 | `NavmeshTest*` | `Land_NavmeshTest*` | |
-| `Workbench`, `WorldEditor`, `WBModuleDef`, ... callable from game scripts | every Workbench class inside `#ifdef WORKBENCH`; `ResourceBrowser`, `WorldEditor*` gone | **measured**: DabsFramework 1.51 (`SampleMVC.c:33`, `Workbench.Dialog(...)`) fails with `Can't find variable 'Workbench'`, then `Can't compile "Mission" script module!` and a crash at boot. Wrap such calls in `#ifdef WORKBENCH`. An API index that ignores `#ifdef` still lists the classes |
+| `Workbench`, `WorldEditor`, `WBModuleDef`, ... callable from game scripts | the Workbench API classes are guarded (`1_core/workbenchapi/workbench.c:1`), except `WorkbenchPlugin` and `ResourceName`; `ResourceBrowser`, `WorldEditor*` gone | **measured on the author's run only**: DabsFramework 1.51 (`SampleMVC.c:33`, `Workbench.Dialog(...)`) fails with `Can't find variable 'Workbench'`, then `Can't compile "Mission" script module!` and a crash at boot. Wrap such calls in `#ifdef WORKBENCH`. An API index that ignores `#ifdef` still lists the classes. See the guard passage in `knowledge/workbench-scripting-api.md` |
 
 The guard itself is mapped from the sources in `knowledge/workbench-scripting-api.md`.
 
@@ -174,8 +172,7 @@ chain can be relied on; never build a fix on being first or "outermost". Make it
 - A CF module only receives the events it enables: call `EnableUpdate()`, `EnableMissionStart()`,
   `EnableClientReady()`, ... in `OnInit()`; an override without its `Enable...` call is never invoked. Networked
   module variables: at most 256 per module, sync through RPC id 435022, only the dedicated server sends.
-- Adding CF to, or removing it from, a server whose storage already exists breaks that storage, and adding it can
-  look like a version conflict: `dayz-test-ingame/references/linux-native-server.md`, "Wipe the storage".
+- Removing CF from a server whose storage was written with CF is an observed breakage (`Scripted variables corrupted` while loading that storage); whether adding CF needs a wipe is a hypothesis that was not isolated (the trees were rebuilt at the same time). Isolate first before wiping: `dayz-test-ingame/references/linux-native-server.md`, "Storage and CF".
 
 **Expansion** (`EX:10-27`, `EX:53-76`):
 

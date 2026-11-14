@@ -33,18 +33,20 @@ re-check a fact against that build's sources before relying on it (next sections
 - **The engine defines only the current version** (`DAYZ_1_30` on 1.30, the next one's define on the next release).
   Plain current code needs no version `#ifdef`, and `#ifdef DAYZ_1_30` would drop the code on the next release; never
   use `DIAG_DEVELOPER`/`BUILD_EXPERIMENTAL` to mean a version.
-- **Forward slashes in every path**, including `CfgMods` `files[]`: with backslashes a 1.30 server compiles none of
-  the mod's scripts and reports no error.
+- **Forward slashes in every path**, including `CfgMods` `files[]`: on the measured Linux build 164014, with backslashes a 1.30 server compiles none of
+  the mod's scripts and reports no error (not retested on 25963285 or Windows); keep forward slashes as the safe habit.
 - **Every PBO sits in `@Mod/addons/`.** A PBO at the mod folder root is silently ignored.
-- **Load order follows `requiredAddons`, not the `-mod` list.** Never build a fix on a position in the `modded class`
+- **Load order follows `requiredAddons`, not the `-mod` list** (the measured loading order; launching in dependency order is a conservative recipe, not a guarantee). Never build a fix on a position in the `modded class`
   chain; hook an event that runs after the behaviour you counteract.
 - **A `modded class` lives in the script module of the class it modifies** (`Transport` is `3_Game`).
 - **A compile error can crash the server** right after `Can't compile ... script module!`: read `script_*.log`
   before anything else when a server dies at boot.
-- **`FindFile` works on 1.30 stable and later**; `CF.FindFileEx` and copied `FindFile` path helpers are leftovers to remove.
-- **Never write into Steam's directories** (server, client, workshop). Test servers run from a tree of their own.
-  The one exception is a symlink to the test mod in the client's install folder, which a client needs to load it;
-  remove it after the run (`dayz-test-ingame/references/linux-headless-client.md`, section 2).
+- **`FindFile` works from 1.30.164200** (measured on build 25963285; the first stable release was broken, see `dayz-1-30-server-measured.md`); `CF.FindFileEx` and copied `FindFile` path helpers are leftovers to remove on that build or later.
+- **Never write into Steam's directories for test servers or Workshop folders.** Test servers run from a tree of their own.
+  The exceptions are the client's own prefix and mod symlink, which `dayz-client-headless.sh` uses
+  (`compatdata/<appid>` of the real prefix and a symlink to the test mod in the client's install folder,
+  removed after the run; `dayz-test-ingame/references/linux-headless-client.md`, section 2). This does not
+  contradict the Windows `P:\Mods -> !Workshop` deploy in `_shared/dayz-conventions.md`.
 - **Uploading to the Workshop is the user's call**; prepare the commands, never run them unprompted.
 - On Linux, build and sign with **dayzmake >= 1.0.0**, never upstream armake2: that is built for Arma, leaves `*.c` out
   of the signature and lacks the DayZ-only functions dayzmake adds (`_shared/linux-proton.md`, section 1).
@@ -119,7 +121,7 @@ Match the request, read that skill first; read more than one when the request sp
 ## Community Framework and Expansion
 
 - CF: the regular Workshop CF 1.5.9 or newer (1559212036), one dependency `JM_CF_Scripts`; `#ifdef CF_MODULES` detects
-  it without a hard dependency. Changing whether a test tree runs CF means wiping its `storage_1` first.
+  it without a hard dependency. Removing CF from a tree whose storage was written with CF is an observed breakage; whether adding CF needs a wipe is a hypothesis that was not isolated — isolate first (rebuild with the same storage kept, or copy the storage aside) before rotating `storage_1`.
 - Expansion needs CF, Dabs Framework and DayZ-Expansion-Licensed before the Bundle; the ids, the order and the
   failure without Dabs are in section 8 of the reference below (the one copy to keep current).
 - Details: `dayz-mod-workflow/references/dayz-1-30-server-measured.md` sections 8-9; CF storage:
@@ -132,9 +134,8 @@ Match the request, read that skill first; read more than one when the request sp
 - **Linux:** the native `DayZServer` from a private tree, the retail client headless under Proton, and the
   self-reporting AutoTest mod: `dayz-test-ingame/references/linux-native-server.md` and
   `references/linux-headless-client.md`; DayZ Tools and DayZDiag under Proton: `_shared/linux-proton.md`.
-- Either way: one server per tree and one at a time, never default ports, a vanilla boot as the baseline, the
-  `Module: ...; loaded` counts as the proof that scripts loaded, and a deliberate syntax error as the probe when an
-  override silently does nothing.
+- Either way: one server per tree, never default ports, a vanilla boot as the baseline, and a deliberate syntax error as the probe when an
+  override silently does nothing. One server at a time is a limit for hosts with limited RAM (about 7.5 GB RSS each with the Expansion bundle, measured on Linux), not an engine rule; parallel servers are allowed (`dayz-client-headless.sh` and `linux-headless-client.md`). Compare each script module the mod contributes files to against the vanilla baseline count; an unchanged count in such a module is the signal that its scripts did not load.
 
 ## Building, signing, publishing
 
