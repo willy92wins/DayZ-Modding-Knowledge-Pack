@@ -121,8 +121,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   signals only a sway whose recorded `/proc` start time and full argv still match, then only that
   session's wineserver by pid:starttime pair (comm and start time re-checked before the signal;
   an empty recorded display signals no wineserver); `headless start` refuses a state with a live
-  session and succeeds only when the recorded pid is `sway` with the expected argv
-  (`DAYZ_PROTON_START_WAIT_TENTHS`, default 50 tenths). `init` and the .NET warm-up stop only
+  session and succeeds only when the recorded pid is `sway` with the exact three-entry sway argv
+  (a script named `sway` does not pass; `DAYZ_PROTON_START_WAIT_TENTHS`, default 50 tenths, checked
+  again after the last sleep; on failure it signals only its own launcher or that exact sway, then
+  deletes its tracking). `init` and the .NET warm-up stop only
   wineservers that were not running when they began, matching `WINEPREFIX` literally
   (`CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY`). These stops reduce but do not eliminate the
   check-then-signal race, and real Proton, sway and `cmd.exe` were not run by the offline tests.

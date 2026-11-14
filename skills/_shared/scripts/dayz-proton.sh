@@ -29,7 +29,7 @@
 # - One display per prefix at a time: a prefix's wineserver is bound to the display its first
 #   program used; others die with "X Error ... BadWindow ... X_UnmapWindow". `headless start`
 #   refuses a busy (or untellable) prefix, refuses a state that already has a live session, and
-#   succeeds only when the recorded pid's /proc comm is sway with the expected argv; `headless
+#   succeeds only when the recorded pid's /proc comm is sway with the exact three-entry sway argv; `headless
 #   stop` signals only a sway whose recorded /proc identity (start time + full argv) still
 #   matches, then only that session's wineserver (by pid:starttime, re-checked before each
 #   signal; an empty or unreadable recorded display signals no wineserver). These checks and
@@ -591,22 +591,21 @@ sway_identity_ok() {
     if ! cmp -s "$_si_cur" "$_si_rec"; then rm -f "$_si_cur" "$_si_rec"; return 1; fi
     awk -v conf="$2/sway.conf" '
         function base(p,   n, a) { n = split(p, a, "/"); return a[n] }
-        NR == 1 { first = $0 } NR == 2 { second = $0 }
+        NR == 1 { first = $0 }
         { prev2 = prev1; prev1 = $0; n = NR }
         END {
-            if (n < 3 || prev2 != "-c" || prev1 != conf) exit 1
+            if (n != 3 || prev2 != "-c" || prev1 != conf) exit 1
             if (base(first) == "sway") exit 0
-            if (n >= 4 && base(second) == "sway") exit 0
             exit 1
         }' "$_si_cur"
     _si_rc=$?
     rm -f "$_si_cur" "$_si_rec"
     [ "$_si_rc" = 0 ]
 }
-# sway_cmdline_matches <pid> <state>: the live argv is exactly
-# sway -c <state>/sway.conf. A script sway carries one extra leading
-# interpreter entry (kernel argv for a #! file), so that 4-entry form,
-# with the sway path second, is also exact; nothing else is.
+# sway_cmdline_matches <pid> <state>: the live argv is exactly the three
+# entries sway, -c, <state>/sway.conf (first entry's basename is sway).
+# The interpreter form of a script named sway (/bin/sh <path>/sway -c ...)
+# is not accepted: a script is not sway.
 sway_cmdline_matches() {
     _sc_cur=$(mktemp) || return 1
     if ! tr '\0' '\n' < "/proc/$1/cmdline" > "$_sc_cur" 2>/dev/null; then
@@ -614,12 +613,11 @@ sway_cmdline_matches() {
     fi
     awk -v conf="$2/sway.conf" '
         function base(p,   n, a) { n = split(p, a, "/"); return a[n] }
-        NR == 1 { first = $0 } NR == 2 { second = $0 }
+        NR == 1 { first = $0 }
         { prev2 = prev1; prev1 = $0; n = NR }
         END {
-            if (prev2 != "-c" || prev1 != conf) exit 1
-            if (n == 3 && base(first) == "sway") exit 0
-            if (n == 4 && base(second) == "sway") exit 0
+            if (n != 3 || prev2 != "-c" || prev1 != conf) exit 1
+            if (base(first) == "sway") exit 0
             exit 1
         }' "$_sc_cur"
     _sc_rc=$?
@@ -675,6 +673,7 @@ EOF
         # a failed start, and no identity is published for the launcher.
         _hl_i=0; _hl_ready=0; pid=
         while [ "$_hl_i" -lt "$_hl_wait" ]; do
+            sleep 0.1; _hl_i=$((_hl_i + 1))
             if [ -s "$state/sway.pid" ]; then
                 pid=$(cat "$state/sway.pid" 2>/dev/null) || pid=
                 if [ -n "$pid" ] && [ -d "/proc/$pid" ]; then
@@ -684,17 +683,23 @@ EOF
                     fi
                 fi
             fi
-            sleep 0.1; _hl_i=$((_hl_i + 1))
         done
         if [ "$_hl_ready" != 1 ]; then
-            # Stop only the launcher this start launched, and only while it
-            # still is that launcher (its cmdline holds the 'exec sway'
-            # command string); never signal whatever the pid became.
+            # Stop only the child this start launched: signal (TERM) the pid
+            # in sway.pid while it is either still that launcher (its cmdline
+            # holds the 'exec sway' command string) or already the definitive
+            # sway of this state (exact sway -c <state>/sway.conf; the conf
+            # path is unique to this state and the pid file was written by
+            # this start's child). Never signal anything else the pid became,
+            # and delete the tracking files only after this.
             if [ -s "$state/sway.pid" ]; then
                 pid=$(cat "$state/sway.pid" 2>/dev/null) || pid=
                 if [ -n "$pid" ] && [ -d "/proc/$pid" ]; then
                     _hl_cmd=$(tr '\0' '\n' < "/proc/$pid/cmdline" 2>/dev/null) || _hl_cmd=
-                    case $_hl_cmd in *'exec sway'*) kill "$pid" 2>/dev/null || true ;; esac
+                    case $_hl_cmd in
+                        *'exec sway'*) kill "$pid" 2>/dev/null || true ;;
+                        *) if sway_cmdline_matches "$pid" "$state"; then kill "$pid" 2>/dev/null || true; fi ;;
+                    esac
                 fi
             fi
             rm -f "$state/sway.pid" "$state/sway.identity"

@@ -1956,7 +1956,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "190e4f6dc19f48cb9c67a3076beb773f989fe0650a67892d32406fa269ae8e2c",
+          "source_hash": "3cf89f0778ac91bdb71185feb478dd7e42947248c82cc63118aafa8b0d972ab8",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -1964,7 +1964,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "190e4f6dc19f48cb9c67a3076beb773f989fe0650a67892d32406fa269ae8e2c",
+      "output_hash": "3cf89f0778ac91bdb71185feb478dd7e42947248c82cc63118aafa8b0d972ab8",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5466,10 +5466,20 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "88e550709dc2eea42736206151d88d3847199a7a299fc76b02aab6acaaadcaa4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8fe7d967f62c023df5c6466b72a67f60c5cf1f04230fdeefee861cff72776d11",
+      "output_hash": "88e550709dc2eea42736206151d88d3847199a7a299fc76b02aab6acaaadcaa4",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -7676,10 +7686,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "113ca74397f28fc6d28c9e5f9849d0d38a9cca873cb9a79954d743592619f5de",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a622788d411aee0d3e857f4c32a75bd5f88b18eba2ca71c5740dd37b30def54c",
+      "output_hash": "113ca74397f28fc6d28c9e5f9849d0d38a9cca873cb9a79954d743592619f5de",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -8422,10 +8442,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "548f0109800ee153dab7dda018445afec16d009e52d35c240634d7fbd7540ee1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a8d6f6c4d3df28f6f51b3805b0722d78935497485e9bb6614b79160863b5a6d9",
+      "output_hash": "548f0109800ee153dab7dda018445afec16d009e52d35c240634d7fbd7540ee1",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -8760,10 +8790,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "87dc8dcdf97598dffe7589622087a013e03907099ca4f103546bea806549b186",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "691e807b1635e9c470c2116e2f228c7d88002480391008182785f6704d217305",
+      "output_hash": "87dc8dcdf97598dffe7589622087a013e03907099ca4f103546bea806549b186",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -9126,10 +9166,20 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "0cfa65538a6364cc9516837557dae310c23033f54d07ecc685c8160a438e3362",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2dec6e1eefb853d02aa937f991c9193f2396821ac0e0eaed0c56c2d615d51eae",
+      "output_hash": "0cfa65538a6364cc9516837557dae310c23033f54d07ecc685c8160a438e3362",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -10190,10 +10240,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "b2c5f30826e29a5209f0d25f147845e46d154f51f7cd10cab5c77bd0e4dd334f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "26de5c17ffce690c2ab986915e87de04459e2900924645aa348ecbe8ae8548f1",
+      "output_hash": "b2c5f30826e29a5209f0d25f147845e46d154f51f7cd10cab5c77bd0e4dd334f",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -10548,10 +10608,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "5f81e4ecfe71aed654ac1f9b15829dbe332ad32c8fd308e3d8f31c020e4f9a09",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "24eef1a8fb8771cd1716e71b0a05f0c5f073fea18d9105d40c2509d65f4f027c",
+      "output_hash": "5f81e4ecfe71aed654ac1f9b15829dbe332ad32c8fd308e3d8f31c020e4f9a09",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -13340,10 +13410,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "6164d42af96692ee1e3628a940ae30e04383d5ffad36f86e4c88037ea24265cf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "251c6a7043567d4acb85b0ad50f753932aed8e840d58051d857cecca7725e4cd",
+      "output_hash": "6164d42af96692ee1e3628a940ae30e04383d5ffad36f86e4c88037ea24265cf",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -14026,10 +14106,20 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "e2a78c713613e93986dfc8ef6918939b3f258e8ad475ab8425c657c8b2bd51f1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "039c0d566009447900027594405657a67766dbc51e00731ebd979bd0dad14de8",
+      "output_hash": "e2a78c713613e93986dfc8ef6918939b3f258e8ad475ab8425c657c8b2bd51f1",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -16358,10 +16448,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "c4c333ff36bff7576ba6707dcf546c290618cc90b78673985acc5c44040e23fb",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "856e7169a070efe377172a6e122aeebfe5e0d0d9832304da1079afdb33ab11ac",
+      "output_hash": "c4c333ff36bff7576ba6707dcf546c290618cc90b78673985acc5c44040e23fb",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -17798,10 +17898,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "4afc8b4685ee772440514969be555bd8f8ace33bd986659a259925621708a6b2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b516f415fbd58d0de01fded51f5b2538178b96b0efaa69d986d65dc80ac5d53",
+      "output_hash": "4afc8b4685ee772440514969be555bd8f8ace33bd986659a259925621708a6b2",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -19406,10 +19516,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "b4ac601936a50aae513491053a570bcb64ed4d9b7b7f84d18f990bedf85d5e71",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "808bc64b4a9290d805fe47a8bdab9be39e6dbf8304302804b19b147b5df99536",
+      "output_hash": "b4ac601936a50aae513491053a570bcb64ed4d9b7b7f84d18f990bedf85d5e71",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -36819,10 +36939,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "x",
+          "license": "MIT",
+          "source_hash": "c1950f565fe9b52b0fc9a49e1a892f0d8a0d9f6adb2980e1a76cd0605d9bbbf7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "linux-proton-review-fixes@2026-11-14",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e3cc36c21c67cd8567b79711e0a3a915e088adb84063f49f7252b73404737bcf",
+      "output_hash": "c1950f565fe9b52b0fc9a49e1a892f0d8a0d9f6adb2980e1a76cd0605d9bbbf7",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -42090,7 +42220,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "d4f58f1bb61ef562278bd049facb16918abee9088e1958ae7b44cadad11856d5",
+          "source_hash": "5705783ebd011596b8ff7ccff28a90f95e9c758f18e809f4486c2018369ac1b9",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -42098,7 +42228,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d4f58f1bb61ef562278bd049facb16918abee9088e1958ae7b44cadad11856d5",
+      "output_hash": "5705783ebd011596b8ff7ccff28a90f95e9c758f18e809f4486c2018369ac1b9",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -42152,7 +42282,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "d0a35c5ac48003f0f35536b4b63f9a7141f41b0d41c93342024e476975c9616e",
+          "source_hash": "589c23ce93a59ccc4c927ec2add7caddfff83b9fb9c8c51891d23fd5f593c34c",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/scripts/dayz-proton.sh",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -42160,7 +42290,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d0a35c5ac48003f0f35536b4b63f9a7141f41b0d41c93342024e476975c9616e",
+      "output_hash": "589c23ce93a59ccc4c927ec2add7caddfff83b9fb9c8c51891d23fd5f593c34c",
       "output_path": "skills/_shared/scripts/dayz-proton.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -42194,7 +42324,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "784ad372d6b8b6f612e1cb81a08af03a41f5c5616ea3ef6dd89c6950c8d6a145",
+          "source_hash": "6598b2d04bc3671cd59f5d27c0459a42ccdbec99a3840624ddde06d45bf4dc8d",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/tests/test_dayz_proton.py",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -42202,7 +42332,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "784ad372d6b8b6f612e1cb81a08af03a41f5c5616ea3ef6dd89c6950c8d6a145",
+      "output_hash": "6598b2d04bc3671cd59f5d27c0459a42ccdbec99a3840624ddde06d45bf4dc8d",
       "output_path": "skills/_shared/tests/test_dayz_proton.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"

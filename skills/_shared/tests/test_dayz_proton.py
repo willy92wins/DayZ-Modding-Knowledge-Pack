@@ -7,6 +7,7 @@ skills/_shared/linux-proton.md. POSIX only: the script is the Linux route.
 from __future__ import annotations
 
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -18,6 +19,11 @@ import pytest
 SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "dayz-proton.sh"
 
 pytestmark = pytest.mark.skipif(os.name == "nt", reason="the Linux runner script")
+
+requires_real_sway = pytest.mark.skipif(
+    platform.machine() not in ("x86_64", "AMD64"),
+    reason="needs the x86_64 ELF fake sway; a script sway is not accepted as sway",
+)
 
 
 def run(
@@ -313,14 +319,12 @@ def test_run_tool_bat_quoting_is_unchanged(tmp_path: Path) -> None:
 def _fake_sway_binary(path: Path) -> None:
     """A tiny x86_64 ELF named sway that pauses forever (comm is sway and
     argv is exactly what the launcher passed; a #! script would run as the
-    interpreter instead). Falls back to a script off x86_64."""
-    import platform
+    interpreter instead and is not accepted as sway). Only built on x86_64;
+    tests using it are skipped elsewhere (requires_real_sway)."""
     import struct
 
+    assert platform.machine() in ("x86_64", "AMD64")
     path.parent.mkdir(parents=True, exist_ok=True)
-    if platform.machine() not in ("x86_64", "AMD64"):
-        _write(path, "#!/bin/sh\nsleep 30 &\n_c=$!\ntrap 'kill $_c 2>/dev/null; exit 0' TERM INT\nwait $_c\n", exe=True)
-        return
     code = bytes.fromhex("b8220000000f05ebf7")  # pause(); jmp back
     total = 64 + 56 + len(code)
     elf = struct.pack(
@@ -414,6 +418,7 @@ def headless_start(
     )
 
 
+@requires_real_sway
 def test_headless_start_then_stop_signals_our_sway(tmp_path: Path) -> None:
     bin_dir = fake_sway(tmp_path)
     dzhome = tmp_path / "dzhome"
@@ -457,6 +462,7 @@ def test_headless_stop_does_not_kill_an_unrelated_live_process(tmp_path: Path) -
 
 
 @pytest.mark.parametrize("tamper", ["starttime", "conf"])
+@requires_real_sway
 def test_headless_stop_rejects_a_tampered_identity(tmp_path: Path, tamper: str) -> None:
     bin_dir = fake_sway(tmp_path)
     dzhome = tmp_path / "dzhome"
@@ -482,6 +488,7 @@ def test_headless_stop_rejects_a_tampered_identity(tmp_path: Path, tamper: str) 
         kill_process_tree(pid)
 
 
+@requires_real_sway
 def test_headless_stop_signals_only_the_sessions_wineserver(tmp_path: Path) -> None:
     bin_dir = fake_sway(tmp_path)
     dzhome = tmp_path / "dzhome"
@@ -511,6 +518,7 @@ def test_headless_stop_signals_only_the_sessions_wineserver(tmp_path: Path) -> N
             kill_popen(server)
 
 
+@requires_real_sway
 def test_headless_stop_with_dead_sway_leaves_the_wineserver_alone(tmp_path: Path) -> None:
     bin_dir = fake_sway(tmp_path)
     dzhome = tmp_path / "dzhome"
@@ -539,6 +547,7 @@ def test_headless_stop_with_dead_sway_leaves_the_wineserver_alone(tmp_path: Path
         kill_popen(server)
 
 
+@requires_real_sway
 def test_headless_stop_with_empty_display_leaves_other_display_wineserver(tmp_path: Path) -> None:
     bin_dir = fake_sway(tmp_path)
     dzhome = tmp_path / "dzhome"
@@ -565,6 +574,7 @@ def test_headless_stop_with_empty_display_leaves_other_display_wineserver(tmp_pa
         kill_popen(server)
 
 
+@requires_real_sway
 def test_headless_second_start_is_refused_and_first_stays_stoppable(tmp_path: Path) -> None:
     bin_dir = fake_sway(tmp_path)
     dzhome = tmp_path / "dzhome"
@@ -626,6 +636,55 @@ def test_headless_start_fails_when_sway_never_appears(tmp_path: Path) -> None:
         if pid_file.exists():
             try:
                 kill_process_tree(int(pid_file.read_text().strip()))
+            except ValueError:
+                pass
+
+
+@requires_real_sway
+def test_headless_start_checks_again_after_the_last_wait(tmp_path: Path) -> None:
+    # The fake sway only becomes the real (ELF) sway after a marker appears,
+    # ~0.44s in: with a 0.5s wait that is inside the last sleep, after the
+    # check a check-before-sleep loop would make at ~0.4s. The start must
+    # still succeed and track it, so a later stop can signal it; no live
+    # sway of this state may be left untracked.
+    real_dir = tmp_path / "realbin"
+    _fake_sway_binary(real_dir / "sway")
+    bin_dir = tmp_path / "fakebin"
+    marker = tmp_path / "become-sway"
+    record = tmp_path / "late-sway.pid"
+    _write(
+        bin_dir / "sway",
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$$\" > '{record}'\n"
+        f"( sleep 0.44; : > '{marker}' ) &\n"
+        f"while [ ! -e '{marker}' ]; do sleep 0.01; done\n"
+        f"exec '{real_dir / 'sway'}' \"$@\"\n",
+        exe=True,
+    )
+    dzhome = tmp_path / "dzhome"
+    state = tmp_path / "state"
+    pid = -1
+    try:
+        done = headless_start(
+            tmp_path, state, bin_dir, dzhome,
+            extra_env={"DAYZ_PROTON_START_WAIT_TENTHS": "5"},
+        )
+        assert done.returncode == 0, done.stderr
+        assert (state / "sway.pid").exists(), "sway that became ready in the last wait was left untracked"
+        pid = int((state / "sway.pid").read_text().strip())
+        assert not pid_gone(pid)
+        assert (state / "sway.identity").exists()
+        done = run(
+            tmp_path, "headless", "stop", str(state),
+            bin_dir=bin_dir, extra_env={"DAYZ_PROTON_HOME": str(dzhome)},
+        )
+        assert done.returncode == 0, done.stderr
+        assert wait_gone(pid), "tracked late sway was not signalled by stop"
+    finally:
+        kill_process_tree(pid)
+        if record.exists():
+            try:
+                kill_process_tree(int(record.read_text().strip()))
             except ValueError:
                 pass
 

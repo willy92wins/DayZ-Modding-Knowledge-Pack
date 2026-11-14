@@ -89,9 +89,11 @@ a double quote, CR, LF or an empty argument before anything is created, copied, 
 or run. [EXACT][CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION] The offline tests prove that .bat serialization only, not how `cmd.exe` or binarize.exe parse it (that parsing is not claimed).
 [EXACT][CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY] `headless stop` signals only a sway whose recorded /proc start time and full argv still match, and then only the wineserver serving that session's recorded display, as a pid:starttime pair re-checked (/proc comm and start time) just before the signal; if the sway is gone or foreign it signals nothing and says so.
 `headless start` refuses a state that already has a live, verified session, succeeds only once
-the recorded pid's /proc comm is `sway` with the expected `sway -c <state>/sway.conf` argv
-(the wait is `DAYZ_PROTON_START_WAIT_TENTHS` tenths of a second, default 50), and signals no
-wineserver at all when the recorded display is empty or unreadable. `init` stops the
+the recorded pid's /proc comm is `sway` with the exact three-entry `sway -c <state>/sway.conf`
+argv (a script named `sway` does not pass; the wait is `DAYZ_PROTON_START_WAIT_TENTHS` tenths of
+a second, default 50, checked again after the last sleep; on failure it signals only its own
+launcher or that exact sway, then deletes its tracking), and signals no wineserver at all when
+the recorded display is empty or unreadable. `init` stops the
 wineservers that were not running when `init` began, in the prefixes it used, by the same
 pid:starttime pairs; a program someone else starts in those prefixes meanwhile cannot be
 told apart (not claimed). These stops reduce but do not eliminate the check-then-signal
