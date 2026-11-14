@@ -16,7 +16,8 @@ on a server with `-mod=@Mod` and `verifySignatures = 2`, and its scripts ran; Th
 
 dayzmake is bzed's DayZ fork of armake2, renamed at `v1.0.0` (https://github.com/bzed/dayzmake). **Upstream armake2
 leaves `*.c` files out of the signature**, so a script mod's `.bisign` does not cover its scripts, and it fails on
-DayZ configs (`MP:16-20`). Use dayzmake >= 1.0.0, pinned: the release binary
+DayZ configs (`MP:16-20`). The fork keeps moving away from upstream on purpose, with functions only DayZ
+needs or needs differently from Arma; what it adds so far is listed in `_shared/linux-proton.md`, section 1. Use dayzmake >= 1.0.0, pinned: the release binary
 `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or
 `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0` (needs `libssl-dev`).
 

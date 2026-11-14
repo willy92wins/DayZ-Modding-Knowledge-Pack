@@ -65,7 +65,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Linux (2026-11-13): bzed's armake2 fork is now dayzmake (https://github.com/bzed/dayzmake). Every
   Linux note names `dayzmake` >= 1.0.0, pinned to the `v1.0.0` release binary or
   `cargo install --git ... --tag v1.0.0` (the tag contains the measured `7dcb3cf` and `0a0ce3b`), and
-  says why the fork is required: upstream armake2 leaves `*.c` files out of the signature.
+  says why the fork is required: upstream armake2 is built for Arma, leaves `*.c` files out of the signature
+  and lacks the DayZ-only functions dayzmake keeps adding (listed in `_shared/linux-proton.md`).
   `dayz-proton.sh doctor` checks for dayzmake, falls back to a pre-rename `armake2` fork build and
   flags upstream armake2 or a pre-1.0 build; it no longer stops at the first Steam app that is not
   installed (`manifest` failed under `set -e`). The native `DayZServer` ignores absolute `-mod=` /

@@ -46,7 +46,8 @@ re-check a fact against that build's sources before relying on it (next sections
   The one exception is a symlink to the test mod in the client's install folder, which a client needs to load it;
   remove it after the run (`dayz-test-ingame/references/linux-headless-client.md`, section 2).
 - **Uploading to the Workshop is the user's call**; prepare the commands, never run them unprompted.
-- On Linux, build and sign with **dayzmake >= 1.0.0**, never upstream armake2 (it leaves `*.c` out of the signature).
+- On Linux, build and sign with **dayzmake >= 1.0.0**, never upstream armake2: that is built for Arma, leaves `*.c` out
+  of the signature and lacks the DayZ-only functions dayzmake adds (`_shared/linux-proton.md`, section 1).
 
 Details and evidence: `dayz-mod-workflow/references/dayz-1-30-server-measured.md`.
 
