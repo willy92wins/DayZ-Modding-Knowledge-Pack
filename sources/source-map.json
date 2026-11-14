@@ -42334,7 +42334,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "5d52cf69985d337109f69f7ba01f7cc5aa567f70bee84e88bf8b220991478a4f",
+          "source_hash": "bf53514f41efb1c98e54782d5c829faa8f3dea8d71e6b32c2f026854d9208910",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/scripts/dayz-proton.sh",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -42342,7 +42342,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "5d52cf69985d337109f69f7ba01f7cc5aa567f70bee84e88bf8b220991478a4f",
+      "output_hash": "bf53514f41efb1c98e54782d5c829faa8f3dea8d71e6b32c2f026854d9208910",
       "output_path": "skills/_shared/scripts/dayz-proton.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -42376,7 +42376,7 @@
           "decision": "merge",
           "decision_evidence": "Review fixes for the Linux/Proton support: binarize and headless-stop hardening, dayzmake unpack guidance, stale text, scoped claims. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "7ad6cb22a8bf2cd56463e6a3f7e3d594a0abbb411a6ea04728bf5759bf3f448c",
+          "source_hash": "4820399872988993283155af9984d4fcdb5e736ffa38d3d325b9fe214365450b",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/tests/test_dayz_proton.py",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
@@ -42384,7 +42384,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7ad6cb22a8bf2cd56463e6a3f7e3d594a0abbb411a6ea04728bf5759bf3f448c",
+      "output_hash": "4820399872988993283155af9984d4fcdb5e736ffa38d3d325b9fe214365450b",
       "output_path": "skills/_shared/tests/test_dayz_proton.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
