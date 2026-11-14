@@ -854,6 +854,32 @@
     },
     {
       "applicability": "domain_invariant",
+      "artifact_id": "skill/systematic-debugging",
+      "artifact_kind": "tree",
+      "repo_path": "skills/systematic-debugging",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
+      "artifact_id": "skill/task-observer",
+      "artifact_kind": "tree",
+      "repo_path": "skills/task-observer",
+      "skill_target_ids": [
+        "claude_user_skills",
+        "agents_user_skills"
+      ],
+      "vault_targets": [
+        "obsidian_snapshots"
+      ]
+    },
+    {
+      "applicability": "domain_invariant",
       "artifact_id": "skill/uv-clean-atlas",
       "artifact_kind": "tree",
       "repo_path": "skills/uv-clean-atlas",

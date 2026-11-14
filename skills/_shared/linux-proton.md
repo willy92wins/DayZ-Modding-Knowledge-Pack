@@ -9,6 +9,12 @@ Measured on 2026-11-03 (server pitfalls in section 5 on 2026-11-04): Debian test
 DayZ Server 1.30.164289, DayZ Tools build 26405911 (binarize 1.30.164289.70). Everything below marked
 **not verified** was not run.
 
+Evidence status: the 2026-11-03..06 measurements in this note (the tool matrix, the textured-cube
+comparison at `7dcb3cf`, the managed cycle) were measured by the author on Debian testing; no claim
+is registered for them, their logs are not in the Pack, and the Pack has not reproduced them. Only
+the statements carrying an `[EXACT]` claim marker below are registered in `sources/claims.json`;
+executable statements added later that carry no marker are labelled "not claimed".
+
 ## 1. Pick the route per step
 
 | Windows step in a skill | On Linux | Status |
@@ -43,12 +49,12 @@ https://github.com/bzed/dayzmake/releases/tag/v1.0.0 (the one dayz-mcp's `linux-
 or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0` (needs `libssl-dev`). The fork
 is required, not a preference, and it is moving away from upstream on purpose: it implements more and
 more functions that only DayZ needs, or that DayZ needs differently from Arma. Upstream armake2
-(KoffeinFlummi/armake2) is built for Arma: it leaves `*.c` files out of the signature, so the `.bisign` of
-a script mod does not cover its scripts, and it fails on DayZ configs. What the fork adds (the author's
+(KoffeinFlummi/armake2) is built for Arma: [EXACT][CLAIM-ARMAKE2-V3-SIGN-OMITS-C] the V3 file hash omits `.c` files in upstream armake2 and includes them in dayzmake v1.0.0.
+Author-reported and not claimed: upstream fails on DayZ configs. What the fork adds (the author's
 list): preprocessor grammar fixes (`#include` directives, nested macro arguments), `$PREFIX$` accepted when
-building PBOs, `img2paa` / `paa2img`, `inspect` of models (MLOD/ODOL: format, LODs, textures, materials,
-selections), a `binarize` command, texture and material checks in `build` (`missing-texture`,
+building PBOs, `img2paa` / `paa2img`, a `binarize` command, texture and material checks in `build` (`missing-texture`,
 `missing-material`) and opt-in `build --proton-binarize` (models through BI's binarize under Proton).
+[EXACT][CLAIM-DAYZMAKE-INSPECT-ODOL-SCOPE] For models, `dayzmake inspect` shows format and version for MLOD and ODOL, and LODs, textures, materials, properties and selections only for an editable MLOD (dayzmake v1.0.0 `README.md:130`).
 Expect new DayZ-only behaviour in later releases; read the release notes before upgrading a pinned build. An installed binary is the fork when `dayzmake -h`
 lists `--proton-binarize`; `dayzmake --version` prints `v1.0.0`, while builds from before the rename
 are called `armake2` and print `v0.3.0` whatever their commit.
@@ -75,6 +81,42 @@ app its own Wine prefix (`steamapps/compatdata/<appid>`), and nothing crosses be
 registry, adds the game `main` key, installs the VC++ runtime, spends the first .NET start (below),
 and links `P:` in the tools and the game prefix. It takes about two minutes once. `doctor` prints what
 is installed, the game version of each app, update state and whether dayzmake (or a pre-rename `armake2` fork build) is installed and the right fork.
+
+`dayz-proton.sh binarize` never puts user text in the `cmd.exe /c` string: it writes a `Z:\run.bat`
+in the sandbox holding every user value double-quoted (`%` doubled, a run of trailing backslashes
+doubled, `setlocal DisableDelayedExpansion` so `!` stays literal), and it refuses an argument with
+a double quote, CR, LF or an empty argument before anything is created, copied, linked, removed
+or run. [EXACT][CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION] The offline tests prove that .bat serialization only, not how `cmd.exe` or binarize.exe parse it (that parsing is not claimed).
+[EXACT][CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY] `headless stop` signals only a sway whose recorded /proc start time and full argv still match, and then only the wineserver serving that session's recorded display, as a pid:starttime pair re-checked (/proc comm and start time) just before the signal; if the sway is gone or foreign it signals nothing and says so.
+A headless state path may only contain `A-Z a-z 0-9 / . _ -`: `headless start`, `stop` and
+`shot` check the path as given and once `pwd -P` resolved, before any side effect, and refuse
+one with (for example) a space, backslash, newline, tab, quote, `$` or backtick. `headless
+start` requires `setsid` (one launcher form, no `nohup`), refuses while a launcher or sway of
+the same state may still be running (it finds a launcher from the pid in `sway.pid` or by
+scanning `/proc/*/cmdline` for this state's `sway.conf` or launcher form, and an incomplete
+scan counts as running) and touches nothing in that case; if `sway.pid`/`sway.cancel` exist
+but no such process is alive, they are stale and `start` removes `sway.pid`, `sway.identity`
+and `sway.cancel` with one stderr line before continuing. It succeeds only once
+the recorded pid's /proc comm is `sway` with the exact three-entry `sway -c <state>/sway.conf`
+argv (a script named `sway` does not pass; the wait is `DAYZ_PROTON_START_WAIT_TENTHS` tenths of
+a second, default 50, checked again after the last sleep), and signals no wineserver at all when
+the recorded display is empty or unreadable. After `start` returns, success or failure, either
+the recorded sway is tracked with a verified identity or no sway of that state is running: on
+failure it first writes `sway.cancel`, which the launcher child checks before writing `sway.pid`
+and again just after (removing its pid and exiting instead of `exec`ing sway), then signals only
+its own launcher or that exact sway, waits five tenths of a second re-checking for a pid
+published in that window, and only then deletes its tracking. The marker stays after a failure
+so a slower child still cancels; the next `start` removes it only after proving no launcher of
+this state is alive, and a successful `start` removes it, so `DAYZ_PROTON_START_WAIT_TENTHS=0`
+fails cleanly without leaving a sway.
+The `sway.conf` path is compared literally through awk's `ENVIRON`, not `awk -v` (whose escape
+handling would mis-compare some state paths), and an allowed state name with `.` and `-` still
+starts and stops. `init` stops the
+wineservers that were not running when `init` began, in the prefixes it used, by the same
+pid:starttime pairs; a program someone else starts in those prefixes meanwhile cannot be
+told apart (not claimed). These stops reduce but do not eliminate the check-then-signal
+race: the identity check and the signal are not atomic, and a pid reused in between can
+still be signalled. Real Proton, sway and `cmd.exe` were not run by these offline tests.
 
 ## 3. `P:` on Linux
 
@@ -127,7 +169,7 @@ repeated with the `v1.0.0` binary. This is a record of the comparison, not a new
   A program started later on another display — or after that display is gone, e.g. a stopped headless
   sway — dies with `X Error … BadWindow … X_UnmapWindow`. (That is the X11 path. With
   `PROTON_ENABLE_WAYLAND=1` two sways on one prefix worked, measured 2026-11-06.) Run one session per prefix, and stop the
-  wineserver when it ends (`headless stop` does; by hand:
+  wineserver when it ends (`headless stop` does, identity-checked as in section 2; by hand:
   `WINEPREFIX=<prefix>/pfx <proton dir>/files/bin/wineserver -k`).
 - **WoW64 workaround on the tested host.** `PROTON_USE_WOW64=1` (the script's default)
   fixed the reported tool-startup/font issues. Without it, the host showed missing FreeType
