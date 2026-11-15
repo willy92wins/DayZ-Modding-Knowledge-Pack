@@ -22778,7 +22778,7 @@
           "decision": "merge",
           "decision_evidence": "serverDZ.cfg line-number follow-up (2026-11-15): two new claims for server-and-mission-config.md (the serverDZ.cfg copies read, cross_checked; the cfggameplay.json loading and stock files, source_verified); the evidence of CLAIM-TEST-SERVERCFG-SCRIPT-KEYS-164289 now names the copy it was read from. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "d7bd00d58aa86aade9c02c742a99594bd8399454003398f508c7be9349ca7988",
+          "source_hash": "7dc1ecc113736ff6572b526642161e7a83ff0da0d97909ff5b6a858020d9eb40",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "servercfg-lines@2026-11-15",
@@ -22786,7 +22786,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "d7bd00d58aa86aade9c02c742a99594bd8399454003398f508c7be9349ca7988",
+      "output_hash": "7dc1ecc113736ff6572b526642161e7a83ff0da0d97909ff5b6a858020d9eb40",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -44668,7 +44668,7 @@
           "decision": "merge",
           "decision_evidence": "serverDZ.cfg line-number follow-up (2026-11-15): the section-2 table drops its line numbers, since Steam does not update serverDZ.cfg (depot 223351 marks it UserConfig), so its layout depends on the install date (the numbers fitted the newer layout with description and shardId, a 2024 copy has the keys 2 to 4 lines higher), and gets a cross_checked claim that says which copies were read and that the 3200-byte file of the build-26220720 depot was not; section 1 drops 'lines 40-48'; section 3 gets a source_verified claim, the unmeasured 'every member must match a field' gives way to what the four stock cfggameplay.json files show (disableColdAreaBuildingCheck in Chernarus and Livonia names no field; the field is disableColdAreaPlacementCheck), and the untested loader case is named. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "f763e22331833cbdc595ecd6157df878348eebd04897c35bfa55f7573a4a9692",
+          "source_hash": "9dc1473aadc8747ec5fc16e874c8049b13d37d3b4f2f23128efb8777d5d64e06",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/references/server-and-mission-config.md",
           "source_revision": "servercfg-lines@2026-11-15",
@@ -44676,7 +44676,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f763e22331833cbdc595ecd6157df878348eebd04897c35bfa55f7573a4a9692",
+      "output_hash": "9dc1473aadc8747ec5fc16e874c8049b13d37d3b4f2f23128efb8777d5d64e06",
       "output_path": "skills/dayz-test-ingame/references/server-and-mission-config.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "source_verified"
