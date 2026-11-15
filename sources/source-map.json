@@ -4999,10 +4999,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-cc34f74@2026-11-14",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion of main f25de18 (#192) on 2026-11-15, authorised by the owner. promote --check from a fresh checkout of f25de18 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=119, 128 operations (46 agents_user_skills, 46 claude_user_skills, 76 obsidian_snapshots); the plan equals the plan of the reviewed head 2866711 (same tree) except the commit in the vault paths. promote --apply PASS, transaction f6942eb0aa0c0ac2a9ad7376, COMMIT event 359, completed_at 2026-11-15T19:34:21.845401+00:00. packctl rewrote this file at that COMMIT (packctl/promotion.py:1064-1106): 72 of 84 adjudicated pairs advanced from the before_digest to the after_digest of their operation, exactly the pairs whose pin equalled the before_digest of a changing operation; the other 12 pairs are unchanged. The file stays canonical JSON.",
+          "license": "MIT",
+          "source_hash": "3d017af492d1345c26789e16df1d693b022586172b23147ecdee72a96ef97c17",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-f25de18@2026-11-15",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f2fb1c5e04b75490638020a90eb60ced8b4a19a2bcc6dfee8b475a80b11d5ca8",
+      "output_hash": "3d017af492d1345c26789e16df1d693b022586172b23147ecdee72a96ef97c17",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -39290,6 +39300,28 @@
       "license": "MIT",
       "output_hash": "14eea2348cdcc497956f701ebef9b7e713693a3d7d8f67b26d1e545c98c9ed8f",
       "output_path": "promotions/receipts/3ec77337e2b3e05cafe62b57.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/f6942eb0aa0c0ac2a9ad7376.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "promotion of main f25de18 (#192) on 2026-11-15, authorised by the owner. promote --check from a fresh checkout of f25de18 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=119, 128 operations (46 agents_user_skills, 46 claude_user_skills, 76 obsidian_snapshots); the plan equals the plan of the reviewed head 2866711 (same tree) except the commit in the vault paths. promote --apply PASS, transaction f6942eb0aa0c0ac2a9ad7376, COMMIT event 359, completed_at 2026-11-15T19:34:21.845401+00:00. Verified after the apply: 128/128 destinations at their after_digest; the receipt's sha256 equals the COMMIT receipt_hash and its completed_at the COMMIT event's; its source_commit and its 128 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any target; the 41 transaction backups hold their before_digest; the new skill dayz-mod-dev has SKILL.md, with the Pack's bytes, in both skill roots.",
+          "license": "MIT",
+          "source_hash": "b8944758586d489af22294643935783ff00d004e7d442fb5669d92cecdbfb0f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/f6942eb0aa0c0ac2a9ad7376.json",
+          "source_revision": "promotion-f25de18@2026-11-15",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "b8944758586d489af22294643935783ff00d004e7d442fb5669d92cecdbfb0f5",
+      "output_path": "promotions/receipts/f6942eb0aa0c0ac2a9ad7376.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
