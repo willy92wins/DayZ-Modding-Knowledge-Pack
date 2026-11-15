@@ -39,8 +39,8 @@ installs it once and does not update it (the depot marks the file `UserConfig`):
 26220720 on 2026-11-10 still holds its copy of 2024-07-31 (2987 bytes), while the depot of build 26220720 holds a
 3200-byte file whose content was not checked. Newer copies add two keys, `description` (before `enableWhitelist`)
 and `shardId` (after `vonCodecQuality`), so line numbers depend on when the server was installed: find a key by
-name. The keys, stock values and comments below are those of the 2024 copy, and the newer copies have the same
-ones. Beyond the keys the test skills already set:
+name. The keys, stock values and comments below are those of the 2024 copy; the newer copies seen carry the same
+keys and comments, with some values changed by their owners. Beyond the keys the test skills already set:
 
 | Key (stock value) | Meaning, from the stock comment |
 |---|---|
