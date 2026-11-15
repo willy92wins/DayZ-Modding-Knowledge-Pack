@@ -2031,10 +2031,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): the Unreleased block records the script fixes, the claims, the CE count corrections and SP-525. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b9e4c7185082e39e730cbbc4e570153690c99cc78e7c0baf31e2ec0700a73650",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b430b908d094d61152bc4bc29b05fb8deb9ac2e8451a11aff4a27bf76fdbabc6",
+      "output_hash": "b9e4c7185082e39e730cbbc4e570153690c99cc78e7c0baf31e2ec0700a73650",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19258,10 +19268,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-525 (2026-11-15): skip the null entries of an EnumerateInventory result before use, as vanilla's five LEVELORDER loops do (1.30.164.200), with the dayz-mcp #410 runtime observation; two claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "15110a288427b33753fdf745859138c164cfdc78a0c874d3cad9584e98ec99d1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8c2af6d063391c9ede4de5d8ee0213ecf89a756dac0ae876dec797871b4baecc",
+      "output_hash": "15110a288427b33753fdf745859138c164cfdc78a0c874d3cad9584e98ec99d1",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -19416,10 +19436,20 @@
           "source_path": "skills/enforce-script-reference/references/memory-management.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): claims for the entity class family (source_verified) and for the reported ref/weak-field probe (unverified: probe and log not in the Pack). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "04746065ed8ac2df88c9328362f25fae496cf46a79da4b0d2851c76385ffd9df",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/memory-management.md",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6b77040d34dd7e16091ae634faf86d97bfb3ca28d5b4cf68b44a4578effc50a5",
+      "output_hash": "04746065ed8ac2df88c9328362f25fae496cf46a79da4b0d2851c76385ffd9df",
       "output_path": "skills/enforce-script-reference/references/memory-management.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -22723,10 +22753,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): eight new claims, for dayzmake verify, the Central Economy files, the server config keys, memory-management and SP-525. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d3067a98eacbac22aa9d2ae4baefc3babe3c9192106c8f21e6e88abec10f9e4a",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6d6d25d5c3fed39927871014d2057dc775948e560f999dc0fa5910b021d09307",
+      "output_hash": "d3067a98eacbac22aa9d2ae4baefc3babe3c9192106c8f21e6e88abec10f9e4a",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -43683,10 +43723,20 @@
           "source_path": "skills/_shared/scripts/build-api-index.py",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): --mod defaults to None, so --mod \"\" goes through the name check and is refused instead of writing the vanilla index. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1518608b66cd60e18f31dd9a0637a9251c8b35c6e131d581b8df5c0c545ad202",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/build-api-index.py",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e8f126bba9bf832b0aafe2937db99b2bef602ab7e83e0ba4f9943a455e9f1450",
+      "output_hash": "1518608b66cd60e18f31dd9a0637a9251c8b35c6e131d581b8df5c0c545ad202",
       "output_path": "skills/_shared/scripts/build-api-index.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -43831,10 +43881,20 @@
           "source_path": "skills/_shared/scripts/dayz-mod-pack.sh",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): WORKSHOP_TAGS is split with read -a into WORKSHOP_TAG_LIST and never glob-expanded against the current directory (load_conf, check_tags, publish-hint). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "eac11e03b92ec1029f78cb1b890cb060bb65a29b9c6801fe9cfbf0b3b3874e71",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-mod-pack.sh",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "78b3e3791dd67efb2a805499a655e3ea96df1696bcaaa2aa5dc057cf9b631b54",
+      "output_hash": "eac11e03b92ec1029f78cb1b890cb060bb65a29b9c6801fe9cfbf0b3b3874e71",
       "output_path": "skills/_shared/scripts/dayz-mod-pack.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -43863,10 +43923,20 @@
           "source_path": "skills/_shared/scripts/extract-dayz-sources.sh",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): the PBO prefix is read from the PBO's header bytes (dayzmake v1.0.0 src/pbo.rs layout) and checked whole, so an LF or CR in it is refused, not truncated; the lock cleanup is installed right after the lock is taken. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "bc893f9628f664c960dc0993c656a1f2f0ad25494630ef5096d2e9d0de0b8c28",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/extract-dayz-sources.sh",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7d6479f6407e750ebeb4d50a8acbb7f195f3e7a7374c0a7886bd992fb806f153",
+      "output_hash": "bc893f9628f664c960dc0993c656a1f2f0ad25494630ef5096d2e9d0de0b8c28",
       "output_path": "skills/_shared/scripts/extract-dayz-sources.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -44021,10 +44091,20 @@
           "source_path": "skills/_shared/tests/test_linux_helpers.py",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): fake PBOs carry a real version header; tests for the raw prefix, the lock after a failed mktemp, unexpanded WORKSHOP_TAGS and --mod \"\"; the .dayzmod no-execution test uses an absolute marker. Each new test fails with its fix undone (negative controls run in WSL Ubuntu 22.04). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "97e24f50403795a5bee4e8581daab4a195ce77cc70b2f68fd4e1ffe25ccd006f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_linux_helpers.py",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cce9080cc63f509de02ed3f956b30edbe3708c992532feb19716f793f6cdc49e",
+      "output_hash": "97e24f50403795a5bee4e8581daab4a195ce77cc70b2f68fd4e1ffe25ccd006f",
       "output_path": "skills/_shared/tests/test_linux_helpers.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -44125,10 +44205,20 @@
           "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): the Do-not-commit-build/ note is narrowed to what dayzmake v1.0.0 verify compares (the stored trailer checksum, not recomputed), with claim CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "44676c1843efbf0462818eff5f7af51cd4621a6d2416150eb284bc22c6e0ff21",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "14a3f83dcc9bdab1e4d2b6bdc66b8be2619e5d7d3b501cb4607763583ab98bf9",
+      "output_hash": "44676c1843efbf0462818eff5f7af51cd4621a6d2416150eb284bc22c6e0ff21",
       "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -44501,10 +44591,20 @@
           "source_path": "skills/dayz-persistence/references/central-economy-files.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): re-read against the 1.30.164289 server install and scripts; the cfgspawnabletypes count (721 live, 17 commented), the rarer lifetimes, the AKM and Sakhal ranges, the event position types and the pos shapes are corrected; meanings not stated by the files are dropped; two claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "66f88236507da4065e168de022d5e5aa58e5779e5ec92c60211d5f02a240e9ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-persistence/references/central-economy-files.md",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7ed77a09b02d229ab48aa850f1843582ee41fa53c6ace97d2c299c0dd13c0bac",
+      "output_hash": "66f88236507da4065e168de022d5e5aa58e5779e5ec92c60211d5f02a240e9ce",
       "output_path": "skills/dayz-persistence/references/central-economy-files.md",
       "routing_artifact_id": "skill/dayz-persistence",
       "verification_level": "source_verified"
@@ -44533,10 +44633,20 @@
           "source_path": "skills/dayz-test-ingame/references/server-and-mission-config.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): the ServerConfigGetInt keys get a claim; enableCfgGameplayFile is read into a bool, so any non-zero value turns it on. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "639e5619c74944de319b0b334e78a38707cf7e2b81477e2107bfafd325b1f4f4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/server-and-mission-config.md",
+          "source_revision": "pack188-followups@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4bc5182e198c4cd06c371df74dd47be22251a3ea027feb35bd5410dfb2725df4",
+      "output_hash": "639e5619c74944de319b0b334e78a38707cf7e2b81477e2107bfafd325b1f4f4",
       "output_path": "skills/dayz-test-ingame/references/server-and-mission-config.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "source_verified"
