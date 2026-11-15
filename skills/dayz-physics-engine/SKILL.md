@@ -267,7 +267,7 @@ override void EOnContact(IEntity other, Contact extra)
         if (speed > 0.5 && m_CanHit)                        // guard vs multi-contact per tick
         {
             m_CanHit = false;                               // reset via timer or target EEHitBy
-            target.ProcessDirectDamage(DT_CUSTOM, this, "", "TransportHit", "0 0 0", speed);
+            target.ProcessDirectDamage(DamageType.CUSTOM, this, "", "TransportHit", "0 0 0", speed);
         }
     }
 }

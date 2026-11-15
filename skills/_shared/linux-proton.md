@@ -31,11 +31,11 @@ executable statements added later that carry no marker are labelled "not claimed
 | Terrain Builder, DSUtils GUI, ImageToPAA GUI | `dayz-proton.sh gui <Tool>` | **not verified** |
 | Dedicated server (`DayZServer_x64.exe`) | native `DayZServer` (Steam app 223350) from a private tree: `scripts/find-dayzserver.sh`, `make-server-tree.sh`, `free-ports.sh` | native, preferred; `dayz-test-ingame/references/linux-native-server.md` |
 | Client (`DayZ_x64.exe`) | retail client under Proton, paired with the native server: `scripts/dayz-client-headless.sh`, `dayz-client-test.sh` | works; `dayz-test-ingame/references/linux-headless-client.md` |
-| `DayZDiag_x64.exe` (client or `-server`) | `dayz-proton.sh headless start <state> DayZDiag <args>`, or experimentally managed through unmerged dayz-mcp PR #353 (last row) | both roles run; a diag client joins a diag server and reaches the world (section 5, pairing) |
+| `DayZDiag_x64.exe` (client or `-server`) | `dayz-proton.sh headless start <state> DayZDiag <args>`, or managed through dayz-mcp `main` (Linux port merged in https://github.com/willy92wins/dayz-mcp/pull/411 on 2026-11-14; last row) | both roles run; a diag client joins a diag server and reaches the world (section 5, pairing) |
 | `P:` drive (WorkDrive, `subst`) | a plain directory, mapped by `dayz-proton.sh init <dir>` | works (section 3) |
 | PowerShell scripts (`*.ps1`) | rewrite the steps in sh; `pwsh` exists on Linux but the scripts call Windows programs, the registry and `subst` | translate, do not run |
 | `%LOCALAPPDATA%\DayZ` logs | `<prefix>/pfx/drive_c/users/steamuser/AppData/Local/DayZ` (section 5) | |
-| dayz-mcp in-game bridge | experimental `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main: `dayz_test_run` (`mode=all/server/client`, `build=true`), `dayz_test_close`, `dayz_test_stop`, bound polls | recorded pack-only managed cycle, 2026-11-06; managed binarization with assets unverified; section 9 of `knowledge/linux-proton-findings-2026-11.md` |
+| dayz-mcp in-game bridge | Linux host support merged into dayz-mcp `main` on 2026-11-14 in https://github.com/willy92wins/dayz-mcp/pull/411 (successor to closed PR #353): `dayz_test_run` (`mode=all/server/client`, `build=true`), `dayz_test_close`, `dayz_test_stop`, bound polls | observations here were measured on `linux-port` on 2026-11-06 before #411 merged (not re-measured on `main`); managed binarization with assets unverified; section 9 of `knowledge/linux-proton-findings-2026-11.md` |
 
 Build, sign, binarize and publish with dayzmake and `workshop`; they are what this pack's Linux route
 is built on. AddonBuilder and Publisher are not needed on Linux. Use the Proton route when the question
@@ -43,10 +43,10 @@ is "what do BI's own tools produce", or for the GUI editors that have no native 
 Builder, TexView, Workbench, Terrain Builder) and for DayZDiag.
 
 **dayzmake** is bzed's DayZ fork of armake2, renamed at `v1.0.0` (https://github.com/bzed/dayzmake;
-the old URL https://github.com/bzed/armake2 redirects there). Use `v1.0.0` or later, pinned to the tag:
-the release binary `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from
-https://github.com/bzed/dayzmake/releases/tag/v1.0.0 (the one dayz-mcp's `linux-port` branch accepts),
-or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0` (needs `libssl-dev`). The fork
+the old URL https://github.com/bzed/armake2 redirects there). Use `v2.0.0` or later (`v1.0.0` or later is fine for building and signing your own mod, whereas unpacking any PBO you did not build yourself requires >= `v2.0.0` — tag `v2.0.0`, commit `f31056ae`, https://github.com/bzed/dayzmake/releases/tag/v2.0.0, where `src/pbo.rs` `safe_relative_path` and `crosses_symlink` validate relative paths and skip unsafe entries; `v1.0.0` `src/pbo.rs:724,731-733` has no containment check):
+install a pinned release from https://github.com/bzed/dayzmake/releases
+(note that dayz-mcp's managed `build=true` path merged in PR #411 pins the `v1.0.0` release binary for building),
+or `cargo install --git https://github.com/bzed/dayzmake --tag v2.0.0` (needs `libssl-dev`). The fork
 is required, not a preference, and it is moving away from upstream on purpose: it implements more and
 more functions that only DayZ needs, or that DayZ needs differently from Arma. Upstream armake2
 (KoffeinFlummi/armake2) is built for Arma: [EXACT][CLAIM-ARMAKE2-V3-SIGN-OMITS-C] the V3 file hash omits `.c` files in upstream armake2 and includes them in dayzmake v1.0.0.
@@ -82,11 +82,11 @@ registry, adds the game `main` key, installs the VC++ runtime, spends the first 
 and links `P:` in the tools and the game prefix. It takes about two minutes once. `doctor` prints what
 is installed, the game version of each app, update state and whether dayzmake (or a pre-rename `armake2` fork build) is installed and the right fork.
 
-`dayz-proton.sh binarize` never puts user text in the `cmd.exe /c` string: it writes a `Z:\run.bat`
-in the sandbox holding every user value double-quoted (`%` doubled, a run of trailing backslashes
-doubled, `setlocal DisableDelayedExpansion` so `!` stays literal), and it refuses an argument with
-a double quote, CR, LF or an empty argument before anything is created, copied, linked, removed
-or run. [EXACT][CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION] The offline tests prove that .bat serialization only, not how `cmd.exe` or binarize.exe parse it (that parsing is not claimed).
+`dayz-proton.sh binarize` and console `dayz-proton.sh tool` never put user text in the `cmd.exe /c`
+string: each writes a `.bat` holding every user value double-quoted (`%` doubled, a run of trailing
+backslashes doubled, `setlocal DisableDelayedExpansion` so `!` stays literal), and refuses an argument
+with a double quote, CR, LF or an empty argument before anything is created, copied, linked, removed
+or run. [EXACT][CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION] The offline tests prove that .bat serialization only, not how `cmd.exe`, binarize.exe or the console tools parse it (that parsing is not claimed).
 [EXACT][CLAIM-DAYZ-PROTON-HEADLESS-STOP-IDENTITY] `headless stop` signals only a sway whose recorded /proc start time and full argv still match, and then only the wineserver serving that session's recorded display, as a pid:starttime pair re-checked (/proc comm and start time) just before the signal; if the sway is gone or foreign it signals nothing and says so.
 A headless state path may only contain `A-Z a-z 0-9 / . _ -`: `headless start`, `stop` and
 `shot` check the path as given and once `pwd -P` resolved, before any side effect, and refuse
@@ -131,7 +131,7 @@ From a `Z:` path it is a Linux directory, possibly your home, and binarize then 
 (the author recorded scans of `~/.cargo` and a network mount).
 
 Vanilla data under `P:\dz` (what WorkDrive's "extract game data" does on Windows): unpack the game's
-PBOs with `dayzmake unpack` into `P/` at their prefix paths. For scripts and configs
+PBOs with `dayzmake unpack` into `P/` at their prefix paths using dayzmake >= `v2.0.0` (tag `v2.0.0`, commit `f31056ae`, `src/pbo.rs` `safe_relative_path`/`crosses_symlink`; `v1.0.0` `src/pbo.rs:724,731-733` has no entry-name containment — on < `v2.0.0` check every entry name with `dayzmake inspect` first, per `dayz-pbo-reverse-engineering`). For scripts and configs
 only, `scripts/extract-dayz-sources.sh <install> <dir>` (configs derapified; about 90 s). Workbench without the
 extracted data compiled its bundled scripts but logged `No entry 'config.bin/CfgVehicles/…'`
 for vanilla classes. Whether an extracted `P:\dz` removes those errors is **not verified**,

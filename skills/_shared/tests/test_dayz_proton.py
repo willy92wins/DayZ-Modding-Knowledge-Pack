@@ -98,7 +98,12 @@ def fake_dayzmake(tmp_path: Path, help_text: str, version: str) -> Path:
 @pytest.mark.parametrize(
     ("help_text", "version", "expected"),
     [
-        ("build [--proton-binarize]", "v1.0.0", "dayzmake v1.0.0 (ok)"),
+        ("build [--proton-binarize]", "v2.0.0", "dayzmake v2.0.0 (ok)"),
+        (
+            "build [--proton-binarize]",
+            "v1.0.0",
+            "dayzmake v1.0.0 (ok for building; upgrade to >= v2.0.0 before unpacking PBOs you did not build)",
+        ),
         ("build [--proton-binarize]", "v0.3.0", "from before the rename (v0.3.0)"),
         ("build", "v0.3.0", "is upstream armake2"),
     ],
@@ -309,9 +314,68 @@ def test_run_tool_bat_quoting_is_unchanged(tmp_path: Path) -> None:
     )
     assert done.returncode == 0, done.stderr
     bat = bats.read_text()
+    lines = bat.splitlines()
+    assert lines[1] == "@echo off"
+    assert lines[2] == "setlocal DisableDelayedExpansion"
+    assert 'DSSignFile.exe"' in lines[3]
     assert '"a & b.pbo"' in bat
-    assert "100%%.pbo" in bat
+    assert '"100%%.pbo"' in bat
     assert '"sp ace.pbo"' in bat
+
+
+def test_run_tool_bat_quotes_every_user_argument(tmp_path: Path) -> None:
+    fake_steam_with_tools(tmp_path)
+    proton_dir, calls_path, bats = fake_proton(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    (dzhome / "tools" / "pfx" / "dosdevices").mkdir(parents=True)
+    tool_args = ["C:\\dir with space\\", "%PATH%", "!x!", *SPECIAL_ARGS]
+    done = run(
+        tmp_path, "tool", "DSSignFile", *tool_args,
+        extra_env={"PROTON": str(proton_dir), "DAYZ_PROTON_HOME": str(dzhome)},
+    )
+    assert done.returncode == 0, done.stderr
+    calls = parse_calls(calls_path)
+    assert calls, calls_path
+    for call in calls:
+        for arg in tool_args:
+            assert arg not in call
+    bat = bats.read_text()
+    lines = bat.splitlines()
+    assert lines[1] == "@echo off"
+    assert lines[2] == "setlocal DisableDelayedExpansion"
+    assert lines[3].startswith('"Z:\\') and 'DSSignFile.exe" ' in lines[3]
+    assert '"C:\\dir with space\\\\"' in bat
+    assert '"%%PATH%%"' in bat
+    assert '"!x!"' in bat
+    for arg in SPECIAL_ARGS:
+        assert expected_bat_quote(arg) in bat, arg
+    stripped = re.sub(r'"[^"]*"', '""', "\n".join(lines[1:]))
+    assert "del P:" not in stripped
+    assert "a&b" not in stripped and "a|b" not in stripped
+
+
+@pytest.mark.parametrize("bad", ['a"&calc&"', 'a"b.pbo', "a\nb.pbo", "a\rb.pbo", "a\n", ""])
+def test_run_tool_refuses_bad_arguments_before_any_side_effect(tmp_path: Path, bad: str) -> None:
+    fake_steam_with_tools(tmp_path)
+    proton_dir, calls_path, bats = fake_proton(tmp_path)
+    dzhome = tmp_path / "dzhome"
+    tmpdir = tmp_path / "tmp"
+    tmpdir.mkdir()
+    done = run(
+        tmp_path, "tool", "DSSignFile", bad,
+        extra_env={
+            "PROTON": str(proton_dir),
+            "DAYZ_PROTON_HOME": str(dzhome),
+            "TMPDIR": str(tmpdir),
+        },
+    )
+    assert done.returncode != 0
+    assert "tool DSSignFile:" in done.stderr
+    assert "binarize:" not in done.stderr
+    assert not calls_path.exists()
+    assert not bats.exists()
+    assert not dzhome.exists()
+    assert list(tmpdir.iterdir()) == []
 
 
 # --- F3: headless identity and wineserver stops ------------------------------

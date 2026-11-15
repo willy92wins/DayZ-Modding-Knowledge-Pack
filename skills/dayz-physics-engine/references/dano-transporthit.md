@@ -46,7 +46,7 @@ enum DamageType
 }
 ```
 
-Aliases used internally: `DT_CUSTOM`, `DT_FIRE_ARM`, `DT_CLOSE_COMBAT` correspond to enum values (verified by usage in RegisterTransportHit).
+In DayZ 1.30 mod scripts, pass `DamageType.CLOSE_COMBAT`, `DamageType.FIRE_ARM`, `DamageType.EXPLOSION`, `DamageType.STUN` or `DamageType.CUSTOM` (`scripts/3_game/damagesystem.c:10-17`): `DT_CLOSE_COMBAT`, `DT_FIRE_ARM` and `DT_EXPLOSION` only appear in `object.c` doc comments and do not exist as script constants in 1.30 (vanilla `EntityAI.RegisterTransportHit` uses the internal `DT_CUSTOM`).
 
 ### 3. ProcessDirectDamage
 

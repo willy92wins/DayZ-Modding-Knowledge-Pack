@@ -17,13 +17,12 @@ on a server with `-mod=@Mod` and `verifySignatures = 2`, and its scripts ran; Th
 dayzmake is bzed's DayZ fork of armake2, renamed at `v1.0.0` (https://github.com/bzed/dayzmake). **Upstream armake2's
 V3 file hash omits `*.c` files** (dayzmake's includes them; a changed script also changes the signed PBO checksum), and it fails on
 DayZ configs (`MP:16-20`). The fork keeps moving away from upstream on purpose, with functions only DayZ
-needs or needs differently from Arma; what it adds so far is listed in `_shared/linux-proton.md`, section 1. Use dayzmake >= 1.0.0, pinned: the release binary
-`dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or
-`cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0` (needs `libssl-dev`).
+needs or needs differently from Arma; what it adds so far is listed in `_shared/linux-proton.md`, section 1. Use dayzmake >= 2.0.0, pinned (or >= 1.0.0 if you only build/sign your own sources and never run `dayzmake unpack` on third-party PBOs — `v2.0.0`, commit `f31056ae`, adds entry-name containment in `src/pbo.rs` `safe_relative_path`/`crosses_symlink` and skips unsafe entries, whereas `v1.0.0` `src/pbo.rs:724,731-733` has none): install from https://github.com/bzed/dayzmake/releases/tag/v2.0.0, or
+`cargo install --git https://github.com/bzed/dayzmake --tag v2.0.0` (needs `libssl-dev`).
 
 ```sh
 dayzmake -h 2>&1 | grep -- --proton-binarize   # a hit = the fork; none = upstream armake2, do not use
-dayzmake --version                             # v1.0.0; pre-rename fork builds are called armake2 and print v0.3.0
+dayzmake --version                             # >= v2.0.0 (v1.x ok for building only); pre-rename builds print v0.3.0
 ```
 
 The version string does not tell builds apart. If in doubt, reinstall from the tag, or binarize one textured model
@@ -125,10 +124,12 @@ a PBO that `inspect`/`unpack` refused with `failed to fill whole buffer`; older 
 dayzmake rapify | derapify | preprocess [src [dst]]   config.cpp <-> config.bin; stdin/stdout without paths
 dayzmake build | pack [-x glob] [-e k=v] [-k key] <dir> [pbo]
 dayzmake inspect <pbo | model.p3d>   PBO: header extensions + files; MLOD: LODs, textures, materials, selections
-dayzmake unpack <pbo> <dir>          header lands in $PBOPREFIX$; no -x (v1.0.0)
+dayzmake unpack <pbo> <dir>          header lands in $PBOPREFIX$; no -x; require >= v2.0.0 for third-party PBOs
 dayzmake cat <pbo> <file> [dst]      one file; inner paths use \  ('scripts\5_Mission\x.c')
 dayzmake img2paa | paa2img | binarize
 ```
+
+Unpacking any PBO you did not build yourself requires dayzmake >= `v2.0.0` (tag `v2.0.0`, commit `f31056ae` in `bzed/dayzmake`; `src/pbo.rs` `safe_relative_path` and `crosses_symlink` validate relative paths and skip unsafe entries). In `v1.0.0` (`src/pbo.rs:724,731-733`) `unpack` joins entry names without containment (`..\x` escapes, an absolute name replaces the base, `--force` overwrites); on < `v2.0.0` inspect all entry names first into a fresh empty directory (`dayz-pbo-reverse-engineering`, "On Linux").
 
 Debug recipes (`MP:269-300`): `dayzmake preprocess src/MyMod/config.cpp | less` shows what the parser sees;
 `dayzmake cat Vanilla.pbo config.bin | dayzmake derapify` shows what an official PBO set; `dayzmake inspect x.pbo` must
