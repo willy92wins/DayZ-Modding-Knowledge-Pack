@@ -516,3 +516,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - TexView: `dayz-proton.sh gui TexView <paa>` opened a DXT5 PAA and showed format, size and average colour.
 - Workbench (`.edds` / `.emat` import) starts under Proton; the import steps were **not verified** there.
 - `P:\` paths in rvmats are paths under the directory mapped by `dayz-proton.sh init`.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

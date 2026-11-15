@@ -158,3 +158,33 @@ Entity-side only. Details and `[EXACT]` blocks: `dayz-1-30-weapons.md`.
 - **Explosives.** Do not call `ExplosivesBase.SetParticleExplosion` / `AddExplosionEffectForSurface`
   (both `[Obsolete("1.30: Handled in AmmoTypes instead")]`, `ExplosivesBase.c:306-310` and `:433`).
   Use `CfgAmmo` `particle` + `AmmoTypesAPI.GetExplosiveEffectData`.
+
+## Spawning a loaded weapon, and the vanilla keys and calls around it (DayZ 1.30.164289)
+
+Script paths are relative to the extracted vanilla `scripts/` tree, config paths to `DZ/weapons/` of the same
+build.
+
+- `Weapon_Base.CreateWeaponWithAmmo(string weaponType, string magazineType = "", int flags = CHAMBER)` and
+  `SpawnAmmo(string magazineType = "", int flags = CHAMBER)` load a weapon from script; an empty magazine type
+  picks one (`scripts/4_World/Entities/Firearms/Weapon_Base.c:720`, `:740`). `flags` is a bit mask of
+  `WeaponWithAmmoFlags` (`:11-30`): `NONE` 0 (full magazine, nothing chambered), `CHAMBER` 1, `CHAMBER_RNG` 2
+  (sequential chance per chamber), `CHAMBER_RNG_SPORADIC` 4 (independent chance per chamber), `QUANTITY_RNG` 8
+  (random round count in the magazine), `AMMO_MAG_RNG` 16 and `AMMO_CHAMBER_RNG` 32 (random ammo type per round
+  when the type is empty), `MAX_CAPACITY_MAG` 64 (pick the largest magazine instead of a random one). Presets:
+  `SAMF_DEFAULT = CHAMBER | MAX_CAPACITY_MAG`, `SAMF_RNG = CHAMBER_RNG | QUANTITY_RNG` (`:41`, `:43`).
+- Script queries on `Weapon` (`scripts/4_World/Entities/Core/Inherited/Weapon.c`):
+  `GetInternalMagazineCartridgeCount(int muzzleIndex)` `:111`, `GetMagazine(int muzzleIndex)` `:240`. On
+  `Weapon_Base`: `IsJammed()` `:399`, `CanFire()` `:1262` (chamber loaded and not fired out, not jammed, not
+  lifted, not ruined), `OnFire(int muzzle_index)` `:1020`, `EEFired(int muzzleType, int mode, string ammoType)`
+  `:341`.
+- Firearm action classes in `scripts/4_World/Classes/UserActionsComponent/Actions/Weapons/`:
+  `FirearmActionAttachMagazine` (+`Quick`), `FirearmActionDetachMagazine`, `FirearmActionLoadBullet` (+`Quick`),
+  `FirearmActionLoadMultiBullet` (+`Quick`, `Radial`), `FirearmActionMechanicManipulate`, `FirearmActionUnjam`.
+- Weapon config keys seen in vanilla: `chamberSize` (rounds the chamber or internal tube holds: 1 on most
+  firearms, 5 on the Mosin, 7 on the Repeater; `firearms/mosin9130/config.cpp:32`,
+  `firearms/repeater/config.cpp:30`), `chamberedRound` (`firearms/B95/config.cpp:27`), `recoilModifier[] =
+  {1, 1, 1}` (`:39`), and `aiRateOfFire` / `aiRateOfFireDistance` on the launchers
+  (`launchers/rpg7/config.cpp:26-27`).
+- Magazine keys (`attachments/magazine/config.cpp:1845-1859`, `Mag_AKM_30Rnd`): `count = 30`,
+  `ammo = "Bullet_762x39"` (the `CfgAmmo` projectile), `ammoItems[]` (the loose-round items it accepts),
+  `tracersEvery = 0`.

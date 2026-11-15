@@ -228,3 +228,7 @@ Stop progression and request missing decision or evidence when:
 - a tolerance can only be chosen by looking at candidate intended to pass;
 - offline gate passes but visual or in-game review fails;
 - integration test requires an unavailable tool or permission.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

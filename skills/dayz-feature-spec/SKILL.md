@@ -165,3 +165,7 @@ the raw producer satisfy the canonical enum by inventing an out-of-contract sent
 `RAW-DATA-ONLY`; that guarantees an enum violation rather than representing a third verdict.
 The analyze gate treats one record name shared by two emitters, or a derived field assigned to
 the raw producer, as a Forward Contract contradiction.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

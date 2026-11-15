@@ -355,3 +355,32 @@ and ATM. Pattern `JsonFileLoader<T>.JsonSaveFile/JsonLoadFile` for per-entity pe
 - [SUP-4] Base implementation of `ExpansionScriptViewMenu`, `ExpansionViewController`, and
   binding runtime are in `DayZExpansion/Core/` — outside Market research scope.
   Verify before implementing exact binding compatibility.
+
+---
+
+## Settings files, item fields and related names (Expansion-Scripts@14fd692)
+
+A later snapshot than the one above: `salutesh/DayZ-Expansion-Scripts@14fd692` (2026-10-15). Read from the
+source, not measured on a server.
+
+- Settings live under `$profile:ExpansionMod\Settings\` (`EXPANSION_FOLDER`, `EXPANSION_SETTINGS_FOLDER`,
+  `DayZExpansion/Core/Scripts/3_Game/DayZExpansion_Core/ExpansionConstants.c:75`, `:78`) or under
+  `$mission:expansion\settings\` (`:85`). The file names have no `Expansion` prefix: `AISettings.json`,
+  `TerritorySettings.json`, `VehicleSettings.json` in the profile folder (`ExpansionConstants.c:98`, `:106-107`),
+  `QuestSettings.json` likewise (`DayZExpansion/Quests/Scripts/3_Game/DayZExpansion_Quests/DayZExpansion_Quest_Constants.c:45`),
+  but `MarketSettings.json` in the **mission** settings folder. Traders are in
+  `$profile:ExpansionMod\Traders\`, the market categories in `$profile:ExpansionMod\Market\`, the trader zones
+  in `$mission:expansion\traderzones\`
+  (`DayZExpansion/Market/Scripts/3_Game/DayZExpansion_Market/Expansion_Market_Constants.c:14-18`).
+- Fields of a market item (`.../DayZExpansion_Market/Settings/ExpansionMarketItem.c:30-48`): `ClassName`,
+  `MaxPriceThreshold` / `MinPriceThreshold` (int), `SellPricePercent` (float), `MaxStockThreshold` /
+  `MinStockThreshold`, `QuantityPercent` (int), `SpawnAttachments[]`, `Variants[]`.
+- `ExpansionQuestObjectiveType` starts at `NONE = 1`, then `TARGET`, `TRAVEL`, `COLLECT`, `DELIVERY`,
+  `TREASUREHUNT`, `AIPATROL`, `AICAMP`, `AIESCORT`, `ACTION`, `CRAFTING`
+  (`DayZExpansion/Quests/Scripts/4_World/DayZExpansion_Quests/Systems/Quests/ExpansionQuestObjectiveType.c:13-26`).
+  Use the names: the numbers do not start at 0.
+- AI settings include `MaxRecruitableAI`, `OverrideClientWeaponFiring` and `RecreateWeaponNetworkRepresentation`
+  (`DayZExpansion/AI/Scripts/3_Game/DayZExpansion_AI/Settings/ExpansionAISettings.c:53`, `:67-68`).
+- Detecting Expansion from a mod that does not depend on it: the Core patch is `CfgPatches DayZExpansion_Core`
+  (`DayZExpansion/Core/Stub/config.cpp:3`), so `g_Game.ConfigIsExisting("CfgPatches DayZExpansion_Core")` works at
+  run time; a module's scripts patch is `DayZExpansion_<Module>_Scripts` (`DayZExpansion/Market/Scripts/config.cpp:3`).

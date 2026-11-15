@@ -41,7 +41,7 @@ Reglas duras (verificadas contra `vanilla EntityAI.c`):
   - DabsFramework: `"DF_Scripts"` or `"DF_GUI"` (not `"DabsFramework"`).
   - Vanilla: `"DZ_Data"`, `"DZ_Scripts"`.
 - [ ] `hiddenSelections[]` count = `hiddenSelectionsTextures[]` count.
-- [ ] `scope = 2` spawnable, `1` reference, `0` abstract.
+- [ ] `scope = 2` for exposure in public lists/tools that filter by scope 2, `1` can still be created by script, `0` abstract.
 - [ ] Inheritance: parent exists or is in `requiredAddons`.
 - [ ] **Vehicle nested class override (`class SimulationModule: SimulationModule`, `class Axles: Axles`, `class Front: Front`, `class Rear: Rear`, `class DamageZones: DamageZones`, etc.)**: base referenced with `: X` MUST be declared as forward-ref `class X;` in root of THIS `CfgVehicles`. Each `config.cpp` is parsed with its own scope — a child mod does NOT inherit forward-refs from parent PBO config. Without them → CfgConvert gives `Undefined base class 'X'` (compile-blocking, mod does not load). Nested classes WITHOUT `: parent` (Engine, Steering, Gearbox, Differential, Suspension…) merge implicitly and do NOT need forward-ref. See E24.
 - [ ] **`ProcessDirectDamage` first argument = `DamageType.FIRE_ARM`** (enum, `damagesystem.c`), NOT `DT_FIRE_ARM` (non-existent alias in current vanilla, only in a comment). See E25.
@@ -54,7 +54,7 @@ Reglas duras (verificadas contra `vanilla EntityAI.c`):
 Full rules live in `enforce-script-reference` skill. Key verified restrictions:
 
 - [ ] **No ternary operators** (`? :` does not compile).
-- [ ] `ref` **only** on member fields, never on locals/params/returns/typedefs.
+- [ ] `ref` on owning member fields; never on params/returns/typedefs or `new ref` (valid and redundant on locals — omit by style).
 - [ ] **Never** use `delete` keyword (segfault if references remain).
 - [ ] `foreach` works, but **never** directly on a getter return (NPE on 2nd iteration). Assign to local first.
 - [ ] Prefix `m_` on all member fields.

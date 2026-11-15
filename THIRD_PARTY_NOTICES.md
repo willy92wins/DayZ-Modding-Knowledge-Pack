@@ -16,6 +16,15 @@ Components listed below retain their own notices and licenses.
 The pack contains a DayZ-specific fork. The upstream copyright and license
 must remain with redistributions of that component.
 
+### bzed/dayz-dev-plugin (contributed parts only)
+
+- Component: the parts of this Pack that come from `bzed/dayz-dev-plugin` at `6112ac5`: the nine helper scripts under `skills/_shared/scripts/` (`find-dayzserver.sh`, `make-server-tree.sh`, `free-ports.sh`, `dayz-client-headless.sh`, `dayz-client-test.sh`, `dayz-mod-pack.sh`, `extract-dayz-sources.sh`, `build-api-index.py`, `dayz-api.py`, each with its `# Source:` header line) and `skills/_shared/tests/test_linux_helpers.py`, the AutoTest asset under `skills/dayz-test-ingame/assets/autotest-mod/`, `skills/dayz-mod-dev/SKILL.md`, and the references whose provenance entries in `sources/source-map.json` say so (`skills/dayz-test-ingame/references/linux-native-server.md`, `skills/dayz-test-ingame/references/linux-headless-client.md`, `skills/dayz-pbo-build/references/dayzmake-linux.md`, `skills/dayz-mod-workflow/references/dayz-1-30-server-measured.md`)
+- Upstream: `bzed/dayz-dev-plugin` at `6112ac5`
+- License: MIT, as stated in PR #183 for the contributed parts
+- Copyright: held by the author of those parts
+
+The plugin repository itself is GPL; only the contributed parts listed above are covered by this statement. The two references the source map describes as clean-room are not attributed to plugin text.
+
 ### obra/superpowers systematic-debugging
 
 - Component: `skills/systematic-debugging/`

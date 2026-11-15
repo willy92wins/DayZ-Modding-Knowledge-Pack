@@ -7,6 +7,62 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-mod-dev`, a new skill: the entry point for mod development on DayZ 1.30 or later. It routes a mod task to the
+  domain skills, carries the rules every mod task needs (look up every API, the version define, forward slashes,
+  PBOs in `addons/`, load order following `requiredAddons`, no writes into Steam's directories, publishing is the
+  user's call), the look-up order with the local API index (`_shared/scripts/dayz-api.py`), the 1.30 porting walk,
+  CF and Expansion essentials, and the build, boot, verify and publish loop on Windows and Linux. Built from bzed's
+  own `dayz-dev` sections (contributed under MIT) and Pack material. 33 DayZ skills link to it for the mod loop;
+  `dayz-test-ingame` and `enforce-script-reference` gain triggers for local servers, API lookups, CF and load order.
+  `AGENTS.md` names it as the entry point; README and `AGENTS.md` count 45 skills.
+
+- From bzed's `dayz-dev` plugin (https://github.com/bzed/dayz-dev-plugin at `6112ac5`), the parts its author wrote,
+  contributed to the Pack under MIT by the author (the plugin itself is GPL-3.0; its upstream DayZGhost material is not
+  taken). Measured on Linux; the author re-tested the plugin on DayZ 1.30 stable.
+  - `skills/_shared/scripts/`: `find-dayzserver.sh`, `make-server-tree.sh`, `free-ports.sh` (a private server tree,
+    random free ports), `dayz-client-headless.sh`, `dayz-client-test.sh` (the retail client headless under Proton, one
+    command from start to report), `dayz-mod-pack.sh` (dayzmake keygen, build, check, Workshop upload hints),
+    `extract-dayz-sources.sh`, `build-api-index.py`, `dayz-api.py` (a declarations index built locally; Bohemia's
+    declarations are not shipped). Tests in `skills/_shared/tests/test_linux_helpers.py` on a fake Steam tree; the
+    AutoTest build, sign and verify test runs where dayzmake is installed.
+  - `dayz-test-ingame`: `references/linux-native-server.md` (server tree, ports, RCon seed, the CF storage wipe,
+    listing servers by PID, the Game-module count and the deliberate-syntax-error probe, the space-padded
+    `SCRIPT    (E)` tag), `references/linux-headless-client.md` (headless client, the "Client is missing a mod"
+    kick, BattlEye, the Expansion spawn selector) and the self-reporting test mod `assets/autotest-mod/`. The
+    "On Linux" section carries the one-line rules whose violation fails silently or misleadingly.
+  - `dayz-pbo-build`: `references/dayzmake-linux.md` (dayzmake, `--proton-binarize`, v3 signatures byte-identical to
+    DSSignFile, `meta.cpp`/`mod.cpp`/app id from 438 Workshop items, Workshop tags, the `workshop` uploader); a
+    folder check that every PBO sits in `addons/`.
+  - `dayz-mod-workflow`: `references/dayz-1-30-server-measured.md` (the `DAYZ_1_30` define, DZEXP-134 `FindFile`
+    and removing its workarounds, `$storage:` timing, `GetMissionFolderPath()` returning `""`, backslash `files[]`
+    loading no scripts, the compile-failure segfault, `OnCEUpdate` never called, the `ERPCs` shift, the 1.30.164200
+    changes with `#ifdef WORKBENCH` breaking DabsFramework 1.51, mod load order following `requiredAddons`, CF 1.5.9
+    and the Expansion mod set). `enforce-script-reference` and `dayz-mod-workflow` say not to build a fix on a
+    position in the `modded class` chain.
+  - From the plugin's skill observations 1-5: the `addons/` rule and probe, load order, the CF wipe at the point of
+    decision, `pkill`/`pgrep` not matching `enfMain`, one server at a time.
+  - Notes that called these helpers "author-local, not distributed" now point at them.
+- Server config, Central Economy files and API facts, verified on DayZ 1.30.164289 (Steam build 26220720): the vanilla
+  scripts and configs, the server's mission files, native Linux server boots with a probe `init.c`, and CF `0763e7e` /
+  Expansion-Scripts `14fd692`. New: `dayz-test-ingame` `references/server-and-mission-config.md`, `dayz-persistence`
+  `references/central-economy-files.md`; additions to `enforce-script-reference` (`verified-api-catalog.md`,
+  `networking.md`, `memory-management.md`, `config-cpp.md`), `dayz-weapons`, `dayz-aviation`, `dayz-ui-development`,
+  `dayz-animation-pipeline`. Written without access to third-party text; facts that could not be verified, or held only
+  before 1.30, were left out.
+
+### Fixed
+
+- PR #183 integration review fixes: the Linux helper scripts no longer write outside their target trees (PBO prefix/entry/row-count validation, status-checked enumeration and `dayzmake cat`, and exclusive `mktemp` staging/promotion in `extract-dayz-sources.sh` with a new `--force` flag; pre-`mkdir` `..` rejection, private `profiles/` and existing-symlink sanitization across `mpmissions/`, `keys/` and `battleye/` in `make-server-tree.sh`; state-path whitelist, sentinel physical-path capture, pre-launch validation, cancel-marker cleanup, verified sway identity and path-free `sway.conf`/`game.sh` in `dayz-client-headless.sh`; `.dayzmod` parsed as data with `KEY_NAME` environment fallback, `WORKSHOP_APP_ID` validation and shell quoting, `pipefail`-safe `find` scans, symlink/atomic-write protection and stale-key cleanup before `static/` private-key scan in `dayz-mod-pack.sh`; `--mod` and default-output symlink/containment validation in `build-api-index.py`; and a feasibility bound in `free-ports.sh`); the AutoTest runner binds results to the test player and restores its initial damage state; and the 1.30 migration citations, local-`ref` guidance, scope, Workbench-guard, CF-storage, module-count, `CCTWaterSurface`, `EffectAreaLoader`, `dayzmake verify` vs `DSCheckSignatures` v3 hash coverage, and executable claim registrations were corrected to their cited sources.
+- `ref` keeps a class without a `Managed` ancestor alive too; a member field without `ref` is weak for both kinds
+  and reads `NULL`; assigning `new` to a non-`ref` field does not compile ("not strong ref"); a two-object `ref` cycle
+  is never destroyed (measured on 1.30.164289; `enforce-script-reference` `references/memory-management.md`,
+  `_shared/enscript-style.md`).
+- `RegisterNetSyncVariableFloat`'s last argument is the number of decimal digits, not bits
+  (`3_Game/Entities/EntityAI.c:2853-2861`).
+- `scope = 1` classes can be created by script (vanilla spawns `LargeTentClutterCutter` that way); three notes said
+  "editor only".
+- Expansion: `ExpansionVehicleBase` is an obsolete stub on `Transport`; current Expansion vehicles derive from `CarScript`.
+
 - Linux (2026-11-13): bzed's armake2 fork is now dayzmake (https://github.com/bzed/dayzmake). Every
   Linux note names `dayzmake` >= 1.0.0, pinned to the `v1.0.0` release binary or
   `cargo install --git ... --tag v1.0.0` (the tag contains the measured `7dcb3cf` and `0a0ce3b`), and

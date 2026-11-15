@@ -262,3 +262,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 
 - Terrain Builder was **not** started under Proton; treat any `.wrp` step as Windows-only until it is measured. String searches in `DayZDiag_x64.exe` work natively with `strings` and `strings -el` (UTF-16).
 - In-game checks: native server and Proton client (`dayz-test-ingame`, Linux notes).
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

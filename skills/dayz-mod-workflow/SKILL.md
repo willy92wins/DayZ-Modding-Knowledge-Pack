@@ -164,9 +164,9 @@ Run the **mandatory structural gate** (`script_validator.py`, and `ui_reconcile.
 
 <!-- corpus-stardz-2026-09-07 -->
 
-### Script compile order vs -mod= path order (historical)
+### Script compile order and load order
 
-Mod **script/config load order** is driven by `requiredAddons[]` in each PBO’s config.cpp CfgPatches dependency graph — not by -mod= path order alone. The engine compiles **all mods’** scripts for layer N (ordered by that graph) before layer N+1. Unrelated mods may fall back to ASCII order of CfgMods class names (community note in StarDZ — historical).
+Mod **script/config load order** is driven by `requiredAddons[]` in each PBO’s config.cpp CfgPatches dependency graph — not by -mod= path order alone. The engine compiles **all mods’** scripts for layer N (ordered by that graph) before layer N+1. Measured on the native Linux 1.30 server (bzed): a `-servermod` whose `requiredAddons` names `DayZExpansion_Vehicles_Scripts` compiled right after that addon, wherever it stood in the `-servermod` string, so a `-servermod` does not come after every `-mod`. **Never build a fix on a position in the `modded class` chain** ("I am outermost"): counteract another mod's behaviour from an event that provably runs after it (`EEInit()` runs after the whole constructor chain, so re-enabling damage there beats a constructor-time `SetAllowDamage(false)` from any position) and pick targets by data (class-name prefix, config flags). Details and the other server-measured 1.30 facts (DZEXP-134 `FindFile`, `$storage:` timing, backslash `files[]`, the 164200 changes, CF and Expansion requirements): [`references/dayz-1-30-server-measured.md`](references/dayz-1-30-server-measured.md).
 
 - [ ] `requiredAddons[]` lists the **CfgPatches class names** you actually depend on (scripts + config parents), not Steam folder names
 - [ ] Soft deps: omit from `requiredAddons` and feature-detect at runtime when optional
@@ -190,10 +190,10 @@ Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/08-tutoria
 - [ ] `CfgPatches` class name matches addon folder name
 - [ ] `requiredAddons` uses CfgPatches class names:
   - CommunityFramework: `"JM_CF_Scripts"` (NOT `"CommunityFramework"`)
-  - DabsFramework: `"DF_Scripts"` or `"DF_GUI"` (NOT `"DabsFramework"`)
+  - DabsFramework: `"DF_Scripts"` or `"DF_GUI"` (NOT `"DabsFramework"`). Expansion: `"DayZExpansion_Core"` for Core; a module's scripts patch is `"DayZExpansion_<Module>_Scripts"` (e.g. `_Market_Scripts`, `_AI_Scripts`, `_Quests_Scripts`, `_Vehicles_Scripts`, `_BaseBuilding_Scripts`), not `"DayZExpansion_<Module>"` (`salutesh/DayZ-Expansion-Scripts@14fd692`: `DayZExpansion/Core/Stub/config.cpp:3`, `DayZExpansion/Market/Scripts/config.cpp:3`)
   - Vanilla: `"DZ_Data"`, `"DZ_Scripts"`
 - [ ] `hiddenSelections[]` count matches `hiddenSelectionsTextures[]` count
-- [ ] `scope = 2` spawnable, `1` reference, `0` abstract
+- [ ] `scope = 2` for exposure in public lists/tools that filter by scope 2, `1` protected (script can still create it, e.g. vanilla `LargeTentClutterCutter`), `0` abstract
 - [ ] Inheritance: verify parent exists or is in requiredAddons
 - [ ] `inventorySlot` = string for single, `inventorySlot[]` = array for multiple
 - [ ] `ghostIcon`: `"set:setname image:imagename"` - verify imageset exists
@@ -204,7 +204,7 @@ Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/08-tutoria
 Defer to `enforce-script-reference` for full rules. Key verified restrictions:
 
 - [ ] No ternary operators (`? :` does not compile)
-- [ ] `ref` only on member fields, never on locals/params/returns
+- [ ] `ref` on owning member fields; never on params/returns/typedefs or `new ref` (valid and redundant on locals)
 - [ ] Never use `delete` keyword (segfault if references still exist)
 - [ ] `foreach`: works, but NEVER directly on getter returns (NPE on 2nd item).
       Assign to local variable first, then iterate.
@@ -993,3 +993,8 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 - Build and sign with dayzmake >= 1.0.0 (bzed's DayZ fork of armake2, https://github.com/bzed/dayzmake, pinned to tag `v1.0.0`; upstream armake2 targets Arma: its V3 file hash omits `*.c` files (dayzmake v1.0.0 includes them) and lacks dayzmake's DayZ-only functions) instead of AddonBuilder; publish with the `workshop` uploader.
 - Experimental only: these managed-cycle observations refer to the unmerged `linux-port` branch in https://github.com/willy92wins/dayz-mcp/pull/353, not upstream main. They do not verify managed binarization with assets. Test loop: `dayz_test_run` on dayz-mcp's `linux-port` branch (`dayz-test-ingame`, "On Linux"), or by hand either pair that can join: `DayZDiag` client and `DayZDiag -server` under Proton, or a manually configured retail Proton client and the native `DayZServer` (a diag client on the native server is refused with `0x00020017`). The native server hangs before the landscape with `-filePatching` (measured 2026-11-04), so start it without the flag and repack; the `-filePatching` loop of section 6 with loose files under Proton was **not verified**.
 - `%LOCALAPPDATA%` and `.ps1` steps: see the guide's pitfalls; translate scripts to `sh`.
+- Testing without dayz-mcp: the native `DayZServer` and the retail client under Proton, `dayz-test-ingame/references/linux-native-server.md` and `linux-headless-client.md`. 1.30 facts measured on that server: [`references/dayz-1-30-server-measured.md`](references/dayz-1-30-server-measured.md).
+
+## The rest of the mod loop
+
+This skill governs how code is written and debugged. Scoping, API lookup, building, the local server boot and publishing, and which domain skill to read, are in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

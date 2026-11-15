@@ -287,3 +287,7 @@ What changes, what breaks, and the migration checklist. `[EXACT]` blocks: `refer
 - [ ] If you spawn custom infected, keep `m_MindState` sync range covering `MINDSTATE_COWER` (5).
 - [ ] Custom maps: regenerate navmesh. Copy/inherit `DZMouflonGroupBeh` / `DZDogGroupBeh` if you want those packs.
 - [ ] Expansion eAI PC-5..PC-18 in this extract were **not** re-verified (Expansion scripts are not in `exp\`). Treat those cites as 1.29 Expansion research.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.

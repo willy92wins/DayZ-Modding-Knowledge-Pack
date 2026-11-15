@@ -462,3 +462,7 @@ Full detail: `references/dayz-1-30-particles.md`. Surface-dust / ceiling-dust / 
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
 
 - `.ptc`/`.emat` are text and are written without Workbench, so nothing here needs Windows. Workbench itself starts under Proton (`dayz-proton.sh gui Workbench`); its particle editor was **not verified** there.
+
+## Building, testing and publishing the mod
+
+When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.
