@@ -155,14 +155,26 @@ if [ "$failed" = 0 ]; then
     while IFS= read -r -d '' pbo; do
       total_pbos=$((total_pbos + 1))
       if ! "$DZPBO" inspect "$pbo" > "$tmp/list" 2>/dev/null; then note_fail "inspect failed (unreadable): $pbo"; continue; fi
-      # The prefix comes from the raw header bytes, kept whole (the trailing 'x' stops $() from dropping a final LF),
-      # so valid_name sees every control character of the stored value.
+      # The stored prefix is checked whole, from the header bytes: a C0 control or DEL anywhere in it (a final LF too,
+      # which $() would drop) is refused. Without one, the value fills exactly one '- prefix=' line of the listing,
+      # and that line carries dayzmake's own decoding of it (UTF-8, or windows-1252 when the bytes are not UTF-8:
+      # src/pbo.rs decode_name), the same text as the entry names the listing gives.
       if ! prefix_hex=$(pbo_prefix_hex "$pbo"); then note_fail "unreadable or malformed PBO header in $pbo; skipping PBO"; continue; fi
       prefix=
       if [ -n "$prefix_hex" ]; then
-        prefix_esc=$(printf '%s' "$prefix_hex" | sed 's/[0-9a-f][0-9a-f]/\\x&/g; s/ //g')
-        prefix=$(printf '%b' "$prefix_esc"; printf x)
+        case " $prefix_hex " in
+          *" "[01][0-9a-f]" "*|*" 7f "*)
+            prefix_esc=$(printf '%s' "$prefix_hex" | sed 's/[0-9a-f][0-9a-f]/\\x&/g; s/ //g')
+            prefix=$(printf '%b' "$prefix_esc"; printf x)
+            note_fail "invalid PBO prefix $(printf '%q' "${prefix%x}") in $pbo (control character in the stored value); skipping PBO"
+            continue ;;
+        esac
+        prefix_lines=$(grep -c '^- prefix=' "$tmp/list" || true)
+        if [ "$prefix_lines" != 1 ]; then note_fail "the listing of $pbo has $prefix_lines '- prefix=' lines for one stored prefix; skipping PBO"; continue; fi
+        prefix=$(sed -n 's/^- prefix=//p' "$tmp/list"; printf x)
         prefix=${prefix%x}
+        prefix=${prefix%$'\n'}
+        prefix=${prefix%$'\r'}
         prefix=${prefix//\\//}
       fi
       [ -n "$prefix" ] || prefix=$(basename "$pbo" .pbo)

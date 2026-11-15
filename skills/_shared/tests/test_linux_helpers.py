@@ -281,7 +281,7 @@ def _fake_dayzmake(tmp_path: Path, entries: dict) -> Path:
         "a = sys.argv[1:]\n"
         "if a and a[0] in ('-h', '--help'): print('--proton-binarize')\n"
         "elif a and a[0] == '--version': print('dayzmake v1.0.0')\n"
-        "elif a and a[0] == 'inspect': sys.stdout.write(open(os.environ['FAKE_LISTING']).read())\n"
+        "elif a and a[0] == 'inspect': sys.stdout.buffer.write(open(os.environ['FAKE_LISTING'], 'rb').read())\n"
         "elif a and a[0] == 'cat':\n"
         "    inner, target = a[2], a[3]\n"
         "    act = ENTRIES.get(inner)\n"
@@ -385,29 +385,72 @@ def test_extract_rejects_a_control_character_in_the_raw_pbo_prefix(tmp_path: Pat
 
 def test_extract_reads_the_prefix_from_the_pbo_header(tmp_path: Path) -> None:
     bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    (tmp_path / "listing.txt").write_text("# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
+    rows = "# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n"
+    (tmp_path / "listing.txt").write_text("- prefix=DZ\\AI\n" + rows)
     install = _make_install(tmp_path, b"DZ\\AI")
     out = tmp_path / "out"
     done = _extract(tmp_path, bin_dir, install, out)
     assert done.returncode == 0, done.stderr
     assert (out / "DZ" / "AI" / "scripts" / "a.c").is_file()
     assert (out / "pbo-map.tsv").read_text() == "DZ/AI\tdta/x.pbo\n"
-    # No version header: the PBO's file name stands in for the prefix, as before.
-    _make_install(tmp_path, None)
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode == 0, done.stderr
-    assert (out / "pbo-map.tsv").read_text() == "x\tdta/x.pbo\n"
     # Another key may repeat; the prefix still comes from its own extension.
     (install / "dta" / "x.pbo").write_bytes(_pbo_bytes(b"DZ\\AI", extra=b"version\0a\0version\0b\0"))
     done = _extract(tmp_path, bin_dir, install, out)
     assert done.returncode == 0, done.stderr
     assert (out / "pbo-map.tsv").read_text() == "DZ/AI\tdta/x.pbo\n"
+    # No version header: the PBO's file name stands in for the prefix, as before.
+    (tmp_path / "listing.txt").write_text(rows)
+    _make_install(tmp_path, None)
+    done = _extract(tmp_path, bin_dir, install, out)
+    assert done.returncode == 0, done.stderr
+    assert (out / "pbo-map.tsv").read_text() == "x\tdta/x.pbo\n"
     # A header block cut off by the end of the file, or a second 'prefix', is refused.
+    (tmp_path / "listing.txt").write_text("- prefix=scripts\n" + rows)
     for data in (_pbo_bytes(b"scripts")[:30], _pbo_bytes(b"scripts", extra=b"prefix\0other\0")):
         (install / "dta" / "x.pbo").write_bytes(data)
         done = _extract(tmp_path, bin_dir, install, tmp_path / "out-bad")
         assert done.returncode != 0
         assert "malformed PBO header" in done.stderr
+    # A clean stored prefix must fill exactly one '- prefix=' line of the listing; none, or a second one (another
+    # value's text), is refused instead of falling back to the file name or mixing the two.
+    (install / "dta" / "x.pbo").write_bytes(_pbo_bytes(b"scripts"))
+    for lines in ("", "- prefix=scripts\n- prefix=elsewhere\n"):
+        (tmp_path / "listing.txt").write_text(lines + rows)
+        done = _extract(tmp_path, bin_dir, install, tmp_path / "out-bad2")
+        assert done.returncode != 0
+        assert "'- prefix=' lines" in done.stderr
+        assert not (tmp_path / "out-bad2").exists()
+
+
+def test_extract_keeps_dayzmakes_decoding_of_a_non_utf8_prefix(tmp_path: Path) -> None:
+    # Stored bytes 'Mod\xe9' are not UTF-8; dayzmake decodes them as windows-1252 ('Modé', src/pbo.rs
+    # decode_name) and prints that text in UTF-8. The extraction and pbo-map.tsv must carry the same text, so that
+    # build-api-index.py, which reads the map as text, still works.
+    bin_dir = _fake_dayzmake(tmp_path, {r"3_Game\a.c": ("content", "class A {}\n")})
+    (tmp_path / "listing.txt").write_bytes(
+        "- prefix=Modé\n# Files: 1\n====\n".encode("utf-8") + rb"3_Game\a.c" + b" stored 9 9\n"
+    )
+    install = _make_install(tmp_path, b"Mod\xe9")
+    out = tmp_path / "out"
+    env = _env_with_bin(tmp_path, None, bin_dir)
+    env["DAYZMAKE"] = "dayzmake"
+    env["FAKE_LISTING"] = str(tmp_path / "listing.txt")
+    # Bytes, not text: the script's progress line names the prefix, and a raw 0xe9 there must not fail the harness
+    # before the map is checked.
+    done = subprocess.run(
+        ["bash", str(SCRIPTS / "extract-dayz-sources.sh"), str(install), str(out)],
+        env=env, capture_output=True, timeout=60, check=False,
+    )
+    assert done.returncode == 0, done.stderr
+    assert (out / "pbo-map.tsv").read_bytes() == "Modé\tdta/x.pbo\n".encode("utf-8")
+    assert (out / "Modé" / "3_Game" / "a.c").is_file()
+    api = tmp_path / "api"
+    index = subprocess.run(
+        [sys.executable, str(SCRIPTS / "build-api-index.py"), str(out), str(api), "--mod", "Test"],
+        env={**os.environ, "PYTHONUTF8": "1"}, capture_output=True, text=True, timeout=60, check=False,
+    )
+    assert index.returncode == 0, index.stderr
+    assert (api / "mod-Test.txt.xz").is_file()
 
 
 def test_extract_rejects_entry_escape_and_lf_listing(tmp_path: Path) -> None:

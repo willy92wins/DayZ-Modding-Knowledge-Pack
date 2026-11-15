@@ -43926,9 +43926,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "PR #188 follow-ups (2026-11-15): the PBO prefix is read from the PBO's header bytes (dayzmake v1.0.0 src/pbo.rs layout) and checked whole, so an LF or CR in it is refused, not truncated; the lock cleanup is installed right after the lock is taken. Written by Claude (Anthropic).",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): the stored PBO prefix is checked whole from the PBO's header bytes (dayzmake v1.0.0 src/pbo.rs layout), so a control character in it, a final LF too, is refused instead of truncated; its text then comes from the single '- prefix=' line of the listing, keeping dayzmake's decoding (windows-1252 for bytes that are not UTF-8); the lock cleanup is installed right after the lock is taken. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "bc893f9628f664c960dc0993c656a1f2f0ad25494630ef5096d2e9d0de0b8c28",
+          "source_hash": "9e4ea1123b2f8275ca897e4b9278ad5a1bd485a97a4a8a1c81f4c2ed4360f20a",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/scripts/extract-dayz-sources.sh",
           "source_revision": "pack188-followups@2026-11-15",
@@ -43936,7 +43936,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "bc893f9628f664c960dc0993c656a1f2f0ad25494630ef5096d2e9d0de0b8c28",
+      "output_hash": "9e4ea1123b2f8275ca897e4b9278ad5a1bd485a97a4a8a1c81f4c2ed4360f20a",
       "output_path": "skills/_shared/scripts/extract-dayz-sources.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -44094,9 +44094,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "PR #188 follow-ups (2026-11-15): fake PBOs carry a real version header; tests for the raw prefix, the lock after a failed mktemp, unexpanded WORKSHOP_TAGS and --mod \"\"; the .dayzmod no-execution test uses an absolute marker. Each new test fails with its fix undone (negative controls run in WSL Ubuntu 22.04). Written by Claude (Anthropic).",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): fake PBOs carry a real version header and the fake inspect copies bytes; tests for the stored prefix (controls, one '- prefix=' line, a non-UTF-8 prefix through build-api-index.py), the lock after a failed mktemp, unexpanded WORKSHOP_TAGS and --mod \"\"; the .dayzmod no-execution test uses an absolute marker. Each new test fails with its fix undone (negative controls run in WSL Ubuntu 22.04). Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "97e24f50403795a5bee4e8581daab4a195ce77cc70b2f68fd4e1ffe25ccd006f",
+          "source_hash": "0d259ab89bae3a3a8707bcfd64b89aa51fd9303dd7a2d87e144f6cc8ca500b85",
           "source_id": "pack-r21-authored",
           "source_path": "skills/_shared/tests/test_linux_helpers.py",
           "source_revision": "pack188-followups@2026-11-15",
@@ -44104,7 +44104,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "97e24f50403795a5bee4e8581daab4a195ce77cc70b2f68fd4e1ffe25ccd006f",
+      "output_hash": "0d259ab89bae3a3a8707bcfd64b89aa51fd9303dd7a2d87e144f6cc8ca500b85",
       "output_path": "skills/_shared/tests/test_linux_helpers.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -44208,9 +44208,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "PR #188 follow-ups (2026-11-15): the Do-not-commit-build/ note is narrowed to what dayzmake v1.0.0 verify compares (the stored trailer checksum, not recomputed), with claim CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM. Written by Claude (Anthropic).",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): the Do-not-commit-build/ note is narrowed to what dayzmake v1.0.0 verify compares (the stored trailer checksum, not recomputed; only edits outside the v3 file hash with names and prefix kept go unnoticed), with claim CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "44676c1843efbf0462818eff5f7af51cd4621a6d2416150eb284bc22c6e0ff21",
+          "source_hash": "b93c151bedcf5825274bd9c8c366555f5b60dfc3e1cf2c31020ac9bdc952b6ec",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
           "source_revision": "pack188-followups@2026-11-15",
@@ -44218,7 +44218,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "44676c1843efbf0462818eff5f7af51cd4621a6d2416150eb284bc22c6e0ff21",
+      "output_hash": "b93c151bedcf5825274bd9c8c366555f5b60dfc3e1cf2c31020ac9bdc952b6ec",
       "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
