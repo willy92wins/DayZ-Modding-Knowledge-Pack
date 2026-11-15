@@ -2,17 +2,17 @@
 
 What the stock dedicated server ships and which script reads it. Everything here was read from the
 DayZ Server install of 1.30.164289 (Steam app 223350, build 26220720; the binary reports `1.30.164289.70`
-in its RPT) and from the vanilla scripts extracted from the 1.30.164289 client. `MISSION` below is
-`mpmissions/dayzOffline.chernarusplus/` of that install; script paths are relative to the extracted
-`scripts/` tree. The Central Economy files (`db/*.xml`, `cfgeconomycore.xml`, `cfgspawnabletypes.xml`, ...)
-are in `dayz-persistence/references/central-economy-files.md`. Ports and the test-tree layout are in
-`linux-native-server.md`.
+in its RPT) and from the vanilla scripts extracted from the 1.30.164289 client, except `serverDZ.cfg`, which
+Steam does not update (section 2). `MISSION` below is `mpmissions/dayzOffline.chernarusplus/` of that install;
+script paths are relative to the extracted `scripts/` tree. The Central Economy files (`db/*.xml`,
+`cfgeconomycore.xml`, `cfgspawnabletypes.xml`, ...) are in `dayz-persistence/references/central-economy-files.md`.
+Ports and the test-tree layout are in `linux-native-server.md`.
 
 ## 1. Missions shipped
 
 `mpmissions/` holds `dayzOffline.chernarusplus`, `dayzOffline.enoch` (Livonia), `dayzOffline.sakhal` and
-`dayzOffline.nasdara`. The mission to load is `template` inside `class Missions { class DayZ { ... }; };` of
-`serverDZ.cfg` (stock file, lines 40-48), in the form `<mission>.<terrain>`.
+`dayzOffline.nasdara`. The mission to load is `template` inside `class Missions { class DayZ { ... }; };` at the
+end of `serverDZ.cfg`, in the form `<mission>.<terrain>`.
 
 A mission folder (Chernarus) contains:
 
@@ -34,23 +34,29 @@ and `pra/`.
 
 ## 2. `serverDZ.cfg` keys in the stock file
 
-The shipped `serverDZ.cfg` documents each key in a comment. Beyond the ones the test skills already set:
+(claim: CLAIM-TEST-SERVERCFG-STOCK-COPIES) The shipped `serverDZ.cfg` documents each key in a comment. Steam
+installs it once and does not update it (the depot marks the file `UserConfig`): a Windows install updated to build
+26220720 on 2026-11-10 still holds its copy of 2024-07-31 (2987 bytes), while the depot of build 26220720 holds a
+3200-byte file whose content was not checked. Newer copies add two keys, `description` (before `enableWhitelist`)
+and `shardId` (after `vonCodecQuality`), so line numbers depend on when the server was installed: find a key by
+name. The keys, stock values and comments below are those of the 2024 copy, and the newer copies have the same
+ones. Beyond the keys the test skills already set:
 
-| Key (stock value) | Meaning, from the stock comment | Line |
-|---|---|---|
-| `verifySignatures = 2` | checks PBOs against `.bisign`; "only 2 is supported" | 11 |
-| `forceSameBuild = 1` | only clients with the server's exe revision may join | 12 |
-| `disableVoN = 0`, `vonCodecQuality = 20` | voice on/off; codec quality 0-30 | 14-15 |
-| `disable3rdPerson = 0`, `disableCrosshair = 0` | view and crosshair toggles | 19-20 |
-| `disablePersonalLight = 1`, `lightingConfig = 0` | personal light off; 0 brighter / 1 darker nights | 22-23 |
-| `serverTime = "SystemTime"` | start time: the machine's clock, or `"YYYY/MM/DD/HH/MM"` | 25 |
-| `serverTimeAcceleration = 12` | in-game time multiplier, 0-24 | 26 |
-| `serverNightTimeAcceleration = 1` | extra multiplier for the night, 0.1-64, applied on top of `serverTimeAcceleration` | 27 |
-| `serverTimePersistent = 0` | save the time to storage and resume from it | 28 |
-| `guaranteedUpdates = 1` | network protocol; "use only number 1" | 30 |
-| `loginQueueConcurrentPlayers = 5`, `loginQueueMaxPlayers = 500` | players processed at once during login; queue length | 32-33 |
-| `instanceId = 1` | server instance number; names the storage folder | 35 |
-| `storageAutoFix = 1` | replace corrupted persistence files with empty ones | 37 |
+| Key (stock value) | Meaning, from the stock comment |
+|---|---|
+| `verifySignatures = 2` | checks PBOs against `.bisign`; "only 2 is supported" |
+| `forceSameBuild = 1` | only clients with the server's exe revision may join |
+| `disableVoN = 0`, `vonCodecQuality = 20` | voice on/off; codec quality 0-30 |
+| `disable3rdPerson = 0`, `disableCrosshair = 0` | view and crosshair toggles |
+| `disablePersonalLight = 1`, `lightingConfig = 0` | personal light off; 0 brighter / 1 darker nights |
+| `serverTime = "SystemTime"` | start time: the machine's clock, or `"YYYY/MM/DD/HH/MM"` |
+| `serverTimeAcceleration = 12` | in-game time multiplier, 0-24 |
+| `serverNightTimeAcceleration = 1` | extra multiplier for the night, 0.1-64, applied on top of `serverTimeAcceleration` |
+| `serverTimePersistent = 0` | save the time to storage and resume from it |
+| `guaranteedUpdates = 1` | network protocol; "use only number 1" |
+| `loginQueueConcurrentPlayers = 5`, `loginQueueMaxPlayers = 500` | players processed at once during login; queue length |
+| `instanceId = 1` | server instance number; names the storage folder |
+| `storageAutoFix = 1` | replace corrupted persistence files with empty ones |
 
 [EXACT][CLAIM-TEST-SERVERCFG-SCRIPT-KEYS-164289] Keys the scripts read with `ServerConfigGetInt` (so they work even
 though the stock file does not list all of them):
@@ -66,12 +72,18 @@ though the stock file does not list all of them):
 
 ## 3. `cfggameplay.json`
 
-`CfgGameplayHandler.LoadData` reads `$mission:cfggameplay.json`, or `dz/worlds/<world>/ce/cfggameplay.json` when
-the mission has none, and only when `enableCfgGameplayFile` is set in `serverDZ.cfg` (a diag build that is not a
-dedicated server forces it on). Otherwise it keeps the defaults from section 2
-(`scripts/3_Game/CfgGameplayHandler.c:3`, `:44-66`). The whole object is sent to clients on connect
-(`scripts/3_Game/CfgGameplayDataJson.c:1`). Every member must match a field of `CfgGameplayJson` and its
-`ITEM_*` classes (`CfgGameplayDataJson.c:14-23` and the classes at `:43-440`).
+[EXACT][CLAIM-TEST-CFGGAMEPLAY-LOAD-164289] `CfgGameplayHandler.LoadData` reads `$mission:cfggameplay.json`, or
+`dz/worlds/<world>/ce/cfggameplay.json` when the mission has none, and only when `enableCfgGameplayFile` is set in
+`serverDZ.cfg`; a diag build that is not a dedicated server forces it on (`scripts/3_Game/CfgGameplayHandler.c:3`,
+`:44-60`). Otherwise, or when neither file exists, every `ITEM_*` class runs its `InitServer`, which sets its
+defaults, some of them from the section-2 keys (`:29-35`, `:62-68`). The whole object is sent to each client on
+connect (`scripts/3_Game/CfgGameplayDataJson.c:1`; `CfgGameplayHandler.c:94-98`, called for
+`ClientPrepareEventTypeID` at `scripts/5_Mission/mission/missionServer.c:320`). The members of the four stock files
+carry the names of the fields of `CfgGameplayJson` and its `ITEM_*` classes (`CfgGameplayDataJson.c:15-23`, the
+classes at `:43-459`), with one exception: Chernarus and Livonia carry `disableColdAreaBuildingCheck` (line 76 in
+both), which names no field. The field is `disableColdAreaPlacementCheck` (`CfgGameplayDataJson.c:252`, read at
+`CfgGameplayHandler.c:367-369`), the name the Sakhal and Nasdara files use. What the loader does with a member that
+names no field was not tested.
 
 Stock sections (`MISSION/cfggameplay.json`; `version` is 123):
 
@@ -88,17 +100,17 @@ Stock sections (`MISSION/cfggameplay.json`; `version` is 123):
   `disableIsCollidingPlayerCheck`, `disableIsClippingRoofCheck`, `disableIsBaseViableCheck`,
   `disableIsCollidingGPlotCheck`, `disableIsCollidingAngleCheck`, `disableIsPlacementPermittedCheck`,
   `disableHeightPlacementCheck`, `disableIsUnderwaterCheck`, `disableIsInTerrainCheck`,
-  `disableColdAreaBuildingCheck`) and `disallowedTypesInUnderground`; `ConstructionData` with
+  `disableColdAreaBuildingCheck`, see above) and `disallowedTypesInUnderground`; `ConstructionData` with
   `disablePerformRoofCheck`, `disableIsCollidingCheck`, `disableDistanceCheck`, `disableItemFalling`,
   `disableDropAttachmentsOnFall`, `disableRefundMaterialsOnFall`.
 - `UIData` (89-103): `use3DMap`, `HitIndicationData` (`hitDirectionOverrideEnabled`, behaviour, style, colour,
-  duration, scatter, `hitIndicationPostProcessEnabled`).
+  duration, break point, scatter, `hitIndicationPostProcessEnabled`).
 - `MapData` (104-110): `ignoreMapOwnership`, `ignoreNavItemsOwnership`, `displayPlayerPosition`,
   `displayNavInfo`.
 - `VehicleData` (111-118): `boatDecayMultiplier` and the wheel detach/damage switches.
 
-The script also knows `ExternalLockData` and `SandstormData`, which the Chernarus file does not carry
-(`dayz-mod-workflow/references/dayz-1-30-mod-workflow.md`).
+The script also knows `ExternalLockData` and `SandstormData` (`CfgGameplayDataJson.c:22-23`), which the Chernarus
+file does not carry and the Nasdara file does (`dayz-mod-workflow/references/dayz-1-30-mod-workflow.md`).
 
 ## 4. `cfgeffectarea.json`
 

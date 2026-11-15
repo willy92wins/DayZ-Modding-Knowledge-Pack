@@ -4671,14 +4671,14 @@
     {
       "artifact_id": "file/skills/dayz-test-ingame/references/server-and-mission-config.md",
       "claim_id": "CLAIM-TEST-SERVERCFG-SCRIPT-KEYS-164289",
-      "evidence_locator": "DayZ scripts, the 1.30.164289 script extract and the 1.30.164200 one; every cited file is byte-identical in both (sha256 compared 2026-11-15): every live ServerConfigGetInt call reads one of these 11 keys (disableBaseDecay only in the commented-out CfgGameplayDataJson.c:48); scripts/3_Game/CfgGameplayHandler.c:53 (read into a bool), :62-67 (defaults when off or the file is missing); scripts/3_Game/CfgGameplayDataJson.c:47, :49, :50, :79, :176; scripts/4_World/Plugins/PluginBase/PluginAdminLog.c:44-47; scripts/5_Mission/mission/missionServer.c:164. The stock serverDZ.cfg of the 1.30.164289 server install (Steam app 223350, build 26220720) sets only disablePersonalLight and lightingConfig of them.",
+      "evidence_locator": "DayZ scripts, the 1.30.164289 script extract and the 1.30.164200 one; every cited file is byte-identical in both (sha256 compared 2026-11-15): every live ServerConfigGetInt call reads one of these 11 keys (disableBaseDecay only in the commented-out CfgGameplayDataJson.c:48); scripts/3_Game/CfgGameplayHandler.c:53 (read into a bool), :62-67 (defaults when off or the file is missing); scripts/3_Game/CfgGameplayDataJson.c:47, :49, :50, :79, :176; scripts/4_World/Plugins/PluginBase/PluginAdminLog.c:44-47; scripts/5_Mission/mission/missionServer.c:164. Of them, the serverDZ.cfg a build-26220720 install still holds from 2024-07-31 (Steam does not update it: CLAIM-TEST-SERVERCFG-STOCK-COPIES) sets only disablePersonalLight and lightingConfig, as does the newer layout with description and shardId; the 3200-byte file in the depot of build 26220720 was not checked.",
       "license": "MIT",
-      "line_end": 65,
-      "line_start": 55,
+      "line_end": 71,
+      "line_start": 61,
       "observed_at": "2026-11-15",
       "promotion_artifact_id": "skill/dayz-test-ingame",
       "source_id": "pack-r21-authored",
-      "source_revision": "pack188-followups@2026-11-15",
+      "source_revision": "servercfg-lines@2026-11-15",
       "verification_level": "source_verified"
     },
     {
@@ -4732,6 +4732,32 @@
       "source_id": "pack-r21-authored",
       "source_revision": "pack188-followups@2026-11-15",
       "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/references/server-and-mission-config.md",
+      "claim_id": "CLAIM-TEST-SERVERCFG-STOCK-COPIES",
+      "evidence_locator": "Read 2026-11-15 on a Windows DayZ Server install (Steam app 223350; appmanifest_223350.acf: buildid 26220720, StateFlags 4, depot 223351 at manifest 5401746265257134544, depot 223354 at manifest 5867941930105127159, LastUpdated 2026-11-10). Steam's depotcache manifest 223351_5401746265257134544, the public manifest of build 26220720 in appcache/appinfo.vdf (depot 223351 has no oslist, so Windows and Linux installs both take it; 223352 holds the Linux binaries, 223353 the Windows ones): serverDZ.cfg size 3200, SHA-1 3217e5270c2bdd387c1244ea94d733960437671e, flags 1 (UserConfig; ban.txt and whitelist.txt too). The install's serverDZ.cfg: 2987 bytes, SHA-1 0c8f0df2fce25b6bb762529586bf9b1aafc95289, modified 2024-07-31, CRLF, no description or shardId line; the table's keys, values and comments at its lines 9-33, the Missions class at 36-44. Newer layout: that copy plus 'description = \"\";' and an empty line after line 4, 'shardId = \"123abc\";' and a ' ' line after line 14, and one space less before vonCodecQuality's comment (3165 bytes, SHA-1 4b24bf2ae85e53fbe213a118be50240db4bbe041); a public CRLF copy committed 2025-09-07 differs from it only in four values its owner set, and public copies carry the description key from 2024-11-30 on and both keys from 2025-05-03 on. In that layout the keys sit at lines 11-37 and Missions at 40-48, the numbers this table carried until 2026-11-15, read by the clean room on a Linux install of build 26220720 (source-map input cleanroom-1.30.164289@2026-11-13). No public copy found by GitHub code search matches the depot SHA-1 (hashed as stored and with LF turned into CRLF), so the content of the 3200-byte file, 35 bytes longer than the newer layout, is unknown.",
+      "license": "MIT",
+      "line_end": 59,
+      "line_start": 37,
+      "observed_at": "2026-11-15",
+      "promotion_artifact_id": "skill/dayz-test-ingame",
+      "source_id": "pack-r21-authored",
+      "source_revision": "servercfg-lines@2026-11-15",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-test-ingame/references/server-and-mission-config.md",
+      "claim_id": "CLAIM-TEST-CFGGAMEPLAY-LOAD-164289",
+      "evidence_locator": "DayZ 1.30.164289 scripts, every cited file byte-identical to its entry in dta/scripts.pbo of a Windows DayZ Server install (Steam app 223350; appmanifest_223350.acf: buildid 26220720, StateFlags 4, depot 223351 at manifest 5401746265257134544, depot 223354 at manifest 5867941930105127159, LastUpdated 2026-11-10) (14401120 bytes, SHA-1 81bdee9ee3507723794377b7c594292f96521df0, as the depot 223351 manifest lists it), compared 2026-11-15: scripts/3_Game/CfgGameplayHandler.c:3, :29-35 (InitData), :44-60 (the dz/worlds/%1/ce fallback, enableCfgGameplayFile read into a bool, DIAG_DEVELOPER on a non-dedicated server), :62-68 (every item's InitServer when off or missing), :71 (JsonFileLoader<CfgGameplayJson>.LoadFile), :94-98 (SyncDataSendEx sends m_Data with RPC_CFG_GAMEPLAY_SYNC), :367-369 (GetDisableColdAreaPlacementCheck); scripts/5_Mission/mission/missionServer.c:317-320; scripts/3_Game/CfgGameplayDataJson.c:1, :14-23, :43-459 (ITEM_GeneralData to ITEM_SandstormData), :252 (disableColdAreaPlacementCheck); scripts/3_Game/WorldData.c:23-24, :143-147 (twelve monthly temperatures). The install's stock cfggameplay.json files, each with the SHA-1 the depot 223354 manifest lists: chernarusplus dae4d44c173021f3e1ad23f682b5b3fcec993bf6 (version 123 at :2; sections at :3-9, :10-53, :54-61, :62-88, :89-103, :104-110, :111-118; disableColdAreaBuildingCheck at :76), enoch 5091b3996cb75a55308d4ab58dd6e7d3cf08e8ad (:76), sakhal b30baca0c37d3f86c438f28755e0102da1f790b1 (disableColdAreaPlacementCheck at :77), nasdara 582cf2956e3d9e14f5c2c9857e954f36bdbfa61f (:75; carries ExternalLockData and SandstormData). Every member name of the four files was checked by script against the field declarations of the class it lands in (86, 86, 88 and 95 members): the only one with no field is disableColdAreaBuildingCheck in chernarusplus and enoch. What JsonFileLoader does with it was not run.",
+      "license": "MIT",
+      "line_end": 113,
+      "line_start": 75,
+      "observed_at": "2026-11-15",
+      "promotion_artifact_id": "skill/dayz-test-ingame",
+      "source_id": "pack-r21-authored",
+      "source_revision": "servercfg-lines@2026-11-15",
+      "verification_level": "source_verified"
     }
   ],
   "schema_version": 1
