@@ -4437,14 +4437,14 @@
     {
       "artifact_id": "file/skills/_shared/linux-proton.md",
       "claim_id": "CLAIM-DAYZ-PROTON-BINARIZE-BAT-SERIALIZATION",
-      "evidence_locator": "skills/_shared/tests/test_dayz_proton.py: test_binarize_bat_quotes_every_user_argument, test_binarize_with_no_file_arguments_is_valid, test_binarize_refuses_bad_arguments_before_any_side_effect, test_binarize_refuses_a_bad_addon_before_any_side_effect (offline, Linux CI/WSL); batch serialization only, not cmd.exe/binarize.exe parsing",
+      "evidence_locator": "skills/_shared/tests/test_dayz_proton.py: test_binarize_bat_quotes_every_user_argument, test_binarize_with_no_file_arguments_is_valid, test_binarize_refuses_bad_arguments_before_any_side_effect, test_binarize_refuses_a_bad_addon_before_any_side_effect, test_run_tool_bat_quoting_is_unchanged, test_run_tool_bat_quotes_every_user_argument, test_run_tool_refuses_bad_arguments_before_any_side_effect (offline, Linux CI/WSL); batch serialization only, not cmd.exe/binarize.exe/tool parsing",
       "license": "MIT",
       "line_end": 89,
       "line_start": 89,
-      "observed_at": "2026-11-14",
+      "observed_at": "2026-11-15",
       "promotion_artifact_id": "skill/_shared",
       "source_id": "pack-r21-authored",
-      "source_revision": "linux-proton-review-fixes@2026-11-14",
+      "source_revision": "pack-fixforward@2026-11-15",
       "verification_level": "offline_tested"
     },
     {
@@ -4569,8 +4569,8 @@
       "claim_id": "CLAIM-DAYZMAKE-SIGN-CLI",
       "evidence_locator": "dayzmake v1.0.0 (commit 2279ac68b28c4d46ad8704c82fbcc5698a27a8b4) README.md:80-81,84,101-103,120; src/sign.rs:661,720-722",
       "license": "MIT",
-      "line_end": 116,
-      "line_start": 112,
+      "line_end": 115,
+      "line_start": 111,
       "observed_at": "2026-11-14",
       "promotion_artifact_id": "skill/dayz-pbo-build",
       "source_id": "pack-r21-authored",
@@ -4582,8 +4582,8 @@
       "claim_id": "CLAIM-DAYZMAKE-V3-HASH-VERIFY",
       "evidence_locator": "dayzmake v1.0.0 (commit 2279ac68b28c4d46ad8704c82fbcc5698a27a8b4) src/sign.rs:157-177,202-234,475-521; src/pbo.rs:311-314,548-563",
       "license": "MIT",
-      "line_end": 120,
-      "line_start": 120,
+      "line_end": 119,
+      "line_start": 119,
       "observed_at": "2026-11-14",
       "promotion_artifact_id": "skill/dayz-pbo-build",
       "source_id": "pack-r21-authored",
@@ -4606,7 +4606,7 @@
     {
       "artifact_id": "file/skills/dayz-test-ingame/references/linux-headless-client.md",
       "claim_id": "CLAIM-AUTOTEST-RUNNER-UNVERIFIED",
-      "evidence_locator": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c:27-32,37-48,77-95,189-196 (checked by offline linter tools/dayz-script-validator only; not run in game)",
+      "evidence_locator": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c:27-32,37-48,78-96,203-210 (checked by offline linter tools/dayz-script-validator only; not run in game)",
       "license": "MIT",
       "line_end": 115,
       "line_start": 114,
@@ -4615,6 +4615,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
       "verification_level": "unverified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-pbo-reverse-engineering/skill.md",
+      "claim_id": "CLAIM-DAYZMAKE-UNPACK-V2-CONTAINMENT",
+      "evidence_locator": "dayzmake v2.0.0 (commit f31056ae, https://github.com/bzed/dayzmake) src/pbo.rs: safe_relative_path, crosses_symlink",
+      "license": "MIT",
+      "line_end": 441,
+      "line_start": 441,
+      "observed_at": "2026-11-15",
+      "promotion_artifact_id": "skill/dayz-pbo-reverse-engineering",
+      "source_id": "pack-r21-authored",
+      "source_revision": "pack-fixforward@2026-11-15",
+      "verification_level": "source_verified"
     }
   ],
   "schema_version": 1

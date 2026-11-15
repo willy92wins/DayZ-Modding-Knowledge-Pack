@@ -91,7 +91,7 @@ a known order and prints results an outside script can grep; it ran green on bot
  Print("[AUTOTEST] DONE passed=P failed=F")    <- the line an outside script waits for
 ```
 
-- The server is the only driver; both sides load the same PBO, so only the test name crosses the wire.
+- The server is the only driver; both sides load the same PBO, so only the test name (and optional per-test setup parameters, such as a created entity's network id) crosses the wire.
 - One RPC out, one back per test; a 20 s timeout turns silence into `FAIL ... no answer from the client`, so a
   crashed or absent client fails the run instead of hanging it.
 - Client checks retry every 500 ms for up to 5 s: replication lag does not flake, a state that never arrives

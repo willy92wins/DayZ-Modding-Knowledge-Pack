@@ -49,10 +49,10 @@
 #   that start has proved no launcher of this state is alive, and by a successful start once
 #   the identity is recorded. The sway.conf path is passed to awk through the environment
 #   (ENVIRON), never `awk -v`, whose escape handling would mis-compare some state paths.
-#   `binarize` writes its arguments only into a quoted .bat (Z:\run.bat) and refuses any with
-#   a double quote, CR, LF or empty before doing anything. `init` stops only the wineservers
-#   that were not running when it began, in the prefixes it used. Real Proton, sway and
-#   cmd.exe were not run by the offline tests.
+#   `binarize` and console `tool` write their arguments only into a quoted .bat and refuse
+#   any with a double quote, CR, LF or empty before doing anything. `init` stops only the
+#   wineservers that were not running when it began, in the prefixes it used. Real Proton,
+#   sway and cmd.exe were not run by the offline tests.
 #   DAYZ_PROTON_START_WAIT_TENTHS bounds the `headless start` wait for sway to appear, in
 #   tenths of a second (default 50).
 # - 32-bit tools run with PROTON_USE_WOW64=1 (default here), or GDI dialogs show no text when the
@@ -78,14 +78,15 @@ CR=$(printf '\r')
 LF='
 '
 
-# --- batch-file quoting (binarize) -------------------------------------------
-# bat_validate <value>: refuse values a .bat cannot carry safely. Called on the
-# original arguments before any side effect.
+# --- batch-file quoting (binarize, console tools) ----------------------------
+# bat_validate <value> [<caller>]: refuse values a .bat cannot carry safely.
+# Called on the original arguments before any side effect.
 bat_validate() {
-    [ -n "$1" ] || die "binarize: an empty argument is not allowed"
+    _bv_who=${2:-bat}
+    [ -n "$1" ] || die "$_bv_who: an empty argument is not allowed"
     case $1 in
-        *'"'*) die "binarize: an argument containing a double quote is not allowed" ;;
-        *"$CR"*|*"$LF"*) die "binarize: an argument containing CR or LF is not allowed" ;;
+        *'"'*) die "$_bv_who: an argument containing a double quote is not allowed" ;;
+        *"$CR"*|*"$LF"*) die "$_bv_who: an argument containing CR or LF is not allowed" ;;
     esac
 }
 # bat_quote <value>: print it double-quoted for a .bat: % doubled, and the whole
@@ -475,10 +476,18 @@ run_tool() {   # run_tool con|gui <Tool> [args]
     set -- "$name" "$@"
     spec=$(tool_exe "$1"); kind=${spec%% *}; exe=${spec#* }; shift
     [ -f "$exe" ] || die "$exe not found (is DayZ Tools, app 830640, installed?)"
-    app=830640; [ "$kind" = game ] && app=221100
-    ensure_prefix "$app"
+    if [ "$mode" != gui ] && [ "$kind" = con ]; then
+        for _rt_a in "$@"; do bat_validate "$_rt_a" "tool $name"; done
+        bat_validate "$(winpath "$exe")" "tool $name"
+        bat_validate "${TMPDIR:-/tmp}" "tool $name"
+    fi
     args=$(mktemp); rewrite_args "$@" > "$args"
     set --; while IFS= read -r a; do set -- "$@" "$a"; done < "$args"; rm -f "$args"
+    if [ "$mode" != gui ] && [ "$kind" = con ]; then
+        for _rt_a in "$@"; do bat_validate "$_rt_a" "tool $name"; done
+    fi
+    app=830640; [ "$kind" = game ] && app=221100
+    ensure_prefix "$app"
     cd "${DAYZ_PROTON_CWD:-$(dirname "$exe")}"
     if [ "$mode" = gui ] || [ "$kind" != con ]; then
         prun "$exe" "$@"; exit $?
@@ -487,14 +496,15 @@ run_tool() {   # run_tool con|gui <Tool> [args]
     # through cmd with their output redirected to a file, then show it. cmd passes the exit code on.
     out=$(mktemp -d "${TMPDIR:-/tmp}/dayz-proton.XXXXXX")
     # A .bat file keeps quoting intact: Proton escapes quotes inside a `cmd /c "..."` string.
+    # Every value is written double-quoted by bat_quote; DisableDelayedExpansion keeps ! literal.
     {
         printf '@echo off\r\n'
-        printf '"%s"' "$(winpath "$exe")"
-        for a in "$@"; do
-            a=$(printf '%s' "$a" | sed 's/%/%%/g')
-            case $a in *' '*|*'&'*|*'('*|*')'*|*'^'*|*'|'*|*'<'*|*'>'*) printf ' "%s"' "$a" ;; *) printf ' %s' "$a" ;; esac
+        printf 'setlocal DisableDelayedExpansion\r\n'
+        printf '%s' "$(bat_quote "$(winpath "$exe")")"
+        for _rt_a in "$@"; do
+            printf ' %s' "$(bat_quote "$_rt_a")"
         done
-        printf ' > "%s" 2>&1\r\nexit /b %%errorlevel%%\r\n' "$(winpath "$out/log.txt")"
+        printf ' > %s 2>&1\r\nexit /b %%errorlevel%%\r\n' "$(bat_quote "$(winpath "$out/log.txt")")"
     } > "$out/run.bat"
     rpt=$(dirname "$(dirname "$exe")")/Logs/AddonBuilder.rpt
     rpt_lines=$(cat "$rpt" 2>/dev/null | wc -l)
@@ -521,11 +531,11 @@ do_binarize() {
     [ $# -ge 3 ] || die "usage: binarize <P-root> <addon path under P:> <out dir> [files...]"
     # Validate the original addon and file arguments before anything is
     # created, copied, linked, removed or run (see bat_validate).
-    bat_validate "$2"
+    bat_validate "$2" binarize
     _bz_i=0
     for _bz_a in "$@"; do
         _bz_i=$((_bz_i + 1))
-        if [ "$_bz_i" -gt 3 ]; then bat_validate "$_bz_a"; fi
+        if [ "$_bz_i" -gt 3 ]; then bat_validate "$_bz_a" binarize; fi
     done
     proot=$(cd "$1" && pwd -P); addon=$2; out=$3; shift 3
     # Strip trailing / from the addon before it becomes a backslash path (a
@@ -979,7 +989,7 @@ do_init() {
 # armake2 is built for Arma (its V3 file hash omits *.c, and dayzmake adds DayZ-only functions);
 # a fork build from before the rename is called armake2.
 check_dayzmake() {
-    url="https://github.com/bzed/dayzmake (v1.0.0 or later)"
+    url="https://github.com/bzed/dayzmake (v2.0.0 or later)"
     b=
     for c in dayzmake armake2; do command -v $c >/dev/null && { b=$c; break; }; done
     if [ -z "$b" ]; then echo "dayzmake:    missing (native PBO build/sign; $url)"; return 0; fi
@@ -990,6 +1000,7 @@ check_dayzmake() {
     ver=$($b --version 2>&1 | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)
     case $ver in
         ''|0.*) echo "dayzmake:    '$b' is the fork from before the rename (v${ver:-?}); upgrade to $url" ;;
+        1.*) echo "dayzmake:    $b v$ver (ok for building; upgrade to >= v2.0.0 before unpacking PBOs you did not build)" ;;
         *) echo "dayzmake:    $b v$ver (ok)" ;;
     esac
 }

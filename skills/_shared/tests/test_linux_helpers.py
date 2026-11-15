@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 import platform
 import shutil
+import signal
 import struct
 import subprocess
 import sys
@@ -712,6 +713,178 @@ def test_headless_invalid_wait_env_launches_nothing(tmp_path: Path) -> None:
         assert not (state / "sway.pid").exists()
         assert not (state / "sway.identity").exists()
     finally:
+        _kill_matching(str(tmp_path))
+
+
+@requires_x86
+@pytest.mark.parametrize(
+    ("sig_name", "expected_rc"),
+    [("SIGINT", 130), ("SIGTERM", 143), ("SIGHUP", 129)],
+)
+def test_headless_interrupted_start_cleans_up_detached_sway(
+    tmp_path: Path, sig_name: str, expected_rc: int
+) -> None:
+    sig = getattr(signal, sig_name)
+    steam = _fake_client_steam(tmp_path)
+    bin_dir = tmp_path / "fakebin"
+    bin_dir.mkdir()
+    _pause_binary(bin_dir / "sway")
+    real_sleep = shutil.which("sleep") or "/bin/sleep"
+    state = tmp_path / "state"
+    gate = tmp_path / "first_sleep.gate"
+    ready = tmp_path / "sway_spawned.ready"
+    sleep_shim = bin_dir / "sleep"
+    sleep_shim.write_text(
+        "#!/bin/sh\n"
+        f"if [ ! -e '{gate}' ]; then\n"
+        f"    : > '{gate}'\n"
+        "    _n=0\n"
+        "    while [ \"$_n\" -lt 100 ]; do\n"
+        f"        if [ -s '{state}/sway.pid' ]; then\n"
+        f"            _p=$(cat '{state}/sway.pid' 2>/dev/null || true)\n"
+        "            if [ -n \"$_p\" ] && [ \"$(cat \"/proc/$_p/comm\" 2>/dev/null || true)\" = sway ]; then\n"
+        f"                : > '{ready}'\n"
+        f"                exec '{real_sleep}' 5\n"
+        "            fi\n"
+        "        fi\n"
+        f"        '{real_sleep}' 0.02\n"
+        "        _n=$((_n + 1))\n"
+        "    done\n"
+        "fi\n"
+        f"exec '{real_sleep}' \"$@\"\n"
+    )
+    sleep_shim.chmod(0o755)
+    env = _env_with_bin(tmp_path, steam, bin_dir)
+    env["DAYZ_CLIENT_START_WAIT_TENTHS"] = "200"
+    sway_pid = -1
+    proc: subprocess.Popen[str] | None = None
+    try:
+        proc = subprocess.Popen(
+            ["sh", str(SCRIPTS / "dayz-client-headless.sh"), "start", str(state)],
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            start_new_session=True,
+        )
+        deadline = time.time() + 5.0
+        while time.time() < deadline and not ready.exists():
+            time.sleep(0.02)
+        assert ready.exists(), "detached sway did not start during first wait tick"
+        sway_pid = int((state / "sway.pid").read_text().strip())
+        assert not (state / "sway.identity").exists()
+        os.killpg(proc.pid, sig)
+        _out, _err = proc.communicate(timeout=10)
+        assert proc.returncode == expected_rc
+        assert _wait_gone(sway_pid), "interrupted start left detached sway alive"
+        assert (state / "sway.cancel").exists()
+        assert not (state / "sway.pid").exists()
+        assert not (state / "sway.identity").exists()
+        sway_pid = -1
+    finally:
+        if proc is not None and proc.poll() is None:
+            _kill_process_tree(proc.pid)
+        _kill_process_tree(sway_pid)
+        _kill_matching(str(tmp_path))
+
+
+@pytest.mark.parametrize(
+    ("phase", "sig_name", "expected_rc"),
+    [
+        ("result_wait", "SIGTERM", 143),
+        ("result_wait", "SIGINT", 130),
+        ("before_client", "SIGTERM", 143),
+    ],
+)
+def test_client_test_signal_runs_cleanup_once_and_exits_promptly(
+    tmp_path: Path, phase: str, sig_name: str, expected_rc: int
+) -> None:
+    sig = getattr(signal, sig_name)
+    scripts_dir = tmp_path / "scripts"
+    scripts_dir.mkdir()
+    shutil.copy2(SCRIPTS / "dayz-client-test.sh", scripts_dir / "dayz-client-test.sh")
+    free_ports = scripts_dir / "free-ports.sh"
+    free_ports.write_text("#!/bin/sh\necho '24000 24020'\n")
+    free_ports.chmod(0o755)
+    calls_log = tmp_path / "headless-calls.log"
+    headless_stub = scripts_dir / "dayz-client-headless.sh"
+    headless_stub.write_text(
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$*\" >> '{calls_log}'\n"
+        "exit 0\n"
+    )
+    headless_stub.chmod(0o755)
+
+    tree = tmp_path / "tree"
+    (tree / "profiles").mkdir(parents=True)
+    (tree / "serverDZ.cfg").write_text('hostname = "t";\n')
+    server_pid_file = tmp_path / "server.pid"
+    ready_line = "echo '__SERVER__ CREATED -> CONNECTED'\n" if phase == "result_wait" else ""
+    server_bin = tree / "DayZServer"
+    server_bin.write_text(
+        "#!/bin/sh\n"
+        f"printf '%s\\n' \"$$\" > '{server_pid_file}'\n"
+        f"{ready_line}"
+        "while :; do sleep 1; done\n"
+    )
+    server_bin.chmod(0o755)
+
+    out_dir = tmp_path / "out"
+    proc: subprocess.Popen[str] | None = None
+    spid = -1
+    try:
+        proc = subprocess.Popen(
+            [
+                "sh",
+                str(scripts_dir / "dayz-client-test.sh"),
+                "-t",
+                str(tree),
+                "-s",
+                "@AutoTest",
+                "-c",
+                "@AutoTest",
+                "-w",
+                "120",
+                "-o",
+                str(out_dir),
+            ],
+            env=isolated_env(tmp_path, None),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        deadline = time.time() + 10.0
+        if phase == "result_wait":
+            while time.time() < deadline:
+                if calls_log.exists() and any(
+                    line.startswith("start ") for line in calls_log.read_text().splitlines()
+                ):
+                    break
+                time.sleep(0.05)
+            assert calls_log.exists() and any(
+                line.startswith("start ") for line in calls_log.read_text().splitlines()
+            )
+        else:
+            while time.time() < deadline and not server_pid_file.exists():
+                time.sleep(0.05)
+            assert server_pid_file.exists()
+
+        spid = int(server_pid_file.read_text().strip())
+        proc.send_signal(sig)
+        _out, _err = proc.communicate(timeout=10)
+        assert proc.returncode == expected_rc
+        assert _wait_gone(spid), "cleanup did not terminate DayZServer"
+        spid = -1
+        calls = calls_log.read_text().splitlines()
+        stops = [line for line in calls if line.startswith("stop ")]
+        starts = [line for line in calls if line.startswith("start ")]
+        assert len(stops) == 1, f"expected cleanup stop once, got {calls}"
+        if phase == "before_client":
+            assert starts == [], f"cancelled before ready must not start client: {calls}"
+    finally:
+        if proc is not None and proc.poll() is None:
+            _kill_process_tree(proc.pid)
+        _kill_process_tree(spid)
         _kill_matching(str(tmp_path))
 
 

@@ -475,7 +475,7 @@ protected string ResolveDamageZone(Object hitObj, int componentIdx)
 // Use:
 string zone = ResolveDamageZone(hitObj, hitComp);
 if (zone != "")
-    hitObj.ProcessDirectDamage(DT_FIRE_ARM, this, zone, AMMO_TYPE,
+    hitObj.ProcessDirectDamage(DamageType.FIRE_ARM, this, zone, AMMO_TYPE,
                                 hitPos, damage, ProcessDirectDamageFlags.ALL_TRANSFER);
 ```
 

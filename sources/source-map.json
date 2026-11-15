@@ -2021,10 +2021,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: record dayz-proton run_tool batch quoting, dayzmake >= v2.0.0 unpack guidance, dayz-mcp #411 provenance updates, DamageType.* fixes, headless/client-test signal cleanup, and AutoTestServerItemSynced network-id binding.",
+          "license": "MIT",
+          "source_hash": "b430b908d094d61152bc4bc29b05fb8deb9ac2e8451a11aff4a27bf76fdbabc6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "adafeef86eea6480810febab2788296d25e4ebf080406f9c15ccf0039fc5eddf",
+      "output_hash": "b430b908d094d61152bc4bc29b05fb8deb9ac2e8451a11aff4a27bf76fdbabc6",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -8052,10 +8062,20 @@
           "source_path": "skills/dayz-aviation/references/combat.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: replace non-existent DT_FIRE_ARM with DamageType.FIRE_ARM (3_game/damagesystem.c:10-17) in DayZ 1.30 script example.",
+          "license": "MIT",
+          "source_hash": "7ce0be2d6109d5ad4d1467c1434fdbb4a4d48c33e67666ee4baccaeba65f21ea",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/references/combat.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ed55d3182f1bedd9eadfa343578476628a24ace6bada13ef8161ada587174ae6",
+      "output_hash": "7ce0be2d6109d5ad4d1467c1434fdbb4a4d48c33e67666ee4baccaeba65f21ea",
       "output_path": "skills/dayz-aviation/references/combat.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -10242,10 +10262,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: update Linux managed-cycle note from closed dayz-mcp PR #353 to merged PR #411 on main (2026-11-14) while keeping linux-port measurement provenance explicit.",
+          "license": "MIT",
+          "source_hash": "a72763f1ecfbd23344343c3737f71d79a6cc80dd12b55bd17b524763ffca7216",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "82cbe7e4c7ac69a26d84dfff59954dba101b09dbe72d4471e4871fbcf2cd7b41",
+      "output_hash": "a72763f1ecfbd23344343c3737f71d79a6cc80dd12b55bd17b524763ffca7216",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -10690,10 +10720,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: update Linux managed-cycle note from closed dayz-mcp PR #353 to merged PR #411 on main (2026-11-14) while keeping linux-port measurement provenance explicit.",
+          "license": "MIT",
+          "source_hash": "fafdc241c3c6e2c97756fb9a1221108e769954189b17df661ef7a4a2d44e5f04",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1de7c8b82beb9cab8672d132eb9b5ca7e5a24ec437e72ee6d586213f87c0f873",
+      "output_hash": "fafdc241c3c6e2c97756fb9a1221108e769954189b17df661ef7a4a2d44e5f04",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -13146,10 +13186,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: update Linux managed-cycle note from closed dayz-mcp PR #353 to merged PR #411 on main (2026-11-14) while keeping linux-port measurement provenance explicit.",
+          "license": "MIT",
+          "source_hash": "8aedc4dd2ed24a13e54a1f2254428f18e55df4e12593e1ec37bc260bbc7cc572",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1af417da30388d467e3c1a8988963f1a4f69165640c216b0a38438564205bd1d",
+      "output_hash": "8aedc4dd2ed24a13e54a1f2254428f18e55df4e12593e1ec37bc260bbc7cc572",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13366,10 +13416,20 @@
           "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: require dayzmake >= v2.0.0 (commit f31056ae, src/pbo.rs safe_relative_path/crosses_symlink) for unpacking third-party PBOs, keeping v1.0.0 lack-of-containment citation and manual inspect fallback.",
+          "license": "MIT",
+          "source_hash": "de01d33054b8c519fdcda8f0f8f826c1f4dadf73d6953bc2f079b69bee7c0623",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c43764531009e16823d13bd835d8788108a5559ca13ec16f0c3b2f6b727f2aa0",
+      "output_hash": "de01d33054b8c519fdcda8f0f8f826c1f4dadf73d6953bc2f079b69bee7c0623",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -13738,10 +13798,20 @@
           "source_path": "skills/dayz-physics-engine/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: replace DT_CUSTOM with DamageType.CUSTOM (3_game/damagesystem.c:10-17) in mod EOnContact example.",
+          "license": "MIT",
+          "source_hash": "f4e6e5d9b58d0e8f802b1ecb5a31626f764bec46f65ed1fbedf1f92b35450c0b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/SKILL.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "acaf125c3455bb8b3c2a8c1e2ce29836593b2b2bbfcb1ef6d28684b0be08bbe3",
+      "output_hash": "f4e6e5d9b58d0e8f802b1ecb5a31626f764bec46f65ed1fbedf1f92b35450c0b",
       "output_path": "skills/dayz-physics-engine/SKILL.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -13770,10 +13840,20 @@
           "source_path": "skills/dayz-physics-engine/references/dano-transporthit.md",
           "source_revision": "kp-update-translate@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: clarify that DayZ 1.30 mod scripts must pass DamageType.* (3_game/damagesystem.c:10-17) because DT_CLOSE_COMBAT/DT_FIRE_ARM/DT_EXPLOSION only appear in object.c doc comments.",
+          "license": "MIT",
+          "source_hash": "7ca226bcfb49d9e177c4d593ac40d293e40c4056b4072b1de90204d184f085e2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-physics-engine/references/dano-transporthit.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "75caba2b32b84aa2238925d8ab2140f1ad91301176f63bd9c02390de65d65aa8",
+      "output_hash": "7ca226bcfb49d9e177c4d593ac40d293e40c4056b4072b1de90204d184f085e2",
       "output_path": "skills/dayz-physics-engine/references/dano-transporthit.md",
       "routing_artifact_id": "skill/dayz-physics-engine",
       "verification_level": "cross_checked"
@@ -15160,10 +15240,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: update Linux managed-cycle notes (including the Steam-session bullet) from closed dayz-mcp PR #353 to merged PR #411 on main (2026-11-14), keeping 2026-11-06 linux-port measurement provenance explicit.",
+          "license": "MIT",
+          "source_hash": "736805bc9b122031ad4c0dfc9efb3abb09d5b44d31f7345553bd729b36adc57d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "891e8fea28c063a930a11db2e14fb010bc5cd45cd4798f0b62ee91afc021b191",
+      "output_hash": "736805bc9b122031ad4c0dfc9efb3abb09d5b44d31f7345553bd729b36adc57d",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -19158,10 +19248,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: specify dayzmake >= v2.0.0 (commit f31056ae, src/pbo.rs safe_relative_path/crosses_symlink) when unpacking vanilla PBOs, with manual inspect fallback on older versions.",
+          "license": "MIT",
+          "source_hash": "8c2af6d063391c9ede4de5d8ee0213ecf89a756dac0ae876dec797871b4baecc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "be1b006150ce836eb6750c009efc384f83e28d9ed6d8e599e8f326c7ebad3f5a",
+      "output_hash": "8c2af6d063391c9ede4de5d8ee0213ecf89a756dac0ae876dec797871b4baecc",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -19264,10 +19364,20 @@
           "source_path": "skills/enforce-script-reference/references/llama-extraction-patterns.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: replace non-existent DT_FIRE_ARM with DamageType.FIRE_ARM (3_game/damagesystem.c:10-17) in ProcessDirectDamage example.",
+          "license": "MIT",
+          "source_hash": "be6ff4e0f034b282478af3c154a30e3f08212aa4a4eb68e0c685810794692222",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/references/llama-extraction-patterns.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "09d34c4ff4b7a659f7964e00ffa6fcb3b643dd78eefdb7163dcc5a4d98be004f",
+      "output_hash": "be6ff4e0f034b282478af3c154a30e3f08212aa4a4eb68e0c685810794692222",
       "output_path": "skills/enforce-script-reference/references/llama-extraction-patterns.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -22603,10 +22713,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: register CLAIM-DAYZMAKE-UNPACK-V2-CONTAINMENT and update line ranges and evidence locators for modified files.",
+          "license": "MIT",
+          "source_hash": "6d6d25d5c3fed39927871014d2057dc775948e560f999dc0fa5910b021d09307",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8d31371b1a94bb5212c5ce86124eb4d8c373d9c883e2b5e3c842ae9258f823e4",
+      "output_hash": "6d6d25d5c3fed39927871014d2057dc775948e560f999dc0fa5910b021d09307",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -43245,10 +43365,20 @@
           "source_path": "knowledge/linux-proton-findings-2026-11.md",
           "source_revision": "dayz-dev-integration@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: update scope note from closed dayz-mcp PR #353 to merged PR #411 on main (2026-11-14) while keeping linux-port measurement provenance explicit, and note dayzmake >= v2.0.0 (f31056ae) for third-party unpack.",
+          "license": "MIT",
+          "source_hash": "d4275a26bd7823750b2e2a49b5a206fa29646e696068f8bd092eb356e7262a7d",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/linux-proton-findings-2026-11.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f34ff0dc7bb597369c9ea9bc1ff33ac4d372dc7eed534b60168730d1b2aa9098",
+      "output_hash": "d4275a26bd7823750b2e2a49b5a206fa29646e696068f8bd092eb356e7262a7d",
       "output_path": "knowledge/linux-proton-findings-2026-11.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -43367,10 +43497,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: update dayz-mcp Linux references to merged PR #411 (keeping 2026-11-06 linux-port measurement provenance), require dayzmake >= v2.0.0 (f31056ae) for third-party unpack, and document console tool .bat serialization.",
+          "license": "MIT",
+          "source_hash": "0afb7f03fae3dd9093b53f7b0eec3f5a7f92b78ec65a5e6d95f984b0aa3bb657",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "82e3a6bb8791cd29ad545205e2244b942eeda312945837ff3d545f9c671fc59d",
+      "output_hash": "0afb7f03fae3dd9093b53f7b0eec3f5a7f92b78ec65a5e6d95f984b0aa3bb657",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -43439,10 +43579,20 @@
           "source_path": "skills/_shared/scripts/dayz-proton.sh",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: validate console tool args before any side effect, emit setlocal DisableDelayedExpansion and bat_quote every value in run_tool with parameterised bat_validate messages; report dayzmake v1.x in doctor as build-only and advise >= v2.0.0 before unpacking third-party PBOs.",
+          "license": "MIT",
+          "source_hash": "a6cc5f5649bdbbe48d7d1713630539ada8b8011e76149839f79c69b24cc5c5c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-proton.sh",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bf53514f41efb1c98e54782d5c829faa8f3dea8d71e6b32c2f026854d9208910",
+      "output_hash": "a6cc5f5649bdbbe48d7d1713630539ada8b8011e76149839f79c69b24cc5c5c8",
       "output_path": "skills/_shared/scripts/dayz-proton.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -43481,10 +43631,20 @@
           "source_path": "skills/_shared/tests/test_dayz_proton.py",
           "source_revision": "linux-proton-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: update run_tool batch-quoting assertion to always-quoted DisableDelayedExpansion form, add run_tool metacharacter/backslash/env/injection tests, and cover dayzmake v1.0.0 vs v2.0.0 in doctor.",
+          "license": "MIT",
+          "source_hash": "e841dca7e5f9b0b762cea73be0d5dc3ec480d70ec4c791401401186526c7b878",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_dayz_proton.py",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "efca47202d156ab9ebf53577af525b7fbe1e2f0f8520ff50491f2160cd2bc285",
+      "output_hash": "e841dca7e5f9b0b762cea73be0d5dc3ec480d70ec4c791401401186526c7b878",
       "output_path": "skills/_shared/tests/test_dayz_proton.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -43577,10 +43737,20 @@
           "source_path": "skills/_shared/scripts/dayz-client-headless.sh",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: trap INT/TERM/HUP before setsid sway launch so an interrupted start runs failed_start_cleanup and exits 130/143/129 instead of leaving an untracked sway; disarm once sway.identity is recorded.",
+          "license": "MIT",
+          "source_hash": "e1d1e8dfb54fe68312e4958e53cf600716432bcdf50b14c7f81adf3424e633dd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-client-headless.sh",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "1e7686eed9afaf7da18e92dee8d4f85730b1afc4afe2d19d507faa111d7ad656",
+      "output_hash": "e1d1e8dfb54fe68312e4958e53cf600716432bcdf50b14c7f81adf3424e633dd",
       "output_path": "skills/_shared/scripts/dayz-client-headless.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -43609,10 +43779,20 @@
           "source_path": "skills/_shared/scripts/dayz-client-test.sh",
           "source_revision": "integration-review@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: make cleanup idempotent and split EXIT vs INT/TERM traps so signals run cleanup once and exit 130/143 promptly.",
+          "license": "MIT",
+          "source_hash": "3e2d8ebcfd2d86e099b7acc329cd660d88208d2b4fcf894909ac50fc2fc5f025",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-client-test.sh",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "bd08898daeda2410528be1b7c6748d1227455e3493ecf2240a39f632f66bb2bf",
+      "output_hash": "3e2d8ebcfd2d86e099b7acc329cd660d88208d2b4fcf894909ac50fc2fc5f025",
       "output_path": "skills/_shared/scripts/dayz-client-test.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -43831,10 +44011,20 @@
           "source_path": "skills/_shared/tests/test_linux_helpers.py",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: add signal-interruption cleanup tests for dayz-client-headless.sh start and dayz-client-test.sh wait/pre-launch phases.",
+          "license": "MIT",
+          "source_hash": "cce9080cc63f509de02ed3f956b30edbe3708c992532feb19716f793f6cdc49e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_linux_helpers.py",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d6358dc3e2a712bdcd2e5aa3deddaa1625d246f6ed372d85bf11ba9f28924da6",
+      "output_hash": "cce9080cc63f509de02ed3f956b30edbe3708c992532feb19716f793f6cdc49e",
       "output_path": "skills/_shared/tests/test_linux_helpers.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -43925,10 +44115,20 @@
           "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: require dayzmake >= v2.0.0 (commit f31056ae, src/pbo.rs safe_relative_path/crosses_symlink) before unpacking third-party PBOs, with manual inspect fallback on older builds.",
+          "license": "MIT",
+          "source_hash": "14a3f83dcc9bdab1e4d2b6bdc66b8be2619e5d7d3b501cb4607763583ab98bf9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "19e8623dfa1f89512768d82d81474ff9260c7a0682a039dcf8f8bde98274e4d2",
+      "output_hash": "14a3f83dcc9bdab1e4d2b6bdc66b8be2619e5d7d3b501cb4607763583ab98bf9",
       "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -44101,10 +44301,20 @@
           "source_path": "testing/autotest-mod/src/AutoTest/scripts/4_World/AutoTestCases.c",
           "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: replace DT_CLOSE_COMBAT with DamageType.CLOSE_COMBAT (3_game/damagesystem.c:10-17) and check CreateInInventory plus bind AutoTestServerItemSynced ClientCheck to the created item's network id.",
+          "license": "MIT",
+          "source_hash": "c4846bc709d63362bb08cdd77987de630f94c736475c2cb61b04c809086a1131",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestCases.c",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ed82f46ba3d801973459bb5a807c10da33f93ccf4bdf4fe9a7245e654b6c2ffd",
+      "output_hash": "c4846bc709d63362bb08cdd77987de630f94c736475c2cb61b04c809086a1131",
       "output_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestCases.c",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "offline_tested"
@@ -44133,10 +44343,20 @@
           "source_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: serialize and read optional per-case run parameters on AUTOTEST_RPC_RUN so AutoTestServerItemSynced binds ClientCheck to the created entity's network id.",
+          "license": "MIT",
+          "source_hash": "6d6a1ad3b5c1163dbc61a55c86fc8aec7a91d579e6d661aa61d582e07dc3aa34",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "23a6579c20cf3459e78ae209dc04f8cdbc613d730bba8311082004af2bb1afd3",
+      "output_hash": "6d6a1ad3b5c1163dbc61a55c86fc8aec7a91d579e6d661aa61d582e07dc3aa34",
       "output_path": "skills/dayz-test-ingame/assets/autotest-mod/src/AutoTest/scripts/4_World/AutoTestRunner.c",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "offline_tested"
@@ -44197,10 +44417,20 @@
           "source_path": "skills/dayz-test-ingame/references/linux-headless-client.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Fix-forward 2026-11-15: note optional per-test setup parameters alongside test name on AUTOTEST_RPC_RUN.",
+          "license": "MIT",
+          "source_hash": "7f0d86b5f44833ce8586eb47f07f4af6a44957365b004d47e21f19c268b11876",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/linux-headless-client.md",
+          "source_revision": "pack-fixforward@2026-11-15",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c67c6f470f7eb23906ad2250bf8115ef0b548a94a3a1e19972b3deb65eb9bf14",
+      "output_hash": "7f0d86b5f44833ce8586eb47f07f4af6a44957365b004d47e21f19c268b11876",
       "output_path": "skills/dayz-test-ingame/references/linux-headless-client.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"

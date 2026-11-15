@@ -70,6 +70,7 @@ class AutoTestRunner
 
 		ScriptRPC rpc = new ScriptRPC();
 		rpc.Write(t.Name());
+		t.WriteRunParams(rpc);
 		rpc.Send(m_Player, AUTOTEST_RPC_RUN, true, m_Player.GetIdentity());
 		GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(Timeout, 20000, false, m_Index);
 	}
@@ -149,6 +150,16 @@ class AutoTestClient
 		s_Instance.Try(name, 0);
 	}
 
+	static void SendResult(string name, bool ok, string msg)
+	{
+		Print("[AUTOTEST-CLIENT] " + name + " ok=" + ok + " " + msg);
+		ScriptRPC rpc = new ScriptRPC();
+		rpc.Write(name);
+		rpc.Write(ok);
+		rpc.Write(msg);
+		rpc.Send(GetGame().GetPlayer(), AUTOTEST_RPC_RESULT, true);
+	}
+
 	void Try(string name, int attempt)
 	{
 		AutoTestCase t = AutoTestRegistry.Find(name);
@@ -165,12 +176,7 @@ class AutoTestClient
 			return;
 		}
 
-		Print("[AUTOTEST-CLIENT] " + name + " ok=" + ok + " " + msg);
-		ScriptRPC rpc = new ScriptRPC();
-		rpc.Write(name);
-		rpc.Write(ok);
-		rpc.Write(msg);
-		rpc.Send(GetGame().GetPlayer(), AUTOTEST_RPC_RESULT, true);
+		SendResult(name, ok, msg);
 	}
 }
 
@@ -184,7 +190,15 @@ modded class PlayerBase
 		{
 			string runName;
 			if (ctx.Read(runName))
+			{
+				AutoTestCase runCase = AutoTestRegistry.Find(runName);
+				if (runCase && !runCase.ReadRunParams(ctx))
+				{
+					AutoTestClient.SendResult(runName, false, "failed to read test parameters");
+					return;
+				}
 				AutoTestClient.Run(runName);
+			}
 		}
 		else if (rpc_type == AUTOTEST_RPC_RESULT && GetGame().IsDedicatedServer())
 		{

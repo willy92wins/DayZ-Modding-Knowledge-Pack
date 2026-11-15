@@ -39,15 +39,12 @@ tree=$(cd "$tree" && pwd -P)
 [ -n "$out" ] || out=$(mktemp -d /var/tmp/dzct.XXXXXX)
 mkdir -p "$out"
 
-# shellcheck disable=SC2046  # two ports, split on purpose
-set -- $("$here/free-ports.sh" 2)
-game=$1 query=$2
-grep -q '^steamQueryPort' "$tree/serverDZ.cfg" || sed -i '1i steamQueryPort = 0;' "$tree/serverDZ.cfg"
-sed -i "s/^steamQueryPort = .*/steamQueryPort = $query;/" "$tree/serverDZ.cfg"
-
-stamp="$out/stamp"; : > "$stamp"
 spid=
+cleaned=0
 cleanup() {
+    [ "$cleaned" = 0 ] || return 0
+    cleaned=1
+    trap '' INT TERM
     "$here/dayz-client-headless.sh" stop "$out/client" 2>/dev/null || true
     if [ -n "$spid" ]; then
         kill "$spid" 2>/dev/null || true
@@ -55,7 +52,17 @@ cleanup() {
         kill -9 "$spid" 2>/dev/null || true
     fi
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'cleanup; exit 130' INT
+trap 'cleanup; exit 143' TERM
+
+# shellcheck disable=SC2046  # two ports, split on purpose
+set -- $("$here/free-ports.sh" 2)
+game=$1 query=$2
+grep -q '^steamQueryPort' "$tree/serverDZ.cfg" || sed -i '1i steamQueryPort = 0;' "$tree/serverDZ.cfg"
+sed -i "s/^steamQueryPort = .*/steamQueryPort = $query;/" "$tree/serverDZ.cfg"
+
+stamp="$out/stamp"; : > "$stamp"
 
 echo "== server: game port $game, mods $smods"
 # shellcheck disable=SC3045  # dash and bash both have ulimit -c

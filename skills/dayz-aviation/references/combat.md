@@ -232,7 +232,7 @@ protected void DoFire()
     if (directHit && directHit.IsInherited(EntityAI)) {
         string zone = ResolveDamageZone(directHit, hitComp);
         if (zone != "")
-            directHit.ProcessDirectDamage(DT_FIRE_ARM, this, zone, SPIT_AMMO_TYPE, hitPos, 1.0, ProcessDirectDamageFlags.ALL_TRANSFER);
+            directHit.ProcessDirectDamage(DamageType.FIRE_ARM, this, zone, SPIT_AMMO_TYPE, hitPos, 1.0, ProcessDirectDamageFlags.ALL_TRANSFER);
     }
     
     // 7) Broadcast FX to all clients

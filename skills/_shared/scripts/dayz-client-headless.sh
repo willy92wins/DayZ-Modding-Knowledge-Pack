@@ -162,11 +162,16 @@ failed_start_signal() {
     return 0
 }
 failed_start_cleanup() {
+    trap '' INT TERM HUP
     : > "$1/sway.cancel"
     failed_start_signal "$1"
     _fc_i=0
-    while [ "$_fc_i" -lt 5 ]; do sleep 0.1; _fc_i=$((_fc_i + 1)); failed_start_signal "$1"; done
+    while [ "$_fc_i" -lt 5 ]; do sleep 0.1 || true; _fc_i=$((_fc_i + 1)); failed_start_signal "$1"; done
     rm -f "$1/sway.pid" "$1/sway.identity"
+}
+interrupted_start_cleanup() {
+    failed_start_cleanup "$state"
+    exit "$1"
 }
 
 cmd=${1:-}; state=${2:-}
@@ -268,8 +273,11 @@ EOS
         printf 'exec ./game.sh > game.log 2>&1\n'
     } > "$state/sway.conf"
     rm -f "$state/wayland-display"
+    trap 'interrupted_start_cleanup 130' INT
+    trap 'interrupted_start_cleanup 143' TERM
+    trap 'interrupted_start_cleanup 129' HUP
     ( cd "$state" && WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 setsid sh -c '[ ! -e "$1/sway.cancel" ] || exit 0; echo $$ > "$1/sway.pid"; if [ -e "$1/sway.cancel" ]; then rm -f "$1/sway.pid"; exit 0; fi; exec sway -c "$1/sway.conf"' sh "$state" > "$state/sway.log" 2>&1 & )
-    # Every error exit after launching setsid MUST route through failed_start_cleanup.
+    # Every error or signal exit after launching setsid MUST route through failed_start_cleanup.
     _i=0; _ready=0; pid=
     while [ "$_i" -lt "$_wait" ]; do
         sleep 0.1 || true
@@ -293,6 +301,7 @@ EOS
         failed_start_cleanup "$state"; die "sway did not stay up (see $state/sway.log)"
     fi
     rm -f "$state/sway.cancel" || { failed_start_cleanup "$state"; die "could not clear cancel marker in $state"; }
+    trap - INT TERM HUP
     echo "sway pid $pid, state in $state"
     ;;
 shot)
