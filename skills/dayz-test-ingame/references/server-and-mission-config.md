@@ -52,10 +52,11 @@ The shipped `serverDZ.cfg` documents each key in a comment. Beyond the ones the 
 | `instanceId = 1` | server instance number; names the storage folder | 35 |
 | `storageAutoFix = 1` | replace corrupted persistence files with empty ones | 37 |
 
-Keys the scripts read with `ServerConfigGetInt` (so they work even though the stock file does not list all of
-them):
+[EXACT][CLAIM-TEST-SERVERCFG-SCRIPT-KEYS-164289] Keys the scripts read with `ServerConfigGetInt` (so they work even
+though the stock file does not list all of them):
 
-- `enableCfgGameplayFile`: without it set to 1 a dedicated server ignores `cfggameplay.json` (section 3).
+- `enableCfgGameplayFile`: unless it is set to a non-zero value (it is read into a `bool`,
+  `scripts/3_Game/CfgGameplayHandler.c:53`), a dedicated server ignores `cfggameplay.json` (section 3).
 - `disableBaseDamage`, `disableContainerDamage`, `disableRespawnDialog`, `disablePersonalLight`, `lightingConfig`:
   the defaults that apply when `cfggameplay.json` is not used (`scripts/3_Game/CfgGameplayDataJson.c:47-50`,
   `:79`, `:176`).

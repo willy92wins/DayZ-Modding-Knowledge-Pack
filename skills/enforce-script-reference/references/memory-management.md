@@ -9,7 +9,7 @@ destroyed immediately when their reference count hits zero.
 ### Two Class Families
 
 **Managed classes** (inherit from `Managed`):
-- Entities are Managed: `Object extends IEntity` and `IEntity: Managed`
+- Entities are Managed: `Object extends IEntity` and `IEntity: Managed` [EXACT][CLAIM-ENF-ENTITY-MANAGED-164289]
   (`scripts/3_Game/Entities/Object.c:64`, `scripts/1_Core/proto/EnEntity.c:164`, DayZ 1.30.164289)
 - Instances survive as long as at least one strong reference exists
 - A class **field** without `ref` is weak here too (measured below)
@@ -63,8 +63,9 @@ has both `ref InventoryLocation` and plain `InventoryLocation` locals).
 The plain form is idiomatic and shorter; `ref` on local is legal but adds
 no extra semantics.
 
-**Measured at runtime by the author on the dedicated server, DayZ 1.30.164289** (probe not in the Pack: a probe in the mission `init.c`, i.e. a class
-declared in the mission module, with a destructor that prints). The class-family statements around it were read from the 164289 source (paths cited inline):
+**Measured at runtime by the author on the dedicated server, DayZ 1.30.164289** (claim: CLAIM-ENF-REF-FIELD-PROBE-164289, registered as
+unverified: neither the probe nor its log is in the Pack, and it was not re-run. The probe: a class declared in the mission `init.c`,
+i.e. in the mission module, with a destructor that prints). The class-family statements around it were read from the 164289 source (paths cited inline):
 
 - `ref` works on a plain class with no `Managed` ancestor: a `ref` field kept its object alive until the
   holder was released, then the destructor ran. You do not need to inherit `Managed` for `ref` to work.

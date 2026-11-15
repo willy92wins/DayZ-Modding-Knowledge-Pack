@@ -608,6 +608,12 @@ if (!item)
 // item created successfully
 ```
 
+### `EnumerateInventory` results: skip null entries before use (SP-525, added 2026-11-15)
+
+[EXACT][CLAIM-ENF-ENUMINV-SKIP-NULL] Check each entry of the array that `GetInventory().EnumerateInventory(...)` fills before you use it, as vanilla does: the five `InventoryTraversalType.LEVELORDER` calls in the 1.30.164.200 scripts each test the entry first (`4_world/static/miscgameplayfunctions.c:131` → `:136`, `:351` → `:356`, `:1224` → `:1241`; `4_world/entities/manbase/playerbase.c:7004` → `:7011`; `4_world/classes/useractionscomponent/actions/continuous/actionskinning.c:238` → `:241`). Never pass an unchecked entry to a `notnull` parameter, such as that of `HasInventoryJunctureItem(notnull EntityAI item)` (`3_game/global/game.c:757`).
+
+[EXACT][CLAIM-ENF-ENUMINV-NULL-RUNTIME-130] Measured in dayz-mcp's Expansion AI adapter (PR #410, DayZDiag 1.30 server with Expansion AI): in two in-game runs on 2026-11-14, a fresh array filled only by `EnumerateInventory(InventoryTraversalType.LEVELORDER, entries)` led to `Virtual Machine Exception: NULL pointer to instance` at `HasInventoryJunctureItem(entry)`. The script went on and the candidate was counted as kept, so the defect showed as a wrong result, not a crash. With `if (entry && ...)` in the loop, the run of 2026-11-15 logged no such exception and its sweep deleted the dropped items. Not established: what the null stands for inside the native traversal (not visible in script), whether `PREORDER` or `INORDER` return nulls too, and whether a null ever stands for a real item. That `LEVELORDER` returns nulls is inferred from the exception and its disappearance; no null was seen directly.
+
 ### Scripted attach on a live player — return is not success (SP-184)
 
 **Code-review check (first):** inventory `Take*`/`LocalTake*` return ≠ success — gate is identity `FindAttachment(slot) == item`.

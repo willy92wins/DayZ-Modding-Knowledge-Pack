@@ -46,7 +46,7 @@ works on another project (`MP:55-90`). The private key lives in `secrets/`, outs
 uploaded: `build` aborts if one turns up in the content folder, `keygen` refuses unless `secrets/` is git-ignored (when the
 project is inside a git work tree) and never overwrites a key, and `check` fails if a `.biprivatekey` is tracked or anywhere in history. A key that reached
 git history or the Workshop is leaked: rotate it under a new name (`MyMod_V2`) so old and new coexist in `keys/`.
-Do not commit `build/`: `dayzmake verify` checks the full-PBO SHA-1 checksum (`Hash 1`) as well as the v3 file hash, so any byte or header-timestamp change fails `dayzmake verify` against an older `.bisign` (`MP:92-102`).
+Do not commit `build/` (`MP:92-102`). [EXACT][CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM] `dayzmake verify` recomputes the three hashes and compares them with the `.bisign`: `Hash 1` is the SHA-1 checksum stored in the PBO's trailer, `Hash 2` hashes it with the entry names and the prefix, and `Hash 3` hashes the v3 file hash (the content of the entries ending in `sqf`, `c`, `inc`, `bikb`, `ext`, `fsm`, `sqm`, `hpp`, `cfg`, `sqs` or `h`) with the names and the prefix. A PBO rebuilt with any change to its headers or entry bytes writes a new trailer, so it fails against an older `.bisign`. The trailer is read, not recomputed: a same-size byte change inside an entry outside the v3 file hash, such as a `.paa`, made without rewriting the trailer keeps all three hashes and still verifies (the name hash covers the non-empty entries, and a same-size change keeps every entry's name and size); the same change in a `.c` entry fails on `Hash 3` (dayzmake v1.0.0 `src/pbo.rs:311-322,548-563`, `src/sign.rs:109-128,157-177,197-235,475-521,749-773`).
 
 ## What `build` and `pack` do
 

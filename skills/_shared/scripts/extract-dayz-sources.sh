@@ -63,9 +63,11 @@ out_parent=$(dirname "$out")
 mkdir -p "$out_parent"
 lock="$out.lock"
 if ! mkdir "$lock" 2>/dev/null; then echo "error: another extraction is running (lock $lock exists)" >&2; exit 1; fi
-tmp=$(mktemp -d /var/tmp/dayz-extract.XXXXXX)
-cleanup() { rm -rf "$tmp"; rm -rf "$lock"; }
+# The lock is ours from here on: install its cleanup before anything else can fail.
+tmp=
+cleanup() { if [ -n "$tmp" ]; then rm -rf "$tmp"; fi; rm -rf "$lock"; }
 trap cleanup EXIT
+tmp=$(mktemp -d /var/tmp/dayz-extract.XXXXXX) || { echo "error: could not create a temporary directory under /var/tmp" >&2; exit 1; }
 staging=$(mktemp -d "$out.new.XXXXXX") || { echo "error: could not create staging directory next to $out" >&2; exit 1; }
 if [ ! -d "$staging" ] || [ -L "$staging" ]; then
   echo "error: staging path is not a real directory: $staging" >&2
@@ -83,6 +85,38 @@ valid_name() {
   case "/$s/" in */../*|*/./*|*//*) return 1 ;; esac
   if [[ $s =~ [[:cntrl:]] ]]; then return 1; fi
   return 0
+}
+# pbo_prefix_hex <pbo>: the bytes of the PBO's 'prefix' header extension as space-separated hex, read from the file
+# itself: `dayzmake inspect` prints extension values unescaped, so an LF inside or at the end of a value only shows
+# as an extra line. Layout as dayzmake v1.0.0 reads it (src/pbo.rs, PBOHeader::read and PBO::read): the first entry
+# header is a C-string name and five little-endian u32; packing method "Vers" (bytes 73 72 65 56) makes it the
+# version header, followed by key/value C strings up to an empty key. Prints nothing when there is no version header
+# or no prefix; returns 1 when the block is cut off (end of file, or past the first 64 KiB) or 'prefix' appears twice
+# (dayzmake would keep the last one).
+pbo_prefix_hex() {
+  od -An -v -tx1 -N 65536 < "$1" | awk '
+    function cstr(   s) {
+      s = ""
+      while (p < n && b[p] != "00") { s = s " " b[p]; p++ }
+      if (p >= n) { bad = 1; return "" }
+      p++
+      return s
+    }
+    { for (i = 1; i <= NF; i++) b[n++] = $i }
+    END {
+      p = 0; bad = 0; found = 0; pre = ""
+      cstr()
+      if (bad || p + 20 > n) exit 1
+      if (b[p] b[p + 1] b[p + 2] b[p + 3] != "73726556") exit 0
+      p += 20
+      while (1) {
+        k = cstr(); if (bad) exit 1
+        if (k == "") break
+        v = cstr(); if (bad) exit 1
+        if (k == " 70 72 65 66 69 78") { if (found) exit 1; found = 1; pre = v }
+      }
+      print substr(pre, 2)
+    }'
 }
 # dest_ok <dest>: resolved path under staging and no symlink on dest or any ancestor under staging.
 dest_ok() {
@@ -121,9 +155,30 @@ if [ "$failed" = 0 ]; then
     while IFS= read -r -d '' pbo; do
       total_pbos=$((total_pbos + 1))
       if ! "$DZPBO" inspect "$pbo" > "$tmp/list" 2>/dev/null; then note_fail "inspect failed (unreadable): $pbo"; continue; fi
-      prefix=$(sed -n 's/^- prefix=//p' "$tmp/list" | tr -d '\r' | tr '\\' '/')
+      # The stored prefix is checked whole, from the header bytes: a C0 control or DEL anywhere in it (a final LF too,
+      # which $() would drop) is refused. Without one, the value fills exactly one '- prefix=' line of the listing,
+      # and that line carries dayzmake's own decoding of it (UTF-8, or windows-1252 when the bytes are not UTF-8:
+      # src/pbo.rs decode_name), the same text as the entry names the listing gives.
+      if ! prefix_hex=$(pbo_prefix_hex "$pbo"); then note_fail "unreadable or malformed PBO header in $pbo; skipping PBO"; continue; fi
+      prefix=
+      if [ -n "$prefix_hex" ]; then
+        case " $prefix_hex " in
+          *" "[01][0-9a-f]" "*|*" 7f "*)
+            prefix_esc=$(printf '%s' "$prefix_hex" | sed 's/[0-9a-f][0-9a-f]/\\x&/g; s/ //g')
+            prefix=$(printf '%b' "$prefix_esc"; printf x)
+            note_fail "invalid PBO prefix $(printf '%q' "${prefix%x}") in $pbo (control character in the stored value); skipping PBO"
+            continue ;;
+        esac
+        prefix_lines=$(grep -c '^- prefix=' "$tmp/list" || true)
+        if [ "$prefix_lines" != 1 ]; then note_fail "the listing of $pbo has $prefix_lines '- prefix=' lines for one stored prefix; skipping PBO"; continue; fi
+        prefix=$(sed -n 's/^- prefix=//p' "$tmp/list"; printf x)
+        prefix=${prefix%x}
+        prefix=${prefix%$'\n'}
+        prefix=${prefix%$'\r'}
+        prefix=${prefix//\\//}
+      fi
       [ -n "$prefix" ] || prefix=$(basename "$pbo" .pbo)
-      if ! valid_name "$prefix"; then note_fail "invalid PBO prefix '$prefix' in $pbo; skipping PBO"; continue; fi
+      if ! valid_name "$prefix"; then note_fail "invalid PBO prefix $(printf '%q' "$prefix") in $pbo; skipping PBO"; continue; fi
       # Cross-check listing: parse '# Files: N', require exact row count after '====', shape, and unique normalised names.
       : > "$tmp/want"
       : > "$tmp/names"

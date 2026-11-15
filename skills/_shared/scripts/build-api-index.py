@@ -339,9 +339,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('scripts'); ap.add_argument('out')
     ap.add_argument('--build', default='')
-    ap.add_argument('--mod', default='', help='index a mod extraction instead of the vanilla scripts; writes mod-NAME.txt.xz')
+    ap.add_argument('--mod', default=None, help='index a mod extraction instead of the vanilla scripts; writes mod-NAME.txt.xz')
     a = ap.parse_args()
-    if a.mod:
+    # None = no --mod; a given value, the empty string too, must pass the name check (never fall back to vanilla).
+    if a.mod is not None:
         if not re.fullmatch(r'[A-Za-z0-9_.-]+', a.mod) or a.mod in ('.', '..'):
             ap.error("--mod must match [A-Za-z0-9_.-]+ and must not be . or ..")
     if os.path.islink(a.out) and not os.path.isdir(a.out):

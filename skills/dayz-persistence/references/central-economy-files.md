@@ -2,7 +2,7 @@
 
 The structure of the Central Economy (CE) files as the 1.30 dedicated server ships them, so that a mod's
 `types.xml` / `cfgspawnabletypes.xml` snippet or a server owner's edit matches the format the server reads.
-Read from the DayZ Server install of 1.30.164289 (Steam app 223350, build 26220720). `MISSION` is
+Read from the DayZ Server install of 1.30.164289 (Steam app 223350, build 26220720) [EXACT][CLAIM-CE-STOCK-FILES-164289]. `MISSION` is
 `mpmissions/dayzOffline.chernarusplus/`; counts are for Chernarus. What a key *does* is only stated where the
 file's own comment or a vanilla script says so; the rest is structure and stock values. How a missing
 `types.xml` entry behaves at run time is measured in `../SKILL.md` ("A class with no `types.xml` entry...").
@@ -36,13 +36,13 @@ Stock roots: `DefaultWeapon`, `DefaultMagazine`, `Inventory_Base`, `HouseNoDestr
 (`:9-18`). `<defaults>` sets `dyn_radius`, `dyn_smin`/`dyn_smax`/`dyn_dmin`/`dyn_dmax`, the `log_ce_*` switches
 (loop, dynamic events, vehicles, loot spawn, cleanup, respawn, statistics, zombies; all `false`),
 `log_storageinfo`, `log_hivewarning`, `log_missionfilewarning`, `save_events_startup` and `save_types_startup`
-(`:20-39`). A custom map that omits `MotorbikeScript` or `HouseDestructible` loses those classes from the CE
-(`dayz-mod-workflow`, error E21).
+(`:20-39`). A custom map whose copy of this file lacks `MotorbikeScript` and `HouseDestructible` is error E21 of
+`dayz-mod-workflow`.
 
 ## `db/types.xml`
 
 One `<type name="Class">` per spawnable class with `nominal`, `lifetime` (seconds), `restock`, `min`,
-`quantmin`/`quantmax` (-1 = not applicable), `cost`, a `<flags>` element (`count_in_cargo`, `count_in_hoarder`,
+`quantmin`/`quantmax`, `cost`, a `<flags>` element (`count_in_cargo`, `count_in_hoarder`,
 `count_in_map`, `count_in_player`, `crafted`, `deloot`) and any number of `<category>`, `<usage>`, `<value>` and
 `<tag>` references to names defined in `cfglimitsdefinition.xml`. Example: `AKM` (`MISSION/db/types.xml:124-136`).
 
@@ -58,8 +58,8 @@ Lifetimes in the stock file (2382 types):
 | 604800 (7 d) | 14 | `TerritoryFlag`, `GardenPlot`, `PowerGenerator`, traps, shelters |
 | 3888000 (45 d) | 22 | tents, barrels, `SeaChest`, `WoodenCrate`, `Fence`, `Watchtower` |
 
-Other values occur a few times each (900, 3, 9000, 5400, 432000, 1209600, 9800, 30). What `lifetime` 0 does
-was not measured. `cost` is 100 on every type except `Mag_SVD_10Rnd` (1000, `:14956`); its effect was not
+Other values: 3 and 900 (34 types each), 9000 (13), 5400 (7), 432000 (3), 1209600 (2), and 30, 300, 2600 and 9800
+(one each). What `lifetime` 0 does was not measured. `cost` is 100 on every type except `Mag_SVD_10Rnd` (1000, `:14956`); its effect was not
 measured.
 
 ## `cfglimitsdefinition.xml` and `cfglimitsdefinitionuser.xml`
@@ -79,13 +79,14 @@ else (`MISSION/cfglimitsdefinition.xml:2-44`):
 
 ## `cfgspawnabletypes.xml` and `cfgrandompresets.xml`
 
-`cfgspawnabletypes.xml` has one `<type name="...">` per class that needs more than `types.xml` gives
-(738 in the stock file). Child elements in the 1.30 file:
+`cfgspawnabletypes.xml` has `<type name="...">` entries for the classes that need more than `types.xml` gives
+(721 in the stock file, plus 17 inside comments at `:3125-3203` and `:4202-4347`; `HuntingVest` has two, `:587` and
+`:593`). Child elements in the 1.30 file:
 
 - `<hoarder/>`: marks a storage container (`Barrel_Blue`, `WoodenCrate`, ...; 17 entries, `:4-53`).
 - `<damage min="0.0" max="0.32"/>`: spawn damage range (89 entries, e.g. `:56`).
-- `<attachments chance="0.25">` with `<item name="..." chance="1.00"/>` children: the block rolls `chance`, then one
-  item of it is picked by the item chances (`AKM`, `:2674-2686`).
+- `<attachments chance="0.25">` with `<item name="..." chance="1.00"/>` children (`AKM`, `:2674-2692`); the file does
+  not say how the block's chance and its items' chances combine.
 - `<cargo chance="...">` with items, same shape, for container contents.
 - `<attachments preset="name"/>` and `<cargo preset="name"/>`: a named list from `cfgrandompresets.xml`
   (e.g. `DuffelBagSmall_Green` with `foodArmy` and `mixArmy`, `:395-397`).
@@ -99,13 +100,14 @@ quantity attributes and no `equip` attribute.
 
 An `<event name="...">` carries `nominal`, `min`, `max`, `lifetime`, `restock`, `saferadius`, `distanceradius`,
 `cleanupradius`, an optional `secondary` (an infected event spawned with it), `<flags deletable init_random
-remove_damaged/>`, `<position>` (`fixed` for events placed from `cfgeventspawns.xml`), `<limit>` (`child`
-etc.), `<active>` and `<children>` with `<child lootmax lootmin max min type/>`. Example: `StaticHeliCrash`,
-nominal 3, lifetime 2100, all three radii 1000, secondary `InfectedArmy`, child `Wreck_UH1Y` with 10 to 15 loot
-items (`MISSION/db/events.xml:822-839`). `cfgeventspawns.xml` lists the fixed positions per event as
-`<pos x z a/>` (`MISSION/cfgeventspawns.xml:2-4`).
+remove_damaged/>`, `<position>` (`fixed` on the events that `cfgeventspawns.xml` places, except the inactive
+`StaticChristmasTree`, which is `uniform`), `<limit>` (`child` etc.), `<active>` and `<children>` with
+`<child lootmax lootmin max min type/>`. Example: `StaticHeliCrash`, nominal 3, lifetime 2100, all three radii 1000,
+secondary `InfectedArmy`, child `Wreck_UH1Y` with 10 to 15 loot items (`MISSION/db/events.xml:822-839`).
+`cfgeventspawns.xml` lists the positions per event as `<pos>` elements, `<pos x z a/>` in 1121 of the 1532
+(`MISSION/cfgeventspawns.xml:2-4`); the others carry `x z` only, or `y` (and `group`) as well.
 
-Sakhal's static events with `<active>1</active>` (`mpmissions/dayzOffline.sakhal/db/events.xml:739-995`):
+Sakhal's static events with `<active>1</active>` (`mpmissions/dayzOffline.sakhal/db/events.xml:739-996`):
 `StaticAmbulance`, `StaticBoatFishing`, `StaticBoatMilitary` (child `StaticObj_PatrolBoat_Military_DE`, `:807`),
 `StaticContainerLocked`, `StaticHeliCrash`, `StaticPoliceCar`, `StaticScientist`. Defined but inactive:
 `StaticAirplaneCrate`, `StaticBonfire`, `StaticChristmasTree`, `StaticFridgeTest`, `StaticMilitaryConvoy`,
@@ -130,7 +132,7 @@ are the stock floats). Stock values (`MISSION/db/globals.xml:3-32`): `AnimalMaxC
 `TimeHopping` 60, `TimeLogin` 15, `TimeLogout` 15, `TimePenalty` 20, `WorldWetTempUpdate` 1, `ZombieMaxCount`
 1000, `ZoneSpawnDist` 300.
 
-Script can read any of them with `GetCEApi().GetCEGlobalInt(name)` / `GetCEGlobalFloat(name)`
+[EXACT][CLAIM-CE-GLOBALS-SCRIPT-READS-164289] Script can read any of them with `GetCEApi().GetCEGlobalInt(name)` / `GetCEGlobalFloat(name)`
 (`scripts/3_Game/CE/CentralEconomy.c:585`, `:592`). Vanilla does so for:
 
 - `FlagRefreshFrequency` and `FlagRefreshMaxDuration` (seconds; 5 and 40 days stock): the territory flag's

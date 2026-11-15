@@ -85,8 +85,11 @@ load_conf() {
     case $MOD_NAME in *[!A-Za-z0-9_.-]*|'') die "MOD_NAME may only contain letters, digits, _ . -" ;; esac
     case $KEY_NAME in .|..) die "KEY_NAME must not be . or .." ;; esac
     case $KEY_NAME in *[!A-Za-z0-9_.-]*|'') die "KEY_NAME may only contain letters, digits, _ . -" ;; esac
+    # Split the tags as data: read -a splits on blanks and, unlike an unquoted $WORKSHOP_TAGS, never expands
+    # * ? [ against the current directory.
+    read -r -a WORKSHOP_TAG_LIST <<< "$WORKSHOP_TAGS"
     local _tag
-    for _tag in $WORKSHOP_TAGS; do
+    for _tag in "${WORKSHOP_TAG_LIST[@]}"; do
         case $_tag in *[!A-Za-z0-9_-]*|'') die "WORKSHOP_TAGS tag '$_tag' may only contain letters, digits, _ -" ;; esac
     done
     CONTENT="$PROJECT/build/@$MOD_NAME"
@@ -291,8 +294,9 @@ cmd_build() {
 TYPE_TAGS="Mod Server"
 CONTENT_TAGS="Animation Character Economy Environment Equipment Mechanics Sound Props Terrain Vehicle Weapon"
 check_tags() {
-    local t ntype=0
-    for t in $(printf '%s' "$WORKSHOP_TAGS" | sed 's/Tag Review//'); do
+    local t ntype=0 _check_list
+    read -r -a _check_list <<< "${WORKSHOP_TAGS/Tag Review/}"
+    for t in "${_check_list[@]}"; do
         case " $TYPE_TAGS " in *" $t "*) ntype=$((ntype + 1)); continue;; esac
         case " $CONTENT_TAGS " in *" $t "*) ;; *) echo "warn: tag '$t' is not a known DayZ tag ($TYPE_TAGS $CONTENT_TAGS)"; ;; esac
     done
@@ -351,7 +355,7 @@ cmd_publish_hint() {
     load_conf
     case $APP_ID in ''|*[!0-9]*) die "WORKSHOP_APP_ID must contain digits only: $APP_ID" ;; esac
     local tagargs="" t
-    for t in $WORKSHOP_TAGS; do tagargs="$tagargs -t $(printf '%q' "$t")"; done
+    for t in "${WORKSHOP_TAG_LIST[@]}"; do tagargs="$tagargs -t $(printf '%q' "$t")"; done
     local q_app q_content q_ignore q_mod q_ctoml q_ptoml q_tags
     q_app=$(printf '%q' "$APP_ID")
     q_content=$(printf '%q' "$CONTENT")
