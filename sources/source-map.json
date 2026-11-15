@@ -44208,9 +44208,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "PR #188 follow-ups (2026-11-15): the Do-not-commit-build/ note is narrowed to what dayzmake v1.0.0 verify compares (the stored trailer checksum, not recomputed; only edits outside the v3 file hash with names and prefix kept go unnoticed), with claim CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM. Written by Claude (Anthropic).",
+          "decision_evidence": "PR #188 follow-ups (2026-11-15): the Do-not-commit-build/ note is narrowed to what dayzmake v1.0.0 verify compares (the stored trailer checksum, not recomputed; only a same-size change inside an entry outside the v3 file hash goes unnoticed), with claim CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "b93c151bedcf5825274bd9c8c366555f5b60dfc3e1cf2c31020ac9bdc952b6ec",
+          "source_hash": "747ab6fda0dbf5b1bceb6b88d36d4d70274d9e3be9aafe9d088977119116e27c",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
           "source_revision": "pack188-followups@2026-11-15",
@@ -44218,7 +44218,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b93c151bedcf5825274bd9c8c366555f5b60dfc3e1cf2c31020ac9bdc952b6ec",
+      "output_hash": "747ab6fda0dbf5b1bceb6b88d36d4d70274d9e3be9aafe9d088977119116e27c",
       "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
