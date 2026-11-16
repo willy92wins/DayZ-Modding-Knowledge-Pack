@@ -61,13 +61,14 @@ In this order:
    and the domain skill's `references/dayz-1-30-*.md`.
 2. **A local index of the vanilla scripts** (offline, exact for the installed build). Build it once per game update:
    ```sh
-   S=skills/_shared/scripts
-   bash $S/extract-dayz-sources.sh "<DayZ install>" /var/tmp/dz-src         # scripts + derapified configs, ~90 s
-   python3 $S/build-api-index.py /var/tmp/dz-src/scripts ~/.cache/dayz-api   # or set DAYZ_API_DIR
-   python3 $S/dayz-api.py class CarScript --inherited    # members incl. every base class
-   python3 $S/dayz-api.py find 'OnCEIterate'             # member lines matching a regex
-   python3 $S/dayz-api.py chain PlayerBase               # base class chain
-   python3 $S/dayz-api.py sub Weapon_Base                # subclasses;  enum X / src X likewise
+   SKILL_DIR="$HOME/.claude/skills/dayz-mod-dev"  # set to this skill's own folder (skills/dayz-mod-dev in the Pack)
+   S="$SKILL_DIR/../_shared/scripts"
+   bash "$S/extract-dayz-sources.sh" "<DayZ install>" /var/tmp/dz-src         # scripts + derapified configs, ~90 s
+   python3 "$S/build-api-index.py" /var/tmp/dz-src/scripts ~/.cache/dayz-api   # or set DAYZ_API_DIR
+   python3 "$S/dayz-api.py" class CarScript --inherited    # members incl. every base class
+   python3 "$S/dayz-api.py" find 'OnCEIterate'             # member lines matching a regex
+   python3 "$S/dayz-api.py" chain PlayerBase               # base class chain
+   python3 "$S/dayz-api.py" sub Weapon_Base                # subclasses;  enum X / src X likewise
    ```
    `src X` names the declaring file; read the body in `/var/tmp/dz-src/scripts/...` and cite `path:line`. Pass `--force` to `extract-dayz-sources.sh` only to replace a non-empty `<out-dir>` that has no `pbo-map.tsv` (otherwise refused so an unrelated directory is not overwritten) [EXACT][CLAIM-EXTRACT-FORCE]. The index holds
    Bohemia's declarations, so it is built locally and never committed to a mod or to this Pack.
@@ -139,7 +140,7 @@ Match the request, read that skill first; read more than one when the request sp
 
 ## Building, signing, publishing
 
-`dayz-pbo-build`. On Windows: AddonBuilder, DsUtils and the Publisher or SteamCMD (`references/workshop-publish.md`).
-On Linux: `skills/_shared/scripts/dayz-mod-pack.sh` (`init`, `keygen`, `build [--binarize-models]`, `check`,
-`publish-hint`) over dayzmake, and the `workshop` uploader (`references/dayzmake-linux.md`). Keep the private key out
-of git and out of the upload folder; one key per mod family; sign after the final build.
+`dayz-pbo-build`. On Windows: AddonBuilder, DsUtils and the Publisher or SteamCMD (`references/workshop-publish.md`). On
+Linux: `"$S/dayz-mod-pack.sh"` (`S` set in the look-up block above) (`init`, `keygen`, `build [--binarize-models]`,
+`check`, `publish-hint`) over dayzmake, and the `workshop` uploader (`references/dayzmake-linux.md`). Keep
+the private key out of git and out of the upload folder; one key per mod family; sign after the final build.

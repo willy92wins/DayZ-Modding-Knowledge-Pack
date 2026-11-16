@@ -4543,8 +4543,8 @@
       "claim_id": "CLAIM-EXTRACT-FORCE",
       "evidence_locator": "skills/_shared/tests/test_linux_helpers.py: test_extract_refuses_nonowned_out_without_force (offline, Linux CI)",
       "license": "MIT",
-      "line_end": 72,
-      "line_start": 72,
+      "line_end": 73,
+      "line_start": 73,
       "observed_at": "2026-11-14",
       "promotion_artifact_id": "skill/dayz-mod-dev",
       "source_id": "pack-r21-authored",
@@ -4758,6 +4758,32 @@
       "source_id": "pack-r21-authored",
       "source_revision": "servercfg-lines@2026-11-15",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/enforce-script-reference/skill.md",
+      "claim_id": "CLAIM-ENF-RESPAWN-LIVING-NOOP",
+      "evidence_locator": "DayZ 1.30.164.200 scripts (VANILLA script extract), read 2026-11-16: 3_game/global/game.c:1107 (proto native void RespawnPlayer()); 5_mission/mission/missionserver.c:611-624 (MissionServer.OnClientRespawnEvent: :615 'player.IsUnconscious() || player.IsRestrained()', :621 'player.SetHealth(\"\", \"\", 0.0)'; nothing for any other player), reached from OnEvent case ClientRespawnEventTypeID at :366-378; 5_mission/gui/ingamemenu.c:321-326 (playerAlive = player && GetPlayerState() == EPlayerStates.ALIVE; m_RespawnButton.Show(!playerAlive); :325 the unconscious restart button also needs disableRespawnInUnconsciousness off), :286-291 (the confirmed dialog returns without a request when 'player && player.IsAlive() && !player.IsUnconscious()'), :345-363 (InGameMenu.GameRespawn: RespawnPlayer :348, SimulateDeath(true) :353, ShowDeadScreen :354, SetPlayerRespawning(true) :359); 4_world/entities/dayzplayerimplement.c:844-881 (SimulateDeath: LockControls :849, ShowDeadScreen :868 with ScreenFadeIn to black :820, sound scene volumes 0 :870-874); 4_world/entities/manbase/playerbase.c:2595 (the only SetPlayerRespawning(false), in OnPlayerLoaded :2569 under IsControlledPlayer :2585); 5_mission/mission/missiongameplay.c:1314 (pause handling returns while IsPlayerRespawning()); signatures 3_game/entities/object.c:517 (IsAlive), 3_game/entities/man.c:63 (IsUnconscious), 4_world/entities/dayzplayerimplement.c:3935 (IsRestrained), PlayerBase overrides playerbase.c:3925 and :2219; CfgGameplayHandler.GetDisableRespawnInUnconsciousness (3_game/cfggameplayhandler.c:188) is called only at ingamemenu.c:325 and 5_mission/gui/ingamemenuxbox.c:599.",
+      "license": "MIT",
+      "line_end": 629,
+      "line_start": 629,
+      "observed_at": "2026-11-16",
+      "promotion_artifact_id": "skill/enforce-script-reference",
+      "source_id": "pack-r21-authored",
+      "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/enforce-script-reference/skill.md",
+      "claim_id": "CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130",
+      "evidence_locator": "dayz-mcp, DayZDiag 1.30 on the experimental instance, server respawn mode CUSTOM. PR #408 (squash 3db91eb5), section 'In-game result' of its body: on a living, conscious player player_respawn, default or with survivor_type, answered ok/requested and nothing happened; after player_kill it worked. PR #416 (squash 873dfd4b, head fe9cf89), in-game run 99d065fa (2026-11-15, PBO built from fe9cf89): player_respawn() and player_respawn(survivor_type=\"SurvivorM_Manua\") on a living, conscious player answered player_alive_conscious; position (0.0 m moved) and class unchanged, the view not black, ui_pause opened and closed the in-game menu, a player_move step moved the player; after player_kill, once the death was seen, the respawn answered ok/requested, and the new living body was refused again. The client-replication delay after a kill is a known limit stated in #416, not measured. Not exercised in game: the unconscious and restrained paths. Run records of the owner's in-game harness, not in the Pack; summary in VAULT/AI/20_Knowledge/skill-patches-pending.md, entry SP-527.",
+      "license": "MIT",
+      "line_end": 631,
+      "line_start": 631,
+      "observed_at": "2026-11-16",
+      "promotion_artifact_id": "skill/enforce-script-reference",
+      "source_id": "pack-r21-authored",
+      "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1
