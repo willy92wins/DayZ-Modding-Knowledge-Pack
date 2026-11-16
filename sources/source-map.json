@@ -2051,10 +2051,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "servercfg-lines@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-527 and the dayz-mod-dev scripts path (2026-11-16): one Added entry (check the player's state before a script-triggered RespawnPlayer) and one Fixed entry (the API-index commands resolve _shared/scripts from the skill's own folder). Implemented by Muse from the orchestrator's brief; vanilla cites verified and sources resealed by Claude (Anthropic); reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "f78b0f977895459426d29ea0acd302516c68ece5882d6797a6f48af11014c122",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "64aca13441a52c0c4e541758539c51125920ddb4afb53d9996f6ea9ab4870531",
+      "output_hash": "f78b0f977895459426d29ea0acd302516c68ece5882d6797a6f48af11014c122",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19308,10 +19318,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "pack188-followups@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-527 (2026-11-16): a script-triggered RespawnPlayer() on a living, conscious, unrestrained player does nothing; check the local player's state on the client before the request (the complement of missionserver.c:615, 1.30.164.200), with the dayz-mcp #408 and #416 in-game observations; two claims. Implemented by Muse from the orchestrator's brief; vanilla cites verified and sources resealed by Claude (Anthropic); reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "5e6e3f38a0d63086b54bf62c39c2daa765367cc9399d818e77d29bab74487d86",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "15110a288427b33753fdf745859138c164cfdc78a0c874d3cad9584e98ec99d1",
+      "output_hash": "5e6e3f38a0d63086b54bf62c39c2daa765367cc9399d818e77d29bab74487d86",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -22803,10 +22823,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "servercfg-lines@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-527 (2026-11-16): two new claims on enforce-script-reference SKILL.md (source_verified and runtime_verified); CLAIM-EXTRACT-FORCE follows its line in dayz-mod-dev SKILL.md. Implemented by Muse from the orchestrator's brief; vanilla cites verified and sources resealed by Claude (Anthropic); reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "2cfae80bef5c2faec14a39ac7a1aa749d4419e4dc6625f88073a06bb399041e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7dc1ecc113736ff6572b526642161e7a83ff0da0d97909ff5b6a858020d9eb40",
+      "output_hash": "2cfae80bef5c2faec14a39ac7a1aa749d4419e4dc6625f88073a06bb399041e5",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -44767,10 +44797,20 @@
           "source_path": "skills/dayz-mod-dev/SKILL.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Installed-copy fix (2026-11-16, follow-up of #192/#193): the look-up block resolves the scripts folder from the skill's own folder (SKILL_DIR, then ../_shared/scripts, as the Pack's skills reach _shared), quotes every $S expansion, and the Linux build line points at the same folder; promotions/promotion-map.json installs skill/_shared beside skill/dayz-mod-dev in every target. Implemented by Muse from the orchestrator's brief; vanilla cites verified and sources resealed by Claude (Anthropic); reviewed cross-family before merge.",
+          "license": "MIT",
+          "source_hash": "3d5f977f32a33947f77baae0084aef59f1b91791b75fe8bf26d0c62af51c1040",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-dev/SKILL.md",
+          "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "46ae79b233f897ce73acd116af7eb2556807440a25d10d92a1867fdc5174dbbf",
+      "output_hash": "3d5f977f32a33947f77baae0084aef59f1b91791b75fe8bf26d0c62af51c1040",
       "output_path": "skills/dayz-mod-dev/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-dev",
       "verification_level": "cross_checked"
