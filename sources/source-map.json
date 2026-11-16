@@ -2061,10 +2061,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): Added entries for the download-and-verify procedure and the Windows section, Changed entry for the 3.0.2 minimum, Fixed entries for the verify claim and the extract usage text. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "a71a94455aa070d778d8f579e8820e15f17fc687f48713fdb569c62148fe40f3",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f78b0f977895459426d29ea0acd302516c68ece5882d6797a6f48af11014c122",
+      "output_hash": "a71a94455aa070d778d8f579e8820e15f17fc687f48713fdb569c62148fe40f3",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5706,10 +5716,20 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "a41116528e3c9b9764277bcf4e0c44df7143e19b14748b0176f40753452c305a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "950a18a61e48ea39ea7a916e77aa58a9d1b3d3fa9f65c6fd0ae23d0d439a505d",
+      "output_hash": "a41116528e3c9b9764277bcf4e0c44df7143e19b14748b0176f40753452c305a",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -6862,10 +6882,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "d0d4b55d66508b7f7b998538e72224b52e6c4350cb0f7ff3554c2bba4331a67f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d09d58846606fa4c5232616f8240b85c02cc1363d9f8693dfcc9171fcbed807e",
+      "output_hash": "d0d4b55d66508b7f7b998538e72224b52e6c4350cb0f7ff3554c2bba4331a67f",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7986,10 +8016,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "089f0eba04f60374280f94b46ca907ff5d9308a1ab2f95271e7ac48972d64d0b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3dd44768c823612b38acd1243c2548d576e536abe179669639665d62f83c7b09",
+      "output_hash": "089f0eba04f60374280f94b46ca907ff5d9308a1ab2f95271e7ac48972d64d0b",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -8802,10 +8842,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "74346222246ee6e2173b62592d68c1c0c45e74fed1c3cd634542ece07abacf0b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ab685e901a15814fb4475ec2dbfd007744f517593a6152e512898c2becdfbfb9",
+      "output_hash": "74346222246ee6e2173b62592d68c1c0c45e74fed1c3cd634542ece07abacf0b",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -9180,10 +9230,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "20c1db8fa0c97cb5cdbf38e746b1e4b52aaa5c14bb11ff0569170d16bf95f646",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3787af96af79a0b5f1b5ba688ac083c24cfa707e9d45e6f25c97dec98cf18696",
+      "output_hash": "20c1db8fa0c97cb5cdbf38e746b1e4b52aaa5c14bb11ff0569170d16bf95f646",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -9586,10 +9646,20 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "53df4800f08a65866ad79a77bd7de3a91906092f2c1a044ee091f4da0e82d9b1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cbefa9e58dcaf49881526976400b16ae1712250bb273bcac7762883ccd8fb802",
+      "output_hash": "53df4800f08a65866ad79a77bd7de3a91906092f2c1a044ee091f4da0e82d9b1",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -10322,10 +10392,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "4e97294b4e64751804b00ef46c008bc43e7a6ff8bd1aace89dd72e792cdbc460",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a72763f1ecfbd23344343c3737f71d79a6cc80dd12b55bd17b524763ffca7216",
+      "output_hash": "4e97294b4e64751804b00ef46c008bc43e7a6ff8bd1aace89dd72e792cdbc460",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -10780,10 +10860,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "6f2053b709f45c15dc7689798687ade2b018ccf6e73afde80b5d5a2d549fa837",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fafdc241c3c6e2c97756fb9a1221108e769954189b17df661ef7a4a2d44e5f04",
+      "output_hash": "6f2053b709f45c15dc7689798687ade2b018ccf6e73afde80b5d5a2d549fa837",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -11178,10 +11268,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "cca136bdbb69dbc4fa63bb9264d31712532f5b09f12552b30c1737c038dc3d83",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9435bf55e14fda778c18b6b4fb0f9ac6e265cd146fde851aa6945b7a40c0de2b",
+      "output_hash": "cca136bdbb69dbc4fa63bb9264d31712532f5b09f12552b30c1737c038dc3d83",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -12136,10 +12236,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "f949acc4121297725190df737b28fc4a4f7fca86f89e31768725894a5e8e2a62",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "002c5cef9e1da562dcfdbbdd2be101d1a042fa1788307e214d0503470d02322d",
+      "output_hash": "f949acc4121297725190df737b28fc4a4f7fca86f89e31768725894a5e8e2a62",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12608,10 +12718,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "1c12b88a8141ac19a0c962c1273f5f3f9bb78b05beab51ed38ba542ae3edac36",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d82a4807782321a5dae80bb39e996812938ccd44d9479197caafd38518f4a119",
+      "output_hash": "1c12b88a8141ac19a0c962c1273f5f3f9bb78b05beab51ed38ba542ae3edac36",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -13246,10 +13366,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): Linux build line pins 3.0.2 with verified download; new section On Windows: dayzmake beside AddonBuilder (not tested), from dayzmake README v3.0.2 and binarize.rs:28-32. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "bb3936617ee801667e483c0e93344680b39e7bc9097f79210e9d863c7ea2d73e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8aedc4dd2ed24a13e54a1f2254428f18e55df4e12593e1ec37bc260bbc7cc572",
+      "output_hash": "bb3936617ee801667e483c0e93344680b39e7bc9097f79210e9d863c7ea2d73e",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13476,10 +13606,20 @@
           "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): unpack of third-party PBOs requires >= 3.0.2; the manual fallback for < 2.0.0 is dropped; extract-dayz-sources.sh named as the whole-install helper. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "3306211f8a5ff5e94da8a10f189ef1856b4e12dd632d759135b37f8ea7086314",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "de01d33054b8c519fdcda8f0f8f826c1f4dadf73d6953bc2f079b69bee7c0623",
+      "output_hash": "3306211f8a5ff5e94da8a10f189ef1856b4e12dd632d759135b37f8ea7086314",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -14190,10 +14330,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "423b081cbd577c81ed2485c854fe94e3b416041b07e2aec2a5d6931060be821d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e69b964de2a735811eb316270a02a695f7f310cb5ea82990e8fb1a9b7f9490cd",
+      "output_hash": "423b081cbd577c81ed2485c854fe94e3b416041b07e2aec2a5d6931060be821d",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -14926,10 +15076,20 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "d62172e49b6c6077b0e9492a0464181efe724dc7529bb006745ef9600a7b5a1e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2bdd774b382ad287311e786902c6d24a83b7f0e80b33b24cc32fcbd26ce97ffb",
+      "output_hash": "d62172e49b6c6077b0e9492a0464181efe724dc7529bb006745ef9600a7b5a1e",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -16196,10 +16356,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "f744af561ae76e0bb4065dd55f0f534294720bf8df109f5a99ce35b287f39d56",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "82e4f855cc14cb0870b988682712b4b80636a1acca18fbaf457b17f3c8eb6da0",
+      "output_hash": "f744af561ae76e0bb4065dd55f0f534294720bf8df109f5a99ce35b287f39d56",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -17398,10 +17568,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "5621e44620c96719463e69422a1ff849f3f3bc1cdb291d5543ae52fb8c46bb35",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9def586dd0b33b972ba2c2e287b9ae278f6c53d854a8985b4bdefabf09bb35b6",
+      "output_hash": "5621e44620c96719463e69422a1ff849f3f3bc1cdb291d5543ae52fb8c46bb35",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -18878,10 +19058,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "c7efd525a90b5375c91eeefca2ccf79417750aa1c6c564f66914a089007012b5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f3eb04503d55eac291bd9d5c3c6f49d4528cd514f261f1f6a37bd94109273843",
+      "output_hash": "c7efd525a90b5375c91eeefca2ccf79417750aa1c6c564f66914a089007012b5",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -19328,10 +19518,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): vanilla unpack with dayzmake >= 3.0.2. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "f7fa2b8101d6d42008ccf179506237910710e7d5d12af56ab8cfdf477ae62b01",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5e6e3f38a0d63086b54bf62c39c2daa765367cc9399d818e77d29bab74487d86",
+      "output_hash": "f7fa2b8101d6d42008ccf179506237910710e7d5d12af56ab8cfdf477ae62b01",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -20736,10 +20936,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "65c130b4af52e8c37e8a7f5e5d497a35e0e2206860cbf532c95779e87021add9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "80c4405d9a1c860274818a4e501c266e6c7d0c1a79553b259e3fc0175de3825e",
+      "output_hash": "65c130b4af52e8c37e8a7f5e5d497a35e0e2206860cbf532c95779e87021add9",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -22833,10 +23043,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM (true for dayzmake 1.x/2.x only) replaced by CLAIM-DAYZMAKE-VERIFY-RECOMPUTES-CHECKSUM; v3.0.2 locations added to CLAIM-DAYZMAKE-V3-HASH-VERIFY and CLAIM-DAYZMAKE-UNPACK-V2-CONTAINMENT; line ranges of the claims in the edited files follow their lines. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "54ed142ac403f3e92656986202947d6a6da72cd364b372ff600236fec6f774d9",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2cfae80bef5c2faec14a39ac7a1aa749d4419e4dc6625f88073a06bb399041e5",
+      "output_hash": "54ed142ac403f3e92656986202947d6a6da72cd364b372ff600236fec6f774d9",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38249,10 +38469,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "dayzmake-why@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): the Linux pack/sign/binarize line pins dayzmake 3.0.2, says that it fixes a lot of security and file-handling issues and points at the verified download in dayz-pbo-build/references/dayzmake-linux.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "82125e466442f62bb271d734b860cb6d284f8e4506be0d02f6fb9505ad5e2608",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "b65645b3e242d0f84572828d41fcd9b1763a6f20c789653290e84466c449c4ba",
+      "output_hash": "82125e466442f62bb271d734b860cb6d284f8e4506be0d02f6fb9505ad5e2608",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -43639,10 +43869,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): minimum and pin 3.0.2 with the explicit note that 3.0.2 fixes a lot of security and file-handling issues, verified download (signed SHA256SUMS, key fingerprint), cargo install without libssl-dev; unpack guidance >= 3.0.2 without the < 2.0.0 manual fallback. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "fffb05351af86837a04828e63fcd7b84d09ef43e581e4e0428f47b4d62e55727",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0afb7f03fae3dd9093b53f7b0eec3f5a7f92b78ec65a5e6d95f984b0aa3bb657",
+      "output_hash": "fffb05351af86837a04828e63fcd7b84d09ef43e581e4e0428f47b4d62e55727",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -43721,10 +43961,20 @@
           "source_path": "skills/_shared/scripts/dayz-proton.sh",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): doctor reports 1.x, 2.x, 3.0.0 and 3.0.1 as too old (upgrade to >= 3.0.2). Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "c9486b190de781068289f044b5a192e95a1ff2682c72ea2a7d4ba1dac5833b94",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-proton.sh",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a6cc5f5649bdbbe48d7d1713630539ada8b8011e76149839f79c69b24cc5c5c8",
+      "output_hash": "c9486b190de781068289f044b5a192e95a1ff2682c72ea2a7d4ba1dac5833b94",
       "output_path": "skills/_shared/scripts/dayz-proton.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -43773,10 +44023,20 @@
           "source_path": "skills/_shared/tests/test_dayz_proton.py",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): doctor cases for 3.0.2, 3.1.0, 10.0.0 (ok) and 3.0.1, 2.0.0, 1.0.0 (too old). Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "1ee113097b72f4147251f5f19cc43cd1fddcb2f853bd7261c8203338e95df1ef",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_dayz_proton.py",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e841dca7e5f9b0b762cea73be0d5dc3ec480d70ec4c791401401186526c7b878",
+      "output_hash": "1ee113097b72f4147251f5f19cc43cd1fddcb2f853bd7261c8203338e95df1ef",
       "output_path": "skills/_shared/tests/test_dayz_proton.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -43983,10 +44243,20 @@
           "source_path": "skills/_shared/scripts/dayz-mod-pack.sh",
           "source_revision": "pack188-followups@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): install hints name v3.0.2 and the verified download; dayzmake_version_ok warns below 3.0.2. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "84f83535b9e4ec8ec316a234302f83c724eb9309ca1b671629db8ece1c0fb656",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-mod-pack.sh",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "eac11e03b92ec1029f78cb1b890cb060bb65a29b9c6801fe9cfbf0b3b3874e71",
+      "output_hash": "84f83535b9e4ec8ec316a234302f83c724eb9309ca1b671629db8ece1c0fb656",
       "output_path": "skills/_shared/scripts/dayz-mod-pack.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -44025,10 +44295,20 @@
           "source_path": "skills/_shared/scripts/extract-dayz-sources.sh",
           "source_revision": "pack188-followups@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): 3.0.2 recommended in the header and the note; usage prints the whole header (2,21p). Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "27eff29219454921916b52e47340d97601f984b0bdbdc117a2b71a14940e5686",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/extract-dayz-sources.sh",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9e4ea1123b2f8275ca897e4b9278ad5a1bd485a97a4a8a1c81f4c2ed4360f20a",
+      "output_hash": "27eff29219454921916b52e47340d97601f984b0bdbdc117a2b71a14940e5686",
       "output_path": "skills/_shared/scripts/extract-dayz-sources.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -44193,10 +44473,20 @@
           "source_path": "skills/_shared/tests/test_linux_helpers.py",
           "source_revision": "pack188-followups@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): test of dayzmake_version_ok; comments say what changed in dayzmake 3.0.0 (cat exit status, escaped inspect listing). Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "0db0c874eafd6944bb5b8b9281b98ec1259f7162b8295c3e84f592de011015e9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_linux_helpers.py",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0d259ab89bae3a3a8707bcfd64b89aa51fd9303dd7a2d87e144f6cc8ca500b85",
+      "output_hash": "0db0c874eafd6944bb5b8b9281b98ec1259f7162b8295c3e84f592de011015e9",
       "output_path": "skills/_shared/tests/test_linux_helpers.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -44307,10 +44597,20 @@
           "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
           "source_revision": "pack188-followups@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): Get the right dayzmake rewritten (3.0.2 minimum, the list of security and file-handling fixes from dayzmake README 3.0.0-3.0.2, download and verify with the pinned fingerprint, run against the v3.0.2 and v3.0.1 releases with negative controls); verify claim replaced (recomputes the checksum since 3.0.0, #46); unpack >= 3.0.2. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "c0b3e3c43fc68c94379cd9b72dbef7ff898ce11db4ab894eb8502ad0826bc25c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "747ab6fda0dbf5b1bceb6b88d36d4d70274d9e3be9aafe9d088977119116e27c",
+      "output_hash": "c0b3e3c43fc68c94379cd9b72dbef7ff898ce11db4ab894eb8502ad0826bc25c",
       "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -44807,10 +45107,20 @@
           "source_path": "skills/dayz-mod-dev/SKILL.md",
           "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): Linux build rule names dayzmake >= 3.0.2 and the verified download. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
+          "license": "MIT",
+          "source_hash": "1fe64e8024de189a884157ed86473ff6faebbc8694ac3ffbe8a9e0cbea08165a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-dev/SKILL.md",
+          "source_revision": "dayzmake-v3.0.2@2026-11-16",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "62c625bd6dfcfd446f963c594652e26235968fa8e69f99c60d45323b6c6e7281",
+      "output_hash": "1fe64e8024de189a884157ed86473ff6faebbc8694ac3ffbe8a9e0cbea08165a",
       "output_path": "skills/dayz-mod-dev/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-dev",
       "verification_level": "cross_checked"

@@ -48,8 +48,10 @@ re-check a fact against that build's sources before relying on it (next sections
   removed after the run; `dayz-test-ingame/references/linux-headless-client.md`, section 2). This does not
   contradict the Windows `P:\Mods -> !Workshop` deploy in `_shared/dayz-conventions.md`.
 - **Uploading to the Workshop is the user's call**; prepare the commands, never run them unprompted.
-- On Linux, build and sign with **dayzmake >= 1.0.0**, never upstream armake2: that is built for Arma, leaves `*.c` out
-  of the signature and lacks the DayZ-only functions dayzmake adds (`_shared/linux-proton.md`, section 1).
+- On Linux, build and sign with **dayzmake >= 3.0.2**, never upstream armake2: that is built for Arma, leaves `*.c` out
+  of the signature and lacks the DayZ-only functions dayzmake adds (`_shared/linux-proton.md`, section 1). dayzmake v3.0.2 fixes a lot of security and file-handling issues of the earlier releases,
+  so do not use an older build; download it only with its GPG-signed checksums verified
+  (`dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake").
 
 Details and evidence: `dayz-mod-workflow/references/dayz-1-30-server-measured.md`.
 

@@ -987,9 +987,10 @@ do_init() {
 
 # check_dayzmake: the native packer is bzed's armake2 fork, renamed dayzmake at v1.0.0. Upstream
 # armake2 is built for Arma (its V3 file hash omits *.c, and dayzmake adds DayZ-only functions);
-# a fork build from before the rename is called armake2.
+# a fork build from before the rename is called armake2. 3.0.2 fixes a lot of security and
+# file-handling issues of the older releases, so anything older is reported as needing an upgrade.
 check_dayzmake() {
-    url="https://github.com/bzed/dayzmake (v2.0.0 or later)"
+    url="https://github.com/bzed/dayzmake (v3.0.2 or later; verify the download, dayz-pbo-build/references/dayzmake-linux.md)"
     b=
     for c in dayzmake armake2; do command -v $c >/dev/null && { b=$c; break; }; done
     if [ -z "$b" ]; then echo "dayzmake:    missing (native PBO build/sign; $url)"; return 0; fi
@@ -1000,7 +1001,7 @@ check_dayzmake() {
     ver=$($b --version 2>&1 | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)
     case $ver in
         ''|0.*) echo "dayzmake:    '$b' is the fork from before the rename (v${ver:-?}); upgrade to $url" ;;
-        1.*) echo "dayzmake:    $b v$ver (ok for building; upgrade to >= v2.0.0 before unpacking PBOs you did not build)" ;;
+        [12].*|3.0.[01]) echo "dayzmake:    $b v$ver (too old: upgrade to >= v3.0.2, which fixes a lot of security and file-handling issues; $url)" ;;
         *) echo "dayzmake:    $b v$ver (ok)" ;;
     esac
 }

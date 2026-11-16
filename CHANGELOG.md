@@ -7,6 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake": how to download a dayzmake release and
+  verify it before installing (the release's GPG-signed `SHA256SUMS`, the pinned key fingerprint
+  `6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E`, a throwaway keyring, a `VALIDSIG` check that stops the script
+  on a bad signature; the Windows route via Gpg4win), run against the `v3.0.2` and `v3.0.1` releases with negative
+  controls; and the list of security and file-handling fixes since 2.0.0 that make 3.0.2 the minimum.
+- `dayz-pbo-build`, "On Windows: dayzmake beside AddonBuilder (not tested)": where the Windows build of dayzmake is
+  useful next to AddonBuilder (`verify` as a stricter signature gate, `inspect`/`cat`/`derapify`, `preprocess`,
+  safe `unpack`, `img2paa`, `api`, a headless `build`).
+
 - `dayz-mod-dev`, a new skill: the entry point for mod development on DayZ 1.30 or later. It routes a mod task to the
   domain skills, carries the rules every mod task needs (look up every API, the version define, forward slashes,
   PBOs in `addons/`, load order following `requiredAddons`, no writes into Steam's directories, publishing is the
@@ -230,6 +239,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   labelled as such. New offline tests cover the `binarize` .bat and the headless/init stops.
 
 ### Changed
+
+- dayzmake >= 3.0.2, pinned to `v3.0.2`, everywhere the Pack names dayzmake (`_shared/linux-proton.md`, the Linux
+  notes of 22 skills, `dayz-mod-pack.sh`, `dayz-proton.sh doctor`, `extract-dayz-sources.sh`): dayzmake v3.0.2 fixes
+  a lot of security and file-handling issues of the earlier releases. `dayz-mod-pack.sh` warns and `doctor` reports
+  "too old" below 3.0.2 (1.x was "ok for building" before); `cargo install` no longer needs `libssl-dev`.
+- `dayz-pbo-reverse-engineering`, `enforce-script-reference`, `_shared/linux-proton.md`: the manual entry-name check
+  for unpacking third-party PBOs with dayzmake < 2.0.0 is gone; use 3.0.2 or upgrade.
+
+### Fixed
+
+- `dayz-pbo-build/references/dayzmake-linux.md`: `dayzmake verify` recomputes the PBO checksum since 3.0.0 (#46), so
+  a same-size change inside an entry outside the v3 file hash no longer verifies; the claim that it still did
+  (`CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM`, true for 1.x/2.x) is replaced by `CLAIM-DAYZMAKE-VERIFY-RECOMPUTES-CHECKSUM`.
+- `extract-dayz-sources.sh` printed its usage one line short.
 
 - `dayz-ui-development` `references/layout-variants-130.md`: layout variants written by hand, measured on
   DayZDiag 1.30.164289 (2026-11-10). A variant in the Workbench format, with the derived IDs and no `.meta`,

@@ -365,8 +365,9 @@ def test_extract_rejects_pbo_prefix_escape(tmp_path: Path) -> None:
     assert not (out / "pbo-map.tsv").exists()
 
 
-# `dayzmake inspect` prints a header value unescaped, so each of these shows a clean '- prefix=scripts' (or 'scr')
-# line; the raw value still holds a control character and must be refused, not truncated.
+# dayzmake before 3.0.0 prints a header value unescaped, so each of these shows a clean '- prefix=scripts' (or 'scr')
+# line; 3.0.0 and later escape it ('scripts\\n', which would read as 'scripts/n' once '\\' becomes '/'). Either way the
+# raw value still holds a control character and must be refused, not truncated.
 @pytest.mark.parametrize("raw", [b"scripts\n", b"scripts\r", b"scripts\n- product=dayz", b"scr\nipts"])
 def test_extract_rejects_a_control_character_in_the_raw_pbo_prefix(tmp_path: Path, raw: bytes) -> None:
     bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
@@ -593,7 +594,7 @@ def test_extract_reextract_drops_stale_and_failure_keeps_old(tmp_path: Path) -> 
     assert not list(out.rglob("stale.c"))
     rows = (out / "pbo-map.tsv").read_text().strip().splitlines()
     assert len(rows) == 1
-    # Failed run (cat prints not found, exits 0 in real dayzmake) keeps the old tree.
+    # Failed run (cat prints not found and exits 0, as dayzmake did before 3.0.0) keeps the old tree.
     (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\missing.c" + " stored 9 9\n")
     done = _extract(tmp_path, bin_dir, install, out)
     assert done.returncode != 0
@@ -1297,3 +1298,31 @@ def test_autotest_mod_builds_signs_and_verifies(tmp_path: Path) -> None:
     assert (content / "addons" / "AutoTest.pbo.AutoTest.bisign").is_file()
     assert (content / "keys" / "AutoTest.bikey").is_file()
     assert not list(content.rglob("*.biprivatekey"))
+
+
+@pytest.mark.parametrize(
+    ("version", "ok"),
+    [
+        ("dayzmake v3.0.2", True),
+        ("v3.0.10", True),
+        ("v3.1.0", True),
+        ("v4.0.0", True),
+        ("v10.0.0", True),
+        ("dayzmake v3.0.1", False),
+        ("v3.0.0", False),
+        ("v2.0.0", False),
+        ("v1.0.0", False),
+        ("v0.3.0", False),
+        ("", False),
+        ("dayzmake", False),
+    ],
+)
+def test_mod_pack_dayzmake_version_ok_needs_3_0_2(version: str, ok: bool) -> None:
+    # need_dayzmake warns unless the binary reports 3.0.2 or later, the release that fixes the security and
+    # file-handling issues of the older ones.
+    probe = (
+        'eval "$(sed -n \'/^dayzmake_version_ok()/,/^}/p\' "$1")"; '
+        'dayzmake_version_ok "$2"'
+    )
+    done = subprocess.run(["bash", "-c", probe, "_", str(SCRIPTS / "dayz-mod-pack.sh"), version])
+    assert (done.returncode == 0) == ok

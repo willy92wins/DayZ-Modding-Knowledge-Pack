@@ -14,14 +14,15 @@
 # e.g. prefix "scripts" -> <out>/scripts/3_Game/..., prefix "DZ\AI" -> <out>/DZ/AI/config.cpp.
 # <out>/pbo-map.tsv lists "<prefix>\t<pbo path relative to the install dir>" for every PBO that yielded files
 # (scripts/build-api-index.py reads it to tell `dayz-api.py src` which PBO holds a file).
-# Needs dayzmake on PATH (>= 1.0.0 recommended). bzed's older armake2 fork (pre-rename, may have bugs) is accepted,
+# Needs dayzmake on PATH (>= 3.0.2 recommended: it fixes a lot of security and file-handling issues). Older builds and
+# bzed's armake2 fork from before the rename are accepted,
 # upstream armake2 is not. Write <out-dir> below /var/tmp (/tmp can be a tmpfs and take up RAM), not below $HOME.
 # Extraction goes to a staging directory next to <out-dir> and is promoted only on complete success,
 # so a re-extraction after a game update drops removed files and never duplicates pbo-map.tsv rows.
 set -eu
 force=0
 if [ "${1:-}" = "--force" ]; then force=1; shift; fi
-[ $# -eq 2 ] || { sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+[ $# -eq 2 ] || { sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'; exit 2; }
 install=$1 out=$2
 while [ "${#install}" -gt 1 ] && [ "${install%/}" != "$install" ]; do install=${install%/}; done
 while [ "${#out}" -gt 1 ] && [ "${out%/}" != "$out" ]; do out=${out%/}; done
@@ -36,7 +37,7 @@ if [ -z "$DZPBO" ]; then
   done
 fi
 [ -n "$DZPBO" ] || { echo "dayzmake not found on PATH (upstream armake2 will not do: bzed's fork has --proton-binarize)" >&2; exit 1; }
-[ "$DZPBO" = dayzmake ] || echo "note: using $DZPBO; dayzmake >= 1.0.0 is recommended (the pre-rename armake2 binary may have bugs)" >&2
+[ "$DZPBO" = dayzmake ] || echo "note: using $DZPBO; dayzmake >= 3.0.2 is recommended (it fixes a lot of security and file-handling issues of older builds)" >&2
 if [ ! -d "$install" ] || [ ! -r "$install" ] || [ ! -x "$install" ]; then
   echo "error: $install is not a readable directory" >&2
   exit 1

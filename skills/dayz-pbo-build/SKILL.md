@@ -1231,12 +1231,40 @@ discriminate and one on a pre-existing symbol did not, with the same command.
 Sibling to what this section already says about gates proving form and not
 compilation: there gate measures what it shouldn't, here it measures something already there.
 
+## On Windows: dayzmake beside AddonBuilder (not tested)
+
+dayzmake has a Windows release (`dayzmake-v3.0.2-windows-x86_64.zip`, same pin and the same signed `SHA256SUMS`;
+the Gpg4win check is in [`references/dayzmake-linux.md`](references/dayzmake-linux.md), "Download and verify the
+release binary"). **None of this has been run on Windows for the Pack**; the behaviour below is what dayzmake's
+`README.md` (v3.0.2) documents, and it is the same code as on Linux. AddonBuilder stays the build of the Windows
+workflow above. Where dayzmake earns its place there is as a second, scriptable instrument:
+
+- **Signature gate after the build:** `dayzmake verify keys\<Name>.bikey addons\<x>.pbo` recomputes the PBO's SHA-1
+  (since `v3.0.0`), while BI's `DSCheckSignatures` trusts the stored trailer (dayzmake's `README.md`, #46; not
+  re-measured here), so a PBO changed after signing fails here even when DSCheckSignatures says OK (`references/dayzmake-linux.md`, the "Do not commit `build/`" paragraph).
+- **What the PBO really contains**, without extracting it: `dayzmake inspect <x.pbo>` lists the header extensions
+  (`prefix=`) and every entry, the quickest form of "Post-build check — confirm the PBO actually contains your
+  scripts"; `dayzmake cat <x.pbo> config.bin | dayzmake derapify` shows the config that shipped.
+- **Config errors with the right line:** `dayzmake preprocess config.cpp` shows what the parser sees, with include
+  cycles, runaway macros and missing includes reported by name (pass `-i <folder>` for include folders: since
+  `v3.0.0` the working directory is only checked directly).
+- **Third-party PBOs:** `dayzmake unpack` with the 3.0.x checks (unsafe entry names skipped, every Windows device
+  name such as `CON` or `COM1` recognised, existing files only replaced with `--force`) instead of a GUI unpacker;
+  see `dayz-pbo-reverse-engineering`.
+- **Textures in batch:** `dayzmake img2paa` / `paa2img` from a script instead of the ImageToPAA GUI.
+- **API look-ups:** `dayzmake api class|find|src <Name>` reads the installed game's scripts (found through Steam
+  and the registry, or `--dayz <dir>`), without the `P:` drive.
+- **A headless build:** `dayzmake build` binarizes models on Windows through `binarize_x64.exe`, which it finds through
+  `HKCU\Software\Bohemia Interactive\binarize` (DayZ Tools must be installed; v3.0.2 `crates/dayzmake-core/src/binarize.rs:28-32`), and signs with `-k`. This is the route
+  for CI without AddonBuilder; compare its PBO with AddonBuilder's (`Compare the entries of two builds`) before
+  relying on it.
+
 ## On Linux
 
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.
 
-- Build with dayzmake >= 1.0.0, bzed's DayZ fork of armake2 (https://github.com/bzed/dayzmake), pinned to `v1.0.0` (the release binary `dayzmake-v1.0.0-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or `cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0`): use `dayzmake build`, `keygen` and `sign`; Upstream armake2 is no substitute: it is built for Arma, its V3 file hash omits `*.c` files (dayzmake v1.0.0 includes them) and lacks the DayZ-only functions dayzmake keeps adding. Check an installed binary with `dayzmake -h | grep -- --proton-binarize` (no hit: not the fork) and `dayzmake --version`; `build --proton-binarize` invokes BI binarize under Proton. `skills/_shared/scripts/dayz-mod-pack.sh` wraps keygen, build, sign, check and the Workshop upload commands; the whole Linux route (signatures, `meta.cpp`, tags, `workshop` uploader) is in [`references/dayzmake-linux.md`](references/dayzmake-linux.md). The validation checks of this skill (prefix, `config.cpp`, `$PBOPREFIX$`, duplicates, stringtable) do not depend on the packer and apply unchanged.
-- `--proton-binarize` keeps texture alpha in the fork's GitHub `master` (commit `0a0ce3b` and later, verified 2026-11-03); older local builds lose it. Reinstall from GitHub when in doubt: `--version` prints `v0.3.0` for both.
+- Build with dayzmake >= 3.0.2, bzed's DayZ fork of armake2 (https://github.com/bzed/dayzmake), pinned to `v3.0.2`; dayzmake v3.0.2 fixes a lot of security and file-handling issues of the earlier releases (unpacking untrusted PBOs, `verify` recomputing the PBO checksum, atomic outputs, hostile-config limits, key checks), so do not use an older build. Install the release binary `dayzmake-v3.0.2-debian-trixie-x86_64.tar.gz` from https://github.com/bzed/dayzmake/releases/tag/v3.0.2 only after verifying it against the release's GPG-signed `SHA256SUMS` (key fingerprint `6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E`; commands and the full list of fixes in [`references/dayzmake-linux.md`](references/dayzmake-linux.md), "Get the right dayzmake"), or `cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.0.2`: use `dayzmake build`, `keygen` and `sign`; Upstream armake2 is no substitute: it is built for Arma, its V3 file hash omits `*.c` files (dayzmake includes them) and lacks the DayZ-only functions dayzmake keeps adding. Check an installed binary with `dayzmake -h | grep -- --proton-binarize` (no hit: not the fork) and `dayzmake --version`; `build --proton-binarize` invokes BI binarize under Proton. `skills/_shared/scripts/dayz-mod-pack.sh` wraps keygen, build, sign, check and the Workshop upload commands; the whole Linux route (signatures, `meta.cpp`, tags, `workshop` uploader) is in [`references/dayzmake-linux.md`](references/dayzmake-linux.md). The validation checks of this skill (prefix, `config.cpp`, `$PBOPREFIX$`, duplicates, stringtable) do not depend on the packer and apply unchanged.
+- `--proton-binarize` keeps texture alpha from fork commit `0a0ce3b` on (verified 2026-11-03; every release from `v1.0.0` contains it); older pre-rename `armake2` builds lose it, and `--version` prints `v0.3.0` for both. Install the pinned `v3.0.2` when in doubt.
 - To compare against BI's AddonBuilder, it runs under Proton: `dayz-proton.sh tool AddonBuilder <P-root>/<Mod> <out> -prefix=<Mod>` (`-packonly` and full builds measured, `-clear` too). The binarize rules above hold: build from `P:\<Mod>`, never from a path whose parent is a large Linux directory, because binarize scans the parent. AddonBuilder exits 0 on a failed build; `dayz-proton.sh` returns the `[ResultCode]` from `DayZ Tools/Bin/Logs/AddonBuilder.rpt` instead.
 - `build_*.ps1`, `robocopy` and junctions: read the script for the source tree, then do the same with `sh`, `rsync` and symlinks. Do not run the `.ps1` under `pwsh`: it calls Windows programs and the registry.
 - Publishing: the `workshop` uploader (nozwock/steam-workshop-uploader) by itself instead of Publisher, its command left to its own `--help`; the author-local `dayz-mod-pack.sh` wrapper is not part of this Pack.
