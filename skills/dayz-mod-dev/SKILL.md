@@ -61,7 +61,7 @@ In this order:
    and the domain skill's `references/dayz-1-30-*.md`.
 2. **A local index of the vanilla scripts** (offline, exact for the installed build). Build it once per game update:
    ```sh
-   SKILL_DIR=<this skill dir>  # skills/dayz-mod-dev in the Pack, ~/.claude/skills/dayz-mod-dev in an installed copy
+   SKILL_DIR="$HOME/.claude/skills/dayz-mod-dev"  # set to this skill's own folder (skills/dayz-mod-dev in the Pack)
    S="$SKILL_DIR/../_shared/scripts"
    bash "$S/extract-dayz-sources.sh" "<DayZ install>" /var/tmp/dz-src         # scripts + derapified configs, ~90 s
    python3 "$S/build-api-index.py" /var/tmp/dz-src/scripts ~/.cache/dayz-api   # or set DAYZ_API_DIR
@@ -140,7 +140,7 @@ Match the request, read that skill first; read more than one when the request sp
 
 ## Building, signing, publishing
 
-`dayz-pbo-build`. On Windows: AddonBuilder, DsUtils and the Publisher or SteamCMD (`references/workshop-publish.md`).
-On Linux: `$SKILL_DIR/../_shared/scripts/dayz-mod-pack.sh` (`init`, `keygen`, `build [--binarize-models]`, `check`,
-`publish-hint`) over dayzmake, and the `workshop` uploader (`references/dayzmake-linux.md`). Keep the private key out
-of git and out of the upload folder; one key per mod family; sign after the final build.
+`dayz-pbo-build`. On Windows: AddonBuilder, DsUtils and the Publisher or SteamCMD (`references/workshop-publish.md`). On
+Linux: `"$S/dayz-mod-pack.sh"` (`S` set in the look-up block above) (`init`, `keygen`, `build [--binarize-models]`,
+`check`, `publish-hint`) over dayzmake, and the `workshop` uploader (`references/dayzmake-linux.md`). Keep
+the private key out of git and out of the upload folder; one key per mod family; sign after the final build.

@@ -44800,9 +44800,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Installed-copy fix (2026-11-16, follow-up of #192/#193): the look-up block resolves the scripts folder from the skill's own folder (SKILL_DIR, then ../_shared/scripts, as the Pack's skills reach _shared), quotes every $S expansion, and the Linux build line points at the same folder; promotions/promotion-map.json installs skill/_shared beside skill/dayz-mod-dev in every target. Implemented by Muse from the orchestrator's brief; vanilla cites verified and sources resealed by Claude (Anthropic); reviewed cross-family before merge.",
+          "decision_evidence": "Installed-copy fix (2026-11-16, follow-up of #192/#193): the look-up block resolves the scripts folder from the skill's own folder (SKILL_DIR, a valid assignment with the common installed location and a note to set it to this skill's folder, then ../_shared/scripts, as the Pack's skills reach _shared), quotes every $S expansion, and the Linux build line calls the same folder as \"$S/dayz-mod-pack.sh\"; promotions/promotion-map.json installs skill/_shared beside skill/dayz-mod-dev in every target. Implemented by Muse from the orchestrator's brief; vanilla cites verified and sources resealed by Claude (Anthropic); reviewed cross-family before merge.",
           "license": "MIT",
-          "source_hash": "3d5f977f32a33947f77baae0084aef59f1b91791b75fe8bf26d0c62af51c1040",
+          "source_hash": "62c625bd6dfcfd446f963c594652e26235968fa8e69f99c60d45323b6c6e7281",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mod-dev/SKILL.md",
           "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
@@ -44810,7 +44810,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3d5f977f32a33947f77baae0084aef59f1b91791b75fe8bf26d0c62af51c1040",
+      "output_hash": "62c625bd6dfcfd446f963c594652e26235968fa8e69f99c60d45323b6c6e7281",
       "output_path": "skills/dayz-mod-dev/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-dev",
       "verification_level": "cross_checked"
