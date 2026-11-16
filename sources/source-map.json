@@ -227,10 +227,30 @@
           "source_path": ".mcp.example.json",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): adds the dayzmake stdio server (command dayzmake, args [mcp]) beside dayz-mcp; the readme lines describe both entries. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "bf027ab6c7f197feaca5b3be7c7237cfe4ee383cab162c6ca7c4f0275df1871e",
+          "source_id": "pack-r21-authored",
+          "source_path": ".mcp.example.json",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "b1a30a41a3da3e8db2d406957883b09c66180fd4b73830d6a8a62e8cd83bdd33",
+          "source_id": "pack-r21-authored",
+          "source_path": ".mcp.example.json",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0ebc34979593aa6d060c2a2baa3fe46f9a569133071437d508b6f7299f4bf877",
+      "output_hash": "b1a30a41a3da3e8db2d406957883b09c66180fd4b73830d6a8a62e8cd83bdd33",
       "output_path": ".mcp.example.json",
       "routing_artifact_id": "root/mcp-example",
       "verification_level": "cross_checked"
@@ -309,10 +329,30 @@
           "source_path": "AGENTS.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): two symptom rows (API existence, PBO/signature) and one task row naming dayzmake's MCP server and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "4d685ce691fe937eca1bd1cca38271d5d3d1b0d9488ab51d33ec5d0a63c58d3a",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "4d685ce691fe937eca1bd1cca38271d5d3d1b0d9488ab51d33ec5d0a63c58d3a",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ddb52a17c6063c42fd146e2dd8d11682288db64fd05a5a45dc7d5eb3ddbc3a79",
+      "output_hash": "4d685ce691fe937eca1bd1cca38271d5d3d1b0d9488ab51d33ec5d0a63c58d3a",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -2081,10 +2121,30 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): Added entries for the dayzmake-mcp guide and the routing to it. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "49e5d98f58e44222804bb4fc84b92a6202f407e079e678ce4f97f8d6c05e1554",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "7054146f0dc58dde62354b2f5f99fce7f986e2513a9747541d95a6300d518d7a",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e9aa72dacfb7ed658c56b67d66216bc186cbf0a8cb75a3136ef4c7d979a1d327",
+      "output_hash": "7054146f0dc58dde62354b2f5f99fce7f986e2513a9747541d95a6300d518d7a",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2455,10 +2515,30 @@
           "source_path": "README.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): section 4 lists dayzmake >= 3.0.2 and its MCP server as an external dependency; the .mcp.example.json sentence names its dayz-mcp entry. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "9f71f13f1a4bd94cf399265c3415ba83632c2df82810795db2ff2ec691bb6da1",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "f1ae79f31ace9106684eec47c0a0e3b77acf0bbefdc767bddc9777c6d4511433",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "17e9e8b814d2b4e9647424fa095a3c9d640c261d799ac64617553e812e48e2f9",
+      "output_hash": "f1ae79f31ace9106684eec47c0a0e3b77acf0bbefdc767bddc9777c6d4511433",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -2599,10 +2679,30 @@
           "source_path": "TOOLS.md",
           "source_revision": "gap-66306aa-step3@2026-11-10",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): What is deliberately absent names dayzmake (external, GPL, not shipped) and its MCP server. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "c4a7935a2cf8c3c1feb3696e392a5c012333587adad54a17e1fe318fb9a26224",
+          "source_id": "pack-r21-authored",
+          "source_path": "TOOLS.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "8e1e417c53c61d7587343799ce6cb9897bc355b86c73df47915ade6d127c009f",
+          "source_id": "pack-r21-authored",
+          "source_path": "TOOLS.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "40add86fbc7446525653f9fcd2250463994b1d59c09a63c82d537fbd52377c32",
+      "output_hash": "8e1e417c53c61d7587343799ce6cb9897bc355b86c73df47915ade6d127c009f",
       "output_path": "TOOLS.md",
       "routing_artifact_id": "root/tools-index",
       "verification_level": "cross_checked"
@@ -3371,10 +3471,30 @@
           "source_path": "knowledge/dayz-mcp-bridge-protocol.md",
           "source_revision": "kp-update-wp-mcp@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the .mcp.example.json sentence names its dayz-mcp entry and the other entry, dayzmake's server. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "2bae082dfde5da988a5c653c4503d4676ada4f5b912837fc0bf283d774fe5775",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/dayz-mcp-bridge-protocol.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "2bae082dfde5da988a5c653c4503d4676ada4f5b912837fc0bf283d774fe5775",
+          "source_id": "pack-r21-authored",
+          "source_path": "knowledge/dayz-mcp-bridge-protocol.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2495c6da7b98f74f5fa9117a5f127f27d0e64a070d8cfef9f9f7205f6e395c20",
+      "output_hash": "2bae082dfde5da988a5c653c4503d4676ada4f5b912837fc0bf283d774fe5775",
       "output_path": "knowledge/dayz-mcp-bridge-protocol.md",
       "routing_artifact_id": "knowledge",
       "verification_level": "cross_checked"
@@ -5756,10 +5876,30 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "bb2b27e86bd26ec7a088431b916e0fc481bc259606243a78ed3587d6f98d5e1e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "a226764f4f932e2d83f8ae8d49a1d13c8fc3bf04fc8812605d53105334922644",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d29ba4282c9586811544a67fccdc410cd89f21c4668b0cb147e3c804fc327bdd",
+      "output_hash": "a226764f4f932e2d83f8ae8d49a1d13c8fc3bf04fc8812605d53105334922644",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -8076,10 +8216,30 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "07f0a2995c2471426efaa43572ebc54f5df6a2ffafcb5e800a09448e66d4c6ab",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "53daba8dea236e4d4f3f830e28ec025b37980b04941b3f4d65ec4cabc109e075",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e324a2a99fddc69f49f3a78f9c51135a082e2a32c780d6f7d7f9b5affadb70d6",
+      "output_hash": "53daba8dea236e4d4f3f830e28ec025b37980b04941b3f4d65ec4cabc109e075",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -8912,10 +9072,30 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "a95654858667a3359ef7b7050acea7a1b5216ecd7984389e1da8cf4b8974989e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "de5334a4eaacef843876afb1fe41f738d778012e5c3d57b00531011dfddac589",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8bc1f587ba6736c7c45fb1c86949301a61c59c7555010edec0d93a2264be2325",
+      "output_hash": "de5334a4eaacef843876afb1fe41f738d778012e5c3d57b00531011dfddac589",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -9310,10 +9490,30 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "21a2256b1783d06d53c85db3bbd905596214318bdb13f32fb6751b4d1dd86fda",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "b2db2155bbd5c1757ec33a36a69e125aa208e8764cf55af6775c4b2eed3f2145",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1648c58559641e794404e4c921f837129a10eb8ba0d2a32fe42be76df35e0e00",
+      "output_hash": "b2db2155bbd5c1757ec33a36a69e125aa208e8764cf55af6775c4b2eed3f2145",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -9736,10 +9936,30 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "d7a7ba3d656664b8eb791bf05839f2e8192cbf001bf3b8849fbb0c46e7366319",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "816ad7f59a474e70e7e0acc932fc4db40d77d1ebdff7952c7585c94f211819a3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5c9836eda77789b299d0d80fec4b20d43fc5f914ddb8eb14c1488564c4ec8fdc",
+      "output_hash": "816ad7f59a474e70e7e0acc932fc4db40d77d1ebdff7952c7585c94f211819a3",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -11388,10 +11608,30 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "6def8dd8023913f1fee96e3558ae28614fcacd4e614b16bda83f1daaa850b59d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "112198cb67700a06b5cbb6576deb01c3e890ccfbef97a4a3114cbe9ff03c04c8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5eed2fd7c6c1b1f7e379b8f5fca76eb620fd11454e2c6d777a25b631bced4f03",
+      "output_hash": "112198cb67700a06b5cbb6576deb01c3e890ccfbef97a4a3114cbe9ff03c04c8",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -12366,10 +12606,30 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "8f072f57b276a4998799c26664af612fa87fccc453b50ed0a6a55c045fffa1c9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "5ded7e51f286cdb6fe8ab262a7616b06c09262bf3ef64e8cb1df9eea2ba514cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cd688ffb70488ef0d540a66f9fa1754d7e0386485ed47b902ef67b56e223ad49",
+      "output_hash": "5ded7e51f286cdb6fe8ab262a7616b06c09262bf3ef64e8cb1df9eea2ba514cc",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12858,10 +13118,30 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "de068482caf78b6ea81022114dcc865e462b251594f9cd1ca922562c4c62aff7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "86b5a4ed379f57b1b0717c6c5b5300c5b5efb6f53338e7e0001de2791a83263e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ad08f79deb661823411a8256f22bf38492d7de1b77dd02827df73d7a9dc7aa66",
+      "output_hash": "86b5a4ed379f57b1b0717c6c5b5300c5b5efb6f53338e7e0001de2791a83263e",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -13516,10 +13796,30 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): Linux build line and the Windows section name the MCP tools (pbo_build, key_generate, pbo_sign, pbo_verify, pbo_inspect, ...). Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "969ac6c7ea38aef3fdb994ad64a4b7a682cab4fd411324b4f3000a96b12a23cf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "934de5a76fcf1ede332ac3bf5f14ce20aefcdd18996c8e0b6925cf995828ce07",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b10319260e34b8f615a32942267bdc083f69597fad7d0c686e7175084c095f9",
+      "output_hash": "934de5a76fcf1ede332ac3bf5f14ce20aefcdd18996c8e0b6925cf995828ce07",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13766,10 +14066,30 @@
           "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): On Linux names pbo_inspect, pbo_cat (target for binary entries), pbo_unpack and config_derapify with absolute paths. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "d25c622e02e80783aac9b9193ee5ca701f6d2108c37120e4ace1b0b76cce127a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "87338b0c23fb0e008639c2fa002dfdcebeb2c630111e4acefbeb2e80622e388b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "84540f3d0461299f64b68e1244dafacbd47bd919fd34b8defbdd99f23bc3d328",
+      "output_hash": "87338b0c23fb0e008639c2fa002dfdcebeb2c630111e4acefbeb2e80622e388b",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -14500,10 +14820,30 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "018bd7d5721534bd9c464b6f16cc926056fc5b7ab1e08838e0268ec757e8051c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "c307347ac8e0eae91cb25477108366138e8e4dc804dc6684b7ae4f74de4ebe2d",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "73b9d10e019a8f0d1b6b3049b0673dae32517e083a3353585ea70f4df5600ae5",
+      "output_hash": "c307347ac8e0eae91cb25477108366138e8e4dc804dc6684b7ae4f74de4ebe2d",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -15256,10 +15596,30 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "02559fe510f8464032c40ff04a2a66364d619559ab91fa3eb908881590a3a039",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "9c1cf49850dde774a861f7097ec99058ef2076727acc4c19584f84e89c3b25d2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fd5f44640b20b9b577a5ebdcd116daf03ac75d18a619712498374db132edf42a",
+      "output_hash": "9c1cf49850dde774a861f7097ec99058ef2076727acc4c19584f84e89c3b25d2",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -17768,10 +18128,30 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "c04e08cb67152eaa3a39c366151536b4d5099c38d62128d5eca9639159eab5e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "18b59e6aeb08c77c4c5007a2d434c920394e6b6adc98fb13cebe8ea4587c4797",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "606d5973b95f2827bdee8680b34f60413393d0f1c491f34112eec0f71e93fdfd",
+      "output_hash": "18b59e6aeb08c77c4c5007a2d434c920394e6b6adc98fb13cebe8ea4587c4797",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -19268,10 +19648,30 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "e3b68ca123189c4a61391a1b75775e911b8f7e7453107229b70897b002c902f5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "1d4338b8fcb73d7ba458dda925483ec439cdccaec42aad2265c124455f10501c",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7385ae159e3f0511f7f57ae8ad188dc12a892480e14230dbb6da14683b790f67",
+      "output_hash": "1d4338b8fcb73d7ba458dda925483ec439cdccaec42aad2265c124455f10501c",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -19738,10 +20138,30 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): declarations through dayzmake's api_class/api_find/api_source tools (CLI dayzmake api) before extracting. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "61d8c57e7fcd73f08624e35d983e08c2f6cde2450243c60c0cb2e590655adde7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "56fdcfc0dd72d7e0767fdb77d4cfb92c90caadde2ee689b39578d3c0c113fb9e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5163031076c5e95d1d41bbde75d6567396bdde861ef55f7125d885958bcd355e",
+      "output_hash": "56fdcfc0dd72d7e0767fdb77d4cfb92c90caadde2ee689b39578d3c0c113fb9e",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -21166,10 +21586,30 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "ac905c70b81c92f9747d3c56725720a5b20ad1b8e758c115222bcfa9650fa9df",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "691a32a223709e339c3495cea192a47ba2fec946411a2daf95628574e5a806f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4ddf3b96c94c96fd561ebf7744de3e7e41102e8aa147edd3113ce78f383f8e2e",
+      "output_hash": "691a32a223709e339c3495cea192a47ba2fec946411a2daf95628574e5a806f6",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -23283,10 +23723,30 @@
           "source_path": "sources/claims.json",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): five claims on skills/_shared/dayzmake-mcp.md (tools, results, registration, relative paths, stale server); line ranges of claims in the edited files follow their lines. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "ef0822f7567ac12a5b48fc80674b40edbd128e2c1f1cbca863f0233eb4026ee8",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the five CLAIM-DAYZMAKE-MCP-* claims joined to the dayzmake v3.1.0 claims; CLAIM-DAYZMAKE-MCP-TOOLS cited at v3.1.0; line numbers follow the edited files. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "039c27fada8171b8dc91e311b89c88d1915eb02b2600d8a0aac344e6d7464d99",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7ebcfbc6da987e82cd08051fe5d9fb34785f86127f1395aaec3b6b95e2fcf91",
+      "output_hash": "039c27fada8171b8dc91e311b89c88d1915eb02b2600d8a0aac344e6d7464d99",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38719,10 +39179,30 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): the Linux pack/sign/binarize line names the MCP tools (pbo_build with proton_binarize, key_generate, pbo_sign, pbo_verify) and skills/_shared/dayzmake-mcp.md. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "8e5e6855d553f221796c800905318183951f2a07c84af00412ebe37e27d85324",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "671422b8247d1a87aff87456acabaec2ddc90eeba32491492f859cbfeb02b2d2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfe921c048dfe7323757b1d9e56a7e73019d3d8dd8ce1d38bf7194f36dd10d12",
+      "output_hash": "671422b8247d1a87aff87456acabaec2ddc90eeba32491492f859cbfeb02b2d2",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -44129,10 +44609,30 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): section 1 says agents talk to dayzmake through dayzmake mcp (dayzmake-mcp.md). Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "4b0d711a450919e2367d6b26c66b03634ca2d69853f3b7868d65855b985e6de1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "be56672183a7f3c1d44d3db623510235c772f2175fb6bcdaf1f4e308c5671a88",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bf75c1341fc7845b16ddb50a670ab7e1db7ca80f27cd8193ad560d0ae9956fbf",
+      "output_hash": "be56672183a7f3c1d44d3db623510235c772f2175fb6bcdaf1f4e308c5671a88",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -44781,10 +45281,30 @@
           "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): new section From an agent: dayzmake mcp; dayz-mod-pack.sh stays on the CLI. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "6ddb1697f022d4700ea01eedd586d5129d77c4331e4be6d4b40442dd1a14e7f1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "5443fe2655780bc78343355f3fb56c0b0d30014fc1f62657da705a12b896d508",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "44b7830ecb75acb10e7ef9db4b6c0edaf63846b5cfa623fb9e60b2a1e14b7563",
+      "output_hash": "5443fe2655780bc78343355f3fb56c0b0d30014fc1f62657da705a12b896d508",
       "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -45301,12 +45821,64 @@
           "source_path": "skills/dayz-mod-dev/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake MCP (2026-11-16): look-up order puts dayzmake's api_* MCP tools (CLI dayzmake api) before the local extracted tree, which stays for bodies and configs; CF/Expansion via mods=; the Linux build rule names dayzmake mcp. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "643a5c11d779b94767022e4550b47781ea70d750550638c3ac64f51367c2587f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-dev/SKILL.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the dayzmake MCP server tools (api_*, extract, pbo_*) are named alongside the v3.1.0 CLI text. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "a3058d6d57dc9c282eb1e2fbbc43b96c3889cf10ece3161d92df7a2acc51cf05",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-dev/SKILL.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "31c80f50ea9141ca044b21a226b46ff0c410e907ea3ec3964562e4b791dd41be",
+      "output_hash": "a3058d6d57dc9c282eb1e2fbbc43b96c3889cf10ece3161d92df7a2acc51cf05",
       "output_path": "skills/dayz-mod-dev/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-dev",
+      "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/_shared/dayzmake-mcp.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "New shared guide: dayzmake mcp as the one way an agent talks to dayzmake (why, detection, version caveat, registration, absolute paths, the 23 tools with CLI commands and arguments, what stays on the CLI), from dayzmake v3.0.2 README.md 'MCP server', docs/book/src/reference/mcp.md, docs/book/src/guides/mcp.md and the server's tools/list; measured by hand over stdin and through a Claude Code client. Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 (tag v3.0.2, commit f227e01) and its MCP server read and run 2026-11-16.",
+          "license": "MIT",
+          "source_hash": "2eb40346cd54970a8fe33da0cab4ec470ffe4b7fe3d0c98228df4d28289789f1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/dayzmake-mcp.md",
+          "source_revision": "dayzmake-mcp@2026-11-16",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake mcp (2026-11-17): the tool table, the measured section and CLAIM-DAYZMAKE-MCP-TOOLS follow the v3.1.0 server (26 tools: api_grep, api_config and extract added). Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0 (commit 83320f1).",
+          "license": "MIT",
+          "source_hash": "a2733b26315981d630836cef93b0f6b996780ff25bd840349307599422d9bfd7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/dayzmake-mcp.md",
+          "source_revision": "dayzmake-mcp-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "a2733b26315981d630836cef93b0f6b996780ff25bd840349307599422d9bfd7",
+      "output_path": "skills/_shared/dayzmake-mcp.md",
+      "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
     }
   ],

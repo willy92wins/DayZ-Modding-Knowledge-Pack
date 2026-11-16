@@ -147,6 +147,14 @@ The version string does not tell builds apart. If in doubt, reinstall from the t
 both ways and `cmp` the results (`MP:45-49`). `dayz-mod-pack.sh` runs the same check: it uses `dayzmake` from `PATH`
 (or the binary named by `$DAYZMAKE`, or the older `$ARMAKE2`), falls back to a pre-rename `armake2`, refuses upstream and warns below 3.1.0.
 
+## From an agent: `dayzmake mcp`
+
+An agent talks to dayzmake through its MCP server: `pbo_build`, `pbo_pack`, `key_generate`, `pbo_sign`,
+`pbo_verify`, `pbo_inspect`, `pbo_cat`, `pbo_unpack`, `extract`, `config_*`, `paa_to_image`/`image_to_paa`, `binarize` and the
+`api_*` look-ups (with `api_grep` and `api_config` since `v3.1.0`) take the arguments of the commands below (`proton_binarize` for `--proton-binarize`). Registering it,
+the tool list, absolute paths and the version caveat: `_shared/dayzmake-mcp.md`. `dayz-mod-pack.sh` stays on the
+CLI; it handles the project around the PBOs.
+
 ## Quick start (`dayz-mod-pack.sh`)
 
 ```sh

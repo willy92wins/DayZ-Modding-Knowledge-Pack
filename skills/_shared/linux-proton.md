@@ -52,7 +52,8 @@ building your own mod. Download the release binary from https://github.com/bzed/
 verify it before use: the release's `SHA256SUMS` is GPG-signed by the key with fingerprint
 `6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E` (the commands are in the same section of that file), or
 `cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.1.0` (no system libraries needed since
-`v3.0.0`). Note that dayz-mcp's managed `build=true` path merged in PR #411 pins the older `v1.0.0` release binary
+`v3.0.0`). From an agent, talk to dayzmake through its MCP server, `dayzmake mcp`: `dayzmake-mcp.md` in this
+folder. Note that dayz-mcp's managed `build=true` path merged in PR #411 pins the older `v1.0.0` release binary
 for building. The fork
 is required, not a preference, and it is moving away from upstream on purpose: it implements more and
 more functions that only DayZ needs, or that DayZ needs differently from Arma. Upstream armake2
@@ -141,7 +142,7 @@ Vanilla data under `P:\dz` (what WorkDrive's "extract game data" does on Windows
 writes every PBO of `dta/` and `addons/` at its prefix path (measured 2026-11-17 with v3.1.0 on DayZ stable: about
 21 GB, 20 s). It writes only into an empty folder or over its own earlier result, so run it on a fresh `P/`
 before your mods go there; single PBOs go through `dayzmake unpack --use-prefix`, with dayzmake >= `v3.1.0` (entry-name containment since `v2.0.0`, commit `f31056ae`; `v1.0.0` `src/pbo.rs:724,731-733` has none; never unpack a PBO you did not build with an older build). For scripts and configs
-only, `dayzmake extract --derapify --only '*.c' --only 'config.*' <install> <dir>` (dayzmake >= 3.1.0; configs derapified, `pbo-map.tsv` maps prefixes to PBOs; a few seconds). Workbench without the
+only, `dayzmake extract --derapify --only '*.c' --only 'config.*' <install> <dir>` (dayzmake >= 3.1.0; configs derapified, `pbo-map.tsv` maps prefixes to PBOs; a few seconds; MCP tool `extract`). Workbench without the
 extracted data compiled its bundled scripts but logged `No entry 'config.bin/CfgVehicles/…'`
 for vanilla classes. Whether an extracted `P:\dz` removes those errors is **not verified**,
 and neither is a model that references vanilla textures.

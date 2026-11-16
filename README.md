@@ -274,6 +274,7 @@ builds and tests mods:
 | **Blender** (with `bpy`) | Authoring and export; several 3D skills assume it. |
 | **DayZDiag_x64.exe** | Local filepatching launch (`dayz-test-ingame`). |
 | Optional: Community Framework, Dabs Framework, VPP Admin Tools | Only when a given skill or project actually uses them. |
+| [dayzmake](https://github.com/bzed/dayzmake) >= 3.1.0 | PBO build/pack/sign/verify, configs, PAA, binarize, the script-API, script-body and config look-ups and source extraction, on Linux and Windows. Agents talk to it through its MCP server `dayzmake mcp`: [`skills/_shared/dayzmake-mcp.md`](skills/_shared/dayzmake-mcp.md). |
 | [DayZ-MCP](https://github.com/willy92wins/dayz-mcp) | Optional for offline work; **required to close the loop** — see below. |
 
 There is nothing to install from an "Anthropic skills" marketplace for this pack.
@@ -310,7 +311,7 @@ cd dayz-mcp\tools
 .\install-mcp.ps1 -Register
 ```
 
-`.mcp.example.json` in this repository is the client wiring that installer writes. The skill
+The `dayz-mcp` entry of `.mcp.example.json` in this repository is the client wiring that installer writes. The skill
 that consumes it is [`dayz-mcp-verify`](skills/dayz-mcp-verify/); the acceptance ladder it runs
 for a drivable vehicle is spawn → render → get-in → drive → wheel direction.
 

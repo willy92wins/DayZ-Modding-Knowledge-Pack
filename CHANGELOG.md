@@ -7,6 +7,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `skills/_shared/dayzmake-mcp.md`: `dayzmake mcp`, dayzmake's MCP server, as the one way an agent talks to
+  dayzmake (script-API look-ups and the PBO, config, key, PAA and binarize commands), on Linux and Windows: why the
+  server instead of the shell, how to tell that it is registered (tool-name prefixes) and that a running server can
+  be older than the binary on `PATH`, registration (Claude Code scopes, the generic `stdio` shape), absolute paths
+  because the server resolves paths against its own working directory, the 26 tools with their CLI commands and
+  arguments as the v3.1.0 server lists them (`api_grep`, `api_config` and `extract` new in 3.1.0), and what stays
+  on the CLI. Registration names the absolute path of the verified binary after a `--version` check instead of
+  `dayzmake` on `PATH`, which can find an older build (review of #196). Measured by hand over stdin (v3.0.2 and
+  v3.1.0) and through a Claude Code client; five claims. `.mcp.example.json` gains a `dayzmake` entry with that
+  path.
+- The skills route to it: `dayz-mod-dev` looks the script API up through dayzmake's `api_*` tools first (the local
+  extracted tree stays for bodies and configs), `dayz-pbo-build`, `dayzmake-linux.md`, `dayz-pbo-reverse-engineering`,
+  `enforce-script-reference`, `_shared/linux-proton.md` and the Linux notes of 14 domain skills name the tools;
+  `AGENTS.md`, `TOOLS.md` and `README.md` §4 list dayzmake and its server.
+
 - `dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake": how to download a dayzmake release and
   verify it before installing (the release's GPG-signed `SHA256SUMS`, the pinned key fingerprint
   `6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E`, a throwaway keyring, and a status-line check that stops the

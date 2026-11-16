@@ -51,7 +51,8 @@ re-check a fact against that build's sources before relying on it (next sections
 - On Linux, build and sign with **dayzmake >= 3.1.0**, never upstream armake2: that is built for Arma, leaves `*.c` out
   of the signature and lacks the DayZ-only functions dayzmake adds (`_shared/linux-proton.md`, section 1). dayzmake 3.x fixes a lot of security and file-handling issues of the earlier releases,
   so do not use an older build; download it only with its GPG-signed checksums verified
-  (`dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake").
+  (`dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake"). From an agent, on Linux and Windows,
+  talk to dayzmake through its MCP server, `dayzmake mcp` (`_shared/dayzmake-mcp.md`).
 
 Details and evidence: `dayz-mod-workflow/references/dayz-1-30-server-measured.md`.
 
@@ -62,7 +63,11 @@ In this order:
 1. **The Pack.** `enforce-script-reference` (`references/verified-api-catalog.md`, `references/dayz-1-30-enforce-script.md`)
    and the domain skill's `references/dayz-1-30-*.md`.
 2. **dayzmake's script-API index** (dayzmake >= 3.1.0; offline, exact for the installed build, read straight from
-   the game's PBOs and cached, nothing to extract or commit):
+   the game's PBOs and cached, nothing to extract or commit): the MCP tools `api_class` (with `inherited`),
+   `api_find`, `api_chain`, `api_subclasses`, `api_enum`, `api_defines`, `api_source` (file and line; `context` or
+   `lines` for numbered lines around it, `cat` for the file), `api_grep` (call sites: a regex over every script
+   body) and `api_config` (a config class: chain, resolved properties, subclasses), through `dayzmake mcp`
+   (`skills/_shared/dayzmake-mcp.md`). Without the server, the same on the CLI:
    ```sh
    dayzmake api class CarScript --inherited        # members incl. every base class
    dayzmake api find 'OnCEIterate'                 # member lines matching a regex
@@ -72,18 +77,19 @@ In this order:
    dayzmake api grep 'GetGame\(\)\.GetMission\(\)'  # call sites: a regex over every script body
    dayzmake api config CfgVehicles/Hatchback_02    # config class: chain, resolved properties, subclasses
    ```
-   Cite the `path:line` that `src` and `grep` print (`--lines <a-b>` prints a range, `--cat` the whole file).
-   `--dayz <dir>` picks an install, `--experimental` the experimental branch, `-m cf,expansion` (or a workshop id,
-   `all`) adds installed mods. For a tree to read or grep with your own tools, extract only scripts and configs:
-   `dayzmake extract --derapify --only '*.c' --only 'config.*' "<DayZ install>" /var/tmp/dz-src` (about 40 MB, a
-   few seconds; `pbo-map.tsv` maps each prefix to its PBO). `-f` replaces only an empty folder or an earlier extract
-   (one with a `pbo-map.tsv`), never an unrelated one. Both hold Bohemia's code, so they stay local and are never
-   committed to a mod or to this Pack.
+   Cite the `path:line` that `src` and `grep` print. Vanilla by default; `mods=cf`, `expansion`, a workshop id or
+   `all` (CLI `-m`) adds installed mods, `dayz`/`--dayz <dir>` picks an install, `experimental` the experimental
+   branch. For a tree to read or grep with your own tools, extract only scripts and configs: the `extract` tool
+   (`derapify`, `only: ["*.c", "config.*"]`) or `dayzmake extract --derapify --only '*.c' --only 'config.*'
+   "<DayZ install>" /var/tmp/dz-src` (about 40 MB, a few seconds; `pbo-map.tsv` maps each prefix to its PBO).
+   `force`/`-f` replaces only an empty folder or an earlier extract (one with a `pbo-map.tsv`), never an unrelated
+   one. Both hold Bohemia's code, so they stay local and are never committed to a mod or to this Pack.
 3. **Online**: `https://diff.yadz.app/api/classes/<Name>.json` (latest build, one class as JSON) and
    BohemiaInteractive/DayZ-Script-Diff for exact bodies. Remote mirrors can lag a release; the local index cannot.
 
-CF and Expansion classes: read their public sources at a pinned commit (Arkensor/DayZ-CommunityFramework,
-salutesh/DayZ-Expansion-Scripts), or query the installed Workshop copy with `dayzmake api ... -m cf` / `-m expansion`.
+CF and Expansion classes: the `api_*` tools with `mods=cf` or `mods=expansion` when they are installed from the
+Workshop, or read their public sources at a pinned commit (Arkensor/DayZ-CommunityFramework,
+salutesh/DayZ-Expansion-Scripts).
 
 ## Router
 

@@ -139,5 +139,5 @@ modes, the security model and how a clone generates the machine-local pieces
 the surface and the invariants are what the implementation is held to, and the
 engine facts above apply to any bridge of this shape.
 
-`.mcp.example.json` in the pack root is the client wiring `install-mcp.ps1
--Register` writes for it.
+The `dayz-mcp` entry of `.mcp.example.json` in the pack root is the client wiring `install-mcp.ps1
+-Register` writes for it (its other entry is dayzmake's server, `skills/_shared/dayzmake-mcp.md`).
