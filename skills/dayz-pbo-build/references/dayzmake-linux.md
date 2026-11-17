@@ -9,7 +9,7 @@ Source: bzed's own measurements, from `bzed/dayz-dev-plugin@6112ac5` `systems/mo
 `MP:<line>`), contributed to this Pack under its MIT licence by the author, who also wrote dayzmake. Platform:
 Debian, Proton Hotfix for the DayZ Tools comparisons. End to end, a PBO built, signed and verified this way loaded
 on a server with `-mod=@Mod` and `verifySignatures = 2`, and its scripts ran; The author re-tested the whole plugin on DayZ 1.30 stable (the author's report, 2026-11-13; build not recorded here). Not verified: the v3-against-v2 signature check on a real client (`MP:9-14`). The AutoTest mod
-(`dayz-test-ingame/assets/autotest-mod`) builds, signs and verifies with this flow and dayzmake 1.0.0 in
+(`dayz-test-ingame/assets/autotest-mod`) builds, signs and verifies with this flow (measured with dayzmake 1.0.0) in
 `skills/_shared/tests/test_linux_helpers.py`.
 
 ## Get the right dayzmake
@@ -17,17 +17,143 @@ on a server with `-mod=@Mod` and `verifySignatures = 2`, and its scripts ran; Th
 dayzmake is bzed's DayZ fork of armake2, renamed at `v1.0.0` (https://github.com/bzed/dayzmake). **Upstream armake2's
 V3 file hash omits `*.c` files** (dayzmake's includes them; a changed script also changes the signed PBO checksum), and it fails on
 DayZ configs (`MP:16-20`). The fork keeps moving away from upstream on purpose, with functions only DayZ
-needs or needs differently from Arma; what it adds so far is listed in `_shared/linux-proton.md`, section 1. Use dayzmake >= 2.0.0, pinned (or >= 1.0.0 if you only build/sign your own sources and never run `dayzmake unpack` on third-party PBOs — `v2.0.0`, commit `f31056ae`, adds entry-name containment in `src/pbo.rs` `safe_relative_path`/`crosses_symlink` and skips unsafe entries, whereas `v1.0.0` `src/pbo.rs:724,731-733` has none): install from https://github.com/bzed/dayzmake/releases/tag/v2.0.0, or
-`cargo install --git https://github.com/bzed/dayzmake --tag v2.0.0` (needs `libssl-dev`).
+needs or needs differently from Arma; what it adds so far is listed in `_shared/linux-proton.md`, section 1.
+
+**Use dayzmake >= `v3.1.0`, pinned to `v3.1.0`.** The 3.0 releases fix a lot of security and file-handling issues
+of the earlier ones, and 3.1.0 adds what the Pack's own extraction and index scripts did (below) and fixes a number of
+config-parsing bugs, so do not stay on an older build, not even for your own mod. The fixes, from the release notes
+in dayzmake's `README.md` (sections 3.0.0 to 3.1.0; issue numbers are `bzed/dayzmake` issues):
+
+- **Unpacking untrusted PBOs.** Entry-name containment since `v2.0.0` (commit `f31056ae`, `safe_relative_path` and
+  `crosses_symlink`); since `v3.0.0` `unpack` also skips names with any control character, `..`, a drive letter or an
+  empty component, strips a leading separator instead of writing to the root (#13, #21) and recognises every
+  Windows device name (#40, #45, #62).
+- **`verify` and `sign` recompute the PBO's SHA-1** instead of trusting the stored trailer, so a modified PBO no
+  longer verifies and a PBO with a wrong trailer is not signed ("checksum mismatch", #46).
+- **Output files are replaced atomically**: a failed command keeps the old target, permissions are kept, a symlink
+  target is written through, and a device or FIFO is written in place (#18, #25).
+- **`build`/`pack` never pack their own output** (also on case-insensitive file systems and with stdout redirected
+  into the source folder), skip FIFOs, devices, sockets and unsafe file names, and warn about colliding entry names
+  instead of packing them silently (#24, #27, #30, #32, #35, #37, #38).
+- **Hostile config input is bounded**: macro expansion caps against exponential ("billion laughs") definitions,
+  a nesting limit of 128, include cycles and nesting deeper than 32 are errors, at most 10,000 includes (#51, #53,
+  #54, #57-#61, #64).
+- **Names from untrusted files are escaped** in errors, warnings and `inspect` listings, so a PBO, config or model
+  cannot write terminal escape sequences (#15, #22, #26, #28).
+- **Keys**: `keygen` writes the private key owner-only (`0600`, #20); key and `.bisign` files with a wrong header,
+  size or modulus are rejected (#48-#52, #56); signing refuses keys below 384 bits (#55); RSA is pure Rust (blinded,
+  constant time), OpenSSL is gone, so building from source no longer needs `libssl-dev`.
+- **`--proton-binarize`** rejects a `$PBOPREFIX$` that would leave its sandbox (#17).
+- **`v3.0.1`** publishes GPG-signed checksums with every release (below); **`v3.0.2`** fixes PAA writing: a mipmap of
+  16 MiB or more is rejected instead of written with a wrong length, LZO-compressed mipmaps stay readable after a
+  re-write, and the offset tagg is written once (#75, #76, #78, #79).
+- **`v3.1.0`** (dayzmake-core 0.3.0):
+  - **New functions.** `extract [--derapify] [--only <glob>]... [-x <glob>]... <install | mod | pbo> <dir>` unpacks
+    every PBO of `dta/` and `addons/` into `<dir>/<prefix>/`, derapifies `.bin` to `.cpp` on request and writes
+    `pbo-map.tsv` (prefix, TAB, PBO path); it stages and swaps the tree, so a re-run drops stale files and a failure
+    keeps the old tree, and `-f` replaces only an empty folder or an earlier result (#87, #98). `api grep <regex>`
+    searches the lines of every `.c` file of the game and the `-m` mods straight from the PBOs (#88). `api config
+    CfgVehicles/<Class>` gives a config class's inheritance chain, its resolved properties tagged with their class,
+    its subclasses and the PBOs that define it, merged in `requiredAddons` order like the engine (#89, #97, #98).
+    `api src --context <n>` / `--lines <a-b>` prints numbered lines around a declaration (#90). `unpack` takes `-x`
+    and `--only` (#86). `inspect --json` prints the PBO header with the raw bytes of every name in hex (#91).
+    `inspect` lists ODOL v56 models: skeleton, LODs, textures, materials, proxies, selections, animations (#84, #96).
+  - **Fixes.** Config parsing matches CfgConvert where it did not: values in exponent notation are floats (#85), an
+    entry may end at the line end (#95), a `//` comment at the end of the file is stripped and an unterminated `/*`
+    warns (#103), f32 overflow is an infinity (#102), 64-bit and hex integers and enum values are written as
+    CfgConvert writes them (#82, #106, #107), errors inside a value carry file and line (#94), the depth limit fits a
+    1 MiB stack again (#108). PAA reads ARGB4444, ARGB1555 and AI88 (#83). Writing and signing keep the raw bytes of
+    windows-1252 names (#92). The release's own download check rejects expired and revoked keys (below).
+
+Behaviour changes to expect when coming from 1.x or 2.x: a missing absolute `#include` is no longer searched for below
+the working directory (pass `-i <folder>`, #66); `cat` of an entry that is not in the PBO exits 1; `verify` and `sign`
+fail with "checksum mismatch" on a PBO whose trailer does not match (repack it). From 3.0.x to 3.1.0: `x = 1.5`
+or `x = 1e-5` in a config is now a float, no longer a string with an `unquoted-string` warning, and `-0x10` is a
+float.
+
+### Download and verify the release binary
+
+Every release since `v3.0.1` carries `SHA256SUMS` and `SHA512SUMS` of its archives with detached GPG signatures
+(`*.asc`) and the public key `dayzmake-release-key.asc`. The key in the release proves nothing on its own (whoever
+could replace the archive could replace the key): what counts is its **fingerprint**, which must be
+
+```
+6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E   dayzmake release signing key (https://github.com/bzed/dayzmake), ed25519, expires 2029-11-15
+```
+
+the same in dayzmake's `README.md` (*Verifying downloads*), its `AGENTS.md` and at
+https://bzed.github.io/dayzmake/release-key.asc. Do not install a binary whose check fails; report it instead.
+
+```sh
+set -eu   # run it as one script: every failed step stops it before the install
+v=v3.1.0 f=dayzmake-v3.1.0-debian-trixie-x86_64.tar.gz
+FPR=662441B36A5785AD18FB8667DF753D99D064EB7E KEYID=DF753D99D064EB7E
+bad() { echo "BAD SIGNATURE: do not install" >&2; exit 1; }
+d=$(mktemp -d /var/tmp/dayzmake.XXXXXX)
+cd "$d"
+gh release download "$v" -R bzed/dayzmake -p "$f" -p 'SHA256SUMS*' -p dayzmake-release-key.asc
+#   without gh: for x in "$f" SHA256SUMS SHA256SUMS.asc dayzmake-release-key.asc; do
+#     curl -fsSLO "https://github.com/bzed/dayzmake/releases/download/$v/$x"; done
+GNUPGHOME=$(mktemp -d /var/tmp/dayzmake-gnupg.XXXXXX)   # throwaway keyring: trusts this key only
+export GNUPGHOME
+gpg --batch --quiet --import dayzmake-release-key.asc
+s=$(gpg --batch --status-fd 1 --verify SHA256SUMS.asc SHA256SUMS 2>/dev/null) || bad
+printf '%s\n' "$s" | grep -Eq '^\[GNUPG:\] (EXPSIG|EXPKEYSIG|REVKEYSIG|BADSIG|ERRSIG) ' && bad
+[ "$(printf '%s\n' "$s" | grep -c '^\[GNUPG:\] NEWSIG')" = 1 ] || bad
+printf '%s\n' "$s" | grep -q "^\[GNUPG:\] GOODSIG $KEYID " || bad
+printf '%s\n' "$s" | grep -q "^\[GNUPG:\] VALIDSIG $FPR " || bad
+echo "signature ok"
+grep -F "  $f" SHA256SUMS | sha256sum -c -                      # must print "<archive>: OK"
+tar xzf "$f"
+install -m 0755 "${f%.tar.gz}/dayzmake" ~/.local/bin/dayzmake
+```
+
+Each step stops the script when it fails (`set -eu`; the `mktemp` results are assigned on lines of their own, because
+`set -e` does not see a failure inside an `&&` list or behind `export`). The signature check follows dayzmake's
+`README.md` (*Verifying downloads*, since `v3.1.0`): the exit status of `gpg --verify` and its `Good signature` text are
+not enough, because gpg prints both, and exits 0, for a signature whose key has expired or been revoked since, and
+it then still prints a `VALIDSIG` line. So the check demands exactly one signature (`NEWSIG`), a `GOODSIG` of the
+release key (the key id is the last 16 hex digits of the fingerprint), a `VALIDSIG` that names the fingerprint,
+and no `EXPSIG`, `EXPKEYSIG`, `REVKEYSIG`, `BADSIG` or `ERRSIG` line, so a second, bad signature cannot hide behind
+a good one. Checking the one archive's line (instead of `sha256sum -c --ignore-missing`, which dayzmake's README
+uses) fails when the archive is not listed at all. Interactive `gpg --verify` warns that the key is not certified
+with a trusted signature; the warning is expected, the fingerprint is what counts. On macOS use
+`shasum -a 256 -c -`.
+
+Run 2026-11-17 on Debian (GnuPG, GNU coreutils), the snippet as printed against the `v3.1.0` release: `signature ok`,
+`OK`, `dayzmake --version` `v3.1.0`. Negative controls with throwaway keys, the check unchanged but for the
+fingerprint: a changed `SHA256SUMS`, a signature by another key, a good signature next to a second one by another
+key, an expired key (gpg `--faked-system-time`; plain `gpg --verify` exits 0 and prints `EXPKEYSIG` and `VALIDSIG`)
+and a revoked key (`REVKEYSIG` and `VALIDSIG`, exit 0) were all refused with `BAD SIGNATURE`; a failing `mktemp`
+stops the script.
+
+On Windows (`dayzmake-v3.1.0-windows-x86_64.zip`), dayzmake's `README.md` (*Verifying downloads*) gives the
+PowerShell route with [Gpg4win](https://www.gpg4win.org/) (not run here): the same status-line check over
+`gpg --status-fd 1 --verify SHA256SUMS.asc SHA256SUMS` with `Select-String` (one `NEWSIG`, `GOODSIG DF753D99D064EB7E`,
+`VALIDSIG` with the fingerprint above, none of `EXPSIG|EXPKEYSIG|REVKEYSIG|BADSIG|ERRSIG`; it must print `True`),
+then `(Get-FileHash -Algorithm SHA256 <zip>).Hash` compared with the zip's line in `SHA256SUMS`. Do not go by the
+`Good signature` text. What dayzmake is useful for on
+Windows next to AddonBuilder (not tested): `dayz-pbo-build`, "On Windows: dayzmake beside AddonBuilder".
+
+From source instead of a binary: `cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.1.0` (no
+system libraries needed since `v3.0.0`).
 
 ```sh
 dayzmake -h 2>&1 | grep -- --proton-binarize   # a hit = the fork; none = upstream armake2, do not use
-dayzmake --version                             # >= v2.0.0 (v1.x ok for building only); pre-rename builds print v0.3.0
+dayzmake --version                             # v3.1.0 or later; pre-rename builds print v0.3.0
 ```
 
 The version string does not tell builds apart. If in doubt, reinstall from the tag, or binarize one textured model
 both ways and `cmp` the results (`MP:45-49`). `dayz-mod-pack.sh` runs the same check: it uses `dayzmake` from `PATH`
-(or the binary named by `$DAYZMAKE`, or the older `$ARMAKE2`), falls back to a pre-rename `armake2`, refuses upstream and warns below 1.0.0.
+(or the binary named by `$DAYZMAKE`, or the older `$ARMAKE2`), falls back to a pre-rename `armake2`, refuses upstream and warns below 3.1.0.
+
+## From an agent: `dayzmake mcp`
+
+An agent talks to dayzmake through its MCP server: `pbo_build`, `pbo_pack`, `key_generate`, `pbo_sign`,
+`pbo_verify`, `pbo_inspect`, `pbo_cat`, `pbo_unpack`, `extract`, `config_*`, `paa_to_image`/`image_to_paa`, `binarize` and the
+`api_*` look-ups (with `api_grep` and `api_config` since `v3.1.0`) take the arguments of the commands below (`proton_binarize` for `--proton-binarize`). Registering it,
+the tool list, absolute paths and the version caveat: `_shared/dayzmake-mcp.md`. `dayz-mod-pack.sh` stays on the
+CLI; it handles the project around the PBOs.
 
 ## Quick start (`dayz-mod-pack.sh`)
 
@@ -46,7 +172,7 @@ works on another project (`MP:55-90`). The private key lives in `secrets/`, outs
 uploaded: `build` aborts if one turns up in the content folder, `keygen` refuses unless `secrets/` is git-ignored (when the
 project is inside a git work tree) and never overwrites a key, and `check` fails if a `.biprivatekey` is tracked or anywhere in history. A key that reached
 git history or the Workshop is leaked: rotate it under a new name (`MyMod_V2`) so old and new coexist in `keys/`.
-Do not commit `build/` (`MP:92-102`). [EXACT][CLAIM-DAYZMAKE-VERIFY-STORED-CHECKSUM] `dayzmake verify` recomputes the three hashes and compares them with the `.bisign`: `Hash 1` is the SHA-1 checksum stored in the PBO's trailer, `Hash 2` hashes it with the entry names and the prefix, and `Hash 3` hashes the v3 file hash (the content of the entries ending in `sqf`, `c`, `inc`, `bikb`, `ext`, `fsm`, `sqm`, `hpp`, `cfg`, `sqs` or `h`) with the names and the prefix. A PBO rebuilt with any change to its headers or entry bytes writes a new trailer, so it fails against an older `.bisign`. The trailer is read, not recomputed: a same-size byte change inside an entry outside the v3 file hash, such as a `.paa`, made without rewriting the trailer keeps all three hashes and still verifies (the name hash covers the non-empty entries, and a same-size change keeps every entry's name and size); the same change in a `.c` entry fails on `Hash 3` (dayzmake v1.0.0 `src/pbo.rs:311-322,548-563`, `src/sign.rs:109-128,157-177,197-235,475-521,749-773`).
+Do not commit `build/` (`MP:92-102`). [EXACT][CLAIM-DAYZMAKE-VERIFY-RECOMPUTES-CHECKSUM] `dayzmake verify` recomputes the three hashes and compares them with the `.bisign`: `Hash 1` is the PBO's SHA-1 checksum, `Hash 2` hashes it with the entry names and the prefix, and `Hash 3` hashes the v3 file hash (the content of the entries ending in `sqf`, `c`, `inc`, `bikb`, `ext`, `fsm`, `sqm`, `hpp`, `cfg`, `sqs` or `h`) with the names and the prefix. Since `v3.0.0` the checksum is computed from the PBO's bytes while reading, and a stored trailer that differs from it is an error ("PBO checksum mismatch", bzed/dayzmake#46), so any change to the bytes of a PBO fails `dayzmake verify`, also a same-size change inside an entry outside the v3 file hash such as a `.paa`, and `sign` refuses such a PBO until it is repacked (dayzmake v3.0.2 `crates/dayzmake-core/src/pbo.rs:747-765,842,856`, `crates/dayzmake-core/src/sign.rs:257-322,325-333,698-743`, `src/commands/sign.rs:138-160`). dayzmake 1.x and 2.x read the trailer without recomputing it: there, such a same-size change made without rewriting the trailer still verified (dayzmake v1.0.0 `src/pbo.rs:311-322`, `src/sign.rs:197-235,475-521`). BI's `DSCheckSignatures` trusts the stored trailer (dayzmake `README.md`, 3.0.0, #46; not re-measured here), so a check that must notice such a change uses `dayzmake verify` >= `v3.0.0`.
 
 ## What `build` and `pack` do
 
@@ -116,20 +242,21 @@ a PBO that `inspect`/`unpack` refused with `failed to fill whole buffer`; older 
 - For a PBO with `config.bin`, a `.c` script and an rvmat, the fork's v3 `.bisign` was **byte-identical** to
   `DSSignFile.exe`'s, and `DSCheckSignatures.exe -deep` reported it OK (2026-10-31, under Proton). For a negative
   control see `dayz-test-ingame`, "A signature negative control that cannot fail".
-- Sign after the final build. In v3 signatures, the v3 file hash (`Hash 3`) selects entries by extension (`sqf`, `c`, `inc`, `bikb`, `ext`, `fsm`, `sqm`, `hpp`, `cfg`, `sqs`, `h` in dayzmake v1.0.0 `src/sign.rs:157-177`) and hashes each selected entry's whole stored content, omitting other extensions such as `.paa` or `.p3d`, while `Hash 1` signs the PBO's SHA-1 checksum over headers and all entry bytes (`src/pbo.rs:311-314,548-563`) [EXACT][CLAIM-DAYZMAKE-V3-HASH-VERIFY]. `dayzmake verify` (`src/sign.rs:202-234,475-521`) checks `Hash 1`, `Hash 2` and `Hash 3`, so a changed header timestamp or modified `.paa` with a recomputed PBO trailer and the old `.bisign` is rejected by `dayzmake verify`; the Pack's historical negative controls where uncovered-entry edits still verified were run with Bohemia's `DSCheckSignatures` (see `dayz-test-ingame`, "A signature negative control that cannot fail", `CLAIM-SIGN-NEGATIVE-CONTROL`). Sign every PBO of a mod with one key, so one `.bikey` covers all.
+- Sign after the final build. In v3 signatures, the v3 file hash (`Hash 3`) selects entries by extension (`sqf`, `c`, `inc`, `bikb`, `ext`, `fsm`, `sqm`, `hpp`, `cfg`, `sqs`, `h` in dayzmake v1.0.0 `src/sign.rs:157-177`, unchanged in v3.0.2 `crates/dayzmake-core/src/sign.rs:257-322`) and hashes each selected entry's whole stored content, omitting other extensions such as `.paa` or `.p3d`, while `Hash 1` signs the PBO's SHA-1 checksum over headers and all entry bytes (`src/pbo.rs:311-314,548-563`) [EXACT][CLAIM-DAYZMAKE-V3-HASH-VERIFY]. `dayzmake verify` (`src/sign.rs:202-234,475-521`) checks `Hash 1`, `Hash 2` and `Hash 3`, so a changed header timestamp or modified `.paa` with a recomputed PBO trailer and the old `.bisign` is rejected by `dayzmake verify`; the Pack's historical negative controls where uncovered-entry edits still verified were run with Bohemia's `DSCheckSignatures` (see `dayz-test-ingame`, "A signature negative control that cannot fail", `CLAIM-SIGN-NEGATIVE-CONTROL`). Sign every PBO of a mod with one key, so one `.bikey` covers all.
 
 ## Other commands
 
 ```
 dayzmake rapify | derapify | preprocess [src [dst]]   config.cpp <-> config.bin; stdin/stdout without paths
 dayzmake build | pack [-x glob] [-e k=v] [-k key] <dir> [pbo]
-dayzmake inspect <pbo | model.p3d>   PBO: header extensions + files; MLOD: LODs, textures, materials, selections
-dayzmake unpack <pbo> <dir>          header lands in $PBOPREFIX$; no -x; require >= v2.0.0 for third-party PBOs
+dayzmake inspect [--json] <pbo | model.p3d>   PBO: header + files (--json: raw name bytes); MLOD/ODOL v56: LODs, textures, ...
+dayzmake unpack [-x glob] [--only glob] <pbo> <dir>   header lands in $PBOPREFIX$; use >= v3.1.0 for third-party PBOs
+dayzmake extract [--derapify] [--only glob] <install | mod | pbo> <dir>   every PBO by prefix + pbo-map.tsv
 dayzmake cat <pbo> <file> [dst]      one file; inner paths use \  ('scripts\5_Mission\x.c')
 dayzmake img2paa | paa2img | binarize
 ```
 
-Unpacking any PBO you did not build yourself requires dayzmake >= `v2.0.0` (tag `v2.0.0`, commit `f31056ae` in `bzed/dayzmake`; `src/pbo.rs` `safe_relative_path` and `crosses_symlink` validate relative paths and skip unsafe entries). In `v1.0.0` (`src/pbo.rs:724,731-733`) `unpack` joins entry names without containment (`..\x` escapes, an absolute name replaces the base, `--force` overwrites); on < `v2.0.0` inspect all entry names first into a fresh empty directory (`dayz-pbo-reverse-engineering`, "On Linux").
+Unpacking any PBO you did not build yourself: use dayzmake >= `v3.1.0` (entry-name containment since `v2.0.0`, commit `f31056ae`; `safe_relative_path` and `crosses_symlink` in v3.0.2 `crates/dayzmake-core/src/pbo.rs:1420,1442`; the further unpack fixes of 3.0.0 are listed under "Get the right dayzmake"). In `v1.0.0` (`src/pbo.rs:724,731-733`) `unpack` joins entry names without containment (`..\x` escapes, an absolute name replaces the base, `--force` overwrites); do not unpack a third-party PBO with a build older than `v3.1.0`, upgrade it (`dayz-pbo-reverse-engineering`, "On Linux").
 
 Debug recipes (`MP:269-300`): `dayzmake preprocess src/MyMod/config.cpp | less` shows what the parser sees;
 `dayzmake cat Vanilla.pbo config.bin | dayzmake derapify` shows what an official PBO set; `dayzmake inspect x.pbo` must

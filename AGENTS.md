@@ -69,6 +69,8 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | A regenerated navmesh "changed everywhere" | `python tools/dayz-navmesh-compare/compare_navmesh.py --old-nm <old.nm> --new-nm <new.nm> --out <report.json>` | Which tiles changed structure rather than bytes, how far from the terrain edit and under which routes |
 | A change looks right in Blender but wrong in game | the in-game bridge — `knowledge/dayz-mcp-bridge-protocol.md` | The engine's opinion, which is the only one that counts |
 | You are about to parse or emit a `.p3d` by hand | `py3d` | Do not write a bespoke codec; this one fails closed and verifies its own writes |
+| Unsure whether a class, method or enum exists in the installed build | dayzmake's MCP tools `api_class` / `api_find` / `api_source` (`skills/_shared/dayzmake-mcp.md`) | The declaration and its file and line, from the installed `scripts.pbo` and, with `mods`, the installed mods |
+| A PBO loads wrong, or a signature is rejected | dayzmake's `pbo_inspect` / `pbo_cat` / `pbo_verify` | The stored prefix and entries, the shipped `config.bin`, and whether the signature matches the PBO's recomputed checksum |
 
 ### By task — what is in play before you start
 
@@ -82,6 +84,7 @@ and limits: [`TOOLS.md`](TOOLS.md).
 | Need `.layout` text / color / image | `dayz-ui-lab` | Format parser; see the two-parser contract in [`TOOLS.md`](TOOLS.md) |
 | Changing a linter rule, detector or parser | `vanilla_control.py` | Gate for linter authors, not a mod-cycle step |
 | Preview an MLOD `.p3d` / PAA / RVMAT | `dayz-3d-viewer` | HTML loads three.js 0.160.0 from a CDN; SWIZ, proxies and ViewPilot 1100 are documented gaps |
+| Building, signing, inspecting or converting with dayzmake, or looking up the script API | `dayzmake mcp`, dayzmake's MCP server | The one way an agent talks to dayzmake: `skills/_shared/dayzmake-mcp.md` (register, tools ↔ CLI, absolute paths); the CLI is the fallback. Not the in-game bridge |
 | Verifying anything in-game | the MCP bridge | Wiring example in `.mcp.example.json`, deliberately not auto-started |
 | Rebuilding or patching a PBO | `dayz-pbo-diff` | Payload SHA-256 per entry; between two builds a different `.p3d` entry proves nothing by itself |
 | Regenerating a terrain's navmesh | `dayz-navmesh-compare` | Structure, not bytes; verified only for one 12 288 m world in 12.5, 25 or 50 m tiles |

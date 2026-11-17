@@ -1,9 +1,19 @@
 {
   "_readme": [
-    "Client wiring for DayZ-MCP (https://github.com/willy92wins/dayz-mcp), the bridge described in",
+    "Client wiring for the two MCP servers the Pack uses. Copy to .mcp.json in your own project",
+    "(or register them with your client) and keep only what you installed.",
+    "",
+    "dayzmake: dayzmake's own MCP server (https://github.com/bzed/dayzmake, >= 3.1.0): script-API,",
+    "script-body and config look-ups, source extraction and the PBO, config, key, PAA and binarize",
+    "commands. Install and verify the binary as in skills/dayz-pbo-build/references/dayzmake-linux.md",
+    "(it lands in ~/.local/bin/dayzmake), check '<path> --version' prints v3.1.0 or later, and put that",
+    "absolute path in 'command' (JSON does not expand ~ or $HOME): the bare name 'dayzmake' would run",
+    "whatever build the client's PATH finds first. Guide: skills/_shared/dayzmake-mcp.md.",
+    "",
+    "dayz-mcp: DayZ-MCP (https://github.com/willy92wins/dayz-mcp), the in-game bridge described in",
     "knowledge/dayz-mcp-bridge-protocol.md. Clone that repo and run tools/install-mcp.ps1",
-    "-Register; it creates tools/.venv-mcp and registers this exact shape. Copy to",
-    ".mcp.json in your own project and set 'command' to that venv's python.exe.",
+    "-Register; it creates tools/.venv-mcp and registers this exact shape. Set 'command' to that",
+    "venv's python.exe.",
     "",
     "Deliberately NOT named .mcp.json: agents auto-start servers declared there, and a",
     "failed launch on every session is worse than no config.",
@@ -12,6 +22,10 @@
     "usable resolution; at the 25k default a frame lands around 580 px wide."
   ],
   "mcpServers": {
+    "dayzmake": {
+      "command": "/home/<you>/.local/bin/dayzmake",
+      "args": ["mcp"]
+    },
     "dayz-mcp": {
       "command": "C:/path/to/dayz-mcp/tools/.venv-mcp/Scripts/python.exe",
       "args": ["-m", "dayz_mcp", "--client"],

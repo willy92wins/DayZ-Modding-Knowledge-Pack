@@ -467,6 +467,11 @@ PNG→PAA encoding, PBO packing. Those live in tooling that is not the
 author's to redistribute; `README.md` §4 lists what to install and where
 it comes from. PAA *decoding* is now in `tools/dayz-3d-viewer`.
 
+PBO packing, signing, PNG→PAA, config rapification and the script-API index
+are in [dayzmake](https://github.com/bzed/dayzmake) (>= 3.1.0, GPL, installed
+separately and not shipped). An agent talks to it through its MCP server,
+`dayzmake mcp`: [`skills/_shared/dayzmake-mcp.md`](skills/_shared/dayzmake-mcp.md).
+
 The screen-rectangle predictor (`ui_rects.py`) is also absent on purpose:
 it belongs to the unpublished DayZ_Tooling workbench, not this pack. See
 [Two `.layout` parsers](#two-layout-parsers).

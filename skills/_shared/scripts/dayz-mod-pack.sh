@@ -124,18 +124,26 @@ scan_static() {
 # Use the dayzmake found in PATH first (or $DAYZMAKE). bzed's fork (https://github.com/bzed/dayzmake) is detected by its --proton-binarize option:
 #   dayzmake -h 2>&1 | grep -- --proton-binarize
 need_dayzmake() {
-    command -v "$DAYZMAKE" >/dev/null 2>&1 || die "dayzmake not found in PATH. Install dayzmake >= 1.0.0: the release binary from https://github.com/bzed/dayzmake/releases/tag/v1.0.0, or cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0; or set DAYZMAKE=/path/to/dayzmake"
+    command -v "$DAYZMAKE" >/dev/null 2>&1 || die "dayzmake not found in PATH. Install dayzmake >= 3.1.0 (it fixes a lot of security and file-handling issues): the release binary from https://github.com/bzed/dayzmake/releases/tag/v3.1.0, verified against its GPG-signed SHA256SUMS (dayz-pbo-build/references/dayzmake-linux.md), or cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.1.0; or set DAYZMAKE=/path/to/dayzmake"
     local help; help=$("$DAYZMAKE" --help 2>&1 || true)
     # Upstream armake2 leaves *.c files out of the PBO signature hash, so signed script mods fail the server's check.
-    case "$help" in *--proton-binarize*) ;; *) die "$(command -v "$DAYZMAKE") is not bzed's fork (no --proton-binarize in -h); upstream armake2 signs wrongly. Install dayzmake >= 1.0.0: cargo install --git https://github.com/bzed/dayzmake --tag v1.0.0" ;; esac
-    # bzed's fork built before the rename (binary called armake2, version v0.3.0) still works, but may carry bugs fixed since.
+    case "$help" in *--proton-binarize*) ;; *) die "$(command -v "$DAYZMAKE") is not bzed's fork (no --proton-binarize in -h); upstream armake2 signs wrongly. Install dayzmake >= 3.1.0 (it fixes a lot of security and file-handling issues): the release binary from https://github.com/bzed/dayzmake/releases/tag/v3.1.0, verified against its GPG-signed SHA256SUMS (dayz-pbo-build/references/dayzmake-linux.md), or cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.1.0" ;; esac
+    # Builds before 3.1.0 (and bzed's fork from before the rename: binary called armake2, version v0.3.0) still build,
+    # but carry security and file-handling bugs fixed in 3.1.0.
     local ver
     ver=$("$DAYZMAKE" --version 2>/dev/null || true)
     ver=${ver%%$'\n'*}
-    case "$ver" in
-        v1.*|v[2-9].*|v[1-9][0-9].*|*" v1."* ) ;;
-        *) echo "warning: $DAYZMAKE reports '$ver'; dayzmake >= 1.0.0 is recommended (the pre-rename armake2 binary may have bugs)" >&2 ;;
-    esac
+    if ! dayzmake_version_ok "$ver"; then
+        echo "warning: $DAYZMAKE reports '$ver'; use dayzmake >= 3.1.0, which fixes a lot of security and file-handling issues of older builds" >&2
+    fi
+}
+
+# dayzmake_version_ok <--version output>: true for v3.1.0 or later.
+dayzmake_version_ok() {
+    local v ma mi
+    v=$(printf '%s\n' "$1" | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+') || return 1
+    IFS=. read -r ma mi _ <<< "$v"
+    [ "$ma" -gt 3 ] || { [ "$ma" -eq 3 ] && [ "$mi" -ge 1 ]; }
 }
 
 cmd_init() {
