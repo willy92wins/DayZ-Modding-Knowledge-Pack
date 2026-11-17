@@ -19,7 +19,7 @@ executable statements added later that carry no marker are labelled "not claimed
 
 | Windows step in a skill | On Linux | Status |
 |---|---|---|
-| Pack / sign a PBO (AddonBuilder, DSSignFile) | `dayzmake build` / `keygen` / `sign` (dayzmake >= 3.0.2, https://github.com/bzed/dayzmake; install and verify below) | native; no external wrapper required |
+| Pack / sign a PBO (AddonBuilder, DSSignFile) | `dayzmake build` / `keygen` / `sign` (dayzmake >= 3.1.0, https://github.com/bzed/dayzmake; install and verify below) | native; no external wrapper required |
 | Binarize models (`.p3d` MLOD → ODOL) | `dayzmake build --proton-binarize` (invokes BI binarize.exe under Proton) | recorded textured-cube comparison at fork commit `7dcb3cf`, which `v1.0.0` contains (section 4) |
 | Publish to the Workshop (Publisher) | `workshop` uploader (https://github.com/nozwock/steam-workshop-uploader) | native route; `scripts/dayz-mod-pack.sh publish-hint` prints the commands (`dayz-pbo-build/references/dayzmake-linux.md`) |
 | Cross-check dayzmake against BI's own tools | `dayz-proton.sh tool AddonBuilder P:\<Mod> <out> -prefix=<Mod>`; `tool DSCreateKey` / `DSSignFile` / `DSCheckSignatures`; `dayz-proton.sh binarize <P-root> <addon> <out> [files]` | works (section 4); for comparisons, not the build |
@@ -43,15 +43,15 @@ is "what do BI's own tools produce", or for the GUI editors that have no native 
 Builder, TexView, Workbench, Terrain Builder) and for DayZDiag.
 
 **dayzmake** is bzed's DayZ fork of armake2, renamed at `v1.0.0` (https://github.com/bzed/dayzmake;
-the old URL https://github.com/bzed/armake2 redirects there). Use `v3.0.2` or later, pinned to `v3.0.2`:
-dayzmake v3.0.2 fixes a lot of security and file-handling issues of the earlier releases (unpacking untrusted PBOs,
+the old URL https://github.com/bzed/armake2 redirects there). Use `v3.1.0` or later, pinned to `v3.1.0`:
+dayzmake 3.x fixes a lot of security and file-handling issues of the earlier releases (unpacking untrusted PBOs,
 `verify` recomputing the PBO checksum, atomic output files, `build` never packing its own output or FIFOs, bounded
 preprocessing of hostile configs, escaped names, stricter key checks; the list is in
 `dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake"), so do not stay on 1.x or 2.x, not even for
-building your own mod. Download the release binary from https://github.com/bzed/dayzmake/releases/tag/v3.0.2 and
+building your own mod. Download the release binary from https://github.com/bzed/dayzmake/releases/tag/v3.1.0 and
 verify it before use: the release's `SHA256SUMS` is GPG-signed by the key with fingerprint
 `6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E` (the commands are in the same section of that file), or
-`cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.0.2` (no system libraries needed since
+`cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.1.0` (no system libraries needed since
 `v3.0.0`). Note that dayz-mcp's managed `build=true` path merged in PR #411 pins the older `v1.0.0` release binary
 for building. The fork
 is required, not a preference, and it is moving away from upstream on purpose: it implements more and
@@ -63,7 +63,7 @@ building PBOs, `img2paa` / `paa2img`, a `binarize` command, texture and material
 `missing-material`) and opt-in `build --proton-binarize` (models through BI's binarize under Proton).
 [EXACT][CLAIM-DAYZMAKE-INSPECT-ODOL-SCOPE] For models, `dayzmake inspect` shows format and version for MLOD and ODOL, and LODs, textures, materials, properties and selections only for an editable MLOD (dayzmake v1.0.0 `README.md:130`).
 Expect new DayZ-only behaviour in later releases; read the release notes before upgrading a pinned build. An installed binary is the fork when `dayzmake -h`
-lists `--proton-binarize`; `dayzmake --version` prints its version (`v3.0.2`), while builds from before the rename
+lists `--proton-binarize`; `dayzmake --version` prints its version (`v3.1.0`), while builds from before the rename
 are called `armake2` and print `v0.3.0` whatever their commit.
 
 ## 2. The cross-app quirk: why DayZ Tools under Proton needs setup
@@ -137,9 +137,11 @@ parent of the source folder; `dayz-pbo-build` documents this); from `P:\MyMod` t
 From a `Z:` path it is a Linux directory, possibly your home, and binarize then burns CPU for minutes
 (the author recorded scans of `~/.cargo` and a network mount).
 
-Vanilla data under `P:\dz` (what WorkDrive's "extract game data" does on Windows): unpack the game's
-PBOs with `dayzmake unpack` into `P/` at their prefix paths using dayzmake >= `v3.0.2` (entry-name containment since `v2.0.0`, commit `f31056ae`; `v1.0.0` `src/pbo.rs:724,731-733` has none; never unpack a PBO you did not build with an older build). For scripts and configs
-only, `scripts/extract-dayz-sources.sh <install> <dir>` (configs derapified; about 90 s). Workbench without the
+Vanilla data under `P:\dz` (what WorkDrive's "extract game data" does on Windows): `dayzmake extract --derapify <install> P/`
+writes every PBO of `dta/` and `addons/` at its prefix path (measured 2026-11-17 with v3.1.0 on DayZ stable: about
+21 GB, 20 s). It writes only into an empty folder or over its own earlier result, so run it on a fresh `P/`
+before your mods go there; single PBOs go through `dayzmake unpack --use-prefix`, with dayzmake >= `v3.1.0` (entry-name containment since `v2.0.0`, commit `f31056ae`; `v1.0.0` `src/pbo.rs:724,731-733` has none; never unpack a PBO you did not build with an older build). For scripts and configs
+only, `dayzmake extract --derapify --only '*.c' --only 'config.*' <install> <dir>` (dayzmake >= 3.1.0; configs derapified, `pbo-map.tsv` maps prefixes to PBOs; a few seconds). Workbench without the
 extracted data compiled its bundled scripts but logged `No entry 'config.bin/CfgVehicles/…'`
 for vanilla classes. Whether an extracted `P:\dz` removes those errors is **not verified**,
 and neither is a model that references vanilla textures.

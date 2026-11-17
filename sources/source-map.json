@@ -2071,10 +2071,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): Changed entry for the 3.1.0 minimum and the dayzmake api/extract lookups, Removed entry for extract-dayz-sources.sh, build-api-index.py and dayz-api.py, Added/Changed entries for the download-and-verify procedure. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "e9aa72dacfb7ed658c56b67d66216bc186cbf0a8cb75a3136ef4c7d979a1d327",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a71a94455aa070d778d8f579e8820e15f17fc687f48713fdb569c62148fe40f3",
+      "output_hash": "e9aa72dacfb7ed658c56b67d66216bc186cbf0a8cb75a3136ef4c7d979a1d327",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2497,10 +2507,20 @@
           "source_path": "THIRD_PARTY_NOTICES.md",
           "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the plugin helper scripts extract-dayz-sources.sh, build-api-index.py and dayz-api.py are removed (replaced by dayzmake extract and dayzmake api), so the notice lists six scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "baf6b4bccb4ce61022033c2bae94b891a6bf237ef2c1644bb5ddf67ec0e8ac6f",
+          "source_id": "pack-r21-authored",
+          "source_path": "THIRD_PARTY_NOTICES.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5a1583da93cd0e91b9afe295b0803142453388977a0591327a0426e6622a481e",
+      "output_hash": "baf6b4bccb4ce61022033c2bae94b891a6bf237ef2c1644bb5ddf67ec0e8ac6f",
       "output_path": "THIRD_PARTY_NOTICES.md",
       "routing_artifact_id": "root/third-party-notices",
       "verification_level": "cross_checked"
@@ -5726,10 +5746,20 @@
           "source_path": "skills/ai-3d-to-dayz/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "d29ba4282c9586811544a67fccdc410cd89f21c4668b0cb147e3c804fc327bdd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/ai-3d-to-dayz/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "a41116528e3c9b9764277bcf4e0c44df7143e19b14748b0176f40753452c305a",
+      "output_hash": "d29ba4282c9586811544a67fccdc410cd89f21c4668b0cb147e3c804fc327bdd",
       "output_path": "skills/ai-3d-to-dayz/SKILL.md",
       "routing_artifact_id": "skill/ai-3d-to-dayz",
       "verification_level": "cross_checked"
@@ -6892,10 +6922,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "ceb69edbc7c6d79f2335ec0cc60704ebfe40b398ceddc250ec5c71a219cb7785",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d0d4b55d66508b7f7b998538e72224b52e6c4350cb0f7ff3554c2bba4331a67f",
+      "output_hash": "ceb69edbc7c6d79f2335ec0cc60704ebfe40b398ceddc250ec5c71a219cb7785",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -8026,10 +8066,20 @@
           "source_path": "skills/dayz-aviation/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "e324a2a99fddc69f49f3a78f9c51135a082e2a32c780d6f7d7f9b5affadb70d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-aviation/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "089f0eba04f60374280f94b46ca907ff5d9308a1ab2f95271e7ac48972d64d0b",
+      "output_hash": "e324a2a99fddc69f49f3a78f9c51135a082e2a32c780d6f7d7f9b5affadb70d6",
       "output_path": "skills/dayz-aviation/SKILL.md",
       "routing_artifact_id": "skill/dayz-aviation",
       "verification_level": "cross_checked"
@@ -8852,10 +8902,20 @@
           "source_path": "skills/dayz-characters/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "8bc1f587ba6736c7c45fb1c86949301a61c59c7555010edec0d93a2264be2325",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-characters/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "74346222246ee6e2173b62592d68c1c0c45e74fed1c3cd634542ece07abacf0b",
+      "output_hash": "8bc1f587ba6736c7c45fb1c86949301a61c59c7555010edec0d93a2264be2325",
       "output_path": "skills/dayz-characters/SKILL.md",
       "routing_artifact_id": "skill/dayz-characters",
       "verification_level": "cross_checked"
@@ -9240,10 +9300,20 @@
           "source_path": "skills/dayz-clothing/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "1648c58559641e794404e4c921f837129a10eb8ba0d2a32fe42be76df35e0e00",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-clothing/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "20c1db8fa0c97cb5cdbf38e746b1e4b52aaa5c14bb11ff0569170d16bf95f646",
+      "output_hash": "1648c58559641e794404e4c921f837129a10eb8ba0d2a32fe42be76df35e0e00",
       "output_path": "skills/dayz-clothing/SKILL.md",
       "routing_artifact_id": "skill/dayz-clothing",
       "verification_level": "runtime_verified"
@@ -9656,10 +9726,20 @@
           "source_path": "skills/dayz-doors/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "5c9836eda77789b299d0d80fec4b20d43fc5f914ddb8eb14c1488564c4ec8fdc",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-doors/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "53df4800f08a65866ad79a77bd7de3a91906092f2c1a044ee091f4da0e82d9b1",
+      "output_hash": "5c9836eda77789b299d0d80fec4b20d43fc5f914ddb8eb14c1488564c4ec8fdc",
       "output_path": "skills/dayz-doors/SKILL.md",
       "routing_artifact_id": "skill/dayz-doors",
       "verification_level": "cross_checked"
@@ -10402,10 +10482,20 @@
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "5bb2481763f9b96170588426c6cdb58d3b21bc77c1d29733fc0c400d8379dba3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mcp-verify/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "4e97294b4e64751804b00ef46c008bc43e7a6ff8bd1aace89dd72e792cdbc460",
+      "output_hash": "5bb2481763f9b96170588426c6cdb58d3b21bc77c1d29733fc0c400d8379dba3",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -10870,10 +10960,20 @@
           "source_path": "skills/dayz-mod-workflow/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "0c9fa1cb2770b8b74c90f9a5b79447f3f3c0ede312c3362199a5deeaaf9b5542",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-workflow/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6f2053b709f45c15dc7689798687ade2b018ccf6e73afde80b5d5a2d549fa837",
+      "output_hash": "0c9fa1cb2770b8b74c90f9a5b79447f3f3c0ede312c3362199a5deeaaf9b5542",
       "output_path": "skills/dayz-mod-workflow/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-workflow",
       "verification_level": "cross_checked"
@@ -11278,10 +11378,20 @@
           "source_path": "skills/dayz-model-pipeline/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "5eed2fd7c6c1b1f7e379b8f5fca76eb620fd11454e2c6d777a25b631bced4f03",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-model-pipeline/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "cca136bdbb69dbc4fa63bb9264d31712532f5b09f12552b30c1737c038dc3d83",
+      "output_hash": "5eed2fd7c6c1b1f7e379b8f5fca76eb620fd11454e2c6d777a25b631bced4f03",
       "output_path": "skills/dayz-model-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-model-pipeline",
       "verification_level": "cross_checked"
@@ -12246,10 +12356,20 @@
           "source_path": "skills/dayz-p3d-audit/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "cd688ffb70488ef0d540a66f9fa1754d7e0386485ed47b902ef67b56e223ad49",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-audit/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f949acc4121297725190df737b28fc4a4f7fca86f89e31768725894a5e8e2a62",
+      "output_hash": "cd688ffb70488ef0d540a66f9fa1754d7e0386485ed47b902ef67b56e223ad49",
       "output_path": "skills/dayz-p3d-audit/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-audit",
       "verification_level": "cross_checked"
@@ -12728,10 +12848,20 @@
           "source_path": "skills/dayz-p3d-inspector/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "ad08f79deb661823411a8256f22bf38492d7de1b77dd02827df73d7a9dc7aa66",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-p3d-inspector/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1c12b88a8141ac19a0c962c1273f5f3f9bb78b05beab51ed38ba542ae3edac36",
+      "output_hash": "ad08f79deb661823411a8256f22bf38492d7de1b77dd02827df73d7a9dc7aa66",
       "output_path": "skills/dayz-p3d-inspector/SKILL.md",
       "routing_artifact_id": "skill/dayz-p3d-inspector",
       "verification_level": "cross_checked"
@@ -13376,10 +13506,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "9b10319260e34b8f615a32942267bdc083f69597fad7d0c686e7175084c095f9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "bb3936617ee801667e483c0e93344680b39e7bc9097f79210e9d863c7ea2d73e",
+      "output_hash": "9b10319260e34b8f615a32942267bdc083f69597fad7d0c686e7175084c095f9",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -13616,10 +13756,20 @@
           "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "84540f3d0461299f64b68e1244dafacbd47bd919fd34b8defbdd99f23bc3d328",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3306211f8a5ff5e94da8a10f189ef1856b4e12dd632d759135b37f8ea7086314",
+      "output_hash": "84540f3d0461299f64b68e1244dafacbd47bd919fd34b8defbdd99f23bc3d328",
       "output_path": "skills/dayz-pbo-reverse-engineering/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-reverse-engineering",
       "verification_level": "cross_checked"
@@ -14340,10 +14490,20 @@
           "source_path": "skills/dayz-proxy-align/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "73b9d10e019a8f0d1b6b3049b0673dae32517e083a3353585ea70f4df5600ae5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-proxy-align/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "423b081cbd577c81ed2485c854fe94e3b416041b07e2aec2a5d6931060be821d",
+      "output_hash": "73b9d10e019a8f0d1b6b3049b0673dae32517e083a3353585ea70f4df5600ae5",
       "output_path": "skills/dayz-proxy-align/SKILL.md",
       "routing_artifact_id": "skill/dayz-proxy-align",
       "verification_level": "cross_checked"
@@ -15086,10 +15246,20 @@
           "source_path": "skills/dayz-sound-system/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "fd5f44640b20b9b577a5ebdcd116daf03ac75d18a619712498374db132edf42a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-sound-system/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d62172e49b6c6077b0e9492a0464181efe724dc7529bb006745ef9600a7b5a1e",
+      "output_hash": "fd5f44640b20b9b577a5ebdcd116daf03ac75d18a619712498374db132edf42a",
       "output_path": "skills/dayz-sound-system/SKILL.md",
       "routing_artifact_id": "skill/dayz-sound-system",
       "verification_level": "cross_checked"
@@ -16366,10 +16536,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "3671a489de8115dd411612cf5dda6956d0d066b4e4834703a34dd2478a54d726",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f744af561ae76e0bb4065dd55f0f534294720bf8df109f5a99ce35b287f39d56",
+      "output_hash": "3671a489de8115dd411612cf5dda6956d0d066b4e4834703a34dd2478a54d726",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -17578,10 +17758,20 @@
           "source_path": "skills/dayz-vehicles/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "606d5973b95f2827bdee8680b34f60413393d0f1c491f34112eec0f71e93fdfd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5621e44620c96719463e69422a1ff849f3f3bc1cdb291d5543ae52fb8c46bb35",
+      "output_hash": "606d5973b95f2827bdee8680b34f60413393d0f1c491f34112eec0f71e93fdfd",
       "output_path": "skills/dayz-vehicles/SKILL.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -19068,10 +19258,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "7385ae159e3f0511f7f57ae8ad188dc12a892480e14230dbb6da14683b790f67",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c7efd525a90b5375c91eeefca2ccf79417750aa1c6c564f66914a089007012b5",
+      "output_hash": "7385ae159e3f0511f7f57ae8ad188dc12a892480e14230dbb6da14683b790f67",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -19528,10 +19728,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "5163031076c5e95d1d41bbde75d6567396bdde861ef55f7125d885958bcd355e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7fa2b8101d6d42008ccf179506237910710e7d5d12af56ab8cfdf477ae62b01",
+      "output_hash": "5163031076c5e95d1d41bbde75d6567396bdde861ef55f7125d885958bcd355e",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -20946,10 +21156,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "4ddf3b96c94c96fd561ebf7744de3e7e41102e8aa147edd3113ce78f383f8e2e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "65c130b4af52e8c37e8a7f5e5d497a35e0e2206860cbf532c95779e87021add9",
+      "output_hash": "4ddf3b96c94c96fd561ebf7744de3e7e41102e8aa147edd3113ce78f383f8e2e",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -23053,10 +23273,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): claim CLAIM-EXTRACT-FORCE removed with extract-dayz-sources.sh and its test; line numbers of the claims in dayzmake-linux.md follow the edited file. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "f7ebcfbc6da987e82cd08051fe5d9fb34785f86127f1395aaec3b6b95e2fcf91",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "54ed142ac403f3e92656986202947d6a6da72cd364b372ff600236fec6f774d9",
+      "output_hash": "f7ebcfbc6da987e82cd08051fe5d9fb34785f86127f1395aaec3b6b95e2fcf91",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -38479,10 +38709,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "dfe921c048dfe7323757b1d9e56a7e73019d3d8dd8ce1d38bf7194f36dd10d12",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "82125e466442f62bb271d734b860cb6d284f8e4506be0d02f6fb9505ad5e2608",
+      "output_hash": "dfe921c048dfe7323757b1d9e56a7e73019d3d8dd8ce1d38bf7194f36dd10d12",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -43879,10 +44119,20 @@
           "source_path": "skills/_shared/linux-proton.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "bf75c1341fc7845b16ddb50a670ab7e1db7ca80f27cd8193ad560d0ae9956fbf",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/linux-proton.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "fffb05351af86837a04828e63fcd7b84d09ef43e581e4e0428f47b4d62e55727",
+      "output_hash": "bf75c1341fc7845b16ddb50a670ab7e1db7ca80f27cd8193ad560d0ae9956fbf",
       "output_path": "skills/_shared/linux-proton.md",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -43971,10 +44221,20 @@
           "source_path": "skills/_shared/scripts/dayz-proton.sh",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): doctor reports dayzmake 1.x to 3.0.x as too old (upgrade to >= v3.1.0). Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "b656880c84dee04717b3e15bba010563cba74f79d3739bb21b46f2014c841f73",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-proton.sh",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c9486b190de781068289f044b5a192e95a1ff2682c72ea2a7d4ba1dac5833b94",
+      "output_hash": "b656880c84dee04717b3e15bba010563cba74f79d3739bb21b46f2014c841f73",
       "output_path": "skills/_shared/scripts/dayz-proton.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "cross_checked"
@@ -44033,85 +44293,21 @@
           "source_path": "skills/_shared/tests/test_dayz_proton.py",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): doctor test cases follow the 3.1.0 minimum (v3.0.2 is too old, v3.1.0 is ok). Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "07b9f2b3f3c4ce3d199b66a0eb8a5528254e511d1678c716bdce91c23e4c80dd",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_dayz_proton.py",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1ee113097b72f4147251f5f19cc43cd1fddcb2f853bd7261c8203338e95df1ef",
+      "output_hash": "07b9f2b3f3c4ce3d199b66a0eb8a5528254e511d1678c716bdce91c23e4c80dd",
       "output_path": "skills/_shared/tests/test_dayz_proton.py",
-      "routing_artifact_id": "skill/_shared",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/skills/_shared/scripts/build-api-index.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Copied from the plugin's scripts/build-api-index.py (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
-          "license": "MIT",
-          "source_hash": "4b2ef5f6a0bb644fb926d27f726bb5f498ff39f8b414c474ec471608bb2b3fa4",
-          "source_id": "bzed-dayz-dev-plugin",
-          "source_path": "scripts/build-api-index.py",
-          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Integration review fixes (2026-11-13): an independent review of the dayz-dev-integration branch; contradictions removed (Steam-directory rule, experimental Workshop path, 5_Mission rule), stale pointers fixed, the Linux mod-path rule kept in one place, pre-1.30-only facts dropped, script docs matched to the code. Written by Claude (Anthropic).",
-          "license": "MIT",
-          "source_hash": "8e1e014c46ba2cb9090ebe3a04d8291a4d7bc4540e955a5771102fb3f7aed06a",
-          "source_id": "pack-r21-authored",
-          "source_path": "skills/_shared/scripts/build-api-index.py",
-          "source_revision": "integration-review@2026-11-13",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Review fixes for the dayz-dev integration: helper hardening, AutoTest, corrected content, claims and provenance. Written by Claude (Anthropic).",
-          "license": "MIT",
-          "source_hash": "e8f126bba9bf832b0aafe2937db99b2bef602ab7e83e0ba4f9943a455e9f1450",
-          "source_id": "pack-r21-authored",
-          "source_path": "skills/_shared/scripts/build-api-index.py",
-          "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "PR #188 follow-ups (2026-11-15): --mod defaults to None, so --mod \"\" goes through the name check and is refused instead of writing the vanilla index. Written by Claude (Anthropic).",
-          "license": "MIT",
-          "source_hash": "1518608b66cd60e18f31dd9a0637a9251c8b35c6e131d581b8df5c0c545ad202",
-          "source_id": "pack-r21-authored",
-          "source_path": "skills/_shared/scripts/build-api-index.py",
-          "source_revision": "pack188-followups@2026-11-15",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "1518608b66cd60e18f31dd9a0637a9251c8b35c6e131d581b8df5c0c545ad202",
-      "output_path": "skills/_shared/scripts/build-api-index.py",
-      "routing_artifact_id": "skill/_shared",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/skills/_shared/scripts/dayz-api.py",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Copied from the plugin's scripts/dayz-api.py (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
-          "license": "MIT",
-          "source_hash": "dbe1a5647a8dc470a41e77f7c7de1ed80c952221abcf73bda1b07f9805687880",
-          "source_id": "bzed-dayz-dev-plugin",
-          "source_path": "scripts/dayz-api.py",
-          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
-          "verification_level": "offline_tested"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "dbe1a5647a8dc470a41e77f7c7de1ed80c952221abcf73bda1b07f9805687880",
-      "output_path": "skills/_shared/scripts/dayz-api.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
     },
@@ -44253,63 +44449,21 @@
           "source_path": "skills/_shared/scripts/dayz-mod-pack.sh",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): dayzmake_version_ok and the install messages require dayzmake >= 3.1.0. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "b0270590201b9c78cd56bc22becd732573192fc4e23ba1a5248c081fdcbbe5aa",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/scripts/dayz-mod-pack.sh",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "84f83535b9e4ec8ec316a234302f83c724eb9309ca1b671629db8ece1c0fb656",
+      "output_hash": "b0270590201b9c78cd56bc22becd732573192fc4e23ba1a5248c081fdcbbe5aa",
       "output_path": "skills/_shared/scripts/dayz-mod-pack.sh",
-      "routing_artifact_id": "skill/_shared",
-      "verification_level": "offline_tested"
-    },
-    {
-      "artifact_id": "file/skills/_shared/scripts/extract-dayz-sources.sh",
-      "distribution_role": "payload",
-      "hash_policy": "sha256",
-      "inputs": [
-        {
-          "decision": "adopt",
-          "decision_evidence": "Copied from the plugin's scripts/extract-dayz-sources.sh (sole author: bzed). Changes for the Pack: a source line, paths to Pack references, the pinned dayzmake v1.0.0 install hint, dayz-api.py reading its index from $DAYZ_API_DIR with a build hint, shellcheck clean-ups.",
-          "license": "MIT",
-          "source_hash": "8122facedb45fc5bb762e6ac5bde8405200eff77b3ff063ff0c9a8584ad0bc9f",
-          "source_id": "bzed-dayz-dev-plugin",
-          "source_path": "scripts/extract-dayz-sources.sh",
-          "source_revision": "6112ac520037443778340d9cd6cf543b180659ec",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "Review fixes for the dayz-dev integration: helper hardening, AutoTest, corrected content, claims and provenance. Written by Claude (Anthropic).",
-          "license": "MIT",
-          "source_hash": "7d6479f6407e750ebeb4d50a8acbb7f195f3e7a7374c0a7886bd992fb806f153",
-          "source_id": "pack-r21-authored",
-          "source_path": "skills/_shared/scripts/extract-dayz-sources.sh",
-          "source_revision": "dayz-dev-integration-review-fixes@2026-11-14",
-          "verification_level": "offline_tested"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "PR #188 follow-ups (2026-11-15): the stored PBO prefix is checked whole from the PBO's header bytes (dayzmake v1.0.0 src/pbo.rs layout), so a control character in it, a final LF too, is refused instead of truncated; its text then comes from the single '- prefix=' line of the listing, keeping dayzmake's decoding (windows-1252 for bytes that are not UTF-8); the lock cleanup is installed right after the lock is taken. Written by Claude (Anthropic).",
-          "license": "MIT",
-          "source_hash": "9e4ea1123b2f8275ca897e4b9278ad5a1bd485a97a4a8a1c81f4c2ed4360f20a",
-          "source_id": "pack-r21-authored",
-          "source_path": "skills/_shared/scripts/extract-dayz-sources.sh",
-          "source_revision": "pack188-followups@2026-11-15",
-          "verification_level": "cross_checked"
-        },
-        {
-          "decision": "merge",
-          "decision_evidence": "dayzmake v3.0.2 (2026-11-16): 3.0.2 recommended in the header and the note; usage prints the whole header (2,21p). Written by Claude (Anthropic) for bzed; dayzmake v3.0.2 sources read at tag v3.0.2 (commit f227e01).",
-          "license": "MIT",
-          "source_hash": "27eff29219454921916b52e47340d97601f984b0bdbdc117a2b71a14940e5686",
-          "source_id": "pack-r21-authored",
-          "source_path": "skills/_shared/scripts/extract-dayz-sources.sh",
-          "source_revision": "dayzmake-v3.0.2@2026-11-16",
-          "verification_level": "cross_checked"
-        }
-      ],
-      "license": "MIT",
-      "output_hash": "27eff29219454921916b52e47340d97601f984b0bdbdc117a2b71a14940e5686",
-      "output_path": "skills/_shared/scripts/extract-dayz-sources.sh",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
     },
@@ -44483,10 +44637,20 @@
           "source_path": "skills/_shared/tests/test_linux_helpers.py",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the tests of extract-dayz-sources.sh, build-api-index.py and dayz-api.py are removed with the scripts; test_mod_pack_dayzmake_version_ok_needs_3_1_0 replaces the 3.0.2 one. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "b8787d171c1ee42716b3cfd2c1f96fb34c894ac752913e8d64aee87efa5fc338",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/_shared/tests/test_linux_helpers.py",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0db0c874eafd6944bb5b8b9281b98ec1259f7162b8295c3e84f592de011015e9",
+      "output_hash": "b8787d171c1ee42716b3cfd2c1f96fb34c894ac752913e8d64aee87efa5fc338",
       "output_path": "skills/_shared/tests/test_linux_helpers.py",
       "routing_artifact_id": "skill/_shared",
       "verification_level": "offline_tested"
@@ -44607,10 +44771,20 @@
           "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): 'Get the right dayzmake' pins v3.1.0, lists what 3.1.0 adds and fixes, and the download-and-verify procedure checks the GPG status lines. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "44b7830ecb75acb10e7ef9db4b6c0edaf63846b5cfa623fb9e60b2a1e14b7563",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c0b3e3c43fc68c94379cd9b72dbef7ff898ce11db4ab894eb8502ad0826bc25c",
+      "output_hash": "44b7830ecb75acb10e7ef9db4b6c0edaf63846b5cfa623fb9e60b2a1e14b7563",
       "output_path": "skills/dayz-pbo-build/references/dayzmake-linux.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -45117,10 +45291,20 @@
           "source_path": "skills/dayz-mod-dev/SKILL.md",
           "source_revision": "dayzmake-v3.0.2@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "dayzmake v3.1.0 (2026-11-17): the Linux pack/sign/binarize or script-lookup text pins dayzmake 3.1.0 and, where the skill looked up vanilla scripts, uses dayzmake api/extract instead of the removed Pack scripts. Written by Claude (Anthropic) for bzed; dayzmake v3.1.0 sources read at tag v3.1.0.",
+          "license": "MIT",
+          "source_hash": "31c80f50ea9141ca044b21a226b46ff0c410e907ea3ec3964562e4b791dd41be",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-mod-dev/SKILL.md",
+          "source_revision": "dayzmake-v3.1.0@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1fe64e8024de189a884157ed86473ff6faebbc8694ac3ffbe8a9e0cbea08165a",
+      "output_hash": "31c80f50ea9141ca044b21a226b46ff0c410e907ea3ec3964562e4b791dd41be",
       "output_path": "skills/dayz-mod-dev/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-dev",
       "verification_level": "cross_checked"

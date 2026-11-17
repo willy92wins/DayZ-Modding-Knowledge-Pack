@@ -19,9 +19,10 @@ V3 file hash omits `*.c` files** (dayzmake's includes them; a changed script als
 DayZ configs (`MP:16-20`). The fork keeps moving away from upstream on purpose, with functions only DayZ
 needs or needs differently from Arma; what it adds so far is listed in `_shared/linux-proton.md`, section 1.
 
-**Use dayzmake >= `v3.0.2`, pinned to `v3.0.2`.** It fixes a lot of security and file-handling issues of the
-earlier releases, so do not stay on an older build, not even for your own mod. The fixes, from the release notes in
-dayzmake's `README.md` (sections 3.0.0 to 3.0.2; issue numbers are `bzed/dayzmake` issues):
+**Use dayzmake >= `v3.1.0`, pinned to `v3.1.0`.** The 3.0 releases fix a lot of security and file-handling issues
+of the earlier ones, and 3.1.0 adds what the Pack's own extraction and index scripts did (below) and fixes a number of
+config-parsing bugs, so do not stay on an older build, not even for your own mod. The fixes, from the release notes
+in dayzmake's `README.md` (sections 3.0.0 to 3.1.0; issue numbers are `bzed/dayzmake` issues):
 
 - **Unpacking untrusted PBOs.** Entry-name containment since `v2.0.0` (commit `f31056ae`, `safe_relative_path` and
   `crosses_symlink`); since `v3.0.0` `unpack` also skips names with any control character, `..`, a drive letter or an
@@ -46,10 +47,29 @@ dayzmake's `README.md` (sections 3.0.0 to 3.0.2; issue numbers are `bzed/dayzmak
 - **`v3.0.1`** publishes GPG-signed checksums with every release (below); **`v3.0.2`** fixes PAA writing: a mipmap of
   16 MiB or more is rejected instead of written with a wrong length, LZO-compressed mipmaps stay readable after a
   re-write, and the offset tagg is written once (#75, #76, #78, #79).
+- **`v3.1.0`** (dayzmake-core 0.3.0):
+  - **New functions.** `extract [--derapify] [--only <glob>]... [-x <glob>]... <install | mod | pbo> <dir>` unpacks
+    every PBO of `dta/` and `addons/` into `<dir>/<prefix>/`, derapifies `.bin` to `.cpp` on request and writes
+    `pbo-map.tsv` (prefix, TAB, PBO path); it stages and swaps the tree, so a re-run drops stale files and a failure
+    keeps the old tree, and `-f` replaces only an empty folder or an earlier result (#87, #98). `api grep <regex>`
+    searches the lines of every `.c` file of the game and the `-m` mods straight from the PBOs (#88). `api config
+    CfgVehicles/<Class>` gives a config class's inheritance chain, its resolved properties tagged with their class,
+    its subclasses and the PBOs that define it, merged in `requiredAddons` order like the engine (#89, #97, #98).
+    `api src --context <n>` / `--lines <a-b>` prints numbered lines around a declaration (#90). `unpack` takes `-x`
+    and `--only` (#86). `inspect --json` prints the PBO header with the raw bytes of every name in hex (#91).
+    `inspect` lists ODOL v56 models: skeleton, LODs, textures, materials, proxies, selections, animations (#84, #96).
+  - **Fixes.** Config parsing matches CfgConvert where it did not: values in exponent notation are floats (#85), an
+    entry may end at the line end (#95), a `//` comment at the end of the file is stripped and an unterminated `/*`
+    warns (#103), f32 overflow is an infinity (#102), 64-bit and hex integers and enum values are written as
+    CfgConvert writes them (#82, #106, #107), errors inside a value carry file and line (#94), the depth limit fits a
+    1 MiB stack again (#108). PAA reads ARGB4444, ARGB1555 and AI88 (#83). Writing and signing keep the raw bytes of
+    windows-1252 names (#92). The release's own download check rejects expired and revoked keys (below).
 
 Behaviour changes to expect when coming from 1.x or 2.x: a missing absolute `#include` is no longer searched for below
 the working directory (pass `-i <folder>`, #66); `cat` of an entry that is not in the PBO exits 1; `verify` and `sign`
-fail with "checksum mismatch" on a PBO whose trailer does not match (repack it).
+fail with "checksum mismatch" on a PBO whose trailer does not match (repack it). From 3.0.x to 3.1.0: `x = 1.5`
+or `x = 1e-5` in a config is now a float, no longer a string with an `unquoted-string` warning, and `-0x10` is a
+float.
 
 ### Download and verify the release binary
 
@@ -65,48 +85,67 @@ the same in dayzmake's `README.md` (*Verifying downloads*), its `AGENTS.md` and 
 https://bzed.github.io/dayzmake/release-key.asc. Do not install a binary whose check fails; report it instead.
 
 ```sh
-set -eu   # run it as one script: a failed check must stop before the install
-v=v3.0.2 f=dayzmake-v3.0.2-debian-trixie-x86_64.tar.gz FPR=662441B36A5785AD18FB8667DF753D99D064EB7E
-d=$(mktemp -d /var/tmp/dayzmake.XXXXXX) && cd "$d"
+set -eu   # run it as one script: every failed step stops it before the install
+v=v3.1.0 f=dayzmake-v3.1.0-debian-trixie-x86_64.tar.gz
+FPR=662441B36A5785AD18FB8667DF753D99D064EB7E KEYID=DF753D99D064EB7E
+bad() { echo "BAD SIGNATURE: do not install" >&2; exit 1; }
+d=$(mktemp -d /var/tmp/dayzmake.XXXXXX)
+cd "$d"
 gh release download "$v" -R bzed/dayzmake -p "$f" -p 'SHA256SUMS*' -p dayzmake-release-key.asc
 #   without gh: for x in "$f" SHA256SUMS SHA256SUMS.asc dayzmake-release-key.asc; do
 #     curl -fsSLO "https://github.com/bzed/dayzmake/releases/download/$v/$x"; done
-export GNUPGHOME=$(mktemp -d /var/tmp/dayzmake-gnupg.XXXXXX)     # throwaway keyring: trusts this key only
-gpg --batch --import dayzmake-release-key.asc
-gpg --batch --status-fd 1 --verify SHA256SUMS.asc SHA256SUMS | grep -q "^\[GNUPG:\] VALIDSIG $FPR " \
-  && echo "signature ok" || { echo "BAD SIGNATURE: do not install" >&2; false; }
+GNUPGHOME=$(mktemp -d /var/tmp/dayzmake-gnupg.XXXXXX)   # throwaway keyring: trusts this key only
+export GNUPGHOME
+gpg --batch --quiet --import dayzmake-release-key.asc
+s=$(gpg --batch --status-fd 1 --verify SHA256SUMS.asc SHA256SUMS 2>/dev/null) || bad
+printf '%s\n' "$s" | grep -Eq '^\[GNUPG:\] (EXPSIG|EXPKEYSIG|REVKEYSIG|BADSIG|ERRSIG) ' && bad
+[ "$(printf '%s\n' "$s" | grep -c '^\[GNUPG:\] NEWSIG')" = 1 ] || bad
+printf '%s\n' "$s" | grep -q "^\[GNUPG:\] GOODSIG $KEYID " || bad
+printf '%s\n' "$s" | grep -q "^\[GNUPG:\] VALIDSIG $FPR " || bad
+echo "signature ok"
 grep -F "  $f" SHA256SUMS | sha256sum -c -                      # must print "<archive>: OK"
-tar xzf "$f" && install -m 0755 "${f%.tar.gz}/dayzmake" ~/.local/bin/dayzmake
+tar xzf "$f"
+install -m 0755 "${f%.tar.gz}/dayzmake" ~/.local/bin/dayzmake
 ```
 
-The `VALIDSIG` line names the fingerprint of the key that made a good signature, so the `grep` fails on a bad
-signature, on a signature by any other key and on a changed `SHA256SUMS`; checking the one archive's line (instead
-of `sha256sum -c --ignore-missing`, which dayzmake's README uses) fails when the archive is not listed at all.
-Interactive `gpg --verify` prints `Good signature from "dayzmake release signing key (https://github.com/bzed/dayzmake)"`
-and the warning that the key is not certified with a trusted signature; the warning is expected, the
-`Primary key fingerprint` line is what you compare. On macOS use `shasum -a 256 -c -`. Run 2026-11-16 on Debian (GnuPG,
-GNU coreutils) against the `v3.0.2` release, the snippet as printed: good signature, `OK`, `dayzmake --version` `v3.0.2`;
-against `v3.0.1` also the negative controls: a changed `SHA256SUMS` (no `VALIDSIG`, the script stops before the install)
-and a changed archive (`FAILED`) were refused. The published key was byte-identical to the one in dayzmake's
-repository and on the site.
+Each step stops the script when it fails (`set -eu`; the `mktemp` results are assigned on lines of their own, because
+`set -e` does not see a failure inside an `&&` list or behind `export`). The signature check follows dayzmake's
+`README.md` (*Verifying downloads*, since `v3.1.0`): the exit status of `gpg --verify` and its `Good signature` text are
+not enough, because gpg prints both, and exits 0, for a signature whose key has expired or been revoked since, and
+it then still prints a `VALIDSIG` line. So the check demands exactly one signature (`NEWSIG`), a `GOODSIG` of the
+release key (the key id is the last 16 hex digits of the fingerprint), a `VALIDSIG` that names the fingerprint,
+and no `EXPSIG`, `EXPKEYSIG`, `REVKEYSIG`, `BADSIG` or `ERRSIG` line, so a second, bad signature cannot hide behind
+a good one. Checking the one archive's line (instead of `sha256sum -c --ignore-missing`, which dayzmake's README
+uses) fails when the archive is not listed at all. Interactive `gpg --verify` warns that the key is not certified
+with a trusted signature; the warning is expected, the fingerprint is what counts. On macOS use
+`shasum -a 256 -c -`.
 
-On Windows (`dayzmake-v3.0.2-windows-x86_64.zip`), dayzmake's `README.md` gives the PowerShell route with
-[Gpg4win](https://www.gpg4win.org/) (not run here): `gpg --import dayzmake-release-key.asc`,
-`gpg --verify SHA256SUMS.asc SHA256SUMS` (compare the printed fingerprint with the one above), then compare
-`(Get-FileHash -Algorithm SHA256 <zip>).Hash` with the zip's line in `SHA256SUMS`. What dayzmake is useful for on
+Run 2026-11-17 on Debian (GnuPG, GNU coreutils), the snippet as printed against the `v3.1.0` release: `signature ok`,
+`OK`, `dayzmake --version` `v3.1.0`. Negative controls with throwaway keys, the check unchanged but for the
+fingerprint: a changed `SHA256SUMS`, a signature by another key, a good signature next to a second one by another
+key, an expired key (gpg `--faked-system-time`; plain `gpg --verify` exits 0 and prints `EXPKEYSIG` and `VALIDSIG`)
+and a revoked key (`REVKEYSIG` and `VALIDSIG`, exit 0) were all refused with `BAD SIGNATURE`; a failing `mktemp`
+stops the script.
+
+On Windows (`dayzmake-v3.1.0-windows-x86_64.zip`), dayzmake's `README.md` (*Verifying downloads*) gives the
+PowerShell route with [Gpg4win](https://www.gpg4win.org/) (not run here): the same status-line check over
+`gpg --status-fd 1 --verify SHA256SUMS.asc SHA256SUMS` with `Select-String` (one `NEWSIG`, `GOODSIG DF753D99D064EB7E`,
+`VALIDSIG` with the fingerprint above, none of `EXPSIG|EXPKEYSIG|REVKEYSIG|BADSIG|ERRSIG`; it must print `True`),
+then `(Get-FileHash -Algorithm SHA256 <zip>).Hash` compared with the zip's line in `SHA256SUMS`. Do not go by the
+`Good signature` text. What dayzmake is useful for on
 Windows next to AddonBuilder (not tested): `dayz-pbo-build`, "On Windows: dayzmake beside AddonBuilder".
 
-From source instead of a binary: `cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.0.2` (no
+From source instead of a binary: `cargo install --locked --git https://github.com/bzed/dayzmake --tag v3.1.0` (no
 system libraries needed since `v3.0.0`).
 
 ```sh
 dayzmake -h 2>&1 | grep -- --proton-binarize   # a hit = the fork; none = upstream armake2, do not use
-dayzmake --version                             # v3.0.2 or later; pre-rename builds print v0.3.0
+dayzmake --version                             # v3.1.0 or later; pre-rename builds print v0.3.0
 ```
 
 The version string does not tell builds apart. If in doubt, reinstall from the tag, or binarize one textured model
 both ways and `cmp` the results (`MP:45-49`). `dayz-mod-pack.sh` runs the same check: it uses `dayzmake` from `PATH`
-(or the binary named by `$DAYZMAKE`, or the older `$ARMAKE2`), falls back to a pre-rename `armake2`, refuses upstream and warns below 3.0.2.
+(or the binary named by `$DAYZMAKE`, or the older `$ARMAKE2`), falls back to a pre-rename `armake2`, refuses upstream and warns below 3.1.0.
 
 ## Quick start (`dayz-mod-pack.sh`)
 
@@ -202,13 +241,14 @@ a PBO that `inspect`/`unpack` refused with `failed to fill whole buffer`; older 
 ```
 dayzmake rapify | derapify | preprocess [src [dst]]   config.cpp <-> config.bin; stdin/stdout without paths
 dayzmake build | pack [-x glob] [-e k=v] [-k key] <dir> [pbo]
-dayzmake inspect <pbo | model.p3d>   PBO: header extensions + files; MLOD: LODs, textures, materials, selections
-dayzmake unpack <pbo> <dir>          header lands in $PBOPREFIX$; no -x; use >= v3.0.2 for third-party PBOs
+dayzmake inspect [--json] <pbo | model.p3d>   PBO: header + files (--json: raw name bytes); MLOD/ODOL v56: LODs, textures, ...
+dayzmake unpack [-x glob] [--only glob] <pbo> <dir>   header lands in $PBOPREFIX$; use >= v3.1.0 for third-party PBOs
+dayzmake extract [--derapify] [--only glob] <install | mod | pbo> <dir>   every PBO by prefix + pbo-map.tsv
 dayzmake cat <pbo> <file> [dst]      one file; inner paths use \  ('scripts\5_Mission\x.c')
 dayzmake img2paa | paa2img | binarize
 ```
 
-Unpacking any PBO you did not build yourself: use dayzmake >= `v3.0.2` (entry-name containment since `v2.0.0`, commit `f31056ae`; `safe_relative_path` and `crosses_symlink` in v3.0.2 `crates/dayzmake-core/src/pbo.rs:1420,1442`; the further unpack fixes of 3.0.0 are listed under "Get the right dayzmake"). In `v1.0.0` (`src/pbo.rs:724,731-733`) `unpack` joins entry names without containment (`..\x` escapes, an absolute name replaces the base, `--force` overwrites); do not unpack a third-party PBO with a build older than `v3.0.2`, upgrade it (`dayz-pbo-reverse-engineering`, "On Linux").
+Unpacking any PBO you did not build yourself: use dayzmake >= `v3.1.0` (entry-name containment since `v2.0.0`, commit `f31056ae`; `safe_relative_path` and `crosses_symlink` in v3.0.2 `crates/dayzmake-core/src/pbo.rs:1420,1442`; the further unpack fixes of 3.0.0 are listed under "Get the right dayzmake"). In `v1.0.0` (`src/pbo.rs:724,731-733`) `unpack` joins entry names without containment (`..\x` escapes, an absolute name replaces the base, `--force` overwrites); do not unpack a third-party PBO with a build older than `v3.1.0`, upgrade it (`dayz-pbo-reverse-engineering`, "On Linux").
 
 Debug recipes (`MP:269-300`): `dayzmake preprocess src/MyMod/config.cpp | less` shows what the parser sees;
 `dayzmake cat Vanilla.pbo config.bin | dayzmake derapify` shows what an official PBO set; `dayzmake inspect x.pbo` must

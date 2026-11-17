@@ -23,7 +23,7 @@ import pytest
 SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
 AUTOTEST = Path(__file__).resolve().parents[2] / "dayz-test-ingame" / "assets" / "autotest-mod"
 POSIX = ["find-dayzserver.sh", "make-server-tree.sh", "free-ports.sh", "dayz-client-headless.sh", "dayz-client-test.sh"]
-BASH = ["dayz-mod-pack.sh", "extract-dayz-sources.sh"]
+BASH = ["dayz-mod-pack.sh"]
 
 pytestmark = pytest.mark.skipif(os.name == "nt", reason="the Linux helper scripts")
 
@@ -132,36 +132,6 @@ def test_experimental_workshop_falls_back_to_the_stable_items(tmp_path: Path) ->
     done = run("find-dayzserver.sh", "-e", "-w", env=isolated_env(tmp_path, steam))
     assert done.returncode == 0, done.stderr
     assert done.stdout.strip().endswith("workshop/content/221100")
-
-
-def test_api_index_builds_and_answers(tmp_path: Path) -> None:
-    scripts = tmp_path / "scripts"
-    (scripts / "3_Game").mkdir(parents=True)
-    (scripts / "4_World").mkdir()
-    (scripts / "3_Game" / "base.c").write_text("class EntityAI : Managed\n{\n\tvoid OnCEIterate(float t, float e);\n}\n")
-    (scripts / "4_World" / "item.c").write_text(
-        "class ItemBase : EntityAI\n{\n\toverride void OnCEIterate(float t, float e) {}\n\tint m_Count;\n}\n"
-    )
-    out = tmp_path / "api"
-    subprocess.run([sys.executable, str(SCRIPTS / "build-api-index.py"), str(scripts), str(out)], check=True)
-    env = dict(os.environ, DAYZ_API_DIR=str(out))
-    chain = subprocess.run(
-        [sys.executable, str(SCRIPTS / "dayz-api.py"), "chain", "ItemBase"], env=env, capture_output=True, text=True
-    )
-    assert chain.stdout.strip().startswith("ItemBase > EntityAI")
-    found = subprocess.run(
-        [sys.executable, str(SCRIPTS / "dayz-api.py"), "find", "OnCEIterate"], env=env, capture_output=True, text=True
-    )
-    assert "EntityAI: void OnCEIterate" in found.stdout
-
-
-def test_api_lookup_without_an_index_says_how_to_build_one(tmp_path: Path) -> None:
-    env = dict(os.environ, DAYZ_API_DIR=str(tmp_path / "none"))
-    done = subprocess.run(
-        [sys.executable, str(SCRIPTS / "dayz-api.py"), "class", "PlayerBase"], env=env, capture_output=True, text=True
-    )
-    assert done.returncode != 0
-    assert "build-api-index.py" in done.stderr
 
 
 def test_mod_pack_init_keeps_secrets_out_of_git(tmp_path: Path) -> None:
@@ -326,318 +296,6 @@ def _valid_mod_project(tmp_path: Path, mod_name: str = "MyMod") -> tuple[Path, d
     env = _env_with_bin(tmp_path, None, bin_dir)
     env["DAYZMAKE"] = "dayzmake"
     return project, env
-
-
-def _pbo_bytes(prefix: bytes | None = b"scripts", extra: bytes = b"") -> bytes:
-    """The leading bytes of a PBO as dayzmake v1.0.0 writes and reads them (src/pbo.rs): a version header (empty name,
-    packing method 'Vers' = 0x56657273 little-endian, four zero u32), its key/value C strings, the empty key that ends
-    them. extract-dayz-sources.sh reads the prefix from these bytes; the fake `inspect` listing gives the entries.
-    prefix=None: the first header is a file entry, so there is no version header and no prefix."""
-    if prefix is None:
-        return b"a.c\0" + struct.pack("<5I", 0, 9, 0, 0, 9) + b"\0" + struct.pack("<5I", 0, 0, 0, 0, 0) + b"fake data"
-    head = b"\0" + struct.pack("<5I", 0x56657273, 0, 0, 0, 0)
-    return head + b"prefix\0" + prefix + b"\0" + extra + b"\0" + b"fake entries"
-
-
-def _make_install(tmp_path: Path, prefix: bytes | None = b"scripts") -> Path:
-    install = tmp_path / "install"
-    (install / "dta").mkdir(parents=True, exist_ok=True)
-    (install / "dta" / "x.pbo").write_bytes(_pbo_bytes(prefix))
-    return install
-
-
-def _extract(tmp_path: Path, bin_dir: Path, install: Path, out: Path, *extra: str) -> subprocess.CompletedProcess[str]:
-    env = _env_with_bin(tmp_path, None, bin_dir)
-    env["DAYZMAKE"] = "dayzmake"
-    env["FAKE_LISTING"] = str(tmp_path / "listing.txt")
-    return run("extract-dayz-sources.sh", *extra, str(install), str(out), env=env)
-
-
-def test_extract_rejects_pbo_prefix_escape(tmp_path: Path) -> None:
-    bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    (tmp_path / "listing.txt").write_text("- prefix=../../../escape\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
-    install = _make_install(tmp_path, b"../../../escape")
-    out = tmp_path / "out"
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert "invalid PBO prefix" in done.stderr
-    assert not (tmp_path / "escape").exists()
-    assert not (out / "pbo-map.tsv").exists()
-
-
-# dayzmake before 3.0.0 prints a header value unescaped, so each of these shows a clean '- prefix=scripts' (or 'scr')
-# line; 3.0.0 and later escape it ('scripts\\n', which would read as 'scripts/n' once '\\' becomes '/'). Either way the
-# raw value still holds a control character and must be refused, not truncated.
-@pytest.mark.parametrize("raw", [b"scripts\n", b"scripts\r", b"scripts\n- product=dayz", b"scr\nipts"])
-def test_extract_rejects_a_control_character_in_the_raw_pbo_prefix(tmp_path: Path, raw: bytes) -> None:
-    bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    shown = raw.decode().replace("\r", "")
-    (tmp_path / "listing.txt").write_text(
-        "Header extensions:\n- prefix=" + shown + "\n\n# Files: 1\n\n====\n" + r"scripts\a.c" + " stored 9 9\n"
-    )
-    install = _make_install(tmp_path, raw)
-    out = tmp_path / "out"
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert "invalid PBO prefix" in done.stderr
-    assert not out.exists()
-    assert not list(tmp_path.rglob("a.c"))
-
-
-def test_extract_reads_the_prefix_from_the_pbo_header(tmp_path: Path) -> None:
-    bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    rows = "# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n"
-    (tmp_path / "listing.txt").write_text("- prefix=DZ\\AI\n" + rows)
-    install = _make_install(tmp_path, b"DZ\\AI")
-    out = tmp_path / "out"
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode == 0, done.stderr
-    assert (out / "DZ" / "AI" / "scripts" / "a.c").is_file()
-    assert (out / "pbo-map.tsv").read_text() == "DZ/AI\tdta/x.pbo\n"
-    # Another key may repeat; the prefix still comes from its own extension.
-    (install / "dta" / "x.pbo").write_bytes(_pbo_bytes(b"DZ\\AI", extra=b"version\0a\0version\0b\0"))
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode == 0, done.stderr
-    assert (out / "pbo-map.tsv").read_text() == "DZ/AI\tdta/x.pbo\n"
-    # No version header: the PBO's file name stands in for the prefix, as before.
-    (tmp_path / "listing.txt").write_text(rows)
-    _make_install(tmp_path, None)
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode == 0, done.stderr
-    assert (out / "pbo-map.tsv").read_text() == "x\tdta/x.pbo\n"
-    # A header block cut off by the end of the file, or a second 'prefix', is refused.
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n" + rows)
-    for data in (_pbo_bytes(b"scripts")[:30], _pbo_bytes(b"scripts", extra=b"prefix\0other\0")):
-        (install / "dta" / "x.pbo").write_bytes(data)
-        done = _extract(tmp_path, bin_dir, install, tmp_path / "out-bad")
-        assert done.returncode != 0
-        assert "malformed PBO header" in done.stderr
-    # A clean stored prefix must fill exactly one '- prefix=' line of the listing; none, or a second one (another
-    # value's text), is refused instead of falling back to the file name or mixing the two.
-    (install / "dta" / "x.pbo").write_bytes(_pbo_bytes(b"scripts"))
-    for lines in ("", "- prefix=scripts\n- prefix=elsewhere\n"):
-        (tmp_path / "listing.txt").write_text(lines + rows)
-        done = _extract(tmp_path, bin_dir, install, tmp_path / "out-bad2")
-        assert done.returncode != 0
-        assert "'- prefix=' lines" in done.stderr
-        assert not (tmp_path / "out-bad2").exists()
-
-
-def test_extract_keeps_dayzmakes_decoding_of_a_non_utf8_prefix(tmp_path: Path) -> None:
-    # Stored bytes 'Mod\xe9' are not UTF-8; dayzmake decodes them as windows-1252 ('Modé', src/pbo.rs
-    # decode_name) and prints that text in UTF-8. The extraction and pbo-map.tsv must carry the same text, so that
-    # build-api-index.py, which reads the map as text, still works.
-    bin_dir = _fake_dayzmake(tmp_path, {r"3_Game\a.c": ("content", "class A {}\n")})
-    (tmp_path / "listing.txt").write_bytes(
-        "- prefix=Modé\n# Files: 1\n====\n".encode("utf-8") + rb"3_Game\a.c" + b" stored 9 9\n"
-    )
-    install = _make_install(tmp_path, b"Mod\xe9")
-    out = tmp_path / "out"
-    env = _env_with_bin(tmp_path, None, bin_dir)
-    env["DAYZMAKE"] = "dayzmake"
-    env["FAKE_LISTING"] = str(tmp_path / "listing.txt")
-    # Bytes, not text: the script's progress line names the prefix, and a raw 0xe9 there must not fail the harness
-    # before the map is checked.
-    done = subprocess.run(
-        ["bash", str(SCRIPTS / "extract-dayz-sources.sh"), str(install), str(out)],
-        env=env, capture_output=True, timeout=60, check=False,
-    )
-    assert done.returncode == 0, done.stderr
-    assert (out / "pbo-map.tsv").read_bytes() == "Modé\tdta/x.pbo\n".encode("utf-8")
-    assert (out / "Modé" / "3_Game" / "a.c").is_file()
-    api = tmp_path / "api"
-    index = subprocess.run(
-        [sys.executable, str(SCRIPTS / "build-api-index.py"), str(out), str(api), "--mod", "Test"],
-        env={**os.environ, "PYTHONUTF8": "1"}, capture_output=True, text=True, timeout=60, check=False,
-    )
-    assert index.returncode == 0, index.stderr
-    assert (api / "mod-Test.txt.xz").is_file()
-
-
-def test_extract_rejects_entry_escape_and_lf_listing(tmp_path: Path) -> None:
-    bin_dir = _fake_dayzmake(tmp_path, {})
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"..\..\victim.c" + " stored 9 9\n")
-    install = _make_install(tmp_path)
-    done = _extract(tmp_path, bin_dir, install, tmp_path / "out")
-    assert done.returncode != 0
-    assert "invalid entry name" in done.stderr
-    assert not (tmp_path / "victim.c").exists()
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\nbad row with\nembedded lf stored 9 9\n")
-    done = _extract(tmp_path, bin_dir, install, tmp_path / "out2")
-    assert done.returncode != 0
-    assert "invalid listing structure" in done.stderr
-
-
-def test_extract_rejects_lf_forged_row_count_and_duplicate_names(tmp_path: Path) -> None:
-    entries = {
-        r"scripts\good.c": ("content", "class Good {}\n"),
-        r"scripts\a.c": ("content", "class A {}\n"),
-        r"scripts\b.c": ("content", "class B {}\n"),
-        r"scripts\c.c": ("content", "class C {}\n"),
-        r"scripts\forged.c": ("content", "class Forged {}\n"),
-        "scripts/a.c": ("content", "class A2 {}\n"),
-    }
-    bin_dir = _fake_dayzmake(tmp_path, entries)
-    install = _make_install(tmp_path)
-    out = tmp_path / "out"
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\good.c" + " stored 9 9\n")
-    assert _extract(tmp_path, bin_dir, install, out).returncode == 0
-    # Fake inspect prints '# Files: 3' and four valid-looking rows (as when an LF in entry 3 forges row 4).
-    (tmp_path / "listing.txt").write_text(
-        "- prefix=scripts\n# Files: 3\n====\n"
-        + r"scripts\a.c" + " stored 9 9\n"
-        + r"scripts\b.c" + " stored 9 9\n"
-        + r"scripts\c.c" + " stored 1 1\n"
-        + r"scripts\forged.c" + " stored 9 9\n"
-    )
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert "invalid listing structure" in done.stderr
-    assert not list(out.rglob("forged.c"))
-    assert list(out.rglob("good.c"))
-    # Duplicate normalised names (backslash vs slash) with matching '# Files: 2' are also rejected.
-    (tmp_path / "listing.txt").write_text(
-        "- prefix=scripts\n# Files: 2\n====\n"
-        + r"scripts\a.c" + " stored 9 9\n"
-        + "scripts/a.c stored 9 9\n"
-    )
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert "invalid listing structure" in done.stderr
-
-
-def test_extract_cat_partial_ioerror_and_unreadable_dir_fail_without_promoting(tmp_path: Path) -> None:
-    entries = {
-        r"scripts\good.c": ("content", "class Good {}\n"),
-        r"scripts\bad.c": ("ioerror", "partial"),
-    }
-    bin_dir = _fake_dayzmake(tmp_path, entries)
-    install = _make_install(tmp_path)
-    out = tmp_path / "out"
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\good.c" + " stored 9 9\n")
-    assert _extract(tmp_path, bin_dir, install, out).returncode == 0
-    assert list(out.rglob("good.c"))
-    # Partial write + exit 1 ('I/O error') must fail the run and never promote over prior out.
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\bad.c" + " stored 9 9\n")
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert "cat failed" in done.stderr
-    assert list(out.rglob("good.c"))
-    assert not list(out.rglob("bad.c"))
-    if hasattr(os, "geteuid") and os.geteuid() != 0:
-        (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\good.c" + " stored 9 9\n")
-        (install / "dta").chmod(0o000)
-        try:
-            done_perm = _extract(tmp_path, bin_dir, install, out)
-            assert done_perm.returncode != 0
-            assert list(out.rglob("good.c"))
-        finally:
-            (install / "dta").chmod(0o755)
-
-
-def test_extract_staging_does_not_reuse_preexisting_pid_dir(tmp_path: Path) -> None:
-    bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
-    install = _make_install(tmp_path)
-    out = tmp_path / "out"
-    env = _env_with_bin(tmp_path, None, bin_dir)
-    env["DAYZMAKE"] = "dayzmake"
-    env["FAKE_LISTING"] = str(tmp_path / "listing.txt")
-    # Pre-create "$out.new.$$" with a stale file and exec into extract-dayz-sources.sh (keeping PID $$).
-    done = subprocess.run(
-        [
-            "sh",
-            "-c",
-            'mkdir -p "$1.new.$$" && printf poisoned > "$1.new.$$/poisoned.c" && exec bash "$2" "$3" "$1"',
-            "sh",
-            str(out),
-            str(SCRIPTS / "extract-dayz-sources.sh"),
-            str(install),
-        ],
-        env=env,
-        capture_output=True,
-        text=True,
-        timeout=60,
-        check=False,
-    )
-    assert done.returncode == 0, done.stderr
-    assert list(out.rglob("a.c"))
-    assert not list(out.rglob("poisoned.c"))
-
-
-def test_extract_refuses_symlink_destination(tmp_path: Path) -> None:
-    victim = tmp_path / "victim.txt"
-    victim.write_text("original")
-    entries = {r"scripts\link.c": ("link", str(victim), "victim.c"), r"scripts\victim.c": ("content", "pwned\n")}
-    bin_dir = _fake_dayzmake(tmp_path, entries)
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 2\n====\n" + r"scripts\link.c" + " stored 9 9\n" + r"scripts\victim.c" + " stored 9 9\n")
-    install = _make_install(tmp_path)
-    done = _extract(tmp_path, bin_dir, install, tmp_path / "out")
-    assert done.returncode != 0
-    assert "symlink" in done.stderr
-    assert victim.read_text() == "original"
-
-
-def test_extract_reextract_drops_stale_and_failure_keeps_old(tmp_path: Path) -> None:
-    entries = {r"scripts\a.c": ("content", "class A {}\n"), r"scripts\stale.c": ("content", "class S {}\n"), r"scripts\missing.c": ("missing",)}
-    bin_dir = _fake_dayzmake(tmp_path, entries)
-    install = _make_install(tmp_path)
-    out = tmp_path / "out"
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 2\n====\n" + r"scripts\a.c" + " stored 9 9\n" + r"scripts\stale.c" + " stored 9 9\n")
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode == 0, done.stderr
-    assert (out / "scripts" / "scripts" / "stale.c").exists() or (out / "scripts" / "stale.c").exists() or list(out.rglob("stale.c"))
-    # Second run: stale removed, no duplicate map rows.
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode == 0, done.stderr
-    assert not list(out.rglob("stale.c"))
-    rows = (out / "pbo-map.tsv").read_text().strip().splitlines()
-    assert len(rows) == 1
-    # Failed run (cat prints not found and exits 0, as dayzmake did before 3.0.0) keeps the old tree.
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\missing.c" + " stored 9 9\n")
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert list(out.rglob("a.c"))
-    # Interrupted promotion is detected.
-    (tmp_path / "out.old.999").mkdir()
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert "mv --" in done.stderr
-
-
-def test_extract_releases_its_lock_when_mktemp_fails(tmp_path: Path) -> None:
-    bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
-    install = _make_install(tmp_path)
-    out = tmp_path / "out"
-    real_mktemp = shutil.which("mktemp")
-    assert real_mktemp is not None
-    # A mktemp on PATH that fails for the temporary directory only, as a full or unwritable /var/tmp would.
-    fake = bin_dir / "mktemp"
-    fake.write_text(f'#!/bin/sh\ncase "$*" in *dayz-extract.*) exit 1 ;; esac\nexec {shlex.quote(real_mktemp)} "$@"\n')
-    fake.chmod(0o755)
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert not (tmp_path / "out.lock").exists()
-    fake.unlink()
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode == 0, done.stderr
-    assert list(out.rglob("a.c"))
-
-
-def test_extract_refuses_nonowned_out_without_force(tmp_path: Path) -> None:
-    bin_dir = _fake_dayzmake(tmp_path, {r"scripts\a.c": ("content", "class A {}\n")})
-    (tmp_path / "listing.txt").write_text("- prefix=scripts\n# Files: 1\n====\n" + r"scripts\a.c" + " stored 9 9\n")
-    install = _make_install(tmp_path)
-    out = tmp_path / "out"
-    out.mkdir()
-    (out / "mine.txt").write_text("mine")
-    done = _extract(tmp_path, bin_dir, install, out)
-    assert done.returncode != 0
-    assert (out / "mine.txt").read_text() == "mine"
-    done = _extract(tmp_path, bin_dir, install, out, "--force")
-    assert done.returncode == 0, done.stderr
 
 
 def test_make_server_tree_existing_profiles_in_source_stays_private(tmp_path: Path) -> None:
@@ -1232,53 +890,6 @@ def test_publish_hint_validates_app_id_and_quotes_values(tmp_path: Path) -> None
     assert "dir\\ with\\ space" in ok.stdout or "'dir with space" in ok.stdout
 
 
-@pytest.mark.parametrize("bad", ["x/../../victim", "..", "/abs", "a\\b", "a/b"])
-def test_api_index_rejects_mod_escape(tmp_path: Path, bad: str) -> None:
-    scripts = tmp_path / "scripts"
-    (scripts / "3_Game").mkdir(parents=True)
-    (scripts / "3_Game" / "base.c").write_text("class EntityAI : Managed {}\n")
-    out = tmp_path / "api"
-    done = subprocess.run([sys.executable, str(SCRIPTS / "build-api-index.py"), str(scripts), str(out), "--mod", bad], capture_output=True, text=True)
-    assert done.returncode == 2
-    assert not (tmp_path / "victim.txt.xz").exists()
-
-
-def test_api_index_rejects_an_empty_mod_and_keeps_the_vanilla_index(tmp_path: Path) -> None:
-    scripts = tmp_path / "scripts"
-    (scripts / "3_Game").mkdir(parents=True)
-    (scripts / "3_Game" / "base.c").write_text("class EntityAI : Managed {}\n")
-    out = tmp_path / "api"
-    out.mkdir()
-    vanilla = out / "dayz-api.txt.xz"
-    vanilla.write_bytes(b"the vanilla index")
-    done = subprocess.run([sys.executable, str(SCRIPTS / "build-api-index.py"), str(scripts), str(out), "--mod", ""], capture_output=True, text=True)
-    assert done.returncode == 2
-    assert "--mod must match" in done.stderr
-    assert vanilla.read_bytes() == b"the vanilla index"
-    assert [p.name for p in out.iterdir()] == ["dayz-api.txt.xz"]
-
-
-def test_api_index_refuses_symlink_output(tmp_path: Path) -> None:
-    scripts = tmp_path / "scripts"
-    (scripts / "3_Game").mkdir(parents=True)
-    (scripts / "3_Game" / "base.c").write_text("class EntityAI : Managed {}\n")
-    out = tmp_path / "api"
-    out.mkdir()
-    victim = tmp_path / "victim.txt"
-    victim.write_text("victim")
-    (out / "mod-good.txt.xz").symlink_to(victim)
-    done = subprocess.run([sys.executable, str(SCRIPTS / "build-api-index.py"), str(scripts), str(out), "--mod", "good"], capture_output=True, text=True)
-    assert done.returncode == 2
-    assert "symlink" in done.stderr
-    assert victim.read_text() == "victim"
-    # Default output (without --mod) must also refuse a pre-existing symlink.
-    (out / "dayz-api.txt.xz").symlink_to(victim)
-    done_default = subprocess.run([sys.executable, str(SCRIPTS / "build-api-index.py"), str(scripts), str(out)], capture_output=True, text=True)
-    assert done_default.returncode == 2
-    assert "symlink" in done_default.stderr
-    assert victim.read_text() == "victim"
-
-
 def test_free_ports_impossible_count_fails_at_once() -> None:
     done = run("free-ports.sh", "3902")
     assert done.returncode != 0
@@ -1303,12 +914,14 @@ def test_autotest_mod_builds_signs_and_verifies(tmp_path: Path) -> None:
 @pytest.mark.parametrize(
     ("version", "ok"),
     [
-        ("dayzmake v3.0.2", True),
-        ("v3.0.10", True),
-        ("v3.1.0", True),
+        ("dayzmake v3.1.0", True),
+        ("v3.1.1", True),
+        ("v3.2.0", True),
         ("v4.0.0", True),
         ("v10.0.0", True),
-        ("dayzmake v3.0.1", False),
+        ("dayzmake v3.0.2", False),
+        ("v3.0.10", False),
+        ("v3.0.1", False),
         ("v3.0.0", False),
         ("v2.0.0", False),
         ("v1.0.0", False),
@@ -1317,8 +930,8 @@ def test_autotest_mod_builds_signs_and_verifies(tmp_path: Path) -> None:
         ("dayzmake", False),
     ],
 )
-def test_mod_pack_dayzmake_version_ok_needs_3_0_2(version: str, ok: bool) -> None:
-    # need_dayzmake warns unless the binary reports 3.0.2 or later, the release that fixes the security and
+def test_mod_pack_dayzmake_version_ok_needs_3_1_0(version: str, ok: bool) -> None:
+    # need_dayzmake warns unless the binary reports 3.1.0 or later, the release that fixes the security and
     # file-handling issues of the older ones.
     probe = (
         'eval "$(sed -n \'/^dayzmake_version_ok()/,/^}/p\' "$1")"; '
