@@ -44,7 +44,7 @@ Before persisting or ordering data across restarts, verify both the clock and th
 3. **`foreach` WORKS** — `foreach (Type var : array)` and `foreach (key, value : map)`. Avoid foreach on expressions returning temporary collections (may NPE)
 4. **`+=` / `-=` WORK** — `x += y;` is equivalent to `x = x + y;` (verified LBmaster production)
 5. **String literals as function params WORK** — `MyFunc("hello", "world")` is fine (verified LBmaster production)
-6. **Multiline expressions — SCOPE RESTRICTED** — production compiles HAVE broken on multi-line BOOLEAN operators (`&&`/`||` split across lines: LF_VStorage F-NEW-1, HUD_Mod) and on multi-line string `+` continuation (bone-dump Print, dayz-animation-pipeline `references/weapon-in-hands.md:239`). Keep boolean conditions and string builds on ONE line, or split into single-line statements (`ln = ln + ...;`) — this is legacy ENF-R11g (see rule map below). Multi-line function ARGUMENT lists: [IN-GAME CONFIRMED, DayZDiag 1.29.163451, SP-127] a call whose argument list spans multiple physical lines kills the entire file and its module (`Can't compile "Mission" script module!` → server does not start). The error is reported on the line of the NEXT argument, not the opening line; the cascade (`Syntax error` line 1, `Unexpected scope` line 2) mimics file corruption. Vanilla contains some multi-line argument lists (`P:\scripts\3_game\worlddata.c:153-156` `Math.Lerp(`, `3_game\client\notifications\notificationsystem.c:307-311` `new NotificationData(`), so the safe scope is not fully characterized. Offline gate: any line ending in `(` or `,` (after stripping comments and trailing whitespace) is a risk — `tools/dayz-ui-lab/tests/test_probe.py::test_probe_mission_keeps_every_call_argument_list_on_one_line` (7 offenders in the failing file, 0 in the fixed). A mod that fails to compile passes any test asserting on source TEXT: the three tests covering this probe were green while the engine rejected the file entirely.
+6. **Multiline expressions — SCOPE RESTRICTED** — production compiles HAVE broken on multi-line BOOLEAN operators (`&&`/`||` split across lines: LF_VStorage F-NEW-1, HUD_Mod) and on multi-line string `+` continuation (bone-dump Print, dayz-animation-pipeline `references/weapon-in-hands.md:239`). Keep boolean conditions and string builds on ONE line, or split into single-line statements (`ln = ln + ...;`) — this is legacy ENF-R11g (see rule map below). Multi-line function ARGUMENT lists: [IN-GAME CONFIRMED, DayZDiag 1.29.163451, SP-127] a call whose argument list spans multiple physical lines kills the entire file and its module (`Can't compile "Mission" script module!` → server does not start). The error is reported on the line of the NEXT argument, not the opening line; the cascade (`Syntax error` line 1, `Unexpected scope` line 2) mimics file corruption. Vanilla contains some multi-line argument lists (`P:\scripts\3_game\worlddata.c:153-156` `Math.Lerp(`, `3_game\client\notifications\notificationsystem.c:307-311` `new NotificationData(`), so the safe scope is not fully characterized. Offline gate: any line ending in `(` or `,` (after stripping comments and trailing whitespace) is a risk — `tools/dayz-ui-lab/tests/test_probe.py::test_probe_mission_keeps_every_call_argument_list_on_one_line` (7 offenders in the failing file, 0 in the fixed). A mod that fails to compile passes any test asserting on source TEXT: the three tests covering this probe were green while the engine rejected the file entirely. The boolean case happened again in BattleRoyale PR #57 (2026-11-17): a `return a || b` split across lines with `||` at the start of each continuation line. The server log showed `Missing ';' at the end of line`, then `Expected ',' or ')', not a '||'`, then `Can't compile "World" script module!`. That code had passed `check_standalone`, the offline validator gate and three read-only LLM reviews; only booting the server caught it.
 7. **NO same variable name in sibling `if`/`else` scopes** — hoist before conditionals
 8. **NO `new array`/`map`/`Param` inside periodic ticks** — use `m_` fields, `.Clear()` each tick
 9. **Explicit typing always; `m_` prefix on all member fields**
@@ -219,6 +219,42 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
     - **Evidence:** reproduced and fixed in DayZDiag 1.30 on 2026-11-17 (BattleRoyale PR #56, runs
       fb6d1730 before the fix and fb144fcf after it). The first hypothesis, "the event arrives
       without a body and vanilla drops it", was wrong: a test proved the premise false.
+37f. **Blocking a family of actions on other players (a safe zone): one gate in `ActionBase`,
+    three hooks.**
+    - **Start:** `modded class ActionBase` overrides the 4-argument
+      `Can(PlayerBase player, ActionTarget target, ItemBase item, int condition_mask)`
+      (`actionbase.c:929`, 1.30).
+      - The client asks it for every action it could offer (`actioninput.c`,
+        `actionmanagerclient.c`).
+      - The server asks it before it accepts a start: `actionmanagerserver.c:168`, through the
+        3-argument `Can` at `:968`.
+      - Returning false before `super` makes the server answer `server_rejected`.
+    - **While it runs:** a continuous action asks
+      `CanContinue(ActionData action_data)` (`actionbase.c:975`) on every tick, from
+      `animatedactionbase.c:419`; it does not ask `Can` again. `CanContinue` is protected; vanilla
+      overrides drop `protected`.
+    - **Single-use effects:** a single-use action, such as a forced bite, applies its effect from
+      `AnimatedActionBase.OnAnimationEvent(ActionData action_data)` (`animatedactionbase.c:188`)
+      without asking `CanContinue`. Return before `super` to drop the effect; the animation still
+      ends through `ActionBaseCB.OnFinish`.
+    - **Which actions:** pick them by `IsInherited` on the vanilla family bases:
+      `ActionForceConsume`, `ActionForceConsumeSingle`, `ActionRestrainTarget`,
+      `ActionHandcuffTarget`, `ActionCoverHeadTarget`, `ActionGagTarget`,
+      `ActionCollectBloodTarget`, `ActionCollectSampleTarget`, `ActionGiveBloodTarget` and
+      `ActionDefibrilateTarget`. In 1.30 none of their subclasses overrides `Can` or `CanContinue`.
+      Do the cheap checks first: `PlayerBase.Cast(target.GetObject())`, not the actor itself. The
+      client asks this for every candidate action on every frame.
+    - **Decide the protection by zone, not by `GetAllowDamage()`:** admin-tool godmode also sets
+      `SetAllowDamage(false)`, so a damage-based gate stops an admin feeding a teammate in a match.
+      Decide on the server by position.
+    - **One shared file, two sides:** use separate `#ifdef SERVER` and `#ifndef SERVER` blocks; the
+      offline linter does not read `#else`. A shared file in the client addon cannot name
+      server-only config classes (`ES-UNDEFINED-CLASS-REF`): let the server push the zone into a
+      static at init.
+    - **Evidence:** BattleRoyale PR #57, DayZDiag 1.30, run b411f3d2 on 2026-11-17. Outside the
+      zone, the head sack and force-feeding on a survivor dummy finish. Inside it, both are
+      `server_rejected` within 0.06 s: the sack stays in hand and the apple stays at 125/125. The
+      `CanContinue` and `OnAnimationEvent` paths were checked by reading only.
 38. **Three input detection patterns exist, all valid:**
     - Simple: `g_Game.GetInput().LocalPress("UAMyAction", false)` — one-line check
     - Direct: `GetUApi().GetInputByName("UAMyAction").LocalPress()` — per-frame

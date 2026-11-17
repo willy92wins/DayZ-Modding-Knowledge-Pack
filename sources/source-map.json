@@ -19788,10 +19788,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "battleroyale-pr56@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 37f and rule 6 evidence from BattleRoyale PR #57 (willy92wins/BattleRoyale): blocking a family of actions on other players through ActionBase.Can, CanContinue and AnimatedActionBase.OnAnimationEvent, decided by zone and not by GetAllowDamage. Measured in DayZDiag 1.30 on 2026-11-17 (run b411f3d2: server_rejected inside the zone, finished outside); vanilla lines checked in the 1.30 extraction (actionbase.c:929, 968, 975; actionmanagerserver.c:168; animatedactionbase.c:188, 419). Rule 6: the same PR's split boolean return failed to compile the World module after passing the offline gates and three LLM reviews. Ported on 2026-11-18 from an unpublished local commit of 2026-11-17, rule text unchanged; the cited lines were read again in the 1.30.164289 and 1.30.164393 scripts, with the same line numbers in both.",
+          "license": "MIT",
+          "source_hash": "a3a5ea3477d72118d9488b0fa5c2b601fbc55c232a9c8846c3b6d53cef21ce75",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "battleroyale-pr57@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ea97365e7495b65d28181444ede3e24427c82e731ae213f3040b76c8c15ef6d7",
+      "output_hash": "a3a5ea3477d72118d9488b0fa5c2b601fbc55c232a9c8846c3b6d53cef21ce75",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -23343,10 +23353,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "battleroyale-pr56@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 37f inserted 36 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 609, 619, 621, 636, 638, 652 and 654 to 645, 655, 657, 672, 674, 688 and 690. No claim text changes.",
+          "license": "MIT",
+          "source_hash": "3eed4b3fd78d592e718eae2b9ea9fd2ad95d986ca8e332dcb3f15948a3ed9e10",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "battleroyale-pr57@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "46c9b8f8a3af27690d2c9e15000f278dacad4bf9c670b618fc0df883a09c5cf0",
+      "output_hash": "3eed4b3fd78d592e718eae2b9ea9fd2ad95d986ca8e332dcb3f15948a3ed9e10",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
