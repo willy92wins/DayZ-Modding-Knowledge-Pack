@@ -196,6 +196,29 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
     Blocking the get-out while the sight is up is then one condition:
     `modded class ActionGetOutTransport { override bool ActionCondition(...) }`
     (`actiongetouttransport.c:70`), not an input exclude.
+37e. **An unpossessed identity still has a player, and a body in the logout queue must never be
+    deleted.**
+    - **What the engine keeps:** after `SelectPlayer(identity, body)` and then
+      `SelectPlayer(identity, null)` + `SelectSpectator`, the engine still counts the last selected
+      body as the identity's player. `identity.GetPlayer()` returns it.
+    - **What the disconnect does with it:** `ClientDisconnectedEvent` carries that body with the
+      normal `logoutTime`, and vanilla queues it for logout (`missionserver.c:641-688`).
+    - **Where it breaks:** `GetPlayerIndentities` stops listing the identity about 4 s after the
+      disconnect. A cleanup that reads "not listed" as "gone" therefore deletes that body during
+      the logout. When the timer ends, vanilla finds the body null, logs
+      `[Logout]: Skipping player …, already removed` and never calls `DisconnectPlayer`
+      (`missionserver.c:690-697`).
+    - **The symptom:** the UID stays in game. Rejoining fails with `0x00040033`, "Player with same
+      UID is already in game", until the server restarts.
+    - **Fix, first part:** before deleting any player body, check vanilla's
+      `IsPlayerDisconnecting(body)` (`missionserver.c:240`).
+    - **Fix, second part:** a body that is nobody's character, such as a spectator anchor, should
+      not wait for the timer. Handle its disconnect at once in `OnClientDisconnectedEvent` with
+      `SendLogoutTime(body, 0)` + `PlayerDisconnected(body, identity, identity.GetId())`, as vanilla
+      does for a dead body (`missionserver.c:679-687`).
+    - **Evidence:** reproduced and fixed in DayZDiag 1.30 on 2026-11-17 (BattleRoyale PR #56, runs
+      fb6d1730 before the fix and fb144fcf after it). The first hypothesis, "the event arrives
+      without a body and vanilla drops it", was wrong: a test proved the premise false.
 38. **Three input detection patterns exist, all valid:**
     - Simple: `g_Game.GetInput().LocalPress("UAMyAction", false)` — one-line check
     - Direct: `GetUApi().GetInputByName("UAMyAction").LocalPress()` — per-frame

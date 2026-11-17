@@ -19778,10 +19778,20 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 37e from BattleRoyale PR #56 (willy92wins/BattleRoyale): an unpossessed identity keeps its last body as player, and deleting a body in the vanilla logout queue skips DisconnectPlayer (duplicate UID until restart). Reproduced and fixed in DayZDiag 1.30 on 2026-11-17 (runs fb6d1730 and fb144fcf); vanilla lines checked in the 1.30 extraction (missionserver.c:240, 641-697). Ported on 2026-11-18 from an unpublished local commit of 2026-11-17, rule text unchanged; the cited lines were read again in the 1.30.164289 scripts (in the 1.30.164393 Experimental scripts the cited missionserver.c ranges after line 240 sit 20 to 29 lines lower).",
+          "license": "MIT",
+          "source_hash": "ea97365e7495b65d28181444ede3e24427c82e731ae213f3040b76c8c15ef6d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "battleroyale-pr56@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5163031076c5e95d1d41bbde75d6567396bdde861ef55f7125d885958bcd355e",
+      "output_hash": "ea97365e7495b65d28181444ede3e24427c82e731ae213f3040b76c8c15ef6d7",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -23323,10 +23333,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 37e inserted 23 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 586, 596, 598, 613, 615, 629 and 631 to 609, 619, 621, 636, 638, 652 and 654. No claim text changes.",
+          "license": "MIT",
+          "source_hash": "46c9b8f8a3af27690d2c9e15000f278dacad4bf9c670b618fc0df883a09c5cf0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "battleroyale-pr56@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7ebcfbc6da987e82cd08051fe5d9fb34785f86127f1395aaec3b6b95e2fcf91",
+      "output_hash": "46c9b8f8a3af27690d2c9e15000f278dacad4bf9c670b618fc0df883a09c5cf0",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
