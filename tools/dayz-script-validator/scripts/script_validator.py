@@ -189,6 +189,7 @@ from detectors.es_undefined_builtin_method import (
     check_es_undefined_builtin_method,
 )
 from shared.vanilla_build import compare_vanilla_build, resolve_game_root
+from shared.vanilla_index_tree import compare_index_tree
 from shared.vanilla_tree import resolve_vanilla_root
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
@@ -516,6 +517,11 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     )
     errors.extend(builtin_errors)
     skipped_checks = list(skipped_checks) + builtin_skipped
+    # Not a rule on the addon: whether the vanilla index some rules above
+    # read was built from the vanilla tree the others read.
+    index_warnings, index_skipped, index_info = compare_index_tree(vanilla_root)
+    warnings.extend(index_warnings)
+    skipped_checks = list(skipped_checks) + index_skipped
     build_info = None
     if game_root:
         # Not a rule on the addon: whether the vanilla tree the rules above
@@ -530,6 +536,8 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     result = build_result(
         addon_root, errors, warnings, len(files), elapsed_ms, skipped_checks
     )
+    if index_info is not None:
+        result["info"]["vanilla_index"] = index_info
     if build_info is not None:
         result["info"]["vanilla_build"] = build_info
     return result
