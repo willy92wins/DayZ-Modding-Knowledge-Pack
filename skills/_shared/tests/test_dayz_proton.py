@@ -98,12 +98,12 @@ def fake_dayzmake(tmp_path: Path, help_text: str, version: str) -> Path:
 @pytest.mark.parametrize(
     ("help_text", "version", "expected"),
     [
-        ("build [--proton-binarize]", "v2.0.0", "dayzmake v2.0.0 (ok)"),
-        (
-            "build [--proton-binarize]",
-            "v1.0.0",
-            "dayzmake v1.0.0 (ok for building; upgrade to >= v2.0.0 before unpacking PBOs you did not build)",
-        ),
+        ("build [--proton-binarize]", "v3.1.0", "dayzmake v3.1.0 (ok)"),
+        ("build [--proton-binarize]", "v3.0.2", "dayzmake v3.0.2 (too old: upgrade to >= v3.1.0"),
+        ("build [--proton-binarize]", "v10.0.0", "dayzmake v10.0.0 (ok)"),
+        ("build [--proton-binarize]", "v3.0.1", "dayzmake v3.0.1 (too old: upgrade to >= v3.1.0"),
+        ("build [--proton-binarize]", "v2.0.0", "dayzmake v2.0.0 (too old: upgrade to >= v3.1.0"),
+        ("build [--proton-binarize]", "v1.0.0", "dayzmake v1.0.0 (too old: upgrade to >= v3.1.0"),
         ("build [--proton-binarize]", "v0.3.0", "from before the rename (v0.3.0)"),
         ("build", "v0.3.0", "is upstream armake2"),
     ],
