@@ -272,3 +272,42 @@ in these runs either.
   `CommandlineGetParam` (`game.c:661`, 1.29 `:660`) behind the test flag (`SKILL.md`, "AUTOMATED in-game cell
   without pilot", point 1) and call `super`: all 7 runs that passed a class spawned it, and 17 runs without
   it drew 14 classes.
+
+## Client crash when a mission ends under DayZ-MCP: the harness's RestApi poll, not the mod (added 2026-11-18)
+
+Measured in the BattleRoyale runs of 2026-11-05 to 18 on DayZDiag 1.30.164289.70 (exe timestamp 2026/11/04 18:53:50),
+one dedicated server and one client, both with `@DayZ_MCP`. The offsets below are that build's; an update moves them.
+
+[EXACT][CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130] The client can die with a native crash when a mission ends and the
+client keeps running: kicked by the server (`DisconnectPlayer`), connected while the server exits, or after its own
+`AbortMission`. Its `crash_<session>.log` reads "Unhandled exception", either an access violation whose first frame is
+`[CDPInitServer]` at an address ending in `f5fc` or `f710`, or SEH `0xc0000374` (heap corruption) under
+`[RtlIsZeroMemory]` and `free_base`. Each of the 29 such crashes came 0 to 2 s after `[MCP-CLIENT] shutdown first
+entry` in the client script log, and each of those logs has `Leaked 'MCPClientPollCallback' script instance (1x)!` at
+the mission cleanup. It hit 29 of the 63 mission ends of BattleRoyale sessions where the client kept running (46 %),
+and none of 60 full game exits (53 of them in other projects).
+
+[EXACT][CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130] A frame name in a DayZDiag `crash_*.log` is only the nearest preceding
+export, and `DayZDiag_x64.exe` exports five symbols (`objdump -p`): `CDPCreateClient`, `CDPCreateServer`,
+`CDPInitServer`, `AmdPowerXpressRequestHighPerformance` and `NvOptimusEnablement`. Every address above
+`CDPInitServer` gets its name, so the label says nothing about networking. To name the real function, use the fact
+that ASLR keeps the low 16 bits of each address: try every 64 KiB-aligned image base against the deltas between the
+frames of one crash, keep the base where each return address follows a call and the frames share the expected
+`.pdata` function, then disassemble with `objdump -d -M intel` at `0x140000000` plus the RVA. On this build the
+three crash sites above (`f5fc`, `f710`, and the call at `f726` whose callee frees) sit in one function, RVA
+`0xa6f528`-`0xa6f758`: the engine's RestApi worker loop. It stores the HTTP status in the request (the `f5fc`
+instruction), compares it with 301, sets state 3 (`EREST_SUCCESS` in the script enum), and its FILE branch logs
+`[RestApi] !!! (file %s) ...`. The faulting addresses come from freed memory: `0xffffffffffffffff`, and
+`0x38382e301c`, which is "0.88" in ASCII.
+
+- Cause, in part a hypothesis: in these runs the only client-side REST user is the DayZ-MCP client bridge. The mod
+  under test and CF send none, and COT's webhook `POST` requires `!IsMissionClient()`. The bridge's `Shutdown()`
+  calls `RestContext.reset()` while its poll `GET` is in flight. That this `reset()` frees the request is not
+  verified: a bridge build that never resets a context with a `GET` in flight, closing 8 missions in a row without a
+  crash, would settle it (0.7 % by chance at 46 %).
+- What to do: do not chase it as a bug of the mod under test. Match the signature and the 0-2 s timing, then go on.
+  The fix belongs to DayZ-MCP: ticket `fb-20261118-010142-38cf` in its inbox, which also replaces the client-owned
+  car hypothesis of `fb-20261115-191029-fa07`. Remove this finding once that ticket is fixed.
+- `crash_*.log` is not only handled exceptions (`SKILL.md`, TROUBLESHOOTING, "Logs"): an "Unhandled exception" entry
+  is a native crash that ended the process.
+- Players without the harness are not expected to hit it; a retail client was not measured.

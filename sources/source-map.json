@@ -2061,10 +2061,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one Added entry, the dayz-test-ingame finding on the client crash when a mission ends under DayZ-MCP and on naming the function behind a DayZDiag crash frame. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7ec3ceb2a934ab8e9ba1643d0329d8a2b8282d0cf8d64dd638c719667b6d731b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f78b0f977895459426d29ea0acd302516c68ece5882d6797a6f48af11014c122",
+      "output_hash": "7ec3ceb2a934ab8e9ba1643d0329d8a2b8282d0cf8d64dd638c719667b6d731b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -15300,10 +15310,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one index line under 'Session findings' for the new appendix (the client crash when a mission ends under DayZ-MCP); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL move one line down, text unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5b93a11a2a32c5309435fc9abf089a8d36b062b2d3b2ba2bf36afaadd8f1b65f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "736805bc9b122031ad4c0dfc9efb3abb09d5b44d31f7345553bd729b36adc57d",
+      "output_hash": "5b93a11a2a32c5309435fc9abf089a8d36b062b2d3b2ba2bf36afaadd8f1b65f",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -15362,10 +15382,20 @@
           "source_path": "skills/dayz-test-ingame/references/session-findings.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: new appendix 'Client crash when a mission ends under DayZ-MCP: the harness's RestApi poll, not the mod'. The DayZDiag 1.30.164289.70 client crash 0-2 s after the DayZ-MCP bridge shutdown at a mission end (29 of 63 BattleRoyale mission ends, 0 of 60 full exits; CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130, runtime_verified, lines 281-288) and how to name the function behind a crash frame, the RestApi worker on this build (CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130, source_verified, lines 290-301); the reset() cause stays a hypothesis with its test; ticket fb-20261118-010142-38cf. Evidence: the client and server profile logs and crash logs of 2026-11-05 to 18, objdump of the exe, the DayZ-MCP bridge source. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cbaf4745edfcd8dbb49e8f9fe068945d33fcc3b0b730fc980d624b743a41e345",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/session-findings.md",
+          "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "42a3650faf07aeb2fc4db1d9efa96309f6620b7f9e7a237b31248494b6ae67d5",
+      "output_hash": "cbaf4745edfcd8dbb49e8f9fe068945d33fcc3b0b730fc980d624b743a41e345",
       "output_path": "skills/dayz-test-ingame/references/session-findings.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -22833,10 +22863,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "sp527-mod-dev-shared-scripts@2026-11-16",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: two new claims on dayz-test-ingame references/session-findings.md (CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130 runtime_verified, CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130 source_verified); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL follow their lines in dayz-test-ingame SKILL.md. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5a62fbdbb9b4397167d4179bc8874eb249d59f45134d0371c502e63c650ad2f8",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "2cfae80bef5c2faec14a39ac7a1aa749d4419e4dc6625f88073a06bb399041e5",
+      "output_hash": "5a62fbdbb9b4397167d4179bc8874eb249d59f45134d0371c502e63c650ad2f8",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

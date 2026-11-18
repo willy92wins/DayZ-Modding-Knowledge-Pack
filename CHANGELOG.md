@@ -7,6 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-test-ingame`: a session finding for the client crash when a mission ends under DayZ-MCP. A `crash_*.log` with
+  `[CDPInitServer]` at `...f5fc`/`...f710`, or heap corruption, 0-2 s after the bridge's shutdown is the harness's RestApi
+  poll (ticket `fb-20261118-010142-38cf`), not the mod under test. Also how to name the function behind a DayZDiag crash frame,
+  whose name is only the nearest of the exe's five exports. Two claims, runtime_verified and source_verified.
+
 - `dayz-mod-dev`, a new skill: the entry point for mod development on DayZ 1.30 or later. It routes a mod task to the
   domain skills, carries the rules every mod task needs (look up every API, the version define, forward slashes,
   PBOs in `addons/`, load order following `requiredAddons`, no writes into Steam's directories, publishing is the

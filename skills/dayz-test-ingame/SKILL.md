@@ -612,6 +612,7 @@ Per-session in-game gotchas moved to `references/session-findings.md`; load it w
 - **Third-party "sloppy" scripts (2026-06-28)** — deps that only warn on retail but fatal-compile on diag require a user-owned external manual parity run; agent stays in quarantine.
 - **Launching DayZDiag from the agent (2026-06-28, superseded 2026-07-15)** — background tool-jobs can lose their child; use the Diag-only managed launcher and its exact run instead of an unmanaged process.
 - **H2R import (2026-10-24)** — some DayZDiag 1.30 runs never load their textures while their error counts read normal (compare the run's median JPEG size with a textured run of the same framing, the RPT warning set being specific to that probe, and relaunch); the vehicle 1PP eye rides the `Head` bone and moves between runs and looks: log it at every look.
+- **Client crash when a mission ends under DayZ-MCP (2026-11-18)** — a `crash_*.log` with `[CDPInitServer]` at `...f5fc`/`...f710`, or heap corruption `0xc0000374`, 0-2 s after `[MCP-CLIENT] shutdown first entry` is the harness's RestApi poll, not the mod under test; a DayZDiag crash frame name is only the nearest of the exe's five exports, and how to name the real function.
 
 ## Backups (.bak_*) in scripts/ inflate the PBO and break grep-verify (SP-065, added 2026-07-14)
 
