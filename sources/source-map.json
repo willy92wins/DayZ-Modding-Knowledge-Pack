@@ -2081,10 +2081,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: an Unreleased Changed entry for the 'Vanilla control' section of tools/dayz-script-validator/README.md: the baseline stays on DayZ 1.30.164289 stable while the owner's P:\\scripts holds 1.30.164393 Experimental, --vanilla-root names a tree of the baseline's build, a local vanilla_index.json is rebuilt when the tree changes build, and the run time reads about six minutes. Its figures are those of that README's input of the same revision: the control exits 0 on the 164289 tree and 1 with no argument, 8 errors and 431 against 434 warnings, the three #else lines, 96 files changed and 3 new, the five false ES-MEMBER-REDECLARE-BASE findings of a 1.30.164289 index read with the 164393 tree, 340.71 s and 367 to 379 s. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cdf1632d36881c4410de22d76f7d5575eed1457acf5c0db23daf604220e53867",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-tree-note@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "e9aa72dacfb7ed658c56b67d66216bc186cbf0a8cb75a3136ef4c7d979a1d327",
+      "output_hash": "cdf1632d36881c4410de22d76f7d5575eed1457acf5c0db23daf604220e53867",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -26728,10 +26738,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-vanilla-control-162@2026-11-10",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: 'Vanilla control' gains three things. (1) What to do when the default vanilla tree holds another build than the baseline's: name a tree of the baseline's build with --vanilla-root; the baseline stays on the stable build and an Experimental build is not a reason to --update (the owner's choice, 2026-11-18). (2) A local scripts/shared/vanilla_index.json is rebuilt when the vanilla tree changes build. (3) The run time reads about six minutes in place of two to four. Measured on the owner's PC on 2026-11-18 with the validator of main at 49764a04ab8cf18285a57fe33dff944005331873 (Python 3.14.3, no index loaded). P:\\scripts holds DayZ 1.30.164393 Experimental since that day (DayZ_x64.exe of the DayZ Exp install: file version 1.30.164.393, product version 1.30.164393.87; script_validator.py --game-root on that install reports 3059 .c files in dta\\scripts.pbo, PBO header version 128312, and none that differs from the tree) and the 1.30.164289 stable tree is kept as P:\\scripts_164289_20261105 (its digest is the baseline's). vanilla_control.py --vanilla-root P:\\scripts_164289_20261105: exit 0, 'PASS - findings match the baseline', 379 s. vanilla_control.py with no argument: exit 1, 'FAIL - warning count above baseline ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN 263 > 260' and the digest line, 378 s. Full dumps of both trees with the same validator: the stable tree has 3057 files, digest fd826b4016910c5ca99046158d6e07aea79b4e52722b5ad20b36ffed8e527a1e, 8 errors and 431 warnings; the Experimental tree has 3060 files, 14082526 bytes, digest e99f99a9c431fb8a8ed62ce4cb48d2690d3b953678009d0d3adb6c589504542b, 8 errors and 434 warnings. The 8 errors are the same rule, file and line; the 349 warnings in files that do not change are identical line by line; the only (rule, file) counts that move are ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN in 4_world/classes/constructionbase.c (2 to 3), 4_world/classes/useractionscomponent/actionmanagerclient.c (0 to 1) and 4_world/classes/useractionscomponent/targetconditionscomponents/cctliquid.c (0 to 1), each on an #else line (constructionbase.c:1034, :1066 and :1707, actionmanagerclient.c:587, cctliquid.c:70 in 164393), and the count of #else lines in those files moves the same way. By sha256 of every file the validator discovers, 96 files differ and 164393 adds 3: 4_world/classes/basebuilding/detectionboxdata.c and, under 4_world/classes/useractionscomponent/targetconditionscomponents, cctliquidframeprobe.c and cctliquidsyntheticcursor.c. Index: check_es_member_redeclare_base on 164393's cctliquidsyntheticcursor.c gives 0 findings with no index, 5 with the index built from 1.30.164289 on 2026-11-09 (lines 26, 27, 28, 37 and 38; that index lists those members under CCTLiquid, at cctliquid.c:18-20 and :33-34 of 164289) and 0 with an index built from the 164393 tree (3059 .c files, tree_digest 756513dd67c5d613693002e06758d986e172506c63af5df67c6a21d0a33cd8de); the validator over the whole 164393 tree with that index loaded gives the same 8 errors and 434 warnings, line by line, as with none. Run time: measured.elapsed_seconds of the baseline is 340.71 (2026-11-10), and the four runs above took 367 to 379 s by the wall clock, two to four at a time. Validator tests: 350 passed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3b92bc591702376f25ba206f5644374249eaefaf6504cb6e7f9d2ed2c844e51b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-tree-note@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ce4e19a70da831ead0ae0b0815ea12e6b4b15e66ca2c26319faff8fe7d708673",
+      "output_hash": "3b92bc591702376f25ba206f5644374249eaefaf6504cb6e7f9d2ed2c844e51b",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

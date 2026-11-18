@@ -416,8 +416,9 @@ over that tree and fails if the findings differ from a measured baseline.
 The vanilla tree is Bohemia's and is not redistributed. Without a local
 copy the control SKIPs (exit 2) instead of pretending the tree was clean.
 
-A full run on DayZ 1.30 takes two to four minutes. It is a gate, not a unit
-test — do not put it in `unittest discover`.
+A full run on DayZ 1.30 takes about six minutes (340 s when the baseline was
+measured, on 2026-11-10). It is a gate, not a unit test — do not put it in
+`unittest discover`.
 
 ```powershell
 python scripts/vanilla_control.py
@@ -434,6 +435,36 @@ accepted change; it prints what moved. Exit 0 is PASS, 1 is FAIL, 2 is
 SKIP (no tree, no baseline, unreadable, or a local
 `scripts/shared/vanilla_index.json` that the validator loads: the baseline
 measures the validator without one, so move that file away first).
+
+The baseline is measured on one build, the stable one: `tree.dayz_build`
+names it and `tree.digest` identifies its tree. A tree of another build
+fails the control on the digest whatever the validator finds in it, so when
+the default tree holds another build (an Experimental extract in
+`P:\scripts`, say), keep a tree of the baseline's build beside it and name
+it. An Experimental build is not a reason to `--update`: the baseline moves
+when a stable patch lands.
+
+```powershell
+python scripts/vanilla_control.py --vanilla-root <tree of the baseline's build>
+```
+
+Measured on the owner's PC on 2026-11-18, with DayZ 1.30.164393 Experimental
+in `P:\scripts` and the 1.30.164289 stable tree in
+`P:\scripts_164289_20261105`: the control passes on the stable tree (8
+errors, 431 warnings) and, with no argument, fails on the Experimental one,
+on the digest and on `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN 263 > 260`. That
+tree (3 060 files, 96 changed and 3 new) gives the same 8 errors and 434
+warnings; the three more are one `#else` each, which the rule does not
+analyse, in `constructionbase.c`, `actionmanagerclient.c` and `cctliquid.c`.
+
+A local `scripts/shared/vanilla_index.json` holds the members and
+signatures of the tree it was built from, so rebuild it when the vanilla
+tree changes build (`python scripts/build_vanilla_index.py`). That day an
+index of 1.30.164289 read with the 164393 tree gave five false
+`ES-MEMBER-REDECLARE-BASE` findings, at
+`4_world/classes/useractionscomponent/targetconditionscomponents/cctliquidsyntheticcursor.c:26-28`
+and `:37-38`: 164393 moves those members of `CCTLiquid` into that new
+subclass. An index built from the 164393 tree gives none.
 
 Every baseline entry carries the reason it is tolerated. `--update` keeps
 the reasons already written and cannot invent the missing ones, so it names

@@ -255,6 +255,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   comes from `dayzmake extract --derapify --only '*.c' --only 'config.*'`, a full `P:\dz` from `dayzmake extract`.
 - `dayz-pbo-reverse-engineering`, `enforce-script-reference`, `_shared/linux-proton.md`: the manual entry-name check
   for unpacking third-party PBOs with dayzmake < 2.0.0 is gone; use 3.1.0 or upgrade.
+- `tools/dayz-script-validator/README.md`, "Vanilla control": what to do when the default vanilla tree holds another
+  build than the baseline's, and that a local `vanilla_index.json` is rebuilt when the tree changes build. The
+  baseline stays on DayZ 1.30.164289 stable (digest `fd826b40`, unchanged): an Experimental build is not a reason to
+  re-baseline, and the control is run with `--vanilla-root` naming a tree of the baseline's build. Measured on the
+  owner's PC on 2026-11-18, after `P:\scripts` moved to DayZ 1.30.164393 Experimental with the 1.30.164289 tree kept
+  beside it, with this validator and no index: the control passes on the 164289 tree (8 errors, 431 warnings) and,
+  with no argument, fails on the Experimental one (3 060 files, digest `e99f99a9`; 96 files changed and 3 new) on
+  the digest and on `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN 263 > 260`. That tree gives the same 8 errors, at the same
+  lines, and 434 warnings: the three more are one `#else` each, which the rule does not analyse, in
+  `constructionbase.c`, `actionmanagerclient.c` and `cctliquid.c`. An index built from 1.30.164289 and read with the
+  164393 tree gave five false `ES-MEMBER-REDECLARE-BASE` findings on `cctliquidsyntheticcursor.c`, a new subclass
+  that takes those members from `CCTLiquid`; an index built from the 164393 tree gives none. The section's run time
+  now reads about six minutes, not two to four: 340 s when the baseline was measured on 2026-11-10, and 367 to 379 s
+  by the wall clock for each of the four runs of 2026-11-18, made two to four at a time.
 
 ### Removed
 
