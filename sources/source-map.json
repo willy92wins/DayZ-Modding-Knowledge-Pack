@@ -5079,10 +5079,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-f25de18@2026-11-15",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion of main 2b35147 (#199) on 2026-11-18, authorised by the owner. promote --check from a fresh checkout of 2b35147 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=101, 128 operations (46 agents_user_skills, 46 claude_user_skills, 76 obsidian_snapshots); the 23 skill trees that change are exactly the ones main touched since the 2026-11-15 promotion of f25de18 (#194, #195 and #199). The owner approved that plan; main then moved to 54706e0 (#200, which touches no skill) and the plan applied is a second check of 2b35147 with the same 128 operations. promote --apply PASS, transaction d99f73773867ca366c793b69, COMMIT event 305, completed_at 2026-11-18T20:54:59.973386+00:00. Verified after the apply with packctl's own tree_digest: 128/128 destinations at their after_digest; the receipt's sha256 equals the COMMIT receipt_hash and its completed_at the COMMIT event's; its source_commit and its 128 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any target; the 25 transaction backups hold their before_digest and the 76 vault destinations were new; dayz-motorbikes/SKILL.md carries the section on one-seat motorbikes in both skill roots.",
+          "license": "MIT",
+          "source_hash": "ddc69f7103df3a2c3b0a8e9a5053c9b4f548b2af6b06e4a0cf336d5dce4dc74b",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-2b35147@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3d017af492d1345c26789e16df1d693b022586172b23147ecdee72a96ef97c17",
+      "output_hash": "ddc69f7103df3a2c3b0a8e9a5053c9b4f548b2af6b06e4a0cf336d5dce4dc74b",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -39882,6 +39892,28 @@
       "license": "MIT",
       "output_hash": "b8944758586d489af22294643935783ff00d004e7d442fb5669d92cecdbfb0f5",
       "output_path": "promotions/receipts/f6942eb0aa0c0ac2a9ad7376.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/d99f73773867ca366c793b69.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "promotion of main 2b35147 (#199) on 2026-11-18, authorised by the owner. promote --check from a fresh checkout of 2b35147 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=101, 128 operations (46 agents_user_skills, 46 claude_user_skills, 76 obsidian_snapshots); the 23 skill trees that change are exactly the ones main touched since the 2026-11-15 promotion of f25de18 (#194, #195 and #199). The owner approved that plan; main then moved to 54706e0 (#200, which touches no skill) and the plan applied is a second check of 2b35147 with the same 128 operations. promote --apply PASS, transaction d99f73773867ca366c793b69, COMMIT event 305, completed_at 2026-11-18T20:54:59.973386+00:00. Verified after the apply with packctl's own tree_digest: 128/128 destinations at their after_digest; the receipt's sha256 equals the COMMIT receipt_hash and its completed_at the COMMIT event's; its source_commit and its 128 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any target; the 25 transaction backups hold their before_digest and the 76 vault destinations were new; dayz-motorbikes/SKILL.md carries the section on one-seat motorbikes in both skill roots.",
+          "license": "MIT",
+          "source_hash": "88a000f47c36a162c655ea79cfa957d45cecf54f3ed3c0a7992346fa5fb50cb0",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/d99f73773867ca366c793b69.json",
+          "source_revision": "promotion-2b35147@2026-11-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "88a000f47c36a162c655ea79cfa957d45cecf54f3ed3c0a7992346fa5fb50cb0",
+      "output_path": "promotions/receipts/d99f73773867ca366c793b69.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
