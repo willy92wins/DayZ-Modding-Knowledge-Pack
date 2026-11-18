@@ -2091,10 +2091,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-one-seat@2026-11-18",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: the entry for the dayz-motorbikes section on one-seat motorbikes now says the two overrides are measured in game on LFH2R and LFDucati (LFDucati run in game on 2026-11-18). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f793fffc05f52c8a64ae82d08d17b76c8eae9125a566bbeb6281bfe3487cd7b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-one-seat-ducati@2026-11-18",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "59bbba9b68994db86593e6dc3431da68de5d460bde58386f224a70345fc79609",
+      "output_hash": "f793fffc05f52c8a64ae82d08d17b76c8eae9125a566bbeb6281bfe3487cd7b9",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -38739,10 +38749,20 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "kp-update-one-seat@2026-11-18",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: State on the second bike measured in game on LFDucati (DayZ 1.30.164393 Experimental, dedicated server and client, five runs of the kit's mount test): without the two overrides the client crash is reproduced from direction 1 and the run passes from direction 0; with them both sides pass with seat type 0; with seat type 1 forced over the fixed bike the run passes. The Symptom tag names both bikes. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6363ee6edca71a6bb7cc3c1ed941fe4c9943d24543a26f949aac9b01995784a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "kp-update-one-seat-ducati@2026-11-18",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "b65c16c3938f8f25b9d53ba7452f768ea4a46ec0ed20917e6e6a8fe2e57a8f85",
+      "output_hash": "6363ee6edca71a6bb7cc3c1ed941fe4c9943d24543a26f949aac9b01995784a1",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
