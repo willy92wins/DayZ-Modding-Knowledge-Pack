@@ -7,6 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-motorbikes`, "One-seat motorbikes on 1.30.164393 or later" and a preflight line: on DayZ 1.30.164393
+  Experimental a bike whose `class Crew` has only `Driver` kills the client on its first frame on the bike when the
+  player gets on from direction 1, because `MotorbikeScript.CrewShouldExit`, new in that build, calls the native
+  `CrewMember` with the seat animation type. Two overrides in the script class fix it (measured in game on LFH2R
+  and LFDucati); only `HasDirectionalInOutAction()` compiles on stable 1.30.164289, which has no `CrewShouldExit`.
 - `dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake": how to download a dayzmake release and
   verify it before installing (the release's GPG-signed `SHA256SUMS`, the pinned key fingerprint
   `6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E`, a throwaway keyring, and a status-line check that stops the
