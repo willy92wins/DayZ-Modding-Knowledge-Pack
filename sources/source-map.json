@@ -31888,10 +31888,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: one more test in TestVanillaIndexBesideTheDefault, written after the code: set_index_path_for_tests(None) goes back to the default index when a file beside it was read for the last tree, which is what the cleanup of a test relies on. A mutation check on a copy of this tool (ten breaks of the choice of the index, one at a time, each run against the whole suite) had shown that no test held that line of set_index_path_for_tests; with this test each of the ten breaks fails at least one test. python -m pytest tests: 379 passed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6d64e3aeec8834f80e440f5a4bc800da35102aadb3ad075d2135331f3e3782ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a8d87a556eb3663564195067362adaf770859845636b335f63c77e8046854d71",
+      "output_hash": "6d64e3aeec8834f80e440f5a4bc800da35102aadb3ad075d2135331f3e3782ce",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

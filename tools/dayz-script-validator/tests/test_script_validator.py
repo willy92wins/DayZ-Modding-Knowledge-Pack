@@ -6358,6 +6358,21 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
         self.assertNotIn("<name>", warning["message"])
         self.assertEqual(str(pinned), str(vanilla_reference.loaded_index_path()))
 
+    def test_unpinning_goes_back_to_the_default_index(self):
+        # What the cleanup of a test does: set_index_path_for_tests also
+        # drops the file that was read for the last tree.
+        self._index(self.stable)
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+        self._run(self.experimental)
+        self.assertEqual(str(beside), str(vanilla_reference.loaded_index_path()))
+
+        vanilla_reference.set_index_path_for_tests(None)
+
+        self.assertEqual(
+            str(self.default), str(vanilla_reference.loaded_index_path())
+        )
+
     def test_without_a_default_index_none_beside_it_is_read(self):
         # The default file says whether there is an index at all: moving it
         # away leaves the four rules with their curated tables, and the
