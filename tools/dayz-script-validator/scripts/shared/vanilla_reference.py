@@ -13,8 +13,10 @@ present. Missing, corrupt, or schema-mismatched index files fall back to the
 curated tables with identical behaviour. On a key present in both, the curated
 entry wins (it carries a human-verified fix message). The index holds the
 members and signatures of the tree it was built from, so an index of another
-tree than the one being read can report a false positive;
-shared/vanilla_index_tree.py warns of it (VANILLA-INDEX-TREE-MISMATCH).
+tree than the one being read can report a false positive. An index of that
+tree kept beside the default one, as `vanilla_index.json.<name>`, is read
+instead (use_sibling_index); shared/vanilla_index_tree.py asks for it and
+warns when there is none (VANILLA-INDEX-TREE-MISMATCH).
 """
 
 from __future__ import annotations
@@ -27,6 +29,8 @@ INDEX_SCHEMA_VERSION = 1
 INDEX_FILENAME = "vanilla_index.json"
 
 _index_path_override = None
+# A file beside the default index, read instead of it (use_sibling_index).
+_index_path_sibling = None
 _index_loaded = False
 _index_data = None
 
@@ -55,10 +59,19 @@ def default_index_path():
 
 
 def set_index_path_for_tests(path):
-    """Point the loader at a specific index file (or a missing path)."""
-    global _index_path_override
+    """Point the loader at a specific index file (or a missing path).
+
+    That file is then the only one read: use_sibling_index leaves it alone.
+    """
+    global _index_path_override, _index_path_sibling
     _index_path_override = path
+    _index_path_sibling = None
     reset_index_cache()
+
+
+def index_path_is_pinned():
+    """Whether set_index_path_for_tests names the only index file read."""
+    return _index_path_override is not None
 
 
 def reset_index_cache():
@@ -70,7 +83,23 @@ def reset_index_cache():
 def _index_path():
     if _index_path_override is not None:
         return Path(_index_path_override)
+    if _index_path_sibling is not None:
+        return _index_path_sibling
     return default_index_path()
+
+
+def _read_index(path):
+    """The index document in a file, or None when the file does not hold one."""
+    try:
+        raw = path.read_text(encoding="utf-8")
+        data = json.loads(raw)
+    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    if data.get("schema_version") != INDEX_SCHEMA_VERSION:
+        return None
+    return data
 
 
 def _load_index():
@@ -78,20 +107,7 @@ def _load_index():
     if _index_loaded:
         return _index_data
     _index_loaded = True
-    path = _index_path()
-    try:
-        raw = path.read_text(encoding="utf-8")
-        data = json.loads(raw)
-    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
-        _index_data = None
-        return None
-    if not isinstance(data, dict):
-        _index_data = None
-        return None
-    if data.get("schema_version") != INDEX_SCHEMA_VERSION:
-        _index_data = None
-        return None
-    _index_data = data
+    _index_data = _read_index(_index_path())
     return _index_data
 
 
@@ -102,6 +118,43 @@ def loaded_index_path():
     return _index_path()
 
 
+def use_default_index():
+    """Read the default index again, after use_sibling_index."""
+    global _index_path_sibling
+    if _index_path_sibling is not None:
+        _index_path_sibling = None
+        reset_index_cache()
+
+
+def use_sibling_index(built_from_tree):
+    """Read an index kept beside the default one instead of the one in use.
+
+    The files are `vanilla_index.json.<name>` in the default index's folder,
+    taken in name order. The first that holds an index for which
+    built_from_tree(tree) is true becomes the index in use, where tree is
+    what that index records of the tree it was built from (the dict
+    loaded_index_tree returns). Returns its path, or None when there is no
+    such file: the index in use then stays. A path set with
+    set_index_path_for_tests is never replaced.
+    """
+    global _index_path_sibling, _index_loaded, _index_data
+    if _index_path_override is not None:
+        return None
+    default = default_index_path()
+    try:
+        siblings = sorted(default.parent.glob(INDEX_FILENAME + ".*"))
+    except OSError:
+        return None
+    for path in siblings:
+        data = _read_index(path)
+        if data is not None and built_from_tree(_tree_of(data)):
+            _index_path_sibling = path
+            _index_loaded = True
+            _index_data = data
+            return path
+    return None
+
+
 _INDEX_TREE_KEYS = (
     "vanilla_root",
     "file_count",
@@ -109,6 +162,10 @@ _INDEX_TREE_KEYS = (
     "total_bytes",
     "tree_digest",
 )
+
+
+def _tree_of(index):
+    return {key: index.get(key) for key in _INDEX_TREE_KEYS}
 
 
 def loaded_index_tree():
@@ -121,7 +178,7 @@ def loaded_index_tree():
     index = _load_index()
     if index is None:
         return None
-    return {key: index.get(key) for key in _INDEX_TREE_KEYS}
+    return _tree_of(index)
 
 
 def base_member_set(base_name):

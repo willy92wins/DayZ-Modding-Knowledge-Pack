@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -269,6 +270,67 @@ class TestLocalIndex(_WithoutLocalIndex):
         code, lines = self._main()
         self.assertEqual(0, code)
         self.assertTrue(lines[0].startswith("PASS"))
+
+
+class TestIndexBesideTheDefault(unittest.TestCase):
+    # The validator reads the index beside the default one that was built
+    # from the tree being read. The control reads none, as before: it SKIPs
+    # on the default index, and without one nothing beside it is read. A
+    # default index moved away under another name in its folder stays away.
+    def setUp(self):
+        temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        self.temp_dir = pathlib.Path(temp_dir.name)
+        self.baseline = self.temp_dir / "baseline.json"
+        self.default = self.temp_dir / "shared" / "vanilla_index.json"
+        self.beside = self.default.with_name("vanilla_index.json.mini")
+        default_path = mock.patch.object(
+            vanilla_reference, "default_index_path", return_value=self.default
+        )
+        default_path.start()
+        self.addCleanup(default_path.stop)
+        vanilla_reference.set_index_path_for_tests(None)
+        self.addCleanup(vanilla_reference.set_index_path_for_tests, None)
+        # Built from the control's own tree: the one the validator would read.
+        build_vanilla_index.write_index(
+            build_vanilla_index.build_index_document(MINI_TREE), self.beside
+        )
+
+    def _main(self, *extra):
+        argv = [
+            "--vanilla-root",
+            str(MINI_TREE),
+            "--baseline",
+            str(self.baseline),
+        ]
+        with redirect_stdout(io.StringIO()) as captured:
+            code = vanilla_control.main(argv + list(extra))
+        return code, captured.getvalue().splitlines()
+
+    def test_without_a_default_index_the_one_beside_it_is_not_read(self):
+        code, _lines = self._main("--update")
+        self.assertEqual(0, code)
+        self.assertIsNone(vanilla_reference.loaded_index_path())
+        code, lines = self._main()
+        self.assertEqual(0, code)
+        self.assertTrue(lines[0].startswith("PASS"))
+        self.assertIsNone(vanilla_reference.loaded_index_path())
+
+    def test_the_default_index_skips_whatever_is_beside_it(self):
+        other_tree = self.temp_dir / "other" / "scripts"
+        other_tree.mkdir(parents=True)
+        (other_tree / "other.c").write_text("class Other\n{\n}\n")
+        build_vanilla_index.write_index(
+            build_vanilla_index.build_index_document(other_tree), self.default
+        )
+        vanilla_reference.reset_index_cache()
+
+        code, lines = self._main("--update")
+
+        self.assertEqual(2, code)
+        self.assertTrue(lines[0].startswith("SKIP"))
+        self.assertIn("(%s)" % self.default, lines[0])
+        self.assertFalse(self.baseline.exists())
 
 
 class TestUnexplainedEntries(unittest.TestCase):

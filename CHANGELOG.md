@@ -89,6 +89,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   with the same count and bytes but other contents is therefore not told apart. `tests/test_script_validator.py`
   now sets a local index aside, as it does the vanilla tree: with one in the checkout, 24 of its tests would fail on
   this rule. See the README's "Which tree the vanilla index is".
+- `dayz-script-validator`: with more than one vanilla tree on a PC, the index of each is kept beside the default one
+  as `scripts/shared/vanilla_index.json.<name>`, and a run reads the one built from the tree it reads. When the
+  default index is not known to be of that tree (a number differs, or it cannot be compared), the files beside it
+  are tried in name order and the first whose count and bytes are the tree's is read instead: the four rules that
+  read the index judge with it, `info.vanilla_index.index` names it and the run has no
+  `VANILLA-INDEX-TREE-MISMATCH`. When none is, the default index is read and the run warns as before; the warning
+  now also offers `--out` with such a name. Only the default file was read until now, so on 2026-11-18 three
+  addons tested on DayZ 1.30.164393 Experimental, validated against that tree while the default index was of
+  1.30.164289, warned on every run and were judged with the stable build's members and signatures. With
+  `vanilla_index.json.164393` beside the default index they are PASS against the Experimental tree and against
+  the default one, and 164393's `targetconditionscomponents` folder gives none of the five false
+  `ES-MEMBER-REDECLARE-BASE` findings. A file beside the default index that is not an index, does not record the
+  two numbers or did not parse every file of its tree is passed over; a path set with `set_index_path_for_tests`
+  is the only file read; and without a default index that loads nothing beside it is read, so the vanilla
+  control, which SKIPs on a loaded index, behaves as before, also with the default index moved away under another
+  name in its folder. On the owner's PC the choice read two more index files, 0.012 to 0.021 s each.
+  `tools/dayz-script-validator/.gitignore` ignores those files, which are derived from Bohemia's scripts like the
+  default index. See the README's "Which tree the vanilla index is".
 
 ### Fixed
 

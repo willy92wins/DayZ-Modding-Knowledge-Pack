@@ -325,7 +325,8 @@ had already turned the control red on 1.30 (inbox 4c83).
 With an index in use and a vanilla tree, each run compares them. The index
 records the count and the total bytes of the `.c` files of the tree it was
 built from, and the tree being read is counted with the generator's own
-walk. When either number differs, `VANILLA-INDEX-TREE-MISMATCH` (WARN)
+walk. When either number differs, and no index kept beside it is of that
+tree (below), `VANILLA-INDEX-TREE-MISMATCH` (WARN)
 names the index file, the tree it was built from (the folder the generator
 read, its two numbers and the start of its `tree_digest`), the tree being
 read with its two numbers, and the command that rebuilds the index from
@@ -348,10 +349,37 @@ exits 2, so what the section above says of a gate that accepts WARN holds
 here too. The vanilla control never gets this far: it SKIPs when an index
 is in use.
 
+A PC with more than one vanilla tree (the stable build's and an
+Experimental one, say) keeps an index of each: the default file for one
+and, for each other, a file beside it named
+`scripts/shared/vanilla_index.json.<name>`. The name is free; the build
+number serves. It is built with `--out`:
+
+```powershell
+python tools/dayz-script-validator/scripts/build_vanilla_index.py --vanilla-root <tree> `
+    --out tools/dayz-script-validator/scripts/shared/vanilla_index.json.<name>
+```
+
+Each run starts from the default index. When that one is not known to be
+of the tree being read (a number differs, or it cannot be compared), the
+files beside it are tried in name order, and the first whose two numbers
+are the tree's is read instead: the four rules judge with it,
+`info.vanilla_index.index` names it and the run has no warning. When none
+is of the tree, the default index is read and the run warns, or gives its
+SKIP line, as above; the warning then also offers `--out` with such a
+name. A file beside the default index is passed over when it is not an
+index (it cannot be read, or has another `schema_version`), does not
+record the two numbers, or did not parse every file of its tree. The
+default file alone says whether there is an index: without one that
+loads, nothing beside it is read, so an index moved away under another
+name in the same folder stays away. Like the default index, those files
+are derived from Bohemia's scripts, and git ignores them.
+
 The two numbers are compared and the index's `tree_digest`, a sha256 over
 the contents of the same files, is not, because of what each costs on
 every run. The price is one blind spot: a tree with the same count and the
-same bytes but other contents is taken for the index's tree.
+same bytes but other contents is taken for the index's tree, by the
+comparison and by the choice among the files beside the default index.
 
 Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work
 running on the PC), on the 1.30.164393 tree in `P:\scripts` (3 059 `.c`
@@ -377,6 +405,23 @@ files, 14 001 771 bytes):
   listing, gave the same two numbers on both trees in 0.03 to 0.09 s. It
   is not used: the generator and the comparison count with one function,
   `collect_c_files` in `scripts/shared/vanilla_index_tree.py`.
+
+Measured there on 2026-11-19, with the 1.30.164289 tree back in
+`P:\scripts` and the 164393 tree in a folder of its own, the default index
+built from the 164289 tree and, beside it, `vanilla_index.json.164393` and
+an index of 1.29:
+
+- Three addons of 114, 77 and 3 files, validated against the 164393 tree
+  with `--game-root` naming the Experimental install, go from WARN on
+  this rule alone to PASS, with `info.vanilla_index.index` naming the
+  `.164393` file. Against the default tree, with the stable install, they
+  are PASS on the default index before and after.
+- 164393's `targetconditionscomponents` folder, validated against its own
+  tree, goes from the five `ES-MEMBER-REDECLARE-BASE` findings and this
+  warning to neither.
+- Choosing the file reads two more index files, 0.012 to 0.021 s each
+  (ten rounds). The count, the default index and the choice together took
+  0.24 to 0.26 s (median 0.25 s), and the count alone 0.19 to 0.22 s.
 
 ## Compile errors read from one file
 
@@ -503,7 +548,9 @@ cwd. `--update` rewrites the baseline on purpose after a DayZ patch or an
 accepted change; it prints what moved. Exit 0 is PASS, 1 is FAIL, 2 is
 SKIP (no tree, no baseline, unreadable, or a local
 `scripts/shared/vanilla_index.json` that the validator loads: the baseline
-measures the validator without one, so move that file away first).
+measures the validator without one, so move that file away first; another
+name in the same folder will do, since nothing beside a default index that
+is not there is read).
 
 The baseline is measured on one build, the stable one: `tree.dayz_build`
 names it and `tree.digest` identifies its tree. A tree of another build
