@@ -11,7 +11,10 @@ An optional generated index (`vanilla_index.json`, produced by
 `scripts/build_vanilla_index.py`, not committed) extends these tables when
 present. Missing, corrupt, or schema-mismatched index files fall back to the
 curated tables with identical behaviour. On a key present in both, the curated
-entry wins (it carries a human-verified fix message).
+entry wins (it carries a human-verified fix message). The index holds the
+members and signatures of the tree it was built from, so an index of another
+tree than the one being read can report a false positive;
+shared/vanilla_index_tree.py warns of it (VANILLA-INDEX-TREE-MISMATCH).
 """
 
 from __future__ import annotations
@@ -97,6 +100,28 @@ def loaded_index_path():
     if _load_index() is None:
         return None
     return _index_path()
+
+
+_INDEX_TREE_KEYS = (
+    "vanilla_root",
+    "file_count",
+    "parsed_file_count",
+    "total_bytes",
+    "tree_digest",
+)
+
+
+def loaded_index_tree():
+    """What the index in use says of the tree it was built from, or None.
+
+    The values build_vanilla_index.py wrote, unchecked; a key the file lacks
+    is None. shared/vanilla_index_tree.py compares them with the vanilla
+    tree being read.
+    """
+    index = _load_index()
+    if index is None:
+        return None
+    return {key: index.get(key) for key in _INDEX_TREE_KEYS}
 
 
 def base_member_set(base_name):
