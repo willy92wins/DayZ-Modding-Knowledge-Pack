@@ -2084,9 +2084,29 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: Added entry for the dayz-motorbikes section on one-seat motorbikes on DayZ 1.30.164393 Experimental (a bike whose class Crew has only Driver kills the client on its first frame on the bike when mounted from direction 1; two overrides in the script class, only HasDirectionalInOutAction compiles on stable 1.30.164289). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "59bbba9b68994db86593e6dc3431da68de5d460bde58386f224a70345fc79609",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-one-seat@2026-11-18",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: the entry for the dayz-motorbikes section on one-seat motorbikes now says the two overrides are measured in game on LFH2R and LFDucati (LFDucati run in game on 2026-11-18). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f793fffc05f52c8a64ae82d08d17b76c8eae9125a566bbeb6281bfe3487cd7b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-one-seat-ducati@2026-11-18",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-11-18: an Unreleased Changed entry for the 'Vanilla control' section of tools/dayz-script-validator/README.md: the baseline stays on DayZ 1.30.164289 stable while the owner's P:\\scripts holds 1.30.164393 Experimental, --vanilla-root names a tree of the baseline's build, a local vanilla_index.json is rebuilt when the tree changes build, and the run time reads about six minutes. Its figures are those of that README's input of the same revision: the control exits 0 on the 164289 tree and 1 with no argument, 8 errors and 431 against 434 warnings, the three #else lines, 96 files changed and 3 new, the five false ES-MEMBER-REDECLARE-BASE findings of a 1.30.164289 index read with the 164393 tree, 340.71 s and 367 to 379 s. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "cdf1632d36881c4410de22d76f7d5575eed1457acf5c0db23daf604220e53867",
+          "source_hash": "1193ebfee60b695280231d771973c3940b852c8ec28a025c5af007c21cdb2953",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-tree-note@2026-11-18",
@@ -2094,7 +2114,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "cdf1632d36881c4410de22d76f7d5575eed1457acf5c0db23daf604220e53867",
+      "output_hash": "1193ebfee60b695280231d771973c3940b852c8ec28a025c5af007c21cdb2953",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -38739,10 +38759,30 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one-seat motorbikes on DayZ 1.30.164393 Experimental. A bike whose class Crew has only Driver kills the client on its first frame on the bike when mounted from direction 1: MotorbikeScript.CrewShouldExit, new in that build, calls the native CrewMember with the seat animation type. Symptom and both overrides measured in game on LFH2R (2026-11-18, five crashes of five; the kit's run passed with the fix); the script chain read in the 1.30.164393 scripts.pbo; CrewShouldExit absent from the scripts.pbo of stable 1.30.164289 and from the 1.30.164014 scripts; LFDucati carries the fix and passes the offline validator, not yet run in game. Adds a preflight line, a pointer in Day-0 steps 2 and 9 and the section 'One-seat motorbikes on 1.30.164393 or later'. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b65c16c3938f8f25b9d53ba7452f768ea4a46ec0ed20917e6e6a8fe2e57a8f85",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "kp-update-one-seat@2026-11-18",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: State on the second bike measured in game on LFDucati (DayZ 1.30.164393 Experimental, dedicated server and client, five runs of the kit's mount test): without the two overrides the client crash is reproduced from direction 1 and the run passes from direction 0; with them both sides pass with seat type 0; with seat type 1 forced over the fixed bike the run passes. The Symptom tag names both bikes. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6363ee6edca71a6bb7cc3c1ed941fe4c9943d24543a26f949aac9b01995784a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "kp-update-one-seat-ducati@2026-11-18",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfe921c048dfe7323757b1d9e56a7e73019d3d8dd8ce1d38bf7194f36dd10d12",
+      "output_hash": "6363ee6edca71a6bb7cc3c1ed941fe4c9943d24543a26f949aac9b01995784a1",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
