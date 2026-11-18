@@ -16,6 +16,8 @@ description: >
 
 # DayZ Motorbikes (Single-Track Vehicles) & 1.30 Vehicle Refactor
 
+> **Preflight: one seat (added 2026-11-18, LFH2R and LFDucati).** On DayZ 1.30.164393 Experimental or later, a bike whose `class Crew` has only `Driver` kills the client on its first frame on the bike when the player gets on from one of the two sides. Two overrides in the script class fix it and only one of them compiles on stable 1.30.164289: §One-seat motorbikes, before writing the script class.
+
 > **Preflight: rider posture (added 2026-09-28, LFDucati T99; B1 measured on the same day) [EXACT except where marked].** Chosen solely by `GetAnimInstance()` -> `SetVehicleType` (`exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:104-107`) -> fixed state and column in `Vehicles.agf` (five nodes require literal `VehicleType == 10 || VehicleType == 11`: `:1429, 1474, 1529, 1570, 2806`). Neither the model nor the config moves the hands: they are fixed by the handlebar pose clip, and there is no foot IK. GP clip-ons with MOTO1/MOTO2 leave the hands ~40 cm above: custom clips are required. Survivor Animations MOTORCYCLE (16) = car driver body (Offroad Hatchback) with IK hands, 1.29 format graph (crashes 1.30). Corrects `references/rider-animation.md:77`: 1.29 graphs are TEXT (`$AnimGraph 7`), not binary. Approach without touching the graph: registered child `.asi` + `SetAnimationInstanceByName`, like surrendering (`PlayerBase.c:2087-2088`, `DayZPlayerCfgBase.c:1543-1548`): **works with the motorbike stopped** on dedicated server and local client (measured 2026-09-28, LFDucati B1, LL-530), **and stopped and moving with custom clips** (LFRider on the H2R, same day, LL-533..535): a DayZATool (`ANIMSET5`) clip put the stopped rider within 0.4 mm of its FK in those runs (later first-person probe runs saw the stopped head move by several cm between runs and looks: `dayz-test-ingame` `references/session-findings.md`, "H2R import (2026-10)"); steering clips are distributed across ±45° of REAL wheel angle on all motorbikes (`Vehicles.agf:50`, `:1466`), not at the limit of each one; transitions are exported as full whole-body posture (as additive differences they collapse the skeleton). With observers and in edge cases, untested. Common mod and toolchain: LFRider (not published). Recipe, pitfalls, and the pose in four pieces: `references/rider-animation.md` §Per-bike pose. Detail: LFDucati research notes (not published).
 
 DayZ 1.30 (stable since 2026-10-15; this skill was written on Experimental build 1.30.164014 and re-checked on stable build 1.30.164200) introduces full native engine support for single-track vehicles via the engine simulation type `simulation = "motorbike"` (`exp\bin\bin\config.cpp:1059`, in-game `bin\config.cpp`). At the class architecture level, `class Motorbike: Transport` is a direct sibling of `Car` and `Boat` in native C++ (`exp\scripts\scripts\3_Game\Vehicles\Motorbike.c:30`, in-game `scripts\3_Game\Vehicles\Motorbike.c`), not a child of `Car`. In the game script layer, `MotorbikeScript` inherits directly from `Motorbike` (`exp\scripts\scripts\4_World\Entities\Vehicles\MotorbikeScript.c:53`, in-game `scripts\4_World\Entities\Vehicles\MotorbikeScript.c`), NOT from `CarScript`.
@@ -60,7 +62,7 @@ Ordered checklist of minimum mandatory deliverables to have an operational motor
    ```cpp
    class CfgPatches { class MiMoto { units[] = {}; requiredAddons[] = {"DZ_Data", "DZ_Vehicles_Singletrack"}; }; };
    ```
-2. [EXACT] **`class Crew` block**: define `class Driver` and `class CoDriver: Driver` pointing to `actionSel = "seat_driver"`, `proxyPos = "crewDriver"`, `getInPos = "pos_driver"`, `getInDir = "pos_driver_dir"`, and both with `isDriver = 1;` (`config.cpp:67-85`).
+2. [EXACT] **`class Crew` block**: define `class Driver` and `class CoDriver: Driver` pointing to `actionSel = "seat_driver"`, `proxyPos = "crewDriver"`, `getInPos = "pos_driver"`, `getInDir = "pos_driver_dir"`, and both with `isDriver = 1;` (`config.cpp:67-85`). A bike with one seat declares only `Driver`: see §One-seat motorbikes.
 3. [EXACT] **`class SimulationModule` block**: declare `class Wheels` with `class Front` and `class Rear` (without `Axles`), `class Brakes` with `Front` (`input = 1`) and `Rear` (`input = 0`), and lean curves in `class Steering` (`config.cpp:232-347`).
 4. [EXACT] **Animation sources (`AnimationSources`)**: declare shock absorbers `damper_1`, `damper_2` and wheel state `AnimHitWheel_1`, `AnimHitWheel_2` (`config.cpp:112-148, 348-368`). If it has a flip-up seat, add `SeatDriver`.
 5. [EXACT] **Damage system (`DamageSystem`)**: define `GlobalHealth` (1000 HP) and the zones from `Motorbike_01`: `Chassis`, `Fender` (transfer target for `Front`), `Engine` (`inventorySlots[] = {"SparkPlug"}`), `Front`, `Reflector_1_1`, `Back`, and `FuelTank`, plus `GUIInventoryAttachmentsProps` (`config.cpp:369-519`). A glass slot that should hide at 0.0, as in `Reflector_1_1`, is a config shape the Pack has not seen work in game: see `dayz-vehicles` `references/vehicle-config-and-modelcfg.md`, end of §6b (SP-483).
@@ -74,7 +76,7 @@ Ordered checklist of minimum mandatory deliverables to have an operational motor
    m_VehicleContactDamageCoef = 0.03;
    m_CrewContactDamageCoef = 0.018;
    ```
-9. [EXACT] **Mandatory script overrides**: implement `GetAnimInstance()` returning `VehicleAnimInstances.MOTO1` (10) or `MOTO2` (11), `HasDirectionalInOutAction()` (`true`), `GetSeatAnimationTypeDirectional()`, `GetTransportCameraDistance()`, `GetTransportCameraOffset()`, and `NeedElectricitySourceDevice()` (`false` on magneto/kickstart bikes).
+9. [EXACT] **Mandatory script overrides**: implement `GetAnimInstance()` returning `VehicleAnimInstances.MOTO1` (10) or `MOTO2` (11), `HasDirectionalInOutAction()` (`true`), `GetSeatAnimationTypeDirectional()`, `GetTransportCameraDistance()`, `GetTransportCameraOffset()`, and `NeedElectricitySourceDevice()` (`false` on magneto/kickstart bikes). On a one-seat bike `HasDirectionalInOutAction()` returns `false`: §One-seat motorbikes.
 10. [DESIGN] **Geometry and P3D model**: ensure bone `"drivewheel"` on the front fork, light memory points (`light_1_1`, `light_1_2_reverse`), smoke (`ptcExhaust_start/end`, `ptcEnginePos`), fuel cap (`refill`), and damage selections (`dmgZone_*`). Details in [references/forward-contract.md](references/forward-contract.md).
 11. [EXACT] **Sounds**: reference engine, exhaust, shock absorber, and horn SoundSets defined in `exp\sounds_hpp\DZ\sounds\hpp\config.cpp` (motorbike SoundSets `:98961-99696`, SoundShaders `:59340-60011`):
     ```c
@@ -204,6 +206,33 @@ Each rule must be strictly followed to prevent critical failures in the entity:
       }
   }
   ```
+
+## One-seat motorbikes on 1.30.164393 or later (added 2026-11-18, LFH2R and LFDucati)
+
+For a bike whose `class Crew` has only `Driver` (the two vanilla bikes have `Driver` and `CoDriver` and are not affected). Line numbers in this section are those of `scripts.pbo` of Experimental 1.30.164393, not of stable 1.30.164289.
+
+- **Symptom** [runtime_verified, 2026-11-18: LFH2R, five runs of five; LFDucati, one run]: the client process dies with an access violation (`0xC0000005`, inside the native `CrewMember`) on its first frame on the bike, after getting on with the normal action from the side the game takes as direction 1. The client RPT ends at `MotorbikeScript.c:473` (`CrewShouldExit`), called from `DayZPlayerImplement.c:2460`. It is a crash of the client process, not a script exception.
+- **Cause** [source_verified]: `ActionGetInTransport.Start` starts the vehicle command with the seat ANIMATION type. With `HasDirectionalInOutAction()` true that type is `GetSeatAnimationTypeDirectional(crewIndex, direction)`, and both vanilla bikes return 1 for the driver from direction 1 (`exp\scripts\scripts\4_World\Classes\UserActionsComponent\Actions\Interact\ActionGetInTransport.c:81-104`, `exp\scripts\scripts\4_World\Entities\Vehicles\InheritedMotorbikes\Motorbike_02.c:51-67`). 1.30.164393 adds `Transport.CrewShouldExit(int posIdx)` (`exp\scripts\scripts\3_Game\Vehicles\Transport.c:953`). `DayZPlayerImplement.CommandHandler` calls it with `HumanCommandVehicle.GetVehicleSeat()`, which is that animation type and not the crew position (`exp\scripts\scripts\4_World\Entities\DayZPlayerImplement.c:2450-2460`), and `MotorbikeScript.CrewShouldExit` passes it to `CrewMember(posIdx)` (`exp\scripts\scripts\4_World\Entities\Vehicles\MotorbikeScript.c:470-480`). The native `CrewMember` does not check the range: with one seat, index 1 is past the table. From the other side the type is 0, the seat that exists. Getting on from both sides is not new (`HasDirectionalInOutAction` is in 1.30.164014 and in stable 1.30.164289); `CrewShouldExit` is.
+- **Remedy** [EXACT: the two overrides as they run in the LFH2R kit; in game on 2026-11-18 the second alone, with seat type 1 in use, and both together passed the kit's run: get on, ride, get off]: in the bike's script class,
+  ```c
+  // Seat type 0 from either side. Compiles on stable 1.30.164289 and on 1.30.164393.
+  override bool HasDirectionalInOutAction()
+  {
+      return false;
+  }
+
+  // 1.30.164393 or later only. Whatever starts the vehicle command with another seat type,
+  // the index goes back to the seat that exists.
+  override bool CrewShouldExit(int posIdx)
+  {
+      if (posIdx < 0 || posIdx >= CrewSize())
+          posIdx = 0;
+      return super.CrewShouldExit(posIdx);
+  }
+  ```
+  With the first one the get-in action falls back to `GetSeatAnimationType`, which `MotorbikeScript` answers with `VEHICLESEAT_DRIVER` for every seat (`exp\scripts\scripts\4_World\Entities\Vehicles\MotorbikeScript.c:450-453`): that alone removes the crash through the normal action. With only the second, the bike is still mounted with seat type 1 from direction 1; whether the vanilla get-on animation from that side suits a custom rider pose has not been looked at.
+- **Which build compiles what**: `CrewShouldExit` has no occurrence in the `scripts.pbo` of stable 1.30.164289 or in the scripts of 1.30.164014 [source_verified]. An `override` with no base function is a compile error, so a PBO carrying the second override should not load on those builds [unverified: not run on them]; the offline validator does not report an `override` without a base function (negative control on LFH2R), so the proof is the game's start-up log. A PBO that must also run on 1.30.164289 carries only the first override.
+- **State on the second bike** [runtime_verified, LFDucati, 2026-11-18, dedicated server and client on 1.30.164393, one run each]: LFDucati (`Motorbike_02_ColorBase`, `class Crew` with only `Driver`, `pos_driver` on the right) has both overrides in its script class. Without them, getting on from direction 1 killed the client on its first frame on the bike with seat type 1 (`0xC0000005` at `DayZDiag_x64.exe+0x849252` with `rdx` = 1, the address the LFH2R dump gave; RPT stack `motorbikescript.c:473`), and getting on from direction 0 ran to the end with seat type 0. With them, both sides got on with seat type 0, rode and got off. With them and `HasDirectionalInOutAction()` forced back to true by a `modded class` in the test addon, the bike was mounted with seat type 1 from direction 1 and the run passed: the `CrewShouldExit` override holds on its own. The runs leave logs only; how getting on and off look was not checked.
 
 ## Measured lessons from LFDucati (1.30.164014, September 2026)
 
