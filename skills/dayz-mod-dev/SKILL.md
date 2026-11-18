@@ -48,8 +48,10 @@ re-check a fact against that build's sources before relying on it (next sections
   removed after the run; `dayz-test-ingame/references/linux-headless-client.md`, section 2). This does not
   contradict the Windows `P:\Mods -> !Workshop` deploy in `_shared/dayz-conventions.md`.
 - **Uploading to the Workshop is the user's call**; prepare the commands, never run them unprompted.
-- On Linux, build and sign with **dayzmake >= 1.0.0**, never upstream armake2: that is built for Arma, leaves `*.c` out
-  of the signature and lacks the DayZ-only functions dayzmake adds (`_shared/linux-proton.md`, section 1).
+- On Linux, build and sign with **dayzmake >= 3.1.0**, never upstream armake2: that is built for Arma, leaves `*.c` out
+  of the signature and lacks the DayZ-only functions dayzmake adds (`_shared/linux-proton.md`, section 1). dayzmake 3.x fixes a lot of security and file-handling issues of the earlier releases,
+  so do not use an older build; download it only with its GPG-signed checksums verified
+  (`dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake").
 
 Details and evidence: `dayz-mod-workflow/references/dayz-1-30-server-measured.md`.
 
@@ -59,24 +61,29 @@ In this order:
 
 1. **The Pack.** `enforce-script-reference` (`references/verified-api-catalog.md`, `references/dayz-1-30-enforce-script.md`)
    and the domain skill's `references/dayz-1-30-*.md`.
-2. **A local index of the vanilla scripts** (offline, exact for the installed build). Build it once per game update:
+2. **dayzmake's script-API index** (dayzmake >= 3.1.0; offline, exact for the installed build, read straight from
+   the game's PBOs and cached, nothing to extract or commit):
    ```sh
-   SKILL_DIR="$HOME/.claude/skills/dayz-mod-dev"  # set to this skill's own folder (skills/dayz-mod-dev in the Pack)
-   S="$SKILL_DIR/../_shared/scripts"
-   bash "$S/extract-dayz-sources.sh" "<DayZ install>" /var/tmp/dz-src         # scripts + derapified configs, ~90 s
-   python3 "$S/build-api-index.py" /var/tmp/dz-src/scripts ~/.cache/dayz-api   # or set DAYZ_API_DIR
-   python3 "$S/dayz-api.py" class CarScript --inherited    # members incl. every base class
-   python3 "$S/dayz-api.py" find 'OnCEIterate'             # member lines matching a regex
-   python3 "$S/dayz-api.py" chain PlayerBase               # base class chain
-   python3 "$S/dayz-api.py" sub Weapon_Base                # subclasses;  enum X / src X likewise
+   dayzmake api class CarScript --inherited        # members incl. every base class
+   dayzmake api find 'OnCEIterate'                 # member lines matching a regex
+   dayzmake api chain PlayerBase                   # base class chain
+   dayzmake api sub Weapon_Base                    # subclasses;  enum X / defines likewise
+   dayzmake api src CarScript --context 5          # file:line of each declaration, 5 lines around it
+   dayzmake api grep 'GetGame\(\)\.GetMission\(\)'  # call sites: a regex over every script body
+   dayzmake api config CfgVehicles/Hatchback_02    # config class: chain, resolved properties, subclasses
    ```
-   `src X` names the declaring file; read the body in `/var/tmp/dz-src/scripts/...` and cite `path:line`. Pass `--force` to `extract-dayz-sources.sh` only to replace a non-empty `<out-dir>` that has no `pbo-map.tsv` (otherwise refused so an unrelated directory is not overwritten) [EXACT][CLAIM-EXTRACT-FORCE]. The index holds
-   Bohemia's declarations, so it is built locally and never committed to a mod or to this Pack.
+   Cite the `path:line` that `src` and `grep` print (`--lines <a-b>` prints a range, `--cat` the whole file).
+   `--dayz <dir>` picks an install, `--experimental` the experimental branch, `-m cf,expansion` (or a workshop id,
+   `all`) adds installed mods. For a tree to read or grep with your own tools, extract only scripts and configs:
+   `dayzmake extract --derapify --only '*.c' --only 'config.*' "<DayZ install>" /var/tmp/dz-src` (about 40 MB, a
+   few seconds; `pbo-map.tsv` maps each prefix to its PBO). `-f` replaces only an empty folder or an earlier extract
+   (one with a `pbo-map.tsv`), never an unrelated one. Both hold Bohemia's code, so they stay local and are never
+   committed to a mod or to this Pack.
 3. **Online**: `https://diff.yadz.app/api/classes/<Name>.json` (latest build, one class as JSON) and
    BohemiaInteractive/DayZ-Script-Diff for exact bodies. Remote mirrors can lag a release; the local index cannot.
 
 CF and Expansion classes: read their public sources at a pinned commit (Arkensor/DayZ-CommunityFramework,
-salutesh/DayZ-Expansion-Scripts), or index an extracted Workshop copy with `build-api-index.py --mod <name>`.
+salutesh/DayZ-Expansion-Scripts), or query the installed Workshop copy with `dayzmake api ... -m cf` / `-m expansion`.
 
 ## Router
 
