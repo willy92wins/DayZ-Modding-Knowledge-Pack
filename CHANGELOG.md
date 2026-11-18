@@ -7,6 +7,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-ui-development`, "Measured in-game on 2026-11-18": one `Widget.TranslateString` per expression (two in one
+  expression drew only the second text; the shared-buffer cause stays a hypothesis, with the test that would settle it),
+  and a child wholly outside its parent's rectangle is not drawn (clipping or culling, not established), which
+  `dayz-layout-viewer` and HTML mock-ups do not model. The delivery checklist, the troubleshooting table, the offline
+  preview step, `widget-api.md` and `layout-format.md` point to it. `dayz-test-ingame`: DayZ-MCP cannot press a
+  `UAInput`, and the test-only hook that opens a key-bound panel when a file in the client profile appears or goes.
+  Five claims, from the BattleRoyale leaderboard runs of 2026-11-18.
+
 - `dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake": how to download a dayzmake release and
   verify it before installing (the release's GPG-signed `SHA256SUMS`, the pinned key fingerprint
   `6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E`, a throwaway keyring, and a status-line check that stops the

@@ -96,6 +96,9 @@ stringtable, which no compiler catches; `--strict` turns its WARN into failure.
    never declared `wrap` still wraps here. If the engine turns out not to wrap `TextWidget` —
    still open, see `layout-format.md` — the preview hides the overflow by showing two lines
    where the game would clip one.
+   A second trap: it draws a child that lies outside its parent's rectangle (`overflow:visible`
+   unless `clipchildren 1`, `:20-21`, `:88`), where the game drew nothing for a child wholly
+   outside it ("Measured in-game on 2026-11-18" below).
    To read the file rather than draw it,
    `python tools/dayz-ui-lab/dayz_ui_lab/parse.py <layout>` (Parser routing above). Do not call
    `DayZ_UI_Research/renderer/parse.py`.
@@ -361,6 +364,8 @@ Supports ignore lists and variable→widget rename mappings.
 - [ ] Widget names unique AND matching the spec table (they are the FindAnyWidget/binding contract)
 - [ ] All user-visible text via `#STR_` keys in stringtable
 - [ ] `ScriptParamsClass` in its own dedicated block (never mixed with child widgets)
+- [ ] Every widget wholly inside its parent's rectangle, the ones only some states show included (a footer,
+      an error line): the game did not draw a child outside it, the offline preview does (2026-11-18)
 
 ### Script (.c)
 - [ ] GetGame() null-checked in destructors; GetWorkspace() null-checked before CreateWidgets
@@ -370,6 +375,8 @@ Supports ignore lists and variable→widget rename mappings.
 - [ ] HUD overlays: root `Unlink()`ed in OnMissionFinish (else ghost widgets stack across sessions)
 - [ ] Dabs: command handlers `return true`; no OnShow/OnHide overrides on ScriptView; ESC wired manually
 - [ ] No ternary operators; m_ prefix on members; variables hoisted
+- [ ] One `Widget.TranslateString` per expression, each result in a local before `string.Format`: two in
+      one expression drew only the second text in game (2026-11-18)
 
 ### Fidelity (the gate that was always missing)
 - [ ] Offline preview eyeballed vs mockup (`dayz-layout-viewer` / `build_viewer.py`, labelled approximation)
@@ -945,6 +952,8 @@ Useful for feature flags across mod boundaries.
 | Widget not destroyed | Using `Show(false)` instead of destroying | Call `widget.Unlink()` to destroy widget and all children. `Show(false)` only hides |
 | ComboBox selection resets | Items cleared and re-added without saving selection | Save `GetCurrentItem()` before `ClearAll()`, restore with `SetCurrentItem()` after re-add |
 | Slider value not syncing with EditBox | One-directional binding | Implement bidirectional: slider OnChange → update editbox text, editbox OnChange → update slider current |
+| A `string.Format` line shows only part of its text (the month alone instead of the whole season) | Two `Widget.TranslateString` calls in one expression, one of them inside a helper | One translation per expression, each in a local before `string.Format` ("Measured in-game on 2026-11-18") |
+| A widget the script shows never appears, and no log line says why | It lies outside its parent's rectangle: a child wholly outside it was not drawn | Make the parent hold it, and check that every widget fits inside its parent; the offline preview draws it anyway ("Measured in-game on 2026-11-18") |
 
 On the "No word wrap in TextWidget" row above, two different claims are easy to
 confuse, and only one of them is measured. The 2026-08-19 census in
@@ -1715,6 +1724,90 @@ The probes were set up and remained unread, ready in `round-s3b/probes/uiprobe.l
 - **Is the procedural texture declared via layout rendered?** See caveat above.
 
 To resume them, having the display turned on is enough: load `$profile:uiprobe.layout` and capture.
+
+---
+
+## Measured in-game on 2026-11-18 — two faults no offline check showed (added 2026-11-18)
+
+DayZDiag 1.30.164289.70, one client at 1920x1080 in Spanish, the BattleRoyale leaderboard panel
+(willy92wins/BattleRoyale#63). Neither fault was flagged by the project's gates, its code review or the
+offline previews. Both showed up in game, in runs `ac881114` and `20f9464d`, and each fix was confirmed by
+the next run (`20f9464d`, `70e5cf20`). Captures and logs: BattleRoyale `br-runs/leaderboard-2026-11-18/`.
+
+### 1. One `Widget.TranslateString` per expression
+
+[EXACT][CLAIM-UI-TRANSLATESTRING-ONE-PER-EXPRESSION-130] Two `Widget.TranslateString` calls in one
+expression broke the line they built. The season line
+`string.Format(Widget.TranslateString("#STR_BR_LEADERBOARD_SEASON_MONTH"), GetMonthName(start_month), start_year)`,
+where `GetMonthName` returns `Widget.TranslateString("#STR_BR_LEADERBOARD_MONTH_11")`, drew «noviembre»,
+the month alone, instead of «Temporada de noviembre de 2026» (the format is `Temporada de %1 de %2`). In
+the same panel the countdown, `string.Format(Widget.TranslateString(key), value)` with one translation,
+drew «Termina en 12 días» in full. With each translation stored in a local before `string.Format`
+(BattleRoyale commit `1c75060`), the season drew in full in the next run.
+
+[EXACT] Excerpt of `BattleRoyaleLeaderboard.c`, before (`48e8b45`, `:743`, `:782`) and after (`1c75060`,
+`:752-754`, `:803-805`):
+
+```c
+// Before: drew «noviembre»
+return string.Format( Widget.TranslateString( "#STR_BR_LEADERBOARD_SEASON_MONTH" ), GetMonthName( start_month ), start_year );
+// ...where GetMonthName ends in
+return Widget.TranslateString( "#" + key );
+
+// After: drew «Temporada de noviembre de 2026»
+start_month_name = GetMonthName( start_month );
+format = Widget.TranslateString( "#STR_BR_LEADERBOARD_SEASON_MONTH" );
+return string.Format( format, start_month_name, start_year );
+// ...where GetMonthName ends in
+key = "#" + key;
+string month_name = Widget.TranslateString( key );
+return month_name;
+```
+
+- Rule: one translation per expression. A helper that translates counts as one: call it in a statement of
+  its own, and combine locals, never calls.
+- Mechanism, a hypothesis: the output fits the second call overwriting the text the first one returned
+  before `string.Format` read it, as if both shared one engine buffer; «noviembre» as the format, with no
+  `%1`, comes out as itself. Not verified. A one-off
+  `Print(string.Format("%1|%2", Widget.TranslateString("#STR_A"), Widget.TranslateString("#STR_B")))` on two
+  keys would test it: the same text twice supports it, two different texts rule it out.
+- Only this shape was measured, in Spanish. Concatenating two calls (`a + b`) or passing two to a function
+  other than `string.Format` was not tried; the rule covers them until it is.
+- No offline check sees it: the script compiles, `ui_reconcile` finds every key, and the offline preview
+  shows `#STR_` keys unresolved (STANDARD WORKFLOW, step 5).
+
+### 2. A child wholly outside its parent's rectangle is not drawn
+
+[EXACT][CLAIM-UI-CHILD-OUTSIDE-PARENT-NOT-DRAWN-130] A widget that lay wholly outside its parent's
+rectangle was not drawn. `LeaderboardFooter15`, a `FrameWidgetClass` of `size 1240 44` at
+`position 0 682`, was a child of `LeaderboardPanel`, a `FrameWidgetClass` of exact `size 1240 682`
+(`hexactsize 1`, `vexactsize 1`, `halign center_ref`, `valign center_ref`); no widget in the layout set
+`clipchildren`. Nothing was drawn under the panel. With `LeaderboardPanel` at `size 1240 726` and
+`position 0 38` instead of `0 16`, which keeps its top edge at y 215 of 1080, the same footer drew at the
+same place on screen with the same script (BattleRoyale commit `25ef6f1` changed only the layout and its
+generator).
+
+- Rule: size every container to hold all its children, the ones only some states show included (a footer,
+  an error line, an expanded row). A layout generator can enforce it: BattleRoyale's
+  `tools/gen_leaderboard_layout.py` stops when a widget is not wholly inside its parent (`check_inside`).
+- Not established: clipping or culling. A child half outside its parent would tell them apart: its inside
+  half alone points to a default clip to the parent, the whole child or none of it to a test on whole
+  rectangles. Run it with and without `clipchildren 0` written on the parent. Until then, treat any part
+  outside the parent as not drawn. The B5 rows in `references/layout-format.md` (a widget 4 px past its
+  parent's edge) are `ui_tree` rectangles, not pixels, so they do not settle it.
+- [EXACT][CLAIM-UI-VIEWER-DRAWS-OUTSIDE-PARENT] Offline previews do not model it. `dayz-layout-viewer`
+  draws every widget with `overflow:visible` and clips children only under `clipchildren 1`
+  (`tools/dayz-layout-viewer/dayz_layout_viewer/html_template.py:20-21`, `:88`): its render of the panel
+  from before the fix (the BattleRoyale generator at `1c75060`, `LeaderboardPanel` 682 tall) drew the
+  footer under the panel, with 0 parser diagnostics. An HTML mock-up draws whatever it is given. Read a
+  preview as where a widget would sit, not as proof that the game draws it.
+
+### 3. Opening a key-bound panel in a harness run
+
+DayZ-MCP cannot press a `UAInput`, so a panel that opens on `GetUApi().GetInputByID(...).LocalPress()`
+cannot be opened with `input_trigger` or `key_press`. Open it with a test-only hook that follows a file in
+the client profile: `dayz-test-ingame`, `references/session-findings.md`, "Panels bound to a UAInput under
+DayZ-MCP".
 
 ---
 
