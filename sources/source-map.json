@@ -2111,10 +2111,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-tree-note@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Changelog entry for enforce-script-reference rules 37e and 37f and the second in-game case added to rule 6 (BattleRoyale PRs #56 and #57, measured in DayZDiag 1.30 on 2026-11-17). The entry restates the two rules; it adds no claim of its own.",
+          "license": "MIT",
+          "source_hash": "af2dfde03d634fda93d9701f3fff41a84dc275b9f949e8fb8ae355d39400fb05",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "battleroyale-pr56-pr57@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1193ebfee60b695280231d771973c3940b852c8ec28a025c5af007c21cdb2953",
+      "output_hash": "af2dfde03d634fda93d9701f3fff41a84dc275b9f949e8fb8ae355d39400fb05",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
