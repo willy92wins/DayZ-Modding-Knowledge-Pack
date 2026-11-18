@@ -2114,9 +2114,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: an Unreleased Added entry for the dayz-script-validator rule VANILLA-INDEX-TREE-MISMATCH. Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "adaaffff79a88a45586fd328f434efc36b8a8932e922f8450d9ab5df11698b80",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Changelog entry for enforce-script-reference rules 37e and 37f and the second in-game case added to rule 6 (BattleRoyale PRs #56 and #57, measured in DayZDiag 1.30 on 2026-11-17). The entry restates the two rules; it adds no claim of its own.",
           "license": "MIT",
-          "source_hash": "af2dfde03d634fda93d9701f3fff41a84dc275b9f949e8fb8ae355d39400fb05",
+          "source_hash": "c99d2ef52ac672b92eaf4dc5a3e285772bd079241fba4b75132328e9e7b73c52",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "battleroyale-pr56-pr57@2026-11-17",
@@ -2124,7 +2134,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "af2dfde03d634fda93d9701f3fff41a84dc275b9f949e8fb8ae355d39400fb05",
+      "output_hash": "c99d2ef52ac672b92eaf4dc5a3e285772bd079241fba4b75132328e9e7b73c52",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -26828,10 +26838,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-vanilla-tree-note@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: new section 'Which tree the vanilla index is' for VANILLA-INDEX-TREE-MISMATCH: which four rules read the index, what is compared (the count and the total bytes of the .c files, with the generator's walk) and what is not (the digest, so a tree with the same count and bytes but other contents is taken for the index's tree), the rebuild command, info.vanilla_index, the SKIP cases and the measurements of 2026-11-18. Its figures are those of the input of scripts/shared/vanilla_index_tree.py of the same revision, rounded. 'Vanilla control' gains one sentence pointing to the section. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "aef4e64737a3d5af4526103cadcc92e3a1adda068bba09a8f8e687a0fc2daf73",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3b92bc591702376f25ba206f5644374249eaefaf6504cb6e7f9d2ed2c844e51b",
+      "output_hash": "aef4e64737a3d5af4526103cadcc92e3a1adda068bba09a8f8e687a0fc2daf73",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26926,10 +26946,20 @@
           "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: collect_c_files moves to scripts/shared/vanilla_index_tree.py and is imported from there, so that the generator and VANILLA-INDEX-TREE-MISMATCH count the same files. No change of output: the generator before (commit cfb9301) and after wrote byte-identical documents from the 1.30.164393 tree (sha256 581371d9e570b5ce9b97e05839d6cb0a1ba053051752889d7a9816a2a64e1ee7; 3059 files, 14001771 bytes, tree_digest 756513dd67c5d613693002e06758d986e172506c63af5df67c6a21d0a33cd8de) and from the 1.30.164289 tree (sha256 28957fa234cfd4878bdb7df69d58356f77fa342b1182bbdb23114db75d606ba9; 3056 files, 13952124 bytes, tree_digest 1885d025b6f465b5046cdf1f119487f41ebb90a4dda945f5805d940cf64e8a7b), measured on the owner's PC on 2026-11-18. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b4654b16d1bbbe25516d56dbb671eb7cd423deb07b963b46b66b02e1e236c922",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d25357d17e2bd5bed125117af22116f45b5fa4c6babd5c7b9c05d36314232dd4",
+      "output_hash": "b4654b16d1bbbe25516d56dbb671eb7cd423deb07b963b46b66b02e1e236c922",
       "output_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27778,10 +27808,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-7b9e@2026-11-09",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: validate_addon calls shared/vanilla_index_tree.compare_index_tree with the vanilla root after the tree rules: its warning joins the run's warnings, its SKIP entries join info.skipped_checks, and info.vanilla_index holds the comparison when one was made. The rule (VANILLA-INDEX-TREE-MISMATCH) and its measurements are in the input of scripts/shared/vanilla_index_tree.py of the same revision. script_validator.py on the LFH2R stage (114 files) with --game-root naming the DayZ Exp install and no index: exit 0, PASS, 0 errors, 0 warnings, as before. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fed8f2d1868b2dec7ec74ed077ea76ff00e7e07557ef92303b136b054e139a1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0fa5c508e1ee778896d3a51b652bae5ae577f8b7df83dad31dad05e4aa97561d",
+      "output_hash": "fed8f2d1868b2dec7ec74ed077ea76ff00e7e07557ef92303b136b054e139a1f",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27918,10 +27958,20 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: loaded_index_tree() returns what the index in use says of the tree it was built from (vanilla_root, file_count, parsed_file_count, total_bytes, tree_digest; None for a key the file lacks, and None instead of the dict without a usable index), for shared/vanilla_index_tree.py. The module docstring now says that an index of another tree than the one being read can report a false positive, and names VANILLA-INDEX-TREE-MISMATCH. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "95003a3b68621db6a58e4a93e3541ff8d0588993b4cbaa8f6fa9c2409cd9c0c9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4903d37818a8afef58e546e71b46717c4bca70f39af4262bd3fb21c2fba49ef4",
+      "output_hash": "95003a3b68621db6a58e4a93e3541ff8d0588993b4cbaa8f6fa9c2409cd9c0c9",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -31818,10 +31868,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "pack-162-resolution@2026-11-10",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: TestVanillaIndexTree, 14 tests for VANILLA-INDEX-TREE-MISMATCH, written before the code: with the test for loaded_index_tree in test_vanilla_index.py, 13 of the 15 new test functions failed before it (one of them through its two subtests) and the two no-index cases passed. They cover: the index of the tree matches, with info.vanilla_index compared and equal; an index of another tree warns and the message holds the index, both trees, both pairs of numbers and the rebuild command; either number alone warns; the same tree under another path matches; files that are not .c do not count; the same count and bytes are not told apart (the stated limit); no index, or an index the loader rejects, compares nothing; no vanilla tree, no numbers, unparsed files and an unreadable tree each give a SKIP entry and exit 0; the generator and the comparison use one collect_c_files; the terse report names the rule. setUpModule now also sets a local scripts/shared/vanilla_index.json aside (set_index_path_for_tests), as it does the vanilla tree: probed with an index of the 1.30.164393 tree as the default index, 24 tests that were already in this module fail on the new rule without that line (exit 2, one more warning or a SKIP line: 13 in TestEsSyncvarContract, 8 in TestUndefinedClassRef, 2 in TestVanillaRootBuild, 1 in TerseOutputTests) and none with it. python -m pytest tests: 365 passed, with no index and with an index of the 164393 tree at the default path. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "428b48479c7a40a416c94e8875e86fb8790dd947eb6526f5e0d77e0f8d8ebf1d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a5e728f5640e44e3edc130905215235d4b6fb424360c8511996d5faa8b06fa20",
+      "output_hash": "428b48479c7a40a416c94e8875e86fb8790dd947eb6526f5e0d77e0f8d8ebf1d",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -31882,10 +31942,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one test for vanilla_reference.loaded_index_tree(): None without an index and with one the loader rejects, the generator's values for the mini tree, and None for each key a hand-written index lacks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8bc8dcf9639d5b892bd2c42c1336843a7513f4112b35cdf7debf39efdd17281b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "41206e3f559723fe1ca787b294cbe49aecc3f146fcdac4ca3fac1fb7423b1021",
+      "output_hash": "8bc8dcf9639d5b892bd2c42c1336843a7513f4112b35cdf7debf39efdd17281b",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42574,6 +42644,28 @@
       "license": "MIT",
       "output_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-18: new module, WARN rule VANILLA-INDEX-TREE-MISMATCH. With a vanilla index in use (shared/vanilla_reference.py loads scripts/shared/vanilla_index.json) and a vanilla tree, compare_index_tree compares the file_count and total_bytes the index records with the .c files of the tree being read, counted with collect_c_files, which moves here from build_vanilla_index.py so that the generator and the comparison walk one way. When either number differs the warning names the index file, the tree it was built from (its vanilla_root, its two numbers and the first 12 hex digits of its tree_digest), the tree being read with its two numbers, and the command that rebuilds the index (build_vanilla_index.py --vanilla-root <tree> --out <index>). info.vanilla_index holds both pairs with matches. Without an index nothing is compared and nothing is reported; an index with no vanilla tree, without the two numbers or with parsed_file_count other than file_count, and a tree whose walk raises OSError, give a SKIP entry and no change of verdict. The digest is not compared, so a tree with the same count and bytes but other contents is taken for the index's tree. Why: four rules read the index (ES-MEMBER-REDECLARE-BASE at detectors/es_member_redeclare_base.py:74, ES-OVERRIDE-PARAM-NAME-MISMATCH at es_override_param_name_mismatch.py:47, ES-METHOD-NAME-COLLIDES-VANILLA-CLASS at es_method_name_collides_vanilla_class.py:25, ES-OVERRIDE-OF-PLATFORM-GATED-METHOD at es_override_of_platform_gated_method.py:112) and nothing said when it was of another build: on 2026-11-18 an index of DayZ 1.30.164289 read with the 1.30.164393 tree gave five false ES-MEMBER-REDECLARE-BASE findings, and a 1.29 index had turned the vanilla control red on 1.30 (inbox 4c83). Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work running on the PC). Count against digest, ten alternated rounds in one process: on the 164393 tree in P:\\scripts (3059 .c files, 14001771 bytes) the count took 0.276 to 0.489 s (median 0.360) and collect_c_files plus tree_digest 1.656 to 2.440 s (median 2.009), 4.6 to 6.6 times as long; on the 164289 tree in P:\\scripts_164289_20261105 (3056 files, 13952124 bytes) 0.330 to 1.308 s (median 0.538) against 1.758 to 3.398 s (median 2.437). Timed inside six validate_addon runs over the LFH2R stage (114 files) with --game-root and an index of the 164393 tree, compare_index_tree took 0.322 to 5.810 s, 1.5 to 9.0 % of runs of 10.8 to 64.9 s, and compare_vanilla_build 1.402 to 20.397 s. With an index built from the 164289 tree, script_validator.py on that stage with --game-root exits 2: WARN, 0 errors and this one warning (index 3056 files and 13952124 bytes, tree 3059 and 14001771); on P:\\scripts\\4_world\\classes\\useractionscomponent\\targetconditionscomponents it exits 1 with the five ES-MEMBER-REDECLARE-BASE errors (cctliquidsyntheticcursor.c lines 26, 27, 28, 37 and 38) and this warning. With an index built from the 164393 tree the stage exits 0, PASS, info.vanilla_index.matches true, with the same findings as with no index, and that folder gives no ES-MEMBER-REDECLARE-BASE and no such warning. The three trees the owner's index has been built from differ in both numbers (1.29: 2805 files, 12566266 bytes). An os.scandir walk gave the same two numbers on both trees in 0.033 to 0.091 s and is not used, to keep one function for the generator and the comparison. vanilla_control.py --vanilla-root P:\\scripts_164289_20261105 with no index: exit 0, 'PASS - findings match the baseline', 269 s. Validator tests: 365 passed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ded35384a00bf21e0fa2800415ee028611e4de5d4bdedd536b0e7e898d0441af",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ded35384a00bf21e0fa2800415ee028611e4de5d4bdedd536b0e7e898d0441af",
+      "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },

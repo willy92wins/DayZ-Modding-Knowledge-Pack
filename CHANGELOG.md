@@ -83,6 +83,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `enforce-script-reference`: before calling `RespawnPlayer()` from script, refuse on the client when the local player
   is alive, conscious and not restrained, and kill a living player first to give it a new body (SP-527, from dayz-mcp
   #408 and #416, where a script-triggered respawn of a living, conscious player reported success and did nothing).
+- `dayz-script-validator`: `VANILLA-INDEX-TREE-MISMATCH` (WARN), for a run whose local
+  `scripts/shared/vanilla_index.json` was not built from the vanilla tree being read. Four rules read the index
+  (`ES-MEMBER-REDECLARE-BASE`, `ES-OVERRIDE-PARAM-NAME-MISMATCH`, `ES-METHOD-NAME-COLLIDES-VANILLA-CLASS`,
+  `ES-OVERRIDE-OF-PLATFORM-GATED-METHOD`) and nothing said when it was of another build: on 2026-11-18 an index of
+  1.30.164289 read with the 1.30.164393 tree gave five false `ES-MEMBER-REDECLARE-BASE` findings, and a 1.29 index
+  had turned the vanilla control red on 1.30. The index records the count and the total bytes of the `.c` files of
+  its tree; the tree being read is counted with the generator's own walk, and when either number differs the warning
+  names the index, the tree it was built from, the tree being read and the command that rebuilds it.
+  `info.vanilla_index` holds both pairs of numbers with `matches`. Without an index nothing is compared; an index
+  with no vanilla tree, without the two numbers or with files it did not parse, and a tree that cannot be read, are
+  a SKIP line that leaves the verdict as it was. The digest the index also records is not compared: measured that
+  day on the 3 059 files of the 164393 tree, the count took 0.28 to 0.49 s and reading and hashing every file 1.66
+  to 2.44 s, and inside six validator runs over a 114-file addon the comparison took 1.5 to 9.0 % of the run. A tree
+  with the same count and bytes but other contents is therefore not told apart. `tests/test_script_validator.py`
+  now sets a local index aside, as it does the vanilla tree: with one in the checkout, 24 of its tests would fail on
+  this rule. See the README's "Which tree the vanilla index is".
 
 ### Fixed
 
