@@ -10,17 +10,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `enforce-script-reference`, rules 37e and 37f, and a second in-game case in rule 6. 37e: in BattleRoyale PR #56
   (DayZDiag 1.30, 2026-11-17), an identity unpossessed via `SelectPlayer(identity, null)` + `SelectSpectator` still
   had its last body queued for logout when `GetHive() && !authFailed && player.IsAlive()`; deleting that body while
-  queued makes stable 1.30.164289 skip `DisconnectPlayer` at timer expiry (UID stuck "already in game" until
-  restart), and in Experimental 1.30.164393 makes `UpdateLogoutPlayers` pass null into `SendExitEmoteRequest` with
-  no null guard if ticked while the timer is still running (or skip `DisconnectPlayer` via `PlayerDisconnected` once
-  the timer has expired). Check `IsPlayerDisconnecting(body)` before deleting a player body; skipping the wait with
-  vanilla's instant-logout call (`SendLogoutTime(body, 0)` + `PlayerDisconnected`) still runs `PlayerDisconnected`'s
-  Hive `Save()`/`CharacterExit` and `HandleBody`. 37f: blocking a family of actions on other players inside a zone
-  (force-feeding, restraints, head sack, gag, blood, defibrillator) gates a modded `ActionBase` across `Can`,
-  `CanContinue`, and `AnimatedActionBase.OnAnimationEvent`, decided on the server by position rather than per-object
-  `GetAllowDamage()`, with the caveat that those three hooks do not block effects applied in `OnEndServer` after
-  partial progress (e.g. `ActionCollectBloodTarget` / `ActionCollectSampleTarget`) or single-use `OnEndServer`
-  effects; in DayZDiag 1.30 on 2026-11-17 only the `Can` start gate was measured in game (head sack and
+  queued makes stable 1.30.164289 skip `DisconnectPlayer` at timer expiry (in BattleRoyale PR #56, the UID stayed
+  "already in game" until server restart), and in Experimental 1.30.164393 makes `UpdateLogoutPlayers` pass null into
+  `SendExitEmoteRequest` with no null guard if ticked while the timer is still running (or skip `DisconnectPlayer` via
+  `PlayerDisconnected` once the timer has expired). Check `IsPlayerDisconnecting(body)` before deleting a player body;
+  skipping the wait with vanilla's instant-logout call (`SendLogoutTime(body, 0)` + `PlayerDisconnected`) still runs
+  `PlayerDisconnected`'s Hive `Save()`/`CharacterExit` and `HandleBody`. 37f: blocking a family of actions on other
+  players inside a zone (force-feeding, restraints, head sack, gag, blood, defibrillator) gates a modded `ActionBase`
+  across `Can`, `CanContinue`, and `AnimatedActionBase.OnAnimationEvent`, decided on the server by position rather than
+  per-object `GetAllowDamage()`, with the caveat that those three hooks do not block effects applied in `OnEndServer`
+  (for example, `ActionCollectBloodTarget` / `ActionCollectSampleTarget` initiating their replacement lambda after
+  partial progress); in DayZDiag 1.30 on 2026-11-17 only the `Can` start gate was measured in game (head sack and
   force-feeding), while `CanContinue`, `AnimatedActionBase.OnAnimationEvent`, and `OnEndServer` were checked by
   reading vanilla source only (mid-action zone crossing untested in game). Rule 6: a boolean `return` split across
   lines passed the offline gates and three reviews, and only booting the server caught it (2026-11-17).

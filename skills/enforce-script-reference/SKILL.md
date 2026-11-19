@@ -254,10 +254,13 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       (`actionbase.c:929-966`, 1.30.164289 and 1.30.164393).
       - On the client, `ActionManagerClient.Update` calls `FindContextualUserActions` only when no
         action is active (`!m_CurrentActionData`, `actionmanagerclient.c:126-143` in 1.30.164289;
-        `:126-140` in 1.30.164393), and `FindContextualUserActions` skips the search when
-        `!m_ActionPossible`, a hand inventory reservation exists, or inventory/menu is open
-        (`actionmanagerclient.c:550-578` in 1.30.164289; `:547-575, 583-590` in 1.30.164393);
-        otherwise it iterates `m_OrederedAllActionInput` via `UpdatePossibleActions`.
+        `:126-140` in 1.30.164393). `FindContextualUserActions` returns early on
+        `!m_ActionPossible`, `HasHandInventoryReservation()`, or — in stable 1.30.164289 —
+        `g_Game.IsInventoryOpen()` (`actionmanagerclient.c:550-559`, checking `MENU_INVENTORY` at
+        `3_game/dayzgame.c:1392-1401`), whereas Experimental 1.30.164393 checks `IsAnyMenuOpen()`
+        (any scripted menu, `actionmanagerclient.c:547-556, 582-590`); otherwise, if
+        `!GetRunningAction()`, it iterates `m_OrederedAllActionInput` via `UpdatePossibleActions`
+        (`:561-578` in 1.30.164289; `:558-575` in 1.30.164393).
       - The server asks it before accepting a start: `actionmanagerserver.c:168`, through the
         3-argument `Can` at `actionbase.c:968-973` (same lines in 1.30.164289 and 1.30.164393).
       - Returning false before `super` leaves `accepted` false, so vanilla sends a negative action
@@ -277,54 +280,67 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       on `UA_ANIM_EVENT` without calling `CanContinue`. Returning before `super` drops those
       `OnAnimationEvent`-dispatched effects (such as `ActionForceConsumeSingle.OnExecuteServer`,
       `actionforceconsumesingle.c:55-69`) while the animation still ends through
-      `ActionBaseCB.OnFinish` (`animatedactionbase.c:27-54`); it does not stop effects applied in
-      `OnEndServer` (for example `ActionWashHandsItem`, which inherits `ActionSingleUseBase` and
-      applies its effect in `OnEndServer`, `actionwashhandsitem.c:2, 38-48`).
+      `ActionBaseCB.OnFinish` (`animatedactionbase.c:27-54`), which calls `action.End` ->
+      `OnEndServer` (`:458-466`); it therefore does not stop effects applied in `OnEndServer`.
     - **Cancellation caveat (`OnEndServer`):** [EXACT][CLAIM-ENF-ACTION-ONENDSERVER-CANCEL] those
       three hooks do not block effects that an action applies in `OnEndServer` after partial
       progress. When a callback finishes cancelled, `ActionBaseCB.OnFinish` runs
       `m_ActionComponent.Interrupt` and then `action.End` -> `OnEndServer`
       (`animatedactionbase.c:42-53, 458-466`); `CABase.Interrupt` calls `Cancel`
       (`cabase.c:34-38`), `CAContinuousTime.Cancel` preserves `m_TimeElpased` in `m_SpentUnits`
-      (`cacontinuoustime.c:58-71`), and `ActionCollectBloodTarget.OnEndServer` converts any
-      `delta > 0` into blood loss on the target (`actioncollectbloodtarget.c:27-47, 78-81`;
-      `ActionCollectSampleTarget.OnEndServer` does the same at `actioncollectsampletarget.c:27-44`;
-      all lines identical in 1.30.164289 and 1.30.164393).
+      (`cacontinuoustime.c:58-71`), and when `delta > 0`, `ActionCollectBloodTarget.OnEndServer`
+      initiates `ServerReplaceItemInHandsWithNew` with `ActionCollectBloodTargetLambda`, which
+      subtracts blood from the target in `CopyOldPropertiesToNew` (when `new_item` is non-null) if
+      `ReplaceItemWithNewLambdaBase.Execute` reaches that step without aborting
+      (`actioncollectbloodtarget.c:27-47, 63-81`,
+      `3_game/systems/inventory/replaceitemwithnewlambdabase.c:244-282`;
+      `ActionCollectSampleTarget.OnEndServer` initiates the same lambda at
+      `actioncollectsampletarget.c:27-44`; all lines identical in 1.30.164289 and 1.30.164393).
     - **Which actions:** [DESIGN] match the family with `IsInherited` on the ten vanilla bases.
       [EXACT][CLAIM-ENF-TARGET-ACTION-FAMILIES] In vanilla 1.30 (1.30.164289 and 1.30.164393),
       neither the ten family bases (`ActionForceConsume`, `ActionForceConsumeSingle`,
       `ActionRestrainTarget`, `ActionHandcuffTarget`, `ActionCoverHeadTarget`, `ActionGagTarget`,
       `ActionCollectBloodTarget`, `ActionCollectSampleTarget`, `ActionGiveBloodTarget`,
       `ActionDefibrilateTarget`) nor any of their 20 descendants overrides `Can` or `CanContinue`.
-    - **Cheap filter first:** check `PlayerBase.Cast(target.GetObject())` and reject self before
-      heavier checks — whenever contextual actions are queried on the client (no active action,
-      actions possible, no hand reservation, and inventory/menu closed),
-      `FindContextualUserActions` (`actionmanagerclient.c:126-143, 550-578` in 1.30.164289;
-      `:126-140, 547-575, 583-590` in 1.30.164393) invokes `UpdatePossibleActions` ->
-      `_GetSelectedActions`, which calls 4-argument `action.Can(...)` across candidate actions
-      (`actioninput.c:310-350, 354-391`, both builds).
-    - **Decide the protection by zone, not by `GetAllowDamage()`:** `GetAllowDamage()` /
-      `SetAllowDamage(bool)` is a per-object flag (`3_game/entities/object.c:1191-1196`, both
-      builds). Where admin-tool godmode sets `SetAllowDamage(false)` on a player, a target-based
-      `!target.GetAllowDamage()` gate blocks actions aimed at that godmode player (and a gate
-      checking the actor's flag blocks a godmode admin from acting on a teammate). [DESIGN] Decide
-      on the server by position.
+    - **Cheap filter first:** [DESIGN] check `PlayerBase.Cast(target.GetObject())` and reject self
+      before heavier checks. When `FindContextualUserActions` reaches its input loop (see **Start**
+      above; `actionmanagerclient.c:561-578` in 1.30.164289; `:558-575` in 1.30.164393), it calls
+      `UpdatePossibleActions` on each entry of `m_OrederedAllActionInput`; in `StandardActionInput`,
+      unless `ForceActionCheck(player)` returns early (`actioninput.c:354-361`),
+      `UpdatePossibleActions` calls `_GetSelectedActions`, which queries 4-argument
+      `action.Can(...)` across candidate actions (`:310-350, 354-391`, both builds). Other inputs
+      can differ: `NoIndicationActionInputBase.UpdatePossibleActions` only records context
+      (`:585-590`) and queries `action.Can(...)` in `GetAction()` when no forced action applies and
+      `m_MainItem` is set (`:592-617`, both builds).
+    - **Decide the protection by zone, not by `GetAllowDamage()`:**
+      [EXACT][CLAIM-ENF-OBJECT-ALLOWDAMAGE] `Object.GetAllowDamage()` /
+      `Object.SetAllowDamage(bool)` are native per-object methods querying or toggling whether the
+      object can receive damage (`3_game/entities/object.c:64, 1188-1196`, 1.30.164289 and 1.30.164393).
+      - [DESIGN] Decide on the server by position instead: where admin-tool godmode calls
+        `SetAllowDamage(false)` on a player, a target-based `!target.GetAllowDamage()` gate blocks
+        actions aimed at that godmode player (and a gate checking the actor's flag blocks a godmode
+        admin from acting on a teammate).
     - **One shared file, two sides:** use separate `#ifdef SERVER` and `#ifndef SERVER` blocks:
       `ES-EMPTY-IFDEF` flags `#else` with `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN` (`WARN`,
       `tools/dayz-script-validator/scripts/detectors/es_empty_ifdef.py:39-44, 132-139`), and
       `ES-SYNCVAR` also treats `#else` under `#ifdef SERVER` as unsupported
       (`detectors/es_syncvar.py:88-93`), whereas other detectors such as `ES-UNDEFINED-CLASS-REF`
       do analyze `#else` branches (`detectors/es_undefined_class_ref.py:641-645`). In a split
-      client/server mod, if a shared file in the client addon names server-only config classes and
-      is validated without that server addon, `ES-UNDEFINED-CLASS-REF` reports `FAIL` when the
-      addon's `requiredAddons[]` are non-empty and all covered by vanilla or `--external-scripts`,
-      or `SKIP` when the missing server addon is listed in `requiredAddons[]` (uncovered) or no
-      `requiredAddons[]` entries are declared
-      (`tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py:790-848`). Note
-      that `ES-UNDEFINED-CLASS-REF` checks whether a type is declared in the addon, vanilla, or
-      scanned `--external-scripts` dependencies (`tools/dayz-script-validator/README.md:62-95`) and
-      does not verify client-side compile visibility. [DESIGN] Let the server push the zone into a
-      static at init.
+      client/server mod, if a shared file in the client addon is validated without the server
+      addon, `ES-UNDEFINED-CLASS-REF` first collects unresolved class-like type references
+      (`Name.Method(` including `.Cast`, `new Name`, typed declarations, and their template
+      arguments) on lines not skipped by `_gated` (such as unknown-macro `#ifdef`/`#ifndef` blocks,
+      unsupported `#if`/`#elif`, or the false branch of an unconditional define;
+      `tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py:612-645, 679-710,
+      770-784`); if none are collected (for example, a name inside an unknown-macro `#ifdef` or
+      used only as a config path), it returns no finding (`:783-784`). When a valid vanilla tree
+      is available and unresolved references are collected, it reports `FAIL` if `requiredAddons[]`
+      is non-empty and all required dependencies are covered by vanilla or `--external-scripts`, or
+      `SKIP` if any required dependency is uncovered (or unquoted) or no `requiredAddons[]` entries
+      are declared (`:733-759, 790-848`). Note that `ES-UNDEFINED-CLASS-REF` checks whether a type
+      is declared in the addon, vanilla, or scanned `--external-scripts` dependencies
+      (`tools/dayz-script-validator/README.md:62-95`) and does not verify client-side compile
+      visibility. [DESIGN] Let the server push the zone into a static at init.
     - **Evidence:** BattleRoyale PR #57, DayZDiag 1.30, run b411f3d2 on 2026-11-17 (run log
       outside this pack). Outside the zone, the head sack and force-feeding on a survivor dummy
       finished. Inside it, both were rejected by the server (reported as `server_rejected` in the
