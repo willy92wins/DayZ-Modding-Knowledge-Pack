@@ -2126,7 +2126,7 @@
           "decision": "merge",
           "decision_evidence": "Changelog entry for enforce-script-reference rules 37e and 37f and the second in-game case added to rule 6 (BattleRoyale PRs #56 and #57, measured in DayZDiag 1.30 on 2026-11-17). The entry restates the two rules; it adds no claim of its own. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "c5c8a883c5985be19fddd551bce520aab08d0c73e650975a2d51a2abd79a50dc",
+          "source_hash": "c107bf6e1030285c102db2741f7c1f2733ee740563ebb24fa715c4bc53110ee5",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "battleroyale-pr56-pr57@2026-11-17",
@@ -2134,7 +2134,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "c5c8a883c5985be19fddd551bce520aab08d0c73e650975a2d51a2abd79a50dc",
+      "output_hash": "c107bf6e1030285c102db2741f7c1f2733ee740563ebb24fa715c4bc53110ee5",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19813,7 +19813,7 @@
           "decision": "merge",
           "decision_evidence": "Rule 37f and rule 6 evidence from BattleRoyale PR #57 (willy92wins/BattleRoyale): blocking a family of actions on other players through ActionBase.Can, CanContinue and AnimatedActionBase.OnAnimationEvent, decided by zone and not by GetAllowDamage. Measured in DayZDiag 1.30 on 2026-11-17 for the starts through Can (run b411f3d2: the head sack and force-feeding server_rejected inside the zone, finished outside), with the CanContinue and AnimatedActionBase.OnAnimationEvent paths checked by reading only; vanilla lines checked in the 1.30 extraction (actionbase.c:929, 968, 975; actionmanagerserver.c:168; animatedactionbase.c:188, 419). Rule 6: the same PR's split boolean return failed to compile the World module after passing the offline gates and three LLM reviews. Ported on 2026-11-18 from an unpublished local commit of 2026-11-17, rule text unchanged; the cited lines were read again in the 1.30.164289 and 1.30.164393 scripts, with the same line numbers in both. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "e407177c2b8ab7af82ae1cd07984deb74b89acb7c7bc995c09e776bd572c39d2",
+          "source_hash": "b2abd2d29441d64102e9b684257e27ad46ecfc0670f5e6a0aba95af309a13e45",
           "source_id": "pack-r21-authored",
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "battleroyale-pr57@2026-11-17",
@@ -19821,7 +19821,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e407177c2b8ab7af82ae1cd07984deb74b89acb7c7bc995c09e776bd572c39d2",
+      "output_hash": "b2abd2d29441d64102e9b684257e27ad46ecfc0670f5e6a0aba95af309a13e45",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -23376,9 +23376,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Rule 37f inserted 36 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 609, 619, 621, 636, 638, 652 and 654 to 645, 655, 657, 672, 674, 688 and 690. No claim text changes. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "decision_evidence": "Rule 37f inserted 36 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 609, 619, 621, 636, 638, 652 and 654 to 645, 655, 657, 672, 674, 688 and 690. No claim text changes. After the review fixes of 2026-11-19 the seven claims sit at 722, 732, 734, 749, 751, 765 and 767, and the fixes add 9 claims for rules 37e and 37f (CLAIM-ENF-LOGOUT-QUEUE-CONDITIONS, CLAIM-ENF-LOGOUT-NULL-BODY-BREAK, CLAIM-ENF-LOGOUT-ISPLAYERDISCONNECTING, CLAIM-ENF-LOGOUT-INSTANT-DISCONNECT, CLAIM-ENF-ACTIONBASE-CAN-GATE, CLAIM-ENF-ACTION-CANCONTINUE-LOOP, CLAIM-ENF-ACTION-ONANIMATIONEVENT, CLAIM-ENF-TARGET-ACTION-FAMILIES, CLAIM-ENF-ACTION-ONENDSERVER-CANCEL). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "e876930261242ce75e49a8e3aa518002518929e15f84d987c9502972fe0701b0",
+          "source_hash": "5102bb3a2389e91ce58690e7e8934939c44c880a12dc088004841fb66f340969",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "battleroyale-pr57@2026-11-17",
@@ -23386,7 +23386,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e876930261242ce75e49a8e3aa518002518929e15f84d987c9502972fe0701b0",
+      "output_hash": "5102bb3a2389e91ce58690e7e8934939c44c880a12dc088004841fb66f340969",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
