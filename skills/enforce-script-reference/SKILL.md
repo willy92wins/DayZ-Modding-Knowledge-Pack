@@ -235,10 +235,12 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       branch in `OnClientDisconnectedEvent` (`missionserver.c:679-687` in 1.30.164289; `:708-716`
       in 1.30.164393, taken for a dead body, `!GetHive()`, or `authFailed`) calls
       `g_Game.SendLogoutTime(player, 0)` and `PlayerDisconnected(player, identity, identity.GetId())`.
-      That branch only skips the logout wait timer: `PlayerDisconnected` still runs
-      `InvokeOnDisconnect(player)`, `player.Save()` and `GetHive().CharacterExit(player)` when
-      `GetHive()` is active, `ReleaseNetworkControls()`, `HandleBody(player)` (which deletes an
-      alive body unless `ShouldPlayerBeKilled` kills it), and `DisconnectPlayer`
+      Compared with the timed-logout branch (`missionserver.c:651-665` in 1.30.164289; `:671-694`
+      in 1.30.164393), it skips the wait timer and `player.StatSyncToClient()` in both builds (plus
+      throw cancellation and `SendExitEmoteRequest` in 1.30.164393), while `PlayerDisconnected`
+      still runs `InvokeOnDisconnect(player)`, `player.Save()` and `GetHive().CharacterExit(player)`
+      when `GetHive()` is active, `ReleaseNetworkControls()`, `HandleBody(player)` (which deletes
+      an alive body unless `ShouldPlayerBeKilled` kills it), and `DisconnectPlayer`
       (`missionserver.c:703-721, 748-764` in 1.30.164289; `:732-750, 777-793` in 1.30.164393).
       - [DESIGN] To skip the logout wait for a body that is nobody's character (such as a spectator
         anchor), call that instant-disconnect sequence in `OnClientDisconnectedEvent`, and account
@@ -248,7 +250,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       hypothesis, "the event arrives without a body and vanilla drops it", was wrong: a test
       proved the premise false.
 37f. **Blocking a family of actions on other players (a safe zone): gating `ActionBase` (`Can`,
-    `CanContinue`, `OnAnimationEvent`) and its `OnEndServer` caveat.**
+    `CanContinue`, `OnAnimationEvent`) and its `OnStartServer` / `OnEndServer` caveats.**
     - **Start:** [EXACT][CLAIM-ENF-ACTIONBASE-CAN-GATE] `modded class ActionBase` overrides the
       4-argument `Can(PlayerBase player, ActionTarget target, ItemBase item, int condition_mask)`
       (`actionbase.c:929-966`, 1.30.164289 and 1.30.164393).
@@ -282,6 +284,16 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       `actionforceconsumesingle.c:55-69`) while the animation still ends through
       `ActionBaseCB.OnFinish` (`animatedactionbase.c:27-54`), which calls `action.End` ->
       `OnEndServer` (`:458-466`); it therefore does not stop effects applied in `OnEndServer`.
+    - **Start-window caveat (`OnStartServer`):** [EXACT][CLAIM-ENF-ACTION-ONSTARTSERVER-WINDOW] if
+      the target enters the zone after `StartDeliveredAction` accepts the action
+      (`actionmanagerserver.c:168-192`) and before `Update` processes `UA_AM_ACCEPTED`
+      (`:305-318`), the server can call `m_CurrentActionData.m_Action.Start(m_CurrentActionData)`
+      without calling `Can` again. `AnimatedActionBase.Start` (`animatedactionbase.c:361-369`)
+      runs `super.Start` -> `ActionBase.Start` -> `OnStartServer` (`actionbase.c:775-788`) before
+      `CreateAndSetupActionCallback` creates the callback that queries `CanContinue`; for example,
+      `ActionRestrainTarget.OnStartServer` (`actionrestraintarget.c:91-107`) can end a surrender
+      or cancel a playing emote and call `SetRestrainStarted(true)` on the target before the first
+      `CanContinue` (all lines identical in 1.30.164289 and 1.30.164393).
     - **Cancellation caveat (`OnEndServer`):** [EXACT][CLAIM-ENF-ACTION-ONENDSERVER-CANCEL] those
       three hooks do not block effects that an action applies in `OnEndServer` after partial
       progress. When a callback finishes cancelled, `ActionBaseCB.OnFinish` runs
@@ -303,15 +315,16 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       `ActionCollectBloodTarget`, `ActionCollectSampleTarget`, `ActionGiveBloodTarget`,
       `ActionDefibrilateTarget`) nor any of their 20 descendants overrides `Can` or `CanContinue`.
     - **Cheap filter first:** [DESIGN] check `PlayerBase.Cast(target.GetObject())` and reject self
-      before heavier checks. When `FindContextualUserActions` reaches its input loop (see **Start**
-      above; `actionmanagerclient.c:561-578` in 1.30.164289; `:558-575` in 1.30.164393), it calls
-      `UpdatePossibleActions` on each entry of `m_OrederedAllActionInput`; in `StandardActionInput`,
-      unless `ForceActionCheck(player)` returns early (`actioninput.c:354-361`),
-      `UpdatePossibleActions` calls `_GetSelectedActions`, which queries 4-argument
-      `action.Can(...)` across candidate actions (`:310-350, 354-391`, both builds). Other inputs
-      can differ: `NoIndicationActionInputBase.UpdatePossibleActions` only records context
-      (`:585-590`) and queries `action.Can(...)` in `GetAction()` when no forced action applies and
-      `m_MainItem` is set (`:592-617`, both builds).
+      before heavier checks.
+      [EXACT][CLAIM-ENF-ACTIONINPUT-CAN-QUERIES] When `FindContextualUserActions` reaches its input
+      loop (see **Start** above; `actionmanagerclient.c:561-578` in 1.30.164289; `:558-575` in
+      1.30.164393), it calls `UpdatePossibleActions` on each entry of `m_OrederedAllActionInput`;
+      in `StandardActionInput`, unless `ForceActionCheck(player)` returns early
+      (`actioninput.c:354-361`), `UpdatePossibleActions` calls `_GetSelectedActions`, which queries
+      4-argument `action.Can(...)` across candidate actions (`:310-350, 354-391`, both builds).
+      Other inputs can differ: `NoIndicationActionInputBase.UpdatePossibleActions` only records
+      context (`:585-590`) and queries `action.Can(...)` in `GetAction()` when no forced action
+      applies and `m_MainItem` is set (`:592-617`, both builds).
     - **Decide the protection by zone, not by `GetAllowDamage()`:**
       [EXACT][CLAIM-ENF-OBJECT-ALLOWDAMAGE] `Object.GetAllowDamage()` /
       `Object.SetAllowDamage(bool)` are native per-object methods querying or toggling whether the
@@ -335,19 +348,20 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       770-784`); if none are collected (for example, a name inside an unknown-macro `#ifdef` or
       used only as a config path), it returns no finding (`:783-784`). When a valid vanilla tree
       is available and unresolved references are collected, it reports `FAIL` if `requiredAddons[]`
-      is non-empty and all required dependencies are covered by vanilla or `--external-scripts`, or
-      `SKIP` if any required dependency is uncovered (or unquoted) or no `requiredAddons[]` entries
-      are declared (`:733-759, 790-848`). Note that `ES-UNDEFINED-CLASS-REF` checks whether a type
-      is declared in the addon, vanilla, or scanned `--external-scripts` dependencies
+      is non-empty and all required dependencies are covered by vanilla or `CfgPatches` in the
+      addon or `--external-scripts`, or `SKIP` if any required dependency is uncovered (or
+      unquoted) or no `requiredAddons[]` entries are declared (`:733-759, 766, 790-848`). Note
+      that `ES-UNDEFINED-CLASS-REF` checks whether a type is declared in the addon, vanilla, or
+      scanned `--external-scripts` dependencies
       (`tools/dayz-script-validator/README.md:62-95`) and does not verify client-side compile
       visibility. [DESIGN] Let the server push the zone into a static at init.
     - **Evidence:** BattleRoyale PR #57, DayZDiag 1.30, run b411f3d2 on 2026-11-17 (run log
       outside this pack). Outside the zone, the head sack and force-feeding on a survivor dummy
       finished. Inside it, both were rejected by the server (reported as `server_rejected` in the
       test harness within 0.06 s): the sack stayed in hand and the apple stayed at 125/125. The
-      `CanContinue`, `OnAnimationEvent`, and `OnEndServer` paths were checked by reading vanilla
-      source only; crossing a zone boundary while an action is already running was not tested in
-      game.
+      `CanContinue`, `OnAnimationEvent`, `OnStartServer`, and `OnEndServer` paths were checked by
+      reading vanilla source only; crossing a zone boundary between acceptance and `Start` or while
+      an action is already running was not tested in game.
 38. **Three input detection patterns exist, all valid:**
     - Simple: `g_Game.GetInput().LocalPress("UAMyAction", false)` — one-line check
     - Direct: `GetUApi().GetInputByName("UAMyAction").LocalPress()` — per-frame
