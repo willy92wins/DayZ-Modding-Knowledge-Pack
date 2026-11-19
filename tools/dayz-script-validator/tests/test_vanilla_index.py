@@ -276,6 +276,44 @@ class TestIndexFallback(_IndexIsolation):
             vanilla_reference.reset_index_cache()
             self.assertEqual(path, vanilla_reference.loaded_index_path())
 
+    def test_loaded_index_tree_is_what_the_generator_wrote_of_its_tree(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "vanilla_index.json"
+            vanilla_reference.set_index_path_for_tests(path)
+            self.assertIsNone(vanilla_reference.loaded_index_tree())
+            path.write_text(json.dumps({"schema_version": 999}), encoding="utf-8")
+            vanilla_reference.reset_index_cache()
+            self.assertIsNone(vanilla_reference.loaded_index_tree())
+            document = build_vanilla_index.build_index_document(MINI_TREE)
+            build_vanilla_index.write_index(document, path)
+            vanilla_reference.reset_index_cache()
+            self.assertEqual(
+                {
+                    "vanilla_root": str(MINI_TREE.resolve()),
+                    "file_count": 5,
+                    "parsed_file_count": 5,
+                    "total_bytes": document["total_bytes"],
+                    "tree_digest": document["tree_digest"],
+                },
+                vanilla_reference.loaded_index_tree(),
+            )
+            # A hand-written index names what it has and nothing else.
+            path.write_text(
+                json.dumps({"schema_version": 1, "file_count": 7}),
+                encoding="utf-8",
+            )
+            vanilla_reference.reset_index_cache()
+            self.assertEqual(
+                {
+                    "vanilla_root": None,
+                    "file_count": 7,
+                    "parsed_file_count": None,
+                    "total_bytes": None,
+                    "tree_digest": None,
+                },
+                vanilla_reference.loaded_index_tree(),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

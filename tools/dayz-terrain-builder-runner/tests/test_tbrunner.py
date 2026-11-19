@@ -523,7 +523,9 @@ class TestMenus(_Desktop):
 
         def bump_mtime(hwnd, message, wparam, lparam):
             result = original(hwnd, message, wparam, lparam)
-            tv4p.write_bytes(b"v2")
+            # Not a second write: two writes within one tick of the system clock share st_mtime_ns.
+            before = tv4p.stat()
+            os.utime(tv4p, ns=(before.st_atime_ns, before.st_mtime_ns + 2_000_000_000))
             return result
 
         self.user32.PostMessageW = bump_mtime

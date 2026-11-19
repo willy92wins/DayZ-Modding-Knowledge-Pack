@@ -1,10 +1,12 @@
 # Publishing a signed mod to the Steam Workshop (DayZ, appid 221100)
 
-Measured on 2026-11-12 on one Windows PC with the Steam client signed in:
-signing a released PBO, creating a hidden Workshop item with SteamCMD, and what
-a SteamCMD login does to the Steam client on the same machine. Updating an item
-and the subscriber's side (the download, the `!Workshop` junction and
-`meta.cpp`) were **not** measured.
+Measured on 2026-11-12 and 2026-11-19 on one Windows PC: signing a released
+PBO, what a server with `verifySignatures = 2` does with it, creating a hidden
+Workshop item with SteamCMD, what a manual SteamCMD login with the Steam
+client's account did to that client on the same machine, updating the item
+with the Publisher, and the owner's subscribed copy of that private item. An
+update with SteamCMD, an update reaching a subscriber, the `!Workshop`
+junction and `meta.cpp` were **not** measured.
 
 ## The item folder
 
@@ -24,13 +26,31 @@ sha256 before and after signing. The three tools write `.RPT` and `.mdmp`
 files next to their own executable, so run a copy of them from a folder of
 your own.
 
+[EXACT][CLAIM-WORKSHOP-SIGN-SERVER-CHECK] A retail DayZServer 1.30.164289.70,
+started with `-config` on a copy of its stock `serverDZ.cfg` (which has
+`verifySignatures = 2`) with `BattlEye = 0` added, loaded the signed mod with
+`-mod`, and a retail client loaded the same mod folder. With the item's
+`.bikey` missing from the server's `keys` folder, the server kicked the client
+0.14 s after it entered `AuthPlayerLoginState`: its RPT logged
+`kicked from server: 120` with a message, in that machine's language, saying
+that the client has a PBO the server does not have, and the client logged
+`Error thrown: 0x00040078`. The message does not mention signatures.
+With the `.bikey` copied into `keys` and nothing else changed, the client
+passed `AuthPlayerLoginState` and the server logged `is connected`. In that
+second run BattlEye kicked the client 23 s after it joined, with
+`Game restart required` (kick 240), although the client ran without BattlEye;
+the server had copied `BEServer_x64.dll` to its profile. Why was not
+investigated, and no log says whether the server applied `BattlEye = 0`. So
+how long a client stays joined was not measured, and a client with BattlEye
+was not tried.
+
 ## Two ways to publish
 
 | | Publisher (DayZ Tools) | SteamCMD |
 |---|---|---|
 | Session | The running Steam client's (inferred from its files) | Its own login with an account |
-| Command line | None in DayZ Tools | `+workshop_build_item <vdf>` |
-| On a machine where people play | No second login (inferred from its files, not measured) | Kicks the Steam client off if it logs in with the client's account (below) |
+| Command line | None found: no `PublisherCmd`, and no option in the Publisher's strings | `+workshop_build_item <vdf>` |
+| On a machine where people play | No log off in the client's log in three publications (below) | A manual login with the client's account kicked the Steam client off (below) |
 
 [EXACT][CLAIM-WORKSHOP-PUBLISHER-FILES] `Bin\Publisher\Publisher.exe`
 (file version 1.0.240.639, signed by Bohemia Interactive) is a 32-bit WPF
@@ -42,22 +62,61 @@ Tools), and no command-line option shows in the Publisher's strings. This was
 read from the installed files without running them.
 
 [INFERRED] From those strings, the Publisher publishes with the session of the
-running client instead of logging in. Not measured, and neither is whether it
-disturbs that session.
+running client instead of logging in. Not measured directly; what it left in
+that client's logs is below.
+
+### Updating an item with the Publisher
+
+[EXACT][CLAIM-WORKSHOP-PUBLISHER-UPDATE] Updating an existing private item
+with the Publisher while the Steam client was running: its content folder is
+the item's root, the folder that holds `addons` and `keys`. Given the `addons`
+folder instead, it copied only the PBO and its `.bisign` to the root of its
+temporary folder and failed before uploading: `Bin\Logs\dayzpublisher.rpt`
+logged `System.IO.DirectoryNotFoundException` for `...\Addons` in
+`UpdateMetadataOuter`. Given the root folder, its log went `Start`, the copy
+to `%TEMP%\!Publisher_<title>_<guid>`, `Processing tags`,
+`Steam Workshop item id is set, the item will be update`,
+`Publishing to Steam Workshop...` and `Clean up` 5.7 s later (14 to 16 s for a
+large mod), and the client's `logs\workshop_log.txt` recorded
+`Upload starting`, `Uploaded new content` with a new manifest id, a new
+preview file and `Upload finished ... : OK`. The chosen visibility shows in
+neither log; the Publisher's files offer public, friends only and private, and
+no unlisted. In three publications with the client running (this update and
+two of another item on 2026-11-12), the client's `logs\connection_log.txt`
+had no line during the publication, no log off and no `Session Replaced`.
+
+### The owner's copy of a private item
+
+[EXACT][CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY] Subscribed from the owner's
+account, the private item downloaded in about 2 s to
+`steamapps\workshop\content\221100\<id>`, with the same files and sha256 as
+the item folder. Days later the client removed it twice, each time logging
+`Get details for item <id> failed : Access Denied` and then
+`Detected workshop change : removing unknown item <id>` in
+`workshop_log.txt`. In between, that log has
+`Detected workshop change : added subscribed item <id>` and, 2 s later,
+`Finished Workshop download job : No Error`; it does not say what added the
+item back. After the Publisher update above, once the owner said they were
+subscribed, readings about every 30 s for 6 minutes and, an hour later, for
+40 minutes found no line naming the item in `workshop_log.txt` besides the
+upload's, and no entry for it in `appworkshop_221100.acf`.
+
+[INFERRED] On the owner's own client a private item is no stand-in for a
+public one: measure an update reaching subscribers on a public item.
 
 ## SteamCMD
 
 ### Before any SteamCMD login on a machine where people play
 
-[EXACT][CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED] A SteamCMD login with the
-account that the Steam client has signed in on the same machine replaces the
-client's session. In the same second as SteamCMD's `LogOnResponse` OK, the
-client's `logs\connection_log.txt` recorded
-`RecvMsgClientLoggedOff('Session Replaced')` and
-`not auto reconnecting due to Session Replaced`. The client did not reconnect
-by itself and stayed offline for 46 minutes, until the owner restarted it.
-Meanwhile, the other test runs on that machine reported kick 49 in
-`WaitAuthPlayerLoginState` on the joins they tried.
+[EXACT][CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED] A manual SteamCMD login (the
+owner typing `login <account>`) with the account that the Steam client had
+signed in on the same machine replaced the client's session. In the same
+second as SteamCMD's `LogOnResponse` OK, the client's
+`logs\connection_log.txt` recorded `RecvMsgClientLoggedOff('Session Replaced')`
+and `not auto reconnecting due to Session Replaced`. The client did not
+reconnect by itself: the owner restarted it 44 minutes later, and it logged on
+again 2 minutes after that. Meanwhile, the other test runs on that machine
+reported kick 49 in `WaitAuthPlayerLoginState` on the joins they tried.
 `HKCU\Software\Valve\Steam\ActiveProcess` did not change, so a registry
 check misses it; the client's `connection_log.txt` shows it.
 
@@ -65,8 +124,10 @@ So, on a machine where people play: publish with the Publisher, or run
 SteamCMD with that account only while the Steam client is closed and no game
 is running, the first login included. A second account was not tried.
 
-[INFERRED] Any SteamCMD login with that account does the same,
-`workshop_download_item` included. Not measured.
+[INFERRED] Any SteamCMD login with that account may replace the client's
+session too, an unattended one from the cached session and
+`workshop_download_item` included. Not measured: the cached login below ran
+while the client was still offline.
 
 ### Login
 
@@ -77,7 +138,9 @@ before running it. The first run updates itself (about 43 MB) and relaunches,
 and the relaunched process lost a `+quit` given on the command line, so do the
 first run by hand. The login is the account owner's, once: `login <account>`
 and the password; the first attempt answered `Account Logon Denied` and asked
-for the Steam Guard code; then `quit`. After that an unattended run logged in
+for the Steam Guard code, and with the code entered the login went through
+(`LogOnResponse` OK in SteamCMD's log); then `quit`. After that an unattended
+run, with the Steam client still logged off by that login (above), logged in
 from the cached session in about one second, with `steamcmd +runscript <file>`
 and this file:
 
@@ -88,8 +151,9 @@ and this file:
     quit
 
 With these two settings that run logged in from the cached session and exited
-by itself; a run without a cached session, or with a failing command, was not
-tried. SteamCMD writes the account name and the SteamID in its own logs.
+by itself; an unattended run without a cached session, or with a failing
+command, was not tried. SteamCMD writes the account name and the SteamID in
+its own logs.
 
 ### Creating a hidden item
 
@@ -111,5 +175,5 @@ the `.vdf`. The run printed `Create new workshop item ( PublishFileID <id>)`,
 `Uploading content...`, `Committing update...` and `Success.` in 13 s, with no
 `previewfile` and no Workshop legal-agreement warning for that private item.
 `visibility` takes the Steamworks values 0 public, 1 friends only, 2 private
-and 3 unlisted; only 2 was used. Updating means the same `.vdf` with the
-item's id instead of 0 (not measured).
+and 3 unlisted; only 2 was used. Updating an item with SteamCMD was not
+measured; the update measured here went through the Publisher (above).

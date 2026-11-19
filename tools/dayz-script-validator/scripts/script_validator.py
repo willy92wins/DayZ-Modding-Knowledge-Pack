@@ -189,6 +189,7 @@ from detectors.es_undefined_builtin_method import (
     check_es_undefined_builtin_method,
 )
 from shared.vanilla_build import compare_vanilla_build, resolve_game_root
+from shared.vanilla_index_tree import compare_index_tree
 from shared.vanilla_tree import resolve_vanilla_root
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
@@ -327,7 +328,8 @@ def collect_external_configs(external_roots):
 
 
 def validate_addon(addon_root, external_roots=None, vanilla_root=None,
-                   vanilla_skip_reason=None, game_root=None):
+                   vanilla_skip_reason=None, game_root=None,
+                   game_root_explicit=False):
     start = time.perf_counter()
     received_addon_root = pathlib.Path(addon_root)
     addon_root = pathlib.Path(addon_root).resolve()
@@ -516,20 +518,31 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     )
     errors.extend(builtin_errors)
     skipped_checks = list(skipped_checks) + builtin_skipped
+    # Not a rule on the addon: whether the vanilla index some rules above
+    # read was built from the vanilla tree the others read.
+    index_warnings, index_skipped, index_info = compare_index_tree(vanilla_root)
+    warnings.extend(index_warnings)
+    skipped_checks = list(skipped_checks) + index_skipped
     build_info = None
     if game_root:
         # Not a rule on the addon: whether the vanilla tree the rules above
         # read is the game's own scripts.
-        build_warnings, build_skipped, build_info = compare_vanilla_build(
-            vanilla_root, game_root
+        build_severity = "FAIL" if game_root_explicit else "WARN"
+        build_findings, build_skipped, build_info = compare_vanilla_build(
+            vanilla_root, game_root, severity=build_severity
         )
-        warnings.extend(build_warnings)
+        if game_root_explicit:
+            errors.extend(build_findings)
+        else:
+            warnings.extend(build_findings)
         skipped_checks = list(skipped_checks) + build_skipped
 
     elapsed_ms = int((time.perf_counter() - start) * 1000)
     result = build_result(
         addon_root, errors, warnings, len(files), elapsed_ms, skipped_checks
     )
+    if index_info is not None:
+        result["info"]["vanilla_index"] = index_info
     if build_info is not None:
         result["info"]["vanilla_build"] = build_info
     return result
@@ -580,9 +593,11 @@ def build_parser():
             "DayZ install folder of the game the addon runs on (default: "
             "DAYZ_GAME_ROOT); its dta\\scripts.pbo itself also works. The "
             "vanilla tree is compared with that PBO file by file, and "
-            "VANILLA-ROOT-BUILD-MISMATCH warns when they differ: the rules "
-            "that read the vanilla tree judge against the tree, not the game. "
-            "Without it nothing is compared."
+            "VANILLA-ROOT-BUILD-MISMATCH fails the run (exit 1) when "
+            "--game-root is passed on the command line or warns (exit 2) when "
+            "it comes from DAYZ_GAME_ROOT: the rules that read the vanilla "
+            "tree judge against the tree, not the game. Without either "
+            "nothing is compared."
         ),
     )
     return parser
@@ -598,6 +613,7 @@ def run(argv=None):
         vanilla_root=vanilla_root,
         vanilla_skip_reason=vanilla_skip_reason,
         game_root=resolve_game_root(args.game_root),
+        game_root_explicit=bool(args.game_root),
     )
     return exit_code_for_status(result["status"]), result
 
