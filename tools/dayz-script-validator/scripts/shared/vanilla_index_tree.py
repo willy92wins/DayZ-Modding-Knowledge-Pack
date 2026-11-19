@@ -27,11 +27,11 @@ the tree being read, the first whole file beside it that is of that tree
 is read instead, and the four rules judge with it. For a file beside it
 the two numbers are not enough: two trees can share them (an identifier
 renamed to another of the same length), and taking one for the other would
-turn this warning into a PASS. So its digest is compared too, and the tree
-is hashed only when a file beside the default index has its two numbers.
-On 2026-11-18 three addons tested on Experimental warned on every run, and
-were judged with the stable build's members, because only the default
-file was read.
+silence VANILLA-INDEX-TREE-MISMATCH and report a match. So its digest is
+compared too, and the tree is hashed only when a file beside the default
+index has its two numbers. On 2026-11-18 three addons tested on
+Experimental warned on every run, and were judged with the stable build's
+members, because only the default file was read.
 """
 
 import os
@@ -158,7 +158,8 @@ def _whole_index_of_tree(recorded, tree_files, tree_bytes, tree_digest):
 def _digest_of(vanilla_root, files):
     """A function that hashes the tree as the generator does, at most once.
 
-    It gives None when a file of the tree cannot be read, which is no match.
+    An OSError while reading a file of the tree propagates so the caller
+    reports a SKIP instead of comparing a tree it could not read.
     """
     hashed = []
 
@@ -167,10 +168,7 @@ def _digest_of(vanilla_root, files):
             # build_vanilla_index.py imports this module: not at the top.
             import build_vanilla_index
 
-            try:
-                hashed.append(build_vanilla_index.tree_digest(files, vanilla_root))
-            except OSError:
-                hashed.append(None)
+            hashed.append(build_vanilla_index.tree_digest(files, vanilla_root))
         return hashed[0]
 
     return tree_digest
@@ -207,9 +205,6 @@ def use_index_of_tree(vanilla_root):
         files = collect_c_files(root)
         tree_files = len(files)
         tree_bytes = sum(path.stat().st_size for path in files)
-    except OSError as error:
-        tree_error = error
-    else:
         if not _numbers_match(loaded_index_tree(), tree_files, tree_bytes):
             tree_digest = _digest_of(root, files)
             beside = use_sibling_index(
@@ -219,6 +214,8 @@ def use_index_of_tree(vanilla_root):
             )
             if beside is not None:
                 index_path, read_beside = beside, True
+    except OSError as error:
+        tree_error = error
     recorded = loaded_index_tree()
     index_files = recorded["file_count"]
     index_bytes = recorded["total_bytes"]

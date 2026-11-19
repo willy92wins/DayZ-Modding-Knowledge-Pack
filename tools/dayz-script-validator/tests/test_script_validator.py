@@ -6356,21 +6356,51 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
     def test_a_pinned_index_is_the_only_one_read(self):
         # set_index_path_for_tests rules: neither the files beside the
         # default index nor those beside the pinned one take its place.
+        import builtins
+        import io
+
         self._index(self.stable)
-        self._index(self.experimental, self._beside("experimental"))
+        default_beside = self._beside("experimental")
+        self._index(self.experimental, default_beside)
         pinned = self.base / "pinned" / "vanilla_index.json"
         self._index(self.stable, pinned)
-        self._index(
-            self.experimental, pinned.with_name(pinned.name + ".experimental")
-        )
+        pinned_beside = pinned.with_name(pinned.name + ".experimental")
+        self._index(self.experimental, pinned_beside)
         vanilla_reference.set_index_path_for_tests(pinned)
 
-        code, result = self._run(self.experimental, self.addon)
+        real_open = io.open
+        real_path_open = pathlib.Path.open
+        index_dirs = {self.default.parent.resolve(), pinned.parent.resolve()}
+        opened = []
+
+        def record_open(file, *args, **kwargs):
+            if isinstance(file, (str, bytes, os.PathLike)):
+                opened.append(pathlib.Path(os.fsdecode(file)).resolve())
+            return real_open(file, *args, **kwargs)
+
+        def record_path_open(path_self, *args, **kwargs):
+            opened.append(path_self.resolve())
+            return real_path_open(path_self, *args, **kwargs)
+
+        with mock.patch.object(
+            io, "open", side_effect=record_open
+        ), mock.patch.object(
+            builtins, "open", side_effect=record_open
+        ), mock.patch.object(
+            pathlib.Path, "open", new=record_path_open
+        ):
+            code, result = self._run(self.experimental, self.addon)
 
         self.assertEqual(1, code)
         warning = self._assert_default_index_warns(result, pinned)
         self.assertNotIn("<name>", warning["message"])
         self.assertEqual(str(pinned), str(vanilla_reference.loaded_index_path()))
+        index_reads = [path for path in opened if path.parent in index_dirs]
+        self.assertIn(pinned.resolve(), index_reads)
+        self.assertNotIn(self.default.resolve(), index_reads)
+        self.assertNotIn(default_beside.resolve(), index_reads)
+        self.assertNotIn(pinned_beside.resolve(), index_reads)
+        self.assertEqual({pinned.resolve()}, set(index_reads))
 
     def test_unpinning_goes_back_to_the_default_index(self):
         # What the cleanup of a test does: set_index_path_for_tests also
@@ -6751,6 +6781,119 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
             return real_scandir(path)
 
         with mock.patch.object(os, "scandir", side_effect=deny_world):
+            code, result = self._run(self.experimental)
+
+        self.assertEqual(0, code)
+        self.assertEqual([], self._index_warnings(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        skips = self._index_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("was not read", skips[0]["reason"])
+        self.assertIn("denied", skips[0]["reason"])
+        self.assertIn(str(self.default), skips[0]["reason"])
+        self.assertEqual(
+            str(self.default), str(vanilla_reference.loaded_index_path())
+        )
+
+    def test_deeply_nested_broken_json_beside_the_default_is_passed_over(self):
+        # Deeply nested unreadable JSON raises RecursionError in json.loads;
+        # the loader must skip it and move on to the valid sibling after it.
+        self._index(self.stable)
+        self._put(
+            "[" * max(32768, sys.getrecursionlimit() + 1000),
+            self._beside("00"),
+        )
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], self._index_warnings(result))
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+
+    def test_a_non_utf8_filename_in_the_tree_does_not_abort_validation(self):
+        # On POSIX, a filename containing raw non-UTF-8 bytes (such as 0xff)
+        # is decoded with surrogateescape; hashing the tree must not abort
+        # with UnicodeEncodeError when a sibling shares the count and bytes.
+        from shared import vanilla_index_tree
+
+        class _SurrogateFile:
+            def __init__(self, real_path, fake_path):
+                self._real = real_path
+                self._fake = fake_path
+
+            def relative_to(self, other):
+                return self._fake.relative_to(other)
+
+            def stat(self):
+                return self._real.stat()
+
+            def open(self, mode="r", *args, **kwargs):
+                return self._real.open(mode, *args, **kwargs)
+
+        self._index(self.stable)
+        self._index(self.experimental, self._beside("experimental"))
+        real_collect = vanilla_index_tree.collect_c_files
+
+        def collect_with_surrogate(tree_root):
+            files = real_collect(tree_root)
+            target = files[-1]
+            return files[:-1] + [
+                _SurrogateFile(target, target.with_name("fx_nonutf8_\udcff.c"))
+            ]
+
+        with mock.patch.object(
+            vanilla_index_tree,
+            "collect_c_files",
+            side_effect=collect_with_surrogate,
+        ):
+            code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self._assert_default_index_warns(result)
+        self.assertEqual([], self._index_skips(result))
+
+    def test_boolean_schema_version_beside_the_default_is_passed_over(self):
+        # True == 1 in Python, but schema_version must be the integer
+        # INDEX_SCHEMA_VERSION, not a boolean or float.
+        self._index(self.stable)
+        document = build_vanilla_index.build_index_document(self.experimental)
+        beside = self._beside("experimental")
+        self._put(document, beside)
+        for name, bad_version in (("bool", True), ("float", 1.0)):
+            with self.subTest(name):
+                bad = self._beside("00")
+                self._put(
+                    json.dumps(dict(document, schema_version=bad_version)),
+                    bad,
+                )
+
+                code, result = self._run(self.experimental, self.addon)
+
+                self.assertEqual(1, code)
+                self.assertEqual(["my_cursor.c"], self._redeclared(result))
+                self.assertEqual([], self._index_warnings(result))
+                self.assertEqual(
+                    str(beside), result["info"]["vanilla_index"]["index"]
+                )
+
+    def test_an_unreadable_file_during_digest_skips_instead_of_warning(self):
+        # A .c file that allows stat() but denies open() cannot be hashed:
+        # the tree could not be read, so this rule reports a SKIP instead of
+        # discarding the read error and warning on the default index.
+        self._index(self.stable)
+        self._index(self.experimental, self._beside("experimental"))
+        blocked = (self.experimental / "4_world" / "fx_liquid.c").resolve()
+        real_path_open = pathlib.Path.open
+
+        def deny_file_open(path_self, *args, **kwargs):
+            if path_self.resolve() == blocked:
+                raise PermissionError("denied")
+            return real_path_open(path_self, *args, **kwargs)
+
+        with mock.patch.object(pathlib.Path, "open", new=deny_file_open):
             code, result = self._run(self.experimental)
 
         self.assertEqual(0, code)

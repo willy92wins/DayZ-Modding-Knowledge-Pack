@@ -135,7 +135,10 @@ def _sha256_file(path):
 def tree_digest(files, root):
     digest = hashlib.sha256()
     for path in files:
-        digest.update(_posix_relative(path, root).encode("utf-8"))
+        # POSIX filenames decoded with surrogateescape can hold lone surrogates.
+        digest.update(
+            _posix_relative(path, root).encode("utf-8", errors="surrogatepass")
+        )
         digest.update(b"\0")
         digest.update(_sha256_file(path).encode("ascii"))
         digest.update(b"\n")

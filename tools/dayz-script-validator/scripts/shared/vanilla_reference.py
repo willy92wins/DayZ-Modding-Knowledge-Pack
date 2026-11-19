@@ -16,7 +16,8 @@ members and signatures of the tree it was built from, so an index of another
 tree than the one being read can report a false positive. A whole index of
 that tree kept beside the default one, as `vanilla_index.json.<name>`, is
 read instead (use_sibling_index); shared/vanilla_index_tree.py decides which
-file is of the tree and warns when none is (VANILLA-INDEX-TREE-MISMATCH).
+file is of the tree and, when none is, warns (VANILLA-INDEX-TREE-MISMATCH)
+or reports a SKIP when the default index cannot be compared with the tree.
 """
 
 from __future__ import annotations
@@ -98,11 +99,23 @@ def _read_index(path):
     try:
         raw = path.read_text(encoding="utf-8")
         data = json.loads(raw)
-    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+    except (
+        OSError,
+        UnicodeError,
+        json.JSONDecodeError,
+        RecursionError,
+        TypeError,
+        ValueError,
+    ):
         return None
     if not isinstance(data, dict):
         return None
-    if data.get("schema_version") != INDEX_SCHEMA_VERSION:
+    version = data.get("schema_version")
+    if (
+        not isinstance(version, int)
+        or isinstance(version, bool)
+        or version != INDEX_SCHEMA_VERSION
+    ):
         return None
     return data
 

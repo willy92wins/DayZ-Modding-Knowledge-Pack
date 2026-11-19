@@ -98,7 +98,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   tables the rules read, each an object, a `parsed_file_count` equal to its `file_count`, and a `tree_digest`. Of
   the tree is when its count, its bytes and its `tree_digest` are the tree's: two trees can share the count and the
   bytes (one identifier renamed to another of the same length is enough), and a file beside the default index taken
-  on those two numbers would turn the warning into a PASS. The tree is hashed only when a file beside the default
+  on those two numbers would silence `VANILLA-INDEX-TREE-MISMATCH` and report a match. The tree is hashed only when a file beside the default
   index has its two numbers; the default index is still compared by the two numbers alone. When no file is of the
   tree, the default index is read and the run warns, or gives its SKIP line, as before; the warning now also offers
   `--out` with such a name. Only the default file was read until now, so on 2026-11-18 three addons tested on DayZ 1.30.164393

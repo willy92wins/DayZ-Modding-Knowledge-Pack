@@ -390,13 +390,13 @@ The price is one blind spot: a tree with the same count and the same bytes
 but other contents is taken for the default index's tree. A file beside
 the default index is not taken on those two numbers: two trees can share
 them (one identifier renamed to another of the same length is enough), and
-taking one for the other would turn this warning into a PASS. Its digest
-is compared too, and the tree is hashed only when a file beside the default
-index has the tree's two numbers. The digest covers the paths as spelt, so
-a copy of a tree with other capitals in its paths (`4_World/...` for
-`4_world/...`, as an extraction that keeps the PBO's own spelling has them)
-is another tree to it: build that copy's index beside the default one,
-from that copy.
+taking one for the other would silence `VANILLA-INDEX-TREE-MISMATCH` and
+report a match. Its digest is compared too, and the tree is hashed only when
+a file beside the default index has the tree's two numbers. The digest covers
+the paths as spelt, so a copy of a tree with other capitals in its paths
+(`4_World/...` for `4_world/...`, as an extraction that keeps the PBO's own
+spelling has them) is another tree to it: build that copy's index beside the
+default one, from that copy.
 
 Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work
 running on the PC), on the 1.30.164393 tree in `P:\scripts` (3 059 `.c`
