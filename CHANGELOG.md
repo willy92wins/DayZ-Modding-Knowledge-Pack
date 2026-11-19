@@ -8,9 +8,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - `dayz-test-ingame`: a session finding for the client crash when a mission ends under DayZ-MCP. On DayZDiag
-  `1.30.164289.70`, the analyzed AV (`[CDPInitServer]` at `...f5fc`/`...f710`) and heap-corruption (`0xc0000374`)
-  crashes at a `+0` to `+2` s whole-second delta from the bridge's shutdown locate the failure in the engine's RestApi
-  worker thread; classifying a new crash requires pinning the binary and resolving the RVA or confirming the RestApi
+  `1.30.164289.70`, the two stack-resolved crashes—an AV (`[CDPInitServer]` at `...f5fc`) and a heap-corruption
+  (`0xc0000374`) crash from a 29-session sample matching first-frame `...f5fc`/`...f710` or `[RtlIsZeroMemory]` +
+  `0xc0000374` at a `+0` to `+2` s whole-second delta from the bridge's shutdown—locate those failures in the engine's
+  RestApi worker thread (the same function holds a candidate instruction at RVA `0xa6f710`, without a resolved `...f710`
+  crash frame); classifying a new crash requires pinning the binary and resolving the RVA or confirming the RestApi
   worker stack for both AV and `0xc0000374` (16-bit suffixes collide across functions within the same binary, and
   `0xc0000374` alone is generic heap corruption). DayZ-MCP bridge teardown (`RestContext.reset()` on the context
   shared by poll `GET` and result `POST`, tracked in a DayZ-MCP inbox ticket) is a suspected cause, not yet verified,
