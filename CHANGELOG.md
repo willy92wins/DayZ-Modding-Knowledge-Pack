@@ -111,6 +111,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-terrain-builder-runner`, tests: `test_save_loop_counts_a_changed_file_without_focus_or_dialog` no longer
+  depends on the system clock. `save_loop` counts a save when the `st_mtime_ns` of the `.tv4p` changes; the test
+  wrote the file and its fake `PostMessageW` wrote it again about 1.5 ms later, and two writes within one tick of
+  the system clock leave the same `st_mtime_ns`, so the test failed whenever both fell in one tick: 9 of 30 runs in
+  one process with the clock mostly at 4 ms (Windows 11, 2026-11-19, when it also failed a `packctl gate` run) and
+  0 of 200 with it at 1 ms. The fake now sets the file's modification time two seconds later with `os.utime`
+  instead of writing again. `tbrunner.py` does not change.
 - PR #188 follow-ups: `extract-dayz-sources.sh` reads the PBO prefix from the PBO's header bytes, so a prefix holding
   an LF or CR is refused instead of truncated (`dayzmake inspect` prints header values unescaped), and installs its
   lock cleanup right after taking the lock; `dayz-mod-pack.sh` splits `WORKSHOP_TAGS` as data, never glob-expanded
@@ -284,6 +291,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-pbo-build` `references/workshop-publish.md`, measured on 2026-11-12 and 2026-11-19: on a retail DayZServer
+  with `verifySignatures = 2`, a client loading the signed mod is kicked in `AuthPlayerLoginState` (kick 120, "the
+  client has a PBO the server does not have") while the server's `keys` lacks the `.bikey`, and joins with it
+  (BattlEye kicked it 23 s later, with `BattlEye = 0` in the server's config); updating an item with the Publisher
+  takes the mod's root folder (the `addons` folder fails before uploading with `DirectoryNotFoundException`), took
+  about 6 s for the small test item and left no log off in the client's `connection_log.txt` in three publications;
+  the owner's Steam client removed its subscribed copy of the private item after `Access Denied`. Claims
+  `CLAIM-WORKSHOP-SIGN-SERVER-CHECK`, `CLAIM-WORKSHOP-PUBLISHER-UPDATE` and `CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY`.
+  The untried SteamCMD update recipe is removed, and `CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED` now says that the
+  login measured was a manual one and that the client was restarted 44 minutes later. In `sources/claims.json` the
+  ranges of `CLAIM-BINARIZE-DIRECT-ADDON-STALL` and `CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY` now start at their blocks
+  in `dayz-pbo-build`'s SKILL.md; on main they began 10 lines before them.
+- `dayz-vehicles/references/get-in-actions-and-proxy-pose.md`, the crew-anchor check: the healthy Memory-to-ViewGeometry
+  offset is zero, not merely equal across seats. LFQuad's 0/100/200 mm, cited there as healthy, showed the one-frame
+  camera jump on the rear seat in game; aligning the two copies removed it (A/B on 2026-11-03, and LFQuad v1.0.2 on
+  2026-11-19). Arma2Quad, aligned, still reported a jump, so zero does not rule it out.
+- `dayz-pbo-build`, rule 5: on a direct `binarize.exe` call the working directory decides where the files a p3d cites
+  are found. With AddonBuilder's arguments, a run started outside the `-addon` folder read the mod's materials from the
+  working directory and embedded a staged vanilla penetration material without its `.bisurf`; started from the
+  `-addon` folder it resolved all 16 (LFQuad, 2026-11-03). Most likely the answer to the H2R open point.
 - dayzmake >= 3.1.0, pinned to `v3.1.0`, everywhere the Pack names dayzmake (`_shared/linux-proton.md`, the Linux
   notes of 22 skills, `dayz-mod-pack.sh`, `dayz-proton.sh doctor`): dayzmake 3.x fixes a lot of security and
   file-handling issues of the earlier releases, and 3.1.0 adds `extract`, `api grep`, `api config` and more and
@@ -309,6 +336,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   that takes those members from `CCTLiquid`; an index built from the 164393 tree gives none. The section's run time
   now reads about six minutes, not two to four: 340 s when the baseline was measured on 2026-11-10, and 367 to 379 s
   by the wall clock for each of the four runs of 2026-11-18, made two to four at a time.
+- `tools/dayz-script-validator`: `VANILLA-ROOT-BUILD-MISMATCH` is FAIL (exit 1) with explicit `--game-root`, WARN (exit 2) with `DAYZ_GAME_ROOT`.
 
 ### Removed
 

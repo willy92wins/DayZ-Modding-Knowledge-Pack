@@ -47,8 +47,9 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
 - **Release package (manual; the checks above do not run it):** every class a player places, or that otherwise
   persists in the world, has an entry with an explicit lifetime in the `types.xml` the release ships. Without
   one it runs out after 30 to 60 minutes of server time (`dayz-persistence`, SP-459).
-- **Publishing to the Workshop (manual):** signing with DsUtils, the item folder, the Publisher or SteamCMD,
-  and why a SteamCMD login with the Steam client's account kicks that client off: `references/workshop-publish.md`.
+- **Publishing to the Workshop (manual):** signing with DsUtils, what `verifySignatures = 2` does without the
+  `.bikey`, the item folder, creating an item with SteamCMD and updating it with the Publisher, and why a manual
+  SteamCMD login with the Steam client's account kicked that client off: `references/workshop-publish.md`.
   On Linux (dayzmake, `meta.cpp`, Workshop tags, the `workshop` uploader): `references/dayzmake-linux.md`.
 - **REQUIRED (the mod folder, after the build):** every PBO sits in `@Mod/addons/`. A PBO at the mod folder root
   (`@MyMod/MyMod.pbo`) is silently ignored: no config, no scripts, no error, while the folder still shows in the
@@ -637,6 +638,22 @@ and 5 extended 2026-10-24, SP-468):**
      directory, per its rpt of 2026-10-23). AddonBuilder builds staged outside `P:\` resolved
      their files (rule 1). What these entries do in the kit that packs these ODOLs is rule 1's
      open point.
+   - **On a direct `binarize.exe` call, the working directory decides where cited files are
+     found** (LFQuad v1.0.2 body, 2026-11-03, BINARIZE 1.30.164289.70, source outside `P:\`;
+     claim: CLAIM-BINARIZE-DIRECT-CWD). Two runs with the same staged source and the same
+     arguments AddonBuilder passes (`-targetBonesInterval=56 -maxProcesses=16 -always
+     -addon=<src> -textures=<dir> -binpath=<Binarize folder>`) differed only in the working
+     directory. Started from another folder, binarize read the mod's `.rvmat` from
+     `<working dir>\lfquad\data\mat\` (the `…rvmat->` lines of its log) and logged `Material not
+     loaded` for `dz\data\data\penetration\metalplate.rvmat`, although it was staged under
+     `<src>`; the ODOL carried that material with no `.bisurf` in its three collision LODs.
+     Started from `<src>`, it took all 16 `.rvmat` from `<src>`, logged no `Material not
+     loaded`, and embedded `metalplate.bisurf`. **Rule:** start a direct call with the `-addon`
+     folder as working directory, as AddonBuilder does, and read the `…rvmat->` lines of its
+     log to see where each material came from. For a direct call, rule 1's "under that folder"
+     means that working directory. This is the most likely answer to the H2R open point above,
+     not measured on the H2R models. Not measured either: whether the working directory is
+     enough without AddonBuilder's other arguments.
 
 The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ingame's
 `dayz-test.ps1` template.

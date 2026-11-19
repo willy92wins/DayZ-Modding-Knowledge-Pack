@@ -2124,9 +2124,49 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: an Unreleased Fixed entry for the dayz-terrain-builder-runner test that depended on the system clock. Its figures are those of the input of tools/dayz-terrain-builder-runner/tests/test_tbrunner.py of the same revision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e19394fa0b703d7a28f4dfbdb669a669a38352c8d54ae40e68407e491f1de1ea",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-tbrunner-test-clock@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: two Unreleased Changed entries (crew-anchor offset is zero; direct binarize working directory).",
+          "license": "MIT",
+          "source_hash": "955799e1ac6f8b7c04acc805a82015a304ca9e62339f1627e80e6e5e0ead740c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), the removed SteamCMD update recipe, the corrected CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED and the corrected ranges of CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY.",
+          "license": "MIT",
+          "source_hash": "f05159e5e46577b847ccc9db10674a2fbb6dd3747633f20cfa188852543af74e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. An Unreleased Changed entry for dayz-script-validator: VANILLA-ROOT-BUILD-MISMATCH fails the run (exit 1) when --game-root is on the command line and still warns (exit 2) when the game comes from DAYZ_GAME_ROOT.",
+          "license": "MIT",
+          "source_hash": "8a24ef6df67e2370d61be135e32ec9a7577c535b0d6f29f3805aca4f5fc039f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Changelog entry for enforce-script-reference rules 37e and 37f and the second in-game case added to rule 6 (BattleRoyale PRs #56 and #57, measured in DayZDiag 1.30 on 2026-11-17). The entry restates the two rules; it adds no claim of its own. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "38e7fa64a2676b49ba1d2d59c63bd643d011010a9fbe6e53ce107fef1885d318",
+          "source_hash": "e1a1fdf9a65bba42b43eda8a531ec54796426a8ba275dee8ba56fdc7d1bf8343",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "battleroyale-pr56-pr57@2026-11-17",
@@ -2134,7 +2174,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "38e7fa64a2676b49ba1d2d59c63bd643d011010a9fbe6e53ce107fef1885d318",
+      "output_hash": "e1a1fdf9a65bba42b43eda8a531ec54796426a8ba275dee8ba56fdc7d1bf8343",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13576,10 +13616,30 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19 (LFQuad v1.0.2 body): rule 5 adds that a direct binarize.exe call resolves cited files from its working directory; CLAIM-BINARIZE-DIRECT-CWD, range from its marker.",
+          "license": "MIT",
+          "source_hash": "a48a660083335321bb261b4fde4f3dae8dc7022f96b927e3e93e7a75113bb2ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The Workshop bullet also names what verifySignatures = 2 does without the .bikey, creating an item with SteamCMD and updating it with the Publisher, and says that the SteamCMD login that kicked the Steam client off was a manual one (references/workshop-publish.md). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b10319260e34b8f615a32942267bdc083f69597fad7d0c686e7175084c095f9",
+      "output_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -18374,10 +18434,20 @@
           "source_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19 (LFQuad v1.0.2): the crew-anchor check no longer cites LFQuad's 0/100/200 mm as healthy; CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET, range from its marker.",
+          "license": "MIT",
+          "source_hash": "b424edebf5887ad383d8beac9ff007894bfa0fa7bf4305656ba55500c1919a0b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "957986f290c9ab492114aeff1841d20e08e44c38df5e0d4cfe5c55681b4e173d",
+      "output_hash": "b424edebf5887ad383d8beac9ff007894bfa0fa7bf4305656ba55500c1919a0b",
       "output_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -23366,6 +23436,26 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: CLAIM-BINARIZE-DIRECT-CWD and CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET added.",
+          "license": "MIT",
+          "source_hash": "c645fed2c343d0d00e395ca7d747ad7bb436b2ced887e502f0e5c740a5dbd36e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three claims for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), runtime_verified, from probes S1 and S3 of the dayz-mcp distribution plan and the vault runbook; the line ranges of the five earlier CLAIM-WORKSHOP-* follow the longer reference; after two adversarial reviews the evidence locators of CLAIM-WORKSHOP-PUBLISHER-FILES, CLAIM-WORKSHOP-STEAMCMD-LOGIN and CLAIM-WORKSHOP-STEAMCMD-CREATE say what the runbook records (no command-line option among the Publisher's strings; the Steam Guard code entered, the Steam client logged off during the unattended run, and that the run without a cached session not tried is an unattended one; 13.3 s for the whole run); in skills/dayz-pbo-build/SKILL.md, CLAIM-BINARIZE-DIRECT-CWD moves down one line with its longer Workshop bullet, and CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY now start at their blocks (548-564 and 624-640); on main they began 10 lines before them (537-553 and 613-629).",
+          "license": "MIT",
+          "source_hash": "8875c5ba294da9a9b1057d0663ea805f448fc0ef94c5443687477a19804c20cd",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Rule 37e inserted 23 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 586, 596, 598, 613, 615, 629 and 631 to 609, 619, 621, 636, 638, 652 and 654. No claim text changes.",
           "license": "MIT",
           "source_hash": "46c9b8f8a3af27690d2c9e15000f278dacad4bf9c670b618fc0df883a09c5cf0",
@@ -23378,7 +23468,7 @@
           "decision": "merge",
           "decision_evidence": "Rule 37f inserted 36 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 609, 619, 621, 636, 638, 652 and 654 to 645, 655, 657, 672, 674, 688 and 690. No claim text changes. After the review fixes of 2026-11-19 the seven claims sit at 733, 743, 745, 760, 762, 776 and 778, and the fixes add 10 claims for rules 37e and 37f (CLAIM-ENF-LOGOUT-QUEUE-CONDITIONS, CLAIM-ENF-LOGOUT-NULL-BODY-BREAK, CLAIM-ENF-LOGOUT-ISPLAYERDISCONNECTING, CLAIM-ENF-LOGOUT-INSTANT-DISCONNECT, CLAIM-ENF-ACTIONBASE-CAN-GATE, CLAIM-ENF-ACTION-CANCONTINUE-LOOP, CLAIM-ENF-ACTION-ONANIMATIONEVENT, CLAIM-ENF-TARGET-ACTION-FAMILIES, CLAIM-ENF-ACTION-ONENDSERVER-CANCEL, CLAIM-ENF-OBJECT-ALLOWDAMAGE). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "f70e0d1ae50ed3a444a78b87b991a85a999ea0c72e2e15f42754c2f1cb54ef54",
+          "source_hash": "6a76db470d0b11699104fc77448abd88d02cb4d0f8d701dbff0effae0660bd60",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "battleroyale-pr57@2026-11-17",
@@ -23386,7 +23476,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f70e0d1ae50ed3a444a78b87b991a85a999ea0c72e2e15f42754c2f1cb54ef54",
+      "output_hash": "6a76db470d0b11699104fc77448abd88d02cb4d0f8d701dbff0effae0660bd60",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -26848,10 +26938,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. The VANILLA-ROOT-BUILD-MISMATCH paragraph says that an explicit --game-root fails the run (exit 1) and DAYZ_GAME_ROOT warns (exit 2), and its last sentence no longer says that a gate accepting WARN lets an explicit mismatch through.",
+          "license": "MIT",
+          "source_hash": "b67e236896f9dc6d03a8ef54c98a844a79900256695e0e34de41390d5b251be3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "aef4e64737a3d5af4526103cadcc92e3a1adda068bba09a8f8e687a0fc2daf73",
+      "output_hash": "b67e236896f9dc6d03a8ef54c98a844a79900256695e0e34de41390d5b251be3",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27818,10 +27918,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. validate_addon takes game_root_explicit; with it the VANILLA-ROOT-BUILD-MISMATCH finding has severity FAIL and goes to errors, otherwise to warnings as before. run() passes it when --game-root is given, and the --game-root help says so.",
+          "license": "MIT",
+          "source_hash": "dea81a3a13caa1d15cea6d133f5799646e8ee8fcbc25c4ac99e9381575695c6f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fed8f2d1868b2dec7ec74ed077ea76ff00e7e07557ef92303b136b054e139a1f",
+      "output_hash": "dea81a3a13caa1d15cea6d133f5799646e8ee8fcbc25c4ac99e9381575695c6f",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -31878,10 +31988,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. TestVanillaRootBuild gains test_an_explicit_game_root_fails_on_another_tree (exit 1, FAIL in errors, terse line) and, from the reviews, five tests: the explicit mismatch also fails when the addon has warnings of its own, through --game-root naming dta/scripts.pbo, and with a [FAIL] tag; --game-root wins over DAYZ_GAME_ROOT; an explicit --game-root that cannot be compared stays a SKIP with exit 0. test_another_tree_warns and test_a_tree_with_files_the_game_lacks_warns name the game through DAYZ_GAME_ROOT and keep their asserts.",
+          "license": "MIT",
+          "source_hash": "3d31929b693aa9f55f8427e4a34b3d3927824909349f04f7398eed9dded318d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "428b48479c7a40a416c94e8875e86fb8790dd947eb6526f5e0d77e0f8d8ebf1d",
+      "output_hash": "3d31929b693aa9f55f8427e4a34b3d3927824909349f04f7398eed9dded318d6",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42573,10 +42693,20 @@
           "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: test_save_loop_counts_a_changed_file_without_focus_or_dialog no longer depends on the system clock. cmd_save_loop counts a save when st_mtime_ns of the .tv4p changes (tbrunner.py, which does not change). The test wrote the file and its fake PostMessageW wrote it again about 1.5 ms later; two writes within one tick of the system clock leave the same st_mtime_ns, and since setUp replaces time.sleep the wait loop then spins for its 10 s and passed stays 0 (AssertionError: 1 != 0). The fake now leaves the file with st_mtime_ns two seconds later through os.utime(ns=...) instead of writing again, as tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo.py already does. Measured on the owner's PC (Windows 11, NTFS, Python 3.14.3) by running that one test N times in one process. The test of commit f4007a9 failed 9 of 30 runs on 2026-11-19 at 00:32 with the clock at 4 ms for 24 of them (the 9 runs whose two writes shared st_mtime_ns; a packctl gate run failed on it that night, TOOL-TESTS-FAILED) and 0 of 200 at 13:03 with the clock at 1 ms (writes 1.3 to 6.2 ms apart); with its second write put back to the first write's st_mtime_ns it failed 5 of 5. The new test passed 200 of 200, with one os.utime call per run and st_mtime_ns exactly 2 000 000 000 ns later each time. Mutations on copies: a fake that leaves the file alone, a fake that sets the same st_mtime_ns and a cmd_save_loop that never sees the change each fail the test. The folder: 36 passed (38 subtests) on Windows and 36 tests OK on Linux (WSL2, kernel 6.18.58.1, ext4, Python 3.10.12), where the test of f4007a9 did not fail either (0 of 60): two consecutive writes never shared st_mtime_ns there (0 of 200 pairs at every gap from 0 to 32 ms). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "730ab0bf126df5f8ae65419ab69d7ee59c6c85436b9f874c5036d44edeff8b07",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+          "source_revision": "kp-update-tbrunner-test-clock@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "504984eeec5ac69beb66dd2f989ca974c64c3b09d432af95f80deb32153079aa",
+      "output_hash": "730ab0bf126df5f8ae65419ab69d7ee59c6c85436b9f874c5036d44edeff8b07",
       "output_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42617,10 +42747,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: follow-up of inbox 5b1f (#208). The comment above BUILTIN_TYPES says that, when the vanilla tree is not the game's, an explicit --game-root fails the run and DAYZ_GAME_ROOT warns, as #208 made it; it said that --game-root warns. Comment only: no code, rule or claim range changes.",
+          "license": "MIT",
+          "source_hash": "89d0d2218db1b66d79406bd31cd1b43f73c3c0d9918a6b8eed5fa4ac55b9b0e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+          "source_revision": "claude/project-thread-kg9kxv@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ca9e2a4179f3f24223c56dce8346ae91fc34bad4e5bebce91932b92634d8aac5",
+      "output_hash": "89d0d2218db1b66d79406bd31cd1b43f73c3c0d9918a6b8eed5fa4ac55b9b0e8",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42639,10 +42779,20 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. compare_vanilla_build takes the finding's severity (WARN by default) and uses it in the message's leading tag and in the finding's severity; counts, SKIP cases and info.vanilla_build do not change.",
+          "license": "MIT",
+          "source_hash": "544aaf43c712f04c0b9a7048ce96b045dfbce8c9bfafa14fec29a4cf8cfe93cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
+      "output_hash": "544aaf43c712f04c0b9a7048ce96b045dfbce8c9bfafa14fec29a4cf8cfe93cc",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -44023,10 +44173,20 @@
           "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
           "source_revision": "workshop-publish-r2@2026-11-12",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pack-authored update by Claude (Anthropic) from probes S1 and S3 of the dayz-mcp distribution plan (2026-11-12 and 2026-11-19) and the vault runbook: CLAIM-WORKSHOP-SIGN-SERVER-CHECK (retail DayZServer with verifySignatures = 2: kick 120 without the .bikey, join with it, the BattlEye kick as observed, its cause as not investigated and how long a client stays as not measured), CLAIM-WORKSHOP-PUBLISHER-UPDATE (the Publisher's content folder, its log and the client's logs in three publications) and CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY (the owner's copy of the private item, followed by an [INFERRED] paragraph); the intro, two table rows and the [INFERRED] paragraph after CLAIM-WORKSHOP-PUBLISHER-FILES follow. After two adversarial reviews, CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED says that the login measured was a manual one and that the client was restarted 44 minutes later, the [INFERRED] paragraph after it that another login may do the same, CLAIM-WORKSHOP-STEAMCMD-LOGIN that the owner entered the Steam Guard code before quit, that the Steam client was still logged off during the unattended run and that the run without a cached session not tried is an unattended one, and the untried SteamCMD update recipe is removed. No account name, item id or private path.",
+          "license": "MIT",
+          "source_hash": "540312f5e09374ab70c9935a62398e2e0bf30af2d72aa2f333997a68f5260afe",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
+      "output_hash": "540312f5e09374ab70c9935a62398e2e0bf30af2d72aa2f333997a68f5260afe",
       "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "runtime_verified"

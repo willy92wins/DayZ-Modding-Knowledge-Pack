@@ -292,17 +292,19 @@ python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
     --vanilla-root <tree> --game-root <DayZ install folder>
 ```
 
-When they differ, `VANILLA-ROOT-BUILD-MISMATCH` (WARN) gives the counts
-(files that differ, files the tree lacks, files only the tree has), the
-first five names and the PBO header's `version`; `info.vanilla_build` holds
-the counts either way, with `matches`. A folder carries no build number,
-and the header's `version` or the exe's version only name a build, so the
-comparison is by content. The PBO is read with the fail-closed reader of
+When they differ, `VANILLA-ROOT-BUILD-MISMATCH` gives the counts (files that
+differ, files the tree lacks, files only the tree has), the first five names
+and the PBO header's `version`; `info.vanilla_build` holds the counts either
+way, with `matches`. A folder carries no build number, and the header's
+`version` or the exe's version only name a build, so the comparison is by
+content. The PBO is read with the fail-closed reader of
 `tools/dayz-vehicle-proxy-contract` (a compressed entry is refused): a PBO
 that cannot be read, a folder without `dta\scripts.pbo` or a missing vanilla
-tree gives a SKIP line, never a match. Without `--game-root` nothing is
-compared. WARN exits 2, which a gate that accepts WARN lets through: a gate
-that must stop on a stale tree has to fail on this rule itself.
+tree gives a SKIP line, never a match. Without `--game-root` or
+`DAYZ_GAME_ROOT` nothing is compared. With `--game-root` on the command line,
+a mismatch is FAIL (in `errors`, exit 1) so a gate fails on a stale tree;
+with `DAYZ_GAME_ROOT`, it is WARN (in `warnings`, exit 2), which a gate that
+accepts WARN lets through.
 
 Measured on 2026-11-03: the 1.30.164014 Exp extract against a 1.30.164200
 game gives 111 `.c` files that differ and 14 that the tree lacks

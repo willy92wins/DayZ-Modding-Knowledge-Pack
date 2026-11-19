@@ -5647,13 +5647,16 @@ class TestVanillaRootBuild(unittest.TestCase):
         self.assertEqual(2, build["files"])
 
     def test_another_tree_warns(self):
+        # The game named by DAYZ_GAME_ROOT: a tree of another build stays a
+        # warning (rc 2). An explicit --game-root fails instead (next test).
         changed = dict(self.FILES)
         changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
         changed["4_World/fx_new.c"] = b"class FX_New\n{\n}\n"
         changed["config.bin"] = b"\x00raP"
         self._install(changed)
 
-        code, result = self._run("--game-root", str(self.game))
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            code, result = self._run()
 
         self.assertEqual(2, code)
         warnings = self._build_warnings(result)
@@ -5672,10 +5675,40 @@ class TestVanillaRootBuild(unittest.TestCase):
         )
         assert_standard_findings(self, result)
 
+    def test_an_explicit_game_root_fails_on_another_tree(self):
+        # Inbox fb-20261118-190704-5b1f, ask 3: with --game-root on the command
+        # line, a vanilla tree of another build is an error, not a warning that
+        # a long log buries. Red on f4007a9 by design (rc 2, one WARN).
+        changed = dict(self.FILES)
+        changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
+        changed["4_World/fx_new.c"] = b"class FX_New\n{\n}\n"
+        changed["config.bin"] = b"\x00raP"
+        self._install(changed)
+
+        code, result = self._run("--game-root", str(self.game))
+
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = [e for e in result["errors"] if e["rule_id"] == BUILD_RULE]
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+        build = result["info"]["vanilla_build"]
+        self.assertEqual(
+            (3, 1, 1, 0, False),
+            (build["files"], build["differ"], build["missing"], build["extra"],
+             build["matches"]),
+        )
+        lines = script_validator.format_terse(result).split("\n")
+        self.assertTrue(lines[0].startswith("FAIL - 1 error"), lines)
+        self.assertIn(BUILD_RULE, lines[1])
+
     def test_a_tree_with_files_the_game_lacks_warns(self):
+        # The game named by DAYZ_GAME_ROOT, as in test_another_tree_warns.
         self._install({"4_World/fx_world.c": self.FILES["4_World/fx_world.c"]})
 
-        _code, result = self._run("--game-root", str(self.game))
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            _code, result = self._run()
 
         self.assertEqual(1, len(self._build_warnings(result)))
         self.assertEqual(1, result["info"]["vanilla_build"]["extra"])
@@ -5714,6 +5747,132 @@ class TestVanillaRootBuild(unittest.TestCase):
             [str(FIXTURES / "empty"), "--game-root", str(self.game)]
         )
         self.assertIn("vanilla tree", self._build_skips(result)[0]["reason"])
+
+    # Inbox 5b1f, review of round 1: an addon with warnings of its own, the
+    # PBO named directly, and the message's tag.
+
+    def _install_another_tree(self):
+        changed = dict(self.FILES)
+        changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
+        self._install(changed)
+
+    def _build_errors(self, result):
+        return [e for e in result["errors"] if e["rule_id"] == BUILD_RULE]
+
+    def test_an_explicit_game_root_fails_even_when_the_addon_warns(self):
+        # An addon that already has a warning of its own is still compared,
+        # and the explicit mismatch is still an error: FAIL, exit 1, the rule
+        # in errors, the addon's warning still in warnings. Green on c958355 by
+        # design; kills a version that compares only when there is no warning.
+        self._install_another_tree()
+        addon = pathlib.Path(self._tmp.name) / "addon_warn"
+        addon.mkdir()
+        (addon / "fx_warn.c").write_bytes(
+            b"class FX_Warn\n{\n    bool F(int x)\n    {\n        return x < int.MIN;\n    }\n}\n"
+        )
+
+        code, result = script_validator.run(
+            [str(addon), "--vanilla-root", str(self.vanilla), "--game-root", str(self.game)]
+        )
+
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = self._build_errors(result)
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+        self.assertIn("ES-INT-MIN-COMPARISON", [w["rule_id"] for w in result["warnings"]])
+        self.assertFalse(result["info"]["vanilla_build"]["matches"])
+
+    def test_an_explicit_pbo_path_fails_on_another_tree(self):
+        # --game-root may name dta/scripts.pbo itself: a mismatch through that
+        # explicit path fails the run as the folder does. Green on c958355 by
+        # design; kills a version that takes only a folder for explicit.
+        self._install_another_tree()
+        pbo = self.game / "dta" / "scripts.pbo"
+
+        code, result = self._run("--game-root", str(pbo))
+
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = self._build_errors(result)
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+
+    def test_the_mismatch_message_is_tagged_with_its_severity(self):
+        # The message carries the finding's own severity as its tag, [FAIL]
+        # for an explicit --game-root and [WARN] for DAYZ_GAME_ROOT, and the
+        # rest of the text is the same. Green on c958355 by design; kills a
+        # version that keeps the [WARN] tag on the error.
+        self._install_another_tree()
+
+        _code, explicit = self._run("--game-root", str(self.game))
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            _code, environment = self._run()
+
+        failed = self._build_errors(explicit)[0]["message"]
+        warned = self._build_warnings(environment)[0]["message"]
+        self.assertTrue(failed.startswith("[FAIL] "), failed)
+        self.assertTrue(warned.startswith("[WARN] "), warned)
+        self.assertEqual(failed[len("[FAIL] "):], warned[len("[WARN] "):])
+
+    # Inbox 5b1f, review of round 2: both sources at once, and the SKIP cases
+    # of an explicit --game-root.
+
+    def test_an_explicit_game_root_wins_over_the_environment(self):
+        # With --game-root and DAYZ_GAME_ROOT both set, the command line names
+        # the game and makes the mismatch an error: a mismatched --game-root
+        # fails although the environment's game matches, and a matching
+        # --game-root passes although the environment's does not. Green on
+        # 9024fc2 by design; kills a version that treats --game-root as
+        # explicit only when DAYZ_GAME_ROOT is unset.
+        self._install_another_tree()
+        matching = pathlib.Path(self._tmp.name) / "DayZ_matching"
+        (matching / "dta").mkdir(parents=True)
+        (matching / "dta" / "scripts.pbo").write_bytes(
+            _pbo_bytes([(name.replace("/", "\\"), data) for name, data in self.FILES.items()])
+        )
+
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(matching)}):
+            code, result = self._run("--game-root", str(self.game))
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = self._build_errors(result)
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            code, result = self._run("--game-root", str(matching))
+        self.assertEqual(0, code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], self._build_errors(result))
+        self.assertEqual([], self._build_warnings(result))
+        self.assertTrue(result["info"]["vanilla_build"]["matches"])
+
+    def test_an_explicit_game_root_that_cannot_be_compared_is_a_skip(self):
+        # A PBO that cannot be read, or no vanilla tree to compare, with an
+        # explicit --game-root: a SKIP entry, exit 0, PASS, the rule in neither
+        # errors nor warnings, and no info.vanilla_build. Green on 9024fc2 by
+        # design; kills a version that also reports the unread PBO as a
+        # finding with the explicit severity.
+        self._install({"4_World/fx_world.c": (b"xx", 0x43707273)})
+        _cases = {
+            "compressed_pbo": lambda: self._run("--game-root", str(self.game)),
+            "no_vanilla_tree": lambda: script_validator.run(
+                [str(FIXTURES / "empty"), "--game-root", str(self.game)]
+            ),
+        }
+        for label, call in _cases.items():
+            with self.subTest(label):
+                code, result = call()
+                self.assertEqual(0, code)
+                self.assertEqual("PASS", result["status"])
+                self.assertEqual([], self._build_errors(result))
+                self.assertEqual([], self._build_warnings(result))
+                self.assertEqual(1, len(self._build_skips(result)))
+                self.assertNotIn("vanilla_build", result["info"])
 
 
 INDEX_RULE = "VANILLA-INDEX-TREE-MISMATCH"
