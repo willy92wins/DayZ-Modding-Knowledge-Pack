@@ -5817,6 +5817,63 @@ class TestVanillaRootBuild(unittest.TestCase):
         self.assertTrue(warned.startswith("[WARN] "), warned)
         self.assertEqual(failed[len("[FAIL] "):], warned[len("[WARN] "):])
 
+    # Inbox 5b1f, review of round 2: both sources at once, and the SKIP cases
+    # of an explicit --game-root.
+
+    def test_an_explicit_game_root_wins_over_the_environment(self):
+        # With --game-root and DAYZ_GAME_ROOT both set, the command line names
+        # the game and makes the mismatch an error: a mismatched --game-root
+        # fails although the environment's game matches, and a matching
+        # --game-root passes although the environment's does not. Green on
+        # 9024fc2 by design; kills a version that treats --game-root as
+        # explicit only when DAYZ_GAME_ROOT is unset.
+        self._install_another_tree()
+        matching = pathlib.Path(self._tmp.name) / "DayZ_matching"
+        (matching / "dta").mkdir(parents=True)
+        (matching / "dta" / "scripts.pbo").write_bytes(
+            _pbo_bytes([(name.replace("/", "\\"), data) for name, data in self.FILES.items()])
+        )
+
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(matching)}):
+            code, result = self._run("--game-root", str(self.game))
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = self._build_errors(result)
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            code, result = self._run("--game-root", str(matching))
+        self.assertEqual(0, code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], self._build_errors(result))
+        self.assertEqual([], self._build_warnings(result))
+        self.assertTrue(result["info"]["vanilla_build"]["matches"])
+
+    def test_an_explicit_game_root_that_cannot_be_compared_is_a_skip(self):
+        # A PBO that cannot be read, or no vanilla tree to compare, with an
+        # explicit --game-root: a SKIP entry, exit 0, PASS, the rule in neither
+        # errors nor warnings, and no info.vanilla_build. Green on 9024fc2 by
+        # design; kills a version that also reports the unread PBO as a
+        # finding with the explicit severity.
+        self._install({"4_World/fx_world.c": (b"xx", 0x43707273)})
+        _cases = {
+            "compressed_pbo": lambda: self._run("--game-root", str(self.game)),
+            "no_vanilla_tree": lambda: script_validator.run(
+                [str(FIXTURES / "empty"), "--game-root", str(self.game)]
+            ),
+        }
+        for label, call in _cases.items():
+            with self.subTest(label):
+                code, result = call()
+                self.assertEqual(0, code)
+                self.assertEqual("PASS", result["status"])
+                self.assertEqual([], self._build_errors(result))
+                self.assertEqual([], self._build_warnings(result))
+                self.assertEqual(1, len(self._build_skips(result)))
+                self.assertNotIn("vanilla_build", result["info"])
+
 
 INDEX_RULE = "VANILLA-INDEX-TREE-MISMATCH"
 
