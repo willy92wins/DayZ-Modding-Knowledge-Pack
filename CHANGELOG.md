@@ -117,6 +117,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `dayz-terrain-builder-runner`, tests: `test_save_loop_counts_a_changed_file_without_focus_or_dialog` no longer
+  depends on the system clock. `save_loop` counts a save when the `st_mtime_ns` of the `.tv4p` changes; the test
+  wrote the file and its fake `PostMessageW` wrote it again about 1.5 ms later, and two writes within one tick of
+  the system clock leave the same `st_mtime_ns`, so the test failed whenever both fell in one tick: 9 of 30 runs in
+  one process with the clock mostly at 4 ms (Windows 11, 2026-11-19, when it also failed a `packctl gate` run) and
+  0 of 200 with it at 1 ms. The fake now sets the file's modification time two seconds later with `os.utime`
+  instead of writing again. `tbrunner.py` does not change.
 - PR #188 follow-ups: `extract-dayz-sources.sh` reads the PBO prefix from the PBO's header bytes, so a prefix holding
   an LF or CR is refused instead of truncated (`dayzmake inspect` prints header values unescaped), and installs its
   lock cleanup right after taking the lock; `dayz-mod-pack.sh` splits `WORKSHOP_TAGS` as data, never glob-expanded
