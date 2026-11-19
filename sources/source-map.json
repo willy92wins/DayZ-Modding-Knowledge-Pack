@@ -42697,10 +42697,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: follow-up of inbox 5b1f (#208). The comment above BUILTIN_TYPES says that, when the vanilla tree is not the game's, an explicit --game-root fails the run and DAYZ_GAME_ROOT warns, as #208 made it; it said that --game-root warns. Comment only: no code, rule or claim range changes.",
+          "license": "MIT",
+          "source_hash": "89d0d2218db1b66d79406bd31cd1b43f73c3c0d9918a6b8eed5fa4ac55b9b0e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+          "source_revision": "claude/project-thread-kg9kxv@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ca9e2a4179f3f24223c56dce8346ae91fc34bad4e5bebce91932b92634d8aac5",
+      "output_hash": "89d0d2218db1b66d79406bd31cd1b43f73c3c0d9918a6b8eed5fa4ac55b9b0e8",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
