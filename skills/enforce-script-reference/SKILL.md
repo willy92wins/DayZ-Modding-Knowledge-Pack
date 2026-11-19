@@ -198,63 +198,112 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
     (`actiongetouttransport.c:70`), not an input exclude.
 37e. **An unpossessed identity still has a player, and a body in the logout queue must never be
     deleted.**
-    - **What the engine keeps:** after `SelectPlayer(identity, body)` and then
-      `SelectPlayer(identity, null)` + `SelectSpectator`, the engine still counts the last selected
-      body as the identity's player. `identity.GetPlayer()` returns it.
-    - **What the disconnect does with it:** `ClientDisconnectedEvent` carries that body with the
-      normal `logoutTime`, and vanilla queues it for logout (`missionserver.c:641-688`).
-    - **Where it breaks:** `GetPlayerIndentities` stops listing the identity about 4 s after the
-      disconnect. A cleanup that reads "not listed" as "gone" therefore deletes that body during
-      the logout. When the timer ends, vanilla finds the body null, logs
-      `[Logout]: Skipping player …, already removed` and never calls `DisconnectPlayer`
-      (`missionserver.c:690-697`).
-    - **The symptom:** the UID stays in game. Rejoining fails with `0x00040033`, "Player with same
-      UID is already in game", until the server restarts.
-    - **Fix, first part:** before deleting any player body, check vanilla's
-      `IsPlayerDisconnecting(body)` (`missionserver.c:240`).
-    - **Fix, second part:** a body that is nobody's character, such as a spectator anchor, should
-      not wait for the timer. Handle its disconnect at once in `OnClientDisconnectedEvent` with
-      `SendLogoutTime(body, 0)` + `PlayerDisconnected(body, identity, identity.GetId())`, as vanilla
-      does for a dead body (`missionserver.c:679-687`).
+    - **What the engine keeps (BattleRoyale PR #56 observation):** after
+      `SelectPlayer(identity, body)` and then `SelectPlayer(identity, null)` + `SelectSpectator`,
+      the engine still counted the last selected body as the identity's player
+      (`identity.GetPlayer()` returned it).
+    - **What the disconnect does with it:** [EXACT][CLAIM-ENF-LOGOUT-QUEUE-CONDITIONS]
+      `MissionServer.OnEvent` (`ClientDisconnectedEventTypeID`) unpacks
+      `ClientDisconnectedEventParams` (`identity`, `player`, `logoutTime`, `authFailed`) and calls
+      `OnClientDisconnectedEvent` when `player` is non-null (`missionserver.c:395-410` in
+      1.30.164289; `:415-430` in 1.30.164393). Inside `OnClientDisconnectedEvent`, vanilla queues
+      the body for timed logout only when `GetHive() && !authFailed && player.IsAlive()`
+      (`missionserver.c:647-675` in 1.30.164289; `:667-704` in 1.30.164393); otherwise it falls
+      through to instant disconnect. Vanilla script does not show which body or `logoutTime` the
+      engine passes into the event; in the BattleRoyale PR #56 DayZDiag 1.30 run, the event
+      carried that unpossessed body with the normal `logoutTime`.
+    - **Where it breaks:** in BattleRoyale PR #56, `GetPlayerIndentities` stopped listing the
+      identity about 4 s after the disconnect; a cleanup that read "not listed" as "gone" deleted
+      that body during the logout. [EXACT][CLAIM-ENF-LOGOUT-NULL-BODY-BREAK] In stable
+      1.30.164289, when the timer ends, `UpdateLogoutPlayers` (`missionserver.c:277-307`) passes
+      the now-null body to `PlayerDisconnected`, which logs
+      `[Logout]: Skipping player …, already removed` and returns without calling `DisconnectPlayer`
+      (`missionserver.c:690-697`, `:721`). In Experimental 1.30.164393, logic changed: while the
+      timer is still running, `UpdateLogoutPlayers` (`missionserver.c:302-324`) passes the null
+      `player` to `SendExitEmoteRequest(player)` before the timer expires, and
+      `SendExitEmoteRequest` (`:276-280`) dereferences `player.GetEmoteManager()` with no null
+      guard (`PlayerDisconnected`'s `!player` skip sits at `:719-726`).
+    - **The symptom (BattleRoyale PR #56):** the UID stayed in game; rejoining failed with
+      `0x00040033`, "Player with same UID is already in game", until the server restarted.
+    - **Fix, first part:** [EXACT][CLAIM-ENF-LOGOUT-ISPLAYERDISCONNECTING] before deleting any
+      player body, check vanilla's `IsPlayerDisconnecting(body)` (`missionserver.c:240-243`,
+      1.30.164289 and 1.30.164393), which tests both `m_LogoutPlayers` and `m_NewLogoutPlayers`.
+    - **Fix, second part:** [EXACT][CLAIM-ENF-LOGOUT-INSTANT-DISCONNECT] Vanilla's instant-logout
+      branch in `OnClientDisconnectedEvent` (`missionserver.c:679-687` in 1.30.164289; `:708-716`
+      in 1.30.164393, taken for a dead body, `!GetHive()`, or `authFailed`) calls
+      `g_Game.SendLogoutTime(player, 0)` and `PlayerDisconnected(player, identity, identity.GetId())`.
+      That branch only skips the logout wait timer: `PlayerDisconnected` still runs
+      `InvokeOnDisconnect(player)`, `player.Save()` and `GetHive().CharacterExit(player)` when
+      `GetHive()` is active, `ReleaseNetworkControls()`, `HandleBody(player)` (which deletes an
+      alive body unless `ShouldPlayerBeKilled` kills it), and `DisconnectPlayer`
+      (`missionserver.c:703-721, 748-764` in 1.30.164289; `:732-750, 777-793` in 1.30.164393).
+      [DESIGN] To skip the logout wait for a body that is nobody's character (such as a spectator
+      anchor), call that instant-disconnect sequence in `OnClientDisconnectedEvent`, and account
+      for `Save()`/`CharacterExit` if a Hive is enabled.
     - **Evidence:** reproduced and fixed in DayZDiag 1.30 on 2026-11-17 (BattleRoyale PR #56, runs
-      fb6d1730 before the fix and fb144fcf after it). The first hypothesis, "the event arrives
-      without a body and vanilla drops it", was wrong: a test proved the premise false.
+      fb6d1730 before the fix and fb144fcf after it; run logs outside this pack). The first
+      hypothesis, "the event arrives without a body and vanilla drops it", was wrong: a test
+      proved the premise false.
 37f. **Blocking a family of actions on other players (a safe zone): one gate in `ActionBase`,
     three hooks.**
-    - **Start:** `modded class ActionBase` overrides the 4-argument
-      `Can(PlayerBase player, ActionTarget target, ItemBase item, int condition_mask)`
-      (`actionbase.c:929`, 1.30).
-      - The client asks it for every action it could offer (`actioninput.c`,
-        `actionmanagerclient.c`).
-      - The server asks it before it accepts a start: `actionmanagerserver.c:168`, through the
-        3-argument `Can` at `:968`.
-      - Returning false before `super` makes the server answer `server_rejected`.
-    - **While it runs:** a continuous action asks
-      `CanContinue(ActionData action_data)` (`actionbase.c:975`) on every tick, from
-      `animatedactionbase.c:419`; it does not ask `Can` again. `CanContinue` is protected; vanilla
-      overrides drop `protected`.
-    - **Single-use effects:** a single-use action, such as a forced bite, applies its effect from
-      `AnimatedActionBase.OnAnimationEvent(ActionData action_data)` (`animatedactionbase.c:188`)
-      without asking `CanContinue`. Return before `super` to drop the effect; the animation still
-      ends through `ActionBaseCB.OnFinish`.
+    - **Start:** [EXACT][CLAIM-ENF-ACTIONBASE-CAN-GATE] `modded class ActionBase` overrides the
+      4-argument `Can(PlayerBase player, ActionTarget target, ItemBase item, int condition_mask)`
+      (`actionbase.c:929-966`, 1.30.164289 and 1.30.164393).
+      - On the client, `ActionManagerClient.Update` calls `FindContextualUserActions` only when no
+        action is active (`!m_CurrentActionData`, `actionmanagerclient.c:126-143` in 1.30.164289;
+        `:126-140` in 1.30.164393), and `FindContextualUserActions` skips the search when
+        `!m_ActionPossible`, a hand inventory reservation exists, or inventory/menu is open
+        (`actionmanagerclient.c:550-578` in 1.30.164289; `:547-575, 583-590` in 1.30.164393);
+        otherwise it iterates `m_OrederedAllActionInput` via `UpdatePossibleActions`.
+      - The server asks it before accepting a start: `actionmanagerserver.c:168`, through the
+        3-argument `Can` at `actionbase.c:968-973` (same lines in 1.30.164289 and 1.30.164393).
+      - Returning false before `super` leaves `accepted` false, so vanilla sends a negative action
+        acknowledgment (`DayZPlayerSyncJunctures.SendActionAcknowledgment(..., false)`) when
+        `UseAcknowledgment()` is true, or calls `RequestInterruptAction()` otherwise
+        (`actionmanagerserver.c:194-211`, 1.30.164289 and 1.30.164393).
+    - **While it runs:** [EXACT][CLAIM-ENF-ACTION-CANCONTINUE-LOOP] while a continuous action is
+      in its animation loop (`STATE_LOOP_LOOP`, `STATE_LOOP_LOOP2`, or `m_inLoop`) and not
+      interrupted, `ActionContinuousBaseCB.CancelCondition` calls `Do`
+      (`actioncontinuousbase.c:6-31`), and `AnimatedActionBase.Do` queries
+      `CanContinue(ActionData action_data)` (`actionbase.c:975`, `protected`) in `UA_PROCESSING`
+      and `UA_INITIALIZE` (`animatedactionbase.c:416-448`, same lines in 1.30.164289 and
+      1.30.164393); it does not ask `Can` again. Vanilla overrides drop `protected`.
+    - **Single-use effects:** [EXACT][CLAIM-ENF-ACTION-ONANIMATIONEVENT] a single-use action, such
+      as a forced bite, applies its effect from
+      `AnimatedActionBase.OnAnimationEvent(ActionData action_data)` (`animatedactionbase.c:188-210`,
+      1.30.164289 and 1.30.164393) without asking `CanContinue`. Return before `super` to drop the
+      effect; the animation still ends through `ActionBaseCB.OnFinish`
+      (`animatedactionbase.c:27-54`).
     - **Which actions:** pick them by `IsInherited` on the vanilla family bases:
       `ActionForceConsume`, `ActionForceConsumeSingle`, `ActionRestrainTarget`,
       `ActionHandcuffTarget`, `ActionCoverHeadTarget`, `ActionGagTarget`,
       `ActionCollectBloodTarget`, `ActionCollectSampleTarget`, `ActionGiveBloodTarget` and
       `ActionDefibrilateTarget`. In 1.30 none of their subclasses overrides `Can` or `CanContinue`.
-      Do the cheap checks first: `PlayerBase.Cast(target.GetObject())`, not the actor itself. The
-      client asks this for every candidate action on every frame.
+      Do the cheap checks first: `PlayerBase.Cast(target.GetObject())`, not the actor itself —
+      whenever contextual actions are being queried on the client (no active action, actions
+      possible, no hand reservation, and inventory/menu closed), `Can` is called across candidate
+      actions (`actionmanagerclient.c:126-143, 550-578` in 1.30.164289; `:126-140, 547-575` in
+      1.30.164393).
     - **Decide the protection by zone, not by `GetAllowDamage()`:** admin-tool godmode also sets
       `SetAllowDamage(false)`, so a damage-based gate stops an admin feeding a teammate in a match.
       Decide on the server by position.
-    - **One shared file, two sides:** use separate `#ifdef SERVER` and `#ifndef SERVER` blocks; the
-      offline linter does not read `#else`. A shared file in the client addon cannot name
-      server-only config classes (`ES-UNDEFINED-CLASS-REF`): let the server push the zone into a
+    - **One shared file, two sides:** use separate `#ifdef SERVER` and `#ifndef SERVER` blocks:
+      `ES-EMPTY-IFDEF` flags `#else` with `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN` (`WARN`,
+      `tools/dayz-script-validator/scripts/detectors/es_empty_ifdef.py:39-44, 132-139`), and
+      `ES-SYNCVAR` also treats `#else` under `#ifdef SERVER` as unsupported
+      (`detectors/es_syncvar.py:88-93`), whereas other detectors such as `ES-UNDEFINED-CLASS-REF`
+      do analyze `#else` branches (`detectors/es_undefined_class_ref.py:641-645`). In a split
+      client/server mod, a shared file in the client addon that names server-only config classes
+      fails `ES-UNDEFINED-CLASS-REF` when validated without that server addon (note that
+      `ES-UNDEFINED-CLASS-REF` checks whether a type is declared in the addon, vanilla, or scanned
+      `--external-scripts` dependencies — `tools/dayz-script-validator/README.md:62-95` — and does
+      not verify client-side compile visibility). [DESIGN] Let the server push the zone into a
       static at init.
-    - **Evidence:** BattleRoyale PR #57, DayZDiag 1.30, run b411f3d2 on 2026-11-17. Outside the
-      zone, the head sack and force-feeding on a survivor dummy finish. Inside it, both are
-      `server_rejected` within 0.06 s: the sack stays in hand and the apple stays at 125/125. The
-      `CanContinue` and `OnAnimationEvent` paths were checked by reading only.
+    - **Evidence:** BattleRoyale PR #57, DayZDiag 1.30, run b411f3d2 on 2026-11-17 (run log
+      outside this pack). Outside the zone, the head sack and force-feeding on a survivor dummy
+      finished. Inside it, both were rejected by the server (reported as `server_rejected` in the
+      test harness within 0.06 s): the sack stayed in hand and the apple stayed at 125/125. The
+      `CanContinue` and `OnAnimationEvent` paths were checked by reading vanilla source only.
 38. **Three input detection patterns exist, all valid:**
     - Simple: `g_Game.GetInput().LocalPress("UAMyAction", false)` — one-line check
     - Direct: `GetUApi().GetInputByName("UAMyAction").LocalPress()` — per-frame
