@@ -2141,10 +2141,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), the removed SteamCMD update recipe, the corrected CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED and the corrected ranges of CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY.",
+          "license": "MIT",
+          "source_hash": "f05159e5e46577b847ccc9db10674a2fbb6dd3747633f20cfa188852543af74e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "955799e1ac6f8b7c04acc805a82015a304ca9e62339f1627e80e6e5e0ead740c",
+      "output_hash": "f05159e5e46577b847ccc9db10674a2fbb6dd3747633f20cfa188852543af74e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13596,10 +13606,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The Workshop bullet also names what verifySignatures = 2 does without the .bikey, creating an item with SteamCMD and updating it with the Publisher, and says that the SteamCMD login that kicked the Steam client off was a manual one (references/workshop-publish.md). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a48a660083335321bb261b4fde4f3dae8dc7022f96b927e3e93e7a75113bb2ee",
+      "output_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -23383,10 +23403,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three claims for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), runtime_verified, from probes S1 and S3 of the dayz-mcp distribution plan and the vault runbook; the line ranges of the five earlier CLAIM-WORKSHOP-* follow the longer reference; after two adversarial reviews the evidence locators of CLAIM-WORKSHOP-PUBLISHER-FILES, CLAIM-WORKSHOP-STEAMCMD-LOGIN and CLAIM-WORKSHOP-STEAMCMD-CREATE say what the runbook records (no command-line option among the Publisher's strings; the Steam Guard code entered, the Steam client logged off during the unattended run, and that the run without a cached session not tried is an unattended one; 13.3 s for the whole run); in skills/dayz-pbo-build/SKILL.md, CLAIM-BINARIZE-DIRECT-CWD moves down one line with its longer Workshop bullet, and CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY now start at their blocks (548-564 and 624-640); on main they began 10 lines before them (537-553 and 613-629).",
+          "license": "MIT",
+          "source_hash": "8875c5ba294da9a9b1057d0663ea805f448fc0ef94c5443687477a19804c20cd",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "c645fed2c343d0d00e395ca7d747ad7bb436b2ced887e502f0e5c740a5dbd36e",
+      "output_hash": "8875c5ba294da9a9b1057d0663ea805f448fc0ef94c5443687477a19804c20cd",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -44033,10 +44063,20 @@
           "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
           "source_revision": "workshop-publish-r2@2026-11-12",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pack-authored update by Claude (Anthropic) from probes S1 and S3 of the dayz-mcp distribution plan (2026-11-12 and 2026-11-19) and the vault runbook: CLAIM-WORKSHOP-SIGN-SERVER-CHECK (retail DayZServer with verifySignatures = 2: kick 120 without the .bikey, join with it, the BattlEye kick as observed, its cause as not investigated and how long a client stays as not measured), CLAIM-WORKSHOP-PUBLISHER-UPDATE (the Publisher's content folder, its log and the client's logs in three publications) and CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY (the owner's copy of the private item, followed by an [INFERRED] paragraph); the intro, two table rows and the [INFERRED] paragraph after CLAIM-WORKSHOP-PUBLISHER-FILES follow. After two adversarial reviews, CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED says that the login measured was a manual one and that the client was restarted 44 minutes later, the [INFERRED] paragraph after it that another login may do the same, CLAIM-WORKSHOP-STEAMCMD-LOGIN that the owner entered the Steam Guard code before quit, that the Steam client was still logged off during the unattended run and that the run without a cached session not tried is an unattended one, and the untried SteamCMD update recipe is removed. No account name, item id or private path.",
+          "license": "MIT",
+          "source_hash": "540312f5e09374ab70c9935a62398e2e0bf30af2d72aa2f333997a68f5260afe",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
+      "output_hash": "540312f5e09374ab70c9935a62398e2e0bf30af2d72aa2f333997a68f5260afe",
       "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "runtime_verified"
