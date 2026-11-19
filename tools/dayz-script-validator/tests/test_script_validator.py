@@ -5647,13 +5647,16 @@ class TestVanillaRootBuild(unittest.TestCase):
         self.assertEqual(2, build["files"])
 
     def test_another_tree_warns(self):
+        # The game named by DAYZ_GAME_ROOT: a tree of another build stays a
+        # warning (rc 2). An explicit --game-root fails instead (next test).
         changed = dict(self.FILES)
         changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
         changed["4_World/fx_new.c"] = b"class FX_New\n{\n}\n"
         changed["config.bin"] = b"\x00raP"
         self._install(changed)
 
-        code, result = self._run("--game-root", str(self.game))
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            code, result = self._run()
 
         self.assertEqual(2, code)
         warnings = self._build_warnings(result)
@@ -5672,10 +5675,40 @@ class TestVanillaRootBuild(unittest.TestCase):
         )
         assert_standard_findings(self, result)
 
+    def test_an_explicit_game_root_fails_on_another_tree(self):
+        # Inbox fb-20261118-190704-5b1f, ask 3: with --game-root on the command
+        # line, a vanilla tree of another build is an error, not a warning that
+        # a long log buries. Red on f4007a9 by design (rc 2, one WARN).
+        changed = dict(self.FILES)
+        changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
+        changed["4_World/fx_new.c"] = b"class FX_New\n{\n}\n"
+        changed["config.bin"] = b"\x00raP"
+        self._install(changed)
+
+        code, result = self._run("--game-root", str(self.game))
+
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = [e for e in result["errors"] if e["rule_id"] == BUILD_RULE]
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+        build = result["info"]["vanilla_build"]
+        self.assertEqual(
+            (3, 1, 1, 0, False),
+            (build["files"], build["differ"], build["missing"], build["extra"],
+             build["matches"]),
+        )
+        lines = script_validator.format_terse(result).split("\n")
+        self.assertTrue(lines[0].startswith("FAIL - 1 error"), lines)
+        self.assertIn(BUILD_RULE, lines[1])
+
     def test_a_tree_with_files_the_game_lacks_warns(self):
+        # The game named by DAYZ_GAME_ROOT, as in test_another_tree_warns.
         self._install({"4_World/fx_world.c": self.FILES["4_World/fx_world.c"]})
 
-        _code, result = self._run("--game-root", str(self.game))
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            _code, result = self._run()
 
         self.assertEqual(1, len(self._build_warnings(result)))
         self.assertEqual(1, result["info"]["vanilla_build"]["extra"])
