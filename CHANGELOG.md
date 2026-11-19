@@ -8,16 +8,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - `dayz-test-ingame`: a session finding for the client crash when a mission ends under DayZ-MCP. On DayZDiag
-  `1.30.164289.70`, the two stack-resolved crashes—an AV (`[CDPInitServer]` at `...f5fc`) and a heap-corruption
-  (`0xc0000374`) crash from a 29-session sample matching first-frame `...f5fc`/`...f710` or `[RtlIsZeroMemory]` +
-  `0xc0000374` at a `+0` to `+2` s whole-second delta from the bridge's shutdown—locate those failures in the engine's
-  RestApi worker thread (the same function holds a candidate instruction at RVA `0xa6f710`, without a resolved `...f710`
-  crash frame); classifying a new crash requires pinning the binary and resolving the RVA or confirming the RestApi
-  worker stack for both AV and `0xc0000374` (16-bit suffixes collide across functions within the same binary, and
-  `0xc0000374` alone is generic heap corruption). DayZ-MCP bridge teardown (`RestContext.reset()` on the context
-  shared by poll `GET` and result `POST`, tracked in a DayZ-MCP inbox ticket) is a suspected cause, not yet verified,
-  so check client-side `RestApi` usage before ruling out the mod under test. Also how to resolve the function behind
-  the analyzed DayZDiag `[CDPInitServer]` crash frames. Two claims, runtime_verified and source_verified.
+  `1.30.164289.70`, the stack-resolved heap-corruption (`0xc0000374`) crash—from a 29-session sample matching
+  first-frame `...f5fc`/`...f710` or `[RtlIsZeroMemory]` + `0xc0000374` at a `+0` to `+2` s whole-second delta from
+  the bridge's shutdown—locates in the engine's RestApi worker thread; attributing the `00:37:57` `[CDPInitServer]`
+  `...f5fc` AV to candidate RVA `0xa6f5fc` in that function remains an inference while the read-vs-write discrepancy
+  is open (the log records an illegal read whereas `0xa6f5fc` writes to memory, and the logged `...f5fc` illegal write
+  belongs to a separate crash excluded from the offset search; the same function also holds a candidate instruction at
+  RVA `0xa6f710`, without a resolved `...f710` crash frame). Classifying a new crash requires pinning the binary and
+  resolving the RVA or confirming the RestApi worker stack for both AV and `0xc0000374` (16-bit suffixes collide
+  across functions within the same binary, and `0xc0000374` alone is generic heap corruption). DayZ-MCP bridge
+  teardown (`RestContext.reset()` on the context shared by poll `GET` and result `POST`, tracked in a DayZ-MCP inbox
+  ticket) is a suspected cause, not yet verified, so check client-side `RestApi` usage before ruling out the mod under
+  test. Also how to resolve the function behind the analyzed DayZDiag `[CDPInitServer]` crash frames. Three claims:
+  one runtime_verified and two source_verified.
 
 - `dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake": how to download a dayzmake release and
   verify it before installing (the release's GPG-signed `SHA256SUMS`, the pinned key fingerprint
