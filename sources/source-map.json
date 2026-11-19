@@ -2131,10 +2131,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-tbrunner-test-clock@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: two Unreleased Changed entries (crew-anchor offset is zero; direct binarize working directory).",
+          "license": "MIT",
+          "source_hash": "955799e1ac6f8b7c04acc805a82015a304ca9e62339f1627e80e6e5e0ead740c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e19394fa0b703d7a28f4dfbdb669a669a38352c8d54ae40e68407e491f1de1ea",
+      "output_hash": "955799e1ac6f8b7c04acc805a82015a304ca9e62339f1627e80e6e5e0ead740c",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13576,10 +13586,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19 (LFQuad v1.0.2 body): rule 5 adds that a direct binarize.exe call resolves cited files from its working directory; CLAIM-BINARIZE-DIRECT-CWD, range from its marker.",
+          "license": "MIT",
+          "source_hash": "a48a660083335321bb261b4fde4f3dae8dc7022f96b927e3e93e7a75113bb2ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b10319260e34b8f615a32942267bdc083f69597fad7d0c686e7175084c095f9",
+      "output_hash": "a48a660083335321bb261b4fde4f3dae8dc7022f96b927e3e93e7a75113bb2ee",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -18374,10 +18394,20 @@
           "source_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19 (LFQuad v1.0.2): the crew-anchor check no longer cites LFQuad's 0/100/200 mm as healthy; CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET, range from its marker.",
+          "license": "MIT",
+          "source_hash": "b424edebf5887ad383d8beac9ff007894bfa0fa7bf4305656ba55500c1919a0b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "957986f290c9ab492114aeff1841d20e08e44c38df5e0d4cfe5c55681b4e173d",
+      "output_hash": "b424edebf5887ad383d8beac9ff007894bfa0fa7bf4305656ba55500c1919a0b",
       "output_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -23343,10 +23373,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: CLAIM-BINARIZE-DIRECT-CWD and CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET added.",
+          "license": "MIT",
+          "source_hash": "c645fed2c343d0d00e395ca7d747ad7bb436b2ced887e502f0e5c740a5dbd36e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7ebcfbc6da987e82cd08051fe5d9fb34785f86127f1395aaec3b6b95e2fcf91",
+      "output_hash": "c645fed2c343d0d00e395ca7d747ad7bb436b2ced887e502f0e5c740a5dbd36e",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

@@ -159,13 +159,23 @@ script that iterates both selections shifts them twice unless it deduplicates by
 the Geometry LOD carries only the `proxy:\...` names, so a verifier that looks up `crewdriver`
 there raises `KeyError` instead of reporting a difference.
 
-**Cheap offline check that catches a half-moved anchor**: the Memory-to-ViewGeometry offset must
-match what the model shipped with, and in a healthy model it is **the same for every crew
-position** — LFQuad measures 0.0 / 100.7 / 200.3 mm for driver and codriver alike. Two seats with
-different offsets mean somebody moved one copy and not the others. On LFQuad2 that showed up as
-18.9 mm of X disagreement on the codriver after a centring edit, and the user reported it as the
-camera jumping for an instant on mounting: the engine seats you with one anchor and corrects to
-the other.
+**Cheap offline check that catches a half-moved anchor**: compare each crew position's Memory
+point with its ViewGeometry anchor. Two seats with different offsets mean somebody moved one copy
+and not the others. On LFQuad2 that showed up as 18.9 mm of X disagreement on the codriver after
+a centring edit, and the user reported it as the camera jumping for an instant on mounting: the
+engine seats you with one anchor and corrects to the other.
+
+**The healthy offset is zero, not merely equal across seats**
+(claim: CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET). LFQuad shipped 0.0 / 100.7 / 200.3 mm for driver and
+codriver alike, and this check used to cite it as a healthy model. In game (DayZ 1.30.164200,
+server and client, Survivor Animations) its rear seat showed the same one-frame camera jump. An
+A/B on 2026-11-03 that moved only the six ViewGeometry anchor points onto the Memory points
+removed it, and so did LFQuad v1.0.2 (2026-11-19), which moved the two Memory points onto their
+anchors instead and the driver anchor 20 mm forward. The ViewGeometry anchor sets where the body
+sits (section above): moving the anchors onto the Memory points dropped the rider 100 mm and
+moved them 200 mm forward, so to keep a seat where it is, move the Memory point. A zero offset
+does not rule the jump out: Arma2Quad has its anchors within 2 mm of its Memory points and its
+user still reported a jump there (2026-11-02).
 
 ## A model proxy is a HOLE the engine fills from the attached item's `model=` (added 2026-09-07)
 

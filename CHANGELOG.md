@@ -272,6 +272,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-vehicles/references/get-in-actions-and-proxy-pose.md`, the crew-anchor check: the healthy Memory-to-ViewGeometry
+  offset is zero, not merely equal across seats. LFQuad's 0/100/200 mm, cited there as healthy, showed the one-frame
+  camera jump on the rear seat in game; aligning the two copies removed it (A/B on 2026-11-03, and LFQuad v1.0.2 on
+  2026-11-19). Arma2Quad, aligned, still reported a jump, so zero does not rule it out.
+- `dayz-pbo-build`, rule 5: on a direct `binarize.exe` call the working directory decides where the files a p3d cites
+  are found. With AddonBuilder's arguments, a run started outside the `-addon` folder read the mod's materials from the
+  working directory and embedded a staged vanilla penetration material without its `.bisurf`; started from the
+  `-addon` folder it resolved all 16 (LFQuad, 2026-11-03). Most likely the answer to the H2R open point.
 - dayzmake >= 3.1.0, pinned to `v3.1.0`, everywhere the Pack names dayzmake (`_shared/linux-proton.md`, the Linux
   notes of 22 skills, `dayz-mod-pack.sh`, `dayz-proton.sh doctor`): dayzmake 3.x fixes a lot of security and
   file-handling issues of the earlier releases, and 3.1.0 adds `extract`, `api grep`, `api config` and more and
