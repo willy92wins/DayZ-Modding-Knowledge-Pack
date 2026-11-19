@@ -48,8 +48,8 @@ Each check reports **PASS**, **WARN**, or **FAIL** status. The final summary sho
   persists in the world, has an entry with an explicit lifetime in the `types.xml` the release ships. Without
   one it runs out after 30 to 60 minutes of server time (`dayz-persistence`, SP-459).
 - **Publishing to the Workshop (manual):** signing with DsUtils, what `verifySignatures = 2` does without the
-  `.bikey`, the item folder, publishing and updating with the Publisher or SteamCMD, and why a SteamCMD login with
-  the Steam client's account kicks that client off: `references/workshop-publish.md`.
+  `.bikey`, the item folder, creating an item with SteamCMD and updating it with the Publisher, and why a SteamCMD
+  login with the Steam client's account kicked that client off: `references/workshop-publish.md`.
   On Linux (dayzmake, `meta.cpp`, Workshop tags, the `workshop` uploader): `references/dayzmake-linux.md`.
 - **REQUIRED (the mod folder, after the build):** every PBO sits in `@Mod/addons/`. A PBO at the mod folder root
   (`@MyMod/MyMod.pbo`) is silently ignored: no config, no scripts, no error, while the folder still shows in the
