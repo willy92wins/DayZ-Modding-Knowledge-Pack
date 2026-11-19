@@ -7,13 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- `dayz-test-ingame`: a session finding for the client crash when a mission ends under DayZ-MCP. A `crash_*.log` with
-  `[CDPInitServer]` at `...f5fc`/`...f710`, or heap corruption `0xc0000374` whose stack passes through the RestApi worker
-  (`0xc0000374` alone is generic heap corruption), 0-2 s after the bridge's shutdown locates the analyzed crash in the
-  engine's RestApi worker thread; DayZ-MCP bridge teardown (`RestContext.reset()` on the context shared by poll `GET`
-  and result `POST`, ticket `fb-20261118-010142-38cf`) is a suspected cause, not yet verified, so check the stack and
-  client-side `RestApi` usage before ruling out the mod under test. Also how to resolve the function behind a DayZDiag
-  crash frame when no PDBs are present. Two claims, runtime_verified and source_verified.
+- `dayz-test-ingame`: a session finding for the client crash when a mission ends under DayZ-MCP. On DayZDiag
+  `1.30.164289.70`, the analyzed AV (`[CDPInitServer]` at `...f5fc`/`...f710`) and heap-corruption (`0xc0000374`)
+  crashes at a `+0` to `+2` s whole-second delta from the bridge's shutdown locate the failure in the engine's RestApi
+  worker thread; classifying a new crash requires pinning the binary and resolving the RVA or confirming the RestApi
+  worker stack for both AV and `0xc0000374` (16-bit suffixes collide across functions within the same binary, and
+  `0xc0000374` alone is generic heap corruption). DayZ-MCP bridge teardown (`RestContext.reset()` on the context
+  shared by poll `GET` and result `POST`, tracked in a DayZ-MCP inbox ticket) is a suspected cause, not yet verified,
+  so check client-side `RestApi` usage before ruling out the mod under test. Also how to resolve the function behind
+  the analyzed DayZDiag `[CDPInitServer]` crash frames. Two claims, runtime_verified and source_verified.
 
 - `dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake": how to download a dayzmake release and
   verify it before installing (the release's GPG-signed `SHA256SUMS`, the pinned key fingerprint
