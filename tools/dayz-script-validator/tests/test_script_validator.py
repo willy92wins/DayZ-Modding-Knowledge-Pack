@@ -6115,6 +6115,20 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
     SAME_COUNT = dict(
         EXPERIMENTAL, **{"4_world/fx_liquid.c": STABLE["4_world/fx_liquid.c"]}
     )
+    # The tree being read with a folder named as a file, so that the order of
+    # the parts (fx_liquid/ before fx_liquid.c) is not that of the strings;
+    # and the same files with the capitals a PBO extraction keeps.
+    ORDERED = dict(
+        EXPERIMENTAL, **{"4_world/fx_liquid/fx_drop.c": b"class FX_Drop\n{\n}\n"}
+    )
+    CAPITALS = {
+        "1_Core/Proto/fx_managed.c": EXPERIMENTAL["1_core/proto/fx_managed.c"],
+        "4_World/FX_Liquid.c": EXPERIMENTAL["4_world/fx_liquid.c"],
+        "4_World/FX_Liquid_Cursor.c": (
+            EXPERIMENTAL["4_world/fx_liquid_cursor.c"]
+        ),
+        "4_World/FX_Liquid/FX_Drop.c": b"class FX_Drop\n{\n}\n",
+    }
     # An addon the two indexes judge otherwise: each class redeclares a
     # member that only one of the two trees gives its base.
     ADDON = {
@@ -6546,10 +6560,12 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
         # Hashing the 164393 tree took about 2 s on the owner's PC, where its
         # two numbers cost a walk: the digest is read only when they match.
         # The generator hashes too, so the indexes are written unwatched.
+        from shared import vanilla_index_tree
+
         def hashes():
             return mock.patch.object(
-                build_vanilla_index, "tree_digest",
-                wraps=build_vanilla_index.tree_digest,
+                vanilla_index_tree, "tree_digests",
+                wraps=vanilla_index_tree.tree_digests,
             )
 
         next_tree = self._write(self.base / "next" / "scripts", self.NEXT)
@@ -6577,6 +6593,196 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
             str(self._beside("b_experimental")),
             result["info"]["vanilla_index"]["index"],
         )
+
+    def _legacy(self, tree, path):
+        """Write a tree's index as the generator wrote it until 2026-11-19.
+
+        Without the casefolded digest: the owner's indexes are such.
+        """
+        document = build_vanilla_index.build_index_document(tree)
+        document.pop("tree_digest_casefold_v1", None)
+        return self._put(document, path)
+
+    def _trees_in_two_capitals(self):
+        ordered = self._write(self.base / "ordered" / "scripts", self.ORDERED)
+        capitals = self._write(
+            self.base / "capitals" / "scripts", self.CAPITALS
+        )
+        return ordered, capitals
+
+    def _assert_read_beside(self, result, beside):
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], result["warnings"])
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+
+    def test_an_old_index_of_the_lower_case_tree_is_read_for_its_capitals(self):
+        # Review of PR #204, round 2, N1: the same files under paths with
+        # the capitals a PBO extraction keeps are the same tree. An index
+        # written before the casefolded digest, from the tree in lower case
+        # (as the owner's are), is read for both spellings.
+        self._index(self.stable)
+        ordered, capitals = self._trees_in_two_capitals()
+        beside = self._beside("lower")
+        self._legacy(ordered, beside)
+        for tree in (ordered, capitals):
+            with self.subTest(tree=tree.parent.name):
+                code, result = self._run(tree, self.addon)
+
+                self.assertEqual(1, code)
+                self._assert_read_beside(result, beside)
+
+    def test_an_index_of_a_tree_in_capitals_is_read_for_any_capitals(self):
+        # Written now, an index also records its casefolded digest.
+        self._index(self.stable)
+        ordered, capitals = self._trees_in_two_capitals()
+        beside = self._beside("capitals")
+        document = self._index(capitals, beside)
+        self.assertNotEqual(
+            document["tree_digest"], document["tree_digest_casefold_v1"]
+        )
+        for tree in (ordered, capitals):
+            with self.subTest(tree=tree.parent.name):
+                code, result = self._run(tree, self.addon)
+
+                self.assertEqual(1, code)
+                self._assert_read_beside(result, beside)
+
+    def test_an_old_index_of_a_tree_in_capitals_is_read_for_those_only(self):
+        # The limit of an index written before the casefolded digest: its
+        # tree_digest holds its capitals, until it is rebuilt.
+        self._index(self.stable)
+        ordered, capitals = self._trees_in_two_capitals()
+        beside = self._beside("capitals")
+        self._legacy(capitals, beside)
+
+        _code, result = self._run(capitals, self.addon)
+
+        self._assert_read_beside(result, beside)
+
+        _code, result = self._run(ordered, self.addon)
+
+        self._assert_default_index_warns(result)
+
+    def test_the_casefolded_digest_follows_the_parts_of_the_paths(self):
+        # Of a tree in lower case it is the generator's digest, which keeps
+        # the indexes written before it comparable: ordered as the strings,
+        # fx_liquid.c would come before the folder fx_liquid.
+        from shared import vanilla_index_tree
+
+        ordered, capitals = self._trees_in_two_capitals()
+        files = vanilla_index_tree.collect_c_files(ordered)
+        names = [path.relative_to(ordered).as_posix() for path in files]
+        self.assertNotEqual(sorted(names), names)
+        spelt, folded = vanilla_index_tree.tree_digests(files, ordered)
+        self.assertEqual(build_vanilla_index.tree_digest(files, ordered), spelt)
+        self.assertEqual(spelt, folded)
+        files = vanilla_index_tree.collect_c_files(capitals)
+        spelt_capitals, folded_capitals = vanilla_index_tree.tree_digests(
+            files, capitals
+        )
+        self.assertEqual(
+            build_vanilla_index.tree_digest(files, capitals), spelt_capitals
+        )
+        self.assertNotEqual(spelt, spelt_capitals)
+        self.assertEqual(folded, folded_capitals)
+
+    def test_an_index_beside_with_a_digest_not_as_written_is_not_read(self):
+        # Each digest is 64 lower-case hex digits, as the generator writes
+        # them; tree_digest_casefold_v1 may also be null or missing. A file
+        # with either digest otherwise is not whole, even when the other one
+        # is the tree's (round 2's "formats" cases, with the casefolded
+        # digest the generator now writes beside them).
+        self._index(self.stable)
+        document = build_vanilla_index.build_index_document(self.experimental)
+        digest = document["tree_digest"]
+        beside = self._beside("experimental")
+        cases = {
+            "a short tree_digest": dict(document, tree_digest="a"),
+            "tree_digest in capitals": dict(document, tree_digest=digest.upper()),
+            "tree_digest not hex": dict(document, tree_digest="q" * 64),
+            "a short casefolded digest": dict(
+                document, tree_digest_casefold_v1="a"
+            ),
+            "casefolded digest not a string": dict(
+                document, tree_digest_casefold_v1=12
+            ),
+            "casefolded digest in capitals": dict(
+                document, tree_digest_casefold_v1=digest.upper()
+            ),
+        }
+        for name, changed in cases.items():
+            with self.subTest(name):
+                self._put(json.dumps(changed), beside)
+
+                code, result = self._run(self.experimental, self.addon)
+
+                self.assertEqual(1, code)
+                self._assert_default_index_warns(result)
+        for name, value in (("null", None), ("missing", "missing")):
+            with self.subTest("casefolded digest " + name):
+                changed = dict(document, tree_digest_casefold_v1=value)
+                if value == "missing":
+                    del changed["tree_digest_casefold_v1"]
+                self._put(json.dumps(changed), beside)
+
+                _code, result = self._run(self.experimental, self.addon)
+
+                self._assert_read_beside(result, beside)
+
+    def test_paths_that_casefold_alike_give_no_casefolded_digest(self):
+        # Two files on a file system that tells capitals apart, one file
+        # named twice on one that does not: casefolded, they are one path.
+        from shared import vanilla_index_tree
+
+        root = self.base / "twice" / "scripts"
+        first = root / "4_world" / "fx_liquid.c"
+        second = root / "4_World" / "FX_Liquid.c"
+        self._write(root, {"4_world/fx_liquid.c": b"class FX_Liquid\n{\n}\n"})
+        if not second.exists():
+            self._write(root, {"4_World/FX_Liquid.c": b"class FX_Liquid\n{\n}\n"})
+
+        spelt, folded = vanilla_index_tree.tree_digests([first, second], root)
+
+        self.assertIsNotNone(spelt)
+        self.assertIsNone(folded)
+
+    def test_a_path_utf8_cannot_write_is_no_match(self):
+        # Review of PR #204, round 2, N3: NTFS keeps an unpaired surrogate in
+        # a name, which UTF-8 cannot write. The tree is not compared, and
+        # the default index warns, as before files beside it were read.
+        self._index(self.stable)
+        odd = self._write(
+            self.base / "odd" / "scripts",
+            dict(self.EXPERIMENTAL, **{"4_world/odd_a.c": b"// name only\n"}),
+        )
+        self._index(odd, self._beside("odd"))
+        plain = odd / "4_world" / "odd_a.c"
+        try:
+            plain.replace(plain.with_name("odd_\udc80.c"))
+        except (OSError, UnicodeError) as error:
+            self.skipTest("this file system refuses the name: %s" % error)
+
+        code, result = self._run(odd, self.addon)
+
+        self.assertEqual(1, code)
+        self._assert_default_index_warns(result)
+
+    def test_a_file_that_cannot_be_read_while_hashing_is_no_match(self):
+        # Review of PR #204, round 2, N6: counted, then not read (another
+        # process holds it without sharing, say). The tree is not compared,
+        # and the default index warns, as before.
+        from shared import vanilla_index_tree
+
+        self._index(self.stable)
+        self._index(self.experimental, self._beside("experimental"))
+        with mock.patch.object(
+            vanilla_index_tree, "_file_sha256",
+            side_effect=PermissionError("held without sharing"),
+        ):
+            code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self._assert_default_index_warns(result)
 
     def test_without_a_default_index_none_beside_it_is_read(self):
         # The default file says whether there is an index at all: moving it

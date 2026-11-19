@@ -370,9 +370,12 @@ tree is read instead: the four rules judge with it,
 generator writes: a JSON object of this `schema_version` holding the four
 tables the rules read (`base_members`, `override_params`,
 `global_class_names` and `platform_gated_methods`, each an object), a
-`parsed_file_count` equal to its `file_count`, and a `tree_digest`. It is
-of the tree when its count, its bytes and its `tree_digest` are the
-tree's. Anything else beside the default index is passed over. When no
+`parsed_file_count` equal to its `file_count`, a `tree_digest` and, from
+indexes written since 2026-11-19, a `tree_digest_casefold_v1` (each digest
+64 lower-case hex digits; the second may be null or missing). It is of the
+tree when its count and its bytes are the tree's and one of its digests is
+one of the tree's (below). Anything else beside the default index is
+passed over. When no
 file beside it is of the tree, the default index is read and the run
 warns, or gives its SKIP line, as above; the warning then also offers
 `--out` with such a name. The default file alone says whether there is an
@@ -391,11 +394,39 @@ the default index is not taken on those two numbers: two trees can share
 them (one identifier renamed to another of the same length is enough), and
 taking one for the other would turn this warning into a PASS. Its digest
 is compared too, and the tree is hashed only when a file beside the default
-index has the tree's two numbers. The digest covers the paths as spelt, so
-a copy of a tree with other capitals in its paths (`4_World/...` for
-`4_world/...`, as an extraction that keeps the PBO's own spelling has them)
-is another tree to it: build that copy's index beside the default one,
-from that copy.
+index has the tree's two numbers.
+
+That digest is compared up to the capitals of the paths, as the comparison
+with the PBO above takes them: an extraction that keeps the PBO's own
+capitals (`4_World/...`) and one in lower case are one tree. Each file is
+read once for two digests of the tree: as spelt, which is `tree_digest`,
+and with each relative path casefolded and the files in the order of their
+casefolded parts, which the generator records as `tree_digest_casefold_v1`.
+For a tree in lower case the two are one, so an index written before
+`tree_digest_casefold_v1` from such a tree, as `P:\scripts` and the
+extractions this pack describes are, is read for a copy in any capitals.
+One written from a copy with capitals is read for that spelling only, until
+it is rebuilt. A tree with two paths that casefold alike, two files on a
+file system that tells capitals apart, has no casefolded digest and is
+compared as spelt. A path that UTF-8 cannot write (an unpaired surrogate,
+which NTFS keeps) or a file that cannot be read while hashing leaves the
+tree uncompared: the default index is read and warns, as before files
+beside it were read. `casefold` also folds a few letters that are not
+ASCII (`ß` and `ss`, say); DayZ's script paths are ASCII.
+
+Three limits remain:
+
+- Only the outer form of the four tables is checked: a file beside the
+  default index with the tree's digest and a table emptied, or a value of
+  another type inside one, is read, and gives a false PASS or an
+  exception. Rebuild an index that was damaged.
+- The tree is counted, then hashed from that list, and the generator
+  parses a tree before it hashes it: a file added or changed in between is
+  not seen, and an index of the tree as it was is read, with `matches`. Do
+  not change a tree while it is validated or indexed.
+- The vanilla control looks for a default index once, and the validation
+  it runs looks again: an index that appears in between is read, and
+  `--update` writes its findings into the baseline.
 
 Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work
 running on the PC), on the 1.30.164393 tree in `P:\scripts` (3 059 `.c`
@@ -425,26 +456,29 @@ files, 14 001 771 bytes):
 Measured there on 2026-11-19, with the 1.30.164289 tree back in
 `P:\scripts` and the 164393 tree in a folder of its own, the default index
 built from the 164289 tree and, beside it, `vanilla_index.json.164393` and
-an index of 1.29 (other work running on the PC):
+an index of 1.29, all three written before `tree_digest_casefold_v1` (other
+work running on the PC):
 
 - Three addons of 114, 77 and 3 files, validated against the 164393 tree
   with `--game-root` naming the Experimental install, go from WARN on
   this rule alone to PASS, with `info.vanilla_index.index` naming the
-  `.164393` file; each run took 10.8 to 12.0 s, against 8.5 to 9.7 s
+  `.164393` file; each run took 10.9 to 11.7 s, against 8.7 to 10.4 s
   before. Against the default tree, with the stable install, they are PASS
-  on the default index before and after (9.2 to 10.2 s).
+  on the default index before and after.
+- A copy of the 164393 tree whose paths keep the PBO's capitals (the same
+  3 059 files, bytes and contents) has another `tree_digest` and the same
+  casefolded one: against it the 114-file addon goes from WARN to PASS,
+  reading the `.164393` file.
 - 164393's `targetconditionscomponents` folder, validated against its own
   tree, goes from the five `ES-MEMBER-REDECLARE-BASE` findings and this
   warning to neither.
-- Ten rounds of the choice alone: against the 164393 tree 1.39 to 2.02 s
-  (median 1.60 s), hashing the tree included; against the 164289 tree,
-  whose numbers the default index has, 0.26 to 0.41 s (median 0.32 s). The
-  count alone took 0.24 to 0.36 s, and reading one index file 0.013 to
-  0.034 s.
-- A copy of the 164393 tree whose paths keep the PBO's capitals has the
-  same 3 059 files and the same bytes, and another digest: against it the
-  114-file addon still warns, as before files beside the default index were
-  read.
+- Ten rounds of the choice alone: against the 164393 tree 1.50 to 2.53 s
+  (median 1.87 s), hashing the tree included; against the 164289 tree,
+  whose numbers the default index has, 0.25 to 0.39 s (median 0.32 s). The
+  count alone took 0.24 to 0.43 s, and reading one index file 0.014 to
+  0.045 s.
+- The generator, run on both trees, writes the same document as before
+  plus `tree_digest_casefold_v1`, equal to `tree_digest` for both.
 
 ## Compile errors read from one file
 

@@ -32,8 +32,17 @@ is hashed only when a file beside the default index has its two numbers.
 On 2026-11-18 three addons tested on Experimental warned on every run, and
 were judged with the stable build's members, because only the default
 file was read.
+
+The digest is compared up to the capitals of the paths: an extraction that
+keeps a PBO's own (4_World/...) is the same tree as one in lower case, as
+shared/vanilla_build.py already takes them against the PBO. tree_digests
+gives the tree's digest as spelt and with the paths casefolded, in the order
+of their casefolded parts, which for a tree in lower case is the generator's
+digest itself: so an index written before the casefolded digest existed,
+from a tree in lower case, is still read for a copy in other capitals.
 """
 
+import hashlib
 import pathlib
 
 from shared.vanilla_reference import (
@@ -124,13 +133,71 @@ def _numbers_match(recorded, tree_files, tree_bytes):
     return index_files == tree_files and index_bytes == tree_bytes
 
 
-def _whole_index_of_tree(recorded, tree_files, tree_bytes, tree_digest):
+def _file_sha256(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _digest(entries):
+    digest = hashlib.sha256()
+    for relative, content in entries:
+        digest.update(relative.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(content.encode("ascii"))
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
+def tree_digests(files, vanilla_root):
+    """The digest of the tree's .c files as spelt, and casefolded.
+
+    files as collect_c_files gives them. Each file is read once. The first is
+    the stream of build_vanilla_index.tree_digest, which the index records
+    as tree_digest: each relative path as spelt, NUL, the sha256 of the
+    file's contents, LF, in the order given. The second, which the generator
+    records as tree_digest_casefold_v1, takes the paths casefolded and in the
+    order of their casefolded parts, so that two spellings of one tree give
+    one digest; it is None when two paths casefold alike, which on a file
+    system that tells capitals apart are two files. A path UTF-8 cannot
+    write raises UnicodeEncodeError, and a file that cannot be read OSError.
+    """
+    root = pathlib.Path(vanilla_root)
+    spelt = []
+    for path in files:
+        spelt.append((path.relative_to(root).as_posix(), _file_sha256(path)))
+    folded = [(relative.casefold(), content) for relative, content in spelt]
+    if len({relative for relative, _content in folded}) != len(folded):
+        return _digest(spelt), None
+    folded.sort(key=lambda entry: entry[0].split("/"))
+    return _digest(spelt), _digest(folded)
+
+
+def _is_digest(value):
+    """A sha256 as the generator writes it: 64 lower-case hex digits."""
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(char in "0123456789abcdef" for char in value)
+    )
+
+
+def _whole_index_of_tree(recorded, tree_files, tree_bytes, tree_digests_of):
     """Whether a file beside the default index is of the tree being read.
 
     More than _numbers_match: the index says it parsed every file of its
-    tree, and the digest of their contents it records is the tree's.
-    tree_digest() hashes the tree, and is called only once the numbers
-    match.
+    tree, its digests are as the generator writes them (tree_digest always,
+    tree_digest_casefold_v1 when it is not null or missing), and one of them
+    is one of the tree's. tree_digests_of() hashes the tree, and is called
+    only once the numbers match.
+
+    Any of the four pairs is the same tree up to the capitals of its paths:
+    both streams have one form, so equal digests mean equal paths, as spelt
+    or casefolded, with equal contents. An index without the casefolded
+    digest, written before it, so matches a copy of its tree in other
+    capitals when its own tree was in lower case.
     """
     if not _numbers_match(recorded, tree_files, tree_bytes):
         return False
@@ -138,30 +205,35 @@ def _whole_index_of_tree(recorded, tree_files, tree_bytes, tree_digest):
     if not _is_count(parsed) or parsed != recorded["file_count"]:
         return False
     digest = recorded["tree_digest"]
-    if not isinstance(digest, str) or not digest:
+    if not _is_digest(digest):
         return False
-    return digest == tree_digest()
+    recorded_digests = {digest}
+    folded = recorded["tree_digest_casefold_v1"]
+    if folded is not None:
+        if not _is_digest(folded):
+            return False
+        recorded_digests.add(folded)
+    return any(found in recorded_digests for found in tree_digests_of() if found)
 
 
-def _digest_of(vanilla_root, files):
-    """A function that hashes the tree as the generator does, at most once.
+def _digests_of(vanilla_root, files):
+    """A function that hashes the tree, at most once, with tree_digests.
 
-    It gives None when a file of the tree cannot be read, which is no match.
+    It gives (None, None) when a file of the tree cannot be read or a path
+    cannot be written in UTF-8: the tree is then not compared, which is no
+    match.
     """
     hashed = []
 
-    def tree_digest():
+    def digests():
         if not hashed:
-            # build_vanilla_index.py imports this module: not at the top.
-            import build_vanilla_index
-
             try:
-                hashed.append(build_vanilla_index.tree_digest(files, vanilla_root))
-            except OSError:
-                hashed.append(None)
+                hashed.append(tree_digests(files, vanilla_root))
+            except (OSError, UnicodeError):
+                hashed.append((None, None))
         return hashed[0]
 
-    return tree_digest
+    return digests
 
 
 def use_index_of_tree(vanilla_root):
@@ -199,10 +271,10 @@ def use_index_of_tree(vanilla_root):
         tree_error = error
     else:
         if not _numbers_match(loaded_index_tree(), tree_files, tree_bytes):
-            tree_digest = _digest_of(root, files)
+            digests = _digests_of(root, files)
             beside = use_sibling_index(
                 lambda recorded: _whole_index_of_tree(
-                    recorded, tree_files, tree_bytes, tree_digest
+                    recorded, tree_files, tree_bytes, digests
                 )
             )
             if beside is not None:
