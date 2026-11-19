@@ -1,10 +1,12 @@
 # Publishing a signed mod to the Steam Workshop (DayZ, appid 221100)
 
-Measured on 2026-11-12 on one Windows PC with the Steam client signed in:
-signing a released PBO, creating a hidden Workshop item with SteamCMD, and what
-a SteamCMD login does to the Steam client on the same machine. Updating an item
-and the subscriber's side (the download, the `!Workshop` junction and
-`meta.cpp`) were **not** measured.
+Measured on 2026-11-12 and 2026-11-19 on one Windows PC with the Steam client
+signed in: signing a released PBO, what a server with `verifySignatures = 2`
+does with it, creating a hidden Workshop item with SteamCMD, what a SteamCMD
+login does to the Steam client on the same machine, updating the item with the
+Publisher, and the owner's subscribed copy of that private item. An update
+reaching a subscriber, the `!Workshop` junction and `meta.cpp` were **not**
+measured.
 
 ## The item folder
 
@@ -24,13 +26,32 @@ sha256 before and after signing. The three tools write `.RPT` and `.mdmp`
 files next to their own executable, so run a copy of them from a folder of
 your own.
 
+[EXACT][CLAIM-WORKSHOP-SIGN-SERVER-CHECK] A retail DayZServer 1.30.164289.70
+with `verifySignatures = 2` and `BattlEye = 0` in `serverDZ.cfg` loaded the
+signed mod with `-mod`, and a retail client loaded the same mod folder. With
+the item's `.bikey` missing from the server's `keys` folder, the server
+kicked the client in `AuthPlayerLoginState` 0.14 s after it connected: its RPT
+logged `kicked from server: 120` with a message, in that machine's language,
+saying that the client has a PBO the server does not have, and the client
+logged `Error thrown: 0x00040078`. The message does not mention signatures.
+With the `.bikey` copied into `keys` and nothing else changed, the client
+passed `AuthPlayerLoginState` and the server logged `is connected`. In that
+second run BattlEye kicked the client 23 s after it joined, with
+`Game restart required` (kick 240), although the client ran without BattlEye;
+the server had copied `BEServer_x64.dll` to its profile. Why was not
+investigated.
+
+[INFERRED] So `BattlEye = 0` alone did not keep BattlEye off on that server: a
+join test that has to last longer needs a client with BattlEye or another way
+to turn it off. Neither was tried.
+
 ## Two ways to publish
 
 | | Publisher (DayZ Tools) | SteamCMD |
 |---|---|---|
 | Session | The running Steam client's (inferred from its files) | Its own login with an account |
 | Command line | None in DayZ Tools | `+workshop_build_item <vdf>` |
-| On a machine where people play | No second login (inferred from its files, not measured) | Kicks the Steam client off if it logs in with the client's account (below) |
+| On a machine where people play | No log off in the client's log in three publications (below) | Kicks the Steam client off if it logs in with the client's account (below) |
 
 [EXACT][CLAIM-WORKSHOP-PUBLISHER-FILES] `Bin\Publisher\Publisher.exe`
 (file version 1.0.240.639, signed by Bohemia Interactive) is a 32-bit WPF
@@ -42,8 +63,47 @@ Tools), and no command-line option shows in the Publisher's strings. This was
 read from the installed files without running them.
 
 [INFERRED] From those strings, the Publisher publishes with the session of the
-running client instead of logging in. Not measured, and neither is whether it
-disturbs that session.
+running client instead of logging in. Not measured directly; what it left in
+that client's logs is below.
+
+### Updating an item with the Publisher
+
+[EXACT][CLAIM-WORKSHOP-PUBLISHER-UPDATE] Updating an existing private item
+with the Publisher while the Steam client was running: its content folder is
+the item's root, the folder that holds `addons` and `keys`. Given the `addons`
+folder instead, it copied only the PBO and its `.bisign` to the root of its
+temporary folder and failed before uploading: `Bin\Logs\dayzpublisher.rpt`
+logged `System.IO.DirectoryNotFoundException` for `...\Addons` in
+`UpdateMetadataOuter`. Given the root folder, its log went `Start`, the copy
+to `%TEMP%\!Publisher_<title>_<guid>`, `Processing tags`,
+`Steam Workshop item id is set, the item will be update`,
+`Publishing to Steam Workshop...` and `Clean up` 5.7 s later (14 to 16 s for a
+large mod), and the client's `logs\workshop_log.txt` recorded
+`Upload starting`, `Uploaded new content` with a new manifest id, a new
+preview file and `Upload finished ... : OK`. The chosen visibility shows in
+neither log; the Publisher's files offer public, friends only and private, and
+no unlisted. In three publications with the client running (this update and
+two of another item on 2026-11-12), the client's `logs\connection_log.txt`
+had no line during the publication, no log off and no `Session Replaced`; a
+disconnect by the Steam servers (`Service Unavailable`, reconnected by itself)
+came 3 minutes before one of them.
+
+### The owner's copy of a private item
+
+[EXACT][CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY] Subscribed from the owner's
+account, the private item downloaded in about 2 s to
+`steamapps\workshop\content\221100\<id>`, with the same files and sha256 as
+the item folder. Days later the client removed it twice (in between it had
+added it back by itself and downloaded it in 2 s), each time logging
+`Get details for item <id> failed : Access Denied` and then
+`Detected workshop change : removing unknown item <id>` in
+`workshop_log.txt`. For two hours after the Publisher update above, while the
+owner said they were subscribed, the client wrote no line for the item in
+`workshop_log.txt` besides the upload and one `GetDetails` request right after
+it, and `appworkshop_221100.acf` had no entry for it.
+
+[INFERRED] On the owner's own client a private item is no stand-in for a
+public one: measure an update reaching subscribers on a public item.
 
 ## SteamCMD
 

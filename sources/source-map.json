@@ -2131,10 +2131,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-tbrunner-test-clock@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY).",
+          "license": "MIT",
+          "source_hash": "caff5ee2771dbb9fda7f96b455ae410f4f8bace3e45b38a13656895d15d23b17",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "e19394fa0b703d7a28f4dfbdb669a669a38352c8d54ae40e68407e491f1de1ea",
+      "output_hash": "caff5ee2771dbb9fda7f96b455ae410f4f8bace3e45b38a13656895d15d23b17",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13576,10 +13586,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The Workshop bullet also names what verifySignatures = 2 does without the .bikey and updating with the Publisher (references/workshop-publish.md). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "8c3b6ada772485f818a0f4ebc938ddb413c97f20a50df92198d818067a2e7f5f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b10319260e34b8f615a32942267bdc083f69597fad7d0c686e7175084c095f9",
+      "output_hash": "8c3b6ada772485f818a0f4ebc938ddb413c97f20a50df92198d818067a2e7f5f",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -23343,10 +23363,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three claims for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), runtime_verified, from probes S1 and S3 of the dayz-mcp distribution plan and the vault runbook; the line ranges of the five earlier CLAIM-WORKSHOP-* follow the longer reference.",
+          "license": "MIT",
+          "source_hash": "b84c845fa63a6983ce05e155844dbe8376be9ec06b96b4de43e0ab0353c172a2",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7ebcfbc6da987e82cd08051fe5d9fb34785f86127f1395aaec3b6b95e2fcf91",
+      "output_hash": "b84c845fa63a6983ce05e155844dbe8376be9ec06b96b4de43e0ab0353c172a2",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -43993,10 +44023,20 @@
           "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
           "source_revision": "workshop-publish-r2@2026-11-12",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pack-authored update by Claude (Anthropic) from probes S1 and S3 of the dayz-mcp distribution plan (2026-11-12 and 2026-11-19) and the vault runbook: CLAIM-WORKSHOP-SIGN-SERVER-CHECK (retail DayZServer with verifySignatures = 2: kick 120 without the .bikey, join with it, the BattlEye kick as observed and the cause as not investigated), CLAIM-WORKSHOP-PUBLISHER-UPDATE (the Publisher's content folder, its log and the client's logs in three publications) and CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY (the owner's copy of the private item), each followed by an [INFERRED] paragraph where it draws a conclusion; the intro and the table row follow. No account name, item id or private path.",
+          "license": "MIT",
+          "source_hash": "edbfe3da4f8ad3715de63c04577f1d64bdc215e97ec79756c1dfa883c23641e9",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
+      "output_hash": "edbfe3da4f8ad3715de63c04577f1d64bdc215e97ec79756c1dfa883c23641e9",
       "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "runtime_verified"

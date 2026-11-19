@@ -272,6 +272,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-pbo-build` `references/workshop-publish.md`, measured on 2026-11-12 and 2026-11-19: on a retail DayZServer
+  with `verifySignatures = 2`, a client loading the signed mod is kicked in `AuthPlayerLoginState` (kick 120, "the
+  client has a PBO the server does not have") while the server's `keys` lacks the `.bikey`, and joins with it (and
+  BattlEye kicked it 23 s later although `BattlEye = 0`); updating an item with the Publisher takes the mod's root
+  folder (the `addons` folder fails before uploading with `DirectoryNotFoundException`), finishes in about 6 s and
+  left no log off in the client's `connection_log.txt` in three publications; the owner's Steam client removed its
+  subscribed copy of the private item after `Access Denied`. Claims `CLAIM-WORKSHOP-SIGN-SERVER-CHECK`,
+  `CLAIM-WORKSHOP-PUBLISHER-UPDATE` and `CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY`.
 - dayzmake >= 3.1.0, pinned to `v3.1.0`, everywhere the Pack names dayzmake (`_shared/linux-proton.md`, the Linux
   notes of 22 skills, `dayz-mod-pack.sh`, `dayz-proton.sh doctor`): dayzmake 3.x fixes a lot of security and
   file-handling issues of the earlier releases, and 3.1.0 adds `extract`, `api grep`, `api config` and more and
