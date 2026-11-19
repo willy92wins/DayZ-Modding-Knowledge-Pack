@@ -2134,6 +2134,16 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: two Unreleased Changed entries (crew-anchor offset is zero; direct binarize working directory).",
+          "license": "MIT",
+          "source_hash": "955799e1ac6f8b7c04acc805a82015a304ca9e62339f1627e80e6e5e0ead740c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19: an Unreleased Added entry for dayz-script-validator reading, of the local vanilla indexes, the one built from the tree being read. Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "d68fd77df5585705a0693e60554b63a724ee88523ed1a41886429c6ae3e20b50",
@@ -2156,7 +2166,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204: the Unreleased Added entry for the index beside the default one rewritten for this revision (the digest compared up to the capitals of the paths, tree_digest_casefold_v1, the form of the digests, paths UTF-8 cannot write, three limits, the cost measured again). Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "385eb10d89c2c4bab8526ab761b80496039195e3e506020443924a16ebb51fd9",
+          "source_hash": "2ba9c2a3a08dacc0628dbdf6ad0fa0f98bb3a991d04d9373016c59a68386f2d2",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
@@ -2164,7 +2174,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "385eb10d89c2c4bab8526ab761b80496039195e3e506020443924a16ebb51fd9",
+      "output_hash": "2ba9c2a3a08dacc0628dbdf6ad0fa0f98bb3a991d04d9373016c59a68386f2d2",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13606,10 +13616,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19 (LFQuad v1.0.2 body): rule 5 adds that a direct binarize.exe call resolves cited files from its working directory; CLAIM-BINARIZE-DIRECT-CWD, range from its marker.",
+          "license": "MIT",
+          "source_hash": "a48a660083335321bb261b4fde4f3dae8dc7022f96b927e3e93e7a75113bb2ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b10319260e34b8f615a32942267bdc083f69597fad7d0c686e7175084c095f9",
+      "output_hash": "a48a660083335321bb261b4fde4f3dae8dc7022f96b927e3e93e7a75113bb2ee",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -18404,10 +18424,20 @@
           "source_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19 (LFQuad v1.0.2): the crew-anchor check no longer cites LFQuad's 0/100/200 mm as healthy; CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET, range from its marker.",
+          "license": "MIT",
+          "source_hash": "b424edebf5887ad383d8beac9ff007894bfa0fa7bf4305656ba55500c1919a0b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "957986f290c9ab492114aeff1841d20e08e44c38df5e0d4cfe5c55681b4e173d",
+      "output_hash": "b424edebf5887ad383d8beac9ff007894bfa0fa7bf4305656ba55500c1919a0b",
       "output_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -23373,10 +23403,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: CLAIM-BINARIZE-DIRECT-CWD and CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET added.",
+          "license": "MIT",
+          "source_hash": "c645fed2c343d0d00e395ca7d747ad7bb436b2ced887e502f0e5c740a5dbd36e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "f7ebcfbc6da987e82cd08051fe5d9fb34785f86127f1395aaec3b6b95e2fcf91",
+      "output_hash": "c645fed2c343d0d00e395ca7d747ad7bb436b2ced887e502f0e5c740a5dbd36e",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
