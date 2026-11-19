@@ -1,12 +1,12 @@
 # Publishing a signed mod to the Steam Workshop (DayZ, appid 221100)
 
-Measured on 2026-11-12 and 2026-11-19 on one Windows PC with the Steam client
-signed in: signing a released PBO, what a server with `verifySignatures = 2`
-does with it, creating a hidden Workshop item with SteamCMD, what a SteamCMD
-login does to the Steam client on the same machine, updating the item with the
-Publisher, and the owner's subscribed copy of that private item. An update
-with SteamCMD, an update reaching a subscriber, the `!Workshop` junction and
-`meta.cpp` were **not** measured.
+Measured on 2026-11-12 and 2026-11-19 on one Windows PC: signing a released
+PBO, what a server with `verifySignatures = 2` does with it, creating a hidden
+Workshop item with SteamCMD, what a manual SteamCMD login with the Steam
+client's account did to that client on the same machine, updating the item
+with the Publisher, and the owner's subscribed copy of that private item. An
+update with SteamCMD, an update reaching a subscriber, the `!Workshop`
+junction and `meta.cpp` were **not** measured.
 
 ## The item folder
 
@@ -40,11 +40,9 @@ passed `AuthPlayerLoginState` and the server logged `is connected`. In that
 second run BattlEye kicked the client 23 s after it joined, with
 `Game restart required` (kick 240), although the client ran without BattlEye;
 the server had copied `BEServer_x64.dll` to its profile. Why was not
-investigated.
-
-[INFERRED] So a join test that has to last longer needs a client with
-BattlEye, or a server shown to run without it: the logs do not say whether the
-server applied `BattlEye = 0`. Neither was tried.
+investigated, and no log says whether the server applied `BattlEye = 0`. So
+how long a client stays joined was not measured, and a client with BattlEye
+was not tried.
 
 ## Two ways to publish
 
@@ -52,7 +50,7 @@ server applied `BattlEye = 0`. Neither was tried.
 |---|---|---|
 | Session | The running Steam client's (inferred from its files) | Its own login with an account |
 | Command line | None found: no `PublisherCmd`, and no option in the Publisher's strings | `+workshop_build_item <vdf>` |
-| On a machine where people play | No log off in the client's log in three publications (below) | A login with the client's account kicked the Steam client off (below) |
+| On a machine where people play | No log off in the client's log in three publications (below) | A manual login with the client's account kicked the Steam client off (below) |
 
 [EXACT][CLAIM-WORKSHOP-PUBLISHER-FILES] `Bin\Publisher\Publisher.exe`
 (file version 1.0.240.639, signed by Bohemia Interactive) is a 32-bit WPF
@@ -92,13 +90,15 @@ had no line during the publication, no log off and no `Session Replaced`.
 [EXACT][CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY] Subscribed from the owner's
 account, the private item downloaded in about 2 s to
 `steamapps\workshop\content\221100\<id>`, with the same files and sha256 as
-the item folder. Days later the client removed it twice (in between it had
-added it back by itself and downloaded it in 2 s), each time logging
+the item folder. Days later the client removed it twice, each time logging
 `Get details for item <id> failed : Access Denied` and then
 `Detected workshop change : removing unknown item <id>` in
-`workshop_log.txt`. After the Publisher update above, while the owner said
-they were subscribed, two watches of 7 and 40 minutes within the next two
-hours found no line naming the item in `workshop_log.txt` besides the
+`workshop_log.txt`. In between, that log has
+`Detected workshop change : added subscribed item <id>` and, 2 s later,
+`Finished Workshop download job : No Error`; it does not say what added the
+item back. After the Publisher update above, once the owner said they were
+subscribed, readings about every 30 s for 6 minutes and, an hour later, for
+40 minutes found no line naming the item in `workshop_log.txt` besides the
 upload's, and no entry for it in `appworkshop_221100.acf`.
 
 [INFERRED] On the owner's own client a private item is no stand-in for a
@@ -124,9 +124,10 @@ So, on a machine where people play: publish with the Publisher, or run
 SteamCMD with that account only while the Steam client is closed and no game
 is running, the first login included. A second account was not tried.
 
-[INFERRED] Any SteamCMD login with that account does the same, an unattended
-one from the cached session and `workshop_download_item` included. Not
-measured: the cached login below ran with the client already offline.
+[INFERRED] Any SteamCMD login with that account may replace the client's
+session too, an unattended one from the cached session and
+`workshop_download_item` included. Not measured: the cached login below ran
+while the client was still offline.
 
 ### Login
 
@@ -137,7 +138,9 @@ before running it. The first run updates itself (about 43 MB) and relaunches,
 and the relaunched process lost a `+quit` given on the command line, so do the
 first run by hand. The login is the account owner's, once: `login <account>`
 and the password; the first attempt answered `Account Logon Denied` and asked
-for the Steam Guard code; then `quit`. After that an unattended run logged in
+for the Steam Guard code, and with the code entered the login went through
+(`LogOnResponse` OK in SteamCMD's log); then `quit`. After that an unattended
+run, with the Steam client still logged off by that login (above), logged in
 from the cached session in about one second, with `steamcmd +runscript <file>`
 and this file:
 
