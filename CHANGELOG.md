@@ -100,8 +100,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   bytes (one identifier renamed to another of the same length is enough), and a file beside the default index taken
   on those two numbers would turn the warning into a PASS. The tree is hashed only when a file beside the default
   index has its two numbers; the default index is still compared by the two numbers alone. When no file is of the
-  tree, the default index is read and the run warns as before; the warning now also offers `--out` with such a
-  name. Only the default file was read until now, so on 2026-11-18 three addons tested on DayZ 1.30.164393
+  tree, the default index is read and the run warns, or gives its SKIP line, as before; the warning now also offers
+  `--out` with such a name. Only the default file was read until now, so on 2026-11-18 three addons tested on DayZ 1.30.164393
   Experimental, validated against that tree while the default index was of 1.30.164289, warned on every run and
   were judged with the stable build's members and signatures. With `vanilla_index.json.164393` beside the default
   index they are PASS against the Experimental tree and against the default one, and 164393's

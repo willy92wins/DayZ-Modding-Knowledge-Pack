@@ -349,7 +349,7 @@ exits 2, so what the section above says of a gate that accepts WARN holds
 here too. The vanilla control never gets this far: it SKIPs when an index
 is in use.
 
-A PC with more than one vanilla tree (the stable build's and an
+[EXACT][CLAIM-DSV-VANILLA-INDEX-BESIDE-OUT] A PC with more than one vanilla tree (the stable build's and an
 Experimental one, say) keeps an index of each: the default file for one
 and, for each other, a file beside it named
 `scripts/shared/vanilla_index.json.<name>`. The name is free; the build
@@ -366,21 +366,22 @@ being read (a number differs, or it cannot be compared), the files beside
 it are tried in name order, and the first that is a whole index of that
 tree is read instead: the four rules judge with it,
 `info.vanilla_index.index` names it, `info.vanilla_index.compared` adds
-`tree_digest`, and the run has no warning. A whole index is what the
-generator writes: a JSON object of this `schema_version` holding the four
-tables the rules read (`base_members`, `override_params`,
-`global_class_names` and `platform_gated_methods`, each an object), a
-`parsed_file_count` equal to its `file_count`, and a `tree_digest`. It is
-of the tree when its count, its bytes and its `tree_digest` are the
-tree's. Anything else beside the default index is passed over. When no
-file beside it is of the tree, the default index is read and the run
-warns, or gives its SKIP line, as above; the warning then also offers
-`--out` with such a name. The default file alone says whether there is an
-index: without one that loads, nothing beside it is read, so an index
-moved away under another name in the same folder stays away, for a later
-run and for the vanilla control in the same process too. Like the default
-index, those files are derived from Bohemia's scripts, and git ignores
-them.
+`tree_digest`, and the run has no `VANILLA-INDEX-TREE-MISMATCH` warning. A
+whole index is what the generator writes: a JSON object of this
+`schema_version` holding the four tables the rules read (`base_members`,
+`override_params`, `global_class_names` and `platform_gated_methods`, each
+an object), a `parsed_file_count` equal to its `file_count`, and a
+`tree_digest`. It is of the tree when its count, its bytes and its
+`tree_digest` are the tree's. Anything else beside the default index is
+passed over. When no file beside it is of the tree, the default index is
+read and the run warns, or gives its SKIP line, as above; the warning then
+also offers `--out` with such a name. The default file alone says whether
+there is an index: without one that loads, nothing beside it is read, so
+an index moved away under another name in the same folder stays away, for
+a later run and for the vanilla control in the same process too. Like the
+default index, those files are derived from Bohemia's scripts, and git
+ignores them. Index selection is process-wide state, so `validate_addon`
+does not support concurrent calls in the same process.
 
 For the default index the two numbers are compared and its `tree_digest`,
 a sha256 over the relative paths and the contents of the same files, is

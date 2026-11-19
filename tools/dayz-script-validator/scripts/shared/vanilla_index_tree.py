@@ -34,6 +34,7 @@ were judged with the stable build's members, because only the default
 file was read.
 """
 
+import os
 import pathlib
 
 from shared.vanilla_reference import (
@@ -81,13 +82,24 @@ def collect_c_files(vanilla_root):
     """The .c files the index covers, in the order its digest reads them.
 
     build_vanilla_index.py imports this one: the generator and the
-    comparison below must count the same files.
+    comparison below must count the same files. Unlike Path.rglob, an
+    unreadable folder raises OSError instead of being silently left out.
     """
-    files = sorted(
-        path
-        for path in vanilla_root.rglob("*.c")
-        if path.is_file()
-    )
+    root = pathlib.Path(vanilla_root)
+    files = []
+    pending = [root]
+    while pending:
+        folder = pending.pop()
+        with os.scandir(folder) as entries:
+            for entry in entries:
+                if entry.is_dir(follow_symlinks=False):
+                    pending.append(pathlib.Path(entry.path))
+                elif (
+                    os.path.normcase(entry.name).endswith(".c")
+                    and entry.is_file()
+                ):
+                    files.append(pathlib.Path(entry.path))
+    files.sort()
     return files
 
 

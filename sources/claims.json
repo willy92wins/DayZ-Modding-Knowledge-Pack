@@ -4771,6 +4771,19 @@
       "source_id": "pack-r21-authored",
       "source_revision": "dayzmake-v3.0.2@2026-11-16",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/README.md",
+      "claim_id": "CLAIM-DSV-VANILLA-INDEX-BESIDE-OUT",
+      "evidence_locator": "tools/dayz-script-validator/scripts/build_vanilla_index.py:37,608-613,651-675; tools/dayz-script-validator/scripts/shared/vanilla_reference.py:29,57-58,140-169; tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py:74-78,213-221; tools/dayz-script-validator/tests/test_vanilla_index.py:32-45; tools/dayz-script-validator/tests/test_script_validator.py:6223-6247,6274-6292",
+      "license": "MIT",
+      "line_end": 356,
+      "line_start": 352,
+      "observed_at": "2026-11-19",
+      "promotion_artifact_id": "tools",
+      "source_id": "pack-r21-authored",
+      "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
+      "verification_level": "source_verified"
     }
   ],
   "schema_version": 1

@@ -6583,13 +6583,39 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
         # away leaves the four rules with their curated tables, and the
         # vanilla control counts on that. Another name in the same folder
         # is where a moved index lands.
-        self._index(self.experimental, self._beside("experimental"))
+        import builtins
+        import io
+
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+        real_open = io.open
+        real_path_open = pathlib.Path.open
+        shared_dir = self.default.parent.resolve()
         for name, content in (("missing", None), ("not an index", "{not json")):
             with self.subTest(name):
                 if content is not None:
                     self._put(content)
+                opened = []
 
-                code, result = self._run(self.experimental, self.addon)
+                def record_open(file, *args, **kwargs):
+                    if isinstance(file, (str, bytes, os.PathLike)):
+                        opened.append(
+                            pathlib.Path(os.fsdecode(file)).resolve()
+                        )
+                    return real_open(file, *args, **kwargs)
+
+                def record_path_open(path_self, *args, **kwargs):
+                    opened.append(path_self.resolve())
+                    return real_path_open(path_self, *args, **kwargs)
+
+                with mock.patch.object(
+                    io, "open", side_effect=record_open
+                ), mock.patch.object(
+                    builtins, "open", side_effect=record_open
+                ), mock.patch.object(
+                    pathlib.Path, "open", new=record_path_open
+                ):
+                    code, result = self._run(self.experimental, self.addon)
 
                 self.assertEqual(0, code)
                 self.assertEqual([], self._redeclared(result))
@@ -6597,6 +6623,12 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
                 self.assertEqual([], self._index_warnings(result))
                 self.assertEqual([], self._index_skips(result))
                 self.assertIsNone(vanilla_reference.loaded_index_path())
+                shared_reads = [
+                    path for path in opened if path.parent == shared_dir
+                ]
+                self.assertIn(self.default.resolve(), shared_reads)
+                self.assertNotIn(beside.resolve(), shared_reads)
+                self.assertEqual({self.default.resolve()}, set(shared_reads))
 
     def test_the_default_index_comes_first_then_the_names_in_order(self):
         self._index(self.experimental)
@@ -6688,6 +6720,46 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
         skips = self._index_skips(result)
         self.assertEqual(1, len(skips))
         self.assertIn("was not read", skips[0]["reason"])
+        self.assertIn(str(self.default), skips[0]["reason"])
+        self.assertEqual(
+            str(self.default), str(vanilla_reference.loaded_index_path())
+        )
+
+    def test_an_unreadable_subfolder_does_not_match_a_smaller_index(self):
+        # An unreadable folder inside the vanilla tree must not be silently
+        # dropped during the walk: otherwise a sibling index built from the
+        # remaining files matches and turns the run into a false PASS.
+        self._index(self.stable)
+        partial = self._write(
+            self.base / "partial" / "scripts",
+            {
+                "1_core/proto/fx_managed.c": self.EXPERIMENTAL[
+                    "1_core/proto/fx_managed.c"
+                ],
+            },
+        )
+        self._index(partial, self._beside("partial"))
+        blocked = (self.experimental / "4_world").resolve()
+        real_scandir = os.scandir
+
+        def deny_world(path="."):
+            if (
+                isinstance(path, (str, bytes, os.PathLike))
+                and pathlib.Path(os.fsdecode(path)).resolve() == blocked
+            ):
+                raise PermissionError("denied")
+            return real_scandir(path)
+
+        with mock.patch.object(os, "scandir", side_effect=deny_world):
+            code, result = self._run(self.experimental)
+
+        self.assertEqual(0, code)
+        self.assertEqual([], self._index_warnings(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        skips = self._index_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("was not read", skips[0]["reason"])
+        self.assertIn("denied", skips[0]["reason"])
         self.assertIn(str(self.default), skips[0]["reason"])
         self.assertEqual(
             str(self.default), str(vanilla_reference.loaded_index_path())
