@@ -2121,10 +2121,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: an Unreleased Fixed entry for the dayz-terrain-builder-runner test that depended on the system clock. Its figures are those of the input of tools/dayz-terrain-builder-runner/tests/test_tbrunner.py of the same revision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e19394fa0b703d7a28f4dfbdb669a669a38352c8d54ae40e68407e491f1de1ea",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-tbrunner-test-clock@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "adaaffff79a88a45586fd328f434efc36b8a8932e922f8450d9ab5df11698b80",
+      "output_hash": "e19394fa0b703d7a28f4dfbdb669a669a38352c8d54ae40e68407e491f1de1ea",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -42523,10 +42533,20 @@
           "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: test_save_loop_counts_a_changed_file_without_focus_or_dialog no longer depends on the system clock. cmd_save_loop counts a save when st_mtime_ns of the .tv4p changes (tbrunner.py, which does not change). The test wrote the file and its fake PostMessageW wrote it again about 1.5 ms later; two writes within one tick of the system clock leave the same st_mtime_ns, and since setUp replaces time.sleep the wait loop then spins for its 10 s and passed stays 0 (AssertionError: 1 != 0). The fake now leaves the file with st_mtime_ns two seconds later through os.utime(ns=...) instead of writing again, as tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo.py already does. Measured on the owner's PC (Windows 11, NTFS, Python 3.14.3) by running that one test N times in one process. The test of commit f4007a9 failed 9 of 30 runs on 2026-11-19 at 00:32 with the clock at 4 ms for 24 of them (the 9 runs whose two writes shared st_mtime_ns; a packctl gate run failed on it that night, TOOL-TESTS-FAILED) and 0 of 200 at 13:03 with the clock at 1 ms (writes 1.3 to 6.2 ms apart); with its second write put back to the first write's st_mtime_ns it failed 5 of 5. The new test passed 200 of 200, with one os.utime call per run and st_mtime_ns exactly 2 000 000 000 ns later each time. Mutations on copies: a fake that leaves the file alone, a fake that sets the same st_mtime_ns and a cmd_save_loop that never sees the change each fail the test. The folder: 36 passed (38 subtests) on Windows and 36 tests OK on Linux (WSL2, kernel 6.18.58.1, ext4, Python 3.10.12), where the test of f4007a9 did not fail either (0 of 60): two consecutive writes never shared st_mtime_ns there (0 of 200 pairs at every gap from 0 to 32 ms). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "730ab0bf126df5f8ae65419ab69d7ee59c6c85436b9f874c5036d44edeff8b07",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+          "source_revision": "kp-update-tbrunner-test-clock@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "504984eeec5ac69beb66dd2f989ca974c64c3b09d432af95f80deb32153079aa",
+      "output_hash": "730ab0bf126df5f8ae65419ab69d7ee59c6c85436b9f874c5036d44edeff8b07",
       "output_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
