@@ -2151,10 +2151,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "workshop-publish-r3@2026-11-19",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. An Unreleased Changed entry for dayz-script-validator: VANILLA-ROOT-BUILD-MISMATCH fails the run (exit 1) when --game-root is on the command line and still warns (exit 2) when the game comes from DAYZ_GAME_ROOT.",
+          "license": "MIT",
+          "source_hash": "8a24ef6df67e2370d61be135e32ec9a7577c535b0d6f29f3805aca4f5fc039f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "f05159e5e46577b847ccc9db10674a2fbb6dd3747633f20cfa188852543af74e",
+      "output_hash": "8a24ef6df67e2370d61be135e32ec9a7577c535b0d6f29f3805aca4f5fc039f6",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -26878,10 +26888,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. The VANILLA-ROOT-BUILD-MISMATCH paragraph says that an explicit --game-root fails the run (exit 1) and DAYZ_GAME_ROOT warns (exit 2), and its last sentence no longer says that a gate accepting WARN lets an explicit mismatch through.",
+          "license": "MIT",
+          "source_hash": "b67e236896f9dc6d03a8ef54c98a844a79900256695e0e34de41390d5b251be3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "aef4e64737a3d5af4526103cadcc92e3a1adda068bba09a8f8e687a0fc2daf73",
+      "output_hash": "b67e236896f9dc6d03a8ef54c98a844a79900256695e0e34de41390d5b251be3",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27848,10 +27868,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. validate_addon takes game_root_explicit; with it the VANILLA-ROOT-BUILD-MISMATCH finding has severity FAIL and goes to errors, otherwise to warnings as before. run() passes it when --game-root is given, and the --game-root help says so.",
+          "license": "MIT",
+          "source_hash": "dea81a3a13caa1d15cea6d133f5799646e8ee8fcbc25c4ac99e9381575695c6f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "fed8f2d1868b2dec7ec74ed077ea76ff00e7e07557ef92303b136b054e139a1f",
+      "output_hash": "dea81a3a13caa1d15cea6d133f5799646e8ee8fcbc25c4ac99e9381575695c6f",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -31908,10 +31938,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. TestVanillaRootBuild gains test_an_explicit_game_root_fails_on_another_tree (exit 1, FAIL in errors, terse line) and, from the reviews, five tests: the explicit mismatch also fails when the addon has warnings of its own, through --game-root naming dta/scripts.pbo, and with a [FAIL] tag; --game-root wins over DAYZ_GAME_ROOT; an explicit --game-root that cannot be compared stays a SKIP with exit 0. test_another_tree_warns and test_a_tree_with_files_the_game_lacks_warns name the game through DAYZ_GAME_ROOT and keep their asserts.",
+          "license": "MIT",
+          "source_hash": "3d31929b693aa9f55f8427e4a34b3d3927824909349f04f7398eed9dded318d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "428b48479c7a40a416c94e8875e86fb8790dd947eb6526f5e0d77e0f8d8ebf1d",
+      "output_hash": "3d31929b693aa9f55f8427e4a34b3d3927824909349f04f7398eed9dded318d6",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42679,10 +42719,20 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. compare_vanilla_build takes the finding's severity (WARN by default) and uses it in the message's leading tag and in the finding's severity; counts, SKIP cases and info.vanilla_build do not change.",
+          "license": "MIT",
+          "source_hash": "544aaf43c712f04c0b9a7048ce96b045dfbce8c9bfafa14fec29a4cf8cfe93cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
+      "output_hash": "544aaf43c712f04c0b9a7048ce96b045dfbce8c9bfafa14fec29a4cf8cfe93cc",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

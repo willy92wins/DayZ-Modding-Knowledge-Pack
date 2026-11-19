@@ -317,6 +317,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   that takes those members from `CCTLiquid`; an index built from the 164393 tree gives none. The section's run time
   now reads about six minutes, not two to four: 340 s when the baseline was measured on 2026-11-10, and 367 to 379 s
   by the wall clock for each of the four runs of 2026-11-18, made two to four at a time.
+- `tools/dayz-script-validator`: `VANILLA-ROOT-BUILD-MISMATCH` is FAIL (exit 1) with explicit `--game-root`, WARN (exit 2) with `DAYZ_GAME_ROOT`.
 
 ### Removed
 
