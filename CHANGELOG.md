@@ -16,19 +16,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Experimental 1.30.164393 passes null into `SendExitEmoteRequest` with no null guard while the timer is still running
   (or skips `DisconnectPlayer` via `PlayerDisconnected` once the timer has expired). Check `IsPlayerDisconnecting(body)`
   before deleting a player body; skipping the wait with vanilla's instant-logout call (`SendLogoutTime(body, 0)` +
-  `PlayerDisconnected`) still runs `PlayerDisconnected`'s Hive `Save()`/`CharacterExit` and `HandleBody`. 37f:
-  blocking a family of actions on other players inside a zone (force-feeding, restraints, head sack, gag, blood,
-  defibrillator) gates a modded `ActionBase` across `Can`, `CanContinue`, and `AnimatedActionBase.OnAnimationEvent`,
-  decided on the server by position rather than per-object `GetAllowDamage()`, with two caveats: for an action whose
-  `UseAcknowledgment()` returns false, if the target enters the zone between acceptance and `Start`,
-  `ActionManagerServer.Update` (`UA_AM_ACCEPTED`) can call `Start` -> `OnStartServer` without re-checking `Can` (the
-  source read does not show how an acknowledged action, the `ActionBase` default, reaches `UA_AM_ACCEPTED`), and those
-  three hooks do not block effects applied in `OnEndServer` (for example,
-  `ActionCollectBloodTarget` / `ActionCollectSampleTarget` initiating their replacement lambda after partial progress);
-  in DayZDiag 1.30 on 2026-11-17 only the `Can` start gate was measured in game (head sack and force-feeding), while
-  `CanContinue`, `AnimatedActionBase.OnAnimationEvent`, `OnStartServer`, and `OnEndServer` were checked by reading
-  vanilla source only (crossing between acceptance and `Start` or mid-action untested in game). Rule 6: a boolean
-  `return` split across lines passed the offline gates and three reviews, and only booting the server caught it
+  `PlayerDisconnected`) still runs `PlayerDisconnected`'s Hive `Save()`/`CharacterExit` and `HandleBody`. 37f: blocking
+  a family of actions on other players inside a zone (force-feeding, restraints, head sack, gag, blood, defibrillator)
+  gates a modded `ActionBase` across `Can`, `CanContinue`, and `AnimatedActionBase.OnAnimationEvent`, decided on the
+  server by position rather than per-object `GetAllowDamage()`, with the caveat that those three hooks do not block
+  effects applied in `OnEndServer` (for example, `ActionCollectBloodTarget` / `ActionCollectSampleTarget` initiating
+  their replacement lambda after partial progress); in DayZDiag 1.30 on 2026-11-17 only the `Can` start gate was
+  measured in game (head sack and force-feeding), while `CanContinue`, `AnimatedActionBase.OnAnimationEvent`, and
+  `OnEndServer` were checked by reading vanilla source only (mid-action zone crossing untested in game). Rule 6: a
+  boolean `return` split across lines passed the offline gates and three reviews, and only booting the server caught it
   (2026-11-17).
 - `dayz-motorbikes`, "One-seat motorbikes on 1.30.164393 or later" and a preflight line: on DayZ 1.30.164393
   Experimental a bike whose `class Crew` has only `Driver` kills the client on its first frame on the bike when the

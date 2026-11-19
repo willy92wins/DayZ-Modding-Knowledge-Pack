@@ -250,7 +250,7 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       hypothesis, "the event arrives without a body and vanilla drops it", was wrong: a test
       proved the premise false.
 37f. **Blocking a family of actions on other players (a safe zone): gating `ActionBase` (`Can`,
-    `CanContinue`, `OnAnimationEvent`) and its `OnStartServer` / `OnEndServer` caveats.**
+    `CanContinue`, `OnAnimationEvent`) and its `OnEndServer` caveat.**
     - **Start:** [EXACT][CLAIM-ENF-ACTIONBASE-CAN-GATE] `modded class ActionBase` overrides the
       4-argument `Can(PlayerBase player, ActionTarget target, ItemBase item, int condition_mask)`
       (`actionbase.c:929-966`, 1.30.164289 and 1.30.164393).
@@ -284,20 +284,6 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       `actionforceconsumesingle.c:55-69`) while the animation still ends through
       `ActionBaseCB.OnFinish` (`animatedactionbase.c:27-54`), which calls `action.End` ->
       `OnEndServer` (`:458-466`); it therefore does not stop effects applied in `OnEndServer`.
-    - **Start-window caveat (`OnStartServer`):** [EXACT][CLAIM-ENF-ACTION-ONSTARTSERVER-WINDOW] for
-      an action whose `UseAcknowledgment()` returns false, `StartDeliveredAction` sets
-      `UA_AM_ACCEPTED` once `Can` passes (`actionmanagerserver.c:168-192`); if the target enters
-      the zone before `Update` processes `UA_AM_ACCEPTED` (`:305-318`), the server can call
-      `m_CurrentActionData.m_Action.Start(m_CurrentActionData)` without calling `Can` again. The
-      base `UseAcknowledgment()` returns true (`actionbase.c:1255-1258`); such an action is left in
-      `UA_AM_PENDING`, which `Update` leaves without calling `Start` (`actionmanagerserver.c:183-188,
-      302-303`), and these lines do not show how it reaches `UA_AM_ACCEPTED`.
-      `AnimatedActionBase.Start` (`animatedactionbase.c:361-369`) runs `super.Start` ->
-      `ActionBase.Start` -> `OnStartServer` (`actionbase.c:775-788`) before it calls
-      `CreateAndSetupActionCallback` when `!IsInstant()`; `CanContinue` is queried only later,
-      through `ActionContinuousBaseCB.CancelCondition` -> `AnimatedActionBase.Do`
-      (`actioncontinuousbase.c:12-23`, `animatedactionbase.c:416-443`; all lines identical in
-      1.30.164289 and 1.30.164393).
     - **Cancellation caveat (`OnEndServer`):** [EXACT][CLAIM-ENF-ACTION-ONENDSERVER-CANCEL] those
       three hooks do not block effects that an action applies in `OnEndServer` after partial
       progress. When a callback finishes cancelled, `ActionBaseCB.OnFinish` runs
@@ -320,19 +306,6 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       `ActionDefibrilateTarget`) nor any of their 20 descendants overrides `Can` or `CanContinue`.
     - **Cheap filter first:** [DESIGN] check `PlayerBase.Cast(target.GetObject())` and reject self
       before heavier checks.
-      [EXACT][CLAIM-ENF-ACTIONINPUT-CAN-QUERIES] When `FindContextualUserActions` reaches its input
-      loop (see **Start** above; `actionmanagerclient.c:561-578` in 1.30.164289; `:558-575` in
-      1.30.164393), it calls `UpdatePossibleActions` on each entry of `m_OrederedAllActionInput`;
-      in `StandardActionInput`, unless `ForceActionCheck(player)` returns early
-      (`actioninput.c:354-361`), `UpdatePossibleActions` calls `_GetSelectedActions` only for the
-      sources enabled by `m_DetectFromItem`, `m_DetectFromTarget`, and `m_DetectFromPlayer`
-      (`:377-391`); `_GetSelectedActions` returns on a null source and otherwise queries
-      4-argument `action.Can(...)` on the actions that source's `GetActions` returns for that
-      input (`:310-350`, both builds). Other inputs can differ:
-      `NoIndicationActionInputBase.UpdatePossibleActions` only records context (`:585-590`), and
-      `GetAction()` queries `action.Can(...)` only when no forced action applies, `m_MainItem` is
-      set, and `m_MainItem.GetActions` returns candidates for that input; otherwise it returns
-      `NULL` (`:592-617`, both builds).
     - **Decide the protection by zone, not by `GetAllowDamage()`:**
       [EXACT][CLAIM-ENF-OBJECT-ALLOWDAMAGE] `Object.GetAllowDamage()` /
       `Object.SetAllowDamage(bool)` are native per-object methods querying or toggling whether the
@@ -367,9 +340,9 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       outside this pack). Outside the zone, the head sack and force-feeding on a survivor dummy
       finished. Inside it, both were rejected by the server (reported as `server_rejected` in the
       test harness within 0.06 s): the sack stayed in hand and the apple stayed at 125/125. The
-      `CanContinue`, `OnAnimationEvent`, `OnStartServer`, and `OnEndServer` paths were checked by
-      reading vanilla source only; crossing a zone boundary between acceptance and `Start` or while
-      an action is already running was not tested in game.
+      `CanContinue`, `OnAnimationEvent`, and `OnEndServer` paths were checked by reading vanilla
+      source only; crossing a zone boundary while an action is already running was not tested in
+      game.
 38. **Three input detection patterns exist, all valid:**
     - Simple: `g_Game.GetInput().LocalPress("UAMyAction", false)` — one-line check
     - Direct: `GetUApi().GetInputByName("UAMyAction").LocalPress()` — per-frame
