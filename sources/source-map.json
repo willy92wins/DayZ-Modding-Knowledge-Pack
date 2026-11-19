@@ -2146,7 +2146,7 @@
           "decision": "merge",
           "decision_evidence": "Unreleased Changed entry for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), the removed SteamCMD update recipe, the corrected CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED and the corrected ranges of CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY.",
           "license": "MIT",
-          "source_hash": "0e4711cc862eec57578e94c1161889c7c3bb9924f1b1f48502d14952f787d21f",
+          "source_hash": "f05159e5e46577b847ccc9db10674a2fbb6dd3747633f20cfa188852543af74e",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "workshop-publish-r3@2026-11-19",
@@ -2154,7 +2154,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0e4711cc862eec57578e94c1161889c7c3bb9924f1b1f48502d14952f787d21f",
+      "output_hash": "f05159e5e46577b847ccc9db10674a2fbb6dd3747633f20cfa188852543af74e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -23406,7 +23406,7 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Three claims for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), runtime_verified, from probes S1 and S3 of the dayz-mcp distribution plan and the vault runbook; the line ranges of the five earlier CLAIM-WORKSHOP-* follow the longer reference; after two adversarial reviews the evidence locators of CLAIM-WORKSHOP-PUBLISHER-FILES, CLAIM-WORKSHOP-STEAMCMD-LOGIN and CLAIM-WORKSHOP-STEAMCMD-CREATE say what the runbook records (no command-line option among the Publisher's strings; the Steam Guard code entered, the Steam client logged off during the unattended run, and that the run without a cached session not tried is an unattended one; 13.3 s for the whole run); in skills/dayz-pbo-build/SKILL.md, CLAIM-BINARIZE-DIRECT-CWD moves down one line with its longer Workshop bullet, and CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY now start at their blocks, 10 lines further down than on main.",
+          "decision_evidence": "Three claims for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), runtime_verified, from probes S1 and S3 of the dayz-mcp distribution plan and the vault runbook; the line ranges of the five earlier CLAIM-WORKSHOP-* follow the longer reference; after two adversarial reviews the evidence locators of CLAIM-WORKSHOP-PUBLISHER-FILES, CLAIM-WORKSHOP-STEAMCMD-LOGIN and CLAIM-WORKSHOP-STEAMCMD-CREATE say what the runbook records (no command-line option among the Publisher's strings; the Steam Guard code entered, the Steam client logged off during the unattended run, and that the run without a cached session not tried is an unattended one; 13.3 s for the whole run); in skills/dayz-pbo-build/SKILL.md, CLAIM-BINARIZE-DIRECT-CWD moves down one line with its longer Workshop bullet, and CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY now start at their blocks (548-564 and 624-640); on main they began 10 lines before them (537-553 and 613-629).",
           "license": "MIT",
           "source_hash": "8875c5ba294da9a9b1057d0663ea805f448fc0ef94c5443687477a19804c20cd",
           "source_id": "pack-r21-authored",

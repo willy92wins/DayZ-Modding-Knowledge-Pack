@@ -283,7 +283,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   The untried SteamCMD update recipe is removed, and `CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED` now says that the
   login measured was a manual one and that the client was restarted 44 minutes later. In `sources/claims.json` the
   ranges of `CLAIM-BINARIZE-DIRECT-ADDON-STALL` and `CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY` now start at their blocks
-  in `dayz-pbo-build`'s SKILL.md, 10 lines further down than before.
+  in `dayz-pbo-build`'s SKILL.md; on main they began 10 lines before them.
 - `dayz-vehicles/references/get-in-actions-and-proxy-pose.md`, the crew-anchor check: the healthy Memory-to-ViewGeometry
   offset is zero, not merely equal across seats. LFQuad's 0/100/200 mm, cited there as healthy, showed the one-frame
   camera jump on the rear seat in game; aligning the two copies removed it (A/B on 2026-11-03, and LFQuad v1.0.2 on
