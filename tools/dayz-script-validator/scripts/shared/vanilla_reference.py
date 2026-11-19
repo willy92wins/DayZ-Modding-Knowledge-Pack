@@ -13,10 +13,10 @@ present. Missing, corrupt, or schema-mismatched index files fall back to the
 curated tables with identical behaviour. On a key present in both, the curated
 entry wins (it carries a human-verified fix message). The index holds the
 members and signatures of the tree it was built from, so an index of another
-tree than the one being read can report a false positive. An index of that
-tree kept beside the default one, as `vanilla_index.json.<name>`, is read
-instead (use_sibling_index); shared/vanilla_index_tree.py asks for it and
-warns when there is none (VANILLA-INDEX-TREE-MISMATCH).
+tree than the one being read can report a false positive. A whole index of
+that tree kept beside the default one, as `vanilla_index.json.<name>`, is
+read instead (use_sibling_index); shared/vanilla_index_tree.py decides which
+file is of the tree and warns when none is (VANILLA-INDEX-TREE-MISMATCH).
 """
 
 from __future__ import annotations
@@ -63,9 +63,8 @@ def set_index_path_for_tests(path):
 
     That file is then the only one read: use_sibling_index leaves it alone.
     """
-    global _index_path_override, _index_path_sibling
+    global _index_path_override
     _index_path_override = path
-    _index_path_sibling = None
     reset_index_cache()
 
 
@@ -75,9 +74,15 @@ def index_path_is_pinned():
 
 
 def reset_index_cache():
-    global _index_loaded, _index_data
+    """Forget the index read, and the file beside the default one it was.
+
+    The next lookup reads the default index from disk again, or the pinned
+    one.
+    """
+    global _index_loaded, _index_data, _index_path_sibling
     _index_loaded = False
     _index_data = None
+    _index_path_sibling = None
 
 
 def _index_path():
@@ -118,19 +123,26 @@ def loaded_index_path():
     return _index_path()
 
 
-def use_default_index():
-    """Read the default index again, after use_sibling_index."""
-    global _index_path_sibling
-    if _index_path_sibling is not None:
-        _index_path_sibling = None
-        reset_index_cache()
+# The tables the lookups below read; build_vanilla_index.py writes each as an
+# object. A file beside the default index without one of them is not whole.
+_INDEX_TABLE_KEYS = (
+    "base_members",
+    "override_params",
+    "global_class_names",
+    "platform_gated_methods",
+)
+
+
+def _has_tables(index):
+    return all(isinstance(index.get(key), dict) for key in _INDEX_TABLE_KEYS)
 
 
 def use_sibling_index(built_from_tree):
     """Read an index kept beside the default one instead of the one in use.
 
     The files are `vanilla_index.json.<name>` in the default index's folder,
-    taken in name order. The first that holds an index for which
+    taken in name order. The first that holds a whole index (an object of
+    this schema_version with the four tables the lookups read) for which
     built_from_tree(tree) is true becomes the index in use, where tree is
     what that index records of the tree it was built from (the dict
     loaded_index_tree returns). Returns its path, or None when there is no
@@ -147,7 +159,9 @@ def use_sibling_index(built_from_tree):
         return None
     for path in siblings:
         data = _read_index(path)
-        if data is not None and built_from_tree(_tree_of(data)):
+        if data is None or not _has_tables(data):
+            continue
+        if built_from_tree(_tree_of(data)):
             _index_path_sibling = path
             _index_loaded = True
             _index_data = data

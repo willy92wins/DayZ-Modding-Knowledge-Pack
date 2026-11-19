@@ -332,6 +332,36 @@ class TestIndexBesideTheDefault(unittest.TestCase):
         self.assertIn("(%s)" % self.default, lines[0])
         self.assertFalse(self.baseline.exists())
 
+    def test_a_validation_before_the_control_does_not_choose_its_index(self):
+        # Review of PR #204, H3: in one process, the file a validation read
+        # beside the default index is not what the control sees. It sees
+        # the default index, as a new process does.
+        other_tree = self.temp_dir / "other" / "scripts"
+        other_tree.mkdir(parents=True)
+        (other_tree / "other.c").write_text("class Other\n{\n}\n")
+        build_vanilla_index.write_index(
+            build_vanilla_index.build_index_document(other_tree), self.default
+        )
+        vanilla_reference.reset_index_cache()
+        result = vanilla_control.validate_addon(MINI_TREE, vanilla_root=MINI_TREE)
+        self.assertEqual(
+            str(self.beside), result["info"]["vanilla_index"]["index"]
+        )
+
+        code, lines = self._main("--update")
+
+        self.assertEqual(2, code)
+        self.assertIn("(%s)" % self.default, lines[0])
+        self.assertFalse(self.baseline.exists())
+
+        self.default.replace(self.default.with_name("vanilla_index.json.away"))
+
+        code, lines = self._main("--update")
+
+        self.assertEqual(0, code)
+        self.assertTrue(lines[0].startswith("UPDATED"))
+        self.assertIsNone(vanilla_reference.loaded_index_path())
+
 
 class TestUnexplainedEntries(unittest.TestCase):
     def test_entries_without_a_note_are_named(self):

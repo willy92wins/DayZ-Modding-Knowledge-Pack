@@ -360,26 +360,42 @@ python tools/dayz-script-validator/scripts/build_vanilla_index.py --vanilla-root
     --out tools/dayz-script-validator/scripts/shared/vanilla_index.json.<name>
 ```
 
-Each run starts from the default index. When that one is not known to be
-of the tree being read (a number differs, or it cannot be compared), the
-files beside it are tried in name order, and the first whose two numbers
-are the tree's is read instead: the four rules judge with it,
-`info.vanilla_index.index` names it and the run has no warning. When none
-is of the tree, the default index is read and the run warns, or gives its
-SKIP line, as above; the warning then also offers `--out` with such a
-name. A file beside the default index is passed over when it is not an
-index (it cannot be read, or has another `schema_version`), does not
-record the two numbers, or did not parse every file of its tree. The
-default file alone says whether there is an index: without one that
-loads, nothing beside it is read, so an index moved away under another
-name in the same folder stays away. Like the default index, those files
-are derived from Bohemia's scripts, and git ignores them.
+Each run reads the default index from disk again, whatever an earlier run
+in the same process read. When that index is not known to be of the tree
+being read (a number differs, or it cannot be compared), the files beside
+it are tried in name order, and the first that is a whole index of that
+tree is read instead: the four rules judge with it,
+`info.vanilla_index.index` names it, `info.vanilla_index.compared` adds
+`tree_digest`, and the run has no warning. A whole index is what the
+generator writes: a JSON object of this `schema_version` holding the four
+tables the rules read (`base_members`, `override_params`,
+`global_class_names` and `platform_gated_methods`, each an object), a
+`parsed_file_count` equal to its `file_count`, and a `tree_digest`. It is
+of the tree when its count, its bytes and its `tree_digest` are the
+tree's. Anything else beside the default index is passed over. When no
+file beside it is of the tree, the default index is read and the run
+warns, or gives its SKIP line, as above; the warning then also offers
+`--out` with such a name. The default file alone says whether there is an
+index: without one that loads, nothing beside it is read, so an index
+moved away under another name in the same folder stays away, for a later
+run and for the vanilla control in the same process too. Like the default
+index, those files are derived from Bohemia's scripts, and git ignores
+them.
 
-The two numbers are compared and the index's `tree_digest`, a sha256 over
-the contents of the same files, is not, because of what each costs on
-every run. The price is one blind spot: a tree with the same count and the
-same bytes but other contents is taken for the index's tree, by the
-comparison and by the choice among the files beside the default index.
+For the default index the two numbers are compared and its `tree_digest`,
+a sha256 over the relative paths and the contents of the same files, is
+not, because hashing the tree on every run costs several times the count.
+The price is one blind spot: a tree with the same count and the same bytes
+but other contents is taken for the default index's tree. A file beside
+the default index is not taken on those two numbers: two trees can share
+them (one identifier renamed to another of the same length is enough), and
+taking one for the other would turn this warning into a PASS. Its digest
+is compared too, and the tree is hashed only when a file beside the default
+index has the tree's two numbers. The digest covers the paths as spelt, so
+a copy of a tree with other capitals in its paths (`4_World/...` for
+`4_world/...`, as an extraction that keeps the PBO's own spelling has them)
+is another tree to it: build that copy's index beside the default one,
+from that copy.
 
 Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work
 running on the PC), on the 1.30.164393 tree in `P:\scripts` (3 059 `.c`
@@ -409,19 +425,26 @@ files, 14 001 771 bytes):
 Measured there on 2026-11-19, with the 1.30.164289 tree back in
 `P:\scripts` and the 164393 tree in a folder of its own, the default index
 built from the 164289 tree and, beside it, `vanilla_index.json.164393` and
-an index of 1.29:
+an index of 1.29 (other work running on the PC):
 
 - Three addons of 114, 77 and 3 files, validated against the 164393 tree
   with `--game-root` naming the Experimental install, go from WARN on
   this rule alone to PASS, with `info.vanilla_index.index` naming the
-  `.164393` file. Against the default tree, with the stable install, they
-  are PASS on the default index before and after.
+  `.164393` file; each run took 10.8 to 12.0 s, against 8.5 to 9.7 s
+  before. Against the default tree, with the stable install, they are PASS
+  on the default index before and after (9.2 to 10.2 s).
 - 164393's `targetconditionscomponents` folder, validated against its own
   tree, goes from the five `ES-MEMBER-REDECLARE-BASE` findings and this
   warning to neither.
-- Choosing the file reads two more index files, 0.012 to 0.021 s each
-  (ten rounds). The count, the default index and the choice together took
-  0.24 to 0.26 s (median 0.25 s), and the count alone 0.19 to 0.22 s.
+- Ten rounds of the choice alone: against the 164393 tree 1.39 to 2.02 s
+  (median 1.60 s), hashing the tree included; against the 164289 tree,
+  whose numbers the default index has, 0.26 to 0.41 s (median 0.32 s). The
+  count alone took 0.24 to 0.36 s, and reading one index file 0.013 to
+  0.034 s.
+- A copy of the 164393 tree whose paths keep the PBO's capitals has the
+  same 3 059 files and the same bytes, and another digest: against it the
+  114-file addon still warns, as before files beside the default index were
+  read.
 
 ## Compile errors read from one file
 
