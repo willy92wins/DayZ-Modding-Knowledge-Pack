@@ -11,18 +11,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   (DayZDiag 1.30, 2026-11-17), an identity unpossessed via `SelectPlayer(identity, null)` + `SelectSpectator` still
   had its last body queued for logout when `GetHive() && !authFailed && player.IsAlive()`; deleting that body while
   queued left the UID "already in game" until server restart in BattleRoyale PR #56. In vanilla source, once
-  `m_LogoutPlayers.GetKey(i)` returns null on a tick (`Object.Delete()` defers deletion via `CALL_CATEGORY_SYSTEM`),
-  stable 1.30.164289 skips `DisconnectPlayer` at timer expiry (`UpdateLogoutPlayers` -> `PlayerDisconnected`), and
+  `m_LogoutPlayers.GetKey(i)` returns null on a tick, stable 1.30.164289 skips `DisconnectPlayer` at timer expiry
+  (`UpdateLogoutPlayers` -> `PlayerDisconnected`), and
   Experimental 1.30.164393 passes null into `SendExitEmoteRequest` with no null guard while the timer is still running
   (or skips `DisconnectPlayer` via `PlayerDisconnected` once the timer has expired). Check `IsPlayerDisconnecting(body)`
   before deleting a player body; skipping the wait with vanilla's instant-logout call (`SendLogoutTime(body, 0)` +
   `PlayerDisconnected`) still runs `PlayerDisconnected`'s Hive `Save()`/`CharacterExit` and `HandleBody`. 37f:
   blocking a family of actions on other players inside a zone (force-feeding, restraints, head sack, gag, blood,
   defibrillator) gates a modded `ActionBase` across `Can`, `CanContinue`, and `AnimatedActionBase.OnAnimationEvent`,
-  decided on the server by position rather than per-object `GetAllowDamage()`, with two caveats: if the target enters
-  the zone between acceptance and `Start`, `ActionManagerServer.Update` (`UA_AM_ACCEPTED`) can call `Start` ->
-  `OnStartServer` without re-checking `Can` (for example, `ActionRestrainTarget.OnStartServer` before the first
-  `CanContinue`), and those three hooks do not block effects applied in `OnEndServer` (for example,
+  decided on the server by position rather than per-object `GetAllowDamage()`, with two caveats: for an action whose
+  `UseAcknowledgment()` returns false, if the target enters the zone between acceptance and `Start`,
+  `ActionManagerServer.Update` (`UA_AM_ACCEPTED`) can call `Start` -> `OnStartServer` without re-checking `Can` (the
+  source read does not show how an acknowledged action, the `ActionBase` default, reaches `UA_AM_ACCEPTED`), and those
+  three hooks do not block effects applied in `OnEndServer` (for example,
   `ActionCollectBloodTarget` / `ActionCollectSampleTarget` initiating their replacement lambda after partial progress);
   in DayZDiag 1.30 on 2026-11-17 only the `Can` start gate was measured in game (head sack and force-feeding), while
   `CanContinue`, `AnimatedActionBase.OnAnimationEvent`, `OnStartServer`, and `OnEndServer` were checked by reading

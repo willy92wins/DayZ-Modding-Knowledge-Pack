@@ -2124,9 +2124,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Changelog entry for enforce-script-reference rules 37e and 37f and the second in-game case added to rule 6 (BattleRoyale PRs #56 and #57, measured in DayZDiag 1.30 on 2026-11-17). The entry restates the two rules; it adds no claim of its own. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "decision_evidence": "Changelog entry for enforce-script-reference rules 37e and 37f and the second in-game case added to rule 6 (BattleRoyale PRs #56 and #57, measured in DayZDiag 1.30 on 2026-11-17). The entry restates the two rules; it adds no claim of its own. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "322dbfde863f436b36dee6f954573637ccdb7c687389c1039e0c6f2c4a31b3d0",
+          "source_hash": "404d5bbd6e69cecb06f76ffcb83cd36e967cf2daa8903deb4c91a1c430152607",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "battleroyale-pr56-pr57@2026-11-17",
@@ -2134,7 +2134,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "322dbfde863f436b36dee6f954573637ccdb7c687389c1039e0c6f2c4a31b3d0",
+      "output_hash": "404d5bbd6e69cecb06f76ffcb83cd36e967cf2daa8903deb4c91a1c430152607",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19811,9 +19811,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Rule 37f and rule 6 evidence from BattleRoyale PR #57 (willy92wins/BattleRoyale): blocking a family of actions on other players through ActionBase.Can, CanContinue and AnimatedActionBase.OnAnimationEvent, decided by zone and not by GetAllowDamage. Measured in DayZDiag 1.30 on 2026-11-17 for the starts through Can (run b411f3d2: the head sack and force-feeding server_rejected inside the zone, finished outside), with the CanContinue and AnimatedActionBase.OnAnimationEvent paths checked by reading only, and with three limits the rule states: a target that enters the zone after the server accepts a start can have the action started without Can being asked again, OnStartServer running before the first CanContinue (actionmanagerserver.c:168-192, 305-318; actionbase.c:775-788); a cancel after progress can still let OnEndServer apply an effect (animatedactionbase.c:42-53, 458-466); and crossing the zone during an action was not measured; vanilla lines checked in the 1.30 extraction (actionbase.c:929, 968, 975; actionmanagerserver.c:168; animatedactionbase.c:188, 419). Rule 6: the same PR's split boolean return failed to compile the World module after passing the offline gates and three LLM reviews. Ported on 2026-11-18 from an unpublished local commit of 2026-11-17, rule text unchanged; the cited lines were read again in the 1.30.164289 and 1.30.164393 scripts, with the same line numbers in both. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "decision_evidence": "Rule 37f and rule 6 evidence from BattleRoyale PR #57 (willy92wins/BattleRoyale): blocking a family of actions on other players through ActionBase.Can, CanContinue and AnimatedActionBase.OnAnimationEvent, decided by zone and not by GetAllowDamage. Measured in DayZDiag 1.30 on 2026-11-17 for the starts through Can (run b411f3d2: the head sack and force-feeding server_rejected inside the zone, finished outside), with the CanContinue and AnimatedActionBase.OnAnimationEvent paths checked by reading only, and with three limits the rule states: for an action whose UseAcknowledgment() returns false, a target that enters the zone after the server accepts the start can have it started without Can being asked again, with OnStartServer running before CanContinue is first queried (actionmanagerserver.c:168-192, 305-318; actionbase.c:775-788, 1255-1258); a cancel after progress can still let OnEndServer apply an effect (animatedactionbase.c:42-53, 458-466); and crossing the zone during an action was not measured; vanilla lines checked in the 1.30 extraction (actionbase.c:929, 968, 975; actionmanagerserver.c:168; animatedactionbase.c:188, 419). Rule 6: the same PR's split boolean return failed to compile the World module after passing the offline gates and three LLM reviews. Ported on 2026-11-18 from an unpublished local commit of 2026-11-17, rule text unchanged; the cited lines were read again in the 1.30.164289 and 1.30.164393 scripts, with the same line numbers in both. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "ab881d20a1c9fae83ac083df2c523ca111f31ecee3b58d4b62fc1aba41923180",
+          "source_hash": "f523bd2a76d23d699216eee96feed2af3a093b571a226e1c2e13a31b36495252",
           "source_id": "pack-r21-authored",
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "battleroyale-pr57@2026-11-17",
@@ -19821,7 +19821,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ab881d20a1c9fae83ac083df2c523ca111f31ecee3b58d4b62fc1aba41923180",
+      "output_hash": "f523bd2a76d23d699216eee96feed2af3a093b571a226e1c2e13a31b36495252",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -23376,9 +23376,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Rule 37f inserted 36 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 609, 619, 621, 636, 638, 652 and 654 to 645, 655, 657, 672, 674, 688 and 690. No claim text changes. After the review fixes of 2026-11-19 the seven claims sit at 738, 748, 750, 765, 767, 781 and 783, and the fixes add 10 claims for rules 37e and 37f (CLAIM-ENF-LOGOUT-QUEUE-CONDITIONS, CLAIM-ENF-LOGOUT-NULL-BODY-BREAK, CLAIM-ENF-LOGOUT-ISPLAYERDISCONNECTING, CLAIM-ENF-LOGOUT-INSTANT-DISCONNECT, CLAIM-ENF-ACTIONBASE-CAN-GATE, CLAIM-ENF-ACTION-CANCONTINUE-LOOP, CLAIM-ENF-ACTION-ONANIMATIONEVENT, CLAIM-ENF-TARGET-ACTION-FAMILIES, CLAIM-ENF-ACTION-ONENDSERVER-CANCEL, CLAIM-ENF-OBJECT-ALLOWDAMAGE). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "decision_evidence": "Rule 37f inserted 36 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 609, 619, 621, 636, 638, 652 and 654 to 645, 655, 657, 672, 674, 688 and 690. No claim text changes. After the review fixes of 2026-11-19 the seven claims sit at 760, 770, 772, 787, 789, 803 and 805, and the fixes add 12 claims for rules 37e and 37f (CLAIM-ENF-LOGOUT-QUEUE-CONDITIONS, CLAIM-ENF-LOGOUT-NULL-BODY-BREAK, CLAIM-ENF-LOGOUT-ISPLAYERDISCONNECTING, CLAIM-ENF-LOGOUT-INSTANT-DISCONNECT, CLAIM-ENF-ACTIONBASE-CAN-GATE, CLAIM-ENF-ACTION-CANCONTINUE-LOOP, CLAIM-ENF-ACTION-ONANIMATIONEVENT, CLAIM-ENF-TARGET-ACTION-FAMILIES, CLAIM-ENF-ACTION-ONENDSERVER-CANCEL, CLAIM-ENF-OBJECT-ALLOWDAMAGE, CLAIM-ENF-ACTION-ONSTARTSERVER-WINDOW, CLAIM-ENF-ACTIONINPUT-CAN-QUERIES). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "8b1bf9ab5d1470f5580a4e29386bee1d0aca2d764dbdeea51b63dcae96c779c4",
+          "source_hash": "cccea0062d85d1ab97953ac25db22b2453c30c02cb7c45485d7df39307bcf971",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "battleroyale-pr57@2026-11-17",
@@ -23386,7 +23386,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "8b1bf9ab5d1470f5580a4e29386bee1d0aca2d764dbdeea51b63dcae96c779c4",
+      "output_hash": "cccea0062d85d1ab97953ac25db22b2453c30c02cb7c45485d7df39307bcf971",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

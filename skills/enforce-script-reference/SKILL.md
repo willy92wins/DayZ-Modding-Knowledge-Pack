@@ -284,16 +284,20 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       `actionforceconsumesingle.c:55-69`) while the animation still ends through
       `ActionBaseCB.OnFinish` (`animatedactionbase.c:27-54`), which calls `action.End` ->
       `OnEndServer` (`:458-466`); it therefore does not stop effects applied in `OnEndServer`.
-    - **Start-window caveat (`OnStartServer`):** [EXACT][CLAIM-ENF-ACTION-ONSTARTSERVER-WINDOW] if
-      the target enters the zone after `StartDeliveredAction` accepts the action
-      (`actionmanagerserver.c:168-192`) and before `Update` processes `UA_AM_ACCEPTED`
-      (`:305-318`), the server can call `m_CurrentActionData.m_Action.Start(m_CurrentActionData)`
-      without calling `Can` again. `AnimatedActionBase.Start` (`animatedactionbase.c:361-369`)
-      runs `super.Start` -> `ActionBase.Start` -> `OnStartServer` (`actionbase.c:775-788`) before
-      `CreateAndSetupActionCallback` creates the callback that queries `CanContinue`; for example,
-      `ActionRestrainTarget.OnStartServer` (`actionrestraintarget.c:91-107`) can end a surrender
-      or cancel a playing emote and call `SetRestrainStarted(true)` on the target before the first
-      `CanContinue` (all lines identical in 1.30.164289 and 1.30.164393).
+    - **Start-window caveat (`OnStartServer`):** [EXACT][CLAIM-ENF-ACTION-ONSTARTSERVER-WINDOW] for
+      an action whose `UseAcknowledgment()` returns false, `StartDeliveredAction` sets
+      `UA_AM_ACCEPTED` once `Can` passes (`actionmanagerserver.c:168-192`); if the target enters
+      the zone before `Update` processes `UA_AM_ACCEPTED` (`:305-318`), the server can call
+      `m_CurrentActionData.m_Action.Start(m_CurrentActionData)` without calling `Can` again. The
+      base `UseAcknowledgment()` returns true (`actionbase.c:1255-1258`); such an action is left in
+      `UA_AM_PENDING`, which `Update` leaves without calling `Start` (`actionmanagerserver.c:183-188,
+      302-303`), and these lines do not show how it reaches `UA_AM_ACCEPTED`.
+      `AnimatedActionBase.Start` (`animatedactionbase.c:361-369`) runs `super.Start` ->
+      `ActionBase.Start` -> `OnStartServer` (`actionbase.c:775-788`) before it calls
+      `CreateAndSetupActionCallback` when `!IsInstant()`; `CanContinue` is queried only later,
+      through `ActionContinuousBaseCB.CancelCondition` -> `AnimatedActionBase.Do`
+      (`actioncontinuousbase.c:12-23`, `animatedactionbase.c:416-443`; all lines identical in
+      1.30.164289 and 1.30.164393).
     - **Cancellation caveat (`OnEndServer`):** [EXACT][CLAIM-ENF-ACTION-ONENDSERVER-CANCEL] those
       three hooks do not block effects that an action applies in `OnEndServer` after partial
       progress. When a callback finishes cancelled, `ActionBaseCB.OnFinish` runs
@@ -320,11 +324,15 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
       loop (see **Start** above; `actionmanagerclient.c:561-578` in 1.30.164289; `:558-575` in
       1.30.164393), it calls `UpdatePossibleActions` on each entry of `m_OrederedAllActionInput`;
       in `StandardActionInput`, unless `ForceActionCheck(player)` returns early
-      (`actioninput.c:354-361`), `UpdatePossibleActions` calls `_GetSelectedActions`, which queries
-      4-argument `action.Can(...)` across candidate actions (`:310-350, 354-391`, both builds).
-      Other inputs can differ: `NoIndicationActionInputBase.UpdatePossibleActions` only records
-      context (`:585-590`) and queries `action.Can(...)` in `GetAction()` when no forced action
-      applies and `m_MainItem` is set (`:592-617`, both builds).
+      (`actioninput.c:354-361`), `UpdatePossibleActions` calls `_GetSelectedActions` only for the
+      sources enabled by `m_DetectFromItem`, `m_DetectFromTarget`, and `m_DetectFromPlayer`
+      (`:377-391`); `_GetSelectedActions` returns on a null source and otherwise queries
+      4-argument `action.Can(...)` on the actions that source's `GetActions` returns for that
+      input (`:310-350`, both builds). Other inputs can differ:
+      `NoIndicationActionInputBase.UpdatePossibleActions` only records context (`:585-590`), and
+      `GetAction()` queries `action.Can(...)` only when no forced action applies, `m_MainItem` is
+      set, and `m_MainItem.GetActions` returns candidates for that input; otherwise it returns
+      `NULL` (`:592-617`, both builds).
     - **Decide the protection by zone, not by `GetAllowDamage()`:**
       [EXACT][CLAIM-ENF-OBJECT-ALLOWDAMAGE] `Object.GetAllowDamage()` /
       `Object.SetAllowDamage(bool)` are native per-object methods querying or toggling whether the
