@@ -287,14 +287,14 @@ client keeps running: kicked by the server (`DisconnectPlayer`), connected while
 truncated to `HH:MM:SS`, with no pre-crash timestamp filter; `scripts/mcp_timing.py:24-37`, `crash_table.txt:4-36`),
 all 29 matching crashes have a whole-second delta of `+0` to `+2` s (`+0` in 13 cases, which only establishes the same
 clock second; `+1` in 15; `+2` in 1), and all 29 match `Leaked 'MCPClientPollCallback'` after that last marker with
-`reset_skipped=0`. In the per-session classifier (`scripts/teardown_rate.py:21-54`, which evaluates `menu` within 400
-lines and `exit` within 30 lines after the first `[MCP-CLIENT] shutdown first entry` per `script_<stamp>.log`
+`reset_skipped=0`. In the per-session classifier (`scripts/teardown_rate.py:21-54`, which evaluates `menu`
+and `exit` after the first `[MCP-CLIENT] shutdown first entry` per `script_<stamp>.log`
 (`:25-28`), reads only the first 300,000 characters of `crash_<stamp>.log` (`:34`) and uses only the first
 `Unhandled exception` regex match (`:35`)—matching `crash` solely on that match's first-frame suffix `f5fc`/`f710` or
 `RtlIsZeroMemory` with `0xc0000374`, without verifying the RVA or full stack per crash (`:35-47`)—and assigns one
 mutually exclusive bucket per session in order `crash`, `exit`, `menu`, `unknown`; `teardown_rate.txt:1-18`),
 BattleRoyale sessions yielded 29 `crash`, 34 `menu` (33 `menu` + 1 `menu+other_crash` with signature `98c8`), 7 `exit`
-(`~DayZGame()` within 30 lines), and 9 `unknown` (8 `unknown` + 1 `unknown+other:9bf2` with a session-end/fail event),
+(`~DayZGame()`), and 9 `unknown` (8 `unknown` + 1 `unknown+other:9bf2` with a session-end/fail event),
 while non-BR sessions yielded 53 `exit` and 0 `crash`. Thus 29/63 (46 %) is a per-session share among the 63
 BattleRoyale sessions classified as `crash` or `menu` (not a count of individual teardowns and not a per-crash
 verification of the RestApi worker: a session whose first teardown returns to the menu is bucketed as `crash` if the
@@ -345,10 +345,7 @@ from the three `...f710` crashes (`crash_summary.txt:12, 13, 22`), so those cras
   `3_game/http/restapi.c:152-155`). `Shutdown()` calls `m_Ctx.reset()` when `m_Ctx && !postedTerminal`
   (`MCPClientBridge.c@a41580f4:4365, 4380-4399, 4479-4485`; `postedTerminal` is set unconditionally after calling
   `PostUiDialogJob(m_DialogJob)` even if `PostResult()` returns early before `m_Ctx.POST()`, e.g. on serialization
-  failure or missing `m_Configured`/`m_Ctx`, `:3546-3578, 4282-4305`). `Shutdown()` also calls `DetachBridge()` on
-  `m_PollCallback`, `m_PollCallbackRefs`, and `m_CallbackRefs`, nulls `m_PollCtx`, `m_Ctx`, and `m_PollCallback`, and
-  clears `m_PollCallbackRefs` (`pollDistinct || !postedTerminal`) and `m_CallbackRefs`
-  (`!postedTerminal`; `MCPClientBridge.c@a41580f4:4425-4504`).
+  failure or missing `m_Configured`/`m_Ctx`, `:3546-3578, 4282-4305`).
 - Cause ([INFERRED], in part a hypothesis): a grep of four client PBOs for three `RestApi`/context-acquisition names
   (`GetRestContext`, `CreateRestApi`, `GetRestApi(`; `REPORT.md:83-92`) found 9 hits in `@DayZ_MCP` (`DayZ_MCP.pbo`),
   0 hits in `@BR-180B1` `scripts_client.pbo` and `@CF`, and 5 hits in `@BR-COT` `scripts.pbo` (`JMWebhookModule`,

@@ -15715,9 +15715,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-11-18: new appendix 'Client crash when a mission ends under DayZ-MCP: RestApi worker crash at bridge teardown' (title as corrected on 2026-11-19). A DayZDiag 1.30.164289.70 client crash at a mission end whose time, compared in whole seconds, is 0 to 2 s after the last DayZ-MCP bridge shutdown marker of the session's script log (29 of the 63 BattleRoyale client sessions classified as crash or menu are classified as crash because the first 'Unhandled exception' match in the first 300,000 characters of the session's crash log carries that signature; 0 of the 60 sessions classified as a full game exit, under the classifier's crash-before-exit precedence; the RestApi worker is resolved for the analyzed heap-corruption crash, and the analyzed access violation is attributed to it as an inference, since its log reports a read where the candidate instruction writes; CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130, runtime_verified, lines 281-304), how to name the function behind a crash frame on this build (CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130, source_verified, lines 306-331) and the bridge's teardown contract in dayz-mcp@a41580f4 (CLAIM-TEST-MCP-BRIDGE-SHUTDOWN-RESET-130, source_verified, lines 342-351); whether a poll GET or a result POST was in flight when reset() ran, and whether reset() frees an active request, stay hypotheses, with an A/B test of reset()'s contribution, tracked in a DayZ-MCP inbox ticket. Evidence: the client and server profile logs and crash logs of 2026-11-05 to 18, objdump of the exe, the DayZ-MCP bridge source. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "decision_evidence": "kp-update 2026-11-18: new appendix 'Client crash when a mission ends under DayZ-MCP: RestApi worker crash at bridge teardown' (title as corrected on 2026-11-19). A DayZDiag 1.30.164289.70 client crash at a mission end whose time, compared in whole seconds, is 0 to 2 s after the last DayZ-MCP bridge shutdown marker of the session's script log (29 of the 63 BattleRoyale client sessions classified as crash or menu are classified as crash because the first 'Unhandled exception' match in the first 300,000 characters of the session's crash log carries that signature; 0 of the 60 sessions classified as a full game exit, under the classifier's crash-before-exit precedence; the RestApi worker is resolved for the analyzed heap-corruption crash, and the analyzed access violation is attributed to it as an inference, since its log reports a read where the candidate instruction writes; CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130, runtime_verified, lines 281-304), how to name the function behind a crash frame on this build (CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130, source_verified, lines 306-331) and the bridge's teardown contract in dayz-mcp@a41580f4 (CLAIM-TEST-MCP-BRIDGE-SHUTDOWN-RESET-130, source_verified, lines 342-348); whether a poll GET or a result POST was in flight when reset() ran, and whether reset() frees an active request, stay hypotheses, with an A/B test of reset()'s contribution, tracked in a DayZ-MCP inbox ticket. Evidence: the client and server profile logs and crash logs of 2026-11-05 to 18, objdump of the exe, the DayZ-MCP bridge source. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "4d53bf947dca959af2c0fe8addb5aba369a7dc7596622378e2f0698d99b51973",
+          "source_hash": "ff603981d5b7249376d2af898d79e14a6b2d9ea50867ec2fd437641874c0ac15",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/references/session-findings.md",
           "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
@@ -15725,7 +15725,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4d53bf947dca959af2c0fe8addb5aba369a7dc7596622378e2f0698d99b51973",
+      "output_hash": "ff603981d5b7249376d2af898d79e14a6b2d9ea50867ec2fd437641874c0ac15",
       "output_path": "skills/dayz-test-ingame/references/session-findings.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -23316,9 +23316,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-11-18: three new claims on dayz-test-ingame references/session-findings.md (CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130 runtime_verified, CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130 source_verified, CLAIM-TEST-MCP-BRIDGE-SHUTDOWN-RESET-130 source_verified); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL follow their lines in dayz-test-ingame SKILL.md. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "decision_evidence": "kp-update 2026-11-18: three new claims on dayz-test-ingame references/session-findings.md (CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130 runtime_verified, CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130 source_verified, CLAIM-TEST-MCP-BRIDGE-SHUTDOWN-RESET-130 source_verified); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL follow their lines in dayz-test-ingame SKILL.md. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "765f962b346b8f4417bf33502431f279eadf1076ee9d1a95764338aa3d0b0188",
+          "source_hash": "13f232ae65d9ce1c62d181357301f21d2862abf031cbc30f7bbcd52fa4343354",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
@@ -23326,7 +23326,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "765f962b346b8f4417bf33502431f279eadf1076ee9d1a95764338aa3d0b0188",
+      "output_hash": "13f232ae65d9ce1c62d181357301f21d2862abf031cbc30f7bbcd52fa4343354",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
