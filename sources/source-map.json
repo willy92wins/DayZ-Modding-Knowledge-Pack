@@ -2181,10 +2181,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "battleroyale-pr56-pr57@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one Added entry, the dayz-test-ingame finding on the client crash when a mission ends under DayZ-MCP and on naming the function behind a DayZDiag crash frame. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "5600aa66f545191bc166c7d349d9a896d09a64968817000e0cb5335cb4f3cb4e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "ec9a08932fd541ca241e290b88f01bf68364a7c8dee9c364d7af49561d1441ce",
+      "output_hash": "5600aa66f545191bc166c7d349d9a896d09a64968817000e0cb5335cb4f3cb4e",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -15770,10 +15780,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one index line under 'Session findings' for the new appendix (the client crash when a mission ends under DayZ-MCP); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL move one line down, text unchanged. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "e2240ed6a0920c8871048b38cdbec7c80aa8d7d89abfef6b06b8f330bc99d22e",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "1b5de61c2cf44daf448600196a562ef0e0ad6b3e64b592c9f645655a018b8a05",
+      "output_hash": "e2240ed6a0920c8871048b38cdbec7c80aa8d7d89abfef6b06b8f330bc99d22e",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -15842,10 +15862,20 @@
           "source_path": "skills/dayz-test-ingame/references/session-findings.md",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: new appendix 'Client crash when a mission ends under DayZ-MCP: RestApi worker crash at bridge teardown' (title as corrected on 2026-11-19). A DayZDiag 1.30.164289.70 client crash at a mission end whose time, compared in whole seconds, is 0 to 2 s after the last DayZ-MCP bridge shutdown marker of the session's script log (29 of the 63 BattleRoyale client sessions classified as crash or menu are classified as crash because the first 'Unhandled exception' match in the first 300,000 characters of the session's crash log carries that signature; 0 of the 60 sessions classified as a full game exit, under the classifier's crash-before-exit precedence; the RestApi worker is resolved for the analyzed heap-corruption crash, and the analyzed access violation is attributed to it as an inference, since its log reports a read where the candidate instruction writes; CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130, runtime_verified, lines 348-371), how to name the function behind a crash frame on this build (CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130, source_verified, lines 373-398) and the bridge's teardown contract in dayz-mcp@a41580f4 (CLAIM-TEST-MCP-BRIDGE-SHUTDOWN-RESET-130, source_verified, lines 409-415); whether a poll GET or a result POST was in flight when reset() ran, and whether reset() frees an active request, stay hypotheses, with an A/B test of reset()'s contribution, tracked in a DayZ-MCP inbox ticket. Evidence: the client and server profile logs and crash logs of 2026-11-05 to 18, objdump of the exe, the DayZ-MCP bridge source. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d1ecdd982a63706cb2664c4c565d2553fb28c5a3fd0fbab6b5196181c3e5f58a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/session-findings.md",
+          "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7f306058508c317dc19225b55cfe34c96d34a396a173c8279cbe62a0bbf1cd1f",
+      "output_hash": "d1ecdd982a63706cb2664c4c565d2553fb28c5a3fd0fbab6b5196181c3e5f58a",
       "output_path": "skills/dayz-test-ingame/references/session-findings.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -23543,10 +23573,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "battleroyale-pr57@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: three new claims on dayz-test-ingame references/session-findings.md (CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130 runtime_verified, CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130 source_verified, CLAIM-TEST-MCP-BRIDGE-SHUTDOWN-RESET-130 source_verified); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL follow their lines in dayz-test-ingame SKILL.md. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0463bffbdf248f202ffcb35cb08f41d93b87ea7185679820465164c6b540d359",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "d7a0bfd12158d1c0120e58276b24f88231613f2cdab06f8d289664cf4a986288",
+      "output_hash": "0463bffbdf248f202ffcb35cb08f41d93b87ea7185679820465164c6b540d359",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
