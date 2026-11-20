@@ -272,3 +272,70 @@ in these runs either.
   `CommandlineGetParam` (`game.c:661`, 1.29 `:660`) behind the test flag (`SKILL.md`, "AUTOMATED in-game cell
   without pilot", point 1) and call `super`: all 7 runs that passed a class spawned it, and 17 runs without
   it drew 14 classes.
+
+## Panels bound to a UAInput under DayZ-MCP: open them through a file, not a key (added 2026-11-18)
+
+Measured on DayZDiag 1.30.164289.70 with one client, opening the BattleRoyale leaderboard panel
+(willy92wins/BattleRoyale#63) in runs `ac881114`, `20f9464d` and `70e5cf20`. The panel opens on
+`GetUApi().GetInputByID(UADayZBRToggleLeaderboard).LocalPress()` in `MissionGameplay`.
+
+[EXACT][CLAIM-TEST-DAYZMCP-NO-UAINPUT-PRESS] DayZ-MCP cannot press a `UAInput`, so a panel opened on
+`UAInput.LocalPress()` cannot be opened through `input_trigger` or `key_press`. Both call script key
+handlers with a DIK code (`input_trigger(kind="key")`: `DayZGame.OnKeyPress`, its default `entry="game"`,
+or `Mission.OnKeyPress`; `key_press`: `Mission.OnKeyPress`), which is not engine input, and the
+`UAInput.Local*` methods are native getters (VANILLA `scripts/3_game/inputapi/uainput.c:58-65`).
+`input_trigger(kind="input")` only reports why a named input cannot be driven: `input_not_drivable`,
+`reason=no_local_setter`. The tool's own description says no script setter feeds `UAInput.Local*`, so mods
+that poll `UAInput`, Community Framework input bindings included, cannot be driven by it.
+`UAInput.ForceEnable` (`uainput.c:93`) was not tried.
+
+What worked is a test-only hook. [EXACT][CLAIM-TEST-FILE-EDGE-PANEL-HOOK-130] A `modded class
+MissionGameplay` that toggles the panel when a file in the client profile appears or goes opened it in all
+three runs: its line `[BR-TEST] leaderboard file true, panel open false` came 1.7 to 2.5 s before each of
+the four captures of the open panel. It acts only on that edge, so a panel that closes itself is not
+reopened while the file stays: in run `ac881114` the hook opened the panel at 13:39:03, the win screen,
+which closes it, showed at 13:39:21, and the next hook line, when the file was deleted at 13:40:20, found
+the panel closed. [DESIGN] skeleton, the BattleRoyale hook with its names changed:
+
+```c
+#ifndef SERVER
+// TEST ONLY, never commit. Creating $profile:mytest_panel_open in the client profile opens the panel,
+// deleting the file closes it. Edge-triggered: a panel that closes itself is not reopened.
+modded class MissionGameplay
+{
+	protected float m_MyTestPanelCheck;
+	protected bool m_MyTestPanelWanted;
+
+	override void OnUpdate(float timeslice)
+	{
+		super.OnUpdate(timeslice);
+
+		m_MyTestPanelCheck += timeslice;
+		if (m_MyTestPanelCheck < 0.5)
+			return;
+		m_MyTestPanelCheck = 0;
+
+		if (!m_MyPanel)
+			return;
+
+		bool wanted = FileExist("$profile:mytest_panel_open");
+		if (wanted == m_MyTestPanelWanted)
+			return;
+
+		m_MyTestPanelWanted = wanted;
+		bool open = m_MyPanel.IsOpen();
+		Print("[MY-TEST] panel file " + wanted.ToString() + ", panel open " + open.ToString());
+		if (wanted != open)
+			m_MyPanel.Toggle();
+	}
+}
+#endif
+```
+
+- Create or delete the file in the client's `-profiles=` folder, the one `$profile:` resolves to on the
+  client, and wait for the hook's log line before you capture: it checks every 0.5 s.
+- Keep the hook out of the repository. BattleRoyale kept it in its run folder
+  (`br-runs/leaderboard-2026-11-18/test-hooks/BRTestLeaderboard.c`), and no commit contains it.
+- Signatures: `MissionGameplay.OnUpdate(float timeslice)` (`scripts/5_mission/mission/missiongameplay.c:287`)
+  and `FileExist(string name)` (`scripts/1_core/proto/ensystem.c:397`).
+- The hook tests the panel, not its key: check the binding by hand, or read it with `input_describe`.

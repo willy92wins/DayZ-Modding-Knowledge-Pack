@@ -2164,9 +2164,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one Added entry, the dayz-ui-development in-game findings of 2026-11-18 (one Widget.TranslateString per expression; a child wholly outside its parent's rectangle is not drawn, which the offline previews do not model) and the dayz-test-ingame finding on opening UAInput-bound panels under DayZ-MCP. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e24cb86bfd1ab915139ee9dee962938b2b9b8ab707470064a7632f636f4a2feb",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Changelog entry for enforce-script-reference rules 37e and 37f and the second in-game case added to rule 6 (BattleRoyale PRs #56 and #57, measured in DayZDiag 1.30 on 2026-11-17). The entry restates the two rules; it adds no claim of its own. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "e1a1fdf9a65bba42b43eda8a531ec54796426a8ba275dee8ba56fdc7d1bf8343",
+          "source_hash": "ec9a08932fd541ca241e290b88f01bf68364a7c8dee9c364d7af49561d1441ce",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "battleroyale-pr56-pr57@2026-11-17",
@@ -2174,7 +2184,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "e1a1fdf9a65bba42b43eda8a531ec54796426a8ba275dee8ba56fdc7d1bf8343",
+      "output_hash": "ec9a08932fd541ca241e290b88f01bf68364a7c8dee9c364d7af49561d1441ce",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -15750,10 +15760,20 @@
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "pack-fixforward@2026-11-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one index line under 'Session findings' for the new appendix (panels bound to a UAInput under DayZ-MCP); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL move one line down, text unchanged. Written by Claude (Anthropic). Corrected on 2026-11-20 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "1b5de61c2cf44daf448600196a562ef0e0ad6b3e64b592c9f645655a018b8a05",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/SKILL.md",
+          "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "736805bc9b122031ad4c0dfc9efb3abb09d5b44d31f7345553bd729b36adc57d",
+      "output_hash": "1b5de61c2cf44daf448600196a562ef0e0ad6b3e64b592c9f645655a018b8a05",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -15812,10 +15832,20 @@
           "source_path": "skills/dayz-test-ingame/references/session-findings.md",
           "source_revision": "kp-update-h2r-2410@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: new appendix 'Panels bound to a UAInput under DayZ-MCP: open them through a file, not a key'. DayZ-MCP cannot press a UAInput (CLAIM-TEST-DAYZMCP-NO-UAINPUT-PRESS, source_verified, lines 282-290), and the test-only MissionGameplay hook that toggles the panel when a file in the client profile appears or goes, with a [DESIGN] skeleton (CLAIM-TEST-FILE-EDGE-PANEL-HOOK-130, runtime_verified, lines 292-298). Evidence: the DayZ-MCP tool descriptions and bridge source at c2f43638, vanilla uainput.c, the BattleRoyale leaderboard runs ac881114, 20f9464d and 70e5cf20 and their hook. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7f306058508c317dc19225b55cfe34c96d34a396a173c8279cbe62a0bbf1cd1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-test-ingame/references/session-findings.md",
+          "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "42a3650faf07aeb2fc4db1d9efa96309f6620b7f9e7a237b31248494b6ae67d5",
+      "output_hash": "7f306058508c317dc19225b55cfe34c96d34a396a173c8279cbe62a0bbf1cd1f",
       "output_path": "skills/dayz-test-ingame/references/session-findings.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -16666,10 +16696,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: new section 'Measured in-game on 2026-11-18 - TranslateString, children outside their parent, and UAInput panels' (CLAIM-UI-TRANSLATESTRING-ONE-PER-EXPRESSION-130 runtime_verified, lines 1744-1770; CLAIM-UI-CHILD-OUTSIDE-PARENT-NOT-DRAWN-130 runtime_verified, lines 1789-1796; CLAIM-UI-VIEWER-DRAWS-OUTSIDE-PARENT offline_tested, lines 1806-1811) with a pointer to the dayz-test-ingame finding on UAInput-bound panels; one line each in STANDARD WORKFLOW step 5, the delivery checklist (layout and script) and the troubleshooting table. Evidence: BattleRoyale leaderboard runs ac881114, 20f9464d and 70e5cf20 (DayZDiag 1.30.164289.70), BattleRoyale commits 1c75060 and 25ef6f1, the dayz-layout-viewer source and its render of the layout from before the fix. Written by Claude (Anthropic). Corrected on 2026-11-20 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "acbb235676fc96fd5f5222c7b83ad6d1f7d753ee03c670e881e0de3daef9ca8a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3671a489de8115dd411612cf5dda6956d0d066b4e4834703a34dd2478a54d726",
+      "output_hash": "acbb235676fc96fd5f5222c7b83ad6d1f7d753ee03c670e881e0de3daef9ca8a",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -17008,10 +17048,20 @@
           "source_path": "skills/dayz-ui-development/references/layout-format.md",
           "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: two comment lines on clipchildren (with it unset, a child wholly outside its parent was not drawn; clip or cull not known) and four lines after the B5 table (its rows are ui_tree rectangles, not pixels), both pointing to SKILL.md 'Measured in-game on 2026-11-18'. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2b601f725c080863c4fef142b5dadd6b5df4eb74153a17398643fd25a9944986",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-format.md",
+          "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0ced0de491bf1471f6299fa4169dee1bd4ea3815155da48c00af3970ebd90a9a",
+      "output_hash": "2b601f725c080863c4fef142b5dadd6b5df4eb74153a17398643fd25a9944986",
       "output_path": "skills/dayz-ui-development/references/layout-format.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -17188,10 +17238,20 @@
           "source_path": "skills/dayz-ui-development/references/widget-api.md",
           "source_revision": "kp-update-inbc-ui-units-fonts@2026-10-03",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: two comment lines in the Widget.TranslateString block, one call per expression, pointing to SKILL.md 'Measured in-game on 2026-11-18'. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "99329d8c982d44e031d7391207902bc9cafb63cf7b463793598ea0e11acef1e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/widget-api.md",
+          "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "c84c8302370ef23d8ab24b13673ff0bd2bee7622ef33676d30611f7e4707a45f",
+      "output_hash": "99329d8c982d44e031d7391207902bc9cafb63cf7b463793598ea0e11acef1e5",
       "output_path": "skills/dayz-ui-development/references/widget-api.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -23456,6 +23516,16 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: five new claims, three on dayz-ui-development SKILL.md (CLAIM-UI-TRANSLATESTRING-ONE-PER-EXPRESSION-130 and CLAIM-UI-CHILD-OUTSIDE-PARENT-NOT-DRAWN-130 runtime_verified, CLAIM-UI-VIEWER-DRAWS-OUTSIDE-PARENT offline_tested) and two on dayz-test-ingame references/session-findings.md (CLAIM-TEST-DAYZMCP-NO-UAINPUT-PRESS source_verified, CLAIM-TEST-FILE-EDGE-PANEL-HOOK-130 runtime_verified); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL follow their lines in dayz-test-ingame SKILL.md. Written by Claude (Anthropic). Corrected on 2026-11-20 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "8d5d29b24cb0bca4ecc87bde5d5a2861f78315b2f9d6931026e15ca2e1982097",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Rule 37e inserted 23 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 586, 596, 598, 613, 615, 629 and 631 to 609, 619, 621, 636, 638, 652 and 654. No claim text changes.",
           "license": "MIT",
           "source_hash": "46c9b8f8a3af27690d2c9e15000f278dacad4bf9c670b618fc0df883a09c5cf0",
@@ -23468,7 +23538,7 @@
           "decision": "merge",
           "decision_evidence": "Rule 37f inserted 36 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 609, 619, 621, 636, 638, 652 and 654 to 645, 655, 657, 672, 674, 688 and 690. No claim text changes. After the review fixes of 2026-11-19 the seven claims sit at 733, 743, 745, 760, 762, 776 and 778, and the fixes add 10 claims for rules 37e and 37f (CLAIM-ENF-LOGOUT-QUEUE-CONDITIONS, CLAIM-ENF-LOGOUT-NULL-BODY-BREAK, CLAIM-ENF-LOGOUT-ISPLAYERDISCONNECTING, CLAIM-ENF-LOGOUT-INSTANT-DISCONNECT, CLAIM-ENF-ACTIONBASE-CAN-GATE, CLAIM-ENF-ACTION-CANCONTINUE-LOOP, CLAIM-ENF-ACTION-ONANIMATIONEVENT, CLAIM-ENF-TARGET-ACTION-FAMILIES, CLAIM-ENF-ACTION-ONENDSERVER-CANCEL, CLAIM-ENF-OBJECT-ALLOWDAMAGE). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "6a76db470d0b11699104fc77448abd88d02cb4d0f8d701dbff0effae0660bd60",
+          "source_hash": "d7a0bfd12158d1c0120e58276b24f88231613f2cdab06f8d289664cf4a986288",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "battleroyale-pr57@2026-11-17",
@@ -23476,7 +23546,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6a76db470d0b11699104fc77448abd88d02cb4d0f8d701dbff0effae0660bd60",
+      "output_hash": "d7a0bfd12158d1c0120e58276b24f88231613f2cdab06f8d289664cf4a986288",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
