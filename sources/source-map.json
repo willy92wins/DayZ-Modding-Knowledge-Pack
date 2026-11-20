@@ -2144,6 +2144,26 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), the removed SteamCMD update recipe, the corrected CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED and the corrected ranges of CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY.",
+          "license": "MIT",
+          "source_hash": "f05159e5e46577b847ccc9db10674a2fbb6dd3747633f20cfa188852543af74e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. An Unreleased Changed entry for dayz-script-validator: VANILLA-ROOT-BUILD-MISMATCH fails the run (exit 1) when --game-root is on the command line and still warns (exit 2) when the game comes from DAYZ_GAME_ROOT.",
+          "license": "MIT",
+          "source_hash": "8a24ef6df67e2370d61be135e32ec9a7577c535b0d6f29f3805aca4f5fc039f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19: an Unreleased Added entry for dayz-script-validator reading, of the local vanilla indexes, the one built from the tree being read. Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "d68fd77df5585705a0693e60554b63a724ee88523ed1a41886429c6ae3e20b50",
@@ -2166,7 +2186,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204: the Unreleased Added entry for the index beside the default one rewritten for this revision (the digest compared up to the capitals of the paths, tree_digest_casefold_v1, the form of the digests, paths UTF-8 cannot write, three limits, the cost measured again). Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "157ce7cd0534d7778dc1f9ee3b886ddc7fa3bb25a1503b10ea019d0deba04ece",
+          "source_hash": "7c6788df95630e38a1d7cca964ad3ef045fd9cfa527614bda032f79979286240",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
@@ -2174,7 +2194,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "157ce7cd0534d7778dc1f9ee3b886ddc7fa3bb25a1503b10ea019d0deba04ece",
+      "output_hash": "7c6788df95630e38a1d7cca964ad3ef045fd9cfa527614bda032f79979286240",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13626,10 +13646,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The Workshop bullet also names what verifySignatures = 2 does without the .bikey, creating an item with SteamCMD and updating it with the Publisher, and says that the SteamCMD login that kicked the Steam client off was a manual one (references/workshop-publish.md). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a48a660083335321bb261b4fde4f3dae8dc7022f96b927e3e93e7a75113bb2ee",
+      "output_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -23416,9 +23446,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Three claims for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), runtime_verified, from probes S1 and S3 of the dayz-mcp distribution plan and the vault runbook; the line ranges of the five earlier CLAIM-WORKSHOP-* follow the longer reference; after two adversarial reviews the evidence locators of CLAIM-WORKSHOP-PUBLISHER-FILES, CLAIM-WORKSHOP-STEAMCMD-LOGIN and CLAIM-WORKSHOP-STEAMCMD-CREATE say what the runbook records (no command-line option among the Publisher's strings; the Steam Guard code entered, the Steam client logged off during the unattended run, and that the run without a cached session not tried is an unattended one; 13.3 s for the whole run); in skills/dayz-pbo-build/SKILL.md, CLAIM-BINARIZE-DIRECT-CWD moves down one line with its longer Workshop bullet, and CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY now start at their blocks (548-564 and 624-640); on main they began 10 lines before them (537-553 and 613-629).",
+          "license": "MIT",
+          "source_hash": "8875c5ba294da9a9b1057d0663ea805f448fc0ef94c5443687477a19804c20cd",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Claim ranges and entries for the review fixes of PR #204. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "b79bb77eb6b84e29c1d568e5bff9d9c27260dc5e443d733679ed2af7eef828fc",
+          "source_hash": "986dd8374264fe731b04f34214ea4145d7b6f0769cef3558e963b67c1e7bc984",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-fix-pack-204-sol@2026-11-19",
@@ -23426,7 +23466,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b79bb77eb6b84e29c1d568e5bff9d9c27260dc5e443d733679ed2af7eef828fc",
+      "output_hash": "986dd8374264fe731b04f34214ea4145d7b6f0769cef3558e963b67c1e7bc984",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -26901,6 +26941,16 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. The VANILLA-ROOT-BUILD-MISMATCH paragraph says that an explicit --game-root fails the run (exit 1) and DAYZ_GAME_ROOT warns (exit 2), and its last sentence no longer says that a gate accepting WARN lets an explicit mismatch through.",
+          "license": "MIT",
+          "source_hash": "b67e236896f9dc6d03a8ef54c98a844a79900256695e0e34de41390d5b251be3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19: 'Which tree the vanilla index is' says that a PC with more than one vanilla tree keeps an index of each beside the default one (vanilla_index.json.<name>, built with --out), how a run chooses (the default index when it is known to be of the tree being read, else the first file beside it, in name order, whose two numbers are the tree's, else the default index with its warning or SKIP line), which files are passed over, that the default file alone says whether there is an index, that the blind spot of the two numbers holds for the choice too, and the measurements of 2026-11-19 on three addons, on 164393's targetconditionscomponents folder and of the cost of the choice. 'Vanilla control' says that a default index moved away under another name in its folder stays away. Its figures are those of the inputs of scripts/shared/vanilla_index_tree.py and tests/test_vanilla_control.py of the same revision, rounded. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "7cfb1e697f80e8388791836a07c8ea91e39b5a58be65fd463a789a7504803ce1",
@@ -26923,7 +26973,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204: 'Which tree the vanilla index is' says that the digest is compared up to the capitals of the paths (the two digests of the tree, the order of the casefolded parts, tree_digest_casefold_v1, what an index written before it is read for, the trees whose paths casefold alike, the paths UTF-8 cannot write and the files that cannot be read, the letters casefold folds beyond ASCII), lists three limits left as they are (damaged tables inside a whole index, a tree changed between its count and its hash or while indexed, an index that appears while the vanilla control runs), and gives the measurements of 2026-11-19 redone with this revision. Its figures are those of the inputs of scripts/shared/vanilla_index_tree.py and scripts/build_vanilla_index.py of the same revision, rounded. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "86b0cdaf7dc44c27d28260941204ddd2daf377ead4b9ffdb9bfcc82300a0ad8e",
+          "source_hash": "5c9d5b77cf00e92f0a52a17dc2bb08871f4ab3470655dadb1fd69aa61f5312ee",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
@@ -26931,7 +26981,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "86b0cdaf7dc44c27d28260941204ddd2daf377ead4b9ffdb9bfcc82300a0ad8e",
+      "output_hash": "5c9d5b77cf00e92f0a52a17dc2bb08871f4ab3470655dadb1fd69aa61f5312ee",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27921,9 +27971,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. validate_addon takes game_root_explicit; with it the VANILLA-ROOT-BUILD-MISMATCH finding has severity FAIL and goes to errors, otherwise to warnings as before. run() passes it when --game-root is given, and the --game-root help says so.",
+          "license": "MIT",
+          "source_hash": "dea81a3a13caa1d15cea6d133f5799646e8ee8fcbc25c4ac99e9381575695c6f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19: validate_addon calls shared/vanilla_index_tree.use_index_of_tree (compare_index_tree until now) before the per-file rules instead of after the tree rules, because it now also settles which local index the four index rules read. What it returns joins the run's warnings, info.skipped_checks and info.vanilla_index at the same place as before, so the order of the report does not change. Measurements in the input of scripts/shared/vanilla_index_tree.py of the same revision. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "3c0fbefc4a49bdedf8755495bbe8abffd9c9bf3cc7ffcf6f8a3136f76d1085ce",
+          "source_hash": "0e9d79ef9e13a21d3a8e8c6323eab904e5d845bdb9d9d4a16edeade5836eb48d",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
@@ -27931,7 +27991,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3c0fbefc4a49bdedf8755495bbe8abffd9c9bf3cc7ffcf6f8a3136f76d1085ce",
+      "output_hash": "0e9d79ef9e13a21d3a8e8c6323eab904e5d845bdb9d9d4a16edeade5836eb48d",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32031,6 +32091,16 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. TestVanillaRootBuild gains test_an_explicit_game_root_fails_on_another_tree (exit 1, FAIL in errors, terse line) and, from the reviews, five tests: the explicit mismatch also fails when the addon has warnings of its own, through --game-root naming dta/scripts.pbo, and with a [FAIL] tag; --game-root wins over DAYZ_GAME_ROOT; an explicit --game-root that cannot be compared stays a SKIP with exit 0. test_another_tree_warns and test_a_tree_with_files_the_game_lacks_warns name the game through DAYZ_GAME_ROOT and keep their asserts.",
+          "license": "MIT",
+          "source_hash": "3d31929b693aa9f55f8427e4a34b3d3927824909349f04f7398eed9dded318d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19: TestVanillaIndexBesideTheDefault, 11 tests written before the code, with a default index and files beside it in a temporary folder (default_index_path patched and no index pinned), two small trees (a member that moves to a new subclass, as CCTLiquid's did in 164393) and an addon that ES-MEMBER-REDECLARE-BASE judges otherwise with each index. With the two tests added to test_vanilla_control.py, 7 of the 13 new test functions failed before the code (one of them through its two subtests) and the 6 that hold what must not change passed. They cover: an index beside the default one built from the tree is read, PASS with no warning and info.vanilla_index naming it; the rules read it (the finding moves from one class of the addon to the other), tree after tree in one process; with no index of the tree the default one warns as before and the message offers --out with a name beside it; a file beside the default index that is no index (broken JSON, not an object, another schema_version, a folder) or that cannot be compared (no file_count, no total_bytes, a count that is not a number, files it did not parse) is not read, while the same document untouched is; a path set with set_index_path_for_tests is the only file read; without a default index that loads none beside it is read; the default index comes first and then the names in order; an index read for one tree is not read for the next; a default index that cannot be compared gives way to one built from the tree; a tree that cannot be read keeps the default index. python -m pytest tests: 378 passed, with no index file in scripts/shared and with the owner's three there. Written by Claude (Anthropic).",
           "license": "MIT",
           "source_hash": "a8d87a556eb3663564195067362adaf770859845636b335f63c77e8046854d71",
@@ -32063,7 +32133,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204: eight tests in TestVanillaIndexBesideTheDefault, and the test that counts hashing now watches vanilla_index_tree.tree_digests. Written before the fixes, on 5b1b7fb five of the first seven failed and the subtest of the copy in capitals of a sixth: an index written before tree_digest_casefold_v1 from the tree in lower case is read for its copy in capitals (N1); an index written now from a copy in capitals is read for both spellings; the casefolded digest of a tree in lower case is its tree_digest and the generator's, in the order of the parts (a folder named as a file, fx_liquid/ before fx_liquid.c), and that of its copy in capitals is the same; two paths that casefold alike give no casefolded digest; a path with an unpaired surrogate, made on the file system itself, leaves the default index and its warning instead of raising (N3). The seventh, an old index of a copy in capitals read for those capitals only, states the documented limit and passes on 5b1b7fb too. A file that cannot be read while hashing leaves the default index and its warning (N6); the reviewer's mutation, except FileNotFoundError, turns it red. A test of the form of the digests was added after the reviewer's formats case showed, with the generator's new key, a damaged tree_digest read beside a good tree_digest_casefold_v1: 6 of its subtests failed before the check, and the 2 with the casefolded digest null or missing passed. python -m pytest tests: 395 passed. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "24aad00bba27407f4ed536edb77a83b7053b9823e3cb3c1009a7c37879313d9b",
+          "source_hash": "a9e3dac6a7a10ffb90bfb16bc23346a94b6e376a4578030ca46b9f1cc105769d",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
@@ -32071,7 +32141,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "24aad00bba27407f4ed536edb77a83b7053b9823e3cb3c1009a7c37879313d9b",
+      "output_hash": "a9e3dac6a7a10ffb90bfb16bc23346a94b6e376a4578030ca46b9f1cc105769d",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42847,10 +42917,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: follow-up of inbox 5b1f (#208). The comment above BUILTIN_TYPES says that, when the vanilla tree is not the game's, an explicit --game-root fails the run and DAYZ_GAME_ROOT warns, as #208 made it; it said that --game-root warns. Comment only: no code, rule or claim range changes.",
+          "license": "MIT",
+          "source_hash": "89d0d2218db1b66d79406bd31cd1b43f73c3c0d9918a6b8eed5fa4ac55b9b0e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+          "source_revision": "claude/project-thread-kg9kxv@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ca9e2a4179f3f24223c56dce8346ae91fc34bad4e5bebce91932b92634d8aac5",
+      "output_hash": "89d0d2218db1b66d79406bd31cd1b43f73c3c0d9918a6b8eed5fa4ac55b9b0e8",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42869,10 +42949,20 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. compare_vanilla_build takes the finding's severity (WARN by default) and uses it in the message's leading tag and in the finding's severity; counts, SKIP cases and info.vanilla_build do not change.",
+          "license": "MIT",
+          "source_hash": "544aaf43c712f04c0b9a7048ce96b045dfbce8c9bfafa14fec29a4cf8cfe93cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
+      "output_hash": "544aaf43c712f04c0b9a7048ce96b045dfbce8c9bfafa14fec29a4cf8cfe93cc",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -44283,10 +44373,20 @@
           "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
           "source_revision": "workshop-publish-r2@2026-11-12",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pack-authored update by Claude (Anthropic) from probes S1 and S3 of the dayz-mcp distribution plan (2026-11-12 and 2026-11-19) and the vault runbook: CLAIM-WORKSHOP-SIGN-SERVER-CHECK (retail DayZServer with verifySignatures = 2: kick 120 without the .bikey, join with it, the BattlEye kick as observed, its cause as not investigated and how long a client stays as not measured), CLAIM-WORKSHOP-PUBLISHER-UPDATE (the Publisher's content folder, its log and the client's logs in three publications) and CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY (the owner's copy of the private item, followed by an [INFERRED] paragraph); the intro, two table rows and the [INFERRED] paragraph after CLAIM-WORKSHOP-PUBLISHER-FILES follow. After two adversarial reviews, CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED says that the login measured was a manual one and that the client was restarted 44 minutes later, the [INFERRED] paragraph after it that another login may do the same, CLAIM-WORKSHOP-STEAMCMD-LOGIN that the owner entered the Steam Guard code before quit, that the Steam client was still logged off during the unattended run and that the run without a cached session not tried is an unattended one, and the untried SteamCMD update recipe is removed. No account name, item id or private path.",
+          "license": "MIT",
+          "source_hash": "540312f5e09374ab70c9935a62398e2e0bf30af2d72aa2f333997a68f5260afe",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
+      "output_hash": "540312f5e09374ab70c9935a62398e2e0bf30af2d72aa2f333997a68f5260afe",
       "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "runtime_verified"
