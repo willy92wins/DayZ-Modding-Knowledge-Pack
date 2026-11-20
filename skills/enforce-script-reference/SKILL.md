@@ -44,7 +44,7 @@ Before persisting or ordering data across restarts, verify both the clock and th
 3. **`foreach` WORKS** — `foreach (Type var : array)` and `foreach (key, value : map)`. Avoid foreach on expressions returning temporary collections (may NPE)
 4. **`+=` / `-=` WORK** — `x += y;` is equivalent to `x = x + y;` (verified LBmaster production)
 5. **String literals as function params WORK** — `MyFunc("hello", "world")` is fine (verified LBmaster production)
-6. **Multiline expressions — SCOPE RESTRICTED** — production compiles HAVE broken on multi-line BOOLEAN operators (`&&`/`||` split across lines: LF_VStorage F-NEW-1, HUD_Mod) and on multi-line string `+` continuation (bone-dump Print, dayz-animation-pipeline `references/weapon-in-hands.md:239`). Keep boolean conditions and string builds on ONE line, or split into single-line statements (`ln = ln + ...;`) — this is legacy ENF-R11g (see rule map below). Multi-line function ARGUMENT lists: [IN-GAME CONFIRMED, DayZDiag 1.29.163451, SP-127] a call whose argument list spans multiple physical lines kills the entire file and its module (`Can't compile "Mission" script module!` → server does not start). The error is reported on the line of the NEXT argument, not the opening line; the cascade (`Syntax error` line 1, `Unexpected scope` line 2) mimics file corruption. Vanilla contains some multi-line argument lists (`P:\scripts\3_game\worlddata.c:153-156` `Math.Lerp(`, `3_game\client\notifications\notificationsystem.c:307-311` `new NotificationData(`), so the safe scope is not fully characterized. Offline gate: any line ending in `(` or `,` (after stripping comments and trailing whitespace) is a risk — `tools/dayz-ui-lab/tests/test_probe.py::test_probe_mission_keeps_every_call_argument_list_on_one_line` (7 offenders in the failing file, 0 in the fixed). A mod that fails to compile passes any test asserting on source TEXT: the three tests covering this probe were green while the engine rejected the file entirely.
+6. **Multiline expressions — SCOPE RESTRICTED** — production compiles HAVE broken on multi-line BOOLEAN operators (`&&`/`||` split across lines: LF_VStorage F-NEW-1, HUD_Mod) and on multi-line string `+` continuation (bone-dump Print, dayz-animation-pipeline `references/weapon-in-hands.md:239`). Keep boolean conditions and string builds on ONE line, or split into single-line statements (`ln = ln + ...;`) — this is legacy ENF-R11g (see rule map below). Multi-line function ARGUMENT lists: [IN-GAME CONFIRMED, DayZDiag 1.29.163451, SP-127] a call whose argument list spans multiple physical lines kills the entire file and its module (`Can't compile "Mission" script module!` → server does not start). The error is reported on the line of the NEXT argument, not the opening line; the cascade (`Syntax error` line 1, `Unexpected scope` line 2) mimics file corruption. Vanilla contains some multi-line argument lists (`P:\scripts\3_game\worlddata.c:153-156` `Math.Lerp(`, `3_game\client\notifications\notificationsystem.c:307-311` `new NotificationData(`), so the safe scope is not fully characterized. Offline gate: any line ending in `(` or `,` (after stripping comments and trailing whitespace) is a risk — `tools/dayz-ui-lab/tests/test_probe.py::test_probe_mission_keeps_every_call_argument_list_on_one_line` (7 offenders in the failing file, 0 in the fixed). A mod that fails to compile passes any test asserting on source TEXT: the three tests covering this probe were green while the engine rejected the file entirely. The boolean case happened again in BattleRoyale PR #57 (2026-11-17): a `return a || b` split across lines with `||` at the start of each continuation line. The server log showed `Missing ';' at the end of line`, then `Expected ',' or ')', not a '||'`, then `Can't compile "World" script module!`. That code had passed `check_standalone`, the offline validator gate and three read-only LLM reviews; only booting the server caught it.
 7. **NO same variable name in sibling `if`/`else` scopes** — hoist before conditionals
 8. **NO `new array`/`map`/`Param` inside periodic ticks** — use `m_` fields, `.Clear()` each tick
 9. **Explicit typing always; `m_` prefix on all member fields**
@@ -196,6 +196,153 @@ Primary URL: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/01-en
     Blocking the get-out while the sight is up is then one condition:
     `modded class ActionGetOutTransport { override bool ActionCondition(...) }`
     (`actiongetouttransport.c:70`), not an input exclude.
+37e. **Never delete a player body in the logout queue (including a previously selected body left
+    behind after `SelectSpectator`).**
+    - **What was observed after `SelectSpectator` (BattleRoyale PR #56 observation):** vanilla
+      script exposes only the native signatures `SelectPlayer` (`3_game/global/game.c:340`),
+      `SelectSpectator` (`:379`), and `PlayerIdentityBase.GetPlayer` (`3_game/gameplay.c:375`) and
+      does not document what body the engine retains. In BattleRoyale PR #56, after
+      `SelectPlayer(identity, body)` followed by `SelectPlayer(identity, null)` + `SelectSpectator`,
+      `identity.GetPlayer()` still returned that last selected body.
+    - **What the disconnect does with it:** [EXACT][CLAIM-ENF-LOGOUT-QUEUE-CONDITIONS]
+      `MissionServer.OnEvent` (`ClientDisconnectedEventTypeID`) unpacks
+      `ClientDisconnectedEventParams` (`identity`, `player`, `logoutTime`, `authFailed`) and calls
+      `OnClientDisconnectedEvent` when `player` is non-null (`missionserver.c:395-410` in
+      1.30.164289; `:415-430` in 1.30.164393). Inside `OnClientDisconnectedEvent`, vanilla queues
+      the body for timed logout only when `GetHive() && !authFailed && player.IsAlive()`
+      (`missionserver.c:647-675` in 1.30.164289; `:667-704` in 1.30.164393); otherwise it falls
+      through to instant disconnect.
+      - *BattleRoyale PR #56 observation:* vanilla script does not show which body or `logoutTime`
+        the engine passes into the event; in that DayZDiag 1.30 run, the event carried the
+        unpossessed body with the normal `logoutTime`.
+    - **Where it breaks:** in BattleRoyale PR #56, `GetPlayerIndentities` stopped listing the
+      identity about 4 s after the disconnect; a cleanup that read "not listed" as "gone" deleted
+      that body during the logout. [EXACT][CLAIM-ENF-LOGOUT-NULL-BODY-BREAK] In stable
+      1.30.164289, when the timer ends, `UpdateLogoutPlayers` (`missionserver.c:277-307`) passes
+      the now-null body to `PlayerDisconnected`, which logs
+      `[Logout]: Skipping player …, already removed` and returns without calling `DisconnectPlayer`
+      (`missionserver.c:690-697`, `:721`). In Experimental 1.30.164393, logic changed: while the
+      timer is still running, `UpdateLogoutPlayers` (`missionserver.c:302-324`) passes the null
+      `player` to `SendExitEmoteRequest(player)` before the timer expires, and
+      `SendExitEmoteRequest` (`:276-280`) dereferences `player.GetEmoteManager()` with no null
+      guard (`PlayerDisconnected`'s `!player` skip sits at `:719-726`).
+    - **The symptom (BattleRoyale PR #56):** the UID stayed in game; rejoining failed with
+      `0x00040033`, "Player with same UID is already in game", until the server restarted.
+    - **Fix, first part:** [EXACT][CLAIM-ENF-LOGOUT-ISPLAYERDISCONNECTING] before deleting any
+      player body, check vanilla's `IsPlayerDisconnecting(body)` (`missionserver.c:240-243`,
+      1.30.164289 and 1.30.164393), which tests both `m_LogoutPlayers` and `m_NewLogoutPlayers`.
+    - **Fix, second part:** [EXACT][CLAIM-ENF-LOGOUT-INSTANT-DISCONNECT] Vanilla's instant-logout
+      branch in `OnClientDisconnectedEvent` (`missionserver.c:679-687` in 1.30.164289; `:708-716`
+      in 1.30.164393, taken for a dead body, `!GetHive()`, or `authFailed`) calls
+      `g_Game.SendLogoutTime(player, 0)` and `PlayerDisconnected(player, identity, identity.GetId())`.
+      Compared with the timed-logout branch (`missionserver.c:651-665` in 1.30.164289; `:671-694`
+      in 1.30.164393), it skips the wait timer and `player.StatSyncToClient()` in both builds (plus
+      throw cancellation and `SendExitEmoteRequest` in 1.30.164393), while `PlayerDisconnected`
+      still runs `InvokeOnDisconnect(player)`, `player.Save()` and `GetHive().CharacterExit(player)`
+      when `GetHive()` is active, `ReleaseNetworkControls()`, `HandleBody(player)` (which deletes
+      an alive body unless `ShouldPlayerBeKilled` kills it), and `DisconnectPlayer`
+      (`missionserver.c:703-721, 748-764` in 1.30.164289; `:732-750, 777-793` in 1.30.164393).
+      - [DESIGN] To skip the logout wait for a body that is nobody's character (such as a spectator
+        anchor), call that instant-disconnect sequence in `OnClientDisconnectedEvent`, and account
+        for `Save()`/`CharacterExit` if a Hive is enabled.
+    - **Evidence:** reproduced and fixed in DayZDiag 1.30 on 2026-11-17 (BattleRoyale PR #56, runs
+      fb6d1730 before the fix and fb144fcf after it; run logs outside this pack). The first
+      hypothesis, "the event arrives without a body and vanilla drops it", was wrong: a test
+      proved the premise false.
+37f. **Blocking a family of actions on other players (a safe zone): gating `ActionBase` (`Can`,
+    `CanContinue`, `OnAnimationEvent`) and its `OnEndServer` caveat.**
+    - **Start:** [EXACT][CLAIM-ENF-ACTIONBASE-CAN-GATE] `modded class ActionBase` overrides the
+      4-argument `Can(PlayerBase player, ActionTarget target, ItemBase item, int condition_mask)`
+      (`actionbase.c:929-966`, 1.30.164289 and 1.30.164393).
+      - On the client, `ActionManagerClient.Update` calls `FindContextualUserActions` only when no
+        action is active (`!m_CurrentActionData`, `actionmanagerclient.c:126-143` in 1.30.164289;
+        `:126-140` in 1.30.164393). `FindContextualUserActions` returns early on
+        `!m_ActionPossible`, `HasHandInventoryReservation()`, or — in stable 1.30.164289 —
+        `g_Game.IsInventoryOpen()` (`actionmanagerclient.c:550-559`, checking `MENU_INVENTORY` at
+        `3_game/dayzgame.c:1392-1401`), whereas Experimental 1.30.164393 checks `IsAnyMenuOpen()`
+        (any scripted menu, `actionmanagerclient.c:547-556, 582-590`); otherwise, if
+        `!GetRunningAction()`, it iterates `m_OrederedAllActionInput` via `UpdatePossibleActions`
+        (`:561-578` in 1.30.164289; `:558-575` in 1.30.164393).
+      - The server asks it before accepting a start: `actionmanagerserver.c:168`, through the
+        3-argument `Can` at `actionbase.c:968-973` (same lines in 1.30.164289 and 1.30.164393).
+      - Returning false before `super` leaves `accepted` false, so vanilla sends a negative action
+        acknowledgment (`DayZPlayerSyncJunctures.SendActionAcknowledgment(..., false)`) when
+        `UseAcknowledgment()` is true, or calls `RequestInterruptAction()` otherwise
+        (`actionmanagerserver.c:194-211`, 1.30.164289 and 1.30.164393).
+    - **While it runs:** [EXACT][CLAIM-ENF-ACTION-CANCONTINUE-LOOP] while a continuous action is
+      in its animation loop (`STATE_LOOP_LOOP`, `STATE_LOOP_LOOP2`, or `m_inLoop`) and not
+      interrupted, `ActionContinuousBaseCB.CancelCondition` calls `Do`
+      (`actioncontinuousbase.c:6-31`), and `AnimatedActionBase.Do` queries
+      `CanContinue(ActionData action_data)` (`actionbase.c:975`, `protected`) in `UA_PROCESSING`
+      and `UA_INITIALIZE` (`animatedactionbase.c:416-448`, same lines in 1.30.164289 and
+      1.30.164393); it does not ask `Can` again. Vanilla overrides drop `protected`.
+    - **Effects dispatched on `OnAnimationEvent`:** [EXACT][CLAIM-ENF-ACTION-ONANIMATIONEVENT]
+      `AnimatedActionBase.OnAnimationEvent(ActionData action_data)` (`animatedactionbase.c:188-210`,
+      1.30.164289 and 1.30.164393) dispatches `OnExecute` / `OnExecuteServer` / `OnExecuteClient`
+      on `UA_ANIM_EVENT` without calling `CanContinue`. Returning before `super` drops those
+      `OnAnimationEvent`-dispatched effects (such as `ActionForceConsumeSingle.OnExecuteServer`,
+      `actionforceconsumesingle.c:55-69`) while the animation still ends through
+      `ActionBaseCB.OnFinish` (`animatedactionbase.c:27-54`), which calls `action.End` ->
+      `OnEndServer` (`:458-466`); it therefore does not stop effects applied in `OnEndServer`.
+    - **Cancellation caveat (`OnEndServer`):** [EXACT][CLAIM-ENF-ACTION-ONENDSERVER-CANCEL] those
+      three hooks do not block effects that an action applies in `OnEndServer` after partial
+      progress. When a callback finishes cancelled, `ActionBaseCB.OnFinish` runs
+      `m_ActionComponent.Interrupt` and then `action.End` -> `OnEndServer`
+      (`animatedactionbase.c:42-53, 458-466`); `CABase.Interrupt` calls `Cancel`
+      (`cabase.c:34-38`), `CAContinuousTime.Cancel` preserves `m_TimeElpased` in `m_SpentUnits`
+      (`cacontinuoustime.c:58-71`), and when `delta > 0`, `ActionCollectBloodTarget.OnEndServer`
+      initiates `ServerReplaceItemInHandsWithNew` with `ActionCollectBloodTargetLambda`, which
+      subtracts blood from the target in `CopyOldPropertiesToNew` (when `new_item` is non-null) if
+      `ReplaceItemWithNewLambdaBase.Execute` reaches that step without aborting
+      (`actioncollectbloodtarget.c:27-47, 63-81`,
+      `3_game/systems/inventory/replaceitemwithnewlambdabase.c:244-282`;
+      `ActionCollectSampleTarget.OnEndServer` initiates the same lambda at
+      `actioncollectsampletarget.c:27-44`; all lines identical in 1.30.164289 and 1.30.164393).
+    - **Which actions:** [DESIGN] match the family with `IsInherited` on the ten vanilla bases.
+      [EXACT][CLAIM-ENF-TARGET-ACTION-FAMILIES] In vanilla 1.30 (1.30.164289 and 1.30.164393),
+      neither the ten family bases (`ActionForceConsume`, `ActionForceConsumeSingle`,
+      `ActionRestrainTarget`, `ActionHandcuffTarget`, `ActionCoverHeadTarget`, `ActionGagTarget`,
+      `ActionCollectBloodTarget`, `ActionCollectSampleTarget`, `ActionGiveBloodTarget`,
+      `ActionDefibrilateTarget`) nor any of their 20 descendants overrides `Can` or `CanContinue`.
+    - **Cheap filter first:** [DESIGN] check `PlayerBase.Cast(target.GetObject())` and reject self
+      before heavier checks.
+    - **Decide the protection by zone, not by `GetAllowDamage()`:**
+      [EXACT][CLAIM-ENF-OBJECT-ALLOWDAMAGE] `Object.GetAllowDamage()` /
+      `Object.SetAllowDamage(bool)` are native per-object methods querying or toggling whether the
+      object can receive damage (`3_game/entities/object.c:64, 1188-1196`, 1.30.164289 and 1.30.164393).
+      - [DESIGN] Decide on the server by position instead: where admin-tool godmode calls
+        `SetAllowDamage(false)` on a player, a target-based `!target.GetAllowDamage()` gate blocks
+        actions aimed at that godmode player (and a gate checking the actor's flag blocks a godmode
+        admin from acting on a teammate).
+    - **One shared file, two sides:** use separate `#ifdef SERVER` and `#ifndef SERVER` blocks:
+      `ES-EMPTY-IFDEF` flags `#else` with `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN` (`WARN`,
+      `tools/dayz-script-validator/scripts/detectors/es_empty_ifdef.py:39-44, 132-139`), and
+      `ES-SYNCVAR` also treats `#else` under `#ifdef SERVER` as unsupported
+      (`detectors/es_syncvar.py:88-93`), whereas other detectors such as `ES-UNDEFINED-CLASS-REF`
+      do analyze `#else` branches (`detectors/es_undefined_class_ref.py:641-645`). In a split
+      client/server mod, if a shared file in the client addon is validated without the server
+      addon, `ES-UNDEFINED-CLASS-REF` first collects unresolved class-like type references
+      (`Name.Method(` including `.Cast`, `new Name`, typed declarations, and their template
+      arguments) on lines not skipped by `_gated` (such as unknown-macro `#ifdef`/`#ifndef` blocks,
+      unsupported `#if`/`#elif`, or the false branch of an unconditional define;
+      `tools/dayz-script-validator/scripts/detectors/es_undefined_class_ref.py:612-645, 679-710,
+      770-784`); if none are collected (for example, a name inside an unknown-macro `#ifdef` or
+      used only as a config path), it returns no finding (`:783-784`). When a valid vanilla tree
+      is available and unresolved references are collected, it reports `FAIL` if `requiredAddons[]`
+      is non-empty and all required dependencies are covered by vanilla or `CfgPatches` in the
+      addon or `--external-scripts`, or `SKIP` if any required dependency is uncovered (or
+      unquoted) or no `requiredAddons[]` entries are declared (`:733-759, 766, 790-848`). Note
+      that `ES-UNDEFINED-CLASS-REF` checks whether a type is declared in the addon, vanilla, or
+      scanned `--external-scripts` dependencies
+      (`tools/dayz-script-validator/README.md:62-95`) and does not verify client-side compile
+      visibility. [DESIGN] Let the server push the zone into a static at init.
+    - **Evidence:** BattleRoyale PR #57, DayZDiag 1.30, run b411f3d2 on 2026-11-17 (run log
+      outside this pack). Outside the zone, the head sack and force-feeding on a survivor dummy
+      finished. Inside it, both were rejected by the server (reported as `server_rejected` in the
+      test harness within 0.06 s): the sack stayed in hand and the apple stayed at 125/125. The
+      `CanContinue`, `OnAnimationEvent`, and `OnEndServer` paths were checked by reading vanilla
+      source only; crossing a zone boundary while an action is already running was not tested in
+      game.
 38. **Three input detection patterns exist, all valid:**
     - Simple: `g_Game.GetInput().LocalPress("UAMyAction", false)` — one-line check
     - Direct: `GetUApi().GetInputByName("UAMyAction").LocalPress()` — per-frame

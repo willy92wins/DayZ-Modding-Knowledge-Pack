@@ -2171,10 +2171,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Changelog entry for enforce-script-reference rules 37e and 37f and the second in-game case added to rule 6 (BattleRoyale PRs #56 and #57, measured in DayZDiag 1.30 on 2026-11-17). The entry restates the two rules; it adds no claim of its own. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ec9a08932fd541ca241e290b88f01bf68364a7c8dee9c364d7af49561d1441ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "battleroyale-pr56-pr57@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "e24cb86bfd1ab915139ee9dee962938b2b9b8ab707470064a7632f636f4a2feb",
+      "output_hash": "ec9a08932fd541ca241e290b88f01bf68364a7c8dee9c364d7af49561d1441ce",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -19918,10 +19928,30 @@
           "source_path": "skills/enforce-script-reference/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 37e from BattleRoyale PR #56 (willy92wins/BattleRoyale): what that PR observed: an unpossessed identity kept its last body as player, and deleting a body in the vanilla logout queue skipped DisconnectPlayer (the UID stayed already in game until the server restarted). Reproduced and fixed in DayZDiag 1.30 on 2026-11-17 (runs fb6d1730 and fb144fcf); vanilla lines checked in the 1.30 extraction (missionserver.c:240, 641-697). Ported on 2026-11-18 from an unpublished local commit of 2026-11-17, rule text unchanged; the cited lines were read again in the 1.30.164289 scripts (in the 1.30.164393 Experimental scripts the cited missionserver.c ranges after line 240 sit 20 to 29 lines lower).",
+          "license": "MIT",
+          "source_hash": "ea97365e7495b65d28181444ede3e24427c82e731ae213f3040b76c8c15ef6d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "battleroyale-pr56@2026-11-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 37f and rule 6 evidence from BattleRoyale PR #57 (willy92wins/BattleRoyale): blocking a family of actions on other players through ActionBase.Can, CanContinue and AnimatedActionBase.OnAnimationEvent, decided by zone and not by GetAllowDamage. Measured in DayZDiag 1.30 on 2026-11-17 for the starts through Can (run b411f3d2: the head sack and force-feeding server_rejected inside the zone, finished outside), with the CanContinue and AnimatedActionBase.OnAnimationEvent paths checked by reading only, and with two limits the rule states: a cancel after progress can still let OnEndServer apply an effect (animatedactionbase.c:42-53, 458-466), and crossing the zone during an action was not measured; vanilla lines checked in the 1.30 extraction (actionbase.c:929, 968, 975; actionmanagerserver.c:168; animatedactionbase.c:188, 419). Rule 6: the same PR's split boolean return failed to compile the World module after passing the offline gates and three LLM reviews. Ported on 2026-11-18 from an unpublished local commit of 2026-11-17, rule text unchanged; the cited lines were read again in the 1.30.164289 and 1.30.164393 scripts, with the same line numbers in both. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2e9245fa93c3959c51077518384a2ed3d2a7fa309fbfd33060d667158825f0e3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/enforce-script-reference/SKILL.md",
+          "source_revision": "battleroyale-pr57@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5163031076c5e95d1d41bbde75d6567396bdde861ef55f7125d885958bcd355e",
+      "output_hash": "2e9245fa93c3959c51077518384a2ed3d2a7fa309fbfd33060d667158825f0e3",
       "output_path": "skills/enforce-script-reference/SKILL.md",
       "routing_artifact_id": "skill/enforce-script-reference",
       "verification_level": "cross_checked"
@@ -23493,10 +23523,30 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 37e inserted 23 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 586, 596, 598, 613, 615, 629 and 631 to 609, 619, 621, 636, 638, 652 and 654. No claim text changes.",
+          "license": "MIT",
+          "source_hash": "46c9b8f8a3af27690d2c9e15000f278dacad4bf9c670b618fc0df883a09c5cf0",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "battleroyale-pr56@2026-11-17",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Rule 37f inserted 36 lines above seven registered enforce-script-reference claims (CLAIM-ENF-COOKWITHEQUIPMENT-HUB, CLAIM-ENF-CAMERA-CREATOR-ID-130, CLAIM-ENF-CAMERA-CREATOR-RESET-ORDER, CLAIM-ENF-ENUMINV-SKIP-NULL, CLAIM-ENF-ENUMINV-NULL-RUNTIME-130, CLAIM-ENF-RESPAWN-LIVING-NOOP, CLAIM-ENF-RESPAWN-LIVING-RUNTIME-130): their line_start and line_end move from 609, 619, 621, 636, 638, 652 and 654 to 645, 655, 657, 672, 674, 688 and 690. No claim text changes. After the review fixes of 2026-11-19 the seven claims sit at 733, 743, 745, 760, 762, 776 and 778, and the fixes add 10 claims for rules 37e and 37f (CLAIM-ENF-LOGOUT-QUEUE-CONDITIONS, CLAIM-ENF-LOGOUT-NULL-BODY-BREAK, CLAIM-ENF-LOGOUT-ISPLAYERDISCONNECTING, CLAIM-ENF-LOGOUT-INSTANT-DISCONNECT, CLAIM-ENF-ACTIONBASE-CAN-GATE, CLAIM-ENF-ACTION-CANCONTINUE-LOOP, CLAIM-ENF-ACTION-ONANIMATIONEVENT, CLAIM-ENF-TARGET-ACTION-FAMILIES, CLAIM-ENF-ACTION-ONENDSERVER-CANCEL, CLAIM-ENF-OBJECT-ALLOWDAMAGE). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d7a0bfd12158d1c0120e58276b24f88231613f2cdab06f8d289664cf4a986288",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "battleroyale-pr57@2026-11-17",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "8d5d29b24cb0bca4ecc87bde5d5a2861f78315b2f9d6931026e15ca2e1982097",
+      "output_hash": "d7a0bfd12158d1c0120e58276b24f88231613f2cdab06f8d289664cf4a986288",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
