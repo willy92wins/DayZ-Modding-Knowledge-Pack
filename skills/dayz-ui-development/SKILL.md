@@ -1727,12 +1727,17 @@ To resume them, having the display turned on is enough: load `$profile:uiprobe.l
 
 ---
 
-## Measured in-game on 2026-11-18 — two faults no offline check showed (added 2026-11-18)
+## Measured in-game on 2026-11-18 — TranslateString, children outside their parent, and UAInput panels (added 2026-11-18)
 
 DayZDiag 1.30.164289.70, one client at 1920x1080 in Spanish, the BattleRoyale leaderboard panel
-(willy92wins/BattleRoyale#63). Neither fault was flagged by the project's gates, its code review or the
-offline previews. Both showed up in game, in runs `ac881114` and `20f9464d`, and each fix was confirmed by
-the next run (`20f9464d`, `70e5cf20`). Captures and logs: BattleRoyale `br-runs/leaderboard-2026-11-18/`.
+(willy92wins/BattleRoyale#63). Both UI faults showed up in game (runs `ac881114` and `20f9464d`), and each
+fix was confirmed by the next run (`20f9464d`, `70e5cf20`). The HTML preview (`dayz-layout-viewer`) missed
+the out-of-bounds footer, whereas offline containment checks flag it: `dayz-ui-lab` emits `DIFF-OVERFLOW`
+when a visible child exceeds a non-clipping parent's bounds (both geometries resolved;
+`tools/dayz-ui-lab/dayz_ui_lab/diff.py:362-416`), and static containment analysis reproduced the pre-fix
+`LeaderboardFooter14` and `LeaderboardFooter15` overflows (BattleRoyale
+`br-runs/leaderboard-2026-11-18/sol-front-r4.md:9`). Captures and logs: BattleRoyale
+`br-runs/leaderboard-2026-11-18/`.
 
 ### 1. One `Widget.TranslateString` per expression
 
