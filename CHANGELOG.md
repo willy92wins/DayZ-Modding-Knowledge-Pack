@@ -102,14 +102,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `VANILLA-INDEX-TREE-MISMATCH` and report a match. The digest is compared up to the capitals of the paths, as the
   comparison with the PBO takes them: `collect_c_files` matches `.c` regardless of case on POSIX as well as Windows,
   each file is read once for the tree's digest as spelt (checked in both POSIX and Windows path-part order for
-  indexes written before `tree_digest_casefold_v1`) and with the paths casefolded, in the order of their casefolded
-  parts, and the generator now also writes the second, as `tree_digest_casefold_v1` (`tree_digest` itself does not
-  change). For a tree whose paths are lower-case ASCII the two are one, so an index written before from such a tree
-  is read for a copy in other ASCII capitals too; a tree with two paths that casefold alike is compared as spelt
-  only. A path UTF-8 cannot write or a file that cannot be read while hashing leaves the tree uncompared. The tree is
-  hashed only when a file beside the default index has its two numbers; the default index is still compared by the
-  two numbers alone. When no file is of the tree, the default index is read and the run warns, or gives its SKIP
-  line, as before; the warning now also offers `--out` with such a name. Only the default file was read until now, so
+  indexes written before `tree_digest_casefold_v1` when no two paths share the same lower-case spelling; on
+  lower-case ties Windows `Path` sorting preserves directory traversal order) and with the paths casefolded, in the
+  order of their casefolded parts, and the generator now also writes the second, as `tree_digest_casefold_v1` (the
+  format of `tree_digest` does not change; on POSIX, a tree with upper-case `.C` files now includes them in its
+  counts and `tree_digest`, so an older index of such a tree no longer matches until rebuilt). For a tree whose paths
+  are lower-case ASCII the two are one, so an index written before from such a tree is read for a copy in other ASCII
+  capitals too; a tree with two paths that casefold alike is compared as spelt only. A path UTF-8 cannot write or a
+  file that cannot be read while hashing leaves the tree's digest uncompared. The tree is hashed only when a file
+  beside the default index has its two numbers; the default index is still compared by the two numbers alone. When no
+  file is of the tree, the default index is read and the run warns, or gives its SKIP line, as before; the warning
+  now also offers `--out` with such a name. Only the default file was read until now, so
   on 2026-11-18 three addons tested on DayZ 1.30.164393 Experimental, validated against that tree while the default
   index was of 1.30.164289, warned on every run and were judged with the stable build's members and signatures. With
   `vanilla_index.json.164393` beside the default index they are PASS against the Experimental tree and against the
