@@ -272,3 +272,179 @@ in these runs either.
   `CommandlineGetParam` (`game.c:661`, 1.29 `:660`) behind the test flag (`SKILL.md`, "AUTOMATED in-game cell
   without pilot", point 1) and call `super`: all 7 runs that passed a class spawned it, and 17 runs without
   it drew 14 classes.
+
+## Panels bound to a UAInput under DayZ-MCP: open them through a file, not a key (added 2026-11-18)
+
+Measured on DayZDiag 1.30.164289.70 with one client, opening the BattleRoyale leaderboard panel
+(willy92wins/BattleRoyale#63) in runs `ac881114`, `20f9464d` and `70e5cf20`. The panel opens on
+`GetUApi().GetInputByID(UADayZBRToggleLeaderboard).LocalPress()` in `MissionGameplay`.
+
+[EXACT][CLAIM-TEST-DAYZMCP-NO-UAINPUT-PRESS] DayZ-MCP cannot press a `UAInput`, so a panel opened on
+`UAInput.LocalPress()` cannot be opened through `input_trigger` or `key_press`. Both call script key
+handlers with a DIK code (`input_trigger(kind="key")`: `DayZGame.OnKeyPress`, its default `entry="game"`,
+or `Mission.OnKeyPress`; `key_press`: `Mission.OnKeyPress`), which is not engine input, and the
+`UAInput.Local*` methods are native getters (VANILLA `scripts/3_game/inputapi/uainput.c:58-65`).
+`input_trigger(kind="input")` only reports why a named input cannot be driven: `input_not_drivable`,
+`reason=no_local_setter`. The tool's own description says no script setter feeds `UAInput.Local*`, so mods
+that poll `UAInput`, Community Framework input bindings included, cannot be driven by it.
+`UAInput.ForceEnable` (`uainput.c:93`) was not tried.
+
+What worked is a test-only hook. [EXACT][CLAIM-TEST-FILE-EDGE-PANEL-HOOK-130] A `modded class
+MissionGameplay` that toggles the panel when a file in the client profile appears or goes opened it in all
+three runs: its line `[BR-TEST] leaderboard file true, panel open false` came 1.7 to 2.5 s before each of
+the four captures of the open panel. It acts only on that edge, so a panel that closes itself is not
+reopened while the file stays: in run `ac881114` the hook opened the panel at 13:39:03, the win screen,
+which closes it, showed at 13:39:21, and the next hook line, when the file was deleted at 13:40:20, found
+the panel closed. [DESIGN] skeleton, the BattleRoyale hook with its names changed:
+
+```c
+#ifndef SERVER
+// TEST ONLY, never commit. Creating $profile:mytest_panel_open in the client profile opens the panel,
+// deleting the file closes it. Edge-triggered: a panel that closes itself is not reopened.
+modded class MissionGameplay
+{
+	protected float m_MyTestPanelCheck;
+	protected bool m_MyTestPanelWanted;
+
+	override void OnUpdate(float timeslice)
+	{
+		super.OnUpdate(timeslice);
+
+		m_MyTestPanelCheck += timeslice;
+		if (m_MyTestPanelCheck < 0.5)
+			return;
+		m_MyTestPanelCheck = 0;
+
+		if (!m_MyPanel)
+			return;
+
+		bool wanted = FileExist("$profile:mytest_panel_open");
+		if (wanted == m_MyTestPanelWanted)
+			return;
+
+		m_MyTestPanelWanted = wanted;
+		bool open = m_MyPanel.IsOpen();
+		Print("[MY-TEST] panel file " + wanted.ToString() + ", panel open " + open.ToString());
+		if (wanted != open)
+			m_MyPanel.Toggle();
+	}
+}
+#endif
+```
+
+- Create or delete the file in the client's `-profiles=` folder, the one `$profile:` resolves to on the
+  client, and wait for the hook's log line before you capture: it checks every 0.5 s.
+- Keep the hook out of the repository. BattleRoyale kept it in its run folder
+  (`br-runs/leaderboard-2026-11-18/test-hooks/BRTestLeaderboard.c`), and no commit contains it.
+- Signatures: `MissionGameplay.OnUpdate(float timeslice)` (`scripts/5_mission/mission/missiongameplay.c:287`)
+  and `FileExist(string name)` (`scripts/1_core/proto/ensystem.c:397`).
+- The hook tests the panel, not its key: check the binding by hand, or read it with `input_describe`.
+
+## Client crash when a mission ends under DayZ-MCP: RestApi worker crash at bridge teardown (added 2026-11-18)
+
+Measured in the BattleRoyale runs of 2026-11-05 to 18 on DayZDiag 1.30.164289.70 (exe timestamp 2026/11/04 18:53:50),
+one dedicated server and one client, both with `@DayZ_MCP`. The offsets below are that build's; an update moves them.
+
+[EXACT][CLAIM-TEST-HARNESS-TEARDOWN-CRASH-130] The client can die with a native crash when a mission ends and the
+client keeps running: kicked by the server (`DisconnectPlayer`), connected while the server exits, or after its own
+`AbortMission`. Its `crash_<session>.log` reads "Unhandled exception", either an access violation whose first frame is
+`[CDPInitServer]` at an address ending in `f5fc` or `f710`, or SEH `0xc0000374` (heap corruption) under
+`[RtlIsZeroMemory]` (with `free_base` on the analyzed stack). Comparing each crash log's whole-second timestamp
+(`HH:MM:SS`) against the last `[MCP-CLIENT] shutdown first entry` in the full `script_<session>.log` (milliseconds
+truncated to `HH:MM:SS`, with no pre-crash timestamp filter; `scripts/mcp_timing.py:24-37`, `crash_table.txt:4-36`),
+all 29 matching crashes have a whole-second delta of `+0` to `+2` s (`+0` in 13 cases, which only establishes the same
+clock second; `+1` in 15; `+2` in 1), and all 29 match `Leaked 'MCPClientPollCallback'` after that last marker with
+`reset_skipped=0`. In the per-session classifier (`scripts/teardown_rate.py:21-54`, which evaluates `menu`
+and `exit` after the first `[MCP-CLIENT] shutdown first entry` per `script_<stamp>.log`
+(`:25-28`), reads only the first 300,000 characters of `crash_<stamp>.log` (`:34`) and uses only the first
+`Unhandled exception` regex match (`:35`)—matching `crash` solely on that match's first-frame suffix `f5fc`/`f710` or
+`RtlIsZeroMemory` with `0xc0000374`, without verifying the RVA or full stack per crash (`:35-47`)—and assigns one
+mutually exclusive bucket per session in order `crash`, `exit`, `menu`, `unknown`; `teardown_rate.txt:1-18`),
+BattleRoyale sessions yielded 29 `crash`, 34 `menu` (33 `menu` + 1 `menu+other_crash` with signature `98c8`), 7 `exit`
+(`~DayZGame()`), and 9 `unknown` (8 `unknown` + 1 `unknown+other:9bf2` with a session-end/fail event),
+while non-BR sessions yielded 53 `exit` and 0 `crash`. Thus 29/63 (46 %) is a per-session share among the 63
+BattleRoyale sessions classified as `crash` or `menu` (not a count of individual teardowns and not a per-crash
+verification of the RestApi worker: a session whose first teardown returns to the menu is bucketed as `crash` if the
+first `Unhandled exception` match within the first 300,000 characters of `crash_<stamp>.log` carries that first-frame
+signature, whereas an entry beyond 300,000 characters or after an earlier `Unhandled exception` match is not reached,
+`:34-47`, and the 9 `unknown` sessions are excluded), and 0/60 `exit` (7 BR + 53 non-BR) reflects `crash`-before-`exit`
+precedence rather than an independent full-exit test.
+
+[EXACT][CLAIM-TEST-DIAG-CRASH-FRAME-NAMES-130] In the analyzed DayZDiag 1.30.164289.70 crash logs
+(`crash_summary.txt:3-39`, `REPORT.md:57-59`), `REPORT.md:57-59` records only three exported networking symbols
+(`CDPCreateClient`, `CDPCreateServer`, `CDPInitServer`), and the `...f5fc` and `...f710` AV frames—as well as unrelated
+crash frames in `crash_summary.txt`—are labeled `[CDPInitServer]` (other unrelated frames show `[CDPCreateServer]` or
+`SymGetSymFromAddr`), so `[CDPInitServer]` on a crash frame does not by itself indicate a networking function. To
+resolve the real function in this binary, step candidate RVAs in `.text` by 64 KiB (`0x10000`), preserving the
+ASLR-invariant low 16 bits of the thread-start return (`0xbddf`), and test deltas normalized to each crash's
+thread-start return (`scripts/find_thread.py:80-98`, `find_thread.txt:1-4`): combining the AV site (`...f5fc`) from
+`crash_2026-11-18_00-36-00.log` with the inner return frames (`...f726`, `...11ee`) from heap-corruption
+`crash_2026-11-16_15-50-18.log` yields one candidate (`score=4`) where all three return addresses follow a `call` and
+the candidate AV RVA (`0xa6f5fc`) and heap-crash caller return (`0xa6f726`) share one `.pdata` function, then
+disassemble at `ImageBase 0x140000000` plus the RVA (`rest_worker_disasm.txt:2`). On this build the resolved
+heap-corruption stack (`crash_2026-11-16_15-50-18.log`) passes through `call 0x140a711b0` at `0xa6f721` (return address
+`0xa6f726` on the stack, where `0xa6f726` is `mov rax, [rbx+0x28]`; `rest_worker_disasm.txt:172-175`), whose callee
+(`0xa711b0`-`0xa71220`) calls `0x12f61c0` (`jmp 0x12f6de8`; `rest_worker_disasm.txt:204, 220-226`, return `0xa711ee`),
+in RVA `0xa6f528`-`0xa6f758`: the engine's RestApi worker loop. In that same function, candidate RVA `0xa6f5fc` is a
+memory write (`mov DWORD PTR [rax+0x1c], ecx`; `rest_worker_disasm.txt:95-98`) that stores the HTTP status before
+comparing `ecx` with 301 (`0x12d`), the loop sets state 3 (`EREST_SUCCESS` in `restapi.c:10-13`), and its FILE branch
+(`0xa71220`) references `[RestApi] !!! (file %s) ...`. However, `crash_2026-11-18_00-36-00.log` (`00:37:57`) logs an
+illegal read at `0xffffffffffffffff` (`crash_summary.txt:39`), whereas `0xa6f5fc` writes to memory
+(`rest_worker_disasm.txt:97`); the logged illegal write at `...f5fc` (`0x38382e301c`, whose upper four bytes
+`0x38382e30` hold the ASCII characters `"0.88"` in little-endian preceded by the low byte `0x1c`; `crash_summary.txt:30`)
+belongs to a different crash (`crash_2026-11-15_19-31-11.log`) that was not included in `scripts/find_thread.py:80-98`.
+The same function also contains a candidate instruction matching the `f710` suffix (`0xa6f710`,
+`cmp BYTE PTR [rdx], 0x0`; `rest_worker_disasm.txt:167`), and `scripts/find_thread.py:80-98` did not run on any frame
+from the three `...f710` crashes (`crash_summary.txt:12, 13, 22`), so those crashes are not resolved to that function.
+
+- AV site attribution ([INFERRED]): attributing the `00:37:57` AV (`crash_2026-11-18_00-36-00.log`) to `0xa6f5fc` in
+  the RestApi worker loop remains an inference while the read-vs-write discrepancy is open: the `score=4` candidate
+  supports it by placing the delta in the same `.pdata` function as `0xa6f726` (`scripts/find_thread.py:80-98`,
+  `find_thread.txt:1-4`), but `crash_summary.txt:39` records an illegal read whereas `0xa6f5fc` writes to memory
+  (`rest_worker_disasm.txt:95-98`), and the logged illegal write at `...f5fc` (`crash_summary.txt:30`) belongs to a
+  separate crash excluded from that calculation.
+- Pointer provenance ([INFERRED]): the invalid target addresses at `f5fc` and the `0xc0000374` crash along the
+  `0xa711b0` -> `0x12f61c0` (`free`) path are consistent with prematurely freed or reused memory, but do not establish
+  the allocation history or rule out earlier corruption (`crash_summary.txt:30, 39`, `rest_worker_disasm.txt:95-98, 195-205`).
+- Bridge teardown contract: [EXACT][CLAIM-TEST-MCP-BRIDGE-SHUTDOWN-RESET-130] in `dayz-mcp@a41580f4`, `MCPClientBridge`
+  shares one `RestContext` (`m_Ctx` and `m_PollCtx` from `GetRestContext` on the same URL via `PollContextUrl`) for
+  both poll `GET` and result `POST` (`MCPClientBridge.c@a41580f4:414-415, 492, 580-589, 4305`; vanilla
+  `3_game/http/restapi.c:152-155`). `Shutdown()` calls `m_Ctx.reset()` when `m_Ctx && !postedTerminal`
+  (`MCPClientBridge.c@a41580f4:4365, 4380-4399, 4479-4485`; `postedTerminal` is set unconditionally after calling
+  `PostUiDialogJob(m_DialogJob)` even if `PostResult()` returns early before `m_Ctx.POST()`, e.g. on serialization
+  failure or missing `m_Configured`/`m_Ctx`, `:3546-3578, 4282-4305`).
+- Cause ([INFERRED], in part a hypothesis): a grep of four client PBOs for three `RestApi`/context-acquisition names
+  (`GetRestContext`, `CreateRestApi`, `GetRestApi(`; `REPORT.md:83-92`) found 9 hits in `@DayZ_MCP` (`DayZ_MCP.pbo`),
+  0 hits in `@BR-180B1` `scripts_client.pbo` and `@CF`, and 5 hits in `@BR-COT` `scripts.pbo` (`JMWebhookModule`,
+  whose `JMWebhookConnection.Post` is gated on `Enabled && !IsMissionClient()`). That search does not establish that
+  the bridge was the sole client-side REST sender: it only searched those three acquisition names (not `RestContext`
+  request methods such as `GET` or `POST` called on an already-created `RestContext`, vanilla
+  `3_game/http/restapi.c:103, 123, 155`), and it did not cover every mod loaded in the crash sample (several included
+  crashes also loaded `@Dabs`, `crash_summary.txt:3-6, 8-10`). None of the 29 matching crashes printed
+  `rest reset skipped` (`crash_table.txt:4-36`, `scripts/mcp_timing.py:24-32`). Whether a poll `GET` or result `POST`
+  was actually in flight when `reset()` ran (`scripts/mcp_timing.py:24-32` checks `rest reset skipped` and
+  `Leaked 'MCPClientPollCallback'`, not in-flight request state) and whether `RestContext.reset()` (documented in
+  script only as `"Clear all pending requests and buffers"`, vanilla `3_game/http/restapi.c:130-133`) natively frees an
+  active request are both unverified parts of the hypothesis. A controlled A/B comparison that suppresses `m_Ctx.reset()`
+  under the same mission-teardown workload with logged in-flight request state can measure `reset()`'s contribution to
+  crash incidence, but—even with a reproducible difference—would not by itself identify which request failed, when it
+  was freed, or the native freeing mechanism: the worker services requests from the shared context used for both poll
+  `GET` and result `POST` (`MCPClientBridge.c@a41580f4:414-415, 492, 4305`), and `Shutdown()` also modifies the
+  references of both callback types (`MCPClientBridge.c@a41580f4:4425-4504`). The existing `29/63` figure
+  (`teardown_rate.txt:1-7`) is a per-session share over outcome-selected BR sessions where a session can contain
+  multiple teardowns and in-flight request state was not logged (`scripts/teardown_rate.py:21-54`), so it does not
+  provide a baseline per-teardown crash probability for an uncalibrated clean-run count.
+- What to do: on the same `DayZDiag_x64.exe` build, only treat a crash near `[MCP-CLIENT] shutdown first entry` (`+0` to
+  `+2` s whole-second delta) as a RestApi worker teardown crash—rather than automatically a mod bug—after pinning the
+  binary and resolving the RVA or confirming the stack passes through the RestApi worker for **both** variants: even
+  within `1.30.164289.70`, distinct functions share a 16-bit suffix (e.g. `0xa6f5fc` vs `0x128f5fc`,
+  `find_thread.txt:1-7`), and `0xc0000374` alone is generic heap corruption. Even then, check whether the mod under test
+  or other loaded client mods use `RestApi`; because the DayZ-MCP bridge shares one `RestContext` for poll `GET` and
+  result `POST`, the worker stack alone does not separate poll `GET` from result `POST`. Tracked in a DayZ-MCP inbox
+  ticket; re-verify or remove this finding once that ticket is resolved.
+- `crash_*.log` is not only handled exceptions (`SKILL.md`, TROUBLESHOOTING, "Logs"): an "Unhandled exception" entry
+  is a native crash that ended the process.
+- Scope of measurement: no run without `@DayZ_MCP` and no retail client (`DayZ_x64.exe`) was measured (the non-BR
+  control sessions still loaded `@DayZ_MCP`, `REPORT.md:114-131`), so whether players without the harness hit a related
+  crash—or whether earlier heap corruption could surface in the allocator path (`rest_worker_disasm.txt:195-205`)—is
+  unmeasured.
