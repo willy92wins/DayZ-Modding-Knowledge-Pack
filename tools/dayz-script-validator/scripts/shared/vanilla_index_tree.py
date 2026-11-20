@@ -40,9 +40,10 @@ gives the tree's digest as spelt and with the paths casefolded, in the order
 of their casefolded parts, which for a tree whose paths are lower-case ASCII
 is the generator's digest itself: so an index written before the casefolded
 digest existed, from such a tree, is still read for a copy in other ASCII
-capitals; and, when no two paths share the same lower-case spelling, an
-older index of a tree with capitals still matches the same spelling in
-either POSIX or Windows path order.
+capitals; and, when it recorded the same .c files (an older POSIX index of a
+tree with upper-case .C files omitted them) and no two paths share the same
+lower-case spelling, an older index of a tree with capitals still matches
+the same spelling in either POSIX or Windows path order.
 """
 
 import hashlib
@@ -181,11 +182,13 @@ def tree_digests(files, vanilla_root, *, include_platform_orders=False):
     include_platform_orders is true, also returns the spelt digest in POSIX
     path-part order and in Windows lower-case path-part order (breaking ties
     by spelt parts), so an index written before tree_digest_casefold_v1
-    matches across platforms when no two paths share the same lower-case
-    spelling; when two paths tie in lower case, Windows Path sorting
-    preserves directory traversal order, which cannot be reconstructed from
-    the names alone. A path UTF-8 cannot write raises UnicodeEncodeError,
-    and a file that cannot be read OSError.
+    matches across platforms when it recorded the same .c files (an older
+    POSIX index of a tree with upper-case .C files omitted them, so its
+    counts and digest do not match until rebuilt) and no two paths share the
+    same lower-case spelling; when two paths tie in lower case, Windows Path
+    sorting preserves directory traversal order, which cannot be
+    reconstructed from the names alone. A path UTF-8 cannot write raises
+    UnicodeEncodeError, and a file that cannot be read OSError.
     """
     root = pathlib.Path(vanilla_root)
     spelt = []
@@ -240,8 +243,10 @@ def _whole_index_of_tree(recorded, tree_files, tree_bytes, tree_digests_of):
     casefolded, with equal contents. An index without the casefolded digest,
     written before it, so matches a copy of its tree in other ASCII capitals
     when its own tree had lower-case ASCII paths, and matches the same
-    spelling across POSIX and Windows path orders when no two paths share
-    the same lower-case spelling.
+    spelling across POSIX and Windows path orders when it recorded the same
+    .c files (an older POSIX index of a tree with upper-case .C files
+    omitted them, so it is rejected at _numbers_match until rebuilt) and no
+    two paths share the same lower-case spelling.
     """
     if not _numbers_match(recorded, tree_files, tree_bytes):
         return False

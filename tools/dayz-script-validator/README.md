@@ -410,10 +410,12 @@ order of their casefolded parts, which the generator records as
 two are one, so an index written before `tree_digest_casefold_v1` from such
 a tree, as `P:\scripts` and the extractions this pack describes are, is read
 for a copy in any ASCII capitals. One written from a copy with capitals is
-read for that spelling only (in either POSIX or Windows path-part order
-when no two paths share the same lower-case spelling; when two paths tie
-in lower case, Windows `Path` sorting preserves directory traversal order
-and is not guaranteed to match across platforms), until it is rebuilt;
+read for that spelling only, provided the older index recorded the same `.c`
+files (an older POSIX index of a tree with upper-case `.C` files omitted
+them, so its counts and digest do not match) and, across POSIX and Windows
+path-part orders, no two paths share the same lower-case spelling (when two
+paths tie in lower case, Windows `Path` sorting preserves directory traversal
+order and is not guaranteed to match across platforms), until it is rebuilt;
 likewise, for a non-ASCII lower-case letter whose
 `casefold` differs from its lower case (`ß` folds to `ss`), `tree_digest`
 and `tree_digest_casefold_v1` differ, so an older index without
@@ -423,9 +425,13 @@ system that tells capitals apart, has no casefolded digest and is compared
 as spelt. A path that UTF-8 cannot write (an unpaired surrogate, which NTFS
 keeps) or a file that cannot be read while hashing leaves the tree's
 digest uncompared: no file beside the default index matches, so the
-default index is read and the run warns, or gives its SKIP line, as
-before files beside it were read. `casefold` also folds a few letters that
-are not ASCII (`ß` and `ss`, say); DayZ's script paths are ASCII.
+default index is read and the index check returns its warning or SKIP line,
+as before files beside it were read (when `--game-root` or `DAYZ_GAME_ROOT`
+is also active, `compare_vanilla_build` opens matching `.c` files from the
+tree without catching `OSError`, so an unreadable file can abort the run
+before any warning, SKIP line or result is produced). `casefold` also folds
+a few letters that are not ASCII (`ß` and `ss`, say); DayZ's script paths
+are ASCII.
 
 Two limits remain:
 
