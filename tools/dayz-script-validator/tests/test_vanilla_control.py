@@ -362,6 +362,49 @@ class TestIndexBesideTheDefault(unittest.TestCase):
         self.assertTrue(lines[0].startswith("UPDATED"))
         self.assertIsNone(vanilla_reference.loaded_index_path())
 
+    def test_an_index_appearing_after_initial_check_is_not_read(self):
+        # An index published after main()'s initial loaded_index_path() check
+        # must not be read by collect_run(): the control stays PASS and
+        # --update does not record VANILLA-INDEX-TREE-MISMATCH in the baseline.
+        self.beside.unlink()
+        code, _lines = self._main("--update")
+        self.assertEqual(0, code)
+        other_tree = self.temp_dir / "other" / "scripts"
+        other_tree.mkdir(parents=True)
+        (other_tree / "other.c").write_text("class Other\n{\n}\n")
+        other_doc = build_vanilla_index.build_index_document(other_tree)
+        real_load = vanilla_control.load_baseline
+
+        def load_and_publish(path):
+            build_vanilla_index.write_index(other_doc, self.default)
+            return real_load(path)
+
+        with mock.patch.object(
+            vanilla_control, "load_baseline", side_effect=load_and_publish
+        ):
+            code, lines = self._main()
+        self.assertEqual(0, code)
+        self.assertTrue(lines[0].startswith("PASS"))
+
+        self.default.unlink()
+        with mock.patch.object(
+            vanilla_control, "load_baseline", side_effect=load_and_publish
+        ):
+            code, lines = self._main("--update")
+        self.assertEqual(0, code)
+        self.assertTrue(lines[0].startswith("UPDATED"))
+        saved = json.loads(self.baseline.read_text(encoding="utf-8"))
+        self.assertNotIn(
+            "VANILLA-INDEX-TREE-MISMATCH", saved.get("warning_counts") or {}
+        )
+
+        # After collect_run() returns, local index loading is active again: a
+        # subsequent control run sees the published default index and SKIPs.
+        code, lines = self._main()
+        self.assertEqual(2, code)
+        self.assertTrue(lines[0].startswith("SKIP"))
+        self.assertIn("(%s)" % self.default, lines[0])
+
 
 class TestUnexplainedEntries(unittest.TestCase):
     def test_entries_without_a_note_are_named(self):

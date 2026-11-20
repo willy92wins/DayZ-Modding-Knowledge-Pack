@@ -7244,34 +7244,91 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
                     str(beside), result["info"]["vanilla_index"]["index"]
                 )
 
-    def test_an_unreadable_file_during_digest_skips_instead_of_warning(self):
-        # A .c file that allows stat() but denies open() cannot be hashed:
-        # the tree could not be read, so this rule reports a SKIP instead of
-        # discarding the read error and warning on the default index.
+    def test_an_old_index_with_capitals_matches_both_posix_and_windows_orders(
+        self,
+    ):
+        # An index written before tree_digest_casefold_v1 sorted files with the
+        # host platform's Path order (Z.c before a.c on POSIX; a.c before Z.c
+        # on Windows). Either order must match the same tree on any platform.
         self._index(self.stable)
-        self._index(self.experimental, self._beside("experimental"))
-        blocked = (self.experimental / "4_world" / "fx_liquid.c").resolve()
-        real_path_open = pathlib.Path.open
+        mixed = self._write(
+            self.base / "mixed" / "scripts",
+            {
+                "4_world/Z.c": b"class Z_Only\n{\n}\n",
+                "4_world/a.c": b"class A_Only\n{\n}\n",
+            },
+        )
+        posix_order = [mixed / "4_world" / "Z.c", mixed / "4_world" / "a.c"]
+        windows_order = [mixed / "4_world" / "a.c", mixed / "4_world" / "Z.c"]
+        posix_digest = build_vanilla_index.tree_digest(posix_order, mixed)
+        windows_digest = build_vanilla_index.tree_digest(windows_order, mixed)
+        self.assertNotEqual(posix_digest, windows_digest)
+        base_doc = build_vanilla_index.build_index_document(mixed)
+        base_doc.pop("tree_digest_casefold_v1", None)
+        beside = self._beside("mixed")
+        for order_name, digest in (
+            ("posix", posix_digest),
+            ("windows", windows_digest),
+        ):
+            with self.subTest(order=order_name):
+                self._put(dict(base_doc, tree_digest=digest), beside)
 
-        def deny_file_open(path_self, *args, **kwargs):
-            if path_self.resolve() == blocked:
-                raise PermissionError("denied")
-            return real_path_open(path_self, *args, **kwargs)
+                code, result = self._run(mixed)
 
-        with mock.patch.object(pathlib.Path, "open", new=deny_file_open):
-            code, result = self._run(self.experimental)
+                self.assertEqual(0, code)
+                self.assertEqual([], result["warnings"])
+                info = result["info"]["vanilla_index"]
+                self.assertEqual(str(beside), info["index"])
+                self.assertTrue(info["matches"])
+
+    def test_uppercase_c_extension_matches_lower_case_index_under_posix_glob(
+        self,
+    ):
+        # Upper-case .C extensions are the same tree up to capitals: even under
+        # case-sensitive (POSIX) glob semantics, collect_c_files must include
+        # them so the lower-case index matches.
+        self._index(self.stable)
+        beside = self._beside("experimental")
+        self._legacy(self.experimental, beside)
+        upper_ext = self._write(
+            self.base / "upper_ext" / "scripts",
+            {
+                "1_Core/Proto/fx_managed.C": self.EXPERIMENTAL[
+                    "1_core/proto/fx_managed.c"
+                ],
+                "4_World/FX_Liquid.C": self.EXPERIMENTAL["4_world/fx_liquid.c"],
+                "4_World/FX_Liquid_Cursor.C": self.EXPERIMENTAL[
+                    "4_world/fx_liquid_cursor.c"
+                ],
+            },
+        )
+        real_rglob = pathlib.Path.rglob
+
+        def posix_rglob(path_self, pattern, *args, **kwargs):
+            if pattern == "*.c" and "case_sensitive" not in kwargs:
+                try:
+                    return real_rglob(
+                        path_self, pattern, *args, case_sensitive=True, **kwargs
+                    )
+                except TypeError:
+                    return (
+                        path
+                        for path in real_rglob(
+                            path_self, pattern, *args, **kwargs
+                        )
+                        if path.name.endswith(".c")
+                    )
+            return real_rglob(path_self, pattern, *args, **kwargs)
+
+        with mock.patch.object(pathlib.Path, "rglob", new=posix_rglob):
+            code, result = self._run(upper_ext)
 
         self.assertEqual(0, code)
-        self.assertEqual([], self._index_warnings(result))
-        self.assertNotIn("vanilla_index", result["info"])
-        skips = self._index_skips(result)
-        self.assertEqual(1, len(skips))
-        self.assertIn("was not read", skips[0]["reason"])
-        self.assertIn("denied", skips[0]["reason"])
-        self.assertIn(str(self.default), skips[0]["reason"])
-        self.assertEqual(
-            str(self.default), str(vanilla_reference.loaded_index_path())
-        )
+        self.assertEqual([], result["warnings"])
+        info = result["info"]["vanilla_index"]
+        self.assertEqual(str(beside), info["index"])
+        self.assertEqual(3, info["tree_files"])
+        self.assertTrue(info["matches"])
 
 
 if __name__ == "__main__":

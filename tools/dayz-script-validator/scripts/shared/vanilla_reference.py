@@ -22,6 +22,7 @@ or reports a SKIP when the default index cannot be compared with the tree.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 import json
 from pathlib import Path
 
@@ -34,6 +35,7 @@ _index_path_override = None
 _index_path_sibling = None
 _index_loaded = False
 _index_data = None
+_index_disabled = False
 
 # Member variables declared in a vanilla base class. Used by
 # ES-MEMBER-REDECLARE-BASE (CANDIDATE-13): a mod class extending one of these
@@ -86,6 +88,18 @@ def reset_index_cache():
     _index_path_sibling = None
 
 
+@contextmanager
+def without_local_index():
+    """Run with only the curated tables, reading no local index from disk."""
+    global _index_disabled
+    previous = _index_disabled
+    _index_disabled = True
+    try:
+        yield
+    finally:
+        _index_disabled = previous
+
+
 def _index_path():
     if _index_path_override is not None:
         return Path(_index_path_override)
@@ -122,6 +136,8 @@ def _read_index(path):
 
 def _load_index():
     global _index_loaded, _index_data
+    if _index_disabled:
+        return None
     if _index_loaded:
         return _index_data
     _index_loaded = True
@@ -163,7 +179,7 @@ def use_sibling_index(built_from_tree):
     set_index_path_for_tests is never replaced.
     """
     global _index_path_sibling, _index_loaded, _index_data
-    if _index_path_override is not None:
+    if _index_disabled or _index_path_override is not None:
         return None
     default = default_index_path()
     try:

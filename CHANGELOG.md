@@ -100,31 +100,33 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   of the tree's: two trees can share the count and the bytes (one identifier renamed to another of the same length
   is enough), and a file beside the default index taken on those two numbers would silence
   `VANILLA-INDEX-TREE-MISMATCH` and report a match. The digest is compared up to the capitals of the paths, as the
-  comparison with the PBO takes them: each file is read once for the tree's digest as spelt and with the paths
-  casefolded, in the order of their casefolded parts, and the generator now also writes the second, as
-  `tree_digest_casefold_v1` (`tree_digest` itself does not change). For a tree in lower case the two are one, so an
-  index written before from such a tree is read for a copy in other capitals too; a tree with two paths that
-  casefold alike is compared as spelt only. A path UTF-8 cannot write or a file that cannot be read while hashing
-  leaves the tree uncompared. The tree is hashed only when a file beside the default index has its two numbers; the
-  default index is still compared by the two numbers alone. When no file is of the tree, the default index is read
-  and the run warns, or gives its SKIP line, as before; the warning now also offers `--out` with such a name. Only
-  the default file was read until now, so on 2026-11-18 three addons tested on DayZ 1.30.164393 Experimental,
-  validated against that tree while the default index was of 1.30.164289, warned on every run and were judged with
-  the stable build's members and signatures. With `vanilla_index.json.164393` beside the default index they are PASS
-  against the Experimental tree and against the default one, and 164393's
-  `targetconditionscomponents` folder gives none of the five false `ES-MEMBER-REDECLARE-BASE` findings. A path set
-  with `set_index_path_for_tests` is the only file read, and without a default index that loads nothing beside it
-  is read. `reset_index_cache()` also forgets a file read beside it, and `vanilla_control.py` reads the default
-  index from disk before deciding to SKIP, so the control behaves as in a new process after a validation earlier in
-  the same one, also with the default index moved away under another name in its folder. On the owner's PC, against
-  the 164393 tree, the choice took 1.50 to 2.53 s, hashing the tree included, and each of those runs took 1.1 to
-  3.0 s more than before, with other work running on the PC; a copy of that tree whose paths keep the PBO's capitals
-  goes from WARN to PASS on the same `vanilla_index.json.164393`. Three limits are left as they are: only the outer
-  form of the tables is checked, so a file beside the default index with the tree's digest and a damaged table
-  inside is read; a tree changed between its count and its hash, or while the generator reads it, is not seen; and
-  an index that appears while the vanilla control runs is read by its validation, whose findings `--update` would
-  write into the baseline. `tools/dayz-script-validator/.gitignore` ignores those files, which are derived from
-  Bohemia's scripts like the default index. See the README's "Which tree the vanilla index is".
+  comparison with the PBO takes them: `collect_c_files` matches `.c` regardless of case on POSIX as well as Windows,
+  each file is read once for the tree's digest as spelt (checked in both POSIX and Windows path-part order for
+  indexes written before `tree_digest_casefold_v1`) and with the paths casefolded, in the order of their casefolded
+  parts, and the generator now also writes the second, as `tree_digest_casefold_v1` (`tree_digest` itself does not
+  change). For a tree whose paths are lower-case ASCII the two are one, so an index written before from such a tree
+  is read for a copy in other ASCII capitals too; a tree with two paths that casefold alike is compared as spelt
+  only. A path UTF-8 cannot write or a file that cannot be read while hashing leaves the tree uncompared. The tree is
+  hashed only when a file beside the default index has its two numbers; the default index is still compared by the
+  two numbers alone. When no file is of the tree, the default index is read and the run warns, or gives its SKIP
+  line, as before; the warning now also offers `--out` with such a name. Only the default file was read until now, so
+  on 2026-11-18 three addons tested on DayZ 1.30.164393 Experimental, validated against that tree while the default
+  index was of 1.30.164289, warned on every run and were judged with the stable build's members and signatures. With
+  `vanilla_index.json.164393` beside the default index they are PASS against the Experimental tree and against the
+  default one, and 164393's `targetconditionscomponents` folder gives none of the five false
+  `ES-MEMBER-REDECLARE-BASE` findings. A path set with `set_index_path_for_tests` is the only file read, and without
+  a default index that loads nothing beside it is read. `reset_index_cache()` also forgets a file read beside it, and
+  `vanilla_control.py` reads the default index from disk before deciding to SKIP and suppresses local index loading
+  during its validation run, so the control behaves as in a new process after a validation earlier in the same one
+  (also with the default index moved away under another name in its folder) and does not read an index that appears
+  after its initial check. On the owner's PC, against the 164393 tree, the choice took 1.50 to 2.53 s, hashing the
+  tree included, and each of those runs took 1.1 to 3.0 s more than before, with other work running on the PC; a copy
+  of that tree whose paths keep the PBO's capitals goes from WARN to PASS on the same `vanilla_index.json.164393`.
+  Two limits are left as they are: only the outer form of the tables is checked, so a file beside the default index
+  with the tree's digest and a damaged table inside is read; and a file added after `collect_c_files` is not seen
+  during validation, while a file edited after being parsed during generation leaves the index with earlier tables
+  and later digests. `tools/dayz-script-validator/.gitignore` ignores those files, which are derived from Bohemia's
+  scripts like the default index. See the README's "Which tree the vanilla index is".
 
 ### Fixed
 

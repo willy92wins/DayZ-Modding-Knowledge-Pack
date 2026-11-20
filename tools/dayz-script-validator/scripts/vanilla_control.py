@@ -25,6 +25,7 @@ from shared.input_errors import discover_files  # noqa: E402
 from shared.vanilla_reference import (  # noqa: E402
     loaded_index_path,
     reset_index_cache,
+    without_local_index,
 )
 from shared.vanilla_tree import resolve_vanilla_root  # noqa: E402
 
@@ -198,7 +199,10 @@ def collect_run(vanilla_root):
     root = Path(vanilla_root).resolve()
     # The tree is its own vanilla root: without it ES-UNDEFINED-CLASS-REF
     # would SKIP and the control would prove nothing about that rule.
-    result = validate_addon(root, vanilla_root=root)
+    # Suppress local index loading after main()'s initial check so an index
+    # appearing in between is not read into findings or a baseline update.
+    with without_local_index():
+        result = validate_addon(root, vanilla_root=root)
     files = discover_files(root)
     return {
         "errors": list(result.get("errors") or []),

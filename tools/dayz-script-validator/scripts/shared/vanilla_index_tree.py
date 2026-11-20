@@ -37,9 +37,11 @@ The digest is compared up to the capitals of the paths: an extraction that
 keeps a PBO's own (4_World/...) is the same tree as one in lower case, as
 shared/vanilla_build.py already takes them against the PBO. tree_digests
 gives the tree's digest as spelt and with the paths casefolded, in the order
-of their casefolded parts, which for a tree in lower case is the generator's
-digest itself: so an index written before the casefolded digest existed,
-from a tree in lower case, is still read for a copy in other capitals.
+of their casefolded parts, which for a tree whose paths are lower-case ASCII
+is the generator's digest itself: so an index written before the casefolded
+digest existed, from such a tree, is still read for a copy in other ASCII
+capitals; and an older index of a tree with capitals still matches the same
+spelling in either POSIX or Windows path order.
 """
 
 import hashlib
@@ -91,7 +93,8 @@ def collect_c_files(vanilla_root):
     """The .c files the index covers, in the order its digest reads them.
 
     build_vanilla_index.py imports this one: the generator and the
-    comparison below must count the same files. Unlike Path.rglob, an
+    comparison below must count the same files. Extension matching is
+    case-insensitive on both POSIX and Windows. Unlike Path.rglob, an
     unreadable folder raises OSError instead of being silently left out.
     """
     root = pathlib.Path(vanilla_root)
@@ -104,7 +107,7 @@ def collect_c_files(vanilla_root):
                 if entry.is_dir(follow_symlinks=False):
                     pending.append(pathlib.Path(entry.path))
                 elif (
-                    os.path.normcase(entry.name).endswith(".c")
+                    entry.name.lower().endswith(".c")
                     and entry.is_file()
                 ):
                     files.append(pathlib.Path(entry.path))
@@ -163,7 +166,7 @@ def _digest(entries):
     return digest.hexdigest()
 
 
-def tree_digests(files, vanilla_root):
+def tree_digests(files, vanilla_root, *, include_platform_orders=False):
     """The digest of the tree's .c files as spelt, and casefolded.
 
     files as collect_c_files gives them. Each file is read once. The first is
@@ -173,18 +176,40 @@ def tree_digests(files, vanilla_root):
     records as tree_digest_casefold_v1, takes the paths casefolded and in the
     order of their casefolded parts, so that two spellings of one tree give
     one digest; it is None when two paths casefold alike, which on a file
-    system that tells capitals apart are two files. A path UTF-8 cannot
-    write raises UnicodeEncodeError, and a file that cannot be read OSError.
+    system that tells capitals apart are two files. When
+    include_platform_orders is true, also returns the spelt digest in POSIX
+    path-part order and in Windows path-part order so an index written
+    before tree_digest_casefold_v1 matches across platforms. A path UTF-8
+    cannot write raises UnicodeEncodeError, and a file that cannot be read
+    OSError.
     """
     root = pathlib.Path(vanilla_root)
     spelt = []
     for path in files:
         spelt.append((path.relative_to(root).as_posix(), _file_sha256(path)))
+    spelt_digest = _digest(spelt)
     folded = [(relative.casefold(), content) for relative, content in spelt]
     if len({relative for relative, _content in folded}) != len(folded):
-        return _digest(spelt), None
-    folded.sort(key=lambda entry: entry[0].split("/"))
-    return _digest(spelt), _digest(folded)
+        folded_digest = None
+    else:
+        folded.sort(key=lambda entry: entry[0].split("/"))
+        folded_digest = _digest(folded)
+    if not include_platform_orders:
+        return spelt_digest, folded_digest
+    posix_spelt = sorted(spelt, key=lambda entry: entry[0].split("/"))
+    windows_spelt = sorted(
+        spelt,
+        key=lambda entry: (
+            [part.lower() for part in entry[0].split("/")],
+            entry[0].split("/"),
+        ),
+    )
+    return (
+        spelt_digest,
+        folded_digest,
+        _digest(posix_spelt),
+        _digest(windows_spelt),
+    )
 
 
 def _is_digest(value):
@@ -205,11 +230,13 @@ def _whole_index_of_tree(recorded, tree_files, tree_bytes, tree_digests_of):
     is one of the tree's. tree_digests_of() hashes the tree, and is called
     only once the numbers match.
 
-    Any of the four pairs is the same tree up to the capitals of its paths:
-    both streams have one form, so equal digests mean equal paths, as spelt
-    or casefolded, with equal contents. An index without the casefolded
-    digest, written before it, so matches a copy of its tree in other
-    capitals when its own tree was in lower case.
+    Any matching pair is the same tree up to the capitals of its paths:
+    each stream has one form, so equal digests mean equal paths, as spelt
+    (in given, POSIX or Windows path-part order) or casefolded, with equal
+    contents. An index without the casefolded digest, written before it,
+    so matches a copy of its tree in other ASCII capitals when its own tree
+    had lower-case ASCII paths, and matches the same spelling across POSIX
+    and Windows path orders.
     """
     if not _numbers_match(recorded, tree_files, tree_bytes):
         return False
@@ -240,7 +267,11 @@ def _digests_of(vanilla_root, files):
     def digests():
         if not hashed:
             try:
-                hashed.append(tree_digests(files, vanilla_root))
+                hashed.append(
+                    tree_digests(
+                        files, vanilla_root, include_platform_orders=True
+                    )
+                )
             except (OSError, UnicodeError):
                 hashed.append((None, None))
         return hashed[0]

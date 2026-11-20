@@ -400,36 +400,44 @@ report a match. Its digest is compared too, and the tree is hashed only
 when a file beside the default index has the tree's two numbers.
 
 That digest is compared up to the capitals of the paths, as the comparison
-with the PBO above takes them: an extraction that keeps the PBO's own
-capitals (`4_World/...`) and one in lower case are one tree. Each file is
-read once for two digests of the tree: as spelt, which is `tree_digest`,
-and with each relative path casefolded and the files in the order of their
-casefolded parts, which the generator records as `tree_digest_casefold_v1`.
-For a tree in lower case the two are one, so an index written before
-`tree_digest_casefold_v1` from such a tree, as `P:\scripts` and the
-extractions this pack describes are, is read for a copy in any capitals.
-One written from a copy with capitals is read for that spelling only, until
-it is rebuilt. A tree with two paths that casefold alike, two files on a
-file system that tells capitals apart, has no casefolded digest and is
-compared as spelt. A path that UTF-8 cannot write (an unpaired surrogate,
-which NTFS keeps) or a file that cannot be read while hashing leaves the
-tree uncompared: the default index is read and warns, as before files
-beside it were read. `casefold` also folds a few letters that are not
-ASCII (`ß` and `ss`, say); DayZ's script paths are ASCII.
+with the PBO above takes them: `collect_c_files` matches `.c` regardless of
+case on POSIX as well as Windows, so an extraction that keeps the PBO's own
+capitals (`4_World/...` or `.C`) and one in lower case are one tree. Each
+file is read once for two digests of the tree: as spelt, which is
+`tree_digest`, and with each relative path casefolded and the files in the
+order of their casefolded parts, which the generator records as
+`tree_digest_casefold_v1`. For a tree whose paths are lower-case ASCII the
+two are one, so an index written before `tree_digest_casefold_v1` from such
+a tree, as `P:\scripts` and the extractions this pack describes are, is read
+for a copy in any ASCII capitals. One written from a copy with capitals is
+read for that spelling only (in either POSIX or Windows path-part order),
+until it is rebuilt; likewise, for a non-ASCII lower-case letter whose
+`casefold` differs from its lower case (`ß` folds to `ss`), `tree_digest`
+and `tree_digest_casefold_v1` differ, so an older index without
+`tree_digest_casefold_v1` does not match another spelling (`ẞ`) until it is
+rebuilt. A tree with two paths that casefold alike, two files on a file
+system that tells capitals apart, has no casefolded digest and is compared
+as spelt. A path that UTF-8 cannot write (an unpaired surrogate, which NTFS
+keeps) or a file that cannot be read while hashing leaves the tree
+uncompared: the default index is read and warns, as before files beside it
+were read. `casefold` also folds a few letters that are not ASCII (`ß` and
+`ss`, say); DayZ's script paths are ASCII.
 
-Three limits remain:
+Two limits remain:
 
 - Only the outer form of the four tables is checked: a file beside the
   default index with the tree's digest and a table emptied, or a value of
   another type inside one, is read, and gives a false PASS or an
   exception. Rebuild an index that was damaged.
-- The tree is counted, then hashed from that list, and the generator
-  parses a tree before it hashes it: a file added or changed in between is
-  not seen, and an index of the tree as it was is read, with `matches`. Do
-  not change a tree while it is validated or indexed.
-- The vanilla control looks for a default index once, and the validation
-  it runs looks again: an index that appears in between is read, and
-  `--update` writes its findings into the baseline.
+- The tree is walked once (`collect_c_files`) before it is counted and
+  hashed, and the generator parses each file before it hashes that list: a
+  file added after the walk is not in the list (so an index of the prior
+  tree can still match), and a file edited during generation after being
+  parsed leaves the index with tables from the earlier content and digests
+  from the later content. A file already in the list whose bytes change
+  between the count and the hash produces a different digest and does not
+  match the prior sibling index. Do not change a tree while it is validated
+  or indexed.
 
 Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work
 running on the PC), on the 1.30.164393 tree in `P:\scripts` (3 059 `.c`
