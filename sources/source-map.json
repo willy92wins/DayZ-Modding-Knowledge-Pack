@@ -16689,9 +16689,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-11-18: new section 'Measured in-game on 2026-11-18 - two faults no offline check showed' (CLAIM-UI-TRANSLATESTRING-ONE-PER-EXPRESSION-130 runtime_verified, lines 1739-1765; CLAIM-UI-CHILD-OUTSIDE-PARENT-NOT-DRAWN-130 runtime_verified, lines 1781-1788; CLAIM-UI-VIEWER-DRAWS-OUTSIDE-PARENT offline_tested, lines 1798-1803) with a pointer to the dayz-test-ingame finding on UAInput-bound panels; one line each in STANDARD WORKFLOW step 5, the delivery checklist (layout and script) and the troubleshooting table. Evidence: BattleRoyale leaderboard runs ac881114, 20f9464d and 70e5cf20 (DayZDiag 1.30.164289.70), BattleRoyale commits 1c75060 and 25ef6f1, the dayz-layout-viewer source and its render of the layout from before the fix. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-11-18: new section 'Measured in-game on 2026-11-18 - two faults no offline check showed' (CLAIM-UI-TRANSLATESTRING-ONE-PER-EXPRESSION-130 runtime_verified, lines 1739-1765; CLAIM-UI-CHILD-OUTSIDE-PARENT-NOT-DRAWN-130 runtime_verified, lines 1784-1791; CLAIM-UI-VIEWER-DRAWS-OUTSIDE-PARENT offline_tested, lines 1801-1806) with a pointer to the dayz-test-ingame finding on UAInput-bound panels; one line each in STANDARD WORKFLOW step 5, the delivery checklist (layout and script) and the troubleshooting table. Evidence: BattleRoyale leaderboard runs ac881114, 20f9464d and 70e5cf20 (DayZDiag 1.30.164289.70), BattleRoyale commits 1c75060 and 25ef6f1, the dayz-layout-viewer source and its render of the layout from before the fix. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "23487a99e3c3074b2b16f5496fc4c50893737661cdf28fccc44e97ff89220908",
+          "source_hash": "3a600dc6bec4e7b68dcfcdc5cc6e7779d0f763418e874346c57e8c6e9b8fd436",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
@@ -16699,7 +16699,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "23487a99e3c3074b2b16f5496fc4c50893737661cdf28fccc44e97ff89220908",
+      "output_hash": "3a600dc6bec4e7b68dcfcdc5cc6e7779d0f763418e874346c57e8c6e9b8fd436",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -23486,9 +23486,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-11-18: five new claims, three on dayz-ui-development SKILL.md (CLAIM-UI-TRANSLATESTRING-ONE-PER-EXPRESSION-130 and CLAIM-UI-CHILD-OUTSIDE-PARENT-NOT-DRAWN-130 runtime_verified, CLAIM-UI-VIEWER-DRAWS-OUTSIDE-PARENT offline_tested) and two on dayz-test-ingame references/session-findings.md (CLAIM-TEST-DAYZMCP-NO-UAINPUT-PRESS source_verified, CLAIM-TEST-FILE-EDGE-PANEL-HOOK-130 runtime_verified); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL follow their lines in dayz-test-ingame SKILL.md. Written by Claude (Anthropic).",
+          "decision_evidence": "kp-update 2026-11-18: five new claims, three on dayz-ui-development SKILL.md (CLAIM-UI-TRANSLATESTRING-ONE-PER-EXPRESSION-130 and CLAIM-UI-CHILD-OUTSIDE-PARENT-NOT-DRAWN-130 runtime_verified, CLAIM-UI-VIEWER-DRAWS-OUTSIDE-PARENT offline_tested) and two on dayz-test-ingame references/session-findings.md (CLAIM-TEST-DAYZMCP-NO-UAINPUT-PRESS source_verified, CLAIM-TEST-FILE-EDGE-PANEL-HOOK-130 runtime_verified); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL follow their lines in dayz-test-ingame SKILL.md. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
           "license": "MIT",
-          "source_hash": "26e0a03d441859afd5e50aae0296965cb69566910570344540e42f3c26a4cc49",
+          "source_hash": "81bd9947a64ed26dde2a8ee064e11f0004b3a4ef8ef2e66249e8b740cf23bb02",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
@@ -23496,7 +23496,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "26e0a03d441859afd5e50aae0296965cb69566910570344540e42f3c26a4cc49",
+      "output_hash": "81bd9947a64ed26dde2a8ee064e11f0004b3a4ef8ef2e66249e8b740cf23bb02",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

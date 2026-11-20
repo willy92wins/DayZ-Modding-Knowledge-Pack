@@ -1773,8 +1773,11 @@ return month_name;
   keys would test it: the same text twice supports it, two different texts rule it out.
 - Only this shape was measured, in Spanish. Concatenating two calls (`a + b`) or passing two to a function
   other than `string.Format` was not tried; the rule covers them until it is.
-- No offline check sees it: the script compiles, `ui_reconcile` finds every key, and the offline preview
-  shows `#STR_` keys unresolved (STANDARD WORKFLOW, step 5).
+- No offline check sees it: the script compiles, `ui_reconcile` reconciles only literal `#STR_`
+  references against the stringtable (`tools/dayz-script-validator/scripts/ui_reconcile.py:22-23`, `:47`,
+  `:126-139`, `:197-220`) — skipping runtime-built keys such as `GetMonthName` (`48e8b45`,
+  `BattleRoyaleLeaderboard.c:780-782`) and not checking `Widget.TranslateString` nesting — and the offline
+  preview shows `#STR_` keys unresolved (STANDARD WORKFLOW, step 5).
 
 ### 2. A child wholly outside its parent's rectangle is not drawn
 
