@@ -4773,6 +4773,32 @@
       "verification_level": "source_verified"
     },
     {
+      "artifact_id": "file/skills/dayz-pbo-build/skill.md",
+      "claim_id": "CLAIM-BINARIZE-DIRECT-CWD",
+      "evidence_locator": "2026-11-03, LFQuad v1.0.2 body, BINARIZE 1.30.164289.70 called directly (not through AddonBuilder), source staged outside P:\\ with config.cpp, model.cfg and data\\ of the mod's PBO plus dz\\data\\data\\penetration\\metalplate.rvmat and metalPlate.bisurf. Same command in both runs: -targetBonesInterval=56 -maxProcesses=16 -always -addon=<src> -textures=<dir> -binpath=<Binarize folder> <src>\\LFQuad <out> LFQuad_body.p3d. Run started from another folder: log lines '<working dir>\\lfquad\\data\\mat\\*.rvmat->', 'Material not loaded: dz\\data\\data\\penetration\\metalplate.rvmat', and the ODOL's Geometry, View Geometry and Fire Geometry materials with an empty surface file. Same command started from <src>: 16 'rvmat->' lines from <src>, no 'Material not loaded', 'metalplate.bisurf' present 3 times in the ODOL.",
+      "license": "MIT",
+      "line_end": 655,
+      "line_start": 640,
+      "observed_at": "2026-11-03",
+      "promotion_artifact_id": "skill/dayz-pbo-build",
+      "source_id": "pack-r21-authored",
+      "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
+      "claim_id": "CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET",
+      "evidence_locator": "LFQuad body, DayZDiag 1.30.164200 server and client with Survivor Animations, judged in game by the mod's owner. 2026-11-03 (run 1788468a): the June body (ViewGeometry crew anchors 0/100/200 mm from the crewdriver and crewcodriver Memory points, same in both seats) against the same MLOD with only those six anchor points moved onto the Memory points: the aligned one removed the one-frame camera jump on getting on the rear seat and moved the driver down and forward. 2026-11-19 (run 683f6624), LFQuad v1.0.2 release PBO (sha256 991a5fd1...): both Memory points moved onto their anchors, the driver anchor 20 mm forward: hands on the handlebar, no camera jump on the rear seat. Arma2Quad body (anchors within 2 mm of its Memory points, measured with py3d) reported with a jump on 2026-11-02.",
+      "license": "MIT",
+      "line_end": 178,
+      "line_start": 168,
+      "observed_at": "2026-11-19",
+      "promotion_artifact_id": "skill/dayz-vehicles",
+      "source_id": "pack-r21-authored",
+      "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+      "verification_level": "runtime_verified"
+    },
+    {
       "artifact_id": "file/tools/dayz-script-validator/README.md",
       "claim_id": "CLAIM-DSV-VANILLA-INDEX-BESIDE-OUT",
       "evidence_locator": "tools/dayz-script-validator/scripts/build_vanilla_index.py:37,608-613,651-675; tools/dayz-script-validator/scripts/shared/vanilla_reference.py:29,57-58,140-169; tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py:74-78,213-221; tools/dayz-script-validator/tests/test_vanilla_index.py:32-45; tools/dayz-script-validator/tests/test_script_validator.py:6223-6247,6274-6292",

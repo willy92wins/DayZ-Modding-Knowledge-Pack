@@ -95,25 +95,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   the files beside it are tried in name order and the first whole index of the tree is read instead: the four rules
   that read the index judge with it, `info.vanilla_index.index` names it, `info.vanilla_index.compared` adds
   `tree_digest`, and the run has no `VANILLA-INDEX-TREE-MISMATCH`. Whole is as the generator writes it: the four
-  tables the rules read, each an object, a `parsed_file_count` equal to its `file_count`, and a `tree_digest`. Of
-  the tree is when its count, its bytes and its `tree_digest` are the tree's: two trees can share the count and the
-  bytes (one identifier renamed to another of the same length is enough), and a file beside the default index taken
-  on those two numbers would silence `VANILLA-INDEX-TREE-MISMATCH` and report a match. The tree is hashed only when a file beside the default
-  index has its two numbers; the default index is still compared by the two numbers alone. When no file is of the
-  tree, the default index is read and the run warns, or gives its SKIP line, as before; the warning now also offers
-  `--out` with such a name. Only the default file was read until now, so on 2026-11-18 three addons tested on DayZ 1.30.164393
-  Experimental, validated against that tree while the default index was of 1.30.164289, warned on every run and
-  were judged with the stable build's members and signatures. With `vanilla_index.json.164393` beside the default
-  index they are PASS against the Experimental tree and against the default one, and 164393's
+  tables the rules read, each an object, a `parsed_file_count` equal to its `file_count`, and its digests as 64
+  lower-case hex digits. Of the tree is when its count and its bytes are the tree's and one of its digests is one
+  of the tree's: two trees can share the count and the bytes (one identifier renamed to another of the same length
+  is enough), and a file beside the default index taken on those two numbers would silence
+  `VANILLA-INDEX-TREE-MISMATCH` and report a match. The digest is compared up to the capitals of the paths, as the
+  comparison with the PBO takes them: each file is read once for the tree's digest as spelt and with the paths
+  casefolded, in the order of their casefolded parts, and the generator now also writes the second, as
+  `tree_digest_casefold_v1` (`tree_digest` itself does not change). For a tree in lower case the two are one, so an
+  index written before from such a tree is read for a copy in other capitals too; a tree with two paths that
+  casefold alike is compared as spelt only. A path UTF-8 cannot write or a file that cannot be read while hashing
+  leaves the tree uncompared. The tree is hashed only when a file beside the default index has its two numbers; the
+  default index is still compared by the two numbers alone. When no file is of the tree, the default index is read
+  and the run warns, or gives its SKIP line, as before; the warning now also offers `--out` with such a name. Only
+  the default file was read until now, so on 2026-11-18 three addons tested on DayZ 1.30.164393 Experimental,
+  validated against that tree while the default index was of 1.30.164289, warned on every run and were judged with
+  the stable build's members and signatures. With `vanilla_index.json.164393` beside the default index they are PASS
+  against the Experimental tree and against the default one, and 164393's
   `targetconditionscomponents` folder gives none of the five false `ES-MEMBER-REDECLARE-BASE` findings. A path set
   with `set_index_path_for_tests` is the only file read, and without a default index that loads nothing beside it
   is read. `reset_index_cache()` also forgets a file read beside it, and `vanilla_control.py` reads the default
   index from disk before deciding to SKIP, so the control behaves as in a new process after a validation earlier in
   the same one, also with the default index moved away under another name in its folder. On the owner's PC, against
-  the 164393 tree, the choice took 1.39 to 2.02 s, hashing the tree included, and each of those runs took 1.3 to
-  3.2 s more than before, with other work running on the PC. A copy of a tree whose paths keep the PBO's capitals is another tree to the digest: build its
-  index from it. `tools/dayz-script-validator/.gitignore` ignores those files, which are derived from Bohemia's
-  scripts like the default index. See the README's "Which tree the vanilla index is".
+  the 164393 tree, the choice took 1.50 to 2.53 s, hashing the tree included, and each of those runs took 1.1 to
+  3.0 s more than before, with other work running on the PC; a copy of that tree whose paths keep the PBO's capitals
+  goes from WARN to PASS on the same `vanilla_index.json.164393`. Three limits are left as they are: only the outer
+  form of the tables is checked, so a file beside the default index with the tree's digest and a damaged table
+  inside is read; a tree changed between its count and its hash, or while the generator reads it, is not seen; and
+  an index that appears while the vanilla control runs is read by its validation, whose findings `--update` would
+  write into the baseline. `tools/dayz-script-validator/.gitignore` ignores those files, which are derived from
+  Bohemia's scripts like the default index. See the README's "Which tree the vanilla index is".
 
 ### Fixed
 
@@ -297,6 +308,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-vehicles/references/get-in-actions-and-proxy-pose.md`, the crew-anchor check: the healthy Memory-to-ViewGeometry
+  offset is zero, not merely equal across seats. LFQuad's 0/100/200 mm, cited there as healthy, showed the one-frame
+  camera jump on the rear seat in game; aligning the two copies removed it (A/B on 2026-11-03, and LFQuad v1.0.2 on
+  2026-11-19). Arma2Quad, aligned, still reported a jump, so zero does not rule it out.
+- `dayz-pbo-build`, rule 5: on a direct `binarize.exe` call the working directory decides where the files a p3d cites
+  are found. With AddonBuilder's arguments, a run started outside the `-addon` folder read the mod's materials from the
+  working directory and embedded a staged vanilla penetration material without its `.bisurf`; started from the
+  `-addon` folder it resolved all 16 (LFQuad, 2026-11-03). Most likely the answer to the H2R open point.
 - dayzmake >= 3.1.0, pinned to `v3.1.0`, everywhere the Pack names dayzmake (`_shared/linux-proton.md`, the Linux
   notes of 22 skills, `dayz-mod-pack.sh`, `dayz-proton.sh doctor`): dayzmake 3.x fixes a lot of security and
   file-handling issues of the earlier releases, and 3.1.0 adds `extract`, `api grep`, `api config` and more and

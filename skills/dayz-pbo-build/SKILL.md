@@ -637,6 +637,22 @@ and 5 extended 2026-10-24, SP-468):**
      directory, per its rpt of 2026-10-23). AddonBuilder builds staged outside `P:\` resolved
      their files (rule 1). What these entries do in the kit that packs these ODOLs is rule 1's
      open point.
+   - **On a direct `binarize.exe` call, the working directory decides where cited files are
+     found** (LFQuad v1.0.2 body, 2026-11-03, BINARIZE 1.30.164289.70, source outside `P:\`;
+     claim: CLAIM-BINARIZE-DIRECT-CWD). Two runs with the same staged source and the same
+     arguments AddonBuilder passes (`-targetBonesInterval=56 -maxProcesses=16 -always
+     -addon=<src> -textures=<dir> -binpath=<Binarize folder>`) differed only in the working
+     directory. Started from another folder, binarize read the mod's `.rvmat` from
+     `<working dir>\lfquad\data\mat\` (the `…rvmat->` lines of its log) and logged `Material not
+     loaded` for `dz\data\data\penetration\metalplate.rvmat`, although it was staged under
+     `<src>`; the ODOL carried that material with no `.bisurf` in its three collision LODs.
+     Started from `<src>`, it took all 16 `.rvmat` from `<src>`, logged no `Material not
+     loaded`, and embedded `metalplate.bisurf`. **Rule:** start a direct call with the `-addon`
+     folder as working directory, as AddonBuilder does, and read the `…rvmat->` lines of its
+     log to see where each material came from. For a direct call, rule 1's "under that folder"
+     means that working directory. This is the most likely answer to the H2R open point above,
+     not measured on the H2R models. Not measured either: whether the working directory is
+     enough without AddonBuilder's other arguments.
 
 The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ingame's
 `dayz-test.ps1` template.

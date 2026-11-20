@@ -188,6 +188,9 @@ _INDEX_TREE_KEYS = (
     "parsed_file_count",
     "total_bytes",
     "tree_digest",
+    # Written since 2026-11-19: the digest with the paths casefolded
+    # (shared/vanilla_index_tree.py, tree_digests).
+    "tree_digest_casefold_v1",
 )
 
 
