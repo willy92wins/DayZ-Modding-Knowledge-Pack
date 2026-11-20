@@ -612,6 +612,7 @@ Per-session in-game gotchas moved to `references/session-findings.md`; load it w
 - **Third-party "sloppy" scripts (2026-06-28)** — deps that only warn on retail but fatal-compile on diag require a user-owned external manual parity run; agent stays in quarantine.
 - **Launching DayZDiag from the agent (2026-06-28, superseded 2026-07-15)** — background tool-jobs can lose their child; use the Diag-only managed launcher and its exact run instead of an unmanaged process.
 - **H2R import (2026-10-24)** — some DayZDiag 1.30 runs never load their textures while their error counts read normal (compare the run's median JPEG size with a textured run of the same framing, the RPT warning set being specific to that probe, and relaunch); the vehicle 1PP eye rides the `Head` bone and moves between runs and looks: log it at every look.
+- **Panels bound to a UAInput under DayZ-MCP (2026-11-18)** — the harness cannot press a `UAInput` (`key_press` and `input_trigger(kind="key")` call script key handlers, while `input_trigger(kind="input")` queries the `UAInput` and returns a refusal diagnostic without driving it — `dayz-mcp@c2f43638` `addon/scripts/5_Mission/MCPClientBridge.c:1889-1895`, `:2113-2155`), so a panel opened on `LocalPress()` is opened in a test by a never-committed `modded class MissionGameplay` hook that toggles it when a file in the client profile appears or goes; edge-triggered, so a panel that closes itself stays closed.
 
 ## Backups (.bak_*) in scripts/ inflate the PBO and break grep-verify (SP-065, added 2026-07-14)
 

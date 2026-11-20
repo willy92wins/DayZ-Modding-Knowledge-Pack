@@ -7,6 +7,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-ui-development`, "Measured in-game on 2026-11-18": one `Widget.TranslateString` per expression (two in one
+  expression drew only the second text; the shared-buffer cause stays a hypothesis, with the test that would settle it),
+  and a child wholly outside its parent's rectangle is not drawn (clipping or culling, not established), which
+  `dayz-layout-viewer` and HTML mock-ups do not model. The delivery checklist, the troubleshooting table, the offline
+  preview step, `widget-api.md` and `layout-format.md` point to it. `dayz-test-ingame`: DayZ-MCP cannot press a
+  `UAInput`, and the test-only hook that opens a key-bound panel when a file in the client profile appears or goes.
+  Five claims, from the BattleRoyale leaderboard runs of 2026-11-18.
 - `dayz-motorbikes`, "One-seat motorbikes on 1.30.164393 or later" and a preflight line: on DayZ 1.30.164393
   Experimental a bike whose `class Crew` has only `Driver` kills the client on its first frame on the bike when the
   player gets on from direction 1, because `MotorbikeScript.CrewShouldExit`, new in that build, calls the native
