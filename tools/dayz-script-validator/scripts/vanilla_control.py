@@ -22,7 +22,11 @@ if str(SCRIPT_DIR) not in sys.path:
 from build_vanilla_index import tree_digest  # noqa: E402
 from script_validator import validate_addon  # noqa: E402
 from shared.input_errors import discover_files  # noqa: E402
-from shared.vanilla_reference import loaded_index_path  # noqa: E402
+from shared.vanilla_reference import (  # noqa: E402
+    loaded_index_path,
+    reset_index_cache,
+    without_local_index,
+)
 from shared.vanilla_tree import resolve_vanilla_root  # noqa: E402
 
 
@@ -195,7 +199,10 @@ def collect_run(vanilla_root):
     root = Path(vanilla_root).resolve()
     # The tree is its own vanilla root: without it ES-UNDEFINED-CLASS-REF
     # would SKIP and the control would prove nothing about that rule.
-    result = validate_addon(root, vanilla_root=root)
+    # Suppress local index loading after main()'s initial check so an index
+    # appearing in between is not read into findings or a baseline update.
+    with without_local_index():
+        result = validate_addon(root, vanilla_root=root)
     files = discover_files(root)
     return {
         "errors": list(result.get("errors") or []),
@@ -424,6 +431,9 @@ def main(argv=None):
     vanilla_root, skip = resolve_vanilla_root(args.vanilla_root)
     if skip:
         return emit_skip(skip, args.json)
+    # The default index as it is on disk, as a new process sees it: not what
+    # a validation earlier in this process read, beside it or before a move.
+    reset_index_cache()
     index_path = loaded_index_path()
     if index_path is not None:
         return emit_skip(LOCAL_INDEX_MESSAGE % index_path, args.json)

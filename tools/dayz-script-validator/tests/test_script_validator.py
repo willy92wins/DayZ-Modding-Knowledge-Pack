@@ -6230,6 +6230,1107 @@ class TestVanillaIndexTree(unittest.TestCase):
         self.assertTrue(lines[1].startswith("  %s  " % INDEX_RULE))
 
 
+class TestVanillaIndexBesideTheDefault(unittest.TestCase):
+    """Which local index is read: the one built from the tree being read.
+
+    2026-11-18: P:\\scripts went back to DayZ 1.30.164289 and the 1.30.164393
+    Experimental tree stayed beside it, each with its index
+    (vanilla_index.json and vanilla_index.json.164393). An addon tested on
+    Experimental names that tree, and only the default index was read: every
+    run of three such addons warned VANILLA-INDEX-TREE-MISMATCH, and four
+    rules judged them with the members and signatures of the stable build.
+    """
+
+    # The tree the default index is built from...
+    STABLE = {
+        "1_core/proto/fx_managed.c": b"class Managed\n{\n}\n",
+        "4_world/fx_liquid.c": (
+            b"class FX_Liquid\n{\n    protected int m_LastHit;\n}\n"
+        ),
+    }
+    # ...and the one being read. The member moves to a new subclass, as
+    # CCTLiquid's did in 164393.
+    EXPERIMENTAL = {
+        "1_core/proto/fx_managed.c": b"class Managed\n{\n}\n",
+        "4_world/fx_liquid.c": b"class FX_Liquid\n{\n}\n",
+        "4_world/fx_liquid_cursor.c": (
+            b"class FX_LiquidCursor : FX_Liquid\n{\n"
+            b"    protected int m_LastHit;\n}\n"
+        ),
+    }
+    # A third tree, which no index of these tests is built from.
+    NEXT = dict(EXPERIMENTAL, **{"4_world/fx_next.c": b"class FX_Next\n{\n}\n"})
+    # Two trees with the count of the one being read. The twin has its bytes
+    # too: one identifier renamed to another of the same length, so only the
+    # digest the index records tells the two apart. The other has other
+    # bytes. Each one's index judges the addon below otherwise.
+    TWIN = dict(EXPERIMENTAL, **{
+        "4_world/fx_liquid_cursor.c": (
+            EXPERIMENTAL["4_world/fx_liquid_cursor.c"].replace(
+                b"m_LastHit", b"m_LastHat"
+            )
+        ),
+    })
+    SAME_COUNT = dict(
+        EXPERIMENTAL, **{"4_world/fx_liquid.c": STABLE["4_world/fx_liquid.c"]}
+    )
+    # The tree being read with a folder named as a file, so that the order of
+    # the parts (fx_liquid/ before fx_liquid.c) is not that of the strings;
+    # and the same files with the capitals a PBO extraction keeps.
+    ORDERED = dict(
+        EXPERIMENTAL, **{"4_world/fx_liquid/fx_drop.c": b"class FX_Drop\n{\n}\n"}
+    )
+    CAPITALS = {
+        "1_Core/Proto/fx_managed.c": EXPERIMENTAL["1_core/proto/fx_managed.c"],
+        "4_World/FX_Liquid.c": EXPERIMENTAL["4_world/fx_liquid.c"],
+        "4_World/FX_Liquid_Cursor.c": (
+            EXPERIMENTAL["4_world/fx_liquid_cursor.c"]
+        ),
+        "4_World/FX_Liquid/FX_Drop.c": b"class FX_Drop\n{\n}\n",
+    }
+    # An addon the two indexes judge otherwise: each class redeclares a
+    # member that only one of the two trees gives its base.
+    ADDON = {
+        "my_liquid.c": (
+            b"class My_Liquid : FX_Liquid\n{\n    protected int m_LastHit;\n}\n"
+        ),
+        "my_cursor.c": (
+            b"class My_Cursor : FX_LiquidCursor\n{\n"
+            b"    protected int m_LastHit;\n}\n"
+        ),
+    }
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.base = pathlib.Path(self._tmp.name)
+        self.stable = self._write(self.base / "stable" / "scripts", self.STABLE)
+        self.experimental = self._write(
+            self.base / "experimental" / "scripts", self.EXPERIMENTAL
+        )
+        self.addon = self._write(self.base / "addon", self.ADDON)
+        # The default index and the files beside it are in a folder of this
+        # test, and no index is pinned as setUpModule pins one.
+        self.default = self.base / "shared" / "vanilla_index.json"
+        default_path = mock.patch.object(
+            vanilla_reference, "default_index_path", return_value=self.default
+        )
+        default_path.start()
+        self.addCleanup(default_path.stop)
+        vanilla_reference.set_index_path_for_tests(None)
+        self.addCleanup(
+            vanilla_reference.set_index_path_for_tests, NO_VANILLA_INDEX
+        )
+
+    @staticmethod
+    def _write(root, files):
+        for name, data in files.items():
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        return root
+
+    def _beside(self, name):
+        return self.default.with_name("%s.%s" % (self.default.name, name))
+
+    def _put(self, document, path=None):
+        """Write an index document: the default index, or a file beside it."""
+        path = path or self.default
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if isinstance(document, str):
+            path.write_text(document, encoding="utf-8")
+        else:
+            build_vanilla_index.write_index(document, path)
+        # The loader keeps the default index it has read.
+        vanilla_reference.reset_index_cache()
+        return document
+
+    def _index(self, tree, path=None):
+        """Build the index of a tree and write it."""
+        return self._put(build_vanilla_index.build_index_document(tree), path)
+
+    def _run(self, tree, addon=None):
+        return script_validator.run(
+            [str(addon or FIXTURES / "empty"), "--vanilla-root", str(tree)]
+        )
+
+    def _index_warnings(self, result):
+        return [w for w in result["warnings"] if w["rule_id"] == INDEX_RULE]
+
+    def _index_skips(self, result):
+        return [
+            s for s in result["info"].get("skipped_checks", [])
+            if s["rule_id"] == INDEX_RULE
+        ]
+
+    def _redeclared(self, result):
+        """Files of the addon where the rule that tells the indexes apart fired."""
+        return sorted(
+            pathlib.PurePath(error["file"]).name
+            for error in result["errors"]
+            if error["rule_id"] == "ES-MEMBER-REDECLARE-BASE"
+        )
+
+    @staticmethod
+    def _counts(tree):
+        files = [path for path in tree.rglob("*.c") if path.is_file()]
+        return len(files), sum(path.stat().st_size for path in files)
+
+    def _assert_default_index_warns(self, result, index=None):
+        """The outcome before files beside the default index were read."""
+        index = index or self.default
+        warnings = self._index_warnings(result)
+        self.assertEqual(1, len(warnings))
+        self.assertEqual(str(index), warnings[0]["file"])
+        self.assertIn('--out "%s"' % index, warnings[0]["message"])
+        info = result["info"]["vanilla_index"]
+        self.assertEqual(str(index), info["index"])
+        self.assertEqual(
+            self._counts(self.stable) + (False,),
+            (info["index_files"], info["index_bytes"], info["matches"]),
+        )
+        # The stable tree's members, which the tree being read moved.
+        self.assertEqual(["my_liquid.c"], self._redeclared(result))
+        return warnings[0]
+
+    def test_an_index_beside_the_default_built_from_the_tree_is_read(self):
+        self._index(self.stable)
+        beside = self._beside("experimental")
+        document = self._index(self.experimental, beside)
+
+        code, result = self._run(self.experimental)
+
+        self.assertEqual(0, code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["warnings"])
+        self.assertEqual([], self._index_skips(result))
+        files, size = self._counts(self.experimental)
+        self.assertEqual(
+            {
+                "index": str(beside),
+                "index_tree": document["vanilla_root"],
+                "index_files": files,
+                "index_bytes": size,
+                "tree_files": files,
+                "tree_bytes": size,
+                "compared": ["file_count", "total_bytes", "tree_digest"],
+                "matches": True,
+            },
+            result["info"]["vanilla_index"],
+        )
+
+    def test_the_rules_read_the_index_of_the_tree_being_read(self):
+        self._index(self.stable)
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+
+        # One process and one tree after the other: each run reads the
+        # index of its tree, the default one or the one beside it.
+        for tree, index, redeclared in (
+            (self.experimental, beside, ["my_cursor.c"]),
+            (self.stable, self.default, ["my_liquid.c"]),
+            (self.experimental, beside, ["my_cursor.c"]),
+        ):
+            with self.subTest(tree=tree.parent.name):
+                code, result = self._run(tree, self.addon)
+
+                self.assertEqual(1, code)
+                self.assertEqual(redeclared, self._redeclared(result))
+                self.assertEqual([], result["warnings"])
+                info = result["info"]["vanilla_index"]
+                self.assertEqual(str(index), info["index"])
+                self.assertTrue(info["matches"])
+                self.assertEqual(
+                    str(index), str(vanilla_reference.loaded_index_path())
+                )
+
+    def test_without_an_index_of_the_tree_the_default_one_warns(self):
+        self._index(self.stable)
+        next_tree = self._write(self.base / "next" / "scripts", self.NEXT)
+        self._index(next_tree, self._beside("next"))
+
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        warning = self._assert_default_index_warns(result)
+        self.assertEqual([warning], result["warnings"])
+        # How to keep both: this tree's index beside the default one.
+        self.assertIn('--out "%s.<name>"' % self.default, warning["message"])
+        assert_standard_findings(self, result)
+
+        code, result = self._run(self.experimental)
+
+        self.assertEqual(2, code)
+        self.assertEqual("WARN", result["status"])
+
+    def test_a_file_beside_the_default_that_is_no_index_is_not_read(self):
+        self._index(self.stable)
+        document = build_vanilla_index.build_index_document(self.experimental)
+        text = json.dumps(document)
+        beside = self._beside("experimental")
+        cases = {
+            "broken json": text[:-20],
+            "not an object": json.dumps([document]),
+            "another schema_version": json.dumps(
+                dict(document, schema_version=999)
+            ),
+        }
+        for name, content in cases.items():
+            with self.subTest(name):
+                self._put(content, beside)
+
+                _code, result = self._run(self.experimental, self.addon)
+
+                self._assert_default_index_warns(result)
+        with self.subTest("a folder"):
+            beside.unlink()
+            beside.mkdir()
+
+            _code, result = self._run(self.experimental, self.addon)
+
+            self._assert_default_index_warns(result)
+            beside.rmdir()
+        # The same document as it was built is read: each case above is
+        # turned down for what it changes.
+        self._put(text, beside)
+        _code, result = self._run(self.experimental, self.addon)
+        self.assertEqual([], self._index_warnings(result))
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+
+    def test_an_index_beside_the_default_that_cannot_be_compared_is_not_read(self):
+        # It is not known to be of the tree being read.
+        self._index(self.stable)
+        document = build_vanilla_index.build_index_document(self.experimental)
+        beside = self._beside("experimental")
+        cases = {
+            "no file_count": {
+                k: v for k, v in document.items() if k != "file_count"
+            },
+            "no total_bytes": {
+                k: v for k, v in document.items() if k != "total_bytes"
+            },
+            "a count that is not a number": dict(
+                document, file_count=str(document["file_count"])
+            ),
+            "files it did not parse": dict(
+                document, parsed_file_count=document["file_count"] - 1
+            ),
+        }
+        for name, changed in cases.items():
+            with self.subTest(name):
+                self._put(json.dumps(changed), beside)
+
+                _code, result = self._run(self.experimental, self.addon)
+
+                self._assert_default_index_warns(result)
+                self.assertEqual([], self._index_skips(result))
+
+    def test_a_pinned_index_is_the_only_one_read(self):
+        # set_index_path_for_tests rules: neither the files beside the
+        # default index nor those beside the pinned one take its place.
+        import builtins
+        import io
+
+        self._index(self.stable)
+        default_beside = self._beside("experimental")
+        self._index(self.experimental, default_beside)
+        pinned = self.base / "pinned" / "vanilla_index.json"
+        self._index(self.stable, pinned)
+        pinned_beside = pinned.with_name(pinned.name + ".experimental")
+        self._index(self.experimental, pinned_beside)
+        vanilla_reference.set_index_path_for_tests(pinned)
+
+        real_open = io.open
+        real_path_open = pathlib.Path.open
+        index_dirs = {self.default.parent.resolve(), pinned.parent.resolve()}
+        opened = []
+
+        def record_open(file, *args, **kwargs):
+            if isinstance(file, (str, bytes, os.PathLike)):
+                opened.append(pathlib.Path(os.fsdecode(file)).resolve())
+            return real_open(file, *args, **kwargs)
+
+        def record_path_open(path_self, *args, **kwargs):
+            opened.append(path_self.resolve())
+            return real_path_open(path_self, *args, **kwargs)
+
+        with mock.patch.object(
+            io, "open", side_effect=record_open
+        ), mock.patch.object(
+            builtins, "open", side_effect=record_open
+        ), mock.patch.object(
+            pathlib.Path, "open", new=record_path_open
+        ):
+            code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        warning = self._assert_default_index_warns(result, pinned)
+        self.assertNotIn("<name>", warning["message"])
+        self.assertEqual(str(pinned), str(vanilla_reference.loaded_index_path()))
+        index_reads = [path for path in opened if path.parent in index_dirs]
+        self.assertIn(pinned.resolve(), index_reads)
+        self.assertNotIn(self.default.resolve(), index_reads)
+        self.assertNotIn(default_beside.resolve(), index_reads)
+        self.assertNotIn(pinned_beside.resolve(), index_reads)
+        self.assertEqual({pinned.resolve()}, set(index_reads))
+
+    def test_unpinning_goes_back_to_the_default_index(self):
+        # What the cleanup of a test does: set_index_path_for_tests also
+        # drops the file that was read for the last tree.
+        self._index(self.stable)
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+        self._run(self.experimental)
+        self.assertEqual(str(beside), str(vanilla_reference.loaded_index_path()))
+
+        vanilla_reference.set_index_path_for_tests(None)
+
+        self.assertEqual(
+            str(self.default), str(vanilla_reference.loaded_index_path())
+        )
+
+    def test_an_index_beside_of_a_tree_with_the_same_numbers_is_not_read(self):
+        # Review of PR #204, H1: two trees can have the same count and the
+        # same bytes. Read, the twin's index gives the addon no finding.
+        self._index(self.stable)
+        twin = self._write(self.base / "twin" / "scripts", self.TWIN)
+        self.assertEqual(self._counts(self.experimental), self._counts(twin))
+        twin_document = self._index(twin, self._beside("a_twin"))
+        document = build_vanilla_index.build_index_document(self.experimental)
+        self.assertNotEqual(
+            document["tree_digest"], twin_document["tree_digest"]
+        )
+
+        code, result = self._run(self.experimental, self.addon)
+
+        # As before files beside the default index were read.
+        self.assertEqual(1, code)
+        self._assert_default_index_warns(result)
+
+        # The tree's own index, after the twin's in name order, is read.
+        beside = self._beside("b_experimental")
+        self._put(document, beside)
+
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], result["warnings"])
+        info = result["info"]["vanilla_index"]
+        self.assertEqual(str(beside), info["index"])
+        self.assertEqual(
+            ["file_count", "total_bytes", "tree_digest"], info["compared"]
+        )
+        self.assertTrue(info["matches"])
+
+    def test_an_index_beside_of_a_tree_with_the_same_count_is_not_read(self):
+        # Review of PR #204, H4: the count alone does not choose.
+        self._index(self.stable)
+        same_count = self._write(
+            self.base / "same_count" / "scripts", self.SAME_COUNT
+        )
+        files, size = self._counts(self.experimental)
+        self.assertEqual(files, self._counts(same_count)[0])
+        self.assertNotEqual(size, self._counts(same_count)[1])
+        self._index(same_count, self._beside("a_same_count"))
+        beside = self._beside("b_experimental")
+        self._index(self.experimental, beside)
+
+        code, result = self._run(self.experimental, self.addon)
+
+        # Read, the other index flags both classes of the addon.
+        self.assertEqual(1, code)
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], result["warnings"])
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+
+    def test_a_default_index_of_a_tree_with_the_same_count_gives_way(self):
+        # Review of PR #204, H4: nor does it keep the default index.
+        same_count = self._write(
+            self.base / "same_count" / "scripts", self.SAME_COUNT
+        )
+        self._index(same_count)
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], result["warnings"])
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+
+    def test_an_index_beside_that_is_not_whole_is_not_read(self):
+        # Review of PR #204, H2: a file beside the default index is read
+        # only as the generator writes it whole: with the four tables the
+        # rules read, every file of its tree parsed, and its tree_digest.
+        # Each case keeps the tree's count, bytes and digest.
+        self._index(self.stable)
+        document = build_vanilla_index.build_index_document(self.experimental)
+        beside = self._beside("experimental")
+
+        def without(key):
+            return {k: v for k, v in document.items() if k != key}
+
+        cases = {
+            "only the two numbers": {
+                "schema_version": document["schema_version"],
+                "file_count": document["file_count"],
+                "total_bytes": document["total_bytes"],
+                "tree_digest": document["tree_digest"],
+            },
+            "no parsed_file_count": without("parsed_file_count"),
+            "parsed_file_count a string": dict(
+                document, parsed_file_count=str(document["file_count"])
+            ),
+            "parsed_file_count a boolean": dict(
+                document, parsed_file_count=False
+            ),
+            "no tree_digest": without("tree_digest"),
+            "an empty tree_digest": dict(document, tree_digest=""),
+        }
+        for table in (
+            "base_members",
+            "override_params",
+            "global_class_names",
+            "platform_gated_methods",
+        ):
+            cases["no " + table] = without(table)
+            cases[table + " null"] = dict(document, **{table: None})
+        for name, changed in cases.items():
+            with self.subTest(name):
+                self._put(json.dumps(changed), beside)
+
+                code, result = self._run(self.experimental, self.addon)
+
+                self.assertEqual(1, code)
+                self._assert_default_index_warns(result)
+        # The same document as it was built is read.
+        self._put(document, beside)
+        _code, result = self._run(self.experimental, self.addon)
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+
+    def test_a_reset_goes_back_to_the_default_index(self):
+        # Review of PR #204, H3: reset_index_cache also forgets the file
+        # that was read for the last tree.
+        self._index(self.stable)
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+        self._run(self.experimental)
+        self.assertEqual(str(beside), str(vanilla_reference.loaded_index_path()))
+
+        vanilla_reference.reset_index_cache()
+
+        self.assertEqual(
+            str(self.default), str(vanilla_reference.loaded_index_path())
+        )
+
+    def test_each_run_reads_the_default_index_again(self):
+        # Not what a run before it in the same process read: moved away,
+        # the default index is no index, and nothing beside it is read.
+        self._index(self.stable)
+        self._index(self.experimental, self._beside("experimental"))
+        _code, result = self._run(self.stable, self.addon)
+        self.assertEqual(
+            str(self.default), result["info"]["vanilla_index"]["index"]
+        )
+        self.default.replace(self._beside("moved"))
+
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(0, code)
+        self.assertEqual([], self._redeclared(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        self.assertIsNone(vanilla_reference.loaded_index_path())
+
+    def test_the_tree_is_hashed_only_for_a_file_beside_with_its_numbers(self):
+        # Hashing the 164393 tree took about 2 s on the owner's PC, where its
+        # two numbers cost a walk: the digest is read only when they match.
+        # The generator hashes too, so the indexes are written unwatched.
+        from shared import vanilla_index_tree
+
+        def hashes():
+            return mock.patch.object(
+                vanilla_index_tree, "tree_digests",
+                wraps=vanilla_index_tree.tree_digests,
+            )
+
+        next_tree = self._write(self.base / "next" / "scripts", self.NEXT)
+        self._index(self.experimental)
+        self._index(next_tree, self._beside("next"))
+        with hashes() as digest:
+            # The default index is the tree's.
+            self._run(self.experimental)
+        self.assertEqual(0, digest.call_count)
+
+        self._index(self.stable)
+        with hashes() as digest:
+            # Neither the default index nor the file beside it has them.
+            self._run(self.experimental)
+        self.assertEqual(0, digest.call_count)
+
+        twin = self._write(self.base / "twin" / "scripts", self.TWIN)
+        self._index(twin, self._beside("a_twin"))
+        self._index(self.experimental, self._beside("b_experimental"))
+        with hashes() as digest:
+            # Two files have them, and the first is of another tree.
+            _code, result = self._run(self.experimental)
+        self.assertEqual(1, digest.call_count)
+        self.assertEqual(
+            str(self._beside("b_experimental")),
+            result["info"]["vanilla_index"]["index"],
+        )
+
+    def _legacy(self, tree, path):
+        """Write a tree's index as the generator wrote it until 2026-11-19.
+
+        Without the casefolded digest: the owner's indexes are such.
+        """
+        document = build_vanilla_index.build_index_document(tree)
+        document.pop("tree_digest_casefold_v1", None)
+        return self._put(document, path)
+
+    def _trees_in_two_capitals(self):
+        ordered = self._write(self.base / "ordered" / "scripts", self.ORDERED)
+        capitals = self._write(
+            self.base / "capitals" / "scripts", self.CAPITALS
+        )
+        return ordered, capitals
+
+    def _assert_read_beside(self, result, beside):
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], result["warnings"])
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+
+    def test_an_old_index_of_the_lower_case_tree_is_read_for_its_capitals(self):
+        # Review of PR #204, round 2, N1: the same files under paths with
+        # the capitals a PBO extraction keeps are the same tree. An index
+        # written before the casefolded digest, from the tree in lower case
+        # (as the owner's are), is read for both spellings.
+        self._index(self.stable)
+        ordered, capitals = self._trees_in_two_capitals()
+        beside = self._beside("lower")
+        self._legacy(ordered, beside)
+        for tree in (ordered, capitals):
+            with self.subTest(tree=tree.parent.name):
+                code, result = self._run(tree, self.addon)
+
+                self.assertEqual(1, code)
+                self._assert_read_beside(result, beside)
+
+    def test_an_index_of_a_tree_in_capitals_is_read_for_any_capitals(self):
+        # Written now, an index also records its casefolded digest.
+        self._index(self.stable)
+        ordered, capitals = self._trees_in_two_capitals()
+        beside = self._beside("capitals")
+        document = self._index(capitals, beside)
+        self.assertNotEqual(
+            document["tree_digest"], document["tree_digest_casefold_v1"]
+        )
+        for tree in (ordered, capitals):
+            with self.subTest(tree=tree.parent.name):
+                code, result = self._run(tree, self.addon)
+
+                self.assertEqual(1, code)
+                self._assert_read_beside(result, beside)
+
+    def test_an_old_index_of_a_tree_in_capitals_is_read_for_those_only(self):
+        # The limit of an index written before the casefolded digest: its
+        # tree_digest holds its capitals, until it is rebuilt.
+        self._index(self.stable)
+        ordered, capitals = self._trees_in_two_capitals()
+        beside = self._beside("capitals")
+        self._legacy(capitals, beside)
+
+        _code, result = self._run(capitals, self.addon)
+
+        self._assert_read_beside(result, beside)
+
+        _code, result = self._run(ordered, self.addon)
+
+        self._assert_default_index_warns(result)
+
+    def test_the_casefolded_digest_follows_the_parts_of_the_paths(self):
+        # Of a tree in lower case it is the generator's digest, which keeps
+        # the indexes written before it comparable: ordered as the strings,
+        # fx_liquid.c would come before the folder fx_liquid.
+        from shared import vanilla_index_tree
+
+        ordered, capitals = self._trees_in_two_capitals()
+        files = vanilla_index_tree.collect_c_files(ordered)
+        names = [path.relative_to(ordered).as_posix() for path in files]
+        self.assertNotEqual(sorted(names), names)
+        spelt, folded = vanilla_index_tree.tree_digests(files, ordered)
+        self.assertEqual(build_vanilla_index.tree_digest(files, ordered), spelt)
+        self.assertEqual(spelt, folded)
+        files = vanilla_index_tree.collect_c_files(capitals)
+        spelt_capitals, folded_capitals = vanilla_index_tree.tree_digests(
+            files, capitals
+        )
+        self.assertEqual(
+            build_vanilla_index.tree_digest(files, capitals), spelt_capitals
+        )
+        self.assertNotEqual(spelt, spelt_capitals)
+        self.assertEqual(folded, folded_capitals)
+
+    def test_an_index_beside_with_a_digest_not_as_written_is_not_read(self):
+        # Each digest is 64 lower-case hex digits, as the generator writes
+        # them; tree_digest_casefold_v1 may also be null or missing. A file
+        # with either digest otherwise is not whole, even when the other one
+        # is the tree's (round 2's "formats" cases, with the casefolded
+        # digest the generator now writes beside them).
+        self._index(self.stable)
+        document = build_vanilla_index.build_index_document(self.experimental)
+        digest = document["tree_digest"]
+        beside = self._beside("experimental")
+        cases = {
+            "a short tree_digest": dict(document, tree_digest="a"),
+            "tree_digest in capitals": dict(document, tree_digest=digest.upper()),
+            "tree_digest not hex": dict(document, tree_digest="q" * 64),
+            "a short casefolded digest": dict(
+                document, tree_digest_casefold_v1="a"
+            ),
+            "casefolded digest not a string": dict(
+                document, tree_digest_casefold_v1=12
+            ),
+            "casefolded digest in capitals": dict(
+                document, tree_digest_casefold_v1=digest.upper()
+            ),
+        }
+        for name, changed in cases.items():
+            with self.subTest(name):
+                self._put(json.dumps(changed), beside)
+
+                code, result = self._run(self.experimental, self.addon)
+
+                self.assertEqual(1, code)
+                self._assert_default_index_warns(result)
+        for name, value in (("null", None), ("missing", "missing")):
+            with self.subTest("casefolded digest " + name):
+                changed = dict(document, tree_digest_casefold_v1=value)
+                if value == "missing":
+                    del changed["tree_digest_casefold_v1"]
+                self._put(json.dumps(changed), beside)
+
+                _code, result = self._run(self.experimental, self.addon)
+
+                self._assert_read_beside(result, beside)
+
+    def test_paths_that_casefold_alike_give_no_casefolded_digest(self):
+        # Two files on a file system that tells capitals apart, one file
+        # named twice on one that does not: casefolded, they are one path.
+        from shared import vanilla_index_tree
+
+        root = self.base / "twice" / "scripts"
+        first = root / "4_world" / "fx_liquid.c"
+        second = root / "4_World" / "FX_Liquid.c"
+        self._write(root, {"4_world/fx_liquid.c": b"class FX_Liquid\n{\n}\n"})
+        if not second.exists():
+            self._write(root, {"4_World/FX_Liquid.c": b"class FX_Liquid\n{\n}\n"})
+
+        spelt, folded = vanilla_index_tree.tree_digests([first, second], root)
+
+        self.assertIsNotNone(spelt)
+        self.assertIsNone(folded)
+
+    def test_a_path_utf8_cannot_write_is_no_match(self):
+        # Review of PR #204, round 2, N3: NTFS keeps an unpaired surrogate in
+        # a name, which UTF-8 cannot write. The tree is not compared, and
+        # the default index warns, as before files beside it were read.
+        self._index(self.stable)
+        odd = self._write(
+            self.base / "odd" / "scripts",
+            dict(self.EXPERIMENTAL, **{"4_world/odd_a.c": b"// name only\n"}),
+        )
+        self._index(odd, self._beside("odd"))
+        plain = odd / "4_world" / "odd_a.c"
+        try:
+            plain.replace(plain.with_name("odd_\udc80.c"))
+        except (OSError, UnicodeError) as error:
+            self.skipTest("this file system refuses the name: %s" % error)
+
+        code, result = self._run(odd, self.addon)
+
+        self.assertEqual(1, code)
+        self._assert_default_index_warns(result)
+
+    def test_a_file_that_cannot_be_read_while_hashing_is_no_match(self):
+        # Review of PR #204, round 2, N6: counted, then not read (another
+        # process holds it without sharing, say). The tree is not compared,
+        # and the default index warns, as before.
+        from shared import vanilla_index_tree
+
+        self._index(self.stable)
+        self._index(self.experimental, self._beside("experimental"))
+        with mock.patch.object(
+            vanilla_index_tree, "_file_sha256",
+            side_effect=PermissionError("held without sharing"),
+        ):
+            code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self._assert_default_index_warns(result)
+
+    def test_without_a_default_index_none_beside_it_is_read(self):
+        # The default file says whether there is an index at all: moving it
+        # away leaves the four rules with their curated tables, and the
+        # vanilla control counts on that. Another name in the same folder
+        # is where a moved index lands.
+        import builtins
+        import io
+
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+        real_open = io.open
+        real_path_open = pathlib.Path.open
+        shared_dir = self.default.parent.resolve()
+        for name, content in (("missing", None), ("not an index", "{not json")):
+            with self.subTest(name):
+                if content is not None:
+                    self._put(content)
+                opened = []
+
+                def record_open(file, *args, **kwargs):
+                    if isinstance(file, (str, bytes, os.PathLike)):
+                        opened.append(
+                            pathlib.Path(os.fsdecode(file)).resolve()
+                        )
+                    return real_open(file, *args, **kwargs)
+
+                def record_path_open(path_self, *args, **kwargs):
+                    opened.append(path_self.resolve())
+                    return real_path_open(path_self, *args, **kwargs)
+
+                with mock.patch.object(
+                    io, "open", side_effect=record_open
+                ), mock.patch.object(
+                    builtins, "open", side_effect=record_open
+                ), mock.patch.object(
+                    pathlib.Path, "open", new=record_path_open
+                ):
+                    code, result = self._run(self.experimental, self.addon)
+
+                self.assertEqual(0, code)
+                self.assertEqual([], self._redeclared(result))
+                self.assertNotIn("vanilla_index", result["info"])
+                self.assertEqual([], self._index_warnings(result))
+                self.assertEqual([], self._index_skips(result))
+                self.assertIsNone(vanilla_reference.loaded_index_path())
+                shared_reads = [
+                    path for path in opened if path.parent == shared_dir
+                ]
+                self.assertIn(self.default.resolve(), shared_reads)
+                self.assertNotIn(beside.resolve(), shared_reads)
+                self.assertEqual({self.default.resolve()}, set(shared_reads))
+
+    def test_the_default_index_comes_first_then_the_names_in_order(self):
+        self._index(self.experimental)
+        self._index(self.experimental, self._beside("a"))
+
+        _code, result = self._run(self.experimental)
+
+        self.assertEqual(
+            str(self.default), result["info"]["vanilla_index"]["index"]
+        )
+
+        self._index(self.stable)
+        self._index(self.experimental, self._beside("b"))
+
+        _code, result = self._run(self.experimental)
+
+        self.assertEqual(
+            str(self._beside("a")), result["info"]["vanilla_index"]["index"]
+        )
+
+    def test_an_index_read_for_one_tree_is_not_read_for_the_next(self):
+        self._index(self.stable)
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+        next_tree = self._write(self.base / "next" / "scripts", self.NEXT)
+
+        _code, first = self._run(self.experimental, self.addon)
+        _code, second = self._run(next_tree, self.addon)
+
+        self.assertEqual(str(beside), first["info"]["vanilla_index"]["index"])
+        self.assertEqual(["my_cursor.c"], self._redeclared(first))
+        self._assert_default_index_warns(second)
+
+    def test_a_default_index_that_cannot_be_compared_gives_way(self):
+        document = build_vanilla_index.build_index_document(self.stable)
+        del document["file_count"]
+        self._put(json.dumps(document))
+
+        # Nothing beside it: a SKIP line, as before.
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self.assertEqual(["my_liquid.c"], self._redeclared(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        self.assertEqual([], self._index_warnings(result))
+        skips = self._index_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("does not record", skips[0]["reason"])
+        self.assertIn(str(self.default), skips[0]["reason"])
+
+        # An index beside it that was built from the tree is known to be
+        # the tree's, which the default one is not.
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], self._index_skips(result))
+        self.assertEqual([], result["warnings"])
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+
+        # Nor is a default index that says it did not parse every file of
+        # its tree, even with the tree's two numbers.
+        document = build_vanilla_index.build_index_document(self.experimental)
+        document["parsed_file_count"] = document["file_count"] - 1
+        self._put(json.dumps(document))
+
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], self._index_skips(result))
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+
+    def test_a_tree_that_cannot_be_read_keeps_the_default_index(self):
+        from shared import vanilla_index_tree
+
+        self._index(self.stable)
+        self._index(self.experimental, self._beside("experimental"))
+        with mock.patch.object(
+            vanilla_index_tree, "collect_c_files",
+            side_effect=PermissionError("denied"),
+        ):
+            code, result = self._run(self.experimental)
+
+        self.assertEqual(0, code)
+        self.assertEqual([], self._index_warnings(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        skips = self._index_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("was not read", skips[0]["reason"])
+        self.assertIn(str(self.default), skips[0]["reason"])
+        self.assertEqual(
+            str(self.default), str(vanilla_reference.loaded_index_path())
+        )
+
+    def test_an_unreadable_subfolder_does_not_match_a_smaller_index(self):
+        # An unreadable folder inside the vanilla tree must not be silently
+        # dropped during the walk: otherwise a sibling index built from the
+        # remaining files matches and turns the run into a false PASS.
+        self._index(self.stable)
+        partial = self._write(
+            self.base / "partial" / "scripts",
+            {
+                "1_core/proto/fx_managed.c": self.EXPERIMENTAL[
+                    "1_core/proto/fx_managed.c"
+                ],
+            },
+        )
+        self._index(partial, self._beside("partial"))
+        blocked = (self.experimental / "4_world").resolve()
+        real_scandir = os.scandir
+
+        def deny_world(path="."):
+            if (
+                isinstance(path, (str, bytes, os.PathLike))
+                and pathlib.Path(os.fsdecode(path)).resolve() == blocked
+            ):
+                raise PermissionError("denied")
+            return real_scandir(path)
+
+        with mock.patch.object(os, "scandir", side_effect=deny_world):
+            code, result = self._run(self.experimental)
+
+        self.assertEqual(0, code)
+        self.assertEqual([], self._index_warnings(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        skips = self._index_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("was not read", skips[0]["reason"])
+        self.assertIn("denied", skips[0]["reason"])
+        self.assertIn(str(self.default), skips[0]["reason"])
+        self.assertEqual(
+            str(self.default), str(vanilla_reference.loaded_index_path())
+        )
+
+    def test_deeply_nested_broken_json_beside_the_default_is_passed_over(self):
+        # Deeply nested unreadable JSON raises RecursionError in json.loads;
+        # the loader must skip it and move on to the valid sibling after it.
+        self._index(self.stable)
+        self._put(
+            "[" * max(32768, sys.getrecursionlimit() + 1000),
+            self._beside("00"),
+        )
+        beside = self._beside("experimental")
+        self._index(self.experimental, beside)
+
+        code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self.assertEqual(["my_cursor.c"], self._redeclared(result))
+        self.assertEqual([], self._index_warnings(result))
+        self.assertEqual(str(beside), result["info"]["vanilla_index"]["index"])
+
+    def test_a_non_utf8_filename_in_the_tree_does_not_abort_validation(self):
+        # On POSIX, a filename containing raw non-UTF-8 bytes (such as 0xff)
+        # is decoded with surrogateescape; hashing the tree must not abort
+        # with UnicodeEncodeError when a sibling shares the count and bytes.
+        from shared import vanilla_index_tree
+
+        class _SurrogateFile:
+            def __init__(self, real_path, fake_path):
+                self._real = real_path
+                self._fake = fake_path
+
+            def relative_to(self, other):
+                return self._fake.relative_to(other)
+
+            def stat(self):
+                return self._real.stat()
+
+            def open(self, mode="r", *args, **kwargs):
+                return self._real.open(mode, *args, **kwargs)
+
+        self._index(self.stable)
+        self._index(self.experimental, self._beside("experimental"))
+        real_collect = vanilla_index_tree.collect_c_files
+
+        def collect_with_surrogate(tree_root):
+            files = real_collect(tree_root)
+            target = files[-1]
+            return files[:-1] + [
+                _SurrogateFile(target, target.with_name("fx_nonutf8_\udcff.c"))
+            ]
+
+        with mock.patch.object(
+            vanilla_index_tree,
+            "collect_c_files",
+            side_effect=collect_with_surrogate,
+        ):
+            code, result = self._run(self.experimental, self.addon)
+
+        self.assertEqual(1, code)
+        self._assert_default_index_warns(result)
+        self.assertEqual([], self._index_skips(result))
+
+    def test_boolean_schema_version_beside_the_default_is_passed_over(self):
+        # True == 1 in Python, but schema_version must be the integer
+        # INDEX_SCHEMA_VERSION, not a boolean or float.
+        self._index(self.stable)
+        document = build_vanilla_index.build_index_document(self.experimental)
+        beside = self._beside("experimental")
+        self._put(document, beside)
+        for name, bad_version in (("bool", True), ("float", 1.0)):
+            with self.subTest(name):
+                bad = self._beside("00")
+                self._put(
+                    json.dumps(dict(document, schema_version=bad_version)),
+                    bad,
+                )
+
+                code, result = self._run(self.experimental, self.addon)
+
+                self.assertEqual(1, code)
+                self.assertEqual(["my_cursor.c"], self._redeclared(result))
+                self.assertEqual([], self._index_warnings(result))
+                self.assertEqual(
+                    str(beside), result["info"]["vanilla_index"]["index"]
+                )
+
+    def test_an_old_index_with_capitals_matches_both_posix_and_windows_orders(
+        self,
+    ):
+        # An index written before tree_digest_casefold_v1 sorted files with the
+        # host platform's Path order (Z.c before a.c on POSIX; a.c before Z.c
+        # on Windows). Either order must match the same tree on any platform.
+        self._index(self.stable)
+        mixed = self._write(
+            self.base / "mixed" / "scripts",
+            {
+                "4_world/Z.c": b"class Z_Only\n{\n}\n",
+                "4_world/a.c": b"class A_Only\n{\n}\n",
+            },
+        )
+        posix_order = [mixed / "4_world" / "Z.c", mixed / "4_world" / "a.c"]
+        windows_order = [mixed / "4_world" / "a.c", mixed / "4_world" / "Z.c"]
+        posix_digest = build_vanilla_index.tree_digest(posix_order, mixed)
+        windows_digest = build_vanilla_index.tree_digest(windows_order, mixed)
+        self.assertNotEqual(posix_digest, windows_digest)
+        base_doc = build_vanilla_index.build_index_document(mixed)
+        base_doc.pop("tree_digest_casefold_v1", None)
+        beside = self._beside("mixed")
+        for order_name, digest in (
+            ("posix", posix_digest),
+            ("windows", windows_digest),
+        ):
+            with self.subTest(order=order_name):
+                self._put(dict(base_doc, tree_digest=digest), beside)
+
+                code, result = self._run(mixed)
+
+                self.assertEqual(0, code)
+                self.assertEqual([], result["warnings"])
+                info = result["info"]["vanilla_index"]
+                self.assertEqual(str(beside), info["index"])
+                self.assertTrue(info["matches"])
+
+    def test_uppercase_c_extension_matches_lower_case_index_under_posix_glob(
+        self,
+    ):
+        # Upper-case .C extensions are the same tree up to capitals: even under
+        # case-sensitive (POSIX) glob semantics, collect_c_files must include
+        # them so the lower-case index matches.
+        self._index(self.stable)
+        beside = self._beside("experimental")
+        self._legacy(self.experimental, beside)
+        upper_ext = self._write(
+            self.base / "upper_ext" / "scripts",
+            {
+                "1_Core/Proto/fx_managed.C": self.EXPERIMENTAL[
+                    "1_core/proto/fx_managed.c"
+                ],
+                "4_World/FX_Liquid.C": self.EXPERIMENTAL["4_world/fx_liquid.c"],
+                "4_World/FX_Liquid_Cursor.C": self.EXPERIMENTAL[
+                    "4_world/fx_liquid_cursor.c"
+                ],
+            },
+        )
+        real_rglob = pathlib.Path.rglob
+
+        def posix_rglob(path_self, pattern, *args, **kwargs):
+            if pattern == "*.c" and "case_sensitive" not in kwargs:
+                try:
+                    return real_rglob(
+                        path_self, pattern, *args, case_sensitive=True, **kwargs
+                    )
+                except TypeError:
+                    return (
+                        path
+                        for path in real_rglob(
+                            path_self, pattern, *args, **kwargs
+                        )
+                        if path.name.endswith(".c")
+                    )
+            return real_rglob(path_self, pattern, *args, **kwargs)
+
+        with mock.patch.object(pathlib.Path, "rglob", new=posix_rglob):
+            code, result = self._run(upper_ext)
+
+        self.assertEqual(0, code)
+        self.assertEqual([], result["warnings"])
+        info = result["info"]["vanilla_index"]
+        self.assertEqual(str(beside), info["index"])
+        self.assertEqual(3, info["tree_files"])
+        self.assertTrue(info["matches"])
+
+
 if __name__ == "__main__":
     unittest.main()
 

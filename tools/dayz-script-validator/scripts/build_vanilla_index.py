@@ -26,7 +26,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from stripper import strip_enforce_comments_and_strings  # noqa: E402
 from shared.method_recognition import collect_method_signature  # noqa: E402
-from shared.vanilla_index_tree import collect_c_files  # noqa: E402
+from shared.vanilla_index_tree import collect_c_files, tree_digests  # noqa: E402
 from shared.vanilla_reference import (  # noqa: E402
     INDEX_SCHEMA_VERSION,
     VANILLA_NONEXISTENT_METHODS,
@@ -135,7 +135,10 @@ def _sha256_file(path):
 def tree_digest(files, root):
     digest = hashlib.sha256()
     for path in files:
-        digest.update(_posix_relative(path, root).encode("utf-8"))
+        # POSIX filenames decoded with surrogateescape can hold lone surrogates.
+        digest.update(
+            _posix_relative(path, root).encode("utf-8", errors="surrogatepass")
+        )
         digest.update(b"\0")
         digest.update(_sha256_file(path).encode("ascii"))
         digest.update(b"\n")
@@ -571,6 +574,10 @@ def build_index_document(vanilla_root):
         "parsed_file_count": len(files) - len(read_errors),
         "total_bytes": total_bytes,
         "tree_digest": tree_digest(files, vanilla_root),
+        # The same digest with the paths casefolded, by which the validator
+        # reads this index for a copy of the tree in other capitals; null
+        # when two paths casefold alike. tree_digest above is unchanged.
+        "tree_digest_casefold_v1": tree_digests(files, vanilla_root)[1],
         "generated_by": "build_vanilla_index.py",
         "global_class_names": dict(sorted(global_class_names.items())),
         "base_members": base_members,

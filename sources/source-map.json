@@ -2191,10 +2191,40 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: an Unreleased Added entry for dayz-script-validator reading, of the local vanilla indexes, the one built from the tree being read. Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "d68fd77df5585705a0693e60554b63a724ee88523ed1a41886429c6ae3e20b50",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the review of PR #204: the Unreleased Added entry for the index beside the default one rewritten for this revision (a whole index, the digest compared for files beside the default index, the default index read from disk on each run and by the vanilla control, the cost measured again, capitals in a copy's paths). Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded, except the 1.3 to 3.2 s more a run, which those inputs do not record: they give 10.8 to 12.0 s a run against 8.5 to 9.7 s before. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "d0e2f1b4f3d40d43ed88995e2a3d9842818ab8d7f438b539bcdb2eecca77b1fe",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204: the Unreleased Added entry for the index beside the default one rewritten for this revision (the digest compared up to the capitals of the paths, tree_digest_casefold_v1, the form of the digests, paths UTF-8 cannot write, three limits, the cost measured again). Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-20 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "5cdb5463281ce910a22c6dc700f152530a1b8ac301eb7573df6abad6ab41c6cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5600aa66f545191bc166c7d349d9a896d09a64968817000e0cb5335cb4f3cb4e",
+      "output_hash": "5cdb5463281ce910a22c6dc700f152530a1b8ac301eb7573df6abad6ab41c6cc",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -23583,10 +23613,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-harness-teardown-crash@2026-11-18",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Claim ranges and entries for the review fixes of PR #204. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "3a194082f5911a55ba1f3ea1013026a157e8b4662935f37f602f4163b76081e2",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-fix-pack-204-sol@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "0463bffbdf248f202ffcb35cb08f41d93b87ea7185679820465164c6b540d359",
+      "output_hash": "3a194082f5911a55ba1f3ea1013026a157e8b4662935f37f602f4163b76081e2",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -26826,10 +26866,20 @@
           "source_path": "tools/dayz-script-validator/.gitignore",
           "source_revision": "r21-vanilla-index@2026-08-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: also ignores scripts/shared/vanilla_index.json.*, the indexes of other vanilla trees that the validator now reads beside the default one. Like the default index they are derived from Bohemia's scripts tree and are never redistributed. git check-ignore names the new line for vanilla_index.json.164393 and vanilla_index.json.129, and git ls-files -ci --exclude-standard lists no tracked file. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "936c2915b59c6b7b4094a3c1935300383b6bcf0be9be700221982a1bcf36b064",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/.gitignore",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c8a9bb37bcfd572258c7640b45cdc84d58fb3b9494dace2b046fc8dba372472e",
+      "output_hash": "936c2915b59c6b7b4094a3c1935300383b6bcf0be9be700221982a1bcf36b064",
       "output_path": "tools/dayz-script-validator/.gitignore",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27058,10 +27108,40 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: 'Which tree the vanilla index is' says that a PC with more than one vanilla tree keeps an index of each beside the default one (vanilla_index.json.<name>, built with --out), how a run chooses (the default index when it is known to be of the tree being read, else the first file beside it, in name order, whose two numbers are the tree's, else the default index with its warning or SKIP line), which files are passed over, that the default file alone says whether there is an index, that the blind spot of the two numbers holds for the choice too, and the measurements of 2026-11-19 on three addons, on 164393's targetconditionscomponents folder and of the cost of the choice. 'Vanilla control' says that a default index moved away under another name in its folder stays away. Its figures are those of the inputs of scripts/shared/vanilla_index_tree.py and tests/test_vanilla_control.py of the same revision, rounded. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "7cfb1e697f80e8388791836a07c8ea91e39b5a58be65fd463a789a7504803ce1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the review of PR #204: 'Which tree the vanilla index is' says what a whole index beside the default one is and that its count, its bytes and its tree_digest must be the tree's; why the digest is compared for those files and not for the default index (two trees can share the two numbers); that the tree is hashed only when a file beside the default index has its numbers; that each run reads the default index from disk, for a later run and the vanilla control in one process too; that a copy of a tree with other capitals in its paths is another tree to the digest; and the measurements of 2026-11-19 redone with this revision. Its figures are those of the input of scripts/shared/vanilla_index_tree.py of the same revision, rounded, except three that input does not record: 9.2 to 10.2 s a run against the default tree with the stable install, 0.24 to 0.36 s for the count alone and 0.013 to 0.034 s for reading one index file. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "1589d46fae749143c7131e117975e290ac300262ad505762685ce6089b5a5512",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204: 'Which tree the vanilla index is' says that the digest is compared up to the capitals of the paths (the two digests of the tree, the order of the casefolded parts, tree_digest_casefold_v1, what an index written before it is read for, the trees whose paths casefold alike, the paths UTF-8 cannot write and the files that cannot be read, the letters casefold folds beyond ASCII), lists three limits left as they are (damaged tables inside a whole index, a tree changed between its count and its hash or while indexed, an index that appears while the vanilla control runs), and gives the measurements of 2026-11-19 redone with this revision. Its figures are those of the inputs of scripts/shared/vanilla_index_tree.py and scripts/build_vanilla_index.py of the same revision, rounded. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-20 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "70e3e99d6ce6082e7a004b0bfca20e84d1e07f9e1ae69b27e2ac85acc8530765",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b67e236896f9dc6d03a8ef54c98a844a79900256695e0e34de41390d5b251be3",
+      "output_hash": "70e3e99d6ce6082e7a004b0bfca20e84d1e07f9e1ae69b27e2ac85acc8530765",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27166,10 +27246,30 @@
           "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204 (N1): build_index_document also writes tree_digest_casefold_v1, the casefolded digest of shared/vanilla_index_tree.tree_digests (null when two paths casefold alike). tree_digest, and the tree_digest function the vanilla control also uses, do not change. Measured on the owner's PC on 2026-11-19: the generator of 5b1b7fb and this one, run on P:\\scripts_164393_20261118 and on P:\\scripts (1.30.164289), write the same document but for that key, with tree_digest 756513dd67c5d613 and 1885d025b6f465b5, those of the owner's indexes, and tree_digest_casefold_v1 equal to tree_digest for both trees, whose paths are in lower case. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "05623f979433614cccd974e92b3280efc58b60b122c6db32370213244bd59266",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
+          "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Review fixes of PR #204. Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "71118d109e64d4ace02bf811569d07c3ce94ea26fd46c2c4d1fa6ef7967c7070",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
+          "source_revision": "kp-fix-pack-204-sol@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b4654b16d1bbbe25516d56dbb671eb7cd423deb07b963b46b66b02e1e236c922",
+      "output_hash": "71118d109e64d4ace02bf811569d07c3ce94ea26fd46c2c4d1fa6ef7967c7070",
       "output_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -28038,10 +28138,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: validate_addon calls shared/vanilla_index_tree.use_index_of_tree (compare_index_tree until now) before the per-file rules instead of after the tree rules, because it now also settles which local index the four index rules read. What it returns joins the run's warnings, info.skipped_checks and info.vanilla_index at the same place as before, so the order of the report does not change. Measurements in the input of scripts/shared/vanilla_index_tree.py of the same revision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "0e9d79ef9e13a21d3a8e8c6323eab904e5d845bdb9d9d4a16edeade5836eb48d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "dea81a3a13caa1d15cea6d133f5799646e8ee8fcbc25c4ac99e9381575695c6f",
+      "output_hash": "0e9d79ef9e13a21d3a8e8c6323eab904e5d845bdb9d9d4a16edeade5836eb48d",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -28188,10 +28298,40 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: the loader can read an index kept beside the default one. use_sibling_index(built_from_tree) takes the files vanilla_index.json.<name> of the default index's folder in name order, reads each with the loader's own checks (_read_index: a UTF-8 JSON object with this schema_version) and makes the first for which built_from_tree is true, given what the file records of its tree, the index in use, returning its path; use_default_index() goes back to the default file; index_path_is_pinned() says whether set_index_path_for_tests names the only file read, in which case use_sibling_index does nothing. set_index_path_for_tests also drops a file chosen before. _load_index now reads through _read_index and loaded_index_tree through _tree_of, with the same results. The caller and the measurements are in the input of scripts/shared/vanilla_index_tree.py of the same revision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9d168e25f84fac264854ee1c0e552a32aee776196db56ef324f8da09b693938b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the review of PR #204: reset_index_cache() also forgets the file beside the default index that was read (H3), and set_index_path_for_tests relies on it; use_default_index() is gone, and use_index_of_tree calls reset_index_cache() instead. use_sibling_index passes over a file that is not a whole index: _has_tables requires the four tables the lookups read (base_members, override_params, global_class_names, platform_gated_methods) to be objects (H2: base_members null made base_member_set raise AttributeError). The checks of the numbers, parsed_file_count and tree_digest are the caller's: see the input of scripts/shared/vanilla_index_tree.py of the same revision. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "bd4782664e8d8a762657b19c84695a6f025a1cf7bc63b049c196a5714e0634f1",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
+          "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204 (N1): _INDEX_TREE_KEYS adds tree_digest_casefold_v1, so that loaded_index_tree() and the predicate of use_sibling_index see it (None in an index written before). See the input of scripts/shared/vanilla_index_tree.py of the same revision. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "f216bac225b2caecfc52bb90d4b86523fa3b866d256b134f7a7f14325aa43709",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
+          "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "95003a3b68621db6a58e4a93e3541ff8d0588993b4cbaa8f6fa9c2409cd9c0c9",
+      "output_hash": "f216bac225b2caecfc52bb90d4b86523fa3b866d256b134f7a7f14325aa43709",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -28274,10 +28414,20 @@
           "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the review of PR #204 (H3): main() calls reset_index_cache() before loaded_index_path(), so the SKIP on a local index is decided on the default index as it is on disk, as in a new process, and not on a file that a validation earlier in the same process read beside it, nor on a default index since moved away. With the reviewer's state case, fdd1074 SKIPs naming the file beside the default index after the default one was moved away, and this revision runs the control (exit 0). In a new process nothing changes: on the owner's PC on 2026-11-19, vanilla_control.py on the default tree (1.30.164289) with the owner's three index files in scripts/shared SKIPs (exit 2) naming the default index, and with the default index moved to vanilla_index.json.164289 in the same folder gives exit 0, 'PASS - findings match the baseline', in 286 s, with no index loaded afterwards. Written by Claude (Anthropic). Corrected on 2026-11-20 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "2b793cafd41a05f691938f8950b762c3faa5cda8791b7a1bbded83322f74d63f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
+          "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6c9158eb17d8bba544e02c5233e6be5caff91019638b313dfad878233a68e1bf",
+      "output_hash": "2b793cafd41a05f691938f8950b762c3faa5cda8791b7a1bbded83322f74d63f",
       "output_path": "tools/dayz-script-validator/scripts/vanilla_control.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32108,10 +32258,50 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: TestVanillaIndexBesideTheDefault, 11 tests written before the code, with a default index and files beside it in a temporary folder (default_index_path patched and no index pinned), two small trees (a member that moves to a new subclass, as CCTLiquid's did in 164393) and an addon that ES-MEMBER-REDECLARE-BASE judges otherwise with each index. With the two tests added to test_vanilla_control.py, 7 of the 13 new test functions failed before the code (one of them through its two subtests) and the 6 that hold what must not change passed. They cover: an index beside the default one built from the tree is read, PASS with no warning and info.vanilla_index naming it; the rules read it (the finding moves from one class of the addon to the other), tree after tree in one process; with no index of the tree the default one warns as before and the message offers --out with a name beside it; a file beside the default index that is no index (broken JSON, not an object, another schema_version, a folder) or that cannot be compared (no file_count, no total_bytes, a count that is not a number, files it did not parse) is not read, while the same document untouched is; a path set with set_index_path_for_tests is the only file read; without a default index that loads none beside it is read; the default index comes first and then the names in order; an index read for one tree is not read for the next; a default index that cannot be compared gives way to one built from the tree; a tree that cannot be read keeps the default index. python -m pytest tests: 378 passed, with no index file in scripts/shared and with the owner's three there. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a8d87a556eb3663564195067362adaf770859845636b335f63c77e8046854d71",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: one more test in TestVanillaIndexBesideTheDefault, written after the code: set_index_path_for_tests(None) goes back to the default index when a file beside it was read for the last tree, which is what the cleanup of a test relies on. A mutation check on a copy of this tool (ten breaks of the choice of the index, one at a time, each run against the whole suite) had shown that no test held that line of set_index_path_for_tests; with this test each of the ten breaks fails at least one test. python -m pytest tests: 379 passed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6d64e3aeec8834f80e440f5a4bc800da35102aadb3ad075d2135331f3e3782ce",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the review of PR #204: seven tests in TestVanillaIndexBesideTheDefault and one subcase, and the compared list expected of an index read beside the default one now holds tree_digest. Written before the fixes: on fdd1074, 5 test functions and 14 subtests of this module failed. H1, a twin tree with the same count and bytes and one identifier renamed to another of the same length: its index, read, gives the addon no finding; the default index warns, and the tree's own index after it in name order is read. H2, 14 files beside the default index with the tree's numbers that are not whole (only the numbers and the digest; no, string or boolean parsed_file_count; no or empty tree_digest; each of the four tables missing or null), each passed over. H3, a reset after a run that read a file beside the default index goes back to the default one, and a run after the default index was moved away reads no index. And the tree is hashed only for a file beside the default index with its numbers, once for two. The two H4 tests pass on fdd1074 and fail with the reviewer's mutation (the count compared alone): a file of the same count and other bytes before the tree's own index, and a default index of that kind. A default index with the tree's numbers that did not parse every file also gives way, a subcase added for a mutation no test caught. python -m pytest tests: 387 passed. On a copy of the tool, 16 breaks of the choice applied one at a time each fail at least one test of the suite. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "be7da3a6bfbc74e0231f0ff63560bee72b9deddbbb663e885d4e063ec03c209c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204: eight tests in TestVanillaIndexBesideTheDefault, and the test that counts hashing now watches vanilla_index_tree.tree_digests. Written before the fixes, on 5b1b7fb five of the first seven failed and the subtest of the copy in capitals of a sixth: an index written before tree_digest_casefold_v1 from the tree in lower case is read for its copy in capitals (N1); an index written now from a copy in capitals is read for both spellings; the casefolded digest of a tree in lower case is its tree_digest and the generator's, in the order of the parts (a folder named as a file, fx_liquid/ before fx_liquid.c), and that of its copy in capitals is the same; two paths that casefold alike give no casefolded digest; a path with an unpaired surrogate, made on the file system itself, leaves the default index and its warning instead of raising (N3). The seventh, an old index of a copy in capitals read for those capitals only, states the documented limit and passes on 5b1b7fb too. A file that cannot be read while hashing leaves the default index and its warning (N6); the reviewer's mutation, except FileNotFoundError, turns it red. A test of the form of the digests was added after the reviewer's formats case showed, with the generator's new key, a damaged tree_digest read beside a good tree_digest_casefold_v1: 6 of its subtests failed before the check, and the 2 with the casefolded digest null or missing passed. python -m pytest tests: 395 passed. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "b01aeaf13624d31c4a99e295fd5a6b1f9d9ea15a6c295963197d230247d99ab7",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3d31929b693aa9f55f8427e4a34b3d3927824909349f04f7398eed9dded318d6",
+      "output_hash": "b01aeaf13624d31c4a99e295fd5a6b1f9d9ea15a6c295963197d230247d99ab7",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32140,10 +32330,30 @@
           "source_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: TestIndexBesideTheDefault, two tests that hold the control's behaviour now that the validator reads an index beside the default one. With no default index and an index of the control's own tree beside it, --update and the comparison run as with no index (exit 0, PASS, no index loaded afterwards). With a default index of another tree and that file beside it, the control SKIPs naming the default file and writes no baseline. Both passed before the code of this revision and pass after it. On the owner's PC on 2026-11-19, vanilla_control.py on the default tree (1.30.164289) with the owner's three index files in scripts/shared: with the default index in place it SKIPs (exit 2) naming that file, as before; with it moved to vanilla_index.json.164289 in the same folder, beside the other two, exit 0, 'PASS - findings match the baseline' in 194 s, and no index loaded afterwards. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fe3939861010bb0a52db21c6e1d2d2602400d799c69e1bf0521b2d37afd0f8c0",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the review of PR #204 (H3): test_a_validation_before_the_control_does_not_choose_its_index. A validation reads the index beside the default one; the control then SKIPs naming the default index, and once the default index is moved to another name in its folder it runs (UPDATED, exit 0) with no index loaded. It failed on fdd1074, where the control SKIPped naming the file beside the default index, and passes with the fix. Written by Claude (Anthropic). Corrected on 2026-11-20 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "39d594348f5efc7cfb8fc0c51fc39f837dcd068ce37f8514f1d0ab35db5097e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
+          "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8dea8bc741ce91ef9c43ae3264a6b6f1e765e4215c704f59945350556404a223",
+      "output_hash": "39d594348f5efc7cfb8fc0c51fc39f837dcd068ce37f8514f1d0ab35db5097e8",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_control.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32182,10 +32392,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the second review of PR #204 (N1): the generator's document holds tree_digest_casefold_v1, equal to tree_digest for the mini tree, whose paths are in lower case, and loaded_index_tree() names that key (None in a hand-written index without it). Both failed on 5b1b7fb and pass with the fix. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "519cc1e769d526b50c3db4d04900ed03e63e654c963565a10f22f2076e415dc8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
+          "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8bc8dcf9639d5b892bd2c42c1336843a7513f4112b35cdf7debf39efdd17281b",
+      "output_hash": "519cc1e769d526b50c3db4d04900ed03e63e654c963565a10f22f2076e415dc8",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42921,10 +43141,40 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
           "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: compare_index_tree becomes use_index_of_tree, which also settles which local index is read and is therefore called before the rules that read it. It starts from the default index (vanilla_reference.use_default_index). When what that index records is not known to be the tree being read (file_count or total_bytes differ, are not recorded, or parsed_file_count is not file_count), it asks vanilla_reference.use_sibling_index for the first vanilla_index.json.<name> beside the default one whose two numbers are the tree's, and that index is the one compared and reported: info.vanilla_index.index names it, matches is true and there is no warning. When there is none the default index stays, and the warning or the SKIP entry is the one of before, with the checks in the same order; the warning also says how to keep both indexes (--out \"<default index>.<name>\"), unless the index is pinned with set_index_path_for_tests. Without a default index that loads the function returns before looking beside it, so nothing is read. The tree is counted once, before the index is judged, so a run whose index cannot be compared now counts the tree too. Why: on 2026-11-18 P:\\scripts went back to DayZ 1.30.164289 and the 1.30.164393 Experimental tree was kept in a folder beside it. Three addons tested on Experimental (the LFH2R, LFDucati and LFRider stages: 114, 77 and 3 files) are validated against that tree, and with only the default index read each run warned VANILLA-INDEX-TREE-MISMATCH (WARN, exit 2) and four rules judged them with the 164289 members and signatures. Measured on the owner's PC on 2026-11-18 and again on 2026-11-19 with the same results (Python 3.14.3), with the default index built from the 164289 tree (3056 files, 13952124 bytes) and beside it vanilla_index.json.164393 (3059 files, 14001771 bytes) and vanilla_index.json.129: script_validator.py on each of the three stages with --vanilla-root naming the 164393 tree and --game-root naming the Experimental install went from exit 2, WARN, 0 errors and that one warning (validator of commit f4007a9) to exit 0, PASS, 0 errors, 0 warnings, with info.vanilla_index.index naming vanilla_index.json.164393 and info.vanilla_build.matches true; with the default tree and --game-root naming the stable install the three are exit 0, PASS on the default index, before and after. 164393's 4_world/classes/useractionscomponent/targetconditionscomponents folder (18 files), validated against its own tree, went from exit 1 with five ES-MEMBER-REDECLARE-BASE errors (cctliquidsyntheticcursor.c lines 26, 27, 28, 37 and 38) and this warning to no error and no such warning (exit 2 on one ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN warning, which the run before had too). Ten rounds in one process with a cold loader, on 2026-11-19: counting the 164393 tree took 0.190 to 0.223 s (median 0.201); use_index_of_tree on it 0.240 to 0.258 s (median 0.249: the default index, the count and two files beside it); on the 164289 tree 0.207 to 0.278 s (median 0.219: the default index and the count); reading one index file 0.012 to 0.021 s. Validator tests: 378 passed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6ffc752b426122a8cd9dc4569abd528f9a3e3c8094944799fe0f4db25406ad57",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
+          "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after an independent review of PR #204 by another model family (on fdd1074): a file beside the default index is no longer read on the two numbers alone. use_index_of_tree reads the default index from disk on each call (reset_index_cache), compares it by file_count and total_bytes as before (_numbers_match, the former _built_from), and when it is not known to be of the tree asks use_sibling_index for the first whole file beside it for which _whole_index_of_tree holds: the two numbers match, parsed_file_count is a count equal to file_count, and tree_digest is a non-empty string equal to the tree's, hashed with build_vanilla_index.tree_digest (imported at call time, since the generator imports this module) at most once per run and only once a file's numbers match; an OSError while hashing is no match. info.vanilla_index.compared adds tree_digest when such a file is read. Findings fixed: H1 (P1), a file of another tree with the same count and bytes was read and turned the warning into a PASS; H2, a file with only schema_version and the two numbers, or with no, string or boolean parsed_file_count, was read, and one with base_members null raised AttributeError; H3, a reset or a vanilla control later in the same process saw the file read for an earlier tree; H4, no test held the byte comparison. Measured on the owner's PC on 2026-11-19 (Python 3.14.3, other work running): the reviewer's reproduce_review.py, unchanged, on f4007a9, fdd1074 and this revision: its collision, partial, state and mutation cases give what the review expected (the right index read and ES-MEMBER-REDECLARE-BASE reported, with and without --game-root; the five incomplete files passed over with no exception; the control run after the default index was moved away), and its edges and compatibility cases give the same as on fdd1074. script_validator.py on the LFH2R, LFDucati and LFRider stages (114, 77 and 3 files) with --vanilla-root naming the 164393 tree and --game-root naming the Experimental install: from exit 2, WARN, 0 errors and this one warning (f4007a9) to exit 0, PASS, 0 warnings, info.vanilla_index.index vanilla_index.json.164393 with tree_digest compared, 10.8 to 12.0 s a run against 8.5 to 9.7 s; with the default tree and the stable install, PASS on the default index before and after. 164393's targetconditionscomponents folder against its own tree: from five ES-MEMBER-REDECLARE-BASE errors to none. Ten rounds of use_index_of_tree: 1.392 to 2.019 s (median 1.602) on the 164393 tree, 0.256 to 0.406 s (median 0.316) on the 164289 tree, whose numbers the default index has. A copy of the 164393 tree with the PBO's capitals in its paths (the same 3059 files, bytes and contents, file by file) has another tree_digest: the LFH2R stage against it warns, as on f4007a9, where fdd1074 had read vanilla_index.json.164393 on the numbers. Validator tests: 387 passed. Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "5f8e008bc2b2155aa420601ffdc8dbfbd5398fce5cad910c0212fc372f5c5463",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
+          "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19, after the second independent review of PR #204 by another model family (on 5b1b7fb). N1 (P1): a copy of a tree with the capitals a PBO extraction keeps in its paths (4_World/...) did not read the index built from the same tree in lower case, because the digest compared the paths as spelt; the owner's LFH2R build script validates against such a copy of 1.30.164393, which so warned and was judged with the stable build's signatures. tree_digests(files, root) now reads each file once (_file_sha256) and gives the tree's digest as spelt (the stream of build_vanilla_index.tree_digest, which does not change and is also the vanilla control's) and with each relative path casefolded, in the order of the casefolded parts, or None when two paths casefold alike. For a tree in lower case the two are equal, so the owner's indexes, written before, are read for copies in any capitals. _whole_index_of_tree requires each recorded digest to be 64 lower-case hex digits (tree_digest_casefold_v1 may be null or missing) and takes the file when either recorded digest is either of the tree's: equal streams mean equal paths, as spelt or casefolded, with equal contents. N3: a path UTF-8 cannot write (an unpaired surrogate) raised UnicodeEncodeError through run(); _digests_of catches UnicodeError as well as OSError, and the tree is then not compared. Ordering by the casefolded strings does not reproduce the owner's index: on the 1.30.164393 tree and on its copy in capitals only the order of the parts gives the recorded tree_digest 756513dd67c5d613. Measured on the owner's PC on 2026-11-19 (Python 3.14.3, other work running): the LFH2R, LFDucati and LFRider stages (114, 77 and 3 files) against P:\\scripts_164393_20261118 with --game-root naming the Experimental install go from exit 2, WARN (f4007a9) to exit 0, PASS, 0 warnings, reading vanilla_index.json.164393, 10.9 to 11.7 s a run against 8.7 to 10.4 s; the LFH2R stage against its build script's copy of that tree with the PBO's capitals goes from WARN (f4007a9 and 5b1b7fb) to PASS on the same index; against the default tree with the stable install all three are PASS before and after. 164393's targetconditionscomponents folder: from five ES-MEMBER-REDECLARE-BASE errors to none. Ten rounds of use_index_of_tree: 1.503 to 2.533 s (median 1.869) on the 164393 tree, 0.246 to 0.392 s (median 0.315) on the 164289 tree. The reviewer's reproduce_r2.py, unchanged, on main 062850c, 5b1b7fb and this revision: case gives PASS in upper_with_lower_index; odd_path gives the WARN of main instead of the exception; unreadable, formats and control give the same as on 5b1b7fb, and so do the six cases of reproduce_review.py; nested, control_race and default_collision are unchanged, as documented limits; snapshots no longer reaches its hook, a patch of build_vanilla_index.tree_digest, which the choice no longer calls. Validator tests: 395 passed. On a copy of the tool, 27 breaks of the choice applied one at a time each fail at least one test, among them the reviewer's except FileNotFoundError (N6). Written by Claude (Anthropic). Corrected on 2026-11-19 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google). Corrected on 2026-11-20 after an adversarial review by Sol (OpenAI); the corrections were written by Gemini (Google).",
+          "license": "MIT",
+          "source_hash": "5b1916fd4303f91d857c7810937560c1b188d6ebd52e1953943c182b71d27b2d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
+          "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ded35384a00bf21e0fa2800415ee028611e4de5d4bdedd536b0e7e898d0441af",
+      "output_hash": "5b1916fd4303f91d857c7810937560c1b188d6ebd52e1953943c182b71d27b2d",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"

@@ -327,7 +327,8 @@ had already turned the control red on 1.30 (inbox 4c83).
 With an index in use and a vanilla tree, each run compares them. The index
 records the count and the total bytes of the `.c` files of the tree it was
 built from, and the tree being read is counted with the generator's own
-walk. When either number differs, `VANILLA-INDEX-TREE-MISMATCH` (WARN)
+walk. When either number differs, and no index kept beside it is of that
+tree (below), `VANILLA-INDEX-TREE-MISMATCH` (WARN)
 names the index file, the tree it was built from (the folder the generator
 read, its two numbers and the start of its `tree_digest`), the tree being
 read with its two numbers, and the command that rebuilds the index from
@@ -350,10 +351,103 @@ exits 2, so what the section above says of a gate that accepts WARN holds
 here too. The vanilla control never gets this far: it SKIPs when an index
 is in use.
 
-The two numbers are compared and the index's `tree_digest`, a sha256 over
-the contents of the same files, is not, because of what each costs on
-every run. The price is one blind spot: a tree with the same count and the
-same bytes but other contents is taken for the index's tree.
+[EXACT][CLAIM-DSV-VANILLA-INDEX-BESIDE-OUT] A PC with more than one vanilla tree (the stable build's and an
+Experimental one, say) keeps an index of each: the default file for one
+and, for each other, a file beside it named
+`scripts/shared/vanilla_index.json.<name>`. The name is free; the build
+number serves. It is built with `--out`:
+
+```powershell
+python tools/dayz-script-validator/scripts/build_vanilla_index.py --vanilla-root <tree> `
+    --out tools/dayz-script-validator/scripts/shared/vanilla_index.json.<name>
+```
+
+Each run reads the default index from disk again, whatever an earlier run
+in the same process read. When that index is not known to be of the tree
+being read (a number differs, or it cannot be compared), the files beside
+it are tried in name order, and the first that is a whole index of that
+tree is read instead: the four rules judge with it,
+`info.vanilla_index.index` names it, `info.vanilla_index.compared` adds
+`tree_digest`, and the run has no `VANILLA-INDEX-TREE-MISMATCH` warning. A
+whole index is what the generator writes: a JSON object of this
+`schema_version` holding the four tables the rules read (`base_members`,
+`override_params`, `global_class_names` and `platform_gated_methods`, each
+an object), a `parsed_file_count` equal to its `file_count`, a
+`tree_digest` and, from indexes written since 2026-11-19, a
+`tree_digest_casefold_v1` (each digest 64 lower-case hex digits; the
+second may be null or missing). It is of the tree when its count and its
+bytes are the tree's and one of its digests is one of the tree's (below).
+Anything else beside the default index is passed over. When no file beside
+it is of the tree, the default index is read and the run warns, or gives
+its SKIP line, as above; the warning then also offers `--out` with such a
+name. The default file alone says whether there is an index: without one
+that loads, nothing beside it is read, so an index moved away under
+another name in the same folder stays away, for a later run and for the
+vanilla control in the same process too. Like the default index, those
+files are derived from Bohemia's scripts, and git ignores them. Index
+selection is process-wide state, so `validate_addon` does not support
+concurrent calls in the same process.
+
+For the default index the two numbers are compared and its `tree_digest`,
+a sha256 over the relative paths and the contents of the same files, is
+not, because hashing the tree on every run costs several times the count.
+The price is one blind spot: a tree with the same count and the same bytes
+but other contents is taken for the default index's tree. A file beside
+the default index is not taken on those two numbers: two trees can share
+them (one identifier renamed to another of the same length is enough), and
+taking one for the other would silence `VANILLA-INDEX-TREE-MISMATCH` and
+report a match. Its digest is compared too, and the tree is hashed only
+when a file beside the default index has the tree's two numbers.
+
+That digest is compared up to the capitals of the paths, as the comparison
+with the PBO above takes them: `collect_c_files` matches `.c` regardless of
+case on POSIX as well as Windows, so an extraction that keeps the PBO's own
+capitals (`4_World/...` or `.C`) and one in lower case are one tree. Each
+file is read once for two digests of the tree: as spelt, which is
+`tree_digest`, and with each relative path casefolded and the files in the
+order of their casefolded parts, which the generator records as
+`tree_digest_casefold_v1`. For a tree whose paths are lower-case ASCII the
+two are one, so an index written before `tree_digest_casefold_v1` from such
+a tree, as `P:\scripts` and the extractions this pack describes are, is read
+for a copy in any ASCII capitals. One written from a copy with capitals is
+read for that spelling only, provided the older index recorded the same `.c`
+files (an older POSIX index of a tree with upper-case `.C` files omitted
+them, so its counts and digest do not match) and, across POSIX and Windows
+path-part orders, no two paths share the same lower-case spelling (when two
+paths tie in lower case, Windows `Path` sorting preserves directory traversal
+order and is not guaranteed to match across platforms), until it is rebuilt;
+likewise, for a non-ASCII lower-case letter whose
+`casefold` differs from its lower case (`ß` folds to `ss`), `tree_digest`
+and `tree_digest_casefold_v1` differ, so an older index without
+`tree_digest_casefold_v1` does not match another spelling (`ẞ`) until it is
+rebuilt. A tree with two paths that casefold alike, two files on a file
+system that tells capitals apart, has no casefolded digest and is compared
+as spelt. A path that UTF-8 cannot write (an unpaired surrogate, which NTFS
+keeps) or a file that cannot be read while hashing leaves the tree's
+digest uncompared: no file beside the default index matches, so the
+default index is read and the index check returns its warning or SKIP line,
+as before files beside it were read (when `--game-root` or `DAYZ_GAME_ROOT`
+is also active, `compare_vanilla_build` opens matching `.c` files from the
+tree without catching `OSError`, so an unreadable file can abort the run
+before any warning, SKIP line or result is produced). `casefold` also folds
+a few letters that are not ASCII (`ß` and `ss`, say); DayZ's script paths
+are ASCII.
+
+Two limits remain:
+
+- Only the outer form of the four tables is checked: a file beside the
+  default index with the tree's digest and a table emptied, or a value of
+  another type inside one, is read, and gives a false PASS or an
+  exception. Rebuild an index that was damaged.
+- The tree is walked once (`collect_c_files`) before it is counted and
+  hashed, and the generator parses each file before it hashes that list: a
+  file added after the walk is not in the list (so an index of the prior
+  tree can still match), and a file edited during generation after being
+  parsed leaves the index with tables from the earlier content and digests
+  from the later content. A file already in the list whose bytes change
+  between the count and the hash produces a different digest and does not
+  match the prior sibling index. Do not change a tree while it is validated
+  or indexed.
 
 Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work
 running on the PC), on the 1.30.164393 tree in `P:\scripts` (3 059 `.c`
@@ -379,6 +473,33 @@ files, 14 001 771 bytes):
   listing, gave the same two numbers on both trees in 0.03 to 0.09 s. It
   is not used: the generator and the comparison count with one function,
   `collect_c_files` in `scripts/shared/vanilla_index_tree.py`.
+
+Measured there on 2026-11-19, with the 1.30.164289 tree back in
+`P:\scripts` and the 164393 tree in a folder of its own, the default index
+built from the 164289 tree and, beside it, `vanilla_index.json.164393` and
+an index of 1.29, all three written before `tree_digest_casefold_v1` (other
+work running on the PC):
+
+- Three addons of 114, 77 and 3 files, validated against the 164393 tree
+  with `--game-root` naming the Experimental install, go from WARN on
+  this rule alone to PASS, with `info.vanilla_index.index` naming the
+  `.164393` file; each run took 10.9 to 11.7 s, against 8.7 to 10.4 s
+  before. Against the default tree, with the stable install, they are PASS
+  on the default index before and after.
+- A copy of the 164393 tree whose paths keep the PBO's capitals (the same
+  3 059 files, bytes and contents) has another `tree_digest` and the same
+  casefolded one: against it the 114-file addon goes from WARN to PASS,
+  reading the `.164393` file.
+- 164393's `targetconditionscomponents` folder, validated against its own
+  tree, goes from the five `ES-MEMBER-REDECLARE-BASE` findings and this
+  warning to neither.
+- Ten rounds of the choice alone: against the 164393 tree 1.50 to 2.53 s
+  (median 1.87 s), hashing the tree included; against the 164289 tree,
+  whose numbers the default index has, 0.25 to 0.39 s (median 0.32 s). The
+  count alone took 0.24 to 0.43 s, and reading one index file 0.014 to
+  0.045 s.
+- The generator, run on both trees, writes the same document as before
+  plus `tree_digest_casefold_v1`, equal to `tree_digest` for both.
 
 ## Compile errors read from one file
 
@@ -505,7 +626,9 @@ cwd. `--update` rewrites the baseline on purpose after a DayZ patch or an
 accepted change; it prints what moved. Exit 0 is PASS, 1 is FAIL, 2 is
 SKIP (no tree, no baseline, unreadable, or a local
 `scripts/shared/vanilla_index.json` that the validator loads: the baseline
-measures the validator without one, so move that file away first).
+measures the validator without one, so move that file away first; another
+name in the same folder will do, since nothing beside a default index that
+is not there is read).
 
 The baseline is measured on one build, the stable one: `tree.dayz_build`
 names it and `tree.digest` identifies its tree. A tree of another build

@@ -1,3 +1,7 @@
 # Derived from Bohemia's vanilla scripts tree. Generate locally with
 #   python scripts/build_vanilla_index.py --vanilla-root P:\scripts
 scripts/shared/vanilla_index.json
+# The index of another vanilla tree, kept beside it: the validator reads
+# the one built from the tree being read. Generate with
+#   --out scripts/shared/vanilla_index.json.<name>
+scripts/shared/vanilla_index.json.*

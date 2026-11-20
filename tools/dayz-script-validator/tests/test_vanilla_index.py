@@ -60,6 +60,10 @@ class TestGenerator(unittest.TestCase):
         self.assertGreater(document["total_bytes"], 0)
         self.assertEqual(64, len(document["tree_digest"]))
         self.assertRegex(document["tree_digest"], r"^[0-9a-f]{64}$")
+        # Its paths are in lower case: casefolded, the digest is the same.
+        self.assertEqual(
+            document["tree_digest"], document["tree_digest_casefold_v1"]
+        )
         self.assertIn("Alpha", document["global_class_names"])
         self.assertRegex(
             document["global_class_names"]["Alpha"],
@@ -294,6 +298,9 @@ class TestIndexFallback(_IndexIsolation):
                     "parsed_file_count": 5,
                     "total_bytes": document["total_bytes"],
                     "tree_digest": document["tree_digest"],
+                    "tree_digest_casefold_v1": (
+                        document["tree_digest_casefold_v1"]
+                    ),
                 },
                 vanilla_reference.loaded_index_tree(),
             )
@@ -310,6 +317,7 @@ class TestIndexFallback(_IndexIsolation):
                     "parsed_file_count": None,
                     "total_bytes": None,
                     "tree_digest": None,
+                    "tree_digest_casefold_v1": None,
                 },
                 vanilla_reference.loaded_index_tree(),
             )

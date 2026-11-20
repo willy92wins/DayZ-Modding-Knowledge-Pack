@@ -1,4 +1,5 @@
-"""Whether the vanilla index in use was built from the vanilla tree being read.
+"""Which local vanilla index is read, and whether it was built from the
+vanilla tree being read.
 
 scripts/shared/vanilla_index.json is generated from one vanilla tree and
 holds that tree's members and signatures. Four rules read it, through
@@ -13,15 +14,49 @@ subclass that takes those members from CCTLiquid; before that, a 1.29 index
 turned the vanilla control red on 1.30 (inbox 4c83).
 
 The index records the count and the total bytes of the .c files of its
-tree, and a digest of their contents. Only the two numbers are compared.
-The README's "Which tree the vanilla index is" has the measured cost of
-both and what the numbers cannot tell apart. A folder's path is not
-compared: the same path holds another build after a refresh. Read-only.
+tree, and a digest of their contents. Only the two numbers are compared
+with the default index. The README's "Which tree the vanilla index is" has
+the measured cost of both and what the numbers cannot tell apart. A
+folder's path is not compared: the same path holds another build after a
+refresh. Read-only.
+
+A PC that holds two vanilla trees (the stable build's and an Experimental
+one, say) keeps an index of each: the default file and, beside it,
+vanilla_index.json.<name>. When the default index is not known to be of
+the tree being read, the first whole file beside it that is of that tree
+is read instead, and the four rules judge with it. For a file beside it
+the two numbers are not enough: two trees can share them (an identifier
+renamed to another of the same length), and taking one for the other would
+silence VANILLA-INDEX-TREE-MISMATCH and report a match. So its digest is
+compared too, and the tree is hashed only when a file beside the default
+index has its two numbers. On 2026-11-18 three addons tested on
+Experimental warned on every run, and were judged with the stable build's
+members, because only the default file was read.
+
+The digest is compared up to the capitals of the paths: an extraction that
+keeps a PBO's own (4_World/...) is the same tree as one in lower case, as
+shared/vanilla_build.py already takes them against the PBO. tree_digests
+gives the tree's digest as spelt and with the paths casefolded, in the order
+of their casefolded parts, which for a tree whose paths are lower-case ASCII
+is the generator's digest itself: so an index written before the casefolded
+digest existed, from such a tree, is still read for a copy in other ASCII
+capitals; and, when it recorded the same .c files (an older POSIX index of a
+tree with upper-case .C files omitted them) and no two paths share the same
+lower-case spelling, an older index of a tree with capitals still matches
+the same spelling in either POSIX or Windows path order.
 """
 
+import hashlib
+import os
 import pathlib
 
-from shared.vanilla_reference import loaded_index_path, loaded_index_tree
+from shared.vanilla_reference import (
+    index_path_is_pinned,
+    loaded_index_path,
+    loaded_index_tree,
+    reset_index_cache,
+    use_sibling_index,
+)
 
 
 VANILLA_INDEX_TREE_RULE_ID = "VANILLA-INDEX-TREE-MISMATCH"
@@ -44,8 +79,15 @@ VANILLA_INDEX_TREE_MESSAGE = (
     "was built from: they can report what this tree does not declare and "
     "miss what it does (2026-11-18: an index of DayZ 1.30.164289 read with "
     "the 1.30.164393 tree gave five false ES-MEMBER-REDECLARE-BASE "
-    "findings). Rebuild it from the tree being read: {rebuild}; or move it "
-    "away, and those rules use only their curated tables."
+    "findings). Rebuild it from the tree being read: {rebuild}; {beside}or "
+    "move it away, and those rules use only their curated tables."
+)
+
+# Offered when files beside the default index are read: not for a pinned one.
+VANILLA_INDEX_BESIDE_ADVICE = (
+    "or keep it for its own tree and build this tree's beside it, with "
+    '--out "{index}.<name>": an index beside the default one that was built '
+    "from the tree being read is read instead of it; "
 )
 
 
@@ -53,13 +95,25 @@ def collect_c_files(vanilla_root):
     """The .c files the index covers, in the order its digest reads them.
 
     build_vanilla_index.py imports this one: the generator and the
-    comparison below must count the same files.
+    comparison below must count the same files. Extension matching is
+    case-insensitive on both POSIX and Windows. Unlike Path.rglob, an
+    unreadable folder raises OSError instead of being silently left out.
     """
-    files = sorted(
-        path
-        for path in vanilla_root.rglob("*.c")
-        if path.is_file()
-    )
+    root = pathlib.Path(vanilla_root)
+    files = []
+    pending = [root]
+    while pending:
+        folder = pending.pop()
+        with os.scandir(folder) as entries:
+            for entry in entries:
+                if entry.is_dir(follow_symlinks=False):
+                    pending.append(pathlib.Path(entry.path))
+                elif (
+                    entry.name.lower().endswith(".c")
+                    and entry.is_file()
+                ):
+                    files.append(pathlib.Path(entry.path))
+    files.sort()
     return files
 
 
@@ -81,14 +135,177 @@ def _rebuild_command(vanilla_root, index_path):
     )
 
 
-def compare_index_tree(vanilla_root):
-    """Return (warnings, skipped, info) for the vanilla index in use.
+def _numbers_match(recorded, tree_files, tree_bytes):
+    """Whether the count and the bytes an index records are the tree's.
+
+    An index that cannot be compared is not known to be of the tree.
+    """
+    index_files = recorded["file_count"]
+    index_bytes = recorded["total_bytes"]
+    if not (_is_count(index_files) and _is_count(index_bytes)):
+        return False
+    parsed = recorded["parsed_file_count"]
+    if _is_count(parsed) and parsed != index_files:
+        return False
+    return index_files == tree_files and index_bytes == tree_bytes
+
+
+def _file_sha256(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _digest(entries):
+    digest = hashlib.sha256()
+    for relative, content in entries:
+        digest.update(relative.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(content.encode("ascii"))
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
+def tree_digests(files, vanilla_root, *, include_platform_orders=False):
+    """The digest of the tree's .c files as spelt, and casefolded.
+
+    files as collect_c_files gives them. Each file is read once. The first is
+    the stream of build_vanilla_index.tree_digest, which the index records
+    as tree_digest: each relative path as spelt, NUL, the sha256 of the
+    file's contents, LF, in the order given. The second, which the generator
+    records as tree_digest_casefold_v1, takes the paths casefolded and in the
+    order of their casefolded parts, so that two spellings of one tree give
+    one digest; it is None when two paths casefold alike, which on a file
+    system that tells capitals apart are two files. When
+    include_platform_orders is true, also returns the spelt digest in POSIX
+    path-part order and in Windows lower-case path-part order (breaking ties
+    by spelt parts), so an index written before tree_digest_casefold_v1
+    matches across platforms when it recorded the same .c files (an older
+    POSIX index of a tree with upper-case .C files omitted them, so its
+    counts and digest do not match until rebuilt) and no two paths share the
+    same lower-case spelling; when two paths tie in lower case, Windows Path
+    sorting preserves directory traversal order, which cannot be
+    reconstructed from the names alone. A path UTF-8 cannot write raises
+    UnicodeEncodeError, and a file that cannot be read OSError.
+    """
+    root = pathlib.Path(vanilla_root)
+    spelt = []
+    for path in files:
+        spelt.append((path.relative_to(root).as_posix(), _file_sha256(path)))
+    spelt_digest = _digest(spelt)
+    folded = [(relative.casefold(), content) for relative, content in spelt]
+    if len({relative for relative, _content in folded}) != len(folded):
+        folded_digest = None
+    else:
+        folded.sort(key=lambda entry: entry[0].split("/"))
+        folded_digest = _digest(folded)
+    if not include_platform_orders:
+        return spelt_digest, folded_digest
+    posix_spelt = sorted(spelt, key=lambda entry: entry[0].split("/"))
+    windows_spelt = sorted(
+        spelt,
+        key=lambda entry: (
+            [part.lower() for part in entry[0].split("/")],
+            entry[0].split("/"),
+        ),
+    )
+    return (
+        spelt_digest,
+        folded_digest,
+        _digest(posix_spelt),
+        _digest(windows_spelt),
+    )
+
+
+def _is_digest(value):
+    """A sha256 as the generator writes it: 64 lower-case hex digits."""
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(char in "0123456789abcdef" for char in value)
+    )
+
+
+def _whole_index_of_tree(recorded, tree_files, tree_bytes, tree_digests_of):
+    """Whether a file beside the default index is of the tree being read.
+
+    More than _numbers_match: the index says it parsed every file of its
+    tree, its digests are as the generator writes them (tree_digest always,
+    tree_digest_casefold_v1 when it is not null or missing), and one of them
+    is one of the tree's. tree_digests_of() hashes the tree, and is called
+    only once the numbers match.
+
+    Any matching pair is the same tree up to the capitals of its paths:
+    each stream has one form, so equal digests mean equal paths, as spelt
+    (in given, POSIX or lower-case-then-spelt path-part order) or
+    casefolded, with equal contents. An index without the casefolded digest,
+    written before it, so matches a copy of its tree in other ASCII capitals
+    when its own tree had lower-case ASCII paths, and matches the same
+    spelling across POSIX and Windows path orders when it recorded the same
+    .c files (an older POSIX index of a tree with upper-case .C files
+    omitted them, so it is rejected at _numbers_match until rebuilt) and no
+    two paths share the same lower-case spelling.
+    """
+    if not _numbers_match(recorded, tree_files, tree_bytes):
+        return False
+    parsed = recorded["parsed_file_count"]
+    if not _is_count(parsed) or parsed != recorded["file_count"]:
+        return False
+    digest = recorded["tree_digest"]
+    if not _is_digest(digest):
+        return False
+    recorded_digests = {digest}
+    folded = recorded["tree_digest_casefold_v1"]
+    if folded is not None:
+        if not _is_digest(folded):
+            return False
+        recorded_digests.add(folded)
+    return any(found in recorded_digests for found in tree_digests_of() if found)
+
+
+def _digests_of(vanilla_root, files):
+    """A function that hashes the tree, at most once, with tree_digests.
+
+    It gives (None, None) when a file of the tree cannot be read or a path
+    cannot be written in UTF-8: the tree is then not compared, which is no
+    match.
+    """
+    hashed = []
+
+    def digests():
+        if not hashed:
+            try:
+                hashed.append(
+                    tree_digests(
+                        files, vanilla_root, include_platform_orders=True
+                    )
+                )
+            except (OSError, UnicodeError):
+                hashed.append((None, None))
+        return hashed[0]
+
+    return digests
+
+
+def use_index_of_tree(vanilla_root):
+    """Settle which local index is read; return (warnings, skipped, info).
+
+    Call it before the rules that read the index. Each call reads the
+    default index from disk again, whatever an earlier call read. It is read
+    when its two numbers are the vanilla tree's; otherwise the first whole
+    file beside it whose two numbers and digest are the tree's, when there
+    is one; else the default index, and what is returned says so as before.
+    Without a default index nothing is read, whatever is beside it: that
+    file says whether there is an index at all.
 
     Without an index nothing reads one, so nothing is compared and nothing
     is reported. info is None whenever nothing was compared; otherwise it
-    holds the numbers of both sides and `matches`. What cannot be compared
-    is a SKIP line, never a match.
+    holds the numbers of both sides, what was compared and `matches`. What
+    cannot be compared is a SKIP line, never a match.
     """
+    reset_index_cache()
     index_path = loaded_index_path()
     if index_path is None:
         return [], [], None
@@ -96,6 +313,24 @@ def compare_index_tree(vanilla_root):
         return [], [_skip(
             "no vanilla tree to compare the vanilla index %s with" % index_path
         )], None
+    root = pathlib.Path(vanilla_root)
+    tree_error = None
+    read_beside = False
+    try:
+        files = collect_c_files(root)
+        tree_files = len(files)
+        tree_bytes = sum(path.stat().st_size for path in files)
+        if not _numbers_match(loaded_index_tree(), tree_files, tree_bytes):
+            digests = _digests_of(root, files)
+            beside = use_sibling_index(
+                lambda recorded: _whole_index_of_tree(
+                    recorded, tree_files, tree_bytes, digests
+                )
+            )
+            if beside is not None:
+                index_path, read_beside = beside, True
+    except OSError as error:
+        tree_error = error
     recorded = loaded_index_tree()
     index_files = recorded["file_count"]
     index_bytes = recorded["total_bytes"]
@@ -115,39 +350,42 @@ def compare_index_tree(vanilla_root):
             "with %s; rebuild it: %s"
             % (index_path, parsed, index_files, vanilla_root, rebuild)
         )], None
-    try:
-        files = collect_c_files(pathlib.Path(vanilla_root))
-        tree_bytes = sum(path.stat().st_size for path in files)
-    except OSError as error:
+    if tree_error is not None:
         return [], [_skip(
             "the vanilla tree %s was not read (%s), so the vanilla index %s "
-            "is not compared with it" % (vanilla_root, error, index_path)
+            "is not compared with it" % (vanilla_root, tree_error, index_path)
         )], None
 
     index_root = recorded["vanilla_root"]
     if not isinstance(index_root, str) or not index_root:
         index_root = None
+    compared = ["file_count", "total_bytes"]
+    if read_beside:
+        compared.append("tree_digest")
     info = {
         "index": str(index_path),
         "index_tree": index_root,
         "index_files": index_files,
         "index_bytes": index_bytes,
-        "tree_files": len(files),
+        "tree_files": tree_files,
         "tree_bytes": tree_bytes,
-        "compared": ["file_count", "total_bytes"],
-        "matches": index_files == len(files) and index_bytes == tree_bytes,
+        "compared": compared,
+        "matches": index_files == tree_files and index_bytes == tree_bytes,
     }
     if info["matches"]:
         return [], [], info
     digest = recorded["tree_digest"]
     if not isinstance(digest, str) or not digest:
         digest = "unknown"
+    advice = ""
+    if not index_path_is_pinned():
+        advice = VANILLA_INDEX_BESIDE_ADVICE.format(index=index_path)
     message = VANILLA_INDEX_TREE_MESSAGE.format(
         index=index_path, root=vanilla_root, index_files=index_files,
         index_bytes=index_bytes,
         index_root=index_root or "a tree it does not name",
-        digest=digest[:12], tree_files=len(files), tree_bytes=tree_bytes,
-        rules=INDEX_RULES, rebuild=rebuild,
+        digest=digest[:12], tree_files=tree_files, tree_bytes=tree_bytes,
+        rules=INDEX_RULES, rebuild=rebuild, beside=advice,
     )
     warning = {
         "check": VANILLA_INDEX_TREE_RULE_ID,

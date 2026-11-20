@@ -189,7 +189,7 @@ from detectors.es_undefined_builtin_method import (
     check_es_undefined_builtin_method,
 )
 from shared.vanilla_build import compare_vanilla_build, resolve_game_root
-from shared.vanilla_index_tree import compare_index_tree
+from shared.vanilla_index_tree import use_index_of_tree
 from shared.vanilla_tree import resolve_vanilla_root
 from detectors.es_member_redeclare_base import (
     ES_MEMBER_REDECLARE_BASE_RULE_ID,
@@ -343,6 +343,10 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
         return build_result(addon_root, errors, warnings, 0, elapsed_ms)
 
     files = discover_files(addon_root)
+    # Not a rule on the addon: which local vanilla index some rules below
+    # read, and whether it was built from the vanilla tree the others read.
+    # Settled before they run, reported after them.
+    index_warnings, index_skipped, index_info = use_index_of_tree(vanilla_root)
     construction_hook = vanilla_declares_construction_hook(vanilla_root)
     hook_registrations = []
     module_files = []
@@ -518,9 +522,7 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     )
     errors.extend(builtin_errors)
     skipped_checks = list(skipped_checks) + builtin_skipped
-    # Not a rule on the addon: whether the vanilla index some rules above
-    # read was built from the vanilla tree the others read.
-    index_warnings, index_skipped, index_info = compare_index_tree(vanilla_root)
+    # What use_index_of_tree found, above.
     warnings.extend(index_warnings)
     skipped_checks = list(skipped_checks) + index_skipped
     build_info = None
