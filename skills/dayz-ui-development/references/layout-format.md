@@ -276,6 +276,10 @@ coincidence. A widget declared at `-4` is drawn 4px **outside** its parent's
 right edge, and only the subtracting form predicts that; a table of positive
 offsets alone would have been satisfied by either rule with a sign flip. Both
 axes behave identically, so `bottom_ref` needs no separate treatment.
+These rows are `ui_tree` rectangles, not pixels: they say where the engine
+places a widget, not that its part outside the parent is drawn. A child wholly
+outside its parent was not drawn at all (SKILL.md, "Measured in-game on
+2026-11-18").
 
 ### Visibility & Interaction
 
@@ -283,6 +287,8 @@ axes behave identically, so `bottom_ref` needs no separate treatment.
 visible 0|1               // Initial visibility (0=hidden, 1=visible, default=1)
 ignorepointer 0|1         // 1=transparent to mouse events, 0=receives events
 clipchildren 0|1           // 1=children clipped to parent bounds (overflow hidden)
+                           // not set: a child WHOLLY outside its parent was still not drawn in game
+                           // (SKILL.md, "Measured in-game on 2026-11-18"; clip or cull, not known)
 ```
 
 **CRITICAL**: `ignorepointer 1` on ALL background ImageWidgets.

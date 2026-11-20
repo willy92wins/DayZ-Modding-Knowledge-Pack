@@ -545,6 +545,8 @@ string translated = Widget.TranslateString("#STR_MY_KEY");
 // Works without a widget instance — static method
 // Handles multiple #keys in one string:
 // "Hello #STR_WORLD" → "Hello World"
+// One CALL per expression: two calls in one expression drew only the second text in game,
+// so keep each result in a local before string.Format (SKILL.md, "Measured in-game on 2026-11-18")
 ```
 
 ### CanvasWidget Drawing
