@@ -45,8 +45,8 @@ ES_UNDEFINED_BUILTIN_METHOD_RULE_ID = "ES-UNDEFINED-BUILTIN-METHOD"
 # types: bool, int, float, vector, string, typename, array, set and map (in
 # 1.30.164200, 1_Core/proto/EnConvert.c, EnString.c and EnScript.c). Their
 # members are read from the vanilla tree, so a verdict holds for the build
-# that tree comes from; --game-root warns when it is not the game's
-# (shared/vanilla_build.py).
+# that tree comes from; when it is not the game's, an explicit --game-root
+# fails the run and DAYZ_GAME_ROOT warns (shared/vanilla_build.py).
 #
 # Judged only when everything is known, otherwise skipped without a word:
 #   - the call is `T.Method(` with T a built-in type or a typedef of one,

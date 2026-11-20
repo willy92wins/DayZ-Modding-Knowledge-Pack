@@ -2084,9 +2084,89 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: Added entry for the dayz-motorbikes section on one-seat motorbikes on DayZ 1.30.164393 Experimental (a bike whose class Crew has only Driver kills the client on its first frame on the bike when mounted from direction 1; two overrides in the script class, only HasDirectionalInOutAction compiles on stable 1.30.164289). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "59bbba9b68994db86593e6dc3431da68de5d460bde58386f224a70345fc79609",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-one-seat@2026-11-18",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: the entry for the dayz-motorbikes section on one-seat motorbikes now says the two overrides are measured in game on LFH2R and LFDucati (LFDucati run in game on 2026-11-18). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "f793fffc05f52c8a64ae82d08d17b76c8eae9125a566bbeb6281bfe3487cd7b9",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-one-seat-ducati@2026-11-18",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: an Unreleased Changed entry for the 'Vanilla control' section of tools/dayz-script-validator/README.md: the baseline stays on DayZ 1.30.164289 stable while the owner's P:\\scripts holds 1.30.164393 Experimental, --vanilla-root names a tree of the baseline's build, a local vanilla_index.json is rebuilt when the tree changes build, and the run time reads about six minutes. Its figures are those of that README's input of the same revision: the control exits 0 on the 164289 tree and 1 with no argument, 8 errors and 431 against 434 warnings, the three #else lines, 96 files changed and 3 new, the five false ES-MEMBER-REDECLARE-BASE findings of a 1.30.164289 index read with the 164393 tree, 340.71 s and 367 to 379 s. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "1193ebfee60b695280231d771973c3940b852c8ec28a025c5af007c21cdb2953",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-tree-note@2026-11-18",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: an Unreleased Added entry for the dayz-script-validator rule VANILLA-INDEX-TREE-MISMATCH. Its figures are those of the inputs of tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py and tools/dayz-script-validator/tests/test_script_validator.py of the same revision, rounded. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "adaaffff79a88a45586fd328f434efc36b8a8932e922f8450d9ab5df11698b80",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: an Unreleased Fixed entry for the dayz-terrain-builder-runner test that depended on the system clock. Its figures are those of the input of tools/dayz-terrain-builder-runner/tests/test_tbrunner.py of the same revision. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "e19394fa0b703d7a28f4dfbdb669a669a38352c8d54ae40e68407e491f1de1ea",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-tbrunner-test-clock@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: two Unreleased Changed entries (crew-anchor offset is zero; direct binarize working directory).",
+          "license": "MIT",
+          "source_hash": "955799e1ac6f8b7c04acc805a82015a304ca9e62339f1627e80e6e5e0ead740c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Changed entry for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), the removed SteamCMD update recipe, the corrected CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED and the corrected ranges of CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY.",
+          "license": "MIT",
+          "source_hash": "f05159e5e46577b847ccc9db10674a2fbb6dd3747633f20cfa188852543af74e",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. An Unreleased Changed entry for dayz-script-validator: VANILLA-ROOT-BUILD-MISMATCH fails the run (exit 1) when --game-root is on the command line and still warns (exit 2) when the game comes from DAYZ_GAME_ROOT.",
+          "license": "MIT",
+          "source_hash": "8a24ef6df67e2370d61be135e32ec9a7577c535b0d6f29f3805aca4f5fc039f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-11-18: one Added entry, the dayz-ui-development in-game findings of 2026-11-18 (one Widget.TranslateString per expression; a child wholly outside its parent's rectangle is not drawn, which the offline previews do not model) and the dayz-test-ingame finding on opening UAInput-bound panels under DayZ-MCP. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "b481be0dce93e29ff4eac119808ec571243802c95ad4a95972182d41bc2f0437",
+          "source_hash": "e24cb86bfd1ab915139ee9dee962938b2b9b8ab707470064a7632f636f4a2feb",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
@@ -2094,7 +2174,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b481be0dce93e29ff4eac119808ec571243802c95ad4a95972182d41bc2f0437",
+      "output_hash": "e24cb86bfd1ab915139ee9dee962938b2b9b8ab707470064a7632f636f4a2feb",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -5059,10 +5139,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-f25de18@2026-11-15",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion of main 2b35147 (#199) on 2026-11-18, authorised by the owner. promote --check from a fresh checkout of 2b35147 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=101, 128 operations (46 agents_user_skills, 46 claude_user_skills, 76 obsidian_snapshots); the 23 skill trees that change are exactly the ones main touched since the 2026-11-15 promotion of f25de18 (#194, #195 and #199). The owner approved that plan; main then moved to 54706e0 (#200, which touches no skill) and the plan applied is a second check of 2b35147 with the same 128 operations. promote --apply PASS, transaction d99f73773867ca366c793b69, COMMIT event 305, completed_at 2026-11-18T20:54:59.973386+00:00. Verified after the apply with packctl's own tree_digest: 128/128 destinations at their after_digest; the receipt's sha256 equals the COMMIT receipt_hash and its completed_at the COMMIT event's; its source_commit and its 128 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any target; the 25 transaction backups hold their before_digest and the 76 vault destinations were new; dayz-motorbikes/SKILL.md carries the section on one-seat motorbikes in both skill roots.",
+          "license": "MIT",
+          "source_hash": "ddc69f7103df3a2c3b0a8e9a5053c9b4f548b2af6b06e4a0cf336d5dce4dc74b",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-2b35147@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3d017af492d1345c26789e16df1d693b022586172b23147ecdee72a96ef97c17",
+      "output_hash": "ddc69f7103df3a2c3b0a8e9a5053c9b4f548b2af6b06e4a0cf336d5dce4dc74b",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -13526,10 +13616,30 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19 (LFQuad v1.0.2 body): rule 5 adds that a direct binarize.exe call resolves cited files from its working directory; CLAIM-BINARIZE-DIRECT-CWD, range from its marker.",
+          "license": "MIT",
+          "source_hash": "a48a660083335321bb261b4fde4f3dae8dc7022f96b927e3e93e7a75113bb2ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The Workshop bullet also names what verifySignatures = 2 does without the .bikey, creating an item with SteamCMD and updating it with the Publisher, and says that the SteamCMD login that kicked the Steam client off was a manual one (references/workshop-publish.md). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b10319260e34b8f615a32942267bdc083f69597fad7d0c686e7175084c095f9",
+      "output_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -18374,10 +18484,20 @@
           "source_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
           "source_revision": "r21-phase01@2026-07-24",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19 (LFQuad v1.0.2): the crew-anchor check no longer cites LFQuad's 0/100/200 mm as healthy; CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET, range from its marker.",
+          "license": "MIT",
+          "source_hash": "b424edebf5887ad383d8beac9ff007894bfa0fa7bf4305656ba55500c1919a0b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "957986f290c9ab492114aeff1841d20e08e44c38df5e0d4cfe5c55681b4e173d",
+      "output_hash": "b424edebf5887ad383d8beac9ff007894bfa0fa7bf4305656ba55500c1919a0b",
       "output_path": "skills/dayz-vehicles/references/get-in-actions-and-proxy-pose.md",
       "routing_artifact_id": "skill/dayz-vehicles",
       "verification_level": "cross_checked"
@@ -23346,9 +23466,29 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: CLAIM-BINARIZE-DIRECT-CWD and CLAIM-R21-VEHICLE-CREW-ANCHOR-OFFSET added.",
+          "license": "MIT",
+          "source_hash": "c645fed2c343d0d00e395ca7d747ad7bb436b2ced887e502f0e5c740a5dbd36e",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "update/crew-anchor-offset-binarize-cwd@2026-11-19",
+          "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Three claims for skills/dayz-pbo-build/references/workshop-publish.md (CLAIM-WORKSHOP-SIGN-SERVER-CHECK, CLAIM-WORKSHOP-PUBLISHER-UPDATE, CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY), runtime_verified, from probes S1 and S3 of the dayz-mcp distribution plan and the vault runbook; the line ranges of the five earlier CLAIM-WORKSHOP-* follow the longer reference; after two adversarial reviews the evidence locators of CLAIM-WORKSHOP-PUBLISHER-FILES, CLAIM-WORKSHOP-STEAMCMD-LOGIN and CLAIM-WORKSHOP-STEAMCMD-CREATE say what the runbook records (no command-line option among the Publisher's strings; the Steam Guard code entered, the Steam client logged off during the unattended run, and that the run without a cached session not tried is an unattended one; 13.3 s for the whole run); in skills/dayz-pbo-build/SKILL.md, CLAIM-BINARIZE-DIRECT-CWD moves down one line with its longer Workshop bullet, and CLAIM-BINARIZE-DIRECT-ADDON-STALL and CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY now start at their blocks (548-564 and 624-640); on main they began 10 lines before them (537-553 and 613-629).",
+          "license": "MIT",
+          "source_hash": "8875c5ba294da9a9b1057d0663ea805f448fc0ef94c5443687477a19804c20cd",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "kp-update 2026-11-18: five new claims, three on dayz-ui-development SKILL.md (CLAIM-UI-TRANSLATESTRING-ONE-PER-EXPRESSION-130 and CLAIM-UI-CHILD-OUTSIDE-PARENT-NOT-DRAWN-130 runtime_verified, CLAIM-UI-VIEWER-DRAWS-OUTSIDE-PARENT offline_tested) and two on dayz-test-ingame references/session-findings.md (CLAIM-TEST-DAYZMCP-NO-UAINPUT-PRESS source_verified, CLAIM-TEST-FILE-EDGE-PANEL-HOOK-130 runtime_verified); CLAIM-TEST-DAYZMCP-CARRIER and CLAIM-SIGN-NEGATIVE-CONTROL follow their lines in dayz-test-ingame SKILL.md. Written by Claude (Anthropic).",
           "license": "MIT",
-          "source_hash": "7e82a34cfac19b3f40c17ca27c04566af51f9b36459babc6d46dc4da49790577",
+          "source_hash": "26e0a03d441859afd5e50aae0296965cb69566910570344540e42f3c26a4cc49",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
@@ -23356,7 +23496,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "7e82a34cfac19b3f40c17ca27c04566af51f9b36459babc6d46dc4da49790577",
+      "output_hash": "26e0a03d441859afd5e50aae0296965cb69566910570344540e42f3c26a4cc49",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -26798,10 +26938,40 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-vanilla-control-162@2026-11-10",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: 'Vanilla control' gains three things. (1) What to do when the default vanilla tree holds another build than the baseline's: name a tree of the baseline's build with --vanilla-root; the baseline stays on the stable build and an Experimental build is not a reason to --update (the owner's choice, 2026-11-18). (2) A local scripts/shared/vanilla_index.json is rebuilt when the vanilla tree changes build. (3) The run time reads about six minutes in place of two to four. Measured on the owner's PC on 2026-11-18 with the validator of main at 49764a04ab8cf18285a57fe33dff944005331873 (Python 3.14.3, no index loaded). P:\\scripts holds DayZ 1.30.164393 Experimental since that day (DayZ_x64.exe of the DayZ Exp install: file version 1.30.164.393, product version 1.30.164393.87; script_validator.py --game-root on that install reports 3059 .c files in dta\\scripts.pbo, PBO header version 128312, and none that differs from the tree) and the 1.30.164289 stable tree is kept as P:\\scripts_164289_20261105 (its digest is the baseline's). vanilla_control.py --vanilla-root P:\\scripts_164289_20261105: exit 0, 'PASS - findings match the baseline', 379 s. vanilla_control.py with no argument: exit 1, 'FAIL - warning count above baseline ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN 263 > 260' and the digest line, 378 s. Full dumps of both trees with the same validator: the stable tree has 3057 files, digest fd826b4016910c5ca99046158d6e07aea79b4e52722b5ad20b36ffed8e527a1e, 8 errors and 431 warnings; the Experimental tree has 3060 files, 14082526 bytes, digest e99f99a9c431fb8a8ed62ce4cb48d2690d3b953678009d0d3adb6c589504542b, 8 errors and 434 warnings. The 8 errors are the same rule, file and line; the 349 warnings in files that do not change are identical line by line; the only (rule, file) counts that move are ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN in 4_world/classes/constructionbase.c (2 to 3), 4_world/classes/useractionscomponent/actionmanagerclient.c (0 to 1) and 4_world/classes/useractionscomponent/targetconditionscomponents/cctliquid.c (0 to 1), each on an #else line (constructionbase.c:1034, :1066 and :1707, actionmanagerclient.c:587, cctliquid.c:70 in 164393), and the count of #else lines in those files moves the same way. By sha256 of every file the validator discovers, 96 files differ and 164393 adds 3: 4_world/classes/basebuilding/detectionboxdata.c and, under 4_world/classes/useractionscomponent/targetconditionscomponents, cctliquidframeprobe.c and cctliquidsyntheticcursor.c. Index: check_es_member_redeclare_base on 164393's cctliquidsyntheticcursor.c gives 0 findings with no index, 5 with the index built from 1.30.164289 on 2026-11-09 (lines 26, 27, 28, 37 and 38; that index lists those members under CCTLiquid, at cctliquid.c:18-20 and :33-34 of 164289) and 0 with an index built from the 164393 tree (3059 .c files, tree_digest 756513dd67c5d613693002e06758d986e172506c63af5df67c6a21d0a33cd8de); the validator over the whole 164393 tree with that index loaded gives the same 8 errors and 434 warnings, line by line, as with none. Run time: measured.elapsed_seconds of the baseline is 340.71 (2026-11-10), and the four runs above took 367 to 379 s by the wall clock, two to four at a time. Validator tests: 350 passed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3b92bc591702376f25ba206f5644374249eaefaf6504cb6e7f9d2ed2c844e51b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-tree-note@2026-11-18",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: new section 'Which tree the vanilla index is' for VANILLA-INDEX-TREE-MISMATCH: which four rules read the index, what is compared (the count and the total bytes of the .c files, with the generator's walk) and what is not (the digest, so a tree with the same count and bytes but other contents is taken for the index's tree), the rebuild command, info.vanilla_index, the SKIP cases and the measurements of 2026-11-18. Its figures are those of the input of scripts/shared/vanilla_index_tree.py of the same revision, rounded. 'Vanilla control' gains one sentence pointing to the section. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "aef4e64737a3d5af4526103cadcc92e3a1adda068bba09a8f8e687a0fc2daf73",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. The VANILLA-ROOT-BUILD-MISMATCH paragraph says that an explicit --game-root fails the run (exit 1) and DAYZ_GAME_ROOT warns (exit 2), and its last sentence no longer says that a gate accepting WARN lets an explicit mismatch through.",
+          "license": "MIT",
+          "source_hash": "b67e236896f9dc6d03a8ef54c98a844a79900256695e0e34de41390d5b251be3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ce4e19a70da831ead0ae0b0815ea12e6b4b15e66ca2c26319faff8fe7d708673",
+      "output_hash": "b67e236896f9dc6d03a8ef54c98a844a79900256695e0e34de41390d5b251be3",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -26896,10 +27066,20 @@
           "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: collect_c_files moves to scripts/shared/vanilla_index_tree.py and is imported from there, so that the generator and VANILLA-INDEX-TREE-MISMATCH count the same files. No change of output: the generator before (commit cfb9301) and after wrote byte-identical documents from the 1.30.164393 tree (sha256 581371d9e570b5ce9b97e05839d6cb0a1ba053051752889d7a9816a2a64e1ee7; 3059 files, 14001771 bytes, tree_digest 756513dd67c5d613693002e06758d986e172506c63af5df67c6a21d0a33cd8de) and from the 1.30.164289 tree (sha256 28957fa234cfd4878bdb7df69d58356f77fa342b1182bbdb23114db75d606ba9; 3056 files, 13952124 bytes, tree_digest 1885d025b6f465b5046cdf1f119487f41ebb90a4dda945f5805d940cf64e8a7b), measured on the owner's PC on 2026-11-18. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b4654b16d1bbbe25516d56dbb671eb7cd423deb07b963b46b66b02e1e236c922",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d25357d17e2bd5bed125117af22116f45b5fa4c6babd5c7b9c05d36314232dd4",
+      "output_hash": "b4654b16d1bbbe25516d56dbb671eb7cd423deb07b963b46b66b02e1e236c922",
       "output_path": "tools/dayz-script-validator/scripts/build_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27748,10 +27928,30 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-7b9e@2026-11-09",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: validate_addon calls shared/vanilla_index_tree.compare_index_tree with the vanilla root after the tree rules: its warning joins the run's warnings, its SKIP entries join info.skipped_checks, and info.vanilla_index holds the comparison when one was made. The rule (VANILLA-INDEX-TREE-MISMATCH) and its measurements are in the input of scripts/shared/vanilla_index_tree.py of the same revision. script_validator.py on the LFH2R stage (114 files) with --game-root naming the DayZ Exp install and no index: exit 0, PASS, 0 errors, 0 warnings, as before. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "fed8f2d1868b2dec7ec74ed077ea76ff00e7e07557ef92303b136b054e139a1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. validate_addon takes game_root_explicit; with it the VANILLA-ROOT-BUILD-MISMATCH finding has severity FAIL and goes to errors, otherwise to warnings as before. run() passes it when --game-root is given, and the --game-root help says so.",
+          "license": "MIT",
+          "source_hash": "dea81a3a13caa1d15cea6d133f5799646e8ee8fcbc25c4ac99e9381575695c6f",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0fa5c508e1ee778896d3a51b652bae5ae577f8b7df83dad31dad05e4aa97561d",
+      "output_hash": "dea81a3a13caa1d15cea6d133f5799646e8ee8fcbc25c4ac99e9381575695c6f",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -27888,10 +28088,20 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: loaded_index_tree() returns what the index in use says of the tree it was built from (vanilla_root, file_count, parsed_file_count, total_bytes, tree_digest; None for a key the file lacks, and None instead of the dict without a usable index), for shared/vanilla_index_tree.py. The module docstring now says that an index of another tree than the one being read can report a false positive, and names VANILLA-INDEX-TREE-MISMATCH. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "95003a3b68621db6a58e4a93e3541ff8d0588993b4cbaa8f6fa9c2409cd9c0c9",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4903d37818a8afef58e546e71b46717c4bca70f39af4262bd3fb21c2fba49ef4",
+      "output_hash": "95003a3b68621db6a58e4a93e3541ff8d0588993b4cbaa8f6fa9c2409cd9c0c9",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_reference.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -31788,10 +31998,30 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "pack-162-resolution@2026-11-10",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: TestVanillaIndexTree, 14 tests for VANILLA-INDEX-TREE-MISMATCH, written before the code: with the test for loaded_index_tree in test_vanilla_index.py, 13 of the 15 new test functions failed before it (one of them through its two subtests) and the two no-index cases passed. They cover: the index of the tree matches, with info.vanilla_index compared and equal; an index of another tree warns and the message holds the index, both trees, both pairs of numbers and the rebuild command; either number alone warns; the same tree under another path matches; files that are not .c do not count; the same count and bytes are not told apart (the stated limit); no index, or an index the loader rejects, compares nothing; no vanilla tree, no numbers, unparsed files and an unreadable tree each give a SKIP entry and exit 0; the generator and the comparison use one collect_c_files; the terse report names the rule. setUpModule now also sets a local scripts/shared/vanilla_index.json aside (set_index_path_for_tests), as it does the vanilla tree: probed with an index of the 1.30.164393 tree as the default index, 24 tests that were already in this module fail on the new rule without that line (exit 2, one more warning or a SKIP line: 13 in TestEsSyncvarContract, 8 in TestUndefinedClassRef, 2 in TestVanillaRootBuild, 1 in TerseOutputTests) and none with it. python -m pytest tests: 365 passed, with no index and with an index of the 164393 tree at the default path. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "428b48479c7a40a416c94e8875e86fb8790dd947eb6526f5e0d77e0f8d8ebf1d",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. TestVanillaRootBuild gains test_an_explicit_game_root_fails_on_another_tree (exit 1, FAIL in errors, terse line) and, from the reviews, five tests: the explicit mismatch also fails when the addon has warnings of its own, through --game-root naming dta/scripts.pbo, and with a [FAIL] tag; --game-root wins over DAYZ_GAME_ROOT; an explicit --game-root that cannot be compared stays a SKIP with exit 0. test_another_tree_warns and test_a_tree_with_files_the_game_lacks_warns name the game through DAYZ_GAME_ROOT and keep their asserts.",
+          "license": "MIT",
+          "source_hash": "3d31929b693aa9f55f8427e4a34b3d3927824909349f04f7398eed9dded318d6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a5e728f5640e44e3edc130905215235d4b6fb424360c8511996d5faa8b06fa20",
+      "output_hash": "3d31929b693aa9f55f8427e4a34b3d3927824909349f04f7398eed9dded318d6",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -31852,10 +32082,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
           "source_revision": "claude/buzon-4c83-vanilla-index@2026-11-05",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one test for vanilla_reference.loaded_index_tree(): None without an index and with one the loader rejects, the generator's values for the mini tree, and None for each key a hand-written index lacks. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "8bc8dcf9639d5b892bd2c42c1336843a7513f4112b35cdf7debf39efdd17281b",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "41206e3f559723fe1ca787b294cbe49aecc3f146fcdac4ca3fac1fb7423b1021",
+      "output_hash": "8bc8dcf9639d5b892bd2c42c1336843a7513f4112b35cdf7debf39efdd17281b",
       "output_path": "tools/dayz-script-validator/tests/test_vanilla_index.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -38789,10 +39029,30 @@
           "source_path": "skills/dayz-motorbikes/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: one-seat motorbikes on DayZ 1.30.164393 Experimental. A bike whose class Crew has only Driver kills the client on its first frame on the bike when mounted from direction 1: MotorbikeScript.CrewShouldExit, new in that build, calls the native CrewMember with the seat animation type. Symptom and both overrides measured in game on LFH2R (2026-11-18, five crashes of five; the kit's run passed with the fix); the script chain read in the 1.30.164393 scripts.pbo; CrewShouldExit absent from the scripts.pbo of stable 1.30.164289 and from the 1.30.164014 scripts; LFDucati carries the fix and passes the offline validator, not yet run in game. Adds a preflight line, a pointer in Day-0 steps 2 and 9 and the section 'One-seat motorbikes on 1.30.164393 or later'. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "b65c16c3938f8f25b9d53ba7452f768ea4a46ec0ed20917e6e6a8fe2e57a8f85",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "kp-update-one-seat@2026-11-18",
+          "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-18: State on the second bike measured in game on LFDucati (DayZ 1.30.164393 Experimental, dedicated server and client, five runs of the kit's mount test): without the two overrides the client crash is reproduced from direction 1 and the run passes from direction 0; with them both sides pass with seat type 0; with seat type 1 forced over the fixed bike the run passes. The Symptom tag names both bikes. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "6363ee6edca71a6bb7cc3c1ed941fe4c9943d24543a26f949aac9b01995784a1",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-motorbikes/SKILL.md",
+          "source_revision": "kp-update-one-seat-ducati@2026-11-18",
+          "verification_level": "source_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfe921c048dfe7323757b1d9e56a7e73019d3d8dd8ce1d38bf7194f36dd10d12",
+      "output_hash": "6363ee6edca71a6bb7cc3c1ed941fe4c9943d24543a26f949aac9b01995784a1",
       "output_path": "skills/dayz-motorbikes/SKILL.md",
       "routing_artifact_id": "skill/dayz-motorbikes",
       "verification_level": "cross_checked"
@@ -39892,6 +40152,28 @@
       "license": "MIT",
       "output_hash": "b8944758586d489af22294643935783ff00d004e7d442fb5669d92cecdbfb0f5",
       "output_path": "promotions/receipts/f6942eb0aa0c0ac2a9ad7376.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/d99f73773867ca366c793b69.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "promotion of main 2b35147 (#199) on 2026-11-18, authorised by the owner. promote --check from a fresh checkout of 2b35147 with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=101, 128 operations (46 agents_user_skills, 46 claude_user_skills, 76 obsidian_snapshots); the 23 skill trees that change are exactly the ones main touched since the 2026-11-15 promotion of f25de18 (#194, #195 and #199). The owner approved that plan; main then moved to 54706e0 (#200, which touches no skill) and the plan applied is a second check of 2b35147 with the same 128 operations. promote --apply PASS, transaction d99f73773867ca366c793b69, COMMIT event 305, completed_at 2026-11-18T20:54:59.973386+00:00. Verified after the apply with packctl's own tree_digest: 128/128 destinations at their after_digest; the receipt's sha256 equals the COMMIT receipt_hash and its completed_at the COMMIT event's; its source_commit and its 128 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any target; the 25 transaction backups hold their before_digest and the 76 vault destinations were new; dayz-motorbikes/SKILL.md carries the section on one-seat motorbikes in both skill roots.",
+          "license": "MIT",
+          "source_hash": "88a000f47c36a162c655ea79cfa957d45cecf54f3ed3c0a7992346fa5fb50cb0",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/d99f73773867ca366c793b69.json",
+          "source_revision": "promotion-2b35147@2026-11-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "88a000f47c36a162c655ea79cfa957d45cecf54f3ed3c0a7992346fa5fb50cb0",
+      "output_path": "promotions/receipts/d99f73773867ca366c793b69.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
@@ -42431,10 +42713,20 @@
           "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
           "source_revision": "kp-update-9821@2026-10-24",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: test_save_loop_counts_a_changed_file_without_focus_or_dialog no longer depends on the system clock. cmd_save_loop counts a save when st_mtime_ns of the .tv4p changes (tbrunner.py, which does not change). The test wrote the file and its fake PostMessageW wrote it again about 1.5 ms later; two writes within one tick of the system clock leave the same st_mtime_ns, and since setUp replaces time.sleep the wait loop then spins for its 10 s and passed stays 0 (AssertionError: 1 != 0). The fake now leaves the file with st_mtime_ns two seconds later through os.utime(ns=...) instead of writing again, as tools/dayz-vehicle-proxy-contract/tests/test_vehicle_proxy_pbo.py already does. Measured on the owner's PC (Windows 11, NTFS, Python 3.14.3) by running that one test N times in one process. The test of commit f4007a9 failed 9 of 30 runs on 2026-11-19 at 00:32 with the clock at 4 ms for 24 of them (the 9 runs whose two writes shared st_mtime_ns; a packctl gate run failed on it that night, TOOL-TESTS-FAILED) and 0 of 200 at 13:03 with the clock at 1 ms (writes 1.3 to 6.2 ms apart); with its second write put back to the first write's st_mtime_ns it failed 5 of 5. The new test passed 200 of 200, with one os.utime call per run and st_mtime_ns exactly 2 000 000 000 ns later each time. Mutations on copies: a fake that leaves the file alone, a fake that sets the same st_mtime_ns and a cmd_save_loop that never sees the change each fail the test. The folder: 36 passed (38 subtests) on Windows and 36 tests OK on Linux (WSL2, kernel 6.18.58.1, ext4, Python 3.10.12), where the test of f4007a9 did not fail either (0 of 60): two consecutive writes never shared st_mtime_ns there (0 of 200 pairs at every gap from 0 to 32 ms). Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "730ab0bf126df5f8ae65419ab69d7ee59c6c85436b9f874c5036d44edeff8b07",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
+          "source_revision": "kp-update-tbrunner-test-clock@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "504984eeec5ac69beb66dd2f989ca974c64c3b09d432af95f80deb32153079aa",
+      "output_hash": "730ab0bf126df5f8ae65419ab69d7ee59c6c85436b9f874c5036d44edeff8b07",
       "output_path": "tools/dayz-terrain-builder-runner/tests/test_tbrunner.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42475,10 +42767,20 @@
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: follow-up of inbox 5b1f (#208). The comment above BUILTIN_TYPES says that, when the vanilla tree is not the game's, an explicit --game-root fails the run and DAYZ_GAME_ROOT warns, as #208 made it; it said that --game-root warns. Comment only: no code, rule or claim range changes.",
+          "license": "MIT",
+          "source_hash": "89d0d2218db1b66d79406bd31cd1b43f73c3c0d9918a6b8eed5fa4ac55b9b0e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
+          "source_revision": "claude/project-thread-kg9kxv@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ca9e2a4179f3f24223c56dce8346ae91fc34bad4e5bebce91932b92634d8aac5",
+      "output_hash": "89d0d2218db1b66d79406bd31cd1b43f73c3c0d9918a6b8eed5fa4ac55b9b0e8",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_undefined_builtin_method.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42497,11 +42799,43 @@
           "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
           "source_revision": "update/validator-builtin-methods@2026-11-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-19: inbox 5b1f. compare_vanilla_build takes the finding's severity (WARN by default) and uses it in the message's leading tag and in the finding's severity; counts, SKIP cases and info.vanilla_build do not change.",
+          "license": "MIT",
+          "source_hash": "544aaf43c712f04c0b9a7048ce96b045dfbce8c9bfafa14fec29a4cf8cfe93cc",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+          "source_revision": "buzon/5b1f-explicit-game-root-fails@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3205ff4e29ea42483ec9915b48c8e6a56171c009c2360b8a61a32ad65090bc11",
+      "output_hash": "544aaf43c712f04c0b9a7048ce96b045dfbce8c9bfafa14fec29a4cf8cfe93cc",
       "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_build.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-18: new module, WARN rule VANILLA-INDEX-TREE-MISMATCH. With a vanilla index in use (shared/vanilla_reference.py loads scripts/shared/vanilla_index.json) and a vanilla tree, compare_index_tree compares the file_count and total_bytes the index records with the .c files of the tree being read, counted with collect_c_files, which moves here from build_vanilla_index.py so that the generator and the comparison walk one way. When either number differs the warning names the index file, the tree it was built from (its vanilla_root, its two numbers and the first 12 hex digits of its tree_digest), the tree being read with its two numbers, and the command that rebuilds the index (build_vanilla_index.py --vanilla-root <tree> --out <index>). info.vanilla_index holds both pairs with matches. Without an index nothing is compared and nothing is reported; an index with no vanilla tree, without the two numbers or with parsed_file_count other than file_count, and a tree whose walk raises OSError, give a SKIP entry and no change of verdict. The digest is not compared, so a tree with the same count and bytes but other contents is taken for the index's tree. Why: four rules read the index (ES-MEMBER-REDECLARE-BASE at detectors/es_member_redeclare_base.py:74, ES-OVERRIDE-PARAM-NAME-MISMATCH at es_override_param_name_mismatch.py:47, ES-METHOD-NAME-COLLIDES-VANILLA-CLASS at es_method_name_collides_vanilla_class.py:25, ES-OVERRIDE-OF-PLATFORM-GATED-METHOD at es_override_of_platform_gated_method.py:112) and nothing said when it was of another build: on 2026-11-18 an index of DayZ 1.30.164289 read with the 1.30.164393 tree gave five false ES-MEMBER-REDECLARE-BASE findings, and a 1.29 index had turned the vanilla control red on 1.30 (inbox 4c83). Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work running on the PC). Count against digest, ten alternated rounds in one process: on the 164393 tree in P:\\scripts (3059 .c files, 14001771 bytes) the count took 0.276 to 0.489 s (median 0.360) and collect_c_files plus tree_digest 1.656 to 2.440 s (median 2.009), 4.6 to 6.6 times as long; on the 164289 tree in P:\\scripts_164289_20261105 (3056 files, 13952124 bytes) 0.330 to 1.308 s (median 0.538) against 1.758 to 3.398 s (median 2.437). Timed inside six validate_addon runs over the LFH2R stage (114 files) with --game-root and an index of the 164393 tree, compare_index_tree took 0.322 to 5.810 s, 1.5 to 9.0 % of runs of 10.8 to 64.9 s, and compare_vanilla_build 1.402 to 20.397 s. With an index built from the 164289 tree, script_validator.py on that stage with --game-root exits 2: WARN, 0 errors and this one warning (index 3056 files and 13952124 bytes, tree 3059 and 14001771); on P:\\scripts\\4_world\\classes\\useractionscomponent\\targetconditionscomponents it exits 1 with the five ES-MEMBER-REDECLARE-BASE errors (cctliquidsyntheticcursor.c lines 26, 27, 28, 37 and 38) and this warning. With an index built from the 164393 tree the stage exits 0, PASS, info.vanilla_index.matches true, with the same findings as with no index, and that folder gives no ES-MEMBER-REDECLARE-BASE and no such warning. The three trees the owner's index has been built from differ in both numbers (1.29: 2805 files, 12566266 bytes). An os.scandir walk gave the same two numbers on both trees in 0.033 to 0.091 s and is not used, to keep one function for the generator and the comparison. vanilla_control.py --vanilla-root P:\\scripts_164289_20261105 with no index: exit 0, 'PASS - findings match the baseline', 269 s. Validator tests: 365 passed. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ded35384a00bf21e0fa2800415ee028611e4de5d4bdedd536b0e7e898d0441af",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
+          "source_revision": "kp-update-vanilla-index-tree@2026-11-18",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "ded35384a00bf21e0fa2800415ee028611e4de5d4bdedd536b0e7e898d0441af",
+      "output_path": "tools/dayz-script-validator/scripts/shared/vanilla_index_tree.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
@@ -43859,10 +44193,20 @@
           "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
           "source_revision": "workshop-publish-r2@2026-11-12",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Pack-authored update by Claude (Anthropic) from probes S1 and S3 of the dayz-mcp distribution plan (2026-11-12 and 2026-11-19) and the vault runbook: CLAIM-WORKSHOP-SIGN-SERVER-CHECK (retail DayZServer with verifySignatures = 2: kick 120 without the .bikey, join with it, the BattlEye kick as observed, its cause as not investigated and how long a client stays as not measured), CLAIM-WORKSHOP-PUBLISHER-UPDATE (the Publisher's content folder, its log and the client's logs in three publications) and CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY (the owner's copy of the private item, followed by an [INFERRED] paragraph); the intro, two table rows and the [INFERRED] paragraph after CLAIM-WORKSHOP-PUBLISHER-FILES follow. After two adversarial reviews, CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED says that the login measured was a manual one and that the client was restarted 44 minutes later, the [INFERRED] paragraph after it that another login may do the same, CLAIM-WORKSHOP-STEAMCMD-LOGIN that the owner entered the Steam Guard code before quit, that the Steam client was still logged off during the unattended run and that the run without a cached session not tried is an unattended one, and the untried SteamCMD update recipe is removed. No account name, item id or private path.",
+          "license": "MIT",
+          "source_hash": "540312f5e09374ab70c9935a62398e2e0bf30af2d72aa2f333997a68f5260afe",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/references/workshop-publish.md",
+          "source_revision": "workshop-publish-r3@2026-11-19",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "79750285fca2b816e9a909a8e89f7afc9a7e7063ec0377ebd388f2ea7dbbc08f",
+      "output_hash": "540312f5e09374ab70c9935a62398e2e0bf30af2d72aa2f333997a68f5260afe",
       "output_path": "skills/dayz-pbo-build/references/workshop-publish.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "runtime_verified"

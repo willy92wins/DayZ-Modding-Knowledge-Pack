@@ -2,6 +2,7 @@
 import json
 import os
 import pathlib
+import shutil
 import struct
 import sys
 import tempfile
@@ -13,9 +14,12 @@ from unittest import mock
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 FIXTURES = ROOT / "tests" / "fixtures"
+NO_VANILLA_INDEX = FIXTURES / "no_vanilla_index_in_unit_tests.json"
 sys.path.insert(0, str(SCRIPTS))
 
+import build_vanilla_index
 import script_validator
+from shared import vanilla_reference
 from shared import vanilla_tree
 
 
@@ -37,9 +41,14 @@ def setUpModule():
     )
     pdrive.start()
     _MODULE_PATCHES.append(pdrive)
+    # Nor with a scripts/shared/vanilla_index.json left in this checkout: the
+    # rules that read it would judge with it, and VANILLA-INDEX-TREE-MISMATCH
+    # would fire on every fixture tree. Tests that need an index build one.
+    vanilla_reference.set_index_path_for_tests(NO_VANILLA_INDEX)
 
 
 def tearDownModule():
+    vanilla_reference.set_index_path_for_tests(None)
     while _MODULE_PATCHES:
         _MODULE_PATCHES.pop().stop()
 
@@ -5638,13 +5647,16 @@ class TestVanillaRootBuild(unittest.TestCase):
         self.assertEqual(2, build["files"])
 
     def test_another_tree_warns(self):
+        # The game named by DAYZ_GAME_ROOT: a tree of another build stays a
+        # warning (rc 2). An explicit --game-root fails instead (next test).
         changed = dict(self.FILES)
         changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
         changed["4_World/fx_new.c"] = b"class FX_New\n{\n}\n"
         changed["config.bin"] = b"\x00raP"
         self._install(changed)
 
-        code, result = self._run("--game-root", str(self.game))
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            code, result = self._run()
 
         self.assertEqual(2, code)
         warnings = self._build_warnings(result)
@@ -5663,10 +5675,40 @@ class TestVanillaRootBuild(unittest.TestCase):
         )
         assert_standard_findings(self, result)
 
+    def test_an_explicit_game_root_fails_on_another_tree(self):
+        # Inbox fb-20261118-190704-5b1f, ask 3: with --game-root on the command
+        # line, a vanilla tree of another build is an error, not a warning that
+        # a long log buries. Red on f4007a9 by design (rc 2, one WARN).
+        changed = dict(self.FILES)
+        changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
+        changed["4_World/fx_new.c"] = b"class FX_New\n{\n}\n"
+        changed["config.bin"] = b"\x00raP"
+        self._install(changed)
+
+        code, result = self._run("--game-root", str(self.game))
+
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = [e for e in result["errors"] if e["rule_id"] == BUILD_RULE]
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+        build = result["info"]["vanilla_build"]
+        self.assertEqual(
+            (3, 1, 1, 0, False),
+            (build["files"], build["differ"], build["missing"], build["extra"],
+             build["matches"]),
+        )
+        lines = script_validator.format_terse(result).split("\n")
+        self.assertTrue(lines[0].startswith("FAIL - 1 error"), lines)
+        self.assertIn(BUILD_RULE, lines[1])
+
     def test_a_tree_with_files_the_game_lacks_warns(self):
+        # The game named by DAYZ_GAME_ROOT, as in test_another_tree_warns.
         self._install({"4_World/fx_world.c": self.FILES["4_World/fx_world.c"]})
 
-        _code, result = self._run("--game-root", str(self.game))
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            _code, result = self._run()
 
         self.assertEqual(1, len(self._build_warnings(result)))
         self.assertEqual(1, result["info"]["vanilla_build"]["extra"])
@@ -5705,6 +5747,487 @@ class TestVanillaRootBuild(unittest.TestCase):
             [str(FIXTURES / "empty"), "--game-root", str(self.game)]
         )
         self.assertIn("vanilla tree", self._build_skips(result)[0]["reason"])
+
+    # Inbox 5b1f, review of round 1: an addon with warnings of its own, the
+    # PBO named directly, and the message's tag.
+
+    def _install_another_tree(self):
+        changed = dict(self.FILES)
+        changed["1_Core/proto/fx_builtin.c"] = b"class Managed\n{\n    int Cross();\n}\n"
+        self._install(changed)
+
+    def _build_errors(self, result):
+        return [e for e in result["errors"] if e["rule_id"] == BUILD_RULE]
+
+    def test_an_explicit_game_root_fails_even_when_the_addon_warns(self):
+        # An addon that already has a warning of its own is still compared,
+        # and the explicit mismatch is still an error: FAIL, exit 1, the rule
+        # in errors, the addon's warning still in warnings. Green on c958355 by
+        # design; kills a version that compares only when there is no warning.
+        self._install_another_tree()
+        addon = pathlib.Path(self._tmp.name) / "addon_warn"
+        addon.mkdir()
+        (addon / "fx_warn.c").write_bytes(
+            b"class FX_Warn\n{\n    bool F(int x)\n    {\n        return x < int.MIN;\n    }\n}\n"
+        )
+
+        code, result = script_validator.run(
+            [str(addon), "--vanilla-root", str(self.vanilla), "--game-root", str(self.game)]
+        )
+
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = self._build_errors(result)
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+        self.assertIn("ES-INT-MIN-COMPARISON", [w["rule_id"] for w in result["warnings"]])
+        self.assertFalse(result["info"]["vanilla_build"]["matches"])
+
+    def test_an_explicit_pbo_path_fails_on_another_tree(self):
+        # --game-root may name dta/scripts.pbo itself: a mismatch through that
+        # explicit path fails the run as the folder does. Green on c958355 by
+        # design; kills a version that takes only a folder for explicit.
+        self._install_another_tree()
+        pbo = self.game / "dta" / "scripts.pbo"
+
+        code, result = self._run("--game-root", str(pbo))
+
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = self._build_errors(result)
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+
+    def test_the_mismatch_message_is_tagged_with_its_severity(self):
+        # The message carries the finding's own severity as its tag, [FAIL]
+        # for an explicit --game-root and [WARN] for DAYZ_GAME_ROOT, and the
+        # rest of the text is the same. Green on c958355 by design; kills a
+        # version that keeps the [WARN] tag on the error.
+        self._install_another_tree()
+
+        _code, explicit = self._run("--game-root", str(self.game))
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            _code, environment = self._run()
+
+        failed = self._build_errors(explicit)[0]["message"]
+        warned = self._build_warnings(environment)[0]["message"]
+        self.assertTrue(failed.startswith("[FAIL] "), failed)
+        self.assertTrue(warned.startswith("[WARN] "), warned)
+        self.assertEqual(failed[len("[FAIL] "):], warned[len("[WARN] "):])
+
+    # Inbox 5b1f, review of round 2: both sources at once, and the SKIP cases
+    # of an explicit --game-root.
+
+    def test_an_explicit_game_root_wins_over_the_environment(self):
+        # With --game-root and DAYZ_GAME_ROOT both set, the command line names
+        # the game and makes the mismatch an error: a mismatched --game-root
+        # fails although the environment's game matches, and a matching
+        # --game-root passes although the environment's does not. Green on
+        # 9024fc2 by design; kills a version that treats --game-root as
+        # explicit only when DAYZ_GAME_ROOT is unset.
+        self._install_another_tree()
+        matching = pathlib.Path(self._tmp.name) / "DayZ_matching"
+        (matching / "dta").mkdir(parents=True)
+        (matching / "dta" / "scripts.pbo").write_bytes(
+            _pbo_bytes([(name.replace("/", "\\"), data) for name, data in self.FILES.items()])
+        )
+
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(matching)}):
+            code, result = self._run("--game-root", str(self.game))
+        self.assertEqual(1, code)
+        self.assertEqual("FAIL", result["status"])
+        errors = self._build_errors(result)
+        self.assertEqual(1, len(errors))
+        self.assertEqual("FAIL", errors[0]["severity"])
+        self.assertEqual([], self._build_warnings(result))
+
+        with mock.patch.dict(os.environ, {"DAYZ_GAME_ROOT": str(self.game)}):
+            code, result = self._run("--game-root", str(matching))
+        self.assertEqual(0, code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], self._build_errors(result))
+        self.assertEqual([], self._build_warnings(result))
+        self.assertTrue(result["info"]["vanilla_build"]["matches"])
+
+    def test_an_explicit_game_root_that_cannot_be_compared_is_a_skip(self):
+        # A PBO that cannot be read, or no vanilla tree to compare, with an
+        # explicit --game-root: a SKIP entry, exit 0, PASS, the rule in neither
+        # errors nor warnings, and no info.vanilla_build. Green on 9024fc2 by
+        # design; kills a version that also reports the unread PBO as a
+        # finding with the explicit severity.
+        self._install({"4_World/fx_world.c": (b"xx", 0x43707273)})
+        _cases = {
+            "compressed_pbo": lambda: self._run("--game-root", str(self.game)),
+            "no_vanilla_tree": lambda: script_validator.run(
+                [str(FIXTURES / "empty"), "--game-root", str(self.game)]
+            ),
+        }
+        for label, call in _cases.items():
+            with self.subTest(label):
+                code, result = call()
+                self.assertEqual(0, code)
+                self.assertEqual("PASS", result["status"])
+                self.assertEqual([], self._build_errors(result))
+                self.assertEqual([], self._build_warnings(result))
+                self.assertEqual(1, len(self._build_skips(result)))
+                self.assertNotIn("vanilla_build", result["info"])
+
+
+INDEX_RULE = "VANILLA-INDEX-TREE-MISMATCH"
+
+
+class TestVanillaIndexTree(unittest.TestCase):
+    """The vanilla index in use against the vanilla tree being read.
+
+    2026-11-18: the default tree moved from DayZ 1.30.164289 to 1.30.164393
+    and the local index stayed. ES-MEMBER-REDECLARE-BASE then gave five false
+    findings on 164393's cctliquidsyntheticcursor.c, a new subclass that
+    takes those members from CCTLiquid; nothing said the index was of another
+    tree.
+    """
+
+    FILES = {
+        "1_core/proto/fx_managed.c": b"class Managed\n{\n}\n",
+        "4_world/fx_liquid.c": (
+            b"class FX_Liquid\n{\n    protected int m_LastHit;\n}\n"
+        ),
+        # Upper case extension: the generator's walk decides whether it
+        # counts, and the comparison walks the same way.
+        "4_world/FX_UPPER.C": b"class FX_Upper\n{\n}\n",
+    }
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.base = pathlib.Path(self._tmp.name)
+        self.tree = self.base / "scripts"
+        self._write_tree(self.tree)
+        self.index_path = self.base / "index" / "vanilla_index.json"
+        self.addCleanup(
+            vanilla_reference.set_index_path_for_tests, NO_VANILLA_INDEX
+        )
+
+    def _write_tree(self, root):
+        for name, data in self.FILES.items():
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        # Neither a file that is not .c nor a folder named like one counts.
+        (root / "config.cpp").write_text("class CfgPatches\n{\n};\n")
+        (root / "4_world" / "folder.c").mkdir()
+
+    def _index(self, tree=None):
+        """Build the index of a tree (this one by default) and load it."""
+        document = build_vanilla_index.build_index_document(tree or self.tree)
+        build_vanilla_index.write_index(document, self.index_path)
+        vanilla_reference.set_index_path_for_tests(self.index_path)
+        return document
+
+    def _load(self, document):
+        """Load a hand-written index document."""
+        self.index_path.parent.mkdir(parents=True, exist_ok=True)
+        self.index_path.write_text(json.dumps(document), encoding="utf-8")
+        vanilla_reference.set_index_path_for_tests(self.index_path)
+
+    def _run(self, *extra):
+        return script_validator.run(
+            [str(FIXTURES / "empty"), "--vanilla-root", str(self.tree)]
+            + list(extra)
+        )
+
+    def _index_warnings(self, result):
+        return [w for w in result["warnings"] if w["rule_id"] == INDEX_RULE]
+
+    def _index_skips(self, result):
+        return [
+            s for s in result["info"].get("skipped_checks", [])
+            if s["rule_id"] == INDEX_RULE
+        ]
+
+    def _tree_counts(self):
+        files = [
+            path for path in self.tree.rglob("*.c") if path.is_file()
+        ]
+        return len(files), sum(path.stat().st_size for path in files)
+
+    def test_the_index_of_the_tree_matches(self):
+        document = self._index()
+
+        code, result = self._run()
+
+        self.assertEqual(0, code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], self._index_warnings(result))
+        self.assertEqual([], self._index_skips(result))
+        # Compared and equal, not merely silent.
+        files, size = self._tree_counts()
+        self.assertEqual(
+            {
+                "index": str(self.index_path),
+                "index_tree": document["vanilla_root"],
+                "index_files": files,
+                "index_bytes": size,
+                "tree_files": files,
+                "tree_bytes": size,
+                "compared": ["file_count", "total_bytes"],
+                "matches": True,
+            },
+            result["info"]["vanilla_index"],
+        )
+        self.assertEqual(document["file_count"], files)
+        self.assertEqual(document["total_bytes"], size)
+
+    def test_an_index_of_another_tree_warns(self):
+        # As 164393 did to 164289: files change and new ones appear.
+        document = self._index()
+        old_files, old_size = self._tree_counts()
+        liquid = self.tree / "4_world" / "fx_liquid.c"
+        liquid.write_bytes(b"class FX_Liquid\n{\n}\n")
+        (self.tree / "4_world" / "fx_liquid_cursor.c").write_bytes(
+            b"class FX_LiquidCursor : FX_Liquid\n{\n"
+            b"    protected int m_LastHit;\n}\n"
+        )
+        new_files, new_size = self._tree_counts()
+
+        code, result = self._run()
+
+        self.assertEqual(2, code)
+        self.assertEqual("WARN", result["status"])
+        warnings = self._index_warnings(result)
+        self.assertEqual(1, len(warnings))
+        warning = warnings[0]
+        self.assertEqual("WARN", warning["severity"])
+        self.assertEqual(INDEX_RULE, warning["check"])
+        self.assertEqual(str(self.index_path), warning["file"])
+        self.assertIsNone(warning["line"])
+        message = warning["message"]
+        # Which tree the index is of, which one is being read, how to rebuild.
+        self.assertIn(str(self.index_path), message)
+        self.assertIn(document["vanilla_root"], message)
+        self.assertIn(document["tree_digest"][:12], message)
+        self.assertIn(
+            "%d .c files and %d bytes" % (old_files, old_size), message
+        )
+        self.assertIn(str(self.tree), message)
+        self.assertIn(
+            "%d .c files and %d bytes" % (new_files, new_size), message
+        )
+        self.assertIn("build_vanilla_index.py", message)
+        self.assertIn('--vanilla-root "%s"' % self.tree, message)
+        self.assertIn('--out "%s"' % self.index_path, message)
+        self.assertEqual(old_files + 1, new_files)
+        info = result["info"]["vanilla_index"]
+        self.assertEqual(
+            (old_files, old_size, new_files, new_size, False),
+            (info["index_files"], info["index_bytes"], info["tree_files"],
+             info["tree_bytes"], info["matches"]),
+        )
+        self.assertEqual([], self._index_skips(result))
+        assert_standard_findings(self, result)
+
+    def test_one_of_the_two_numbers_is_enough_to_warn(self):
+        managed = self.tree / "1_core" / "proto" / "fx_managed.c"
+        data = managed.read_bytes()
+        cases = {
+            # Same file count, other bytes.
+            "bytes": {managed: data + b"// one line more\n"},
+            # Same bytes, one file more: the file split in two.
+            "count": {
+                managed: data[:6],
+                managed.with_name("fx_managed_rest.c"): data[6:],
+            },
+        }
+        for name, writes in cases.items():
+            with self.subTest(name):
+                shutil.rmtree(self.tree)
+                self._write_tree(self.tree)
+                self._index()
+                before = self._tree_counts()
+                for path, content in writes.items():
+                    path.write_bytes(content)
+                after = self._tree_counts()
+                if name == "bytes":
+                    self.assertEqual(before[0], after[0])
+                    self.assertNotEqual(before[1], after[1])
+                else:
+                    self.assertNotEqual(before[0], after[0])
+                    self.assertEqual(before[1], after[1])
+
+                code, result = self._run()
+
+                self.assertEqual(2, code)
+                self.assertEqual(1, len(self._index_warnings(result)))
+                self.assertFalse(result["info"]["vanilla_index"]["matches"])
+
+    def test_the_same_tree_under_another_path_matches(self):
+        # A folder's path is not what is compared: P:\scripts held 164289
+        # one day and 164393 the next, and the generator writes the resolved
+        # path, which a subst drive spells otherwise.
+        copy = self.base / "elsewhere" / "scripts"
+        self._write_tree(copy)
+        document = self._index(copy)
+
+        code, result = self._run()
+
+        self.assertEqual(0, code)
+        info = result["info"]["vanilla_index"]
+        self.assertTrue(info["matches"])
+        self.assertEqual(document["vanilla_root"], info["index_tree"])
+        self.assertNotEqual(str(self.tree), info["index_tree"])
+        self.assertEqual([], self._index_warnings(result))
+
+    def test_files_that_are_not_c_do_not_count(self):
+        self._index()
+        (self.tree / "config.cpp").write_text("class CfgPatches\n{\n    x;\n};\n")
+        (self.tree / "4_world" / "notes.txt").write_text("not a script\n")
+
+        code, result = self._run()
+
+        self.assertEqual(0, code)
+        self.assertTrue(result["info"]["vanilla_index"]["matches"])
+
+    def test_same_count_and_bytes_are_not_told_apart(self):
+        # The limit of comparing two numbers and not the contents: the
+        # digest would see this, at the price of reading every file of the
+        # tree on every run. See the README for the measured cost.
+        self._index()
+        liquid = self.tree / "4_world" / "fx_liquid.c"
+        data = liquid.read_bytes()
+        changed = data.replace(b"m_LastHit", b"m_LastHat")
+        self.assertNotEqual(data, changed)
+        self.assertEqual(len(data), len(changed))
+        liquid.write_bytes(changed)
+
+        code, result = self._run()
+
+        self.assertEqual(0, code)
+        self.assertTrue(result["info"]["vanilla_index"]["matches"])
+        self.assertEqual([], self._index_warnings(result))
+
+    def test_without_an_index_nothing_is_compared(self):
+        code, result = self._run()
+
+        self.assertEqual(0, code)
+        self.assertEqual("PASS", result["status"])
+        self.assertNotIn("vanilla_index", result["info"])
+        self.assertEqual([], self._index_warnings(result))
+        self.assertEqual([], self._index_skips(result))
+
+    def test_an_index_the_loader_rejects_is_no_index(self):
+        for text in ("{not json", json.dumps({"schema_version": 999})):
+            with self.subTest(text):
+                self.index_path.parent.mkdir(parents=True, exist_ok=True)
+                self.index_path.write_text(text, encoding="utf-8")
+                vanilla_reference.set_index_path_for_tests(self.index_path)
+
+                code, result = self._run()
+
+                self.assertEqual(0, code)
+                self.assertNotIn("vanilla_index", result["info"])
+                self.assertEqual([], self._index_warnings(result))
+                self.assertEqual([], self._index_skips(result))
+
+    def test_without_a_vanilla_tree_the_index_is_not_judged(self):
+        self._index()
+
+        code, result = script_validator.run([str(FIXTURES / "empty")])
+
+        # No warning and the same verdict as with no index: a SKIP line only.
+        self.assertEqual(0, code)
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], self._index_warnings(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        skips = self._index_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertEqual("SKIP", skips[0]["status"])
+        self.assertIn("no vanilla tree", skips[0]["reason"])
+        self.assertIn(str(self.index_path), skips[0]["reason"])
+
+    def test_an_index_that_does_not_count_its_tree_is_not_judged(self):
+        document = self._index()
+        for missing in ("file_count", "total_bytes"):
+            with self.subTest(missing):
+                stripped = dict(document)
+                del stripped[missing]
+                self._load(stripped)
+
+                code, result = self._run()
+
+                self.assertEqual(0, code)
+                self.assertEqual([], self._index_warnings(result))
+                self.assertNotIn("vanilla_index", result["info"])
+                skips = self._index_skips(result)
+                self.assertEqual(1, len(skips))
+                self.assertIn("does not record", skips[0]["reason"])
+                self.assertIn("build_vanilla_index.py", skips[0]["reason"])
+        # A count that is not a number is no count either.
+        self._load(dict(document, file_count="3"))
+        _code, result = self._run()
+        self.assertIn("does not record", self._index_skips(result)[0]["reason"])
+        self.assertEqual([], self._index_warnings(result))
+
+    def test_an_index_that_did_not_parse_every_file_is_not_judged(self):
+        # total_bytes then leaves out the files the generator could not
+        # read, so it is not the tree's and equal trees would differ.
+        document = self._index()
+        self._load(
+            dict(
+                document,
+                parsed_file_count=document["file_count"] - 1,
+                total_bytes=document["total_bytes"] - 1,
+            )
+        )
+
+        code, result = self._run()
+
+        self.assertEqual(0, code)
+        self.assertEqual([], self._index_warnings(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        skips = self._index_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn(
+            "parsed %d of the %d"
+            % (document["file_count"] - 1, document["file_count"]),
+            skips[0]["reason"],
+        )
+
+    def test_a_tree_that_cannot_be_read_is_not_judged(self):
+        from shared import vanilla_index_tree
+
+        self._index()
+        with mock.patch.object(
+            vanilla_index_tree, "collect_c_files",
+            side_effect=PermissionError("denied"),
+        ):
+            code, result = self._run()
+
+        self.assertEqual(0, code)
+        self.assertEqual([], self._index_warnings(result))
+        self.assertNotIn("vanilla_index", result["info"])
+        skips = self._index_skips(result)
+        self.assertEqual(1, len(skips))
+        self.assertIn("was not read", skips[0]["reason"])
+        self.assertIn("denied", skips[0]["reason"])
+
+    def test_the_generator_and_the_comparison_walk_one_way(self):
+        from shared import vanilla_index_tree
+
+        self.assertIs(
+            vanilla_index_tree.collect_c_files,
+            build_vanilla_index.collect_c_files,
+        )
+
+    def test_the_terse_report_names_the_rule(self):
+        self._index()
+        (self.tree / "4_world" / "fx_new.c").write_bytes(b"class FX_New\n{\n}\n")
+
+        _code, result = self._run()
+        lines = script_validator.format_terse(result).splitlines()
+
+        self.assertEqual("WARN - 1 warning", lines[0])
+        self.assertTrue(lines[1].startswith("  %s  " % INDEX_RULE))
 
 
 if __name__ == "__main__":

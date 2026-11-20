@@ -26,6 +26,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from stripper import strip_enforce_comments_and_strings  # noqa: E402
 from shared.method_recognition import collect_method_signature  # noqa: E402
+from shared.vanilla_index_tree import collect_c_files  # noqa: E402
 from shared.vanilla_reference import (  # noqa: E402
     INDEX_SCHEMA_VERSION,
     VANILLA_NONEXISTENT_METHODS,
@@ -227,15 +228,6 @@ def _is_control_flow(signature):
 
 def _is_destructor(signature):
     return bool(re.search(r"\bvoid\s+~", signature))
-
-
-def collect_c_files(vanilla_root):
-    files = sorted(
-        path
-        for path in vanilla_root.rglob("*.c")
-        if path.is_file()
-    )
-    return files
 
 
 def scan_file(path, relative_path):

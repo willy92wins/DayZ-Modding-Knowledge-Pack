@@ -31,7 +31,7 @@ _READER_ROOT = (
 _EXAMPLES = 5
 
 VANILLA_ROOT_BUILD_MESSAGE = (
-    "[WARN] the vanilla tree {root} is not the scripts of the game at {game}: "
+    "[{severity}] the vanilla tree {root} is not the scripts of the game at {game}: "
     "of the {files} .c files of {pbo} (PBO header version {version}), {differ} "
     "differ from the tree and {missing} are not in it, and the tree has "
     "{extra} .c files the game does not ({examples}). The rules that read the "
@@ -81,8 +81,8 @@ def _skip(reason):
     }
 
 
-def compare_vanilla_build(vanilla_root, game_root):
-    """Return (warnings, skipped, info) for --game-root.
+def compare_vanilla_build(vanilla_root, game_root, severity="WARN"):
+    """Return (findings, skipped, info) for --game-root.
 
     info is None when nothing was compared; otherwise it holds the counts
     and `matches`. The PBO's entry names are relative to its prefix, the
@@ -148,17 +148,18 @@ def compare_vanilla_build(vanilla_root, game_root):
         return [], [], info
     examples = (differ + missing + extra)[:_EXAMPLES]
     message = VANILLA_ROOT_BUILD_MESSAGE.format(
+        severity=severity,
         root=vanilla_root, game=game_root, files=len(game), pbo=pbo,
         version=version or "unknown", differ=len(differ), missing=len(missing),
         extra=len(extra),
         examples="first: " + ", ".join(examples),
     )
-    warning = {
+    finding = {
         "check": VANILLA_ROOT_BUILD_RULE_ID,
         "file": str(vanilla_root),
         "line": None,
         "message": message,
-        "severity": "WARN",
+        "severity": severity,
         "rule_id": VANILLA_ROOT_BUILD_RULE_ID,
     }
-    return [warning], [], info
+    return [finding], [], info

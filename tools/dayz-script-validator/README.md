@@ -292,22 +292,93 @@ python tools/dayz-script-validator/scripts/script_validator.py <addon_root> `
     --vanilla-root <tree> --game-root <DayZ install folder>
 ```
 
-When they differ, `VANILLA-ROOT-BUILD-MISMATCH` (WARN) gives the counts
-(files that differ, files the tree lacks, files only the tree has), the
-first five names and the PBO header's `version`; `info.vanilla_build` holds
-the counts either way, with `matches`. A folder carries no build number,
-and the header's `version` or the exe's version only name a build, so the
-comparison is by content. The PBO is read with the fail-closed reader of
+When they differ, `VANILLA-ROOT-BUILD-MISMATCH` gives the counts (files that
+differ, files the tree lacks, files only the tree has), the first five names
+and the PBO header's `version`; `info.vanilla_build` holds the counts either
+way, with `matches`. A folder carries no build number, and the header's
+`version` or the exe's version only name a build, so the comparison is by
+content. The PBO is read with the fail-closed reader of
 `tools/dayz-vehicle-proxy-contract` (a compressed entry is refused): a PBO
 that cannot be read, a folder without `dta\scripts.pbo` or a missing vanilla
-tree gives a SKIP line, never a match. Without `--game-root` nothing is
-compared. WARN exits 2, which a gate that accepts WARN lets through: a gate
-that must stop on a stale tree has to fail on this rule itself.
+tree gives a SKIP line, never a match. Without `--game-root` or
+`DAYZ_GAME_ROOT` nothing is compared. With `--game-root` on the command line,
+a mismatch is FAIL (in `errors`, exit 1) so a gate fails on a stale tree;
+with `DAYZ_GAME_ROOT`, it is WARN (in `warnings`, exit 2), which a gate that
+accepts WARN lets through.
 
 Measured on 2026-11-03: the 1.30.164014 Exp extract against a 1.30.164200
 game gives 111 `.c` files that differ and 14 that the tree lacks
 (`1_Core/proto/EnConvert.c` first); `P:\scripts` and an extract of the same
 `scripts.pbo` both match (3 056 files). The comparison takes about 1.7 s.
+
+## Which tree the vanilla index is
+
+`scripts/shared/vanilla_index.json` is local and optional. It is generated
+from one vanilla tree (`scripts/build_vanilla_index.py`) and gives four
+rules that tree's members and signatures: `ES-MEMBER-REDECLARE-BASE`,
+`ES-OVERRIDE-PARAM-NAME-MISMATCH`, `ES-METHOD-NAME-COLLIDES-VANILLA-CLASS`
+and `ES-OVERRIDE-OF-PLATFORM-GATED-METHOD`. The other vanilla rules read
+the tree itself, so when the tree moves to another build and the index
+stays, one run judges against two builds. On 2026-11-18 an index of
+1.30.164289 read with the 1.30.164393 tree gave five false
+`ES-MEMBER-REDECLARE-BASE` findings (see "Vanilla control"); a 1.29 index
+had already turned the control red on 1.30 (inbox 4c83).
+
+With an index in use and a vanilla tree, each run compares them. The index
+records the count and the total bytes of the `.c` files of the tree it was
+built from, and the tree being read is counted with the generator's own
+walk. When either number differs, `VANILLA-INDEX-TREE-MISMATCH` (WARN)
+names the index file, the tree it was built from (the folder the generator
+read, its two numbers and the start of its `tree_digest`), the tree being
+read with its two numbers, and the command that rebuilds the index from
+that tree:
+
+```powershell
+python tools/dayz-script-validator/scripts/build_vanilla_index.py --vanilla-root <tree>
+```
+
+`info.vanilla_index` holds both pairs of numbers either way, with
+`matches`. Moving the index away also clears the warning: the four rules
+then use only their curated tables. Without an index nothing is compared
+and nothing is reported. What cannot be compared is a SKIP line, never a
+match, and leaves the verdict as it was: an index with no vanilla tree, an
+index that does not record the two numbers or did not parse every file of
+its tree, a tree that cannot be read. The folder's path is not compared:
+the same path holds another build after a refresh, and the generator
+writes the resolved path, which a `subst` drive spells another way. WARN
+exits 2, so what the section above says of a gate that accepts WARN holds
+here too. The vanilla control never gets this far: it SKIPs when an index
+is in use.
+
+The two numbers are compared and the index's `tree_digest`, a sha256 over
+the contents of the same files, is not, because of what each costs on
+every run. The price is one blind spot: a tree with the same count and the
+same bytes but other contents is taken for the index's tree.
+
+Measured on the owner's PC on 2026-11-18 (Python 3.14.3, other work
+running on the PC), on the 1.30.164393 tree in `P:\scripts` (3 059 `.c`
+files, 14 001 771 bytes):
+
+- Count against digest, ten rounds of one after the other: the count took
+  0.28 to 0.49 s (median 0.36 s), and reading and hashing every file 1.66
+  to 2.44 s (median 2.01 s), 4.6 to 6.6 times as long. On the 1.30.164289
+  tree: 0.33 to 1.31 s against 1.76 to 3.40 s.
+- Inside six runs of the validator over a 114-file addon with
+  `--game-root`, the comparison took 0.32 to 5.81 s, 1.5 to 9.0 % of each
+  run (10.8 to 64.9 s). The `--game-root` comparison, which hashes those
+  files and the PBO's entries, took 1.40 to 20.4 s in those runs.
+- The three trees the owner's index has been built from differ in both
+  numbers: 1.29 (2 805 files, 12 566 266 bytes), 1.30.164289 (3 056,
+  13 952 124) and 1.30.164393 (3 059, 14 001 771).
+- With an index of the 164289 tree, that addon goes from PASS to WARN on
+  this rule alone, and 164393's `targetconditionscomponents` folder gives
+  the five `ES-MEMBER-REDECLARE-BASE` findings with this warning beside
+  them. With the index rebuilt from the 164393 tree both runs report
+  `matches`, the addon is PASS and the five findings are gone.
+- A walk with `os.scandir`, which reads the sizes from the directory
+  listing, gave the same two numbers on both trees in 0.03 to 0.09 s. It
+  is not used: the generator and the comparison count with one function,
+  `collect_c_files` in `scripts/shared/vanilla_index_tree.py`.
 
 ## Compile errors read from one file
 
@@ -416,8 +487,9 @@ over that tree and fails if the findings differ from a measured baseline.
 The vanilla tree is Bohemia's and is not redistributed. Without a local
 copy the control SKIPs (exit 2) instead of pretending the tree was clean.
 
-A full run on DayZ 1.30 takes two to four minutes. It is a gate, not a unit
-test — do not put it in `unittest discover`.
+A full run on DayZ 1.30 takes about six minutes (340 s when the baseline was
+measured, on 2026-11-10). It is a gate, not a unit test — do not put it in
+`unittest discover`.
 
 ```powershell
 python scripts/vanilla_control.py
@@ -434,6 +506,38 @@ accepted change; it prints what moved. Exit 0 is PASS, 1 is FAIL, 2 is
 SKIP (no tree, no baseline, unreadable, or a local
 `scripts/shared/vanilla_index.json` that the validator loads: the baseline
 measures the validator without one, so move that file away first).
+
+The baseline is measured on one build, the stable one: `tree.dayz_build`
+names it and `tree.digest` identifies its tree. A tree of another build
+fails the control on the digest whatever the validator finds in it, so when
+the default tree holds another build (an Experimental extract in
+`P:\scripts`, say), keep a tree of the baseline's build beside it and name
+it. An Experimental build is not a reason to `--update`: the baseline moves
+when a stable patch lands.
+
+```powershell
+python scripts/vanilla_control.py --vanilla-root <tree of the baseline's build>
+```
+
+Measured on the owner's PC on 2026-11-18, with DayZ 1.30.164393 Experimental
+in `P:\scripts` and the 1.30.164289 stable tree in
+`P:\scripts_164289_20261105`: the control passes on the stable tree (8
+errors, 431 warnings) and, with no argument, fails on the Experimental one,
+on the digest and on `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN 263 > 260`. That
+tree (3 060 files, 96 changed and 3 new) gives the same 8 errors and 434
+warnings; the three more are one `#else` each, which the rule does not
+analyse, in `constructionbase.c`, `actionmanagerclient.c` and `cctliquid.c`.
+
+A local `scripts/shared/vanilla_index.json` holds the members and
+signatures of the tree it was built from, so rebuild it when the vanilla
+tree changes build (`python scripts/build_vanilla_index.py`). That day an
+index of 1.30.164289 read with the 164393 tree gave five false
+`ES-MEMBER-REDECLARE-BASE` findings, at
+`4_world/classes/useractionscomponent/targetconditionscomponents/cctliquidsyntheticcursor.c:26-28`
+and `:37-38`: 164393 moves those members of `CCTLiquid` into that new
+subclass. An index built from the 164393 tree gives none. A run of the
+validator with an index of another tree now warns: see "Which tree the
+vanilla index is".
 
 Every baseline entry carries the reason it is tolerated. `--update` keeps
 the reasons already written and cannot invent the missing ones, so it names

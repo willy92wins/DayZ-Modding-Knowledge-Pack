@@ -14,7 +14,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   preview step, `widget-api.md` and `layout-format.md` point to it. `dayz-test-ingame`: DayZ-MCP cannot press a
   `UAInput`, and the test-only hook that opens a key-bound panel when a file in the client profile appears or goes.
   Five claims, from the BattleRoyale leaderboard runs of 2026-11-18.
-
+- `dayz-motorbikes`, "One-seat motorbikes on 1.30.164393 or later" and a preflight line: on DayZ 1.30.164393
+  Experimental a bike whose `class Crew` has only `Driver` kills the client on its first frame on the bike when the
+  player gets on from direction 1, because `MotorbikeScript.CrewShouldExit`, new in that build, calls the native
+  `CrewMember` with the seat animation type. Two overrides in the script class fix it (measured in game on LFH2R
+  and LFDucati); only `HasDirectionalInOutAction()` compiles on stable 1.30.164289, which has no `CrewShouldExit`.
 - `dayz-pbo-build/references/dayzmake-linux.md`, "Get the right dayzmake": how to download a dayzmake release and
   verify it before installing (the release's GPG-signed `SHA256SUMS`, the pinned key fingerprint
   `6624 41B3 6A57 85AD 18FB  8667 DF75 3D99 D064 EB7E`, a throwaway keyring, and a status-line check that stops the
@@ -76,9 +80,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `enforce-script-reference`: before calling `RespawnPlayer()` from script, refuse on the client when the local player
   is alive, conscious and not restrained, and kill a living player first to give it a new body (SP-527, from dayz-mcp
   #408 and #416, where a script-triggered respawn of a living, conscious player reported success and did nothing).
+- `dayz-script-validator`: `VANILLA-INDEX-TREE-MISMATCH` (WARN), for a run whose local
+  `scripts/shared/vanilla_index.json` was not built from the vanilla tree being read. Four rules read the index
+  (`ES-MEMBER-REDECLARE-BASE`, `ES-OVERRIDE-PARAM-NAME-MISMATCH`, `ES-METHOD-NAME-COLLIDES-VANILLA-CLASS`,
+  `ES-OVERRIDE-OF-PLATFORM-GATED-METHOD`) and nothing said when it was of another build: on 2026-11-18 an index of
+  1.30.164289 read with the 1.30.164393 tree gave five false `ES-MEMBER-REDECLARE-BASE` findings, and a 1.29 index
+  had turned the vanilla control red on 1.30. The index records the count and the total bytes of the `.c` files of
+  its tree; the tree being read is counted with the generator's own walk, and when either number differs the warning
+  names the index, the tree it was built from, the tree being read and the command that rebuilds it.
+  `info.vanilla_index` holds both pairs of numbers with `matches`. Without an index nothing is compared; an index
+  with no vanilla tree, without the two numbers or with files it did not parse, and a tree that cannot be read, are
+  a SKIP line that leaves the verdict as it was. The digest the index also records is not compared: measured that
+  day on the 3 059 files of the 164393 tree, the count took 0.28 to 0.49 s and reading and hashing every file 1.66
+  to 2.44 s, and inside six validator runs over a 114-file addon the comparison took 1.5 to 9.0 % of the run. A tree
+  with the same count and bytes but other contents is therefore not told apart. `tests/test_script_validator.py`
+  now sets a local index aside, as it does the vanilla tree: with one in the checkout, 24 of its tests would fail on
+  this rule. See the README's "Which tree the vanilla index is".
 
 ### Fixed
 
+- `dayz-terrain-builder-runner`, tests: `test_save_loop_counts_a_changed_file_without_focus_or_dialog` no longer
+  depends on the system clock. `save_loop` counts a save when the `st_mtime_ns` of the `.tv4p` changes; the test
+  wrote the file and its fake `PostMessageW` wrote it again about 1.5 ms later, and two writes within one tick of
+  the system clock leave the same `st_mtime_ns`, so the test failed whenever both fell in one tick: 9 of 30 runs in
+  one process with the clock mostly at 4 ms (Windows 11, 2026-11-19, when it also failed a `packctl gate` run) and
+  0 of 200 with it at 1 ms. The fake now sets the file's modification time two seconds later with `os.utime`
+  instead of writing again. `tbrunner.py` does not change.
 - PR #188 follow-ups: `extract-dayz-sources.sh` reads the PBO prefix from the PBO's header bytes, so a prefix holding
   an LF or CR is refused instead of truncated (`dayzmake inspect` prints header values unescaped), and installs its
   lock cleanup right after taking the lock; `dayz-mod-pack.sh` splits `WORKSHOP_TAGS` as data, never glob-expanded
@@ -252,6 +279,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `dayz-pbo-build` `references/workshop-publish.md`, measured on 2026-11-12 and 2026-11-19: on a retail DayZServer
+  with `verifySignatures = 2`, a client loading the signed mod is kicked in `AuthPlayerLoginState` (kick 120, "the
+  client has a PBO the server does not have") while the server's `keys` lacks the `.bikey`, and joins with it
+  (BattlEye kicked it 23 s later, with `BattlEye = 0` in the server's config); updating an item with the Publisher
+  takes the mod's root folder (the `addons` folder fails before uploading with `DirectoryNotFoundException`), took
+  about 6 s for the small test item and left no log off in the client's `connection_log.txt` in three publications;
+  the owner's Steam client removed its subscribed copy of the private item after `Access Denied`. Claims
+  `CLAIM-WORKSHOP-SIGN-SERVER-CHECK`, `CLAIM-WORKSHOP-PUBLISHER-UPDATE` and `CLAIM-WORKSHOP-PRIVATE-SUBSCRIBED-COPY`.
+  The untried SteamCMD update recipe is removed, and `CLAIM-WORKSHOP-STEAMCMD-SESSION-REPLACED` now says that the
+  login measured was a manual one and that the client was restarted 44 minutes later. In `sources/claims.json` the
+  ranges of `CLAIM-BINARIZE-DIRECT-ADDON-STALL` and `CLAIM-BINARIZE-DIRECT-MATERIALS-EMPTY` now start at their blocks
+  in `dayz-pbo-build`'s SKILL.md; on main they began 10 lines before them.
+- `dayz-vehicles/references/get-in-actions-and-proxy-pose.md`, the crew-anchor check: the healthy Memory-to-ViewGeometry
+  offset is zero, not merely equal across seats. LFQuad's 0/100/200 mm, cited there as healthy, showed the one-frame
+  camera jump on the rear seat in game; aligning the two copies removed it (A/B on 2026-11-03, and LFQuad v1.0.2 on
+  2026-11-19). Arma2Quad, aligned, still reported a jump, so zero does not rule it out.
+- `dayz-pbo-build`, rule 5: on a direct `binarize.exe` call the working directory decides where the files a p3d cites
+  are found. With AddonBuilder's arguments, a run started outside the `-addon` folder read the mod's materials from the
+  working directory and embedded a staged vanilla penetration material without its `.bisurf`; started from the
+  `-addon` folder it resolved all 16 (LFQuad, 2026-11-03). Most likely the answer to the H2R open point.
 - dayzmake >= 3.1.0, pinned to `v3.1.0`, everywhere the Pack names dayzmake (`_shared/linux-proton.md`, the Linux
   notes of 22 skills, `dayz-mod-pack.sh`, `dayz-proton.sh doctor`): dayzmake 3.x fixes a lot of security and
   file-handling issues of the earlier releases, and 3.1.0 adds `extract`, `api grep`, `api config` and more and
@@ -263,6 +310,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   comes from `dayzmake extract --derapify --only '*.c' --only 'config.*'`, a full `P:\dz` from `dayzmake extract`.
 - `dayz-pbo-reverse-engineering`, `enforce-script-reference`, `_shared/linux-proton.md`: the manual entry-name check
   for unpacking third-party PBOs with dayzmake < 2.0.0 is gone; use 3.1.0 or upgrade.
+- `tools/dayz-script-validator/README.md`, "Vanilla control": what to do when the default vanilla tree holds another
+  build than the baseline's, and that a local `vanilla_index.json` is rebuilt when the tree changes build. The
+  baseline stays on DayZ 1.30.164289 stable (digest `fd826b40`, unchanged): an Experimental build is not a reason to
+  re-baseline, and the control is run with `--vanilla-root` naming a tree of the baseline's build. Measured on the
+  owner's PC on 2026-11-18, after `P:\scripts` moved to DayZ 1.30.164393 Experimental with the 1.30.164289 tree kept
+  beside it, with this validator and no index: the control passes on the 164289 tree (8 errors, 431 warnings) and,
+  with no argument, fails on the Experimental one (3 060 files, digest `e99f99a9`; 96 files changed and 3 new) on
+  the digest and on `ES-EMPTY-IFDEF-UNSUPPORTED-PATTERN 263 > 260`. That tree gives the same 8 errors, at the same
+  lines, and 434 warnings: the three more are one `#else` each, which the rule does not analyse, in
+  `constructionbase.c`, `actionmanagerclient.c` and `cctliquid.c`. An index built from 1.30.164289 and read with the
+  164393 tree gave five false `ES-MEMBER-REDECLARE-BASE` findings on `cctliquidsyntheticcursor.c`, a new subclass
+  that takes those members from `CCTLiquid`; an index built from the 164393 tree gives none. The section's run time
+  now reads about six minutes, not two to four: 340 s when the baseline was measured on 2026-11-10, and 367 to 379 s
+  by the wall clock for each of the four runs of 2026-11-18, made two to four at a time.
+- `tools/dayz-script-validator`: `VANILLA-ROOT-BUILD-MISMATCH` is FAIL (exit 1) with explicit `--game-root`, WARN (exit 2) with `DAYZ_GAME_ROOT`.
 
 ### Removed
 
