@@ -179,6 +179,9 @@ from detectors.es_cast_unrelated_types import check_es_cast_unrelated_types
 from detectors.es_proto_argument_downcast import (
     check_es_proto_argument_downcast,
 )
+from detectors.es_script_argument_downcast import (
+    check_es_script_argument_downcast,
+)
 from detectors.es_undeclared_static_member import (
     check_es_undeclared_static_member,
 )
@@ -504,6 +507,13 @@ def validate_addon(addon_root, external_roots=None, vanilla_root=None,
     )
     errors.extend(downcast_errors)
     warnings.extend(downcast_warnings)
+    script_downcast_errors, script_downcast_warnings = (
+        check_es_script_argument_downcast(
+            addon_sources, external_sources, vanilla_root
+        )
+    )
+    errors.extend(script_downcast_errors)
+    warnings.extend(script_downcast_warnings)
     errors.extend(
         check_es_undeclared_static_member(
             addon_sources, external_sources, vanilla_root
