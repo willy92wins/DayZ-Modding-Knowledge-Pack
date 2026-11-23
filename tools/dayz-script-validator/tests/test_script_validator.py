@@ -7331,6 +7331,508 @@ class TestVanillaIndexBesideTheDefault(unittest.TestCase):
         self.assertTrue(info["matches"])
 
 
+SCRIPT = FIXTURES / "script_argument_downcast"
+SCRIPT_RULE = "ES-SCRIPT-ARGUMENT-DOWNCAST"
+
+
+def _script_findings(
+    source, external=(), vanilla=SCRIPT / "vanilla", path="scripts/5_Mission/x.c"
+):
+    from detectors.es_script_argument_downcast import (
+        check_es_script_argument_downcast,
+    )
+    from stripper import strip_enforce_comments_and_strings
+
+    def strip(text):
+        return strip_enforce_comments_and_strings(text, "x.c")[0]
+
+    return check_es_script_argument_downcast(
+        [(path, strip(source))],
+        [(rel_path, strip(text)) for rel_path, text in external],
+        vanilla,
+    )
+
+
+def _script_lines(
+    source, external=(), vanilla=SCRIPT / "vanilla", path="scripts/5_Mission/x.c"
+):
+    """The lines of the FAILs and WARNs, in order."""
+    errors, warnings = _script_findings(source, external, vanilla, path)
+    return sorted(finding["line"] for finding in errors + warnings)
+
+
+def _lines(*lines):
+    return "\n".join(lines) + "\n"
+
+
+class TestScriptArgumentDowncast(unittest.TestCase):
+    """ES-SCRIPT-ARGUMENT-DOWNCAST: a base-class argument where a script method takes a derived class.
+
+    Inbox fb-20261122-205419-250d, DayZDiag 1.30.164289: a mod's
+    `SubtreeBornInInventory(rec.m_RefEnt)`, with `Object m_RefEnt` and the
+    script method (no proto) taking an EntityAI at argument 0, was refused
+    with "Unsafe down-casting, use 'EntityAI.Cast' for safe down-casting",
+    "Types 'Object' and 'EntityAI' are unrelated" and "Cannot convert
+    'Object' to 'EntityAI' for argument '0' to method
+    'SubtreeBornInInventory'", and the Mission module did not compile.
+    ES-PROTO-ARGUMENT-DOWNCAST judges only protos and said nothing. The two
+    rules share their machinery; a call is judged by one of them at most.
+    """
+
+    EVIDENCE = (
+        "(DayZDiag 1.30.164289, at the script method SubtreeBornInInventory "
+        "of a mod, argument '0', where it also said \"Types 'Object' and "
+        "'EntityAI' are unrelated\")"
+    )
+
+    def test_ticket_repro_fails(self):
+        exit_code, result = script_validator.run(
+            [str(SCRIPT / "bad"), "--vanilla-root", str(SCRIPT / "vanilla")]
+        )
+
+        self.assertEqual(1, exit_code)
+        errors = [
+            e for e in _errors_of(result, SCRIPT_RULE) if "fx_persist.c" in e["file"]
+        ]
+        self.assertEqual(
+            [(20, "FAIL"), (25, "FAIL"), (30, "FAIL")],
+            [(e["line"], e["severity"]) for e in errors],
+        )
+        first = errors[0]["message"]
+        self.assertTrue(first.startswith("[FAIL] "), first)
+        self.assertIn(
+            "line 20: 'FX_SubtreeBorn(': argument 0 (counted from 0), "
+            "'rec.m_RefEnt', is declared as Object, and the script method "
+            "FX_Persist.FX_SubtreeBorn takes EntityAI there",
+            first,
+        )
+        self.assertIn("(EntityAI > Object > IEntity > Managed)", first)
+        self.assertIn(
+            "\"Cannot convert 'Object' to 'EntityAI' for argument '0' to method "
+            "'FX_SubtreeBorn'\"",
+            first,
+        )
+        self.assertIn(self.EVIDENCE, first)
+        self.assertIn("Pass EntityAI.Cast(rec.m_RefEnt)", first)
+        self.assertIn(
+            "line 25: 'this.FX_SubtreeBorn(': argument 0 (counted from 0), "
+            "'rec.m_RefEnt', is declared as Object",
+            errors[1]["message"],
+        )
+        self.assertIn(
+            "line 30: 'census.FX_SubtreeBorn(': argument 0 (counted from 0), "
+            "'obj', is declared as Object",
+            errors[2]["message"],
+        )
+        for error in errors:
+            self.assertEqual(SCRIPT_RULE, error["check"])
+        # A script method: the proto rule says nothing.
+        self.assertEqual([], _errors_of(result, PROTO_RULE))
+        self.assertEqual(
+            [], [w for w in result["warnings"] if w["rule_id"] == PROTO_RULE]
+        )
+        assert_standard_findings(self, result)
+
+    def test_the_fixed_shapes_pass(self):
+        _code, result = script_validator.run(
+            [str(SCRIPT / "ok"), "--vanilla-root", str(SCRIPT / "vanilla")]
+        )
+
+        # EntityAI.Cast, a name narrowed with Class.CastTo, the same type, an
+        # up-cast, null, and the bad call in a comment, a string and #if 0.
+        self.assertEqual([], _errors_of(result, SCRIPT_RULE))
+        self.assertEqual(
+            [], [w for w in result["warnings"] if w["rule_id"] == SCRIPT_RULE]
+        )
+        self.assertEqual([], _errors_of(result, PROTO_RULE))
+
+    def test_without_the_vanilla_tree_nothing_is_judged(self):
+        _code, result = script_validator.run([str(SCRIPT / "bad")])
+
+        self.assertEqual([], _errors_of(result, SCRIPT_RULE))
+        self.assertEqual(
+            [], [w for w in result["warnings"] if w["rule_id"] == SCRIPT_RULE]
+        )
+
+    def test_only_the_measured_pair_fails(self):
+        # An Object where a script method takes an EntityAI is FAIL. An
+        # IEntity or a Managed where it takes an Object, and an IEntity where
+        # it takes an EntityAI, are not measured: WARN.
+        source = _lines(
+            "class FX_U",                                  # 1
+            "{",                                           # 2
+            "    void FX_TakeItem(EntityAI item)",         # 3
+            "    {",                                       # 4
+            "    }",                                       # 5
+            "",                                            # 6
+            "    void FX_TakeObject(Object target)",       # 7
+            "    {",                                       # 8
+            "    }",                                       # 9
+            "",                                            # 10
+            "    void F(Object o, IEntity e, Managed m)",  # 11
+            "    {",                                       # 12
+            "        FX_TakeItem(o);",                     # 13
+            "        FX_TakeObject(e);",                   # 14
+            "        FX_TakeObject(m);",                   # 15
+            "        FX_TakeItem(e);",                     # 16
+            "    }",                                       # 17
+            "}",                                           # 18
+        )
+
+        errors, warnings = _script_findings(source)
+        self.assertEqual(
+            [(13, "FAIL")], [(e["line"], e["severity"]) for e in errors]
+        )
+        self.assertEqual(
+            [(14, "WARN"), (15, "WARN"), (16, "WARN")],
+            [(w["line"], w["severity"]) for w in warnings],
+        )
+        failed = errors[0]["message"]
+        self.assertIn(
+            "'FX_TakeItem(': argument 0 (counted from 0), 'o', is declared as "
+            "Object, and the script method FX_U.FX_TakeItem takes EntityAI there",
+            failed,
+        )
+        self.assertIn(self.EVIDENCE, failed)
+        self.assertIn("Pass EntityAI.Cast(o)", failed)
+        self.assertNotIn("not measured", failed)
+        warned = warnings[0]["message"]
+        self.assertTrue(
+            warned.startswith("[WARN] scripts/5_Mission/x.c line 14: "), warned
+        )
+        self.assertIn(
+            "'FX_TakeObject(': argument 0 (counted from 0), 'e', is declared as "
+            "IEntity, and the script method FX_U.FX_TakeObject takes Object there",
+            warned,
+        )
+        self.assertIn(
+            "refused an Object where a mod's script method took an EntityAI",
+            warned,
+        )
+        self.assertIn(
+            "whether it refuses IEntity where Object is taken is not measured",
+            warned,
+        )
+        self.assertIn("Pass Object.Cast(e)", warned)
+        self.assertNotIn(self.EVIDENCE, warned)
+        self.assertIn(
+            "whether it refuses IEntity where EntityAI is taken is not measured",
+            warnings[2]["message"],
+        )
+        for finding in errors + warnings:
+            self.assertEqual(SCRIPT_RULE, finding["rule_id"])
+        # The validator counts the FAILs as errors and the rest as warnings.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "x.c"
+            path.write_text(source, encoding="utf-8")
+            _code, result = script_validator.run(
+                [str(path), "--vanilla-root", str(SCRIPT / "vanilla")]
+            )
+        self.assertEqual([13], [e["line"] for e in _errors_of(result, SCRIPT_RULE)])
+        self.assertEqual(
+            [14, 15, 16],
+            [w["line"] for w in result["warnings"] if w["rule_id"] == SCRIPT_RULE],
+        )
+
+    def test_each_call_form_is_judged(self):
+        source = _lines(
+            "class FX_Base",                                  # 1
+            "{",                                              # 2
+            "    void FX_Keep(EntityAI item)",                # 3
+            "    {",                                          # 4
+            "    }",                                          # 5
+            "}",                                              # 6
+            "",                                               # 7
+            "class FX_Child : FX_Base",                       # 8
+            "{",                                              # 9
+            "    void F(Object o, FX_Base other, EntityAI self)",  # 10
+            "    {",                                          # 11
+            "        FX_Keep(o);",                            # 12
+            "        this.FX_Keep(o);",                       # 13
+            "        other.FX_Keep(o);",                      # 14
+            "        FX_Util.FX_Store(o);",                   # 15
+            "        self.FX_Hold(o);",                       # 16
+            "    }",                                          # 17
+            "}",                                              # 18
+            "",                                               # 19
+            "modded class FX_Base",                           # 20
+            "{",                                              # 21
+            "    void G(Object o)",                           # 22
+            "    {",                                          # 23
+            "        FX_Keep(o);",                            # 24
+            "    }",                                          # 25
+            "}",                                              # 26
+        )
+
+        errors, warnings = _script_findings(source)
+        self.assertEqual([], warnings)
+        # No receiver (a method the class inherits), this., a variable, a
+        # class name (a static vanilla script method), a vanilla script
+        # method, and no receiver in a modded class.
+        expected = [
+            (12, "'FX_Keep(':", "FX_Base.FX_Keep"),
+            (13, "'this.FX_Keep(':", "FX_Base.FX_Keep"),
+            (14, "'other.FX_Keep(':", "FX_Base.FX_Keep"),
+            (15, "'FX_Util.FX_Store(':", "FX_Util.FX_Store"),
+            (16, "'self.FX_Hold(':", "EntityAI.FX_Hold"),
+            (24, "'FX_Keep(':", "FX_Base.FX_Keep"),
+        ]
+        self.assertEqual([line for line, _c, _o in expected], [e["line"] for e in errors])
+        for error, (line, call, owner) in zip(errors, expected):
+            message = error["message"]
+            self.assertIn("line %d: %s argument 0 (counted from 0), 'o'" % (line, call), message)
+            self.assertIn("the script method %s takes EntityAI there" % owner, message)
+            self.assertEqual("FAIL", error["severity"])
+
+    def test_an_argument_through_a_member_is_resolved(self):
+        source = _lines(
+            "class FX_Rec",                              # 1
+            "{",                                         # 2
+            "    Object m_Ref;",                         # 3
+            "    EntityAI m_Own;",                       # 4
+            "    FX_Rec m_Next;",                        # 5
+            "}",                                         # 6
+            "",                                          # 7
+            "class FX_RecChild : FX_Rec",                # 8
+            "{",                                         # 9
+            "}",                                         # 10
+            "",                                          # 11
+            "class FX_User",                             # 12
+            "{",                                         # 13
+            "    FX_Rec m_Rec;",                         # 14
+            "",                                          # 15
+            "    void FX_Take(EntityAI item)",           # 16
+            "    {",                                     # 17
+            "    }",                                     # 18
+            "",                                          # 19
+            "    void F(FX_Rec rec, FX_RecChild child)",  # 20
+            "    {",                                     # 21
+            "        FX_Take(rec.m_Ref);",               # 22
+            "        FX_Rec held = rec;",                # 23
+            "        FX_Take(held.m_Ref);",              # 24
+            "        FX_Take(m_Rec.m_Ref);",             # 25
+            "        FX_Take(child.m_Ref);",             # 26
+            "        FX_Take(rec.m_Own);",               # 27
+            "        FX_Take(rec.m_Next.m_Ref);",        # 28
+            "        FX_Take(rec.m_Missing);",           # 29
+            "    }",                                     # 30
+            "}",                                         # 31
+        )
+
+        # A parameter's member, a local's, a member's, and one the class of
+        # the name inherits. The same type, two levels and a member nobody
+        # declares are not judged.
+        self.assertEqual([22, 24, 25, 26], _script_lines(source))
+        errors, _warnings = _script_findings(source)
+        self.assertIn(
+            "'FX_Take(': argument 0 (counted from 0), 'rec.m_Ref', is declared "
+            "as Object",
+            errors[0]["message"],
+        )
+        self.assertIn("Pass EntityAI.Cast(rec.m_Ref)", errors[0]["message"])
+
+    def test_a_member_through_this_is_not_the_local_of_that_name(self):
+        source = _lines(
+            "class FX_L",                       # 1
+            "{",                                # 2
+            "    EntityAI m_Thing;",            # 3
+            "",                                 # 4
+            "    void FX_Take(EntityAI item)",  # 5
+            "    {",                            # 6
+            "    }",                            # 7
+            "",                                 # 8
+            "    void F()",                     # 9
+            "    {",                            # 10
+            "        Object m_Thing = null;",   # 11
+            "        FX_Take(this.m_Thing);",   # 12
+            "        FX_Take(m_Thing);",        # 13
+            "    }",                            # 14
+            "}",                                # 15
+        )
+
+        # this.m_Thing is the member, an EntityAI; m_Thing is the local.
+        self.assertEqual([13], _script_lines(source))
+
+    def test_the_first_class_that_declares_the_method_decides(self):
+        external = [(
+            "scripts/4_World/p.c",
+            _lines(
+                "class FX_B",
+                "{",
+                "    void H(EntityAI e)",
+                "    {",
+                "    }",
+                "}",
+                # a derived class that declares H again, with an Object
+                "class FX_D : FX_B",
+                "{",
+                "    void H(Object e)",
+                "    {",
+                "    }",
+                "}",
+                # a proto in one body and a script method in another: neither
+                # rule judges it
+                "class FX_M",
+                "{",
+                "    proto native void H(EntityAI e);",
+                "}",
+                "modded class FX_M",
+                "{",
+                "    void H(EntityAI e)",
+                "    {",
+                "    }",
+                "}",
+                # two parameter lists in one class
+                "class FX_Two",
+                "{",
+                "    void H(EntityAI e)",
+                "    {",
+                "    }",
+                "    void H(EntityAI e, int n)",
+                "    {",
+                "    }",
+                "}",
+            ),
+        )]
+        source = _lines(
+            "void F(FX_B b, FX_D d, FX_M m, FX_Two t, Object o)",  # 1
+            "{",                                                  # 2
+            "    b.H(o);",                                        # 3
+            "    d.H(o);",                                        # 4
+            "    m.H(o);",                                        # 5
+            "    t.H(o);",                                        # 6
+            "}",                                                  # 7
+        )
+
+        self.assertEqual([3], _script_lines(source, external))
+        self.assertEqual([], _proto_lines(source, external, vanilla=SCRIPT / "vanilla"))
+        # Without the vanilla tree Object and EntityAI are unknown.
+        self.assertEqual([], _script_lines(source, external, vanilla=None))
+
+    def test_a_proto_call_goes_to_the_proto_rule_only(self):
+        source = _lines(
+            "void F(EntityAI s, Object o)",  # 1
+            "{",                             # 2
+            "    s.FX_Show(o);",             # 3
+            "    s.FX_Hold(o);",             # 4
+            "}",                             # 5
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "x.c"
+            path.write_text(source, encoding="utf-8")
+            _code, result = script_validator.run(
+                [str(path), "--vanilla-root", str(SCRIPT / "vanilla")]
+            )
+        # FX_Show is a proto, FX_Hold a script method.
+        self.assertEqual([3], [e["line"] for e in _errors_of(result, PROTO_RULE)])
+        self.assertEqual([4], [e["line"] for e in _errors_of(result, SCRIPT_RULE)])
+        self.assertEqual(
+            [],
+            [
+                w for w in result["warnings"]
+                if w["rule_id"] in (PROTO_RULE, SCRIPT_RULE)
+            ],
+        )
+
+    def test_unjudged_shapes_are_skipped(self):
+        take = ["    void FX_Take(EntityAI item)", "    {", "    }"]
+        cases = [
+            # an explicit cast, a name narrowed with Class.CastTo, and null
+            _lines(
+                "class FX_C", "{", *take,
+                "    void F(Object o)", "    {",
+                "        FX_Take(EntityAI.Cast(o));",
+                "        EntityAI narrowed;",
+                "        if (Class.CastTo(narrowed, o))",
+                "            FX_Take(narrowed);",
+                "        FX_Take(null);",
+                "    }", "}",
+            ),
+            # the same type, and an up-cast where an Object is taken
+            _lines(
+                "class FX_C", "{", *take,
+                "    void FX_Mark(Object target)", "    {", "    }",
+                "    void F(EntityAI e)", "    {",
+                "        FX_Take(e);",
+                "        FX_Mark(e);",
+                "    }", "}",
+            ),
+            # a type nobody declares, and an unrelated class
+            _lines(
+                "class FX_R", "{", "}",
+                "class FX_C", "{", *take,
+                "    void F(FX_Ghost g, FX_R r)", "    {",
+                "        FX_Take(g);",
+                "        FX_Take(r);",
+                "    }", "}",
+            ),
+            # out and inout parameters, an array and a template parameter
+            _lines(
+                "class FX_C", "{",
+                "    void FX_Fill(out EntityAI item)", "    {", "    }",
+                "    void FX_Swap(inout EntityAI item)", "    {", "    }",
+                "    void FX_Pair(EntityAI items[2])", "    {", "    }",
+                "    void FX_All(array<EntityAI> items)", "    {", "    }",
+                "    void F(Object o)", "    {",
+                "        FX_Fill(o);",
+                "        FX_Swap(o);",
+                "        FX_Pair(o);",
+                "        FX_All(o);",
+                "    }", "}",
+            ),
+            # more arguments than parameters
+            _lines(
+                "class FX_C", "{", *take,
+                "    void F(Object o)", "    {",
+                "        FX_Take(o, o);",
+                "    }", "}",
+            ),
+            # super, new, a call's result and an unknown receiver; the
+            # method's own header is no call
+            _lines(
+                "class FX_B", "{", *take,
+                "    void FX_B(EntityAI item)", "    {", "    }",
+                "}",
+                "class FX_C : FX_B", "{",
+                "    override void FX_Take(EntityAI item)", "    {",
+                "        Object o;",
+                "        super.FX_Take(o);",
+                "        FX_B made = new FX_B(o);",
+                "        GetSelf().FX_Take(o);",
+                "        g_Unknown.FX_Take(o);",
+                "    }",
+                "    FX_C GetSelf()", "    {", "        return this;", "    }",
+                "}",
+            ),
+            # a global function, a method that has the name of a global
+            # function, and a call with no receiver outside every class
+            _lines(
+                "void FX_Global(EntityAI item)", "{", "}",
+                "void FX_Take(EntityAI item)", "{", "}",
+                "class FX_C", "{", *take,
+                "    void F(Object o)", "    {",
+                "        FX_Global(o);",
+                "        FX_Take(o);",
+                "    }", "}",
+                "void G(Object o)", "{",
+                "    FX_Global(o);",
+                "}",
+            ),
+            # the call under #if 0
+            _lines(
+                "class FX_C", "{", *take,
+                "    void F(Object o)", "    {",
+                "#if 0",
+                "        FX_Take(o);",
+                "#endif",
+                "    }", "}",
+            ),
+        ]
+        for source in cases:
+            self.assertEqual([], _script_lines(source), source)
+
+
 if __name__ == "__main__":
     unittest.main()
 
