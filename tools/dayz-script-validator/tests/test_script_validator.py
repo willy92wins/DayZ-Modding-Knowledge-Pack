@@ -7709,6 +7709,42 @@ class TestScriptArgumentDowncast(unittest.TestCase):
         # Without the vanilla tree Object and EntityAI are unknown.
         self.assertEqual([], _script_lines(source, external, vanilla=None))
 
+    def test_a_method_with_another_parameter_list_up_the_chain_is_skipped(self):
+        # The real-mod pass of 250d, in DayZ-Expansion: a derived class
+        # declares the method again with a narrower parameter, the base keeps
+        # the wider one, and the compiler takes the base's for a base-typed
+        # argument. An override with the same parameter list is still judged.
+        source = _lines(
+            "class FX_ConfigBase",                          # 1
+            "{",                                            # 2
+            "    void FX_CopyConfig(FX_ConfigBase other)",  # 3
+            "    {",                                        # 4
+            "    }",                                        # 5
+            "    void FX_Take(EntityAI item)",              # 6
+            "    {",                                        # 7
+            "    }",                                        # 8
+            "}",                                            # 9
+            "",                                             # 10
+            "class FX_Config : FX_ConfigBase",              # 11
+            "{",                                            # 12
+            "    void FX_CopyConfig(FX_Config other)",      # 13
+            "    {",                                        # 14
+            "    }",                                        # 15
+            "    override void FX_Take(EntityAI item)",     # 16
+            "    {",                                        # 17
+            "    }",                                        # 18
+            "",                                             # 19
+            "    void F(FX_ConfigBase old, Object o)",      # 20
+            "    {",                                        # 21
+            "        FX_CopyConfig(old);",                  # 22
+            "        this.FX_CopyConfig(old);",             # 23
+            "        FX_Take(o);",                          # 24
+            "    }",                                        # 25
+            "}",                                            # 26
+        )
+
+        self.assertEqual([24], _script_lines(source))
+
     def test_a_proto_call_goes_to_the_proto_rule_only(self):
         source = _lines(
             "void F(EntityAI s, Object o)",  # 1
