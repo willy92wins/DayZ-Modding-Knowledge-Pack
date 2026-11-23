@@ -7744,6 +7744,13 @@ class TestScriptArgumentDowncast(unittest.TestCase):
         )
 
         self.assertEqual([24], _script_lines(source))
+        # The message names the nearest declaration, the override the call
+        # reaches from FX_Config.
+        errors, _warnings = _script_findings(source)
+        self.assertIn(
+            "the script method FX_Config.FX_Take takes EntityAI there",
+            errors[0]["message"],
+        )
 
     def test_a_proto_call_goes_to_the_proto_rule_only(self):
         source = _lines(
