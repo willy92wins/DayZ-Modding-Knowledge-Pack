@@ -77,7 +77,8 @@ ES_SCRIPT_ARGUMENT_DOWNCAST_RULE_ID = "ES-SCRIPT-ARGUMENT-DOWNCAST"
 #     `ClassBodies.proto()` does, but every declaration there must be a
 #     script method (no `proto`) with one parameter list. A proto there
 #     is the proto rule's, and a proto beside a script method, or two
-#     parameter lists, are skipped by both rules. A body that cannot be
+#     parameter lists, are skipped by both rules. A different parameter
+#     list further up the chain also skips the call. A body that cannot be
 #     read, or a declaration with a line from its start to its `(` under
 #     an #if, #ifdef or #ifndef, leaves the method unknown;
 #   - the argument is a plain name typed as the proto rule types it, or
@@ -142,8 +143,9 @@ def _script_method(bodies, chain, method):
     """(class, parameters) of the script `method` that chain[0] reaches,
     or None, as ClassBodies.proto() reads it with the proto test turned
     round: the first class up the chain with a declaration on a line that
-    compiles decides, and every declaration there must be a script method
-    with one parameter list."""
+    compiles decides, with one script parameter list there, and no proto
+    or different parameter list in any class above it."""
+    decided = None
     for cls in chain:
         bodies_of = bodies.bodies.get(cls)
         if not bodies_of or any(
@@ -158,13 +160,19 @@ def _script_method(bodies, chain, method):
                 if not lines.plain(start, at):
                     return None
                 found.append((proto, parameters))
-        if not found:
+        if decided is None:
+            if not found:
+                continue
+            signatures = {parameters for _proto, parameters in found}
+            if any(proto for proto, _parameters in found) or len(signatures) != 1:
+                return None
+            decided = cls, signatures.pop()
             continue
-        signatures = {parameters for _proto, parameters in found}
-        if any(proto for proto, _parameters in found) or len(signatures) != 1:
+        if any(
+            proto or parameters != decided[1] for proto, parameters in found
+        ):
             return None
-        return cls, signatures.pop()
-    return None
+    return decided
 
 
 def _global_names(text):

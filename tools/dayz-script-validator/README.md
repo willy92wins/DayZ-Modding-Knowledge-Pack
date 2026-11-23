@@ -245,7 +245,9 @@ were not measured again.
   is not `out` or `inout` and has a plain class type whose chain holds the
   argument's class above its own. `Class` is not judged as the argument's
   class. A proto there is the proto rule's; a proto beside a script method
-  and two parameter lists (overloads) are skipped by both rules. Skipped:
+  and two parameter lists (overloads) are skipped by both rules; for this
+  rule, that covers two lists in one class or along the receiver's chain.
+  Skipped:
   `super.Method(` and `super.m`, a receiver that is not a plain name, an
   unknown receiver, a name preceded by a dot or by an identifier other
   than `return` or `else` (so `new Method(` and `thread Method(` and a
