@@ -23708,7 +23708,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. Registers CLAIM-ENFORCE-SCRIPT-ARGUMENT-DOWNCAST at lines 36-97 of es_script_argument_downcast.py, and moves CLAIM-DSV-VANILLA-INDEX-BESIDE-OUT by the lines the validator README gained before its marker.",
           "license": "MIT",
-          "source_hash": "3e2f5764bd2853297b47f348faf5397b89c63fb97544c2a7ef11408c89994016",
+          "source_hash": "11bf408f616f7fc61c08c99d537c8f7dad50011969e413bb47bc089e6c036063",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-250d@2026-11-23",
@@ -23716,7 +23716,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3e2f5764bd2853297b47f348faf5397b89c63fb97544c2a7ef11408c89994016",
+      "output_hash": "11bf408f616f7fc61c08c99d537c8f7dad50011969e413bb47bc089e6c036063",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -27233,7 +27233,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. A bullet for ES-SCRIPT-ARGUMENT-DOWNCAST right after the ES-PROTO-ARGUMENT-DOWNCAST one: what it judges, the measured pair and its evidence (a mod's SubtreeBornInInventory(rec.m_RefEnt) refused by DayZDiag 1.30.164289), and what it skips. The proto bullet's last sentence now sends an argument of a script method to the new rule.",
           "license": "MIT",
-          "source_hash": "f7ba92e1c88202f19da34fa09430a9bfcef6e9cc7be278db2d408ccd266f8e55",
+          "source_hash": "c59d4b206b595c64df4a8ef8cc3eeaa7d157bad673281013bac1b38978dd036f",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-250d@2026-11-23",
@@ -27241,7 +27241,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "f7ba92e1c88202f19da34fa09430a9bfcef6e9cc7be278db2d408ccd266f8e55",
+      "output_hash": "c59d4b206b595c64df4a8ef8cc3eeaa7d157bad673281013bac1b38978dd036f",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32411,9 +32411,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. TestScriptArgumentDowncast, eleven tests written and frozen before the code they pin: the ticket's shape FAILs in its three call forms with the measured evidence, only that pair FAILs and the others WARN, each call form and an argument through a member are judged, this.m is not the local of that name, the first declaring class decides, a proto call goes to the proto rule only, a call right after a directive line is judged, and the shapes that are not judged (dead lines included) give nothing. TestProtoArgumentDowncast does not change.",
+          "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. TestScriptArgumentDowncast, twelve tests written and frozen before the code they pin: the ticket's shape FAILs in its three call forms with the measured evidence, only that pair FAILs and the others WARN, each call form and an argument through a member are judged, this.m is not the local of that name, the first declaring class decides and a different parameter list further up the chain skips the call (the real-mod pass found that shape in DayZ-Expansion), a proto call goes to the proto rule only, a call right after a directive line is judged, and the shapes that are not judged (dead lines included) give nothing. TestProtoArgumentDowncast does not change.",
           "license": "MIT",
-          "source_hash": "ee23dacd22e23a8016174f6b03ebe1955af365aa3a94b688a966e5153f13a08a",
+          "source_hash": "3db2c7fd886f040303ff97280512e35118dac88e23dd307e9970863a65d0abe6",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-250d@2026-11-23",
@@ -32421,7 +32421,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "ee23dacd22e23a8016174f6b03ebe1955af365aa3a94b688a966e5153f13a08a",
+      "output_hash": "3db2c7fd886f040303ff97280512e35118dac88e23dd307e9970863a65d0abe6",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42492,9 +42492,9 @@
       "inputs": [
         {
           "decision": "adopt",
-          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d, fb-20261122-205419-250d). Rule ES-SCRIPT-ARGUMENT-DOWNCAST for dayz-script-validator, the sibling of ES-PROTO-ARGUMENT-DOWNCAST for script methods: a name, or a member through a name, passed to a parameter of a script method (not a proto) whose class derives from the argument's declared class. DayZDiag 1.30.164289 refused a mod's SubtreeBornInInventory(rec.m_RefEnt), with Object m_RefEnt and the script method taking an EntityAI at argument 0, and the Mission module did not compile; with EntityAI.Cast the mod compiled. That pair is FAIL, any other WARN. It imports the proto rule's machinery, which does not change. Claim comment CLAIM-ENFORCE-SCRIPT-ARGUMENT-DOWNCAST at lines 36-97.",
+          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d, fb-20261122-205419-250d). Rule ES-SCRIPT-ARGUMENT-DOWNCAST for dayz-script-validator, the sibling of ES-PROTO-ARGUMENT-DOWNCAST for script methods: a name, or a member through a name, passed to a parameter of a script method (not a proto) whose class derives from the argument's declared class. DayZDiag 1.30.164289 refused a mod's SubtreeBornInInventory(rec.m_RefEnt), with Object m_RefEnt and the script method taking an EntityAI at argument 0, and the Mission module did not compile; with EntityAI.Cast the mod compiled. That pair is FAIL, any other WARN. It imports the proto rule's machinery, which does not change. A method declared with another parameter list further up the receiver's chain is skipped. Claim comment CLAIM-ENFORCE-SCRIPT-ARGUMENT-DOWNCAST at lines 36-98.",
           "license": "MIT",
-          "source_hash": "03cbbdd51f7e10b38d26233b2f336f28b5eec0957c11c9086a36b3ed9aec0289",
+          "source_hash": "2365b2b85ca64c9d45301ab2c1cafc3b6c0907b11742b666c014b334edefe059",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/scripts/detectors/es_script_argument_downcast.py",
           "source_revision": "kp-update-250d@2026-11-23",
@@ -42502,7 +42502,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "03cbbdd51f7e10b38d26233b2f336f28b5eec0957c11c9086a36b3ed9aec0289",
+      "output_hash": "2365b2b85ca64c9d45301ab2c1cafc3b6c0907b11742b666c014b334edefe059",
       "output_path": "tools/dayz-script-validator/scripts/detectors/es_script_argument_downcast.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
