@@ -32413,7 +32413,7 @@
           "decision": "merge",
           "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. TestScriptArgumentDowncast, twelve tests written and frozen before the code they pin: the ticket's shape FAILs in its three call forms with the measured evidence, only that pair FAILs and the others WARN, each call form and an argument through a member are judged, this.m is not the local of that name, the first declaring class decides and a different parameter list further up the chain skips the call (the real-mod pass found that shape in DayZ-Expansion), a proto call goes to the proto rule only, a call right after a directive line is judged, and the shapes that are not judged (dead lines included) give nothing. TestProtoArgumentDowncast does not change.",
           "license": "MIT",
-          "source_hash": "3db2c7fd886f040303ff97280512e35118dac88e23dd307e9970863a65d0abe6",
+          "source_hash": "1f7eb60ddcd2c7eab7dad18b46f94015f8cc507f2cbc18930a841d2cc9c039f7",
           "source_id": "pack-r21-authored",
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-250d@2026-11-23",
@@ -32421,7 +32421,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3db2c7fd886f040303ff97280512e35118dac88e23dd307e9970863a65d0abe6",
+      "output_hash": "1f7eb60ddcd2c7eab7dad18b46f94015f8cc507f2cbc18930a841d2cc9c039f7",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
