@@ -7,6 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-weapons` W-MAG1 and W-MAG2, and a `dayz-pbo-build` rule 5 note (SP-535, the Mag6L31 6L31 magazine,
+  2026-11-23). W-MAG1: an attached magazine is drawn with its own model at the weapon's magazine proxy, so a new
+  magazine `.p3d` must sit in the vanilla magazine's frame; measure it with the side-silhouette IoU over the top
+  5 cm and check it at the proxy in the engine frame. W-MAG2: compatibility is config only (`magazines[] +=` on the
+  base class; the engine decides with the native `CanAttachMagazine`), and a script-spawned magazine is empty, so a
+  test quick reload is refused until it is filled. Rule 5: the external ODOL reader does not parse the v56 ODOL a
+  1.30 binarize writes; the material strings embedded in the ODOL stand in for the after-build control. Three
+  claims: two offline_tested and one source_verified.
+
 - `dayz-test-ingame`: a session finding for the client crash when a mission ends under DayZ-MCP. On DayZDiag
   `1.30.164289.70`, the stack-resolved heap-corruption (`0xc0000374`) crash—from a 29-session sample matching
   first-frame `...f5fc`/`...f710` or `[RtlIsZeroMemory]` + `0xc0000374` at a `+0` to `+2` s whole-second delta from

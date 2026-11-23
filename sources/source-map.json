@@ -2221,10 +2221,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-535 (2026-11-23): one Added entry for dayz-weapons W-MAG1/W-MAG2 and the dayz-pbo-build rule 5 note on v56 ODOL. Written and resealed by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "39cfea6ca728bcc7d5d9ca5f07b2b2220710f35b6ffdbd9dc873f2fa5de36cd7",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "sp535-magazine-import@2026-11-23",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "5cdb5463281ce910a22c6dc700f152530a1b8ac301eb7573df6abad6ab41c6cc",
+      "output_hash": "39cfea6ca728bcc7d5d9ca5f07b2b2220710f35b6ffdbd9dc873f2fa5de36cd7",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13686,10 +13696,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "workshop-publish-r3@2026-11-19",
           "verification_level": "source_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-535 (2026-11-23): rule 5 note, the external ODOL reader does not parse the v56 ODOL of a 1.30 binarize and the embedded material strings stand in for the after-build control; one claim (offline_tested). Written and resealed by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9b043fd3c5feee490b747b117a6b342ea8600cbce486855e6a97cd4ae597ff10",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "sp535-magazine-import@2026-11-23",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4f4ecfb88c1639a7f49705221d5e0376ccde74bb1b336e626b2a5df59d25e0f4",
+      "output_hash": "9b043fd3c5feee490b747b117a6b342ea8600cbce486855e6a97cd4ae597ff10",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -19518,10 +19538,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-535 (2026-11-23): PREFLIGHT W-MAG1 (a new magazine .p3d sits in the vanilla magazine's frame; side-silhouette IoU and the engine-frame check at the weapon's proxy) and W-MAG2 (magazine compatibility is config only; a script-spawned magazine is empty, so the test quick reload is refused), two QUICK TRIAGE rows, two claims (offline_tested, source_verified). Measured on the Mag6L31 import and the owner's in-game test; written and resealed by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "dc0c07f94aecea12dbec609588eeaa815e4ef688dcdfe7a96631d82b11db848f",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "sp535-magazine-import@2026-11-23",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "7385ae159e3f0511f7f57ae8ad188dc12a892480e14230dbb6da14683b790f67",
+      "output_hash": "dc0c07f94aecea12dbec609588eeaa815e4ef688dcdfe7a96631d82b11db848f",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"
@@ -23623,10 +23653,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-fix-pack-204-sol@2026-11-19",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-535 (2026-11-23): three new claims, CLAIM-WPN-MAG-VANILLA-FRAME (offline_tested), CLAIM-WPN-MAG-PREPARED-NEEDS-AMMO (source_verified) and CLAIM-ODOL-V56-READER (offline_tested). Written and resealed by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "dfaa387c435c06249b1fa069e39ac750788e877467d1f58d1906387910f7fea8",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "sp535-magazine-import@2026-11-23",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "3a194082f5911a55ba1f3ea1013026a157e8b4662935f37f602f4163b76081e2",
+      "output_hash": "dfaa387c435c06249b1fa069e39ac750788e877467d1f58d1906387910f7fea8",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
