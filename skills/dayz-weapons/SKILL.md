@@ -84,7 +84,7 @@ pointer. Firearm test cycles are as expensive as any DayZ rebuild — a prefligh
    search rotation and offset maximizing the side-silhouette IoU over the top 5 cm (here θ 7.5°, IoU 0.946:
    the artist's mesh had its feed lips level, the vanilla frame tilts them). Check the result at the proxy
    with `p_weapon = anchor + p_mag @ py3d.proxy_frame_to_engine(R)` (rows), where
-   `anchor, R = py3d.derive_proxy_frame(tri)`: that places the vanilla magazine in the magwell, the raw
+   `anchor, R, ambiguous, deg = py3d.derive_proxy_frame(tri)`: that places the vanilla magazine in the magwell, the raw
    frame does not. Keep `autocenter=0` in the Geometry LOD, as vanilla does. claim: CLAIM-WPN-MAG-VANILLA-FRAME
 9. **W-MAG2 — magazine compatibility is config only, and a script-spawned magazine is EMPTY.**
    `[VERIFIED-vanilla]` 1.30.164289. `class AK74_Base: Rifle_Base { magazines[] += {"Mag_X"}; };`, with

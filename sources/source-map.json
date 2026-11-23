@@ -2231,10 +2231,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "sp535-magazine-import@2026-11-23",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-535 follow-up (2026-11-23): Auditor HOLD on 140fc7cf \u2014 the Unreleased Added entry now calls the v56 ODOL material strings a provisional stand-in (INCONCLUSIVE; they do not replace the after-build control; the negative control was not run). Written and resealed after Sol VALID RED.",
+          "license": "MIT",
+          "source_hash": "82d9c2ad8021100a83df31ad5c4a612c1f98d9ef3ede8c4ad615eb0966e18591",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "sp535-magazine-import-auditor-red@2026-11-23",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "39cfea6ca728bcc7d5d9ca5f07b2b2220710f35b6ffdbd9dc873f2fa5de36cd7",
+      "output_hash": "82d9c2ad8021100a83df31ad5c4a612c1f98d9ef3ede8c4ad615eb0966e18591",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -13706,10 +13716,20 @@
           "source_path": "skills/dayz-pbo-build/SKILL.md",
           "source_revision": "sp535-magazine-import@2026-11-23",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-535 follow-up (2026-11-23): Auditor HOLD on 140fc7cf \u2014 the rule 5 note no longer presents the embedded material strings as a replacement for the after-build control; they are a provisional stand-in (INCONCLUSIVE; the negative control was not run). Wording only; the rule itself is unchanged. Written and resealed after Sol VALID RED.",
+          "license": "MIT",
+          "source_hash": "91a0428ad310f3d93c219eff065c704da24a5f5c67c6eee3c8f56d80b7a2a7b3",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-pbo-build/SKILL.md",
+          "source_revision": "sp535-magazine-import-auditor-red@2026-11-23",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9b043fd3c5feee490b747b117a6b342ea8600cbce486855e6a97cd4ae597ff10",
+      "output_hash": "91a0428ad310f3d93c219eff065c704da24a5f5c67c6eee3c8f56d80b7a2a7b3",
       "output_path": "skills/dayz-pbo-build/SKILL.md",
       "routing_artifact_id": "skill/dayz-pbo-build",
       "verification_level": "cross_checked"
@@ -19548,10 +19568,20 @@
           "source_path": "skills/dayz-weapons/SKILL.md",
           "source_revision": "sp535-magazine-import@2026-11-23",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "SP-535 follow-up (2026-11-23): Auditor HOLD on 140fc7cf \u2014 W-MAG1 unpacks all four values returned by py3d.derive_proxy_frame (anchor, R, ambiguous, deg), matching py3d and its tests. Written and resealed after Sol VALID RED.",
+          "license": "MIT",
+          "source_hash": "de5a6864dfde7ea6769f22a818594b2f5111c24b6ee83589562d38342401e3ec",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-weapons/SKILL.md",
+          "source_revision": "sp535-magazine-import-auditor-red@2026-11-23",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "dc0c07f94aecea12dbec609588eeaa815e4ef688dcdfe7a96631d82b11db848f",
+      "output_hash": "de5a6864dfde7ea6769f22a818594b2f5111c24b6ee83589562d38342401e3ec",
       "output_path": "skills/dayz-weapons/SKILL.md",
       "routing_artifact_id": "skill/dayz-weapons",
       "verification_level": "cross_checked"

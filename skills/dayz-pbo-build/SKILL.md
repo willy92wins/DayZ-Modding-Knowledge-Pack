@@ -654,7 +654,7 @@ and 5 extended 2026-10-24, SP-468):**
      means that working directory. This is the most likely answer to the H2R open point above,
      not measured on the H2R models. Not measured either: whether the working directory is
      enough without AddonBuilder's other arguments.
-   - **The ODOL reader above does not parse a 1.30 binarize; read the strings instead**
+   - **The ODOL reader above does not parse a 1.30 binarize; embedded strings are a provisional stand-in (INCONCLUSIVE)**
      (Mag6L31, 2026-11-23, AddonBuilder of DayZ Tools 1.30; claim: CLAIM-ODOL-V56-READER). The ODOL
      it wrote is version 56 (`ODOL` + `38 00 00 00`), like the 1.30 vanilla models (`dayz-vehicles`
      `references/dayz-1-30-vehicles.md`, CLAIM-ODOL-V56-130); the external converter's reader, which
@@ -664,8 +664,8 @@ and 5 extended 2026-10-24, SP-468):**
      build showed the mod's `.rvmat` with its `_nohq`, `_as` and `_smdi`, the procedural DT and MC,
      `fresnel(2.86,0.01)` and `dz\data\data\env_land_co.paa`, and the Fire Geometry's
      `armor_1mm_plate.rvmat` with `armor_1mm_plate.bisurf`. Check those names per material. That
-     an empty material leaves only its own name follows from the fields listed above; the control
-     without the staged files was not run.
+     an empty material leaves only its own name follows from the fields listed above. This does not
+     replace the after-build control; the control without the staged files was not run (INCONCLUSIVE).
 
 The orchestrated build path (temp wipe + deploy + launch) lives in dayz-test-ingame's
 `dayz-test.ps1` template.
