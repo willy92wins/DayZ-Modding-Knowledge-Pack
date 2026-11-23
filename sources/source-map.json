@@ -2241,10 +2241,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "sp535-magazine-import-auditor-red@2026-11-23",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. An Unreleased Added entry for ES-SCRIPT-ARGUMENT-DOWNCAST, with what stays out of scope (global functions and the Man family).",
+          "license": "MIT",
+          "source_hash": "7eae5ad9da84af574812647047085caedc087aa0cf0ae6bd22b188e6d1ae97e8",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "82d9c2ad8021100a83df31ad5c4a612c1f98d9ef3ede8c4ad615eb0966e18591",
+      "output_hash": "7eae5ad9da84af574812647047085caedc087aa0cf0ae6bd22b188e6d1ae97e8",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -23693,10 +23703,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "sp535-magazine-import@2026-11-23",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. Registers CLAIM-ENFORCE-SCRIPT-ARGUMENT-DOWNCAST at lines 36-97 of es_script_argument_downcast.py, and moves CLAIM-DSV-VANILLA-INDEX-BESIDE-OUT by the lines the validator README gained before its marker.",
+          "license": "MIT",
+          "source_hash": "3e2f5764bd2853297b47f348faf5397b89c63fb97544c2a7ef11408c89994016",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "dfaa387c435c06249b1fa069e39ac750788e877467d1f58d1906387910f7fea8",
+      "output_hash": "3e2f5764bd2853297b47f348faf5397b89c63fb97544c2a7ef11408c89994016",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -27208,10 +27228,20 @@
           "source_path": "tools/dayz-script-validator/README.md",
           "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. A bullet for ES-SCRIPT-ARGUMENT-DOWNCAST right after the ES-PROTO-ARGUMENT-DOWNCAST one: what it judges, the measured pair and its evidence (a mod's SubtreeBornInInventory(rec.m_RefEnt) refused by DayZDiag 1.30.164289), and what it skips. The proto bullet's last sentence now sends an argument of a script method to the new rule.",
+          "license": "MIT",
+          "source_hash": "f7ba92e1c88202f19da34fa09430a9bfcef6e9cc7be278db2d408ccd266f8e55",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/README.md",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "70e3e99d6ce6082e7a004b0bfca20e84d1e07f9e1ae69b27e2ac85acc8530765",
+      "output_hash": "f7ba92e1c88202f19da34fa09430a9bfcef6e9cc7be278db2d408ccd266f8e55",
       "output_path": "tools/dayz-script-validator/README.md",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -28218,10 +28248,20 @@
           "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
           "source_revision": "kp-update-vanilla-index-beside@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d (fb-20261122-205419-250d). validate_addon runs ES-SCRIPT-ARGUMENT-DOWNCAST right after ES-PROTO-ARGUMENT-DOWNCAST, over the addon with the --external-scripts roots and the vanilla tree, its FAILs as errors and its WARNs as warnings.",
+          "license": "MIT",
+          "source_hash": "2c47c2bf0f3b51a92e31325280d438eebd6c0039f95ce37e4765144556bb07f6",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/script_validator.py",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0e9d79ef9e13a21d3a8e8c6323eab904e5d845bdb9d9d4a16edeade5836eb48d",
+      "output_hash": "2c47c2bf0f3b51a92e31325280d438eebd6c0039f95ce37e4765144556bb07f6",
       "output_path": "tools/dayz-script-validator/scripts/script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -32368,10 +32408,20 @@
           "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
           "source_revision": "kp-update-vanilla-index-beside-r3@2026-11-19",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-23: pipeline inbox 250d. TestScriptArgumentDowncast, eleven tests written and frozen before the code they pin: the ticket's shape FAILs in its three call forms with the measured evidence, only that pair FAILs and the others WARN, each call form and an argument through a member are judged, this.m is not the local of that name, the first declaring class decides, a proto call goes to the proto rule only, a call right after a directive line is judged, and the shapes that are not judged (dead lines included) give nothing. TestProtoArgumentDowncast does not change.",
+          "license": "MIT",
+          "source_hash": "ee23dacd22e23a8016174f6b03ebe1955af365aa3a94b688a966e5153f13a08a",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/test_script_validator.py",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "b01aeaf13624d31c4a99e295fd5a6b1f9d9ea15a6c295963197d230247d99ab7",
+      "output_hash": "ee23dacd22e23a8016174f6b03ebe1955af365aa3a94b688a966e5153f13a08a",
       "output_path": "tools/dayz-script-validator/tests/test_script_validator.py",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
@@ -42432,6 +42482,160 @@
       "license": "MIT",
       "output_hash": "b2a80d70c3dd3540a9b110bc92d0db477e7857c9a9e45521d5e4bb87677e1b09",
       "output_path": "tools/dayz-script-validator/tests/fixtures/proto_argument_downcast/vanilla/3_game/fx_physics.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/scripts/detectors/es_script_argument_downcast.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d, fb-20261122-205419-250d). Rule ES-SCRIPT-ARGUMENT-DOWNCAST for dayz-script-validator, the sibling of ES-PROTO-ARGUMENT-DOWNCAST for script methods: a name, or a member through a name, passed to a parameter of a script method (not a proto) whose class derives from the argument's declared class. DayZDiag 1.30.164289 refused a mod's SubtreeBornInInventory(rec.m_RefEnt), with Object m_RefEnt and the script method taking an EntityAI at argument 0, and the Mission module did not compile; with EntityAI.Cast the mod compiled. That pair is FAIL, any other WARN. It imports the proto rule's machinery, which does not change. Claim comment CLAIM-ENFORCE-SCRIPT-ARGUMENT-DOWNCAST at lines 36-97.",
+          "license": "MIT",
+          "source_hash": "03cbbdd51f7e10b38d26233b2f336f28b5eec0957c11c9086a36b3ed9aec0289",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/scripts/detectors/es_script_argument_downcast.py",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "03cbbdd51f7e10b38d26233b2f336f28b5eec0957c11c9086a36b3ed9aec0289",
+      "output_path": "tools/dayz-script-validator/scripts/detectors/es_script_argument_downcast.py",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/script_argument_downcast/bad/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d), fixture of TestScriptArgumentDowncast. CfgPatches of the bad addon; written for the pack.",
+          "license": "MIT",
+          "source_hash": "577dc75401c0324dddf13725cbb0614bc269cf927abfb936774aef2086180b03",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/bad/config.cpp",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "577dc75401c0324dddf13725cbb0614bc269cf927abfb936774aef2086180b03",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/bad/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/script_argument_downcast/bad/scripts/5_Mission/fx_persist.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d), fixture of TestScriptArgumentDowncast. The ticket's shape: an Object member passed to the EntityAI parameter of a script method with no receiver, with this. and with a receiver; written for the pack.",
+          "license": "MIT",
+          "source_hash": "4f22fba49cc66415f36c387cbd3528da1264ac26c1dad12a8a2c4a4d823575c4",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/bad/scripts/5_Mission/fx_persist.c",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "4f22fba49cc66415f36c387cbd3528da1264ac26c1dad12a8a2c4a4d823575c4",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/bad/scripts/5_Mission/fx_persist.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/script_argument_downcast/ok/config.cpp",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d), fixture of TestScriptArgumentDowncast. CfgPatches of the ok addon; written for the pack.",
+          "license": "MIT",
+          "source_hash": "2d4477f36acdd9f40d656b833bfe2ef2942ad11530b00eb32c9746f30df00e17",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/ok/config.cpp",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2d4477f36acdd9f40d656b833bfe2ef2942ad11530b00eb32c9746f30df00e17",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/ok/config.cpp",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/script_argument_downcast/ok/scripts/5_Mission/fx_persist.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d), fixture of TestScriptArgumentDowncast. The fixed shapes: EntityAI.Cast, a name narrowed with Class.CastTo, the same type, an up-cast, null, and the bad call in a comment, a string and #if 0; written for the pack.",
+          "license": "MIT",
+          "source_hash": "bdbec67a81b0dc08e66ed26217c7ecaa3ba081ae8e3bb7dd5cf97665a1cdbd1c",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/ok/scripts/5_Mission/fx_persist.c",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bdbec67a81b0dc08e66ed26217c7ecaa3ba081ae8e3bb7dd5cf97665a1cdbd1c",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/ok/scripts/5_Mission/fx_persist.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/script_argument_downcast/vanilla/1_core/fx_core.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d), fixture of TestScriptArgumentDowncast. A minimal stand-in for the vanilla tree's root classes (Class, Managed, IEntity), only their shape; written for the pack.",
+          "license": "MIT",
+          "source_hash": "8dcdc50991d569ef33f7e0701c0c2c437250e1fa6456ecdcf9bf0e4b4f36c9a3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/vanilla/1_core/fx_core.c",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "8dcdc50991d569ef33f7e0701c0c2c437250e1fa6456ecdcf9bf0e4b4f36c9a3",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/vanilla/1_core/fx_core.c",
+      "routing_artifact_id": "tools",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tools/dayz-script-validator/tests/fixtures/script_argument_downcast/vanilla/3_game/fx_entities.c",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Authored 2026-11-23 (pipeline inbox 250d), fixture of TestScriptArgumentDowncast. Object and EntityAI with a proto and script methods, and a class with a static script method, only their shape; written for the pack.",
+          "license": "MIT",
+          "source_hash": "0d0868272714db4b643992d455a5c045afa3776b8f55301b1cb9e2984b7104ae",
+          "source_id": "pack-r21-authored",
+          "source_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/vanilla/3_game/fx_entities.c",
+          "source_revision": "kp-update-250d@2026-11-23",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "0d0868272714db4b643992d455a5c045afa3776b8f55301b1cb9e2984b7104ae",
+      "output_path": "tools/dayz-script-validator/tests/fixtures/script_argument_downcast/vanilla/3_game/fx_entities.c",
       "routing_artifact_id": "tools",
       "verification_level": "offline_tested"
     },
