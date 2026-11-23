@@ -7828,9 +7828,44 @@ class TestScriptArgumentDowncast(unittest.TestCase):
                 "#endif",
                 "    }", "}",
             ),
+            # calls on lines that never compile: FX_DEAD is defined in the
+            # file, so the #ifndef branch is dead
+            _lines(
+                "#define FX_DEAD",
+                "class FX_C", "{", *take,
+                "    void F(Object o, FX_C other)", "    {",
+                "#ifndef FX_DEAD",
+                "        other.FX_Take(o);",
+                "        int n = 0;",
+                "        FX_Take(o);",
+                "#endif",
+                "    }", "}",
+            ),
         ]
         for source in cases:
             self.assertEqual([], _script_lines(source), source)
+
+    def test_a_call_right_after_a_directive_line_is_judged(self):
+        # The word that ends a directive line is no receiver and no type
+        # before the name: the call starts a statement.
+        source = _lines(
+            "class FX_C",                       # 1
+            "{",                                # 2
+            "    void FX_Take(EntityAI item)",  # 3
+            "    {",                            # 4
+            "    }",                            # 5
+            "",                                 # 6
+            "    void F(Object o)",             # 7
+            "    {",                            # 8
+            "#ifdef FX_SERVER",                 # 9
+            "        FX_Take(o);",              # 10
+            "#endif",                           # 11
+            "        FX_Take(o);",              # 12
+            "    }",                            # 13
+            "}",                                # 14
+        )
+
+        self.assertEqual([10, 12], _script_lines(source))
 
 
 if __name__ == "__main__":
