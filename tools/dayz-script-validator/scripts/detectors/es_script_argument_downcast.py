@@ -213,10 +213,23 @@ def _preceded_by_a_name(stripped, at):
     """True when the name at `at` is preceded, past whitespace, by a dot
     or by an identifier other than `return` or `else`: no bare call."""
     index = at - 1
+    crossed_newline = False
     while index >= 0 and stripped[index] in " \t\r\n":
+        if stripped[index] in "\r\n":
+            crossed_newline = True
         index -= 1
     if index < 0:
         return False
+    if crossed_newline:
+        line_start = max(
+            stripped.rfind("\n", 0, index + 1),
+            stripped.rfind("\r", 0, index + 1),
+        ) + 1
+        first = line_start
+        while first <= index and stripped[first] in " \t":
+            first += 1
+        if first <= index and stripped[first] == "#":
+            return False
     if stripped[index] == ".":
         return True
     if not _WORD_TAIL_RE.match(stripped[index]):
