@@ -183,6 +183,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   during validation, while a file edited after being parsed during generation leaves the index with earlier tables
   and later digests. `tools/dayz-script-validator/.gitignore` ignores those files, which are derived from Bohemia's
   scripts like the default index. See the README's "Which tree the vanilla index is".
+- `dayz-script-validator`: `ES-SCRIPT-ARGUMENT-DOWNCAST` (FAIL or WARN), the sibling of
+  `ES-PROTO-ARGUMENT-DOWNCAST` for script methods: a name, or a member through a name, passed to a parameter of a
+  script method (not a `proto`) when the parameter's class derives from the argument's declared class. DayZDiag
+  1.30.164289 refused a mod's `SubtreeBornInInventory(rec.m_RefEnt)` (no receiver; `Object m_RefEnt`;
+  `protected bool SubtreeBornInInventory(EntityAI root)`) with "Unsafe down-casting, use 'EntityAI.Cast' for safe
+  down-casting", "Types 'Object' and 'EntityAI' are unrelated" and "Cannot convert 'Object' to 'EntityAI' for
+  argument '0' to method 'SubtreeBornInInventory'", and the Mission module did not compile (pipeline inbox
+  fb-20261122-205419-250d); with `EntityAI.Cast(rec.m_RefEnt)` in both calls the mod compiled, and the proto rule
+  had said nothing. The measured pair (an `Object` where an `EntityAI` is taken) is FAIL, any other pair WARN.
+  Judged in the three call forms (`recv.Method(`, `this.Method(`, `Method(` inside a class body, a `modded class`
+  included) with the proto rule's machinery. Out of scope: global functions, and calls on the Man family (`Man`,
+  `DayZPlayer`, `PlayerBase`), whose chain does not resolve because vanilla declares `class Man` with two headers
+  under `#ifdef`.
 
 ### Fixed
 

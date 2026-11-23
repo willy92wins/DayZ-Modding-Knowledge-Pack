@@ -218,8 +218,43 @@ were not measured again.
   `<`, `>` or a directive is skipped, and so is one with more arguments than
   parameters. Protos are read from the addon, the `--external-scripts` roots
   and the vanilla tree, so without a vanilla tree no vanilla proto is
-  judged, with no SKIP line. Only a proto's refusal is measured: an argument
-  of a script method and a down-cast in an assignment are not judged.
+  judged, with no SKIP line. Only a proto's refusal is measured here: an
+  argument of a script method is judged by `ES-SCRIPT-ARGUMENT-DOWNCAST`,
+  and a down-cast in an assignment is judged by neither rule.
+- `ES-SCRIPT-ARGUMENT-DOWNCAST` (FAIL or WARN): a name, or a member through a
+  name (`rec.m_RefEnt`), passed to a parameter of a script method (not a
+  `proto`) where the parameter's class derives from the class the argument
+  is declared as. A mod's `SubtreeBornInInventory(rec.m_RefEnt)`, with
+  `Object m_RefEnt` and `protected bool SubtreeBornInInventory(EntityAI
+  root)`, made DayZDiag 1.30.164289 refuse the Mission module with `Cannot
+  convert 'Object' to 'EntityAI' for argument '0' to method
+  'SubtreeBornInInventory'` (inbox fb-20261122-205419-250d); with
+  `EntityAI.Cast(rec.m_RefEnt)` the mod compiled, and
+  `ES-PROTO-ARGUMENT-DOWNCAST` had said nothing. That pair, an `Object`
+  where an `EntityAI` is taken, is FAIL; any other is WARN, because no
+  refusal of it is measured. Judged only when everything is known: the call
+  is in a method the validator reads, on a line that compiles, and is
+  `recv.Method(`, `this.Method(` or `Method(` with no receiver inside a
+  class body (a `modded class` included), the receiver read as in
+  `ES-PROTO-ARGUMENT-DOWNCAST` or, for `this` and no receiver, as the class
+  of the body around the call; the first class up the receiver's chain that
+  declares the method declares it as a script method every time, with one
+  parameter list; the argument is a plain name read the same way, or
+  `x.m` with the member read up the chain of the type of `x` (`this.m`
+  reads the enclosing class, never a local of that name); and the parameter
+  is not `out` or `inout` and has a plain class type whose chain holds the
+  argument's class above its own. `Class` is not judged as the argument's
+  class. A proto there is the proto rule's; a proto beside a script method
+  and two parameter lists (overloads) are skipped by both rules. Skipped:
+  `super.Method(` and `super.m`, a receiver that is not a plain name, an
+  unknown receiver, a name preceded by a dot or by an identifier other
+  than `return` or `else` (so `new Method(` and `thread Method(` and a
+  method header are no call), a call outside every class body, a bare name
+  that is also a global function, two levels of members (`x.y.z`), calls
+  and anything else as an argument, a call whose arguments hold `<`, `>` or
+  a directive, and one with more arguments than parameters. Script methods
+  are read from the addon, the `--external-scripts` roots and the vanilla
+  tree, so without a vanilla tree no vanilla script method is judged.
 - `ES-UNDEFINED-BUILTIN-METHOD` (FAIL): a call to a method that the vanilla
   tree's class of a built-in type does not declare. `vector gU =
   gF.Cross(gR);`, with `gF` and `gR` vector locals, made a DayZ 1.30.164200
