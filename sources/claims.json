@@ -5083,6 +5083,45 @@
       "source_id": "pack-r21-authored",
       "source_revision": "kp-update-vanilla-index-beside-review@2026-11-19",
       "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-weapons/skill.md",
+      "claim_id": "CLAIM-WPN-MAG-VANILLA-FRAME",
+      "evidence_locator": "Mag6L31 (6L31 60-round magazine for the vanilla AK74/AKS74U), 2026-11-23, DayZ 1.30.164289. aks74u.p3d and ak101.p3d (the vanilla AK74 model, DZ\\weapons\\firearms\\ak74\\config.cpp:171) debinarized; their magazine proxies are proxy:\\dz\\weapons\\attachments\\magazine\\magazine_ak74_30rnd.001 and magazine_ak101_30rnd.001. Placing the debinarized vanilla magazine_ak74_30rnd LOD 0 with anchor + p @ py3d.proxy_frame_to_engine(R) (rows, anchor/R from py3d.derive_proxy_frame) seats it in the magwell of both weapons; the raw frame does not. The 6L31 mesh, aligned by maximising the side-silhouette IoU over the top 5 cm of the vanilla magazine (theta 7.5 deg, dx -0.0048, dy -0.0491), reads IoU 0.946 in the built MLOD. The owner tested the built mod in game on 1.30.164289 the same night ('probado, todo bien'); the fit itself was judged offline. Scripts and renders in the owner's project folder Mag6L31_dev (tools/align_search.py, tools/weapon_fit.py, evidence/fit_*.png), not in the Pack; summary in VAULT/AI/20_Knowledge/skill-patches-pending.md, entry SP-535.",
+      "license": "MIT",
+      "line_end": 88,
+      "line_start": 78,
+      "observed_at": "2026-11-23",
+      "promotion_artifact_id": "skill/dayz-weapons",
+      "source_id": "pack-r21-authored",
+      "source_revision": "sp535-magazine-import@2026-11-23",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-weapons/skill.md",
+      "claim_id": "CLAIM-WPN-MAG-PREPARED-NEEDS-AMMO",
+      "evidence_locator": "Vanilla scripts 1.30.164289 (P:\\scripts matched the installed dta\\scripts.pbo file by file, dayz-script-validator vanilla_build, 2026-11-23): 4_world/entities/core/inherited/weapon.c:216 (proto native bool CanAttachMagazine), 4_world/classes/weapons/weaponmanager.c:91-129 (CanAttachMagazine; the hierarchy check at :102-103 is commented out), :1078-1099 (GetPreparedMagazine returns only magazines with GetAmmoCount() > 0, :1093), :1268-1306 (SetSutableMagazines via TestAttachMagazine), 4_world/classes/useractionscomponent/actions/weapons/firearmactionattachmagazine.c:26-35 and :231-262, actions/continuous/actionloadmagazine.c:116-121. Config: DZ\\weapons\\firearms\\ak74\\config.cpp:50 (the only magazines[] in that file, in AK74_Base). Observed in game the same day (dayz-mcp run 8ef97b93): an AK74 in hands and a Mag_6L31_60Rnd from inventory_give, action_use FirearmActionAttachMagazineQuick answered not_possible; the owner's own in-game test of the magazines[] += patch passed.",
+      "license": "MIT",
+      "line_end": 101,
+      "line_start": 89,
+      "observed_at": "2026-11-23",
+      "promotion_artifact_id": "skill/dayz-weapons",
+      "source_id": "pack-r21-authored",
+      "source_revision": "sp535-magazine-import@2026-11-23",
+      "verification_level": "source_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-pbo-build/skill.md",
+      "claim_id": "CLAIM-ODOL-V56-READER",
+      "evidence_locator": "Mag6L31 build, 2026-11-23, AddonBuilder of DayZ Tools 1.30 (BuildResult 0). The ODOL header read 'ODOL' + 38 00 00 00 (version 56), 5 LODs, first resolution 1.0; the vanilla magazine models of the extracted tree read version 54 (36 00 00 00). The external converter's odol_reader.py (ODOL.from_file, also odol_to_mlod.py) raised ValueError 'scan fallback: LOD address table not found' on the v56 file and converted the v54 ones. strings on the v56 ODOL listed the mod's rvmat with its _nohq/_as/_smdi stage paths, #(argb,8,8,3)color(0.5,0.5,0.5,1,dt), #(argb,8,8,3)color(0,0,0,0,mc), #(ai,64,64,1)fresnel(2.86,0.01) and dz\\data\\data\\env_land_co.paa, and dz\\data\\data\\penetration\\armor_1mm_plate.rvmat with armor_1mm_plate.bisurf. The negative control (the same build without the staged files) was not run. DayZ-MCP inbox ticket fb-20261123-011026-c3f7.",
+      "license": "MIT",
+      "line_end": 658,
+      "line_start": 657,
+      "observed_at": "2026-11-23",
+      "promotion_artifact_id": "skill/dayz-pbo-build",
+      "source_id": "pack-r21-authored",
+      "source_revision": "sp535-magazine-import@2026-11-23",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1

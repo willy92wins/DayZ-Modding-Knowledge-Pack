@@ -75,6 +75,30 @@ pointer. Firearm test cycles are as expensive as any DayZ rebuild — a prefligh
    (`SCARH` / a 1.29 pistol / CZ527 / CZ61). On 1.30.164200 they ship in `nasdara\addons\weapons_nasdara.pbo`,
    not in `weapons_firearms` / `weapons_pistols`, and a config parent is not always the script parent
    (`SCARL_Base: Rifle_Base` in config, `: SCARH_Base` in script). → `dayz-1-30-weapons.md`.
+8. **W-MAG1 — a new magazine `.p3d` must sit in the frame of the vanilla magazine it stands in for.**
+   `[OFFLINE MEASURED]` Mag6L31 (6L31 60-round AK-74 magazine, 2026-11-23; the owner's in-game test on
+   1.30.164289 passed). An attached magazine is drawn with ITS OWN model at the weapon's magazine proxy
+   (`aks74u.p3d` carries `proxy:\dz\weapons\attachments\magazine\magazine_ak74_30rnd.001`; the vanilla AK74
+   uses `ak101.p3d` and its `magazine_ak101_30rnd` proxy), so the model's origin and tilt decide whether it
+   seats in the magwell. Measure it, do not eyeball it: debinarize the vanilla magazine and the weapon, then
+   search rotation and offset maximizing the side-silhouette IoU over the top 5 cm (here θ 7.5°, IoU 0.946:
+   the artist's mesh had its feed lips level, the vanilla frame tilts them). Check the result at the proxy
+   with `p_weapon = anchor + p_mag @ py3d.proxy_frame_to_engine(R)` (rows), where
+   `anchor, R, ambiguous, deg = py3d.derive_proxy_frame(tri)`: that places the vanilla magazine in the magwell, the raw
+   frame does not. Keep `autocenter=0` in the Geometry LOD, as vanilla does. claim: CLAIM-WPN-MAG-VANILLA-FRAME
+9. **W-MAG2 — magazine compatibility is config only, and a script-spawned magazine is EMPTY.**
+   `[VERIFIED-vanilla]` 1.30.164289. `class AK74_Base: Rifle_Base { magazines[] += {"Mag_X"}; };`, with
+   `DZ_Weapons_Firearms_AK74` in `requiredAddons`, reaches AK74, AKS74U and their colour variants, because
+   none of them redefines `magazines[]` (`DZ\weapons\firearms\ak74\config.cpp:50`). The engine decides with
+   the native `Weapon.CanAttachMagazine` (`P:\scripts\4_world\entities\core\inherited\weapon.c:216`), so no
+   script hook widens a magazine to "every weapon that takes magazine X": a modded weapon with its own list
+   needs its own line. When testing, `CreateInInventory` (and dayz-mcp `inventory_give`) creates the magazine
+   with no rounds, and the quick reload `FirearmActionAttachMagazineQuick` takes
+   `WeaponManager.GetPreparedMagazine()`, which skips empty magazines
+   (`P:\scripts\4_world\classes\weapons\weaponmanager.c:1093`): the action is refused. Fill it first with
+   `ActionLoadMagazineQuick` (magazine in hands, compatible rounds in the inventory, which also tests
+   `ammoItems[]`), or use `FirearmActionAttachMagazine`, which targets the magazine and needs no rounds
+   (`firearmactionattachmagazine.c:26-35`). claim: CLAIM-WPN-MAG-PREPARED-NEEDS-AMMO
 
 **Memory-point sanity** (each was a real AI-mesh bug on MK47): `usti hlavne`/`konec hlavne` share Y and
 Z (level bore); `bolt_axis` parallel to bore; eject direction within ~25° of the reference; `eye` height
@@ -106,6 +130,8 @@ or another packed peer. On 1.30.164200 their own models are in `weapons_nasdara.
 | Stuck in single / full-auto missing | W-CFG1 — `Mode_*` declared inside `CfgWeapons` instead of ROOT scope | `cfgweapons-contract.md` §Mode_* |
 | Tilted fire line / muzzle flash off-axis | memory-point sanity: `usti`/`konec` not level, or `usti hlavne` misplaced | `p3d-selection-contract.md` §sanity |
 | Magazine won't attach / wrong slot | `magazines[]` / `inventorySlot` mismatch vs the mag class | `cfgweapons-contract.md` §attachments |
+| New magazine hangs below the magwell or sinks into the receiver | W-MAG1 — the `.p3d` is not in the vanilla magazine's frame | W-MAG1 above |
+| Test quick reload refused with a script-given magazine | W-MAG2 — the magazine is empty; `GetPreparedMagazine` skips it | W-MAG2 above |
 | Optics / attachment slot won't accept X | `attachments[]` slot name vs the attachment's `inventorySlot`; mount-gated optics | `cfgweapons-contract.md` §attachments |
 | **Grip / hands / ADS / rider pose wrong** | NOT this skill — anim | `dayz-animation-pipeline` → `weapon-in-hands.md` |
 | **Bolt-slide / reload / fire / jam-unjam MOTION** | NOT this skill — anim (`.anm`/`.asi` authoring) | `dayz-animation-pipeline` → `weapon-anim-*` |
