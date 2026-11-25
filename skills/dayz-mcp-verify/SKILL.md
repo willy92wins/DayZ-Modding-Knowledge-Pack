@@ -1400,6 +1400,6 @@ When this work has to end in a mod that builds, loads and ships (`config.cpp`/`C
 
 ## Promoted Lessons (2026-11-25)
 
-- **LL-546** — Capturing a WMI-launched DayZ client window from inside an app fails with WGC `0x80070057`; launch the window capturer outside the package (`captura_fuera.py`, without full-screen DDA while the user is active).
+- **LL-546** — Capturing a WMI-launched DayZ client window from inside an app fails with WGC `0x80070057`; launch the window capturer as a standalone process outside the packaged app (without full-screen DDA while the user is active).
 - **LL-562** — Strict-equality provenance gates on host-rewritten config files (such as `~/.codex/config.toml` after a host adds default `enabled = true`) break all clients on cosmetic edits; compare effective behavior/required fields or canonicalize defaults.
 - **LL-568** — A client probe that waits on owner state only refreshed inside `RewindState` does not measure the state itself: it measures whether the server sent a rewind correction (smooth runs emit zero rewinds).
