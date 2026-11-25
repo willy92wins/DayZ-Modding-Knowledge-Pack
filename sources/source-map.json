@@ -23806,9 +23806,9 @@
         },
         {
           "decision": "merge",
-          "decision_evidence": "Registers CLAIM-PREFLIGHT-WORKBENCH-PRESET-130, offline_tested, observed 2026-11-19, for the new Workbench preset section of skills/dayz-preflight/SKILL.md, from the Workbench test of 2026-11-19 (attempts r2 and r7) on Workbench 1.30.164289.70 of DayZ Tools build 26405911: the r2 launch record with denied screen access and no input, the two r2 preset copies (34563 bytes, sha256 7dec4d75fe5c0f4eed5e522bf9b7a016dccdc07c456b5059066cad3f0ba6d801, and 29769 bytes, sha256 2289a1a5784003458b5bae2204623f4d00b82d743eb40d1ea51309f9585bf055), the action comparison of preset-diff.txt (304 to 263 actions, 41 missing, 0 extra, 0 of 263 changed key), its restore, and the r7 preset line leaving 29769 bytes again and its restore to 34563 bytes.",
+          "decision_evidence": "Registers CLAIM-PREFLIGHT-WORKBENCH-PRESET-130, offline_tested, observed 2026-11-19, for the new Workbench preset section of skills/dayz-preflight/SKILL.md, from the Workbench test of 2026-11-19 (attempts r2 and r7) on Workbench 1.30.164289.70 of DayZ Tools build 26405911: the r2 launch record with denied screen access and the preset written at Workbench start, before anything was sent to Workbench, the two r2 preset copies (34563 bytes, sha256 7dec4d75fe5c0f4eed5e522bf9b7a016dccdc07c456b5059066cad3f0ba6d801, and 29769 bytes, sha256 2289a1a5784003458b5bae2204623f4d00b82d743eb40d1ea51309f9585bf055), the action comparison of preset-diff.txt (304 to 263 actions, 41 missing, 0 extra, 0 of 263 changed key), its restore, and the r7 preset line leaving 29769 bytes again and its restore to 34563 bytes.",
           "license": "MIT",
-          "source_hash": "98eee1084b64f65927595557322cdd8b5da521e67489e494a3aff25d837aa409",
+          "source_hash": "c37e9074ec36859f8df436189c73032f2dc5e46692455f0966ed577dbd90c9fd",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-workbench-gp7@2026-11-19",
@@ -23816,7 +23816,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "98eee1084b64f65927595557322cdd8b5da521e67489e494a3aff25d837aa409",
+      "output_hash": "c37e9074ec36859f8df436189c73032f2dc5e46692455f0966ed577dbd90c9fd",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
