@@ -436,6 +436,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   now reads about six minutes, not two to four: 340 s when the baseline was measured on 2026-11-10, and 367 to 379 s
   by the wall clock for each of the four runs of 2026-11-18, made two to four at a time.
 - `tools/dayz-script-validator`: `VANILLA-ROOT-BUILD-MISMATCH` is FAIL (exit 1) with explicit `--game-root`, WARN (exit 2) with `DAYZ_GAME_ROOT`.
+- `dayz-ui-development` `references/layout-variants-130.md`: two more measurements, in Workbench
+  1.30.164289.70 on 2026-11-19 and on DayZDiag 1.30.164289 on 2026-11-25 (runs P0b and P3). That
+  Workbench's context menu on `bleedingdrops.imageset` and on `dayzwidgets.styles` offered no
+  variant; from the editor's "Resource Variants" picker it made a full copy of each file, with a
+  `.meta`, rewriting the imageset texture GUID to the CRC-64/WE of the upper-case texture path.
+  Packed as `gui` shadows (`@GP7WBImg`, `@GP7WBSty`), the copies loaded and applied their edits
+  against the probe-alone control, with the readings of the full copies of 2026-11-12; only image
+  sizes and text sizes were read, and only those two files. `CLAIM-UI-SHADOW-WORKBENCH-COPY-130`,
+  `CLAIM-UI-SHADOW-WORKBENCH-LOADS-130`. The unknown for Workbench resource variants of other
+  types leaves section 6; in its place, what a Workbench imageset variant draws, and the context
+  menu for a layout on Workbench 1.30.164289.70. `SKILL.md` changes its index line for the page.
 
 ### Removed
 

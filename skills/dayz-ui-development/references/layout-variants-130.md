@@ -1,7 +1,8 @@
 # Layout variants on DayZ 1.30 — change a vanilla `.layout` without replacing it
 
 Measured on DayZ 1.30.164200 (stable, DayZDiag), 2026-10-27 and 2026-11-05, and on 1.30.164289 with variants
-written by hand, 2026-11-10 and 2026-11-12 (their evidence is in each claim of `sources/claims.json`). Target:
+written by hand, 2026-11-10 and 2026-11-12, and made in Workbench, 2026-11-19 and 2026-11-25
+(their evidence is in each claim of `sources/claims.json`). Target:
 `VANILLA/gui/layouts/day_z_ingamemenu.layout`, the Esc menu, created by
 `VANILLA/scripts/5_mission/GUI/InGameMenu.c:38`. Evidence: `VAULT/reviews/2026-10-26-dayz-130-variants-and-fsshadowing.md`
 (sections "Results (2026-10-27)", "Workbench-generated variants (2026-11-05)", "Probe 4 results (2026-11-05)")
@@ -275,11 +276,58 @@ gave `Normal` 670, `Bold` 690, `Light` 670 and `L5Style` 670, where without it t
 680, and the `MultilineTextWidget` styles kept their widths (540, 550 and 540, as without it). So the changed
 and the new style apply, and the styles the copy repeats keep drawing as before.
 
+[EXACT][CLAIM-UI-SHADOW-WORKBENCH-COPY-130] **Workbench makes the variant of an imageset or of the styles as a
+full copy of the file.** Workbench 1.30.164289.70 (DayZ Tools build 26405911, 2026-11-19) was started as in §1,
+from its own folder with `-filePatching` and `-mod=` an authoring root `GP7WB` holding a `mod.cpp`. There, the
+Resource browser's context menu on `DZ/gui/imagesets/bleedingdrops.imageset` and on
+`DZ/gui/looknfeel/dayzwidgets.styles` had no entry to create a variant. "Open file in new tab" opens each file
+in its editor (the ImageSet editor and the styles editor). The editor's "Resource Variants (1)" picker offered
+"1. Create variant for 'GP7WB' addon..." and "2. $DZ:gui/imagesets/bleedingdrops.imageset" for the imageset, and
+the same first entry with "2. $DZ:gui/looknfeel/dayzwidgets.styles" for the styles. Choosing the first entry
+gave the "New Resource Variant" dialog, "Create new resource variant and copy it to your addon?", with Yes and
+No. With Yes, Workbench wrote the whole file at the same path in the addon, with a `.meta` beside it, as it does
+for a layout (§1), and the picker then held the `$GP7WB:` path active and the `$DZ:` path. The edits were made
+in the editor and saved with Ctrl+S: `Bleeding2` from 128 x 128 to 100 x 100, and the `TextWidget` `Normal`
+style on `gui/fonts/metronlight`. Workbench's font list holds lower-case paths only. Against vanilla
+1.30.164289, the imageset was written anew (1734 bytes, vanilla 1747 bytes): its texture reference went from
+`"{35363C01F72D2EBE}Gui/imagesets/BleedingDrops.edds"` to
+`"{FEAD63B1347867F9}gui/imagesets/bleedingdrops.edds"`, `Bleeding2` went to `Size 100 100`, and the empty
+`Groups` block was dropped. The styles file (237985 bytes, vanilla 237984 bytes) differs from vanilla only in
+that edited line, `Font="gui/fonts/MetronBook"` to `Font="gui/fonts/metronlight"`
+(`VANILLA/gui/looknfeel/dayzwidgets.styles:3`). `FEAD63B1347867F9` is the CRC-64/WE of the texture path in
+upper case, `GUI/IMAGESETS/BLEEDINGDROPS.EDDS`, computed as in `CLAIM-UI-LAYOUT-GUID-CRC64-130`; the vanilla
+GUID `35363C01F72D2EBE` is not that CRC, and it is not the CRC of the path as vanilla writes it.
+
+[EXACT][CLAIM-UI-SHADOW-WORKBENCH-LOADS-130] **Packed as a `gui` shadow, each Workbench copy loads and applies
+its edit, and keeps what it repeats.** The test ran on DayZDiag 1.30.164289 (2026-11-25). `@GP7WBImg` and
+`@GP7WBSty`, packed by FileBank with header `prefix=gui` and `fsShadowing=1`, one file each, held the Workbench
+copy without its `.meta`: `@GP7WBImg` 1876 bytes, sha256
+`1b46704b59851b8f181fea72f19d13abb63a1e9c610783b87811dfacedcaa3a3`, and `@GP7WBSty` 238123 bytes, sha256
+`cb99099b646f273c30bf5b6a5d01ee553183a12a29372646750ef524d6816305`. They were loaded together in one run (P3),
+against a control run with the probe alone (P0b), with the same probe as the full copies of
+`CLAIM-UI-SHADOW-IMAGESET-FULL-130` and `CLAIM-UI-SHADOW-STYLES-FULL-130`. Images: `Bleeding1` 128 x 128 in
+both runs, and `Bleeding2` 100 x 100 in P3 against 128 x 128 in P0b. `l5p3_added` failed in both runs, because
+neither file has it. `TextWidget` styles: `Normal` 670 in P3 against 680 in P0b, `Bold` 690 and `Light` 670 in
+both, and `L5Style` 670 in P3 against 680 in P0b; a style name that does not exist draws like `Normal`, as in
+`CLAIM-UI-SHADOW-STYLES-REPLACES-130`. The `MultilineTextWidget` styles gave 540, 550 and 540 in both runs,
+height 22. `Bleeding1`, `Bleeding2` and the seven style readings gave what the two full copies gave on
+2026-11-12. No error line of either run names the BleedingDrops texture or either GUID. At shutdown, the
+`RESOURCES (E)` lines of P3 name the MetronLight font files by the lower-case path Workbench wrote
+(`RESOURCES (E): gui/fonts/metronlight58.edds   1`), and those of P0b by `MetronLight`
+(`RESOURCES (E): gui/fonts/MetronLight58.edds   1`). So a Workbench variant of these two files is a full-copy
+shadow, like those of §5. These runs show that it loads and applies, not that a Workbench variant merges with
+the vanilla file.
+
 [INFERRED] A shadow of an imageset or of `dayzwidgets.styles` has to hold the whole vanilla file with your
-changes (both full copies worked, both deltas lost what they did not repeat), and it changes those images or
-styles on every screen; only `BleedingDrops.imageset` and `dayzwidgets.styles` were measured.
+changes (both full copies worked, both deltas lost what they did not repeat). It changes those images or
+styles on every screen. The variant Workbench makes from the editor's "Resource Variants" picker is such a
+copy, and it loaded and applied like the full copies. Only `BleedingDrops.imageset` and `dayzwidgets.styles`
+were measured.
 
 ## 6. Unknowns — do not promise these
 
-- **Resource variants made in Workbench for other types.** The shadows of §5 were plain files. Whether a
-  Workbench resource variant of an `.imageset` or of the styles merges like a layout variant is not measured.
+- **What a Workbench imageset variant draws.** In game only image sizes were read. Whether the texture drawn comes
+  from the reference Workbench rewrote (`CLAIM-UI-SHADOW-WORKBENCH-COPY-130`) is not measured; no error line named it.
+- **The context menu for a layout on Workbench 1.30.164289.70.** That build's context menu offered no variant for an
+  imageset or for the styles. Whether it still offers one for a layout is not measured; §1 was measured with the
+  Workbench of 1.30.164200. For those two files, the path that worked was the editor's "Resource Variants" picker.
