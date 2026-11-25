@@ -998,3 +998,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 ## The rest of the mod loop
 
 This skill governs how code is written and debugged. Scoping, API lookup, building, the local server boot and publishing, and which domain skill to read, are in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.
+
+## Promoted Lessons (2026-11-25)
+
+- **LL-556** — Before abandoning or switching a hypothesis over a single log line, list chronologically every action and state transition that touched that object since the previous test run.

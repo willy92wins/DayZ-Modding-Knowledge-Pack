@@ -332,3 +332,9 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 ## Building, testing and publishing the mod
 
 When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.
+
+## Promoted Lessons (2026-11-25)
+
+- **LL-545** — On DayZ motorbikes, neutral is index `0` and `GetGearCount()` equals neutral plus forward gears (`CarGear.FIRST` = `2` is second gear); first gear is `GetNeutralGear() + 1`. Automated gear sweeps need a pause (~0.8 s) between `ShiftUp()` calls and a sufficiently long straight for top gears.
+- **LL-551** — `DayZPlayerCamera3rdPersonVehicleMotorbike` lags the pivot by `speed * 0.05` (~2.8 m at 200 km/h); on high-speed bikes, compensate in a `modded class DayZPlayerCamera3rdPersonVehicleMotorbike` `OnUpdate` override gated to the bike's `m_Transport`.
+- **LL-552** — When stiffening suspension built under the rest-at-measured-phase rule (`k = load / travelMaxDown`), scale suspension travel, `model.cfg` (`offset0`/`offset1` and swingarm angles), and wheel hub positions together using one shared stiffness constant verified across generators.

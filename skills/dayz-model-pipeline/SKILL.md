@@ -929,3 +929,11 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 ## Building, testing and publishing the mod
 
 When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.
+
+## Promoted Lessons (2026-11-25)
+
+- **LL-532** — Whenever a new gate fails on a binarized ODOL asset, run the exact same gate against a known-working vanilla/in-game control piece first to rule out parser or convention bugs before changing the model.
+- **LL-547** — Ray-based "inside room" probes are fooled by thin shells and exterior cracks; define interior volume via voxel flood-fill/containment on the exported geometry.
+- **LL-553** — Fan triangulation from the first corner of concave n-gons (such as walls with door cutouts) flips triangles into reverse winding; use ear clipping (`mathutils.geometry.tessellate_polygon`) and match the parent face normal.
+- **LL-554** — A Shadow LOD inherited from an earlier version of a visible skin can enclose the updated visible mesh and cast self-shadow strips across it; sample visible surface points inward against the Shadow LOD volume.
+- **LL-558** — Displacing border vertices on cut meshes opens T-junction wedges where adjacent edges do not share that vertex; re-project edge-supported vertices onto their host edge at the same parameter.

@@ -1853,3 +1853,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 ## The rest of the mod loop
 
 Testing is one step of the loop in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md) (look up, write, build, boot, verify, publish), which also routes a failing mod to the domain skill that owns the broken part.
+
+## Promoted Lessons (2026-11-25)
+
+- **LL-514** — Mods that replace the player animation graph (such as older builds of `@Survivor Animations` on DayZ 1.30 Exp) can crash the server at character creation; isolate graph-overriding mods per game version in a solo load before combining them.

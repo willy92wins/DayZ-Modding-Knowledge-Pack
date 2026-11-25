@@ -725,3 +725,9 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 ## Building, testing and publishing the mod
 
 When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.
+
+## Promoted Lessons (2026-11-25)
+
+- **LL-404** — An accurate line- or item-count audit has zero operational value if the counted unit is not the unit that pays the constraint (for example static memory vs source lines); validate the billing unit before auditing.
+- **LL-529** — A census only answers for the scope it actually traversed; when a decision governs a whole category, census the entire category across the diff rather than only the call sites hit by one pattern.
+- **LL-575** — Asset comparison tables must keep pixel domains (all texels vs non-black) and summary statistics (median vs mean) identical across columns and explicitly define every color/material class.

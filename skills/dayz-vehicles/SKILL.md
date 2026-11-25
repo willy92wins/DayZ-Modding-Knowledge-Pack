@@ -1983,3 +1983,8 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 ## Building, testing and publishing the mod
 
 When this work has to end in a mod that builds, loads and ships (`config.cpp`/`CfgMods`, `requiredAddons`, the PBO and its signature, a boot on a local server, the Workshop), follow the loop and the rules every mod task needs in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md), the Pack's entry point for mod development.
+
+## Promoted Lessons (2026-11-25)
+
+- **LL-566** — A 1PP occlusion patch calculated from one camera eye position must be tested against what it blocks from other eye heights and across steering-column/hand sweeps, not only what it reveals from the reference eye.
+- **LL-573** — 1PP closures generated from a single viewpoint can hang out over the exterior when viewed from other eye positions; gate closures against exterior-connected background rather than local cockpit bounds alone.
