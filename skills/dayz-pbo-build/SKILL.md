@@ -1302,3 +1302,7 @@ Everything above is the Windows workflow and stays valid there. On Linux, the Pr
 ## The rest of the mod loop
 
 Building is one step of the loop in [`dayz-mod-dev`](../dayz-mod-dev/SKILL.md) (look up, write, build, boot on a local server, verify, publish), the Pack's entry point for mod development.
+
+## Promoted Lessons (2026-11-25)
+
+- **LL-564** — `AddonBuilder` with binarize writes `.p3d` ODOLs under `<temp>\<prefix>` while `FileBank` packs `<temp>\<sourceFolder>`: when `-prefix` differs from the source folder name, `AddonBuilder` reports `Build Successful` while silently omitting every `.p3d` from the PBO. Keep source folder and `-prefix` aligned and verify the packed PBO file index.
