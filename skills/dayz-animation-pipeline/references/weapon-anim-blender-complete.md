@@ -76,6 +76,30 @@ The download is a **plain folder**, not a zip, so Blender's "Install from file" 
 
 (`README.md:18`.)
 
+[EXACT][CLAIM-ANIM-TXA-ADDON-ISOLATED-PROFILE] The Pack does not ship
+the DayZAnimationTools plugin, and it gives no verified download URL
+for the maintained (Sanitoeter05) fork that §1.1 recommends for
+Blender 4.4+/5.x; the only URL in the Pack is the original jdfnc24
+plugin (`references/skeletal-anm-enfusion.md:51`), which needs
+Blender 3.6.8–4.0 (`references/skeletal-anm-enfusion.md:62`). To run
+the plugin in background Blender without touching the user's Blender
+profile, as measured on 2026-11-25 with Blender 5.3.0 portable:
+point `BLENDER_USER_RESOURCES` at an empty folder (Blender's USER
+resource path and its user add-on path then point there, the latter
+being `<folder>\scripts\addons`), copy the `DayzAnimationTools`
+folder into `<folder>\scripts\addons\`, and start Blender with
+`--addons DayzAnimationTools`, or call
+`addon_utils.enable("DayzAnimationTools", default_set=False)` in the
+script. With either, `export_scene.txa` was registered; with the
+folder in place and neither, the add-on was found but not enabled;
+with `--addons` on an empty profile it was not found; no user
+preferences file was written in any run. The same four runs with a
+minimal probe add-on gave the same results, and its operator ran.
+The headless recipe of this file, section "SP-035 — Headless
+`.txa` import via DayzAnimationPlugin (Blender background)", loads
+the plugin without installing it (`sys.path.append(...)`,
+`import DayzAnimationTools`, `DayzAnimationTools.register()`).
+
 ### 1.3 Where the tools live in the UI
 
 After enabling:
@@ -98,7 +122,7 @@ After enabling:
 
 ### 1.6 Optional: DayZATool (Route B fallback)
 
-DTZxPorter DayZATool: `--extract-anim` (ANM→SEAnim), `--extract-model` (XOB→SEModel), `--generate-anim file.seanim` (SEAnim→.anm). Requires .NET Framework 4.5; expect manual scale tuning. Blender importers: `io_scene_seanim`, `io_model_semodel`. (`dtzxporter.com/tools/dayzatool`.)
+DTZxPorter DayZATool: `--extract-anim` (ANM→SEAnim), `--extract-mdl` (XOB→SEModel), `--generate-anim file.seanim` (SEAnim→.anm). Requires .NET Framework 4.5; expect manual scale tuning. Blender importers: `io_scene_seanim`, `io_model_semodel`. (`dtzxporter.com/tools/dayzatool`.)
 
 ---
 
