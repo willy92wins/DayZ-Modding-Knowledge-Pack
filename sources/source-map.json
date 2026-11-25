@@ -46430,7 +46430,7 @@
           "decision": "adopt",
           "decision_evidence": "Pack-authored reference for the bind-pose check from the measurements of 2026-11-18/19 recorded in brief RG1 and amendment E1 (six CLAIM-ANIM-BIND-* claims); no author name, no machine path, no game bind-pose bytes beyond the listed difference angles.",
           "license": "MIT",
-          "source_hash": "b17224bbd70849dd2f0a0d6d0647072fc50bf3c1587df9c46de910a67d757fc2",
+          "source_hash": "893a0ae076cff472413e67abc93eccba67da8bf227dca57963e82857dd909cda",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-animation-pipeline/references/rig-bind-check.md",
           "source_revision": "bind-pose-check@2026-11-25",
@@ -46438,7 +46438,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "b17224bbd70849dd2f0a0d6d0647072fc50bf3c1587df9c46de910a67d757fc2",
+      "output_hash": "893a0ae076cff472413e67abc93eccba67da8bf227dca57963e82857dd909cda",
       "output_path": "skills/dayz-animation-pipeline/references/rig-bind-check.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "offline_tested"
