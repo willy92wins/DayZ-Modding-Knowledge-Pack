@@ -5204,9 +5204,9 @@
     {
       "artifact_id": "file/skills/dayz-animation-pipeline/references/rig-bind-check.md",
       "claim_id": "CLAIM-ANIM-BIND-VISUAL-KEYING",
-      "evidence_locator": "Measured 2026-11-18: the template's function gate passed, rest 0.0042 mm and 0.0000 deg, and a bake with visual keying replayed the controlled pose to 0.0011 mm and 0.0000 deg (the turned copy: 0.0012 mm).",
+      "evidence_locator": "Measured 2026-11-18: the template's function gate passed, rest 0.0042 mm, and a bake with visual keying replayed the controlled pose to 0.0011 mm (the turned copy: 0.0012 mm). That gate read angles through mathutils, in float32, and showed 0.0000 deg for both, below what float32 resolves (about 0.03 deg, CLAIM-ANIM-BIND-DOUBLE-PRECISION).",
       "license": "MIT",
-      "line_end": 112,
+      "line_end": 113,
       "line_start": 108,
       "observed_at": "2026-11-18",
       "promotion_artifact_id": "skill/dayz-animation-pipeline",

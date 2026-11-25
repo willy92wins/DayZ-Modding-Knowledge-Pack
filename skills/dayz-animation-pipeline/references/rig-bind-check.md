@@ -106,7 +106,8 @@ included. Every local outside the 32 kept within 0.000256 deg and
 0.0000022 deg.
 
 [EXACT][CLAIM-ANIM-BIND-VISUAL-KEYING] The template's controls work: a
-bake with visual keying replayed the controlled pose to 0.0011 mm and
-0.0000 deg. Before exporting with a constraint rig, bake with visual
+bake with visual keying replayed the controlled pose to 0.0011 mm, and
+its angle check, which reads in float32, showed no turn (so under about
+0.03 deg). Before exporting with a constraint rig, bake with visual
 keying: the exporter samples absolute locals with the constraints off,
 so the bake is what carries the controlled pose into the export.
