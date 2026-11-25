@@ -447,6 +447,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `CLAIM-UI-SHADOW-WORKBENCH-LOADS-130`. The unknown for Workbench resource variants of other
   types leaves section 6; in its place, what a Workbench imageset variant draws, and the context
   menu for a layout on Workbench 1.30.164289.70. `SKILL.md` changes its index line for the page.
+- `dayz-preflight` `SKILL.md`: Workbench 1.30.164289.70 (DayZ Tools build 26405911), started on
+  2026-11-19 from its own folder with `-filePatching` and `-mod=` an authoring root holding a
+  `mod.cpp`, rewrote the profile's `Documents\DayZ\<profile>.dayz_preset_User.xml` when it started,
+  before any input (attempt r2): from 34563 to 29769 bytes and from 304 to 263 actions. The 41
+  missing actions were the actions of mods that the session did not load; none was added, and none
+  of the 263 kept actions changed its key. A later start the same day (attempt r7) left the file at
+  29769 bytes again. `CLAIM-PREFLIGHT-WORKBENCH-PRESET-130`. Copy the file before starting
+  Workbench; after closing it, with no Workbench or DayZ process running, put the copy back and
+  check that the restored file matches the copy in size or sha256. Not measured: other Workbench
+  builds, and whether the game puts the missing bindings back once those mods load again.
 
 ### Removed
 
