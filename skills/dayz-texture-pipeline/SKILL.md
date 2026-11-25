@@ -523,7 +523,7 @@ When this work has to end in a mod that builds, loads and ships (`config.cpp`/`C
 
 ## Promoted Lessons (2026-11-25)
 
-- **LL-513** — Double-sided thin faces that render see-through in-game cannot be fixed by flipping normals: add an inverted twin (preserving UVs, normals, and animation selections) and validate visibility with a backface-culling rasterizer.
+- **LL-513** — Double-sided thin faces that render see-through in-game cannot be fixed by flipping normals: add an inverted twin (preserving UVs and animation selections, inverting normals) and validate visibility with a backface-culling rasterizer.
 - **LL-543** — An automated geometry fit tuned to a single 2D reference photo can distort 3D proportions without tripping single-angle renders; inspect plan and elevation against the prior mesh before accepting.
 - **LL-555** — Normal maps (`_nohq`) containing null texels (`128,127,128`) or unbaked black background pixels (`0,0,0`) emit invented magenta/corrupted normals through `ImageToPAA`; verify round-trip `PNG -> PAA -> PNG` PSNR per channel.
 - **LL-576** — Per-channel RGB gains measured on a clean texture do not transfer directly to its dirty/worn variant (grey dirt shifts hue); apply the clean delta weighted by `luminance(used) / luminance(clean)` instead.
