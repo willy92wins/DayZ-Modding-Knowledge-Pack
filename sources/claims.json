@@ -5239,6 +5239,32 @@
       "source_id": "pack-r21-authored",
       "source_revision": "bind-pose-check@2026-11-25",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
+      "claim_id": "CLAIM-ANIM-TXA-ADDON-ISOLATED-PROFILE",
+      "evidence_locator": "Pack text: references/skeletal-anm-enfusion.md:51 (the only plugin URL in the Pack, the original jdfnc24 plugin) and :62 (that plugin needs Blender 3.6.8-4.0; the maintained fork needs Blender 4.4+/5.x). Measured on 2026-11-25 with Blender 5.3.0 portable in background, the add-on in an isolated BLENDER_USER_RESOURCES folder under scripts/addons: with --addons DayzAnimationTools (run m2) and with addon_utils.enable(DayzAnimationTools, default_set=False) (run m3) export_scene.txa was registered; with the folder in place and neither (run m1) it was found but not enabled; with --addons on an empty profile (run m4) it was not found; no user preferences file was written in any run. A minimal probe add-on in the same four runs gave the same results and its operator ran.",
+      "license": "MIT",
+      "line_end": 101,
+      "line_start": 79,
+      "observed_at": "2026-11-25",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "rg1-phase-d@2026-11-25",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/rig-bind-check.md",
+      "claim_id": "CLAIM-ANIM-BIND-RIGIFY-CONTROLS",
+      "evidence_locator": "Agent run of 2026-11-25 on the conformed Rigify template in Blender 5.3.0 in background, by command number: upper_arm_parent.R IK_FK was 0 in both templates as delivered (commands 7 and 10); with 0 the FK control upper_arm_fk.R left the arm of _DayZ_Character still (command 11: 0.0 deg on all 20 frames; command 17: 0.0 deg with the control at -30 and at -60 deg); with 1 it drove it (command 20: 58.7 deg with the control at -60 deg; command 21: 59.993 deg at frame 20 with -61.33 deg). Reopened with blender -b the saved file read 0.141 deg at frame 20 instead of 59.993 deg (command 23), the same with --enable-autoexec (command 24); with the Copy Transforms constraints of _DayZ_Character muted its baked action read 59.993 deg again (command 25). The cause was not established. Second agent run of 2026-11-25 on the same template and Blender version, by command number: upper_arm_parent.R IK_FK was 0 in the template and in its conformed copy as delivered (command 12); with 0, turning the FK control upper_arm_fk.R by -60 or +60 deg about its local X, Y or Z left the direction of _DayZ_Character's RightArm unchanged (0.0 deg); with 1, -60 or +60 deg about its local X or Z turned that direction 60.0 deg, and about its local Y (the bone's own axis) 0.0 deg (command 12). Reopened, with the Copy Transforms constraints of _DayZ_Character muted, the saved file read 60.0 deg (command 26).",
+      "license": "MIT",
+      "line_end": 131,
+      "line_start": 115,
+      "observed_at": "2026-11-25",
+      "promotion_artifact_id": "skill/dayz-animation-pipeline",
+      "source_id": "pack-r21-authored",
+      "source_revision": "rg1-phase-d@2026-11-25",
+      "verification_level": "offline_tested"
     }
   ],
   "schema_version": 1

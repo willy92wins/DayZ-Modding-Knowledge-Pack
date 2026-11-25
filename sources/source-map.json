@@ -2271,10 +2271,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-25",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Unreleased Added entry for the four documentation gaps closed from the agent run of 2026-11-25 (CLAIM-ANIM-TXA-ADDON-ISOLATED-PROFILE, CLAIM-ANIM-BIND-RIGIFY-CONTROLS).",
+          "license": "MIT",
+          "source_hash": "11bd3c150e6d3f96ea5fb377481880d746a1619bb282c4b110787c87850a482a",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "rg1-phase-d@2026-11-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d4d5419170d07e2c6f45ea5d924ad2d04f9b4b77de427d477764572f2a3ffd07",
+      "output_hash": "11bd3c150e6d3f96ea5fb377481880d746a1619bb282c4b110787c87850a482a",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -6122,10 +6132,20 @@
           "source_path": "skills/blender-animation/SKILL.md",
           "source_revision": "linux-proton@2026-11-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The install paragraph notes that bind_pose_check.py and this skill's flow on a Rigify template were run on Blender 5.3.0 on 2026-11-25. Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "9396011e8ab316e4beda41b0706a14836c568cdc7c087151fa62d2c1279f9e3a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/SKILL.md",
+          "source_revision": "rg1-phase-d@2026-11-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "9f8cc5eb2eed540ff3699685bae4af7228b0986ad11ed4250075c30ff94d6267",
+      "output_hash": "9396011e8ab316e4beda41b0706a14836c568cdc7c087151fa62d2c1279f9e3a",
       "output_path": "skills/blender-animation/SKILL.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -6278,10 +6298,20 @@
           "source_path": "skills/blender-animation/references/dayz-handoff.md",
           "source_revision": "update/pr-135-review@2026-10-27",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The manual-folder-copy bullet states the Pack ships no plugin and no verified URL of the maintained fork, and points to the background install in an isolated profile in weapon-anim-blender-complete.md section 1.2. Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "1a985e7101b876e0582094dfaf2a4906e751117f43e563e09dda457338854d55",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/blender-animation/references/dayz-handoff.md",
+          "source_revision": "rg1-phase-d@2026-11-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "c715330d04526a340eeb422dab2f9a34ed62b264a61a771e8eb7aac3e7456e97",
+      "output_hash": "1a985e7101b876e0582094dfaf2a4906e751117f43e563e09dda457338854d55",
       "output_path": "skills/blender-animation/references/dayz-handoff.md",
       "routing_artifact_id": "skill/blender-animation",
       "verification_level": "cross_checked"
@@ -7824,10 +7854,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
           "source_revision": "kp-update-wp-anim@2026-10-01",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Section 1.6 names --extract-mdl, and section 1.2 states the Pack ships no DayZAnimationTools plugin and no verified URL of the maintained fork, with the background install in an isolated profile (CLAIM-ANIM-TXA-ADDON-ISOLATED-PROFILE). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "2785cf3d514c4264b3deb35b7dc213fd3057b182e782cb73721763982f05fd2a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
+          "source_revision": "rg1-phase-d@2026-11-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ca0970685f730aa957690ffefeec791a01567d0c778055a42e08bd2a704b5214",
+      "output_hash": "2785cf3d514c4264b3deb35b7dc213fd3057b182e782cb73721763982f05fd2a",
       "output_path": "skills/dayz-animation-pipeline/references/weapon-anim-blender-complete.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -23783,10 +23823,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-25",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Two claims: CLAIM-ANIM-TXA-ADDON-ISOLATED-PROFILE for weapon-anim-blender-complete.md and CLAIM-ANIM-BIND-RIGIFY-CONTROLS for rig-bind-check.md, measured on 2026-11-25.",
+          "license": "MIT",
+          "source_hash": "16310898d5fe6377af14aa40658d97a177153c3319f1154b55339e54f2fa2747",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "rg1-phase-d@2026-11-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "19a62de293964c06667b032dca56eb601b91b406d23e31d36af507d3d4404536",
+      "output_hash": "16310898d5fe6377af14aa40658d97a177153c3319f1154b55339e54f2fa2747",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -46475,10 +46525,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/rig-bind-check.md",
           "source_revision": "bind-pose-check@2026-11-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "A closing paragraph on the Rigify arm IK_FK control and the reopened saved file (CLAIM-ANIM-BIND-RIGIFY-CONTROLS), measured on 2026-11-25. Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "454ff0935242b9fe3da9083ffc4916dba45346687d76ebb1882c41e597ede7d2",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/rig-bind-check.md",
+          "source_revision": "rg1-phase-d@2026-11-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "893a0ae076cff472413e67abc93eccba67da8bf227dca57963e82857dd909cda",
+      "output_hash": "454ff0935242b9fe3da9083ffc4916dba45346687d76ebb1882c41e597ede7d2",
       "output_path": "skills/dayz-animation-pipeline/references/rig-bind-check.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "offline_tested"
