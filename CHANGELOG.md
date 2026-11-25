@@ -7,6 +7,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-animation-pipeline` and `blender-animation`, documentation gaps closed from the agent
+  run of 2026-11-25: `references/weapon-anim-blender-complete.md` §1.6 names the measured
+  DayZATool option `--extract-mdl` (XOB→SEModel), not `--extract-model`; §1.2 states that the
+  Pack does not ship the DayZAnimationTools plugin nor a verified URL of the maintained fork,
+  and gives the background install in an isolated profile (`BLENDER_USER_RESOURCES`,
+  `--addons DayzAnimationTools` or `addon_utils.enable(..., default_set=False)`), measured
+  with Blender 5.3.0 portable; `blender-animation/references/dayz-handoff.md` points to it.
+  `references/rig-bind-check.md` records the Rigify arm control (`upper_arm_parent.R`
+  `IK_FK` 0 as delivered, 1 to drive `_DayZ_Character` with the FK control) and that the
+  saved file reopened at 0.141 deg at frame 20 against 59.993 deg in the authoring session,
+  with no cause established. `blender-animation/SKILL.md` notes that `bind_pose_check.py`
+  and this skill's flow were run on Blender 5.3.0 on 2026-11-25. `CLAIM-ANIM-TXA-ADDON-ISOLATED-PROFILE`,
+  `CLAIM-ANIM-BIND-RIGIFY-CONTROLS`.
+
 - `dayz-animation-pipeline` `scripts/bind_pose_check.py`, `tests/test_bind_pose_check.py` and
   `references/rig-bind-check.md`: a Blender bind-pose check of an armature's rest locals (and, on a
   `jd` rig, its `Pelvis`/`EntityPosition`/`Collision` roots) against a DayZATool-extracted SEModel,

@@ -9,7 +9,14 @@ Author animations in the user's live Blender through `mcp__Blender__execute_blen
 Everything happens via the bpy data API — no UI, no mouse. The user's install is Blender
 5.1.1 (a dead "Blender 4.3" folder exists in Program Files without an executable — do not
 target it). All API claims in this skill were either executed live against 5.1.1
-(2026-07-09) or carry a doc/source citation in the references.
+(2026-07-09) or carry a doc/source citation in the references. On 2026-11-25
+`dayz-animation-pipeline/scripts/bind_pose_check.py` and an agent run of this
+skill's flow on a Rigify template (FK control keys, a bake onto
+`_DayZ_Character`, an SEAnim export with `seanim_export.py`, made
+because the DayZ plugin was absent from that run) were run on Blender
+5.3.0 (portable, in background). Full-body animations still go
+Route A (`references/dayz-handoff.md`, Route A section, the only
+validated route for full-body/action anims).
 
 ## When NOT to use this skill
 
@@ -201,6 +208,11 @@ Contract extracted and verified 2026-07-09 (all citations in `references/dayz-ha
   `DayzAnimationTools.register()` — the pattern in
   `WeaponAnimPipeline_dev\tools\txa\viewer_to_txa_via_plugin.py:13-16`) or install by
   folder copy (NOT zip-install).
+- In background with an isolated profile:
+  `dayz-animation-pipeline/references/weapon-anim-blender-complete.md` §1.2.
+- For a Rigify template, before keying its FK controls, measure which
+  `IK_FK` value of the arm lets them move `_DayZ_Character`
+  (`dayz-animation-pipeline/references/rig-bind-check.md`).
 - Posing pattern from the proven bridge script: disable constraints while setting
   matrices, `rotation_mode='QUATERNION'` on all pose bones, autokey off, explicit
   `keyframe_insert` per bone per frame.

@@ -111,3 +111,21 @@ its angle check, which reads in float32, showed no turn it could
 resolve. Before exporting with a constraint rig, bake with visual
 keying: the exporter samples absolute locals with the constraints off,
 so the bake is what carries the controlled pose into the export.
+
+[EXACT][CLAIM-ANIM-BIND-RIGIFY-CONTROLS] In the agent runs of
+2026-11-25 on the conformed template in Blender 5.3.0 in background,
+`upper_arm_parent.R["IK_FK"]` was 0 in the template and in its
+conformed copy, as delivered; with 0, turning the FK control
+`upper_arm_fk.R` by -60 or +60 deg about its local X, Y or Z left
+the direction of `_DayZ_Character`'s `RightArm` unchanged
+(0.0 deg); with 1, -60 or +60 deg about its local X or Z turned
+that direction 60.0 deg, and about its local Y (the bone's own
+axis) 0.0 deg. So, with a Rigify template, measure which value of
+the arm's `IK_FK` lets the FK control move the deform rig before
+keying it. Reopened with `blender -b`, the saved file read
+0.141 deg at frame 20 on `_DayZ_Character` instead of the
+59.993 deg of the authoring session, and the same 0.141 deg with
+`--enable-autoexec`; with the Copy Transforms constraints of
+`_DayZ_Character` muted, its baked action read 59.993 deg again.
+In the second run the reopened file, with those constraints muted,
+read 60.0 deg. The cause was not established.
