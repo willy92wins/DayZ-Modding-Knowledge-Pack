@@ -72,7 +72,9 @@ ONLY stride that yields in-range parents AND exactly one root. The full 148-bone
 `references/ofp2-manskeleton-parents.txt` (measured by the LFQuad2 session with a bounded parser;
 recipe and the roll-bone warning are in its header). DayZATool runs headless from a shell but
 throws `InvalidOperationException` on `Console.ReadKey` when stdin is redirected — AFTER writing
-the output file; ignore the exception and check the file exists.
+the output file; ignore the exception and check the file exists. To check a
+rig's rest pose against that bind pose, see
+[`rig-bind-check.md`](rig-bind-check.md) and `scripts/bind_pose_check.py`.
 
 ### `RightHand_Dummy` / `LeftHand_Dummy` — what they are
 

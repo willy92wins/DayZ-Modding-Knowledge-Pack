@@ -7,6 +7,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `dayz-animation-pipeline` `scripts/bind_pose_check.py`, `tests/test_bind_pose_check.py` and
+  `references/rig-bind-check.md`: a Blender bind-pose check of an armature's rest locals (and, on a
+  `jd` rig, its `Pelvis`/`EntityPosition`/`Collision` roots) against a DayZATool-extracted SEModel,
+  computed in double precision, refusing a `--report` path that is an input. Measured on
+  2026-11-18/19 on a third-party Rigify template: 144 compared, 32 over tolerance (maximum
+  36.6195 deg / 0.2996 mm), with `Pelvis` 179.9999 deg and `EntityPosition` and `Collision` 120 deg
+  off the JD rig in the roots; on the fixed copy 144 compared at 0.0313 deg / 0.009 mm. `SKILL.md`
+  and `references/player-skeleton.md` point to it. `CLAIM-ANIM-BIND-EXPORT-ABSOLUTE`,
+  `CLAIM-ANIM-BIND-DOUBLE-PRECISION`, `CLAIM-ANIM-BIND-TEMPLATE-32`, `CLAIM-ANIM-BIND-ROOT-TURN`,
+  `CLAIM-ANIM-BIND-FIX-RESULT`, `CLAIM-ANIM-BIND-VISUAL-KEYING`.
+
 - `dayz-weapons` W-MAG1 and W-MAG2, and a `dayz-pbo-build` rule 5 note (SP-535, the Mag6L31 6L31 magazine,
   2026-11-23). W-MAG1: an attached magazine is drawn with its own model at the weapon's magazine proxy, so a new
   magazine `.p3d` must sit in the vanilla magazine's frame; measure it with the side-silhouette IoU over the top

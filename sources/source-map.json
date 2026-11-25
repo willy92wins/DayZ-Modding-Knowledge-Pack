@@ -2254,9 +2254,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Unreleased Added entry for dayz-animation-pipeline bind_pose_check.py, its tests and references/rig-bind-check.md (CLAIM-ANIM-BIND-*).",
+          "license": "MIT",
+          "source_hash": "a737f3ef83feb8f07e6a4bbe3616205129d7b29b18666cb337d6861b89845f8c",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "bind-pose-check@2026-11-25",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "[Unreleased] Changed gains the entry for the Workbench variants of layout-variants-130.md (Workbench 1.30.164289.70 on 2026-11-19, DayZDiag 1.30.164289 on 2026-11-25, runs P0b and P3: the variant of bleedingdrops.imageset and of dayzwidgets.styles made from the editor Resource Variants picker is a full copy, and packed as a gui shadow it loads and applies), naming the two new claims CLAIM-UI-SHADOW-WORKBENCH-COPY-130 and CLAIM-UI-SHADOW-WORKBENCH-LOADS-130, the Workbench unknown that leaves section 6, the two unknowns that enter it, and the SKILL.md index line.",
           "license": "MIT",
-          "source_hash": "3b952c39fc8b606862d6003ac6c33cd0c203ac29c31257543f48bf4fcb48ed3d",
+          "source_hash": "d4d5419170d07e2c6f45ea5d924ad2d04f9b4b77de427d477764572f2a3ffd07",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-25",
@@ -2264,7 +2274,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "3b952c39fc8b606862d6003ac6c33cd0c203ac29c31257543f48bf4fcb48ed3d",
+      "output_hash": "d4d5419170d07e2c6f45ea5d924ad2d04f9b4b77de427d477764572f2a3ffd07",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7122,10 +7132,20 @@
           "source_path": "skills/dayz-animation-pipeline/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "One scripts-index entry for scripts/bind_pose_check.py pointing to references/rig-bind-check.md (CLAIM-ANIM-BIND-*). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "be9c48a4a7056e652a10647841ad41c16381cb01af1e8ead7ece9665afb9e653",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/SKILL.md",
+          "source_revision": "bind-pose-check@2026-11-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ceb69edbc7c6d79f2335ec0cc60704ebfe40b398ceddc250ec5c71a219cb7785",
+      "output_hash": "be9c48a4a7056e652a10647841ad41c16381cb01af1e8ead7ece9665afb9e653",
       "output_path": "skills/dayz-animation-pipeline/SKILL.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -7486,10 +7506,20 @@
           "source_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
           "source_revision": "kp-update-inba-seanim@2026-10-03",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "A link from the SEModel bind-pose paragraph to references/rig-bind-check.md and scripts/bind_pose_check.py (CLAIM-ANIM-BIND-*). Other lines unchanged.",
+          "license": "MIT",
+          "source_hash": "0b9f942971626d4a88cf45d702d8d774f0e486977f7b93ba187a4969f8456d8b",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
+          "source_revision": "bind-pose-check@2026-11-25",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a91ae2c7e06f9326456ba96edb553bc3b5c93ed30292c165a8b452f03f45d09f",
+      "output_hash": "0b9f942971626d4a88cf45d702d8d774f0e486977f7b93ba187a4969f8456d8b",
       "output_path": "skills/dayz-animation-pipeline/references/player-skeleton.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
       "verification_level": "cross_checked"
@@ -23736,9 +23766,19 @@
         },
         {
           "decision": "merge",
+          "decision_evidence": "Six claims for skills/dayz-animation-pipeline/references/rig-bind-check.md (CLAIM-ANIM-BIND-*), measured on 2026-11-18/19.",
+          "license": "MIT",
+          "source_hash": "9ae5bf6fa5a3451efcdd266625c1cbad78f9acdfee0120f30230fc22f2b245e3",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "bind-pose-check@2026-11-25",
+          "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
           "decision_evidence": "Registers the two claims of the layout-variants-130.md page from the gap of commit 66306aa: CLAIM-UI-SHADOW-WORKBENCH-COPY-130, offline_tested, observed 2026-11-19 in Workbench 1.30.164289.70 (DayZ Tools build 26405911, run record RECORD.md of the U3 Workbench test, the four files Workbench wrote in GP7WB and their diffs against vanilla 1.30.164289, and the CRC-64/WE record of the texture path), and CLAIM-UI-SHADOW-WORKBENCH-LOADS-130, runtime_verified, observed 2026-11-25 on DayZDiag 1.30.164289 in runs P0b (run_id 1df2ba33-c7db-414b-b6c3-212d21c5bde2) and P3 (run_id 3198ca7f-2cee-466c-8a92-bad687f8339e) with the probe @GP7Probe and the FileBank shadows @GP7WBImg and @GP7WBSty; the line ranges of the claims of that page follow the edited page.",
           "license": "MIT",
-          "source_hash": "0fa6c11248ec5a8f53e1aa3ace2ba217155a44cac55ad9a073aff77160de7e07",
+          "source_hash": "19a62de293964c06667b032dca56eb601b91b406d23e31d36af507d3d4404536",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-25",
@@ -23746,7 +23786,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "0fa6c11248ec5a8f53e1aa3ace2ba217155a44cac55ad9a073aff77160de7e07",
+      "output_hash": "19a62de293964c06667b032dca56eb601b91b406d23e31d36af507d3d4404536",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -46376,6 +46416,72 @@
       "output_path": "skills/dayz-mod-dev/SKILL.md",
       "routing_artifact_id": "skill/dayz-mod-dev",
       "verification_level": "cross_checked"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/scripts/bind_pose_check.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored Blender bind-pose check written for the RG1 phase P change from the measured 2026-11-18/19 case; the SEModel reading and the closed parent and root rules of the bind gate, with the bone-frame map imported from scripts/seanim_export.py; no game data.",
+          "license": "MIT",
+          "source_hash": "c7201c101fc72915e5fc4c0f9ba9071bf49e37a3ddda35c78c17d14ef437f4e5",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/scripts/bind_pose_check.py",
+          "source_revision": "bind-pose-check@2026-11-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "c7201c101fc72915e5fc4c0f9ba9071bf49e37a3ddda35c78c17d14ef437f4e5",
+      "output_path": "skills/dayz-animation-pipeline/scripts/bind_pose_check.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/tests/test_bind_pose_check.py",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored pure-Python tests for bind_pose_check.py: 24 numbered cases with synthetic SEModels built with struct in tmp_path; no game data, no bpy, no numpy.",
+          "license": "MIT",
+          "source_hash": "456fce0d05c9edfa6863cbe3a014360e8e43245f210bc1d961f599abcdddfef0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/tests/test_bind_pose_check.py",
+          "source_revision": "bind-pose-check@2026-11-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "456fce0d05c9edfa6863cbe3a014360e8e43245f210bc1d961f599abcdddfef0",
+      "output_path": "skills/dayz-animation-pipeline/tests/test_bind_pose_check.py",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-animation-pipeline/references/rig-bind-check.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Pack-authored reference for the bind-pose check from the measurements of 2026-11-18/19 recorded in brief RG1 and amendment E1 (six CLAIM-ANIM-BIND-* claims); no author name, no machine path, no game bind-pose bytes beyond the listed difference angles.",
+          "license": "MIT",
+          "source_hash": "893a0ae076cff472413e67abc93eccba67da8bf227dca57963e82857dd909cda",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-animation-pipeline/references/rig-bind-check.md",
+          "source_revision": "bind-pose-check@2026-11-25",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "893a0ae076cff472413e67abc93eccba67da8bf227dca57963e82857dd909cda",
+      "output_path": "skills/dayz-animation-pipeline/references/rig-bind-check.md",
+      "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
     }
   ],
   "baseline_commit": "a15f47a432a46965cc08be4b432e1ef587eb76da",
