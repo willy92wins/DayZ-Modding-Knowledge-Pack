@@ -2251,10 +2251,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "kp-update-250d@2026-11-23",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Changed gains the entry for the Workbench variants of layout-variants-130.md (Workbench 1.30.164289.70 on 2026-11-19, DayZDiag 1.30.164289 on 2026-11-25, runs P0b and P3: the variant of bleedingdrops.imageset and of dayzwidgets.styles made from the editor Resource Variants picker is a full copy, and packed as a gui shadow it loads and applies), naming the two new claims CLAIM-UI-SHADOW-WORKBENCH-COPY-130 and CLAIM-UI-SHADOW-WORKBENCH-LOADS-130, the Workbench unknown that leaves section 6, the two unknowns that enter it, and the SKILL.md index line.",
+          "license": "MIT",
+          "source_hash": "3b952c39fc8b606862d6003ac6c33cd0c203ac29c31257543f48bf4fcb48ed3d",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "gap-66306aa-ingame-gp7@2026-11-25",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7eae5ad9da84af574812647047085caedc087aa0cf0ae6bd22b188e6d1ae97e8",
+      "output_hash": "3b952c39fc8b606862d6003ac6c33cd0c203ac29c31257543f48bf4fcb48ed3d",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -16816,10 +16826,20 @@
           "source_path": "skills/dayz-ui-development/SKILL.md",
           "source_revision": "kp-update-ui-leaderboard-findings@2026-11-18",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "The index line of references/layout-variants-130.md gains the measured span 2026-11-05 to 2026-11-25 and says that the variant Workbench makes of an imageset or of the styles from the editor is one of the full copies, from the Workbench test of 2026-11-19 on Workbench 1.30.164289.70 (DayZ Tools build 26405911) and runs P0b and P3 of 2026-11-25 on DayZDiag 1.30.164289 (claims CLAIM-UI-SHADOW-WORKBENCH-COPY-130 and CLAIM-UI-SHADOW-WORKBENCH-LOADS-130). One line changed, line count unchanged.",
+          "license": "MIT",
+          "source_hash": "401bf3889df214303968ebc2f3fde3c410cca4936b5372b19f8a7df8d99b3aac",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/SKILL.md",
+          "source_revision": "gap-66306aa-ingame-gp7@2026-11-25",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "acbb235676fc96fd5f5222c7b83ad6d1f7d753ee03c670e881e0de3daef9ca8a",
+      "output_hash": "401bf3889df214303968ebc2f3fde3c410cca4936b5372b19f8a7df8d99b3aac",
       "output_path": "skills/dayz-ui-development/SKILL.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
@@ -23713,10 +23733,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "kp-update-250d@2026-11-23",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers the two claims of the layout-variants-130.md page from the gap of commit 66306aa: CLAIM-UI-SHADOW-WORKBENCH-COPY-130, offline_tested, observed 2026-11-19 in Workbench 1.30.164289.70 (DayZ Tools build 26405911, run record RECORD.md of the U3 Workbench test, the four files Workbench wrote in GP7WB and their diffs against vanilla 1.30.164289, and the CRC-64/WE record of the texture path), and CLAIM-UI-SHADOW-WORKBENCH-LOADS-130, runtime_verified, observed 2026-11-25 on DayZDiag 1.30.164289 in runs P0b (run_id 1df2ba33-c7db-414b-b6c3-212d21c5bde2) and P3 (run_id 3198ca7f-2cee-466c-8a92-bad687f8339e) with the probe @GP7Probe and the FileBank shadows @GP7WBImg and @GP7WBSty; the line ranges of the claims of that page follow the edited page.",
+          "license": "MIT",
+          "source_hash": "0fa6c11248ec5a8f53e1aa3ace2ba217155a44cac55ad9a073aff77160de7e07",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "gap-66306aa-ingame-gp7@2026-11-25",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "11bf408f616f7fc61c08c99d537c8f7dad50011969e413bb47bc089e6c036063",
+      "output_hash": "0fa6c11248ec5a8f53e1aa3ace2ba217155a44cac55ad9a073aff77160de7e07",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -43617,10 +43647,20 @@
           "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
           "source_revision": "gap-66306aa-ingame-gp7@2026-11-12",
           "verification_level": "runtime_verified"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Gap of commit 66306aa, Workbench test of 2026-11-19 on Workbench 1.30.164289.70 (DayZ Tools build 26405911) and in-game test of 2026-11-25 on DayZDiag 1.30.164289 (runs P0b, run_id 1df2ba33-c7db-414b-b6c3-212d21c5bde2, and P3, run_id 3198ca7f-2cee-466c-8a92-bad687f8339e): section 5 gains CLAIM-UI-SHADOW-WORKBENCH-COPY-130 (the variant Workbench makes of bleedingdrops.imageset and of dayzwidgets.styles from the editor Resource Variants picker is a full copy of the file, with a .meta, and its texture GUID is the CRC-64/WE of the upper-case texture path) and CLAIM-UI-SHADOW-WORKBENCH-LOADS-130 (the two copies packed as gui shadows, @GP7WBImg and @GP7WBSty, load and apply in P3 against the P0b control, with the readings of the full copies of 2026-11-12), its inferred paragraph now rests on those claims too, and the header gains the Workbench dates 2026-11-19 and 2026-11-25. Section 6 drops the Workbench unknown for other types and gains the unknown of what a Workbench imageset variant draws and the unknown of the context menu for a layout on Workbench 1.30.164289.70. Outside the header, the two new paragraphs, that inferred paragraph and those bullets, the page is unchanged.",
+          "license": "MIT",
+          "source_hash": "21dcd78492ebe04c25373037408e8fb6f0aed6b62ba175806e790603f2a3c249",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ui-development/references/layout-variants-130.md",
+          "source_revision": "gap-66306aa-ingame-gp7@2026-11-25",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "22ce61429b9ab60f7387de213f477d74774aa3c3bb8869822e9855bc7539e466",
+      "output_hash": "21dcd78492ebe04c25373037408e8fb6f0aed6b62ba175806e790603f2a3c249",
       "output_path": "skills/dayz-ui-development/references/layout-variants-130.md",
       "routing_artifact_id": "skill/dayz-ui-development",
       "verification_level": "cross_checked"
