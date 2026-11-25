@@ -130,6 +130,21 @@ What 1.30 adds is Tools/launch awareness (not new `preflight.py` probes — thos
 
 Operational flags and argv: `dayz-test-ingame` / `dayz-test-ingame/references/dayz-1-30-test-ingame.md`. Mesh cache: `dayz-model-pipeline` / `dayz-model-pipeline/references/dayz-1-30-model-pipeline.md`.
 
+## Workbench 1.30 rewrites the input preset
+
+[EXACT][CLAIM-PREFLIGHT-WORKBENCH-PRESET-130] Workbench 1.30.164289.70 (DayZ Tools build 26405911),
+started on 2026-11-19 from its own folder with `-filePatching` and `-mod=` an authoring root holding a
+`mod.cpp`, rewrote the profile's input preset `Documents\DayZ\<profile>.dayz_preset_User.xml` when it
+started, before any input (attempt r2). The file went from 34563 to 29769 bytes, and its actions went
+from 304 to 263: the 41 missing actions were the actions of mods that the session did not load, no
+action was added, and none of the 263 kept actions changed its key. A later start the same day
+(attempt r7) left the file at 29769 bytes again. Not measured: other Workbench builds, and whether
+the game puts the missing bindings back once those mods load again.
+
+Before starting Workbench, copy `Documents\DayZ\<profile>.dayz_preset_User.xml` somewhere safe.
+After closing Workbench, and with no Workbench or DayZ process left running, put the copy back in
+place and check that the restored file matches the copy in size or sha256.
+
 ## On Linux
 
 Everything above is the Windows workflow and stays valid there. On Linux, the Proton setup, the measured tool matrix and the pitfalls are in [`_shared/linux-proton.md`](../_shared/linux-proton.md); this section only says what changes for this skill.

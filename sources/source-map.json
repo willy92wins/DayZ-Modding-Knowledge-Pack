@@ -2281,10 +2281,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "rg1-phase-d@2026-11-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] Changed gains the entry for dayz-preflight SKILL.md: Workbench 1.30.164289.70 (DayZ Tools build 26405911) on 2026-11-19 rewrote the profile preset in Documents\\DayZ\\ at start, before any input (attempt r2), from 34563 to 29769 bytes and from 304 to 263 actions (41 actions of mods the session did not load missing, none added, none of the 263 kept changed key), a later start the same day (attempt r7) left it at 29769 bytes again, claim CLAIM-PREFLIGHT-WORKBENCH-PRESET-130, and the copy-before-start and restore-and-check-after-close instruction; other Workbench builds and whether the game puts the missing bindings back once those mods load again are not measured.",
+          "license": "MIT",
+          "source_hash": "af61992de049449e589cabc4d7fa1d6dad735f08866a41215020e725612f8a16",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "gap-66306aa-workbench-gp7@2026-11-19",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "11bd3c150e6d3f96ea5fb377481880d746a1619bb282c4b110787c87850a482a",
+      "output_hash": "af61992de049449e589cabc4d7fa1d6dad735f08866a41215020e725612f8a16",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -14596,10 +14606,20 @@
           "source_path": "skills/dayz-preflight/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "A new section, Workbench 1.30 rewrites the input preset, before On Linux: CLAIM-PREFLIGHT-WORKBENCH-PRESET-130 records that Workbench 1.30.164289.70 (DayZ Tools build 26405911), started on 2026-11-19 from its own folder with -filePatching and -mod= an authoring root holding a mod.cpp, rewrote the profile preset in Documents\\DayZ\\ when it started, before any input (attempt r2), from 34563 to 29769 bytes and from 304 to 263 actions, with 41 actions of mods the session did not load missing, none added and none of the 263 kept changed key, and that a later start the same day (attempt r7) left it at 29769 bytes again; a second paragraph says to copy the file before starting Workbench and, after closing it with no Workbench or DayZ process running, to put the copy back and check its size or sha256. Not measured: other Workbench builds, and whether the game puts the missing bindings back once those mods load again.",
+          "license": "MIT",
+          "source_hash": "cbaa67c68ae03027f913e8523a34875692d8fc7cdaf14ee1e72842520cd4e36a",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-preflight/SKILL.md",
+          "source_revision": "gap-66306aa-workbench-gp7@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d10bf4bd3a6ea1df17e0216cc71c41ab2e9069853a1803314682769b339844b7",
+      "output_hash": "cbaa67c68ae03027f913e8523a34875692d8fc7cdaf14ee1e72842520cd4e36a",
       "output_path": "skills/dayz-preflight/SKILL.md",
       "routing_artifact_id": "skill/dayz-preflight",
       "verification_level": "cross_checked"
@@ -23833,10 +23853,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "rg1-phase-d@2026-11-25",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Registers CLAIM-PREFLIGHT-WORKBENCH-PRESET-130, offline_tested, observed 2026-11-19, for the new Workbench preset section of skills/dayz-preflight/SKILL.md, from the Workbench test of 2026-11-19 (attempts r2 and r7) on Workbench 1.30.164289.70 of DayZ Tools build 26405911: the r2 launch record with denied screen access and the preset written at Workbench start, before anything was sent to Workbench, the two r2 preset copies (34563 bytes, sha256 7dec4d75fe5c0f4eed5e522bf9b7a016dccdc07c456b5059066cad3f0ba6d801, and 29769 bytes, sha256 2289a1a5784003458b5bae2204623f4d00b82d743eb40d1ea51309f9585bf055), the action comparison of preset-diff.txt (304 to 263 actions, 41 missing, 0 extra, 0 of 263 changed key), its restore, and the r7 preset line leaving 29769 bytes again and its restore to 34563 bytes.",
+          "license": "MIT",
+          "source_hash": "c18bf4cd2620fd99287bded785ca96908df2889617aa1f38292f9b36b33ea70d",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "gap-66306aa-workbench-gp7@2026-11-19",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "16310898d5fe6377af14aa40658d97a177153c3319f1154b55339e54f2fa2747",
+      "output_hash": "c18bf4cd2620fd99287bded785ca96908df2889617aa1f38292f9b36b33ea70d",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
