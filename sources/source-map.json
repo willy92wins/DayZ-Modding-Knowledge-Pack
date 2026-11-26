@@ -2311,10 +2311,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "#214: the 13 skills without the dayz- prefix are renamed dayz-<name> (folder and name:), and the references to them in this file follow the new names; no other change.",
+          "license": "MIT",
+          "source_hash": "6575c1aa6ef7009e6e17b7c49e809095478b2780c364e49bc7c259549d040bc9",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "is-214-dayz-prefix@2026-11-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d903f4523ff566afec001bce2bece8ae812527e251d6bbdc1a8e69108e8671d9",
+      "output_hash": "6575c1aa6ef7009e6e17b7c49e809095478b2780c364e49bc7c259549d040bc9",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"

@@ -10,7 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `skills/` and `packctl` (`validate_skills`) (#214): prefixed the 13 non-`dayz-` skill folders
   and names with `dayz-`, rewrote live references across skills, documentation, evals, tools,
   tests, `promotions/promotion-map.json`, `sources/source-map.json`, `sources/claims.json` and
-  `sources/link-allowlist.json` via `tools/migrate_214_dayz_prefix.py` (leaving historical
+  `sources/link-allowlist.json` by a one-off migration script (not shipped) (leaving historical
   receipts, adjudications, upstream locators and prior changelog entries intact), and added the
   `SKILL-NAME-PREFIX` check in `packctl/validation.py` with tests in
   `tests/packctl/test_validation.py` so every folder directly under `skills/` except `_shared`
