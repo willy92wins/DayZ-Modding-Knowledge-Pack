@@ -176,6 +176,77 @@ def test_skill_description_1025_fails(repo_factory) -> None:
     assert codes(validate_skills(root)) == ["SKILL-DESCRIPTION-TOO-LONG"]
 
 
+def test_skill_routing_hint_existing_target_passes(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/demo/SKILL.md": (
+                "---\n"
+                "name: demo\n"
+                'description: "Use when: demo. Not vanilla CarScript: dayz-vehicles."\n'
+                "---\n"
+                "# Demo\n"
+            ),
+            "skills/dayz-vehicles/SKILL.md": (
+                "---\n"
+                "name: dayz-vehicles\n"
+                "description: Vehicles fixture.\n"
+                "---\n"
+                "# Vehicles\n"
+            ),
+        }
+    )
+
+    assert "SKILL-ROUTING-HINT-DANGLING" not in codes(validate_skills(root))
+    assert validate_skills(root) == []
+
+
+def test_skill_routing_hint_dangling_target_fails(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/demo/SKILL.md": (
+                "---\n"
+                "name: demo\n"
+                'description: "Use when: audit; not output-discipline: pre-output-discipline."\n'
+                "---\n"
+                "# Demo\n"
+            )
+        }
+    )
+
+    findings = validate_skills(root)
+
+    assert codes(findings) == ["SKILL-ROUTING-HINT-DANGLING"]
+    assert findings[0]["path"] == "skills/demo/SKILL.md"
+    assert findings[0]["line"] == 1
+    assert "pre-output-discipline" in str(findings[0]["evidence"])
+
+
+def test_skill_routing_hint_two_targets_flags_only_missing(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/demo/SKILL.md": (
+                "---\n"
+                "name: demo\n"
+                'description: "Use when: demo. Not X: dayz-vehicles, missing-skill."\n'
+                "---\n"
+                "# Demo\n"
+            ),
+            "skills/dayz-vehicles/SKILL.md": (
+                "---\n"
+                "name: dayz-vehicles\n"
+                "description: Vehicles fixture.\n"
+                "---\n"
+                "# Vehicles\n"
+            ),
+        }
+    )
+
+    findings = validate_skills(root)
+
+    assert codes(findings) == ["SKILL-ROUTING-HINT-DANGLING"]
+    assert findings[0]["evidence"] == "missing-skill"
+
+
 def test_skill_extra_frontmatter_fails(repo_factory) -> None:
     root = repo_factory(
         {

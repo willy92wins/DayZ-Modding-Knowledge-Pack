@@ -2291,10 +2291,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "gap-66306aa-workbench-gp7@2026-11-19",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "[Unreleased] gains the #215 entry: the rigorous-data-audit and rip-vehicle-import descriptions no longer route to skills the pack does not ship, and packctl validate checks routing hints (SKILL-ROUTING-HINT-DANGLING).",
+          "license": "MIT",
+          "source_hash": "b0219bea171345efa08003b46d593d68e40ad514663abb23a68f3588422b57ff",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "is-215-dangling-routing-hints@2026-11-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "af61992de049449e589cabc4d7fa1d6dad735f08866a41215020e725612f8a16",
+      "output_hash": "b0219bea171345efa08003b46d593d68e40ad514663abb23a68f3588422b57ff",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -4873,10 +4883,20 @@
           "source_path": "packctl/validation.py",
           "source_revision": "kp-update-conflict-markers@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "#215: validate_skills reports SKILL-ROUTING-HINT-DANGLING when a description's 'Not <label>: <skill>' hint names a skill with no folder under skills/; on the base tree it flags exactly rigorous-data-audit -> pre-output-discipline and rip-vehicle-import -> forza-to-dayz, and the fixed pack has none.",
+          "license": "MIT",
+          "source_hash": "74778c3ef138f21d1558d1d3414bc6f88b320612805700ef766fc4348a3d86d4",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/validation.py",
+          "source_revision": "is-215-dangling-routing-hints@2026-11-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "96ef04114256be0c907fca72b694adb269fb0888bb355d1281615f51df3028ae",
+      "output_hash": "74778c3ef138f21d1558d1d3414bc6f88b320612805700ef766fc4348a3d86d4",
       "output_path": "packctl/validation.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -20892,10 +20912,20 @@
           "source_path": "skills/rigorous-data-audit/SKILL.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "#215: the description drops the hint to pre-output-discipline, a skill the pack does not ship.",
+          "license": "MIT",
+          "source_hash": "a876b8b8e6205459d52976706052fb5220f93fa9034529e97aa3395e5f75f259",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rigorous-data-audit/SKILL.md",
+          "source_revision": "is-215-dangling-routing-hints@2026-11-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "8b8212fa52c154fedacfa718ade1482bb1ec9f8dfc09974e0ec979ab1a221877",
+      "output_hash": "a876b8b8e6205459d52976706052fb5220f93fa9034529e97aa3395e5f75f259",
       "output_path": "skills/rigorous-data-audit/SKILL.md",
       "routing_artifact_id": "skill/rigorous-data-audit",
       "verification_level": "cross_checked"
@@ -21616,10 +21646,20 @@
           "source_path": "skills/rip-vehicle-import/SKILL.md",
           "source_revision": "dayzmake-v3.1.0@2026-11-17",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "#215: the description drops the publisher and engine names (AGENTS.md, the source game is called rip here) and the hint to forza-to-dayz, which the pack does not ship.",
+          "license": "MIT",
+          "source_hash": "d8644f56b610569ccd78ca8066a02e6fe9432faf028dfbdb5d6f195af598b4a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/rip-vehicle-import/SKILL.md",
+          "source_revision": "is-215-dangling-routing-hints@2026-11-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4ddf3b96c94c96fd561ebf7744de3e7e41102e8aa147edd3113ce78f383f8e2e",
+      "output_hash": "d8644f56b610569ccd78ca8066a02e6fe9432faf028dfbdb5d6f195af598b4a0",
       "output_path": "skills/rip-vehicle-import/SKILL.md",
       "routing_artifact_id": "skill/rip-vehicle-import",
       "verification_level": "cross_checked"
@@ -24601,10 +24641,20 @@
           "source_path": "tests/packctl/test_validation.py",
           "source_revision": "kp-chips-packctl@2026-10-03",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "#215: positive, single-target negative and two-target negative tests of SKILL-ROUTING-HINT-DANGLING.",
+          "license": "MIT",
+          "source_hash": "28d15694ecdd2477fadb283e18d361bdd5db96a7903a5b63befa9c6d41841484",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_validation.py",
+          "source_revision": "is-215-dangling-routing-hints@2026-11-26",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "bc759d929b7e07d1ce69f26e4b588c4d50fad3378d2399fb5cada2fc822e2019",
+      "output_hash": "28d15694ecdd2477fadb283e18d361bdd5db96a7903a5b63befa9c6d41841484",
       "output_path": "tests/packctl/test_validation.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"

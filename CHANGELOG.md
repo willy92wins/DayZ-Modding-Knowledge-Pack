@@ -7,6 +7,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `packctl` (`validate_skills`) and skill descriptions (#215): fixed dangling routing hints in
+  `skills/rigorous-data-audit/SKILL.md` (dropped `not output-discipline: pre-output-discipline`)
+  and `skills/rip-vehicle-import/SKILL.md` (replaced unshipped source-game/engine names and
+  dangling target with the canonical `rip-import` description), and added the
+  `SKILL-ROUTING-HINT-DANGLING` check in `packctl/validation.py` with tests in
+  `tests/packctl/test_validation.py` so every `Not ...: <skill>` routing hint resolves to a
+  directory under `skills/`.
+
 - `dayz-animation-pipeline` and `blender-animation`, documentation gaps closed from the agent
   run of 2026-11-25: `references/weapon-anim-blender-complete.md` §1.6 names the measured
   DayZATool option `--extract-mdl` (XOB→SEModel), not `--extract-model`; §1.2 states that the

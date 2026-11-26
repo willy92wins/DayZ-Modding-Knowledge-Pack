@@ -1,6 +1,6 @@
 ---
 name: rip-vehicle-import
-description: "Use when: ripped racing-game Grub, rip vehicle import, non-Forza Grub rip. Same family-B template as forza-to-dayz (that name survives). Not ForzaTech/ForzaDayZ: forza-to-dayz; not vanilla CarScript: dayz-vehicles."
+description: "Use when: ripped racing-game Grub, rip vehicle import, rip-import of a source-game vehicle. Family-B template. Not vanilla CarScript: dayz-vehicles."
 ---
 
 # Ripped racing-game vehicle → DayZ — family B adapter (CAMBIO-2)
