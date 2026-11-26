@@ -23,9 +23,9 @@ ES_RESERVED_WORD_IDENTIFIER_RULE_ID = "ES-RESERVED-WORD-IDENTIFIER"
 #           `Broken expression (missing ';'?)`, then
 #           `Can't compile "Mission" script module!`
 #   owned   local `EntityAI owned;`, 2026-07-20: `Broken expression (missing
-#           ';'?)` (enforce-script-reference SKILL.md, SP-073)
+#           ';'?)` (dayz-enforce-script-reference SKILL.md, SP-073)
 #   out     a local named `out`: `Broken expression (missing ';'?)`
-#           (enforce-script-reference SKILL.md, "Three ways to break the
+#           (dayz-enforce-script-reference SKILL.md, "Three ways to break the
 #           compiler that do not produce a readable error")
 #
 # Vanilla uses all four as keywords, never as names: `sealed class Contact`

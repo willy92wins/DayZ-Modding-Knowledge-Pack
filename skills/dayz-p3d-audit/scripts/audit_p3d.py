@@ -387,7 +387,7 @@ def check_wheel_slot_firegeo(p, config_text):
     exists in the body's FireGeometry LOD (not only in visual LODs). A selection
     present only in visual LODs binds the slot as inventory but PhysX never seats
     the wheel -> WheelCountPresent()=0, silent (no RPT error). See
-    enforce-script-reference 'Wheel attachment to simulation'."""
+    dayz-enforce-script-reference 'Wheel attachment to simulation'."""
     issues = []
     if not _is_vehicle_body(p):
         return issues

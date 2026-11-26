@@ -146,9 +146,9 @@ def test_source_map_rejects_private_physical_root(repo_factory) -> None:
 def test_skill_clean_description_and_allowed_frontmatter(repo_factory) -> None:
     root = repo_factory(
         {
-            "skills/demo/SKILL.md": (
+            "skills/dayz-demo/SKILL.md": (
                 "---\n"
-                "name: demo\n"
+                "name: dayz-demo\n"
                 "description: Use for a clean fixture.\n"
                 "license: MIT\n"
                 "compatibility: DayZ 1.29\n"
@@ -164,11 +164,48 @@ def test_skill_clean_description_and_allowed_frontmatter(repo_factory) -> None:
     assert validate_skills(root) == []
 
 
+def test_skill_name_prefix_valid_and_shared_pass(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/dayz-x/SKILL.md": (
+                "---\n"
+                "name: dayz-x\n"
+                "description: Clean prefixed skill fixture.\n"
+                "---\n"
+                "# DayZ X\n"
+            ),
+            "skills/_shared/conventions.md": "# Shared conventions\n",
+        }
+    )
+
+    assert validate_skills(root) == []
+
+
+def test_skill_name_prefix_missing_prefix_fails(repo_factory) -> None:
+    root = repo_factory(
+        {
+            "skills/blender-x/SKILL.md": (
+                "---\n"
+                "name: blender-x\n"
+                "description: Unprefixed skill fixture.\n"
+                "---\n"
+                "# Blender X\n"
+            )
+        }
+    )
+
+    findings = validate_skills(root)
+
+    assert codes(findings) == ["SKILL-NAME-PREFIX"]
+    assert findings[0]["path"] == "skills/blender-x"
+    assert findings[0]["evidence"] == "blender-x"
+
+
 def test_skill_description_1025_fails(repo_factory) -> None:
     root = repo_factory(
         {
-            "skills/demo/SKILL.md": (
-                "---\nname: demo\ndescription: " + ("x" * 1025) + "\n---\n# Demo\n"
+            "skills/dayz-demo/SKILL.md": (
+                "---\nname: dayz-demo\ndescription: " + ("x" * 1025) + "\n---\n# Demo\n"
             )
         }
     )
@@ -179,9 +216,9 @@ def test_skill_description_1025_fails(repo_factory) -> None:
 def test_skill_routing_hint_existing_target_passes(repo_factory) -> None:
     root = repo_factory(
         {
-            "skills/demo/SKILL.md": (
+            "skills/dayz-demo/SKILL.md": (
                 "---\n"
-                "name: demo\n"
+                "name: dayz-demo\n"
                 'description: "Use when: demo. Not vanilla CarScript: dayz-vehicles."\n'
                 "---\n"
                 "# Demo\n"
@@ -203,9 +240,9 @@ def test_skill_routing_hint_existing_target_passes(repo_factory) -> None:
 def test_skill_routing_hint_dangling_target_fails(repo_factory) -> None:
     root = repo_factory(
         {
-            "skills/demo/SKILL.md": (
+            "skills/dayz-demo/SKILL.md": (
                 "---\n"
-                "name: demo\n"
+                "name: dayz-demo\n"
                 'description: "Use when: audit; not output-discipline: pre-output-discipline."\n'
                 "---\n"
                 "# Demo\n"
@@ -216,7 +253,7 @@ def test_skill_routing_hint_dangling_target_fails(repo_factory) -> None:
     findings = validate_skills(root)
 
     assert codes(findings) == ["SKILL-ROUTING-HINT-DANGLING"]
-    assert findings[0]["path"] == "skills/demo/SKILL.md"
+    assert findings[0]["path"] == "skills/dayz-demo/SKILL.md"
     assert findings[0]["line"] == 1
     assert "pre-output-discipline" in str(findings[0]["evidence"])
 
@@ -224,9 +261,9 @@ def test_skill_routing_hint_dangling_target_fails(repo_factory) -> None:
 def test_skill_routing_hint_two_targets_flags_only_missing(repo_factory) -> None:
     root = repo_factory(
         {
-            "skills/demo/SKILL.md": (
+            "skills/dayz-demo/SKILL.md": (
                 "---\n"
-                "name: demo\n"
+                "name: dayz-demo\n"
                 'description: "Use when: demo. Not X: dayz-vehicles, missing-skill."\n'
                 "---\n"
                 "# Demo\n"
@@ -250,9 +287,9 @@ def test_skill_routing_hint_two_targets_flags_only_missing(repo_factory) -> None
 def test_skill_extra_frontmatter_fails(repo_factory) -> None:
     root = repo_factory(
         {
-            "skills/demo/SKILL.md": (
+            "skills/dayz-demo/SKILL.md": (
                 "---\n"
-                "name: demo\n"
+                "name: dayz-demo\n"
                 "description: Clean description.\n"
                 "invented-field: false\n"
                 "---\n"

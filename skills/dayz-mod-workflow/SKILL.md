@@ -6,7 +6,7 @@ description: >
   anti-confabulation (verify every API), debug hierarchy (top-down 6-layer
   diagnosis), edge case checklists, error catalog of verified recurring mistakes,
   checkpoint/handoff system for context degradation. Use ALONGSIDE domain skills
-  (enforce-script-reference, dayz-ui-development, dayz-particles, etc.), not
+  (dayz-enforce-script-reference, dayz-ui-development, dayz-particles, etc.), not
   instead of them. Triggers: "implement", "write the code", "build the mod",
   "fix the bug", "debug this", "it doesn't work", "actions not showing",
   sprint execution, or any transition from plan to code/fix. Concurrent
@@ -31,7 +31,7 @@ Before writing or fixing ANY code:
 
 - [ ] Is there an approved plan/design? If NO -> plan first.
 - [ ] Which domain skills apply? Load them NOW (not from memory):
-  - Enforce Script -> `enforce-script-reference`
+  - Enforce Script -> `dayz-enforce-script-reference`
   - UI/layout -> `dayz-ui-development`
   - Particles -> `dayz-particles`
   - 3D models -> `dayz-model-pipeline`
@@ -53,7 +53,7 @@ For EACH file produced or modified:
 
 ### 2a. Write/edit the file
 
-Follow all rules from `enforce-script-reference`. When in doubt about ANY
+Follow all rules from `dayz-enforce-script-reference`. When in doubt about ANY
 function, class, method, or parameter:
 
 **GOLDEN RULE: If it's not in a loaded skill AND not in vanilla/mod code the
@@ -201,7 +201,7 @@ Source: https://github.com/StarDZ-Team/DayZ-Modding-Wiki/blob/main/en/08-tutoria
 
 ### 4.2 Enforce Script - General
 
-Defer to `enforce-script-reference` for full rules. Key verified restrictions:
+Defer to `dayz-enforce-script-reference` for full rules. Key verified restrictions:
 
 - [ ] No ternary operators (`? :` does not compile)
 - [ ] `ref` on owning member fields; never on params/returns/typedefs or `new ref` (valid and redundant on locals)
@@ -756,7 +756,7 @@ position. Move it BEFORE the irreversible call.
 
 Severity-inflation discipline (crash vs VM exception vs corruption vs degradation vs cosmetic — verify before labelling) and multi-agent audit context isolation (independent `path:line` per agent, ≥1 adversarial agent, ≥20% random re-check) are in **`references/audit-escalation.md`**.
 
-> These OVERLAP the **`rigorous-data-audit`** skill — invoke that skill to RUN a data-critical audit (its 7-step, 8-parallel-auditor workflow); the reference here is only the severity-labelling + auditor-independence protocol note.
+> These OVERLAP the **`dayz-rigorous-data-audit`** skill — invoke that skill to RUN a data-critical audit (its 7-step, 8-parallel-auditor workflow); the reference here is only the severity-labelling + auditor-independence protocol note.
 
 ## (added 2026-07-23) When changing a scheduler interval constant, update verification harnesses with hardcoded counts
 
@@ -815,7 +815,7 @@ side separately. Wrapping a failing declaration in a side guard is not a fix unl
 that still compiles it also passes.
 
 The language rule for where a `modded class` declaration must live belongs to
-`enforce-script-reference`; this workflow section governs the two-sided compile gate.
+`dayz-enforce-script-reference`; this workflow section governs the two-sided compile gate.
 
 ## Script-module capacity is calibrated by family (SP-209, added 2026-08-31)
 

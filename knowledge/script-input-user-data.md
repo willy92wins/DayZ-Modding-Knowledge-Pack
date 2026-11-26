@@ -7,7 +7,7 @@ carries it with the player's input, and script on the receiving side reads it
 back as a `ParamsReadContext`. This note maps that path only — the class, the
 guard that gates it, the vanilla write sites, and the engine-driven receive
 chain. For `ScriptRPC` itself (target object, `rpc_type`, recipient identity),
-see `skills/enforce-script-reference/references/networking.md`; nothing here
+see `skills/dayz-enforce-script-reference/references/networking.md`; nothing here
 replaces it.
 
 All citations are the official scripts, revision `119356`, under `scripts/`.
@@ -151,7 +151,7 @@ Use the input channel when the message *is* player input — something the
 owning client originates and the server must validate as input. Use
 `ScriptRPC` for everything addressed: a specific object, a specific player, or
 a reply. The full `ScriptRPC` contract, including the server-to-client target
-rule, stays in `skills/enforce-script-reference/references/networking.md`.
+rule, stays in `skills/dayz-enforce-script-reference/references/networking.md`.
 [EXACT][CLAIM-INPUT-USERDATA-VS-SCRIPTRPC]
 
 ## Gotchas

@@ -7,7 +7,7 @@
 > Provenance: `[LFQuad ✓]` = verified this session against the real mod (config.cpp / model.cfg /
 > raw PBO bytes), 2026-06. Line refs are into `P:\LFQuad\config.cpp` and `P:\LFQuad\model.cfg`.
 
-> REDIRECT CAMBIO-1 (familia B): `../../rip-vehicle-import/cookbooks/family-b/coche-blanco.md`.
+> REDIRECT CAMBIO-1 (familia B): `../../dayz-rip-vehicle-import/cookbooks/family-b/coche-blanco.md`.
 
 ## 2. ODOL vs MLOD changes what `model.cfg` MEANS at runtime
 

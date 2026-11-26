@@ -197,7 +197,7 @@ class CfgNonAIVehicles
 - `model` path must point to the proxy .p3d file that exists in the addon
 - Class name must be `Proxy` followed by the basename of `model`, compared case-insensitively
   (`MySlot.p3d` -> `ProxyMySlot`). A class named otherwise draws nothing and logs nothing, also
-  for an inventory slot: `rip-vehicle-import` `cookbooks/family-b/attach-invisible.md`, rule (d),
+  for an inventory slot: `dayz-rip-vehicle-import` `cookbooks/family-b/attach-invisible.md`, rule (d),
   measured in game on LFQuad3, whose three inventory slots drew nothing until its proxy classes
   were renamed. Check it in `config.cpp` before measuring any proxy frame
 - Class name (`ProxyMySlot`) must be unique across all loaded addons, so the proxy basename must be too

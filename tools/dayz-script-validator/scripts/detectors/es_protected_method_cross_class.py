@@ -17,7 +17,7 @@ ES_PROTECTED_METHOD_CROSS_CLASS_RULE_ID = "ES-PROTECTED-METHOD-CROSS-CLASS"
 # WARN, not FAIL: the refusal is measured for fields only. Enforce
 # `protected` reaches only the declaring class and its descendants, and a
 # protected FIELD read from an unrelated class stops the module
-# (`Variable 'm_DeviceId' is protected`, enforce-script-reference SKILL.md,
+# (`Variable 'm_DeviceId' is protected`, dayz-enforce-script-reference SKILL.md,
 # "Moving a body between modules", and ES-PROTECTED-CROSS-MODULE). No
 # compile log in this pack shows the same for a METHOD. Pipeline inbox
 # fb-20261006-002741-28fa (LFSkateboard) has the shape: `protected void

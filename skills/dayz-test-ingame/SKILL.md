@@ -31,7 +31,7 @@ Cite-then-verify discipline:
 
 Use when the user wants to see a mod running in-game, iterate scripts/configs live, or stand
 up a local server+client. Do NOT use to author the mod (that is `dayz-model-pipeline` /
-`enforce-script-reference`), to validate/pack only (`dayz-pbo-build`), or to configure a
+`dayz-enforce-script-reference`), to validate/pack only (`dayz-pbo-build`), or to configure a
 production server. The retail `DayZ_x64.exe` is for final pre-release validation only —
 default to the diag exe. Retail is manual-only and external to this launcher.
 On this box retail does not load mission (LL-479): B-4 accredits 3_Game+4_World and 5_Mission
@@ -530,7 +530,7 @@ Croco quadbike) IN THE SAME RUN before touching geometry.
 
 - `WheelCountPresent()` - how many wheels the simulation actually seated (the gate).
   `0` while `WheelCount()` returns N means the slot/FireGeometry wiring is wrong; see
-  the `enforce-script-reference` wheel-attachment rule and audit check SP-017.
+  the `dayz-enforce-script-reference` wheel-attachment rule and audit check SP-017.
 - `WheelHasContact(i)` per wheel - `1` = touching ground, `0` = airborne. Print the
   four as a bitstring (`wc=1111` good; `wc=0000` = the whole vehicle is suspended off
   the ground, a placement/clearance problem, not a sim problem). Vanilla refs:

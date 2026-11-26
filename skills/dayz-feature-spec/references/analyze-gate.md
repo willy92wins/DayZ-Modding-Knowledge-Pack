@@ -41,7 +41,7 @@ Focus on high-signal findings. Do not dump raw artifacts into the report.
 ### D. Constitution alignment
 
 - Any spec/plan/code element conflicting with a CLAUDE.md MUST rule (e.g. R2 unverified API, R7 invariant not traced to all call-sites, R6 comment style) → CRITICAL for correctness rules, HIGH for style.
-- Missing mandated gate (e.g. data-critical change without rigorous-data-audit queued) → CRITICAL.
+- Missing mandated gate (e.g. data-critical change without dayz-rigorous-data-audit queued) → CRITICAL.
 
 ## Severity heuristic
 

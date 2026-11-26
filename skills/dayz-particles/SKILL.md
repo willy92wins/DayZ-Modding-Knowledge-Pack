@@ -291,7 +291,7 @@ EEDelete + LFPG_OnWiresCut + destructor.
    Guards 1 and 7 are complementary, not redundant: `#ifndef SERVER` (pitfall 1) is
    compile-time exclusion for whole client-only blocks; the null-check (this pitfall)
    is runtime safety for code compiled on both sides (a diag/SP client-server build has
-   no SERVER define but still runs server-side). Side checks: `enforce-script-reference`
+   no SERVER define but still runs server-side). Side checks: `dayz-enforce-script-reference`
    hard rules 19-20.
 8. **SEffectManager.DestroyEffect()** is the ONLY safe Effect cleanup.
 9. **AIR_RESISTANCE** controls smoke rise. FireplaceBase adjusts for ceilings.

@@ -11,8 +11,8 @@ description: >
   action missing, CanBuild/CanBuildPart, RegisterPartForSync, blocked
   dismantle, missing collision or hologram placement. Always invoke before
   authoring/debugging a buildable structure or its persistence. Delegate
-  geometry to dayz-model-pipeline, script APIs to enforce-script-reference,
-  persistence audit to rigorous-data-audit and packaging to dayz-pbo-build.
+  geometry to dayz-model-pipeline, script APIs to dayz-enforce-script-reference,
+  persistence audit to dayz-rigorous-data-audit and packaging to dayz-pbo-build.
   Also 1.30: ConstructionBase/Rebuilding, BuildPartServerEx, bricks/mortar, fence code lock.
   Not terrain holes: dayz-underground.
 ---
@@ -202,7 +202,7 @@ base-building entity done, verify ALL of these — each is a silent-corruption s
   hand you.** (1) The wall normal: neither `RaycastRVProxy.dir` nor `RaycastRV.contactDir` is a face normal for
   object hits — both are the ray direction, so a yaw taken from them faces the camera and the ghost's box
   collides with the wall at any angle. Take it from `DayZPhysics.RayCastBullet` on
-  `PhxInteractionLayers.BUILDING` and keep the fire-geometry ray for identity (`enforce-script-reference`
+  `PhxInteractionLayers.BUILDING` and keep the fire-geometry ray for identity (`dayz-enforce-script-reference`
   SP-LFS-2). (2) The ground: pick the nearest support at or BELOW the aimed point (Y ≤ aimY + 2 mm); a ray
   started 2 m above the point selects sills, ledges and the floor above. (3) The collision box: lift its
   bottom 5 cm like `IsCollidingBBox` (`hologram.c:547,556`) or every building floor blocks placement, and trim
@@ -222,7 +222,7 @@ Part `id` 1..31 → SyncParts01, 32..62 → SyncParts02, 63..93 → SyncParts03.
 
 **R9 gate:** any mod that adds parts, changes the bitmask packing or the `id` ranges, or touches
 `OnStoreSave`/`OnStoreLoad` ordering is modifying player progression — a bug means lost bases after a
-restart. Delegate to `rigorous-data-audit` (R9) BEFORE declaring release-safe. Full detail, the 93-part
+restart. Delegate to `dayz-rigorous-data-audit` (R9) BEFORE declaring release-safe. Full detail, the 93-part
 cap, the version bumps (`GetDamageSystemVersionChange()→111`; Fence gate persistence bumped at v110) and
 the hand-off checklist are in `references/persistence-audit.md`.
 (since 1.30: `BaseBuildingBase` packing is unchanged. `Rebuilding` is a second, versioned stream on
@@ -257,8 +257,8 @@ Do NOT build new features on `ActionPlugIntoFence` — it is DEPRECATED (`action
 | Concern | Skill |
 |---|---|
 | `.p3d` selections / memory points / the `Deployed` proxy / LODs / missing-collision or action-target bugs | `dayz-model-pipeline` (+ `dayz-p3d-audit`) |
-| config.cpp + Enforce script — RPC, sync vars, `OnStoreSave/Load`, `modded class`, side checks | `enforce-script-reference` |
-| Persistence / bitmask packing / recovery paths (data-critical, id ranges, save ordering) | `rigorous-data-audit` (R9) |
+| config.cpp + Enforce script — RPC, sync vars, `OnStoreSave/Load`, `modded class`, side checks | `dayz-enforce-script-reference` |
+| Persistence / bitmask packing / recovery paths (data-critical, id ranges, save ordering) | `dayz-rigorous-data-audit` (R9) |
 | Show/hide a part (`SetAnimationPhase`), gate open/close, AnimationSources | `dayz-animation-pipeline` |
 | Build / deploy / launch to test; smoke it in-game | `dayz-pbo-build` + `dayz-test-ingame` (+ `dayz-mcp-verify`) |
 | Terrain holes, underground triggers, `disallowedTypesInUnderground`, bunkers under the terrain | `dayz-underground` |
@@ -313,7 +313,7 @@ Digest J (`work/out2/digest-J-construction-locks-bunker.md` §§1,3–5). Every 
 - **`disableSimulation`.** `[CHANGELOG]` house entities may set `disableSimulation` to skip ticking (`changelog-1.30-exp-modding.md:13`; native `Entity.c:3-6`). Not a `BaseBuildingBase` field.
 - **Activation.** Any `CfgVehicles` class with a `Construction` subclass gets the component at init (`EntityAI.c:248-249`). Rebuilding parts read new keys: per-part decay (`can_part_decay`, `part_decay_threshold`, `part_decay_rate`, global `disableBaseDecay`), `StaticsSupportData`, `EffectsData`, `custom_part_type`, `skipOnRepair`/`skipOnDismantle`. Table with readers: `references/dayz-1-30-construction-rebuilding.md` §9.2.
 - **Rebuildable map buildings were scripts only on 1.30.164014.** The Nasdara houses and `Land_IrrigationTunnel_Entrance_01` had script classes but no configs or models in that install (§9.4). Terrain holes and underground areas: `dayz-underground`.
-- **Rebuildable houses carry attachment slots on the building itself (DayZDiag 1.30.164200)** [EXACT][CLAIM-BB-130-HOUSE-SLOTS]: in that build the configs are there (the line above describes 1.30.164014). A server-side scan of `CfgVehicles` (classes that `IsKindOf "House"`, `scope` ≥ 1, non-empty `attachments[]`) found 32 classes: 22 houses from `Land_House_1M1` to `Land_House_3S2_Dam2`, whose rebuild slots are `RB_LvL<n>_{Log,Plank,Nail,MetalSheet,MetalWire}` plus `RB_LvL<n>_{Brick,MortarMix}` on all but `Land_House_1M1`, `Land_House_1M2` and `Land_House_1S1`, with `<n>` up to 1 on the `1*` houses, 2 on the `2*` and 3 on the `3*`, and lock slots `Att_CombinationLock<n>_{Wood,Metal}` / `Att_CodeLock<n>_{Wood,Metal}` in a number that varies per house; `Land_Bunker_Basement_*` / `Land_Bunker_Shelter_*` with `Att_CodeLock`, `Land_WaterWell_Brick`, `Land_IrrigationTunnel_Entrance_01` (`RB_LvL1/2_{Rope,Stick}`) and `Land_Radio_PanelBig` / `Land_Radio_PanelPAS` (`LargeBattery`). `world_spawn(Land_House_1M1)` on Chernarus answered `declared_slots` with the nine level-1 slots, and `inventory_attach(WoodenPlank, slot RB_LvL1_Plank)` filled one. Moves into and out of those slots reach `ItemBase.EEItemLocationChanged` with the house as the hierarchy root (`enforce-script-reference`, `references/dayz-1-30-enforce-script.md` §3.2). Script class: `Land_House_1M1 : BuildingSuper` (`4_World/Entities/Building/Rebuildable/House_1M1.c:1`); slot rules in `BuildingBase.CanReceiveAttachment` / `CanReleaseAttachment` (`4_World/Entities/Game/Super/Building.c:297`, `:372`). Not measured: the Nasdara map itself, models and rebuild actions on these slots.
+- **Rebuildable houses carry attachment slots on the building itself (DayZDiag 1.30.164200)** [EXACT][CLAIM-BB-130-HOUSE-SLOTS]: in that build the configs are there (the line above describes 1.30.164014). A server-side scan of `CfgVehicles` (classes that `IsKindOf "House"`, `scope` ≥ 1, non-empty `attachments[]`) found 32 classes: 22 houses from `Land_House_1M1` to `Land_House_3S2_Dam2`, whose rebuild slots are `RB_LvL<n>_{Log,Plank,Nail,MetalSheet,MetalWire}` plus `RB_LvL<n>_{Brick,MortarMix}` on all but `Land_House_1M1`, `Land_House_1M2` and `Land_House_1S1`, with `<n>` up to 1 on the `1*` houses, 2 on the `2*` and 3 on the `3*`, and lock slots `Att_CombinationLock<n>_{Wood,Metal}` / `Att_CodeLock<n>_{Wood,Metal}` in a number that varies per house; `Land_Bunker_Basement_*` / `Land_Bunker_Shelter_*` with `Att_CodeLock`, `Land_WaterWell_Brick`, `Land_IrrigationTunnel_Entrance_01` (`RB_LvL1/2_{Rope,Stick}`) and `Land_Radio_PanelBig` / `Land_Radio_PanelPAS` (`LargeBattery`). `world_spawn(Land_House_1M1)` on Chernarus answered `declared_slots` with the nine level-1 slots, and `inventory_attach(WoodenPlank, slot RB_LvL1_Plank)` filled one. Moves into and out of those slots reach `ItemBase.EEItemLocationChanged` with the house as the hierarchy root (`dayz-enforce-script-reference`, `references/dayz-1-30-enforce-script.md` §3.2). Script class: `Land_House_1M1 : BuildingSuper` (`4_World/Entities/Building/Rebuildable/House_1M1.c:1`); slot rules in `BuildingBase.CanReceiveAttachment` / `CanReleaseAttachment` (`4_World/Entities/Game/Super/Building.c:297`, `:372`). Not measured: the Nasdara map itself, models and rebuild actions on these slots.
 
 ### What breaks (1.29 mods)
 

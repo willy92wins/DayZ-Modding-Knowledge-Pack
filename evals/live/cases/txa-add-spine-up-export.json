@@ -2,7 +2,7 @@
   "schema_version": 1,
   "case_id": "txa-add-spine-up-export",
   "family": "dayz-animation",
-  "skill_under_test": "blender-animation",
+  "skill_under_test": "dayz-blender-animation",
   "question": "fixture/export_bones.json is the bone list a script is about to export as a DayZ .txa wave animation for Workbench, taken from a rig that carries extra bones. Audit it: name every bone that must NOT be exported and give the specific reason for each, distinguishing bones excluded because the animation is additive from bones excluded because their parents do not exist in the vanilla skeleton at all. Name the vanilla skeleton, name the export type the file must declare, and say what the export must be driven by rather than written by hand. Do not simply say to remove unused bones. End your answer with a final CITATIONS: block containing exactly one path:line citation per line. Each citation must point to either a supplied fixture or a relative path in the pack, and may append the exact cited line in double quotes.",
   "fixtures": {
     "fixture/export_bones.json": "{\n  \"target\": \"wave_2s_30fps.txa\",\n  \"bones\": [\n    \"EntityPosition\",\n    \"Pelvis\",\n    \"Spine\",\n    \"Spine1\",\n    \"Spine2\",\n    \"Neck\",\n    \"Head\",\n    \"RightShoulder\",\n    \"RightArm\",\n    \"RightForeArm\",\n    \"RightHand\",\n    \"RightHand_Dummy\",\n    \"RightHandRing\",\n    \"RightHandRing1\",\n    \"RightHandPinky\",\n    \"RightHandPinky1\",\n    \"LeftUpLeg\",\n    \"RightUpLeg\"\n  ]\n}\n"

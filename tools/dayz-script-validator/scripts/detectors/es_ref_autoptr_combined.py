@@ -4,7 +4,7 @@ import re
 ES_REF_AUTOPTR_COMBINED_RULE_ID = "ES-REF-AUTOPTR-COMBINED"
 
 
-# enforce-script-reference SKILL.md:38 (rule 13, under section header :21
+# dayz-enforce-script-reference SKILL.md:38 (rule 13, under section header :21
 # "Syntax Restrictions (compiler enforced or runtime crash)"):
 # "Never combine `ref` and `autoptr` on the same field — pick one".
 # Match the two qualifiers adjacent (the leading qualifiers of a field
@@ -19,7 +19,7 @@ ES_REF_AUTOPTR_COMBINED_RE = re.compile(
 ES_REF_AUTOPTR_COMBINED_MESSAGE = (
     "[WARN] {rel_path} line {line}: `ref` and `autoptr` combined on the same "
     "field declaration. Enforce allows only one strong-reference qualifier "
-    "per field — pick one (enforce-script-reference SKILL.md:38). "
+    "per field — pick one (dayz-enforce-script-reference SKILL.md:38). "
     "`ref array<autoptr T>` (separated by a generic) is valid and not flagged."
 )
 

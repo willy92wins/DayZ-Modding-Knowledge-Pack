@@ -344,7 +344,7 @@ Gameplay physics cannot leave the authority; only cosmetic physics can.
 
 ## Cross-skill pointers
 
-- `enforce-script-reference` — language rules, RPC/SyncVars, config.cpp, action system basics.
+- `dayz-enforce-script-reference` — language rules, RPC/SyncVars, config.cpp, action system basics.
 - `dayz-p3d-audit` / `dayz-model-pipeline` — building the Geometry/ViewGeo/FireGeo LODs that physics
   and the cursor require.
 - `dayz-mod-workflow` — implementation protocol + DayZDiag/filePatching fast loop.

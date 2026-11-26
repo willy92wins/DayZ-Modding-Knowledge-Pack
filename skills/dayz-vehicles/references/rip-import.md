@@ -67,7 +67,7 @@ with a `PartEnum` attribute. Resolve `game:\` → your `game_path` root for `[ -
   (`bodywide_a`, `fenderswide_a`) — the Manifest is the full catalog; the carbin config selects. For a
   widebody build INCLUDE the `*wide*` and EXCLUDE the stock equivalents (same LOD count = full replacement,
   not flares). The exclusivity is a `[verify]` prior — confirm no z-fight in the visual assemble
-  (blender-visual-review), do not treat it as a fact.
+  (dayz-blender-visual-review), do not treat it as a fact.
 - Wheel rims (`oz_rallyracing_wheellf` etc.): EXCLUDE if reusing the vanilla `sedanwheel.p3d`; the source-game rim
   becomes a post-MVP cosmetic.
 
@@ -207,7 +207,7 @@ BLOCK), not optional steps — skippable verification is how the offline false-g
   ingest one when a future car keeps both Locators and an independent author.)
 - `visual_gate.py <p3d> <out_dir> [--label N] [--views N]` — **generic for ANY DayZ `.p3d`** (added
   2026-06-25). Exports the visual LOD to OBJ and renders N orbit + top + low views via Blender 5.1 headless
-  (the `dayz-3d-viewer` Three.js viewer is retired) + a `blender-visual-review` checklist + an
+  (the `dayz-3d-viewer` Three.js viewer is retired) + a `dayz-blender-visual-review` checklist + an
   unresolved-proxy inventory. CAVEAT (s20 2026-07-02, supersedes the old "reproduces the engine cull"
   claim): it does NOT reproduce the engine — the engine renders the ANTI-cross side and shades with the
   STORED MLOD normals, while Blender no-normals + backface culling shows the +cross side (the opposite);
@@ -958,7 +958,7 @@ class `ProxySUB_BRZ_Wheel_destroyed` did not match the proxy file basename `sub_
 rename. Both fixes verified offline (double-measured); in-game gate = the next drive-test.
 Method lesson: the cheap discriminator was measuring the visual proxies' FRAMES against the
 control BEFORE touching the item's LODs — s36 spent its cycle on the item asset instead.
-Promoted: dayz-vehicles preflight #21 + rip-vehicle-import §attachment-render (2026-07-18).
+Promoted: dayz-vehicles preflight #21 + dayz-rip-vehicle-import §attachment-render (2026-07-18).
 
 **Changing the TRACK means moving the WHOLE corner, and the limit is the hub, not the arch (SP-416, added 2026-10-01, SUB_BRZ s97).** [EXACT] On that car the four wheel proxies carried the SAME frame in every LOD (no per-side rotation), unlike the vanilla controls above, whose wheel frames are mirrored per side (it is the door proxies that share one frame); so shifting the wheel mesh inside the wheel `.p3d` moved the left wheels inboard and the right ones outboard at the same time. Read the four frames first: it is one call. To change the track, move per side: the proxy triangle in every LOD that carries it, the `wheel_<side>_<axle>_*` memory points (axle, damper, damper_axis, damper_land, steering, steering_axis), the `..._damper_land` Geometry box, and the brake/hub chunk plus its merged copies in the far LODs - on SUB_BRZ s97 that was 748 shell points and 1,570 chunk points in total for 10 cm of track (5 cm per side). The travel limit is the brake/hub box reaching the rim's inner face, not the wheel arch; profile the rim sweep (local x, radius) against the brake points before spending a cycle.
 

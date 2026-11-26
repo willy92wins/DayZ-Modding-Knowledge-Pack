@@ -7,6 +7,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `skills/` and `packctl` (`validate_skills`) (#214): prefixed the 13 non-`dayz-` skill folders
+  and names with `dayz-`, rewrote live references across skills, documentation, evals, tools,
+  tests, `promotions/promotion-map.json`, `sources/source-map.json`, `sources/claims.json` and
+  `sources/link-allowlist.json` via `tools/migrate_214_dayz_prefix.py` (leaving historical
+  receipts, adjudications, upstream locators and prior changelog entries intact), and added the
+  `SKILL-NAME-PREFIX` check in `packctl/validation.py` with tests in
+  `tests/packctl/test_validation.py` so every folder directly under `skills/` except `_shared`
+  must start with `dayz-`:
+
+  | Old skill name | New skill name |
+  | --- | --- |
+  | `3d-generation-harness` | `dayz-3d-generation-harness` |
+  | `ai-3d-to-dayz` | `dayz-ai-3d-to-dayz` |
+  | `ardy-motion-generation` | `dayz-ardy-motion-generation` |
+  | `blender-animation` | `dayz-blender-animation` |
+  | `blender-assembly` | `dayz-blender-assembly` |
+  | `blender-visual-review` | `dayz-blender-visual-review` |
+  | `enforce-script-reference` | `dayz-enforce-script-reference` |
+  | `mixamo-retarget` | `dayz-mixamo-retarget` |
+  | `rigorous-data-audit` | `dayz-rigorous-data-audit` |
+  | `rip-vehicle-import` | `dayz-rip-vehicle-import` |
+  | `systematic-debugging` | `dayz-systematic-debugging` |
+  | `task-observer` | `dayz-task-observer` |
+  | `uv-clean-atlas` | `dayz-uv-clean-atlas` |
+
 - `packctl` (`validate_skills`) and skill descriptions (#215): fixed dangling routing hints in
   `skills/rigorous-data-audit/SKILL.md` (dropped `not output-discipline: pre-output-discipline`)
   and `skills/rip-vehicle-import/SKILL.md` (replaced unshipped source-game/engine names and

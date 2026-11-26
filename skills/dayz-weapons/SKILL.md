@@ -153,7 +153,7 @@ or another packed peer. On 1.30.164200 their own models are in `weapons_nasdara.
 | Geometry assembly / LODs / procedural textures | `dayz-model-pipeline` |
 | Texture / rvmat zones | `dayz-texture-pipeline` |
 | `.p3d` collision / action / path audit | `dayz-p3d-audit` |
-| Enforce Script (`modded class`, config-script side) rules | `enforce-script-reference` |
+| Enforce Script (`modded class`, config-script side) rules | `dayz-enforce-script-reference` |
 | PBO packaging / binarize | `dayz-pbo-build` |
 | In-game build/deploy/launch + auto-verify | `dayz-test-ingame` (+ `dayz-mcp-verify`) |
 | 1.30 pistol anim-state getters, open-bolt mag detach, explosion FX API, Nasdara weapons | **THIS skill** → `dayz-1-30-weapons.md` |

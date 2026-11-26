@@ -210,7 +210,7 @@ An entity whose visual LOD contains ONLY proxy triangles (py3d `LOD.add_proxy`, 
 - renders the attached item at the proxy, shows in the vicinity panel and accepts drag in/out (LFSecure V3 `LFS_Armory_Probe`, Guillermo in-game), and persists with its attachments across restarts without `types.xml`;
 - needs `autocenter = 0` in its CfgVehicles class: without it the engine recentres the model (memory points and bounding centre shifted);
 - still collides with the player: its bounding volume blocks movement even with no Geometry, no ViewGeometry and no FireGeometry (four variants measured). Design proxies and cursor boxes inside geometry that already blocks, or prototype without a physics body before accepting the placement;
-- verify with BOTH a storage-loaded instance and a runtime-created one: attachments created in `EEInit`/the creation tick never reach clients (see enforce-script-reference SP-LFS-3).
+- verify with BOTH a storage-loaded instance and a runtime-created one: attachments created in `EEInit`/the creation tick never reach clients (see dayz-enforce-script-reference SP-LFS-3).
 
 ### Vanilla Attachment Model Paths (DayZ SA)
 

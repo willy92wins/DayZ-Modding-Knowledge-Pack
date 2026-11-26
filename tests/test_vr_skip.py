@@ -10,7 +10,7 @@ from pathlib import Path
 REFERENCES = (
     Path(__file__).resolve().parents[1]
     / "skills"
-    / "blender-visual-review"
+    / "dayz-blender-visual-review"
     / "references"
 )
 

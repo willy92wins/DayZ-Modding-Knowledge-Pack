@@ -1,6 +1,6 @@
 ---
 name: dayz-realistic-animation-director
-description: Dirige de principio a fin la creación, corrección, pulido, exportación, integración y verificación de animaciones realistas para DayZ. Úsala cuando el resultado deba sentirse físicamente creíble en jugador, manos y armas, recargas, unstuck/unjam, locomoción, criaturas, ocupantes de vehículos, mecanismos, props o simulaciones; especialmente ante clipping, dedos cruzados, articulaciones sobreextendidas, contacto falso, objetos que no siguen la mano, stutter, loops defectuosos o discrepancias Blender-vs-in-game. Orquesta `blender-animation` para autoría y `dayz-animation-pipeline` para contratos del motor; no sustituye consultas puramente técnicas sobre config, ASI, skeletons o exportación.
+description: Dirige de principio a fin la creación, corrección, pulido, exportación, integración y verificación de animaciones realistas para DayZ. Úsala cuando el resultado deba sentirse físicamente creíble en jugador, manos y armas, recargas, unstuck/unjam, locomoción, criaturas, ocupantes de vehículos, mecanismos, props o simulaciones; especialmente ante clipping, dedos cruzados, articulaciones sobreextendidas, contacto falso, objetos que no siguen la mano, stutter, loops defectuosos o discrepancias Blender-vs-in-game. Orquesta `dayz-blender-animation` para autoría y `dayz-animation-pipeline` para contratos del motor; no sustituye consultas puramente técnicas sobre config, ASI, skeletons o exportación.
 ---
 
 # DayZ Realistic Animation Director
@@ -11,7 +11,7 @@ Produce a credible animation and close its integration with honest evidence. Thi
 
 Before acting, read [authority-and-routing.md](references/authority-and-routing.md).
 
-- Invoke `blender-animation` before operating on Actions, rigs, constraints, curves, renders, or export from Blender.
+- Invoke `dayz-blender-animation` before operating on Actions, rigs, constraints, curves, renders, or export from Blender.
 - Invoke `dayz-animation-pipeline` before deciding format, skeleton, export mask, FPS/frame budget, notetracks, anim graph/ASI, compile, wiring, or DayZ integration.
 - Invoke additional domain skill indicated in [authority-and-routing.md](references/authority-and-routing.md) for characters, creatures, vehicles, P3D, retargeting, or in-game test; then apply checks from [domain-gates.md](references/domain-gates.md).
 - In case of conflict, specialized authority wins. Record divergence and stop affected gate; do not invent a third rule.
@@ -28,7 +28,7 @@ If the request is strictly technical —for example, choosing an `AnimationSourc
 | Mocap/external donor | applicable retargeting skill; never without source→target map |
 | Runtime test | active `dayz-test-ingame`/`dayz-mcp-verify`, with lease and lifecycle (in 1.30: Workbench Enfusion 2021 Live Editing) |
 
-`blender-animation` and `dayz-animation-pipeline` remain mandatory for authoring and integration respectively; skills in the table do not replace them.
+`dayz-blender-animation` and `dayz-animation-pipeline` remain mandatory for authoring and integration respectively; skills in the table do not replace them.
 
 ## Three checks that never substitute for each other
 
@@ -79,7 +79,7 @@ For a continuous window of contact, collision, locking, order, joint range, or c
 
 ### 3. Blocking
 
-With `blender-animation`, author only golden poses: start, anticipation, contact, maximum effort, release, recovery, and end.
+With `dayz-blender-animation`, author only golden poses: start, anticipation, contact, maximum effort, release, recovery, and end.
 
 - Render each pose in on-axis view and at least one oblique view.
 - Validate anatomy, silhouette, contact, and collision before interpolating.
@@ -88,7 +88,7 @@ With `blender-animation`, author only golden poses: start, anticipation, contact
 
 ### 4. Motion and effort
 
-- Apply blocking → spline → polish via `blender-animation`.
+- Apply blocking → spline → polish via `dayz-blender-animation`.
 - Use timing, spacing, arcs, anticipation, overlap, moving holds, and settle according to physical intent.
 - Validate position, rotation, velocity, acceleration, and jerk on relevant elements.
 - Distinguish an intentional snap/impact via a declared window; outside of it, a spike is stutter.
@@ -118,7 +118,7 @@ In addition to JSON:
 
 ### 6. Exporta e integra
 
-- Hand off Blender export to `blender-animation` following its active contract.
+- Hand off Blender export to `dayz-blender-animation` following its active contract.
 - Hand off artifact to `dayz-animation-pipeline` for compile, ASI/config, build, and deploy.
 - Verify artifact actually deployed, not only source. In DayZ 1.30, animation graphs are structured into modular Enfusion Config `.agf` files indexed from `AnimSrcGraph` `.agr`, and `.asi` files use `AnimSetInstanceSource`.
 - Do not declare that Workbench, DayZATool, Blender MCP, or DayZ executed if no evidence of that execution exists in the session.

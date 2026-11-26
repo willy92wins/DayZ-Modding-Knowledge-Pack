@@ -112,7 +112,7 @@ were not measured again.
   an `--external-scripts` root. `bool Debug;` in a 4_World settings class
   made DayZDiag 1.29 refuse the module with `Variable name 'Debug' already
   used as type name` (inbox fb-20260928-025254-35c1); a local `Widget map`
-  failed the same way (enforce-script-reference `pitfalls-advanced.md`,
+  failed the same way (dayz-enforce-script-reference `pitfalls-advanced.md`,
   SP-317). Only a member and a local are on record; a parameter, an enum and
   a typedef are judged the same way without a failure on record. The match
   is exact case, so a member `debug` passes: identifiers are case-sensitive
@@ -607,7 +607,7 @@ log, or from a broken file the validator passed:
   continuation (inbox fb-20261006-030019-e074). One measurement; FAIL since
   the vanilla control found nothing for it on 1.29.0.163451 and on
   1.30.164078 stable. The operator leading the next line is
-  the same parser rule (enforce-script-reference SKILL.md, SP-386) and is not
+  the same parser rule (dayz-enforce-script-reference SKILL.md, SP-386) and is not
   reported here; neither is a call's argument list over two lines.
 
 Each finding is wrong wherever the code compiles, so code under another

@@ -127,7 +127,7 @@ Use only the sections relevant to the task, in addition to the common contract a
 
 ## Physics simulation
 
-- Use `blender-animation` for simulation setup and bake discipline.
+- Use `dayz-blender-animation` for simulation setup and bake discipline.
 - Bake once before sampling; repeated unbaked evaluation is not deterministic evidence.
 - Validate contacts and energy/settling after bake.
 - Confirm the export route can carry the baked result into DayZ; do not assume Blender-only deformation survives.

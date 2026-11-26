@@ -391,7 +391,7 @@ Specific algorithm cited, line ranges proven, novelty justified, skill destinati
 ## Cross-references
 
 - [[dayz-mod-workflow]] — implementation protocol (use AFTER extracting patterns, when applying them)
-- [[enforce-script-reference]] — general Enforce Script patterns (likely target for many findings)
+- [[dayz-enforce-script-reference]] — general Enforce Script patterns (likely target for many findings)
 - [[dayz-pbo-build]] — opposite direction (packaging your own)
 - [[dayz-aviation]] — example of skill created via this workflow
 - [[dayz-particles]] — example of orthogonal-domain skill (created with <7 threshold relaxed)

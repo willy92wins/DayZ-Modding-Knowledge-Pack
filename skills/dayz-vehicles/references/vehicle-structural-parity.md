@@ -74,7 +74,7 @@ config wires them.
 
 - LFQuad F2 parity audit: `AI/10_Projects/LFQuad/research/2026-05-24-parity-audit-civiliansedan-claude.md`.
 - LL-030 (parity-first), LL-031 (gate by RPT post-deploy).
-- Tools: an external ODOL→MLOD converter (debinarize the reference; not distributed with this pack), skill `enforce-script-reference` (config blocks),
+- Tools: an external ODOL→MLOD converter (debinarize the reference; not distributed with this pack), skill `dayz-enforce-script-reference` (config blocks),
   `dayz-animation-pipeline` (model.cfg / AnimationSources), `dayz-particles` (damage effects).
 
 ---
@@ -475,7 +475,7 @@ Causation caveat (R31, verified in-game 2026-05-27): adding `class=vehicle` did 
 in-game result was unchanged. So treat `class=vehicle` as REQUIRED PARITY (6/6 vanilla carry it; a
 vehicle build must replicate it and it is cheap), NOT as the proven wheel-simulation gate. The
 actual silent wheel-sim gate verified in-game is the `CfgSlots.selection` <-> FireGeometry proxy
-selection consistency rule (see `enforce-script-reference`, wheel attachment / SP-017). Origin:
+selection consistency rule (see `dayz-enforce-script-reference`, wheel attachment / SP-017). Origin:
 SP-012b, LFQuad bug-ledger UPDATE 8/10.
 
 (Merged 2026-07-06 from the `dayz-model-pipeline` fork copy -- LL-110 dedup.)
@@ -902,7 +902,7 @@ GENERIC (wire these for any car, not just a rip):
   body-proxy naming, mod token). `--positive-control <CivilianSedan_mlod.p3d>` proves the contract is
   satisfiable; `--self-test` proves non-vacuity. Add a POLICY entry per new car instead of forking a
   `verify_<mod>.py` (the per-car `verify_amglf.py`/`verify_brz.py` are superseded).
-- `visual_gate.py <p3d> <out_dir>` — Blender-headless N-angle render + `blender-visual-review` checklist +
+- `visual_gate.py <p3d> <out_dir>` — Blender-headless N-angle render + `dayz-blender-visual-review` checklist +
   unresolved-proxy inventory. CAVEAT (s20 2026-07-02): it does NOT reproduce the engine cull — the engine
   renders the ANTI-cross side and shades with the STORED MLOD normals, while Blender no-normals + backface
   culling shows the +cross side (the exact opposite); and it does NOT resolve body-split proxy chunks
@@ -1038,7 +1038,7 @@ normalizes the triangle, so scale is moot) and the "wheel pattern" (re-center th
 bbox-center + anchor at that center — proves the engine does not use bbox-center either).
 
 Practical guidance: **vanilla does not proxy the car body** — the body is direct geometry under the
-65535 ceiling. Prefer fitting the body under 65535 (decimate with `blender-visual-review`, or split
+65535 ceiling. Prefer fitting the body under 65535 (decimate with `dayz-blender-visual-review`, or split
 into ≤2 sub-objects of direct geometry) over body-proxys of large model-space geometry. If you must
 proxy large geometry, the referenced `.p3d` likely has to be LOCAL-centered with the same LOD set as a
 vanilla wheel (Geometry/Memory/ViewGeo/FireGeo), and the placement reference must be reverse-engineered

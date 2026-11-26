@@ -2,7 +2,7 @@
 
 ---
 name: dayz-particles
-description: Enfusion-style .ptc particle effect format for DayZ (current engine, post-Reforger) — distinct from the classic class-based Particle.cpp / CfgCloudlets syntax. Covers EffectDef/EmitorDef structure, Material UUID + .emat refs (vanilla smoke/fire/sparks/dust/debris paths), the emitter parameter catalog, animated curves and *Mast modulation overlays, multi-emitter composition (layered explosion/impact), and registration via ParticleList + RegisterParticle. Use when: writing .ptc files for DayZ Enfusion, creating explosion/impact/smoke/dust/debris/spark effects, registering with ParticleList, integrating with EffectParticle scripts, debugging .ptc that won't load, or converting old class-based particles to Enfusion. Triggers: .ptc, particle effect, Enfusion particle, EffectDef, EmitorDef, ParticleList, smoke/fire/explosion effect, RegisterParticle, .emat. Use alongside enforce-script-reference.
+description: Enfusion-style .ptc particle effect format for DayZ (current engine, post-Reforger) — distinct from the classic class-based Particle.cpp / CfgCloudlets syntax. Covers EffectDef/EmitorDef structure, Material UUID + .emat refs (vanilla smoke/fire/sparks/dust/debris paths), the emitter parameter catalog, animated curves and *Mast modulation overlays, multi-emitter composition (layered explosion/impact), and registration via ParticleList + RegisterParticle. Use when: writing .ptc files for DayZ Enfusion, creating explosion/impact/smoke/dust/debris/spark effects, registering with ParticleList, integrating with EffectParticle scripts, debugging .ptc that won't load, or converting old class-based particles to Enfusion. Triggers: .ptc, particle effect, Enfusion particle, EffectDef, EmitorDef, ParticleList, smoke/fire/explosion effect, RegisterParticle, .emat. Use alongside dayz-enforce-script-reference.
 ---
 
 # DayZ Enfusion Particle Effects (.ptc)
@@ -293,7 +293,7 @@ The dynamic-enable pattern (per-emitter control via `EnableEmitor(ptc, index, en
 
 ## Cross-references
 
-- [[enforce-script-reference]] — `modded class` pattern, EffectParticle base, SEffectManager
+- [[dayz-enforce-script-reference]] — `modded class` pattern, EffectParticle base, SEffectManager
 - [[dayz-aviation]] — PLANES_EX / PLANES_IMPACT / PLANES_BOOM usage context, Seaplanewatereffects.c example
 - [[dayz-mod-workflow]] — workflow protocol
 

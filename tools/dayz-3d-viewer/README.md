@@ -89,7 +89,7 @@ Generated HTML loads **three.js 0.160.0** and its `OrbitControls` /
 
 The tool does not embed three.js source. Opening the HTML without a
 network will show a blank page. The classify viewer under
-`skills/rip-vehicle-import` does the same for r128; see
+`skills/dayz-rip-vehicle-import` does the same for r128; see
 `THIRD_PARTY_NOTICES.md`.
 
 ## Determinism

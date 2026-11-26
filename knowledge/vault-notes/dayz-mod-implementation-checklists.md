@@ -51,7 +51,7 @@ Reglas duras (verificadas contra `vanilla EntityAI.c`):
 
 ### 2.2 Enforce Script — general
 
-Full rules live in `enforce-script-reference` skill. Key verified restrictions:
+Full rules live in `dayz-enforce-script-reference` skill. Key verified restrictions:
 
 - [ ] **No ternary operators** (`? :` does not compile).
 - [ ] `ref` on owning member fields; never on params/returns/typedefs or `new ref` (valid and redundant on locals — omit by style).

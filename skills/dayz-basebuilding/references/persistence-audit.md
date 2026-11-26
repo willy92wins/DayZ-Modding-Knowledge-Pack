@@ -4,7 +4,7 @@ Authored 2026-07-07 (F4) from vanilla P:\scripts — see citations.
 
 **R9 gate.** Any mod that adds parts, changes the bitmask packing or the `id` ranges, or touches
 `OnStoreSave`/`OnStoreLoad` ordering is modifying player progression — a bug here means players lose their
-bases after a server restart. Invoke `rigorous-data-audit` (R9) BEFORE declaring release-safe. This file is
+bases after a server restart. Invoke `dayz-rigorous-data-audit` (R9) BEFORE declaring release-safe. This file is
 the hand-off checklist. Roots: `P:\scripts\` = `<dayz-projects>\scripts\`.
 
 ## 1. The representation — three 31-bit ints, netsync AND save at once
@@ -62,7 +62,7 @@ layout and new saves with the new one.
 
 ## 6. R9 hand-off checklist
 
-Before declaring a base-building persistence change release-safe, confirm with `rigorous-data-audit`:
+Before declaring a base-building persistence change release-safe, confirm with `dayz-rigorous-data-audit`:
 
 1. Every part `id` in the `Construction{}` block is unique and in 1..93.
 2. `OnStoreSave` and `OnStoreLoad` write and read the same fields in the same order.

@@ -11,7 +11,7 @@ description: >
   de la feature", "definición de done", "criterios de aceptación", "antes de
   implementar", acceptance criteria, consistency/analyze gate, spec checklist
   or "¿está listo para codear?". Run after planning and before
-  dayz-mod-workflow; compose with rigorous-data-audit for data-critical work.
+  dayz-mod-workflow; compose with dayz-rigorous-data-audit for data-critical work.
 ---
 
 # DayZ Feature Spec
@@ -25,7 +25,7 @@ This is the local adaptation of GitHub's [spec-kit](https://github.com/github/sp
 Use before implementing:
 
 - a new mod feature, or any change touching >1 file (aligns with R3),
-- anything data-critical (persistence, progression) — then also invoke `rigorous-data-audit`,
+- anything data-critical (persistence, progression) — then also invoke `dayz-rigorous-data-audit`,
 - anything where "done" is not self-evident, or where a later phase/consumer reads this phase's output (R8-extended forward contract).
 
 Skip for: 1-line typos, trivial reversible tweaks (default keybind, stringtable key, path slash). R3's small-reversible-changes-go-direct rule wins — a spec here would be ceremony.
@@ -50,7 +50,7 @@ Fill `references/spec-template.md`. It is deliberately short. Four sections carr
 
 ## Step 2 — Spec quality checklist ("unit tests for English")
 
-Before writing any code, run `references/spec-checklist.md` against the spec. It checks the spec itself the way tests check code: is every criterion measurable, every scenario reproducible, every `ASSUMED` resolved-or-flagged, every cross-file ref verified, scope boundary explicit. A spec that fails the checklist is not ready to implement. This is a gate on the *English*, complementary to `rigorous-data-audit`, which is a gate on the *code*.
+Before writing any code, run `references/spec-checklist.md` against the spec. It checks the spec itself the way tests check code: is every criterion measurable, every scenario reproducible, every `ASSUMED` resolved-or-flagged, every cross-file ref verified, scope boundary explicit. A spec that fails the checklist is not ready to implement. This is a gate on the *English*, complementary to `dayz-rigorous-data-audit`, which is a gate on the *code*.
 
 ## Step 3 — Analyze gate (after code/tasks, before the in-game test)
 
@@ -76,7 +76,7 @@ If a future task tempts you to re-add generic app cruft here, don't — that was
 - **G2 / R2** — cite-then-verify. Every forward-contract ref and cross-file symbol is verified `path:line`.
 - **G3** — honest verification. Success Criteria say what will be checked and how.
 - **R7 / R8 / R8-extended** — the analyze gate is the artifact-level layer above R7's code-level invariant tracing and R8's end-to-end walk; the Forward Contract section is R8-extended made explicit.
-- **rigorous-data-audit** — for data-critical mods, this skill precedes it; the spec's crash-recovery/admin scenarios feed that audit.
+- **dayz-rigorous-data-audit** — for data-critical mods, this skill precedes it; the spec's crash-recovery/admin scenarios feed that audit.
 - **dayz-mod-workflow** — consumes the approved spec and implements.
 - **pre-output-discipline** — the discovery→generation gate; writing the spec is a generation step, so validate discovery first. Optional external skill, **not** included in this pack. Without it, apply the gate by hand: every discovery claim carries a verified `path:line` before any spec text is written.
 - **Pre-code ceremony routing (SP-050)** — which gate applies when is fixed by the single source: `<system-notes>\workflow.md` §Árbol de decisión pre-código. This skill is Step 2 of that tree; Grill A precedes it, Grill B and `dayz-mod-workflow` follow.

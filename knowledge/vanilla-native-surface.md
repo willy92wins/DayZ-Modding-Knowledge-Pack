@@ -2,7 +2,7 @@
 
 A `proto native` declaration is where Enforce Script ends and the engine begins: the script side states a name, a return type and a parameter list, and the native side supplies the body. The declaration is the whole contract, so it has to be read exactly.
 
-This note maps that surface in the official DayZ scripts build `119356`: how many such declarations the build carries, where they concentrate, what `owned` does to the returned value and `static` to the call shape, and the exact shape of two representative calls. It is not a syntax lesson — `skills/enforce-script-reference/` teaches how `proto native` is written — and it is not a runtime promise: every count and signature below is a statement about declarations in the build's scripts, verified against those scripts, and nothing here was exercised in a running game.
+This note maps that surface in the official DayZ scripts build `119356`: how many such declarations the build carries, where they concentrate, what `owned` does to the returned value and `static` to the call shape, and the exact shape of two representative calls. It is not a syntax lesson — `skills/dayz-enforce-script-reference/` teaches how `proto native` is written — and it is not a runtime promise: every count and signature below is a statement about declarations in the build's scripts, verified against those scripts, and nothing here was exercised in a running game.
 
 ## What the build declares
 

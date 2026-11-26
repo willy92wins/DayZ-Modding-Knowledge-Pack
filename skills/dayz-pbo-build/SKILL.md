@@ -319,7 +319,7 @@ Vehicles only. For PhysX to seat a wheel (`WheelCountPresent() > 0`), the select
 named by `config.cpp > CfgSlots > <wheel-slot>.selection` MUST exist in the body's
 **FireGeometry LOD**. A selection present only in visual LODs binds the slot as
 inventory but the wheel never simulates: `WheelCountPresent()=0`, no traction, no
-spin, NO RPT error - a silent killer (see `enforce-script-reference` wheel-attachment
+spin, NO RPT error - a silent killer (see `dayz-enforce-script-reference` wheel-attachment
 rule, `dayz-model-pipeline` Rule 20).
 
 This check lives in the `dayz-p3d-audit` validator (SP-017). Run it pre-build and
@@ -951,7 +951,7 @@ i++;  --i;                            // increment / decrement
 foreach (string s : selections) { }   // foreach over a collection
 ```
 
-For the authoritative Enforce Script rule set, see the `enforce-script-reference` skill.
+For the authoritative Enforce Script rule set, see the `dayz-enforce-script-reference` skill.
 
 ---
 
