@@ -1,6 +1,6 @@
 ---
 name: rigorous-data-audit
-description: "Use when: audit X, revisa a fondo, release-safe?, esto puede romper progresión, data loss, OnStoreSave/OnStoreLoad. Persistence/state-machine pre-release audit. Not cosmetic/UI: dayz-ui-development; not output-discipline: pre-output-discipline."
+description: "Use when: audit X, revisa a fondo, release-safe?, esto puede romper progresión, data loss, OnStoreSave/OnStoreLoad. Persistence/state-machine pre-release audit. Not cosmetic/UI: dayz-ui-development."
 ---
 
 # Rigorous Data Audit

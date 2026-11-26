@@ -525,12 +525,44 @@ def _parse_frontmatter(path: Path) -> tuple[dict[str, object], int, str | None]:
     return values, 1, None
 
 
+_ROUTING_HINT_PATTERN = re.compile(
+    r"\b[Nn]ot\s+(?P<label>(?:[^:;.]|\.(?!\s|$))+?):\s*(?P<targets>[^;.]+)"
+)
+_ROUTING_TARGET_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_-])[a-z0-9]+(?:-[a-z0-9]+)+(?![A-Za-z0-9_-])"
+)
+
+
+def _dangling_routing_hints(
+    description: str,
+    existing_skill_dirs: set[str],
+) -> list[str]:
+    # Single lowercase prose words (e.g. "or", "and") in a target list are
+    # ignored unless they already match a folder under skills/, while every
+    # kebab-case token must resolve to an existing skill directory.
+    missing: list[str] = []
+    seen: set[str] = set()
+    for match in _ROUTING_HINT_PATTERN.finditer(description):
+        targets = match.group("targets")
+        for target_match in _ROUTING_TARGET_PATTERN.finditer(targets):
+            target = target_match.group(0)
+            if target not in existing_skill_dirs and target not in seen:
+                seen.add(target)
+                missing.append(target)
+    return missing
+
+
 def validate_skills(root: Path) -> list[dict[str, object]]:
     root = Path(root).resolve()
     findings: list[dict[str, object]] = []
     skills_root = root / "skills"
     if not skills_root.exists():
         return findings
+    existing_skill_dirs = (
+        {entry.name for entry in skills_root.iterdir() if entry.is_dir()}
+        if skills_root.is_dir()
+        else set()
+    )
     for skill_path in sorted(skills_root.rglob("SKILL.md")):
         relative = skill_path.relative_to(root).as_posix()
         try:
@@ -600,6 +632,17 @@ def validate_skills(root: Path) -> list[dict[str, object]]:
                     evidence=f"length={len(description)} limit=1024",
                 )
             )
+        if description:
+            for target in _dangling_routing_hints(description, existing_skill_dirs):
+                findings.append(
+                    finding(
+                        "SKILL-ROUTING-HINT-DANGLING",
+                        path=relative,
+                        line=1,
+                        message="The skill description routes to a skill the pack does not ship.",
+                        evidence=target,
+                    )
+                )
     return sort_findings(findings)
 
 
