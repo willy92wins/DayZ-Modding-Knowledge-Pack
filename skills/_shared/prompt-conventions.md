@@ -79,8 +79,8 @@ Operational rule before writing a magic number, base class list, or language res
 
 DEBUNKED-and-then-corrected case (2026-05-12 audit; updated 2026-07-06): audit claimed `?:`, `++`, `foreach`, `+=` "are valid EnScript features". Verification of 2026-05-12 against skills back then concluded "all four NOT supported". Final verdict split:
 
-- `?:` (ternary) — debunking HOLDS: does not compile in EnScript. Remains prohibited (enforce-script-reference, hard rules).
-- `++`, `foreach`, `+=` — audit WAS RIGHT: verified later in production (LBmaster) and in game vanilla scripts (`P:\scripts\3_game\billboardset.c:108` uses foreach, among many). Skills listing them as prohibited were mistaken and got corrected (enforce-script-reference rules 2-4).
+- `?:` (ternary) — debunking HOLDS: does not compile in EnScript. Remains prohibited (dayz-enforce-script-reference, hard rules).
+- `++`, `foreach`, `+=` — audit WAS RIGHT: verified later in production (LBmaster) and in game vanilla scripts (`P:\scripts\3_game\billboardset.c:108` uses foreach, among many). Skills listing them as prohibited were mistaken and got corrected (dayz-enforce-script-reference rules 2-4).
 
 Meta lesson REVISED (stronger than original): on 2026-05-12 the claim was "refuted" citing 4-5 matching skills — but N skills repeating the same claim are NOT N independent sources if they share lineage (all inherited same legacy note). Multi-skill consensus ≠ verification. Sole primary source for language restrictions is compiler / vanilla game scripts; a single vanilla `.c` using `foreach` outweighs 5 skills saying it does not exist.
 

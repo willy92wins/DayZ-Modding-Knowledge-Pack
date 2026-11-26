@@ -301,7 +301,7 @@ def vanilla_global_class_citation(name):
 # occurrences each; host-side grep over P:\scripts, 2026-06-10). Calling one
 # compile-fails with `Undefined function`. Used by ES-NONEXISTENT-METHOD
 # (CANDIDATE-43). Value = fix message with the verified alternative.
-# Source claims: enforce-script-reference SKILL.md:1599/:1605/:1630-1631
+# Source claims: dayz-enforce-script-reference SKILL.md:1599/:1605/:1630-1631
 # ("Deep-dive verified additions", added 2026-06-06).
 VANILLA_NONEXISTENT_METHODS = {
     # Real API: recipebase.c:159 `void InsertIngredient(int index, string ingredient, ...)`

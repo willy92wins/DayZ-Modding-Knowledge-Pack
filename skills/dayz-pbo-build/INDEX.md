@@ -194,7 +194,7 @@ Each validator returns:
 
 DayZ Enforce Script **supports** ternary (`x ? a : b`), `++`/`--`, and `foreach` — do NOT flag them.
 The only array caveat: there is no `+=` concatenation; add elements with `.Insert()` / `.InsertAll()`.
-See the `enforce-script-reference` skill for the authoritative rules.
+See the `dayz-enforce-script-reference` skill for the authoritative rules.
 
 ## Support
 

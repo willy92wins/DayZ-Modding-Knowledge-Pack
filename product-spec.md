@@ -191,7 +191,7 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
 | D2 | Versioning/migration covers fresh, legacy, known, future, truncated, same-build upgrade, and rollback | complete matrix produces expected verdict/action, without accepted partial read | ✓ |
 | D3 | Sidecars use temp→verify→replace, backup, and fail-closed recovery | fault injection at each I/O boundary preserves original or recoverable evidence | ✓ |
 | D4 | Deprecated APIs and incomplete examples are not recommended | evals reject `JsonLoadFile` as new pattern and headers bound only to DayZ build | ✓ |
-| D5 | Every persistent change documents legacy, post-change data in rollback, and alternative without format change | checklist and rigorous-data-audit without blocking findings | ✓ |
+| D5 | Every persistent change documents legacy, post-change data in rollback, and alternative without format change | checklist and dayz-rigorous-data-audit without blocking findings | ✓ |
 
 **Evidence executed on 2026-07-28** (each `✓` with the line that closes it, measured on
 `dcf0671`, not inferred). Persistence spec checklist: 16/16.
@@ -218,7 +218,7 @@ control positivo three-cards → verdict=PASS, exit 0, findings=0
 - **D5** — `test_persistence_checklist.py`: the checklist fails exactly once per
   missing element (legacy, rollback, alternative without format change), accumulates without
   short-circuit, and rejects an alternative presented *after* the change. Plus
-  `rigorous-data-audit` **without blocking findings**: 1 P2 and 2 P3, all three fixed in
+  `dayz-rigorous-data-audit` **without blocking findings**: 1 P2 and 2 P3, all three fixed in
   `dcf0671`.
   **Declared scope of that audit:** executed **single-agent**, because subagents
   require explicit authorization in this project (`project-brief.md`) and the session did not

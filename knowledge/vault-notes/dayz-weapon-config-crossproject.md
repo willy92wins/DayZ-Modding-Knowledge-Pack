@@ -11,7 +11,7 @@ source: A6_SR2M bug#10 (full-auto), A6_MK47, A6 pack RE
 
 Reusable gotchas for authoring/​debugging a DayZ firearm's `config.cpp` (CfgWeapons).
 Load this before building or fixing any custom weapon. Pairs with
-[[dayz-animations-creatures-weapons]] (anim side) and the `enforce-script-reference`,
+[[dayz-animations-creatures-weapons]] (anim side) and the `dayz-enforce-script-reference`,
 `dayz-pbo-build`, `dayz-test-ingame` skills.
 
 ## INV-W1 — Fire-mode classes `Mode_*` live at ROOT config scope, NOT inside `CfgWeapons`
@@ -105,6 +105,6 @@ INV-W1 entirely (that's why A6_SR2M's `ModeTest` cycled). The moment you re-decl
 subclasses to customize (e.g. sounds), INV-W1 applies — so fix the `Mode_*` scope first.
 
 ## Related
-- [[skill-patches-pending]] — SP-031 (this Mode_* scope lesson, destined for `enforce-script-reference` + `dayz-pbo-build`).
+- [[skill-patches-pending]] — SP-031 (this Mode_* scope lesson, destined for `dayz-enforce-script-reference` + `dayz-pbo-build`).
 - [[dayz-animations-creatures-weapons]] — weapon animation side (RTM/asi, fire/chamber/reload anims).
 - A6_SR2M HANDOFF (LIVE-STATE) — `...\A6_SR2M_dev\HANDOFF.md`.

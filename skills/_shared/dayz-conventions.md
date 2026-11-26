@@ -552,7 +552,7 @@ That single line is enough — the agent/skill is expected to read this file whe
 
 Every DayZ skill using a magic number (LOD range, version range, density, instance limit, catalog counts) MUST cite source. This section is the container where verified canonical values will go. If a skill disagrees with this table, the skill is wrong — not this table.
 
-> ⚠️ NOTICE 2026-05-12 updated: narrative audit `rigorous-data-audit` from 2026-05-12 claimed Arma3↔DayZ contamination across 5 locations, but verification against actual files shows most audit findings were CONFABULATED (cited `9e9..1.1e10` for ShadowVolume when actual code uses correct value `10000`; cited `2e13/3e13/7e13` ranges as current bug when code has explicit comments stating those values were corrected). The following table lists values VERIFIED against actual files today, plus placeholders for those requiring P:\ vanilla check.
+> ⚠️ NOTICE 2026-05-12 updated: narrative audit `dayz-rigorous-data-audit` from 2026-05-12 claimed Arma3↔DayZ contamination across 5 locations, but verification against actual files shows most audit findings were CONFABULATED (cited `9e9..1.1e10` for ShadowVolume when actual code uses correct value `10000`; cited `2e13/3e13/7e13` ranges as current bug when code has explicit comments stating those values were corrected). The following table lists values VERIFIED against actual files today, plus placeholders for those requiring P:\ vanilla check.
 
 | Concept | DayZ canonical value | Verified source | Notes |
 |---|---|---|---|
@@ -637,7 +637,7 @@ below). Read a citation by what is next to it:
   "DayZ 1.30 Exp" or "1.30 Exp" (dated notes, prose, router labels) was written while 1.30 was
   Experimental; its citations were moved like the rest.
 - **Pinned blocks say so.** A block copied from one build (for example the sealed
-  `rip-vehicle-import` family-B cookbook) or verified as a table on one build names that build
+  `dayz-rip-vehicle-import` family-B cookbook) or verified as a table on one build names that build
   in its header and keeps its lines.
 - **Data files.** A `scripts\config.cpp` line is the one in DayZ Tools' `P:\scripts\` extraction,
   which writes `name="x";`. The other configs were re-checked in `config.bin` files unpacked with
@@ -683,5 +683,5 @@ Reglas operativas:
 - If user has Asana/Linear connected, the tracker is single source of truth — do NOT create tasks automatically without confirming policy. Each row → a task titled `[F#] Issue`.
 - When closing tracker, retain it as auditable history (do not delete).
 
-Real case (2026-05-12 audit `rigorous-data-audit`): 13 reports + 1 index.md generated with ~333 audited facts. NO actionable tracker was generated. Detected debt (5 locations of Arma3↔DayZ contamination, off-by-6-orders magic numbers, Arma 3 base classes in DayZ list) remains in narrative format, not closeable one by one. Next audit: add fix-tracker from start.
+Real case (2026-05-12 audit `dayz-rigorous-data-audit`): 13 reports + 1 index.md generated with ~333 audited facts. NO actionable tracker was generated. Detected debt (5 locations of Arma3↔DayZ contamination, off-by-6-orders magic numbers, Arma 3 base classes in DayZ list) remains in narrative format, not closeable one by one. Next audit: add fix-tracker from start.
 

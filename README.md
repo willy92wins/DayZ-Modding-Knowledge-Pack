@@ -36,7 +36,7 @@ If you are an AI assistant tasked with helping the user mod DayZ, internalize th
 
 3. **The client/server split is not optional knowledge.** Most "it doesn't work" bugs are a
    value read on the wrong side. Map which side owns each piece of state *before* writing a
-   feature. `enforce-script-reference` and `knowledge/` cover this.
+   feature. `dayz-enforce-script-reference` and `knowledge/` cover this.
 
 4. **In-game testing is expensive (3–10 min per cycle).** Do all offline analysis first, batch
    every pending change into one test, and have a plan B/C ready before you ask for a rebuild.
@@ -69,7 +69,7 @@ DayZ-Modding-Knowledge-Pack/
 │   │   ├── scripts/              ← dayz-proton.sh, local server/client test harness, dayz-mod-pack.sh, API index
 │   │   └── tests/
 │   ├── dayz-mod-dev/             ← entry point for mod work: routing, rules, build-test-publish loop
-│   ├── enforce-script-reference/ ← Enforce Script + config.cpp reference
+│   ├── dayz-enforce-script-reference/ ← Enforce Script + config.cpp reference
 │   ├── dayz-ai-patterns/         ← Expansion eAI FSM / targeting / groups
 │   ├── dayz-mod-workflow/        ← implement/debug protocol (client/server, anti-confabulation)
 │   ├── dayz-vehicles/            ← cars, trucks, quads, bikes, boats (CarScript)
@@ -95,18 +95,18 @@ DayZ-Modding-Knowledge-Pack/
 │   ├── dayz-mcp-verify/          ← auto-test a mod by driving it (see §8 and the bridge note)
 │   ├── dayz-pbo-reverse-engineering/  ← learn from another author's PBO
 │   ├── dayz-feature-spec/        ← spec + consistency gate before coding
-│   ├── rip-vehicle-import/            ← convert a ripped racing-game car into a drivable DayZ vehicle
-│   ├── rigorous-data-audit/      ← audit persistence/state-machine code before release
-│   ├── blender-animation/        ← author animations in Blender (via MCP) → DayZ
+│   ├── dayz-rip-vehicle-import/            ← convert a ripped racing-game car into a drivable DayZ vehicle
+│   ├── dayz-rigorous-data-audit/      ← audit persistence/state-machine code before release
+│   ├── dayz-blender-animation/        ← author animations in Blender (via MCP) → DayZ
 │   ├── dayz-animation-pipeline/  ← model.cfg / RTM / SEAnim / weapon anim
 │   ├── dayz-realistic-animation-director/ ← realistic motion gates + offline audit
-│   ├── mixamo-retarget/          ← Mixamo/FBX retarget (no Mixamo assets shipped)
-│   ├── blender-assembly/         ← build geometry in Blender via MCP
-│   ├── blender-visual-review/    ← render-and-look review loop
-│   ├── 3d-generation-harness/    ← research → plan → build → roast → ship
-│   ├── uv-clean-atlas/           ← legible UV atlases (SAT-zero overlap)
-│   ├── ai-3d-to-dayz/            ← AI-generated 3D (Hunyuan/Tripo/TRELLIS) → DayZ
-│   ├── ardy-motion-generation/   ← motion generation → DayZ integration
+│   ├── dayz-mixamo-retarget/          ← Mixamo/FBX retarget (no Mixamo assets shipped)
+│   ├── dayz-blender-assembly/         ← build geometry in Blender via MCP
+│   ├── dayz-blender-visual-review/    ← render-and-look review loop
+│   ├── dayz-3d-generation-harness/    ← research → plan → build → roast → ship
+│   ├── dayz-uv-clean-atlas/           ← legible UV atlases (SAT-zero overlap)
+│   ├── dayz-ai-3d-to-dayz/            ← AI-generated 3D (Hunyuan/Tripo/TRELLIS) → DayZ
+│   ├── dayz-ardy-motion-generation/   ← motion generation → DayZ integration
 │   └── dayz-3d-viewer/           ← MLOD .p3d / PAA / RVMAT → glTF + HTML viewer
 ├── tools/                        ← see TOOLS.md
 │   ├── py3d/                     ← DayZ fork of py3d (MLOD .p3d codec), MIT
@@ -174,7 +174,7 @@ back to it.
 | `dayz-vehicles` | Authoring, importing or debugging a **drivable ground/water vehicle** (car, truck, quad/ATV, motorbike, boat) on the CarScript/Boat base. Owns the full `config.cpp` + `model.cfg` contract (SimulationModule drivetrain, Axles/Wheels, Crew, AnimationSources, `wheel_1_1..2_2`), structural parity vs a vanilla vehicle, and the packaging failures that pass local filepatching but break on a dedicated server (white/untextured, reversed wheel spin). **Invoke before writing any ground-vehicle entity/config.** |
 | `dayz-motorbikes` | **Single-track vehicles (motorbikes / motorcycles)** in DayZ 1.30 (stable build 1.30.164200). Covers `MotorbikeScript`, `simulation = "motorbike"`, 2-wheel physics (Wheels block without Axles, Brakes split Front/Rear, lean/steering/tipover), kickstand/kickstart, 3rd person camera (ID 32), and 1.30 modular refactor (`VehicleLightsComponent`, `VehicleHornComponent`, `VehicleVFXComponent`). |
 | `dayz-aviation` | **Planes, seaplanes, and helicopters** via the CarScript-as-aviation pattern. Real aerodynamics in Enforce Script (lift/drag/stall, ISA atmosphere), NaN-safe physics, PID auto-stabilization, flight-control AnimationSources, aviation memory points, script-driven dials, Buoyancy for seaplanes, retractable gear, RPM-band sound. Documents 5 flight-model implementations across 4 authors. |
-| `rip-vehicle-import` | Converting a **racing-game rip** (source-game Grub: `.modelbin`/`.carbin`) into a drivable, textured DayZ CarScript car. A 12-step pipeline + day-1 checklist + winding/glass/interior/material rules distilled from ~30 sessions on the first car. Pairs with `dayz-vehicles`. |
+| `dayz-rip-vehicle-import` | Converting a **racing-game rip** (source-game Grub: `.modelbin`/`.carbin`) into a drivable, textured DayZ CarScript car. A 12-step pipeline + day-1 checklist + winding/glass/interior/material rules distilled from ~30 sessions on the first car. Pairs with `dayz-vehicles`. |
 
 **Weapons, characters & animation**
 | Skill | Use when |
@@ -182,11 +182,11 @@ back to it.
 | `dayz-weapons` | Custom **firearm** (entity side): the `.p3d` contract (bolt/trigger/magazine selections + memory points), weapon-selection→player-bone remap (`AddItemBoneRemap`), the `CfgWeapons`/`config.cpp` contract, inheritance base choice (Rifle_Base / BoltActionRifle_Base / Pistol_Base…), fire modes, dispersion, recoil, jam config, attachment/optics slots, muzzle-flash + ejection points. |
 | `dayz-characters` | **Humanoid characters** (custom infected/zombies, survivors, NPCs): mesh → retopo → rig to `OFP2_ManSkeleton` → UV + normal bake → character LODs → `config.cpp` inheritance (ZombieMaleBase / SurvivorBase…) → PBO. Owns baked scaling (runtime `SetScale` is broken), the one-anim-mod-at-a-time wall, canonical bind pose. |
 | `dayz-clothing` | **Clothing mods and worn models** (`_m`/`_f`): `ClothingTypes`, slot setup (`Vest`, `Body`, `Armband`, `NBCHead`/`NBCTop`/`NBCPants`/`NBCBoots`/`NBCGloves`), `NBCBag`, `Waterskin`, gas mask filters, `headSelectionsToHide`, and wet clothing. Fixes floating, rigid or rotated clothing. |
-| `blender-animation` | Authoring or modifying **animations in Blender** (via the Blender MCP) and handing them off to DayZ (RTM / `.anm` / `.txa` / SEAnim). Includes physics-sim driven motion. |
+| `dayz-blender-animation` | Authoring or modifying **animations in Blender** (via the Blender MCP) and handing them off to DayZ (RTM / `.anm` / `.txa` / SEAnim). Includes physics-sim driven motion. |
 | `dayz-animation-pipeline` | **DayZ animation end-to-end**: config-driven object animation (`model.cfg` / AnimationSources), item carry IK, hide-on-attach, skeletal RTM / Enfusion `.anm` via SEAnim, anim-graph / weapon states, vehicle-rider IK. Use before writing any animation that has to play in-game. |
-| `dayz-realistic-animation-director` | **Realistic motion director**: contract, blocking, offline audit and in-game gate for player/hands/weapons/locomotion/creatures/vehicles. Orchestrates `blender-animation` and `dayz-animation-pipeline`; ships no third-party motion models. |
-| `mixamo-retarget` | **Retarget Mixamo (or any FBX/DAE) mocap** onto a custom Blender / DayZ rig through the Blender MCP. Ships the retargeting flow only — no Mixamo or Adobe assets. Experimental until the fixture at the bottom of the skill is recorded. |
-| `ardy-motion-generation` | **Motion generation** for characters/creatures and the plan to integrate generated motion into DayZ. |
+| `dayz-realistic-animation-director` | **Realistic motion director**: contract, blocking, offline audit and in-game gate for player/hands/weapons/locomotion/creatures/vehicles. Orchestrates `dayz-blender-animation` and `dayz-animation-pipeline`; ships no third-party motion models. |
+| `dayz-mixamo-retarget` | **Retarget Mixamo (or any FBX/DAE) mocap** onto a custom Blender / DayZ rig through the Blender MCP. Ships the retargeting flow only — no Mixamo or Adobe assets. Experimental until the fixture at the bottom of the skill is recorded. |
+| `dayz-ardy-motion-generation` | **Motion generation** for characters/creatures and the plan to integrate generated motion into DayZ. |
 
 **Base building**
 | Skill | Use when |
@@ -196,22 +196,22 @@ back to it.
 **3D / AI asset pipeline**
 | Skill | Use when |
 |---|---|
-| `ai-3d-to-dayz` | Index/pointer skill for taking **AI-generated 3D** (Hunyuan, Tripo, TRELLIS) into DayZ: geometry-first, normal-bake into `_nohq`, and why AI-retopo output needs a manifold cleanup pass. |
-| `3d-generation-harness` | **End-to-end 3D generation gates**: research dossier → plan with tests → per-part build → adversarial roast → ship. Orchestrates pack `blender-assembly`, `blender-visual-review`, `dayz-model-pipeline` and `dayz-p3d-audit`. Image-to-3D generators named in the playbook are optional/external and are not shipped here. |
-| `uv-clean-atlas` | **Legible UV atlases** for hard-surface meshes (vehicle/prop/weapon): artist-style charts, SAT-zero overlap, semantic shelf pack. Blender-headless scripts ship; PartUV/weights do not. |
+| `dayz-ai-3d-to-dayz` | Index/pointer skill for taking **AI-generated 3D** (Hunyuan, Tripo, TRELLIS) into DayZ: geometry-first, normal-bake into `_nohq`, and why AI-retopo output needs a manifold cleanup pass. |
+| `dayz-3d-generation-harness` | **End-to-end 3D generation gates**: research dossier → plan with tests → per-part build → adversarial roast → ship. Orchestrates pack `dayz-blender-assembly`, `dayz-blender-visual-review`, `dayz-model-pipeline` and `dayz-p3d-audit`. Image-to-3D generators named in the playbook are optional/external and are not shipped here. |
+| `dayz-uv-clean-atlas` | **Legible UV atlases** for hard-surface meshes (vehicle/prop/weapon): artist-style charts, SAT-zero overlap, semantic shelf pack. Blender-headless scripts ship; PartUV/weights do not. |
 | `dayz-model-pipeline` | Author a complete DayZ object: Blender headless geometry, LODs, memory points, named selections, `.rvmat`, `model.cfg` / `config.cpp`, assembled through pack `tools/py3d` (>= 1.5.0). |
 | `dayz-p3d-audit` | Offline **silent-killer audit** of an MLOD `.p3d` (winding, Component01, FireGeo wheel slots, mass-on-the-wrong-LOD). The script is `scripts/audit_p3d.py`; it needs `pip install -e tools/py3d`. |
 | `dayz-p3d-inspector` | Extract an MLOD to Recipe JSON, inspect/edit it in a Three.js viewer, rebuild a `.p3d`. Visual work — structural audits stay with `dayz-p3d-audit`. |
 | `dayz-proxy-align` | Visually **align and orient proxies** (clothing / attachments / crew) with a move/rotate gizmo and write the triangle back losslessly. |
-| `blender-assembly` | Build or assemble geometry **in Blender** via the Blender MCP: primitives, modifiers, booleans, the cube-size and bevel rules. |
-| `blender-visual-review` | **Render and look**: multi-angle captures, a typed stop policy, and winding that a Blender render cannot judge. Complements `blender-assembly`. |
+| `dayz-blender-assembly` | Build or assemble geometry **in Blender** via the Blender MCP: primitives, modifiers, booleans, the cube-size and bevel rules. |
+| `dayz-blender-visual-review` | **Render and look**: multi-angle captures, a typed stop policy, and winding that a Blender render cannot judge. Complements `dayz-blender-assembly`. |
 | `dayz-3d-viewer` | Convert an MLOD **`.p3d`**, **PAA** and **RVMAT** into a `.glb` and a Three.js HTML viewer (`embedded` or `web`). The executable is `tools/dayz-3d-viewer`; this playbook is how to invoke it. |
 | `dayz-texture-pipeline` | **Textures and materials**: `.paa` / `.rvmat` / native PBR (MatPBR `.emat`), the `_co/_nohq/_smdi/_as` suffixes, hiddenSelections, damage/destruct swaps, Multi shader masks. |
 
 **Script, audio, VFX, UI, doors & physics**
 | Skill | Use when |
 |---|---|
-| `enforce-script-reference` | **Any Enforce Script or `config.cpp` work.** Memory (`ref`/`autoptr`/Managed/GC), networking (ScriptRPC, SyncVars, `OnStoreSave/Load`), timers (the `CallLater` 4.5 h bug), type system, action system, side checks, verified API catalog. Load it before writing script. |
+| `dayz-enforce-script-reference` | **Any Enforce Script or `config.cpp` work.** Memory (`ref`/`autoptr`/Managed/GC), networking (ScriptRPC, SyncVars, `OnStoreSave/Load`), timers (the `CallLater` 4.5 h bug), type system, action system, side checks, verified API catalog. Load it before writing script. |
 | `dayz-ai-patterns` | **DayZ Expansion eAI**: FSM states, combat hysteresis, threat/targeting, LOS/FOV, pathfinding, group formation and NoiseSystem. Expansion scripts are cited, not shipped. |
 | `dayz-sound-system` | **Audio**: `CfgSoundShaders`/`CfgSoundSets`, client-only `EffectSound`/`SEffectManager`, server→client `StartItemSoundServer`, NoiseSystem, "sound not playing on dedicated server". |
 | `dayz-particles` | **Particles**: plain-text `.ptc`/`.emat`, GUID materials, `Particle`/`ParticleSource`/`ParticleManager`/`SEffectManager`. Consult before writing any particle code. |
@@ -231,11 +231,11 @@ back to it.
 | `dayz-preflight` | **Before any other DayZ skill.** Read-only check that `P:\` is mounted, DayZ Tools and vanilla data are locatable, and `P:\Mods` is the workshop junction. Hard-fails if `P:\` is missing. |
 | `dayz-pbo-build` | **Pre-build validation and packaging**: `config.cpp`, `model.cfg`, textures, `.p3d` LODs, stringtable, AddonBuilder invocation. Use when packing, deploying, or asking "is this addon ready". |
 | `dayz-pbo-reverse-engineering` | **Learning from another author's PBO**: Mikero ExtractPbo, source-vs-deployable classification, the sweep order (config.cpp → model.cfg → scripts → rvmats → p3d), and citation discipline so you don't confabulate what their code does. |
-| `rigorous-data-audit` | **Before releasing data-critical code** (persistence, state machines, admin commands, async multi-tick queues) — anything where a bug means lost player progression. A multi-angle parallel audit + adversarial verification for invariant violations, races, path inconsistencies, and recovery-path defects. |
+| `dayz-rigorous-data-audit` | **Before releasing data-critical code** (persistence, state machines, admin commands, async multi-tick queues) — anything where a bug means lost player progression. A multi-angle parallel audit + adversarial verification for invariant violations, races, path inconsistencies, and recovery-path defects. |
 | `dayz-test-ingame` | **Building, deploying and launching a mod locally** with `DayZDiag_x64.exe` + filepatching (server+client on one box, or single-exe offline). Generates a parametrized test orchestrator. *Assumes a specific Windows/DayZ tooling layout — see §8.* |
 | `dayz-mcp-verify` | **Auto-testing a mod in-game** by driving it with MCP tools (spawn a classname, orbit the camera, screenshot, raycast, read telemetry) and the drivable-car acceptance ladder. *Drives the game through [DayZ-MCP](https://github.com/willy92wins/dayz-mcp), published separately — see §8 for the wiring.* |
-| `systematic-debugging` | **A bug, a failing test or unexpected behaviour**: find the root cause before proposing a fix. Ported from obra/superpowers (MIT); see its `SOURCE.md`. |
-| `task-observer` | **During multi-step work with tools**: watches for patterns, user corrections and methods worth turning into skills, and keeps an observation log. Ported from rebelytics' "One Skill to Rule Them All" (CC BY 4.0) and modified; see its `SOURCE.md`. |
+| `dayz-systematic-debugging` | **A bug, a failing test or unexpected behaviour**: find the root cause before proposing a fix. Ported from obra/superpowers (MIT); see its `SOURCE.md`. |
+| `dayz-task-observer` | **During multi-step work with tools**: watches for patterns, user corrections and methods worth turning into skills, and keeps an observation log. Ported from rebelytics' "One Skill to Rule Them All" (CC BY 4.0) and modified; see its `SOURCE.md`. |
 
 ---
 
@@ -245,8 +245,8 @@ These playbooks are the author's, apart from two ported skills. The local plugin
 were installed under happened to be named `anthropic-skills`; that is a namespace on one
 machine, not a licence or an upstream. They ship under the same MIT licence as the rest of the
 pack. The two ported skills keep their own licence and ship their `LICENSE` and `SOURCE.md`:
-`task-observer`, adapted from rebelytics' "One Skill to Rule Them All" (Eoghan Henn, CC BY 4.0,
-modified), and `systematic-debugging`, from obra/superpowers (MIT, Copyright (c) 2025 Jesse
+`dayz-task-observer`, adapted from rebelytics' "One Skill to Rule Them All" (Eoghan Henn, CC BY 4.0,
+modified), and `dayz-systematic-debugging`, from obra/superpowers (MIT, Copyright (c) 2025 Jesse
 Vincent). See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ### Shipped in this pack
@@ -463,7 +463,7 @@ are the real value; keep them even if you adapt everything else.
    "fixed it here, forgot the adjacent site."
 3. **Walk it end-to-end before declaring it done.** Compiling ≠ correct. Mentally run the happy
    path, then kill the process between each I/O pair (crash recovery), then re-check admin/reset
-   flows. For data-critical code, run `rigorous-data-audit`.
+   flows. For data-critical code, run `dayz-rigorous-data-audit`.
 4. **Respect the client/server split.** Decide which side owns each value before coding; most
    "doesn't work" bugs are a read on the wrong side.
 5. **Batch in-game tests.** A test cycle is minutes. Exhaust offline analysis (grep logs, simulate
@@ -572,8 +572,8 @@ Where each 1.30 section lives: [`compatibility-matrix.md`](compatibility-matrix.
 
 > **User:** "Help me make this ripped car drivable in DayZ."
 >
-> 1. `rip-vehicle-import` if it's a racing-game rip (import pipeline), else `dayz-vehicles` (authoring).
-> 2. `enforce-script-reference` for any Enforce Script / config work.
+> 1. `dayz-rip-vehicle-import` if it's a racing-game rip (import pipeline), else `dayz-vehicles` (authoring).
+> 2. `dayz-enforce-script-reference` for any Enforce Script / config work.
 > 3. `dayz-feature-spec` first if it's non-trivial — lock the Forward Contract (classnames,
 >    `model.cfg` selections, wheel names) before coding.
 > 4. `dayz-test-ingame` to build/deploy/launch locally; verify in-game.

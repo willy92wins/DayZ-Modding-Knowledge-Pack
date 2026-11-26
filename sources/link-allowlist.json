@@ -152,57 +152,57 @@
       "reason": "Private Obsidian context pointer intentionally excluded from the public pack."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-3d-viewer.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-mod-workflow.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-model-pipeline.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-p3d-audit.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-p3d-inspector.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-particles.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-pbo-build.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-preflight.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-dayz-ui-development.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-enforce-script-reference.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     },
     {
-      "path": "skills/rigorous-data-audit/index.md",
+      "path": "skills/dayz-rigorous-data-audit/index.md",
       "target": "./audit-japm-pbo-recovery.md",
       "reason": "Historical audit pointer retained as context; the project-specific report is not distributed."
     }

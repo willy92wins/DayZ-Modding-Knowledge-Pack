@@ -104,7 +104,7 @@ class CfgSkeletons { class MyItemSkeleton { skeletonInherit=""; isDiscrete=0;
 `config.cpp`: an `AnimationSources` entry drives the swap; `hiddenSelections` still lists
 only the texture selections.
 
-script (item side) -- APIs verified vs vanilla (see `enforce-script-reference` ->
+script (item side) -- APIs verified vs vanilla (see `dayz-enforce-script-reference` ->
 `verified-api-catalog.md`; entityai.c:3355/3364, inventoryitem.c OnWasAttached):
 ```c
 void MyItem()  // constructor: default to the ground model

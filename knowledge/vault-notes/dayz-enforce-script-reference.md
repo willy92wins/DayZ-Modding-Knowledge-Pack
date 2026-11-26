@@ -1,6 +1,6 @@
 # DayZ Enforce Script Reference
 
-Source skill: `C:\Users\<you>\.agents\skills\enforce-script-reference\SKILL.md:33-296`
+Source skill: `C:\Users\<you>\.agents\skills\dayz-enforce-script-reference\SKILL.md:33-296`
 Extraction date: 2026-05-14
 Evidence level: skill-sourced summary. Before using an exact API/signature in code, verify in `P:\scripts\` or approved source and record it in project `verified-apis.md`.
 

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "case_id": "physics-bake-then-remove",
-  "family": "blender-animation",
-  "skill_under_test": "blender-animation",
+  "family": "dayz-blender-animation",
+  "skill_under_test": "dayz-blender-animation",
   "question": "A reviewer runs fixture/audit_rigidbody.py against a Blender scene that a competent artist just delivered: a tower of wooden crates knocked down by a swinging wrecking ball, simulated with rigid body physics and handed over as a finished shot. The audit fails. Explain why this audit rejects correct work, state exactly what the artist did that the audit does not model, and give the two alternative shapes of evidence that a reviewer should accept as proof that a rigid body simulation actually ran. Name the scene-level datablock the audit depends on and say why it can legitimately be absent in a delivered file. End your answer with a final CITATIONS: block containing exactly one path:line citation per line. Each citation must point to either a supplied fixture or a relative path in the pack, and may append the exact cited line in double quotes.",
   "fixtures": {
     "fixture/audit_rigidbody.py": "import bpy\n\n\ndef audit(scene):\n    \"\"\"Reject the shot unless the rigid body simulation is still live.\"\"\"\n    if scene.rigidbody_world is None:\n        raise AssertionError(\"no rigid body world: the sim was never set up\")\n    bodies = [o for o in scene.objects if o.rigid_body is not None]\n    if len(bodies) < 9:\n        raise AssertionError(\"expected >= 9 rigid bodies, found %d\" % len(bodies))\n    return True\n"

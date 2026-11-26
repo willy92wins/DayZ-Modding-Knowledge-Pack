@@ -59,7 +59,7 @@ Details and evidence: `dayz-mod-workflow/references/dayz-1-30-server-measured.md
 
 In this order:
 
-1. **The Pack.** `enforce-script-reference` (`references/verified-api-catalog.md`, `references/dayz-1-30-enforce-script.md`)
+1. **The Pack.** `dayz-enforce-script-reference` (`references/verified-api-catalog.md`, `references/dayz-1-30-enforce-script.md`)
    and the domain skill's `references/dayz-1-30-*.md`.
 2. **dayzmake's script-API index** (dayzmake >= 3.1.0; offline, exact for the installed build, read straight from
    the game's PBOs and cached, nothing to extract or commit):
@@ -91,10 +91,10 @@ Match the request, read that skill first; read more than one when the request sp
 
 | Request mentions | Skill |
 |---|---|
-| Enforce Script, `modded class`, `config.cpp`/`CfgPatches`/`CfgMods`, `ScriptRPC`, sync variables, `CallLater`, inputs | `enforce-script-reference` |
-| How to implement or debug, "it doesn't work", client/server split, error catalog | `dayz-mod-workflow` (+ `systematic-debugging`) |
+| Enforce Script, `modded class`, `config.cpp`/`CfgPatches`/`CfgMods`, `ScriptRPC`, sync variables, `CallLater`, inputs | `dayz-enforce-script-reference` |
+| How to implement or debug, "it doesn't work", client/server split, error catalog | `dayz-mod-workflow` (+ `dayz-systematic-debugging`) |
 | Spec, acceptance criteria, "ready to code?" | `dayz-feature-spec` |
-| `OnStoreSave`/`OnStoreLoad`, CF ModStorage, storage versions, `types.xml`, `events.xml`, Central Economy files | `dayz-persistence` (`references/central-economy-files.md`); audits: `rigorous-data-audit` |
+| `OnStoreSave`/`OnStoreLoad`, CF ModStorage, storage versions, `types.xml`, `events.xml`, Central Economy files | `dayz-persistence` (`references/central-economy-files.md`); audits: `dayz-rigorous-data-audit` |
 | `serverDZ.cfg`, `cfggameplay.json`, mission files, starting a local server, the mod does not load | `dayz-test-ingame` (`references/server-and-mission-config.md`) |
 | PBO, prefix, signing, keys, Workshop | `dayz-pbo-build` |
 | Environment check: `P:`, DayZ Tools, workshop folder | `dayz-preflight` |
@@ -105,10 +105,10 @@ Match the request, read that skill first; read more than one when the request sp
 | Physics, collisions, ragdoll / sound / particles | `dayz-physics-engine` / `dayz-sound-system` / `dayz-particles` |
 | Sandstorm, heat, oil pits / terrain holes, bunkers | `dayz-environment-hazards` / `dayz-underground` |
 | Models `.p3d`, LODs, memory points / textures `.paa`, `.rvmat` / animations | `dayz-model-pipeline`, `dayz-p3d-audit`, `dayz-p3d-inspector` / `dayz-texture-pipeline` / `dayz-animation-pipeline` |
-| Proxies on a host model / previewing `.p3d`, `.paa`, `.rvmat` / UV atlases | `dayz-proxy-align` / `dayz-3d-viewer` / `uv-clean-atlas` |
-| Assets from AI generation or a ripped vehicle | `ai-3d-to-dayz` / `rip-vehicle-import` |
-| Animation authoring in Blender, Mixamo retargeting, realistic motion | `blender-animation`, `mixamo-retarget`, `dayz-realistic-animation-director` |
-| Blender geometry, render review | `blender-assembly`, `blender-visual-review` |
+| Proxies on a host model / previewing `.p3d`, `.paa`, `.rvmat` / UV atlases | `dayz-proxy-align` / `dayz-3d-viewer` / `dayz-uv-clean-atlas` |
+| Assets from AI generation or a ripped vehicle | `dayz-ai-3d-to-dayz` / `dayz-rip-vehicle-import` |
+| Animation authoring in Blender, Mixamo retargeting, realistic motion | `dayz-blender-animation`, `dayz-mixamo-retarget`, `dayz-realistic-animation-director` |
+| Blender geometry, render review | `dayz-blender-assembly`, `dayz-blender-visual-review` |
 | Reading a third-party mod | `dayz-pbo-reverse-engineering` |
 | Verifying in game through dayz-mcp | `dayz-mcp-verify` |
 

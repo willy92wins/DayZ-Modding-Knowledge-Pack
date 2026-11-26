@@ -134,7 +134,7 @@ contract). Config is script-side (`CfgMods` + `CfgPatches`), no `config.bin`.
 ## Cross-references
 
 - `vehicle-weapon-system.md` (vault `DayZ_Vehicle_Skill/patterns`) — the fixed-turret sibling pattern.
-- RPC dispatch bus used here (single fixed id + string function name) → `enforce-script-reference`
+- RPC dispatch bus used here (single fixed id + string function name) → `dayz-enforce-script-reference`
   ("Single-ID string-dispatch RPC bus (RPCManager)").
 - Pose command work → `dayz-animation-pipeline` (`HumanCommandScript`, rider IK).
 - Vehicle recovery of another SIBNIC mod → vault `30_Research/sibnic-gunner/INDEX.md`.

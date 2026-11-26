@@ -321,9 +321,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/3d-generation-harness",
+      "artifact_id": "skill/dayz-3d-generation-harness",
       "artifact_kind": "tree",
-      "repo_path": "skills/3d-generation-harness",
+      "repo_path": "skills/dayz-3d-generation-harness",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -347,9 +347,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/ai-3d-to-dayz",
+      "artifact_id": "skill/dayz-ai-3d-to-dayz",
       "artifact_kind": "tree",
-      "repo_path": "skills/ai-3d-to-dayz",
+      "repo_path": "skills/dayz-ai-3d-to-dayz",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -360,9 +360,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/ardy-motion-generation",
+      "artifact_id": "skill/dayz-ardy-motion-generation",
       "artifact_kind": "tree",
-      "repo_path": "skills/ardy-motion-generation",
+      "repo_path": "skills/dayz-ardy-motion-generation",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -373,9 +373,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/blender-animation",
+      "artifact_id": "skill/dayz-blender-animation",
       "artifact_kind": "tree",
-      "repo_path": "skills/blender-animation",
+      "repo_path": "skills/dayz-blender-animation",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -386,9 +386,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/blender-assembly",
+      "artifact_id": "skill/dayz-blender-assembly",
       "artifact_kind": "tree",
-      "repo_path": "skills/blender-assembly",
+      "repo_path": "skills/dayz-blender-assembly",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -399,9 +399,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/blender-visual-review",
+      "artifact_id": "skill/dayz-blender-visual-review",
       "artifact_kind": "tree",
-      "repo_path": "skills/blender-visual-review",
+      "repo_path": "skills/dayz-blender-visual-review",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -815,9 +815,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/enforce-script-reference",
+      "artifact_id": "skill/dayz-enforce-script-reference",
       "artifact_kind": "tree",
-      "repo_path": "skills/enforce-script-reference",
+      "repo_path": "skills/dayz-enforce-script-reference",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -828,9 +828,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/mixamo-retarget",
+      "artifact_id": "skill/dayz-mixamo-retarget",
       "artifact_kind": "tree",
-      "repo_path": "skills/mixamo-retarget",
+      "repo_path": "skills/dayz-mixamo-retarget",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -841,9 +841,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/rigorous-data-audit",
+      "artifact_id": "skill/dayz-rigorous-data-audit",
       "artifact_kind": "tree",
-      "repo_path": "skills/rigorous-data-audit",
+      "repo_path": "skills/dayz-rigorous-data-audit",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -854,9 +854,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/rip-vehicle-import",
+      "artifact_id": "skill/dayz-rip-vehicle-import",
       "artifact_kind": "tree",
-      "repo_path": "skills/rip-vehicle-import",
+      "repo_path": "skills/dayz-rip-vehicle-import",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -867,9 +867,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/systematic-debugging",
+      "artifact_id": "skill/dayz-systematic-debugging",
       "artifact_kind": "tree",
-      "repo_path": "skills/systematic-debugging",
+      "repo_path": "skills/dayz-systematic-debugging",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -880,9 +880,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/task-observer",
+      "artifact_id": "skill/dayz-task-observer",
       "artifact_kind": "tree",
-      "repo_path": "skills/task-observer",
+      "repo_path": "skills/dayz-task-observer",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"
@@ -893,9 +893,9 @@
     },
     {
       "applicability": "domain_invariant",
-      "artifact_id": "skill/uv-clean-atlas",
+      "artifact_id": "skill/dayz-uv-clean-atlas",
       "artifact_kind": "tree",
-      "repo_path": "skills/uv-clean-atlas",
+      "repo_path": "skills/dayz-uv-clean-atlas",
       "skill_target_ids": [
         "claude_user_skills",
         "agents_user_skills"

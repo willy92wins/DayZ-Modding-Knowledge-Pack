@@ -1,6 +1,6 @@
 # Workbench Enforce scripting API (build 119356)
 
-Workbench scripting extends the editor itself: it opens modules, runs external tools, registers and rebuilds resources, and reacts to resource events. This note maps that Enforce surface for tool authors who extend Workbench. It is not a gameplay tutorial and does not cover the Python tools in `TOOLS.md` or the language rules in `enforce-script-reference`. Everything below is source-verified against build `119356` (`scripts/1_core/workbenchapi/` and `scripts/1_core/workbenchapi.c`). No runtime behaviour is claimed; a `proto` declaration proves the signature exists, not that a given build links a native behind it. No vanilla code is copied.
+Workbench scripting extends the editor itself: it opens modules, runs external tools, registers and rebuilds resources, and reacts to resource events. This note maps that Enforce surface for tool authors who extend Workbench. It is not a gameplay tutorial and does not cover the Python tools in `TOOLS.md` or the language rules in `dayz-enforce-script-reference`. Everything below is source-verified against build `119356` (`scripts/1_core/workbenchapi/` and `scripts/1_core/workbenchapi.c`). No runtime behaviour is claimed; a `proto` declaration proves the signature exists, not that a given build links a native behind it. No vanilla code is copied.
 
 ## The guard boundary
 

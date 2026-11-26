@@ -480,7 +480,7 @@ class MyClass : Managed
 }
 ```
 
-**Note:** `ref` keeps a plain class (no `Managed` ancestor) alive as well; measured on DayZ 1.30.164289 for a class declared in the mission module, so explicit `Managed` inheritance is not needed for `ref` to work. A member field without `ref` is weak for both kinds. Details: `enforce-script-reference/references/memory-management.md`.
+**Note:** `ref` keeps a plain class (no `Managed` ancestor) alive as well; measured on DayZ 1.30.164289 for a class declared in the mission module, so explicit `Managed` inheritance is not needed for `ref` to work. A member field without `ref` is weak for both kinds. Details: `dayz-enforce-script-reference/references/memory-management.md`.
 
 ### Garbage Collection
 
@@ -900,7 +900,7 @@ if (!list[1])  // Evaluates to true for both null and out-of-bounds
 
 **Empty Preprocessor Blocks:**
 
-The guide says that empty `#ifdef`/`#ifndef` blocks cause segfaults, even if they only contain comments. Not reproduced: on DayZDiag 1.30.164289 (2026-11-09) a block holding only a comment compiled and ran on server and client, at file scope, in a class body and in a method body (`enforce-script-reference` `references/pitfalls-advanced.md`, section 5). A block with nothing at all inside, a retail build and DayZ 1.29 are not measured.
+The guide says that empty `#ifdef`/`#ifndef` blocks cause segfaults, even if they only contain comments. Not reproduced: on DayZDiag 1.30.164289 (2026-11-09) a block holding only a comment compiled and ran on server and client, at file scope, in a class body and in a method body (`dayz-enforce-script-reference` `references/pitfalls-advanced.md`, section 5). A block with nothing at all inside, a retail build and DayZ 1.29 are not measured.
 
 ```
 // Compiled and ran on DayZDiag 1.30.164289, server and client

@@ -69,7 +69,7 @@ with `LoadImageFile`.
 
 These caused repeated waves of compilation errors or bugs in
 real projects. If they reappear in a third mod, candidates to enter
-`enforce-script-reference` / `dayz-pbo-build`.
+`dayz-enforce-script-reference` / `dayz-pbo-build`.
 
 **Config / build:**
 - `requiredAddons` must be `"JM_CF_Scripts"`, **not** `"CF"`.
@@ -186,7 +186,7 @@ clarification above. Handoff: [`30_Sessions/2026-05-20-dayz-animation-pipeline-e
 
 ## Relacionado
 
-- Skills: `enforce-script-reference`, `dayz-pbo-build`, `dayz-model-pipeline`,
+- Skills: `dayz-enforce-script-reference`, `dayz-pbo-build`, `dayz-model-pipeline`,
   `dayz-p3d-audit` — cover most of modding; this note is the
   supplement to what was verified in projects and is not in them.
 - Skill draft `dayz-animation-pipeline` — complete animation pipeline

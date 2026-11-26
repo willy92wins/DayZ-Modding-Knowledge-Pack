@@ -20,14 +20,14 @@ description: >
 
 1. Identify family by asset origin and architecture; not by symptom.
 2. If asset is a new Grub source-game car, proxy-split and with moving parts, use **family B**.
-3. Family B → open `../rip-vehicle-import/SKILL.md` and follow only its adapter, golden, and allowlist.
+3. Family B → open `../dayz-rip-vehicle-import/SKILL.md` and follow only its adapter, golden, and allowlist.
 4. That adapter opens asset `asset-contract.json` as third and final day-0 file; schema, Blender export, and primitive are machine inputs, not additional documents maintained by agent.
 5. If a frozen plan/runbook already exists for asset, follow that contract in flight; do not migrate it here.
 6. If no row applies or family adapter is missing: **STOP**. Do not improvise from this atlas.
 
 | Input signal | Adapter | Day-0 files |
 |---|---|---|
-| source-game Grub, new car, proxy-split + doors/moving parts | Family B | This router → `../rip-vehicle-import/SKILL.md` → `<asset>\asset-contract.json` |
+| source-game Grub, new car, proxy-split + doors/moving parts | Family B | This router → `../dayz-rip-vehicle-import/SKILL.md` → `<asset>\asset-contract.json` |
 | Asset already in flight | Frozen project runbook | Whichever cited in its current plan |
 | Other family or insufficient data | None | **STOP** |
 
@@ -357,7 +357,7 @@ cannot reach game-ready quality (pivot to a human artist), and the LFHeli HH-60G
 verdict independently weeks later. A visual red that survives N rounds is a signal to escalate to a
 human, not to run round N+1.
 
-> REDIRECT CAMBIO-1: familia B → `../rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md`.
+> REDIRECT CAMBIO-1: familia B → `../dayz-rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md`.
 
 ## INV-ALIGN — a faithful import does NOT mean the pieces line up (added 2026-07-27)
 
@@ -393,12 +393,12 @@ causes, and auditing the texture pipeline is the **most expensive** way to find 
 this ladder first; each rung is minutes, the full audit is sessions.
 
 1. **Audit the UVs, not the textures.** Exact SAT overlap + island count + density
-   (`uv-clean-atlas`, `uv_audit.py`). Overlap > 0, atomised islands (2-4 faces each) or wildly
+   (`dayz-uv-clean-atlas`, `uv_audit.py`). Overlap > 0, atomised islands (2-4 faces each) or wildly
    uneven density means the problem is upstream of any `.rvmat` — no material wiring fixes it.
 
    **No-overlap means an exact `SAT=0` (SP-214, added 2026-08-31).** A Monte-Carlo
    estimate has a measured nonzero floor, so its displayed `0%` is not proof. Route
-   vehicle UV repair to `uv-clean-atlas` and use its current chart/SLIM/fold/SAT and
+   vehicle UV repair to `dayz-uv-clean-atlas` and use its current chart/SLIM/fold/SAT and
    semantic-packing contract; `PartUV` is not the vehicle default. One anti-fold
    round is a cost target, not a correctness exception: run the same exact SAT
    detector after every round, continue when it is nonzero, and block any mesh that
@@ -491,7 +491,7 @@ identifies nothing. Discriminate by changing the regime, not by reasoning:
   discriminant manoeuvres above were designed on 2026-07-29 and **had not been run in-game** at the
   time of writing. Treat them as an untested procedure until a cycle closes it.
 
-> REDIRECT CAMBIO-1: familia B → `../rip-vehicle-import/cookbooks/family-b/get-in-ausente.md`.
+> REDIRECT CAMBIO-1: familia B → `../dayz-rip-vehicle-import/cookbooks/family-b/get-in-ausente.md`.
 
 ## INVARIANTS YOU WILL HIT — preflight checklist (read BEFORE authoring, not after the in-game fail)
 
@@ -628,7 +628,7 @@ and require approximately zero residual before trusting any product comparison.
 2. **The script module must actually LOAD or the class never binds — silent.** `CfgMods` `files[]` with
    back-slashes / a `.p3d` path that resolves to `*.p3d.p3d` → module not loaded → no get-in, no error.
    → `SKILL.md` §"Binding del script", `rip-import.md`.
-3. **REDIRECT CAMBIO-1 (familia B):** `../rip-vehicle-import/cookbooks/family-b/wheelpresent-0.md`.
+3. **REDIRECT CAMBIO-1 (familia B):** `../dayz-rip-vehicle-import/cookbooks/family-b/wheelpresent-0.md`.
 4. **Seats and wheel hubs must be `componentNN`-tagged (dual-tag) — AND each seat component must be raycast-collidable.** The engine enumerates collision
    components only by `componentNN`; a seat/hub that is a standalone island (0% componentNN overlap) is
    invisible → spawn blocker / no seat. Tag the SAME faces with a `componentNN` too. **Then the ViewGeo seat cube
@@ -777,7 +777,7 @@ and require approximately zero residual before trusting any product comparison.
      direction), the wheel sweeps left-right like a wiper instead of rotating in its plane. The axis
      must be ~perpendicular to the rim plane (Z-dominant, some Y).
    Evidence + probes: `MERCEDES_AMGLF_dev\reviews\2026-07-03-fable-review-b1b6-plan.md`.
-12. **REDIRECT CAMBIO-1 (familia B):** `../rip-vehicle-import/cookbooks/family-b/coche-blanco.md`.
+12. **REDIRECT CAMBIO-1 (familia B):** `../dayz-rip-vehicle-import/cookbooks/family-b/coche-blanco.md`.
 13. **Distance-LOD ladder: a single-visual-LOD import renders its FULL face count at ANY distance —
     > Historial del texto superado: `history/cambio-1-superseded-family-b-rules.md` §“Invariante 13”.
     author the ladder BEFORE fighting LOD0 decimation.** (added 2026-07-07, SUB_BRZ s25 measured)
@@ -806,7 +806,7 @@ and require approximately zero residual before trusting any product comparison.
     (sorted), KEEPING every struct LOD. GATE it with a self-test on a COPY: struct LODs
     (Geo/Mem/HP/ViewGeo/FireGeo) must come out BIT-IDENTICAL (get-in), then re-verify real deployed vs
     backup. Flat body source = shell res0 minus proxy faces + the chunk p3ds (cabin already excluded — it
-    lives in the intact interior proxy). Render-review the baked LOD before deploy (blender-visual-review).
+    lives in the intact interior proxy). Render-review the baked LOD before deploy (dayz-blender-visual-review).
     (d) **A far-LOD baked WITHOUT the shell's make-consistent/orient pass ships with its WINDING globally
     INVERTED → the body reads TRANSPARENT (see-through) at mid/far distance — a DISTINCT failure from (b)'s
     BLACK.** (added 2026-07-09, SUB_BRZ s29 measured+fixed) Transparent = winding/cull wrong (anti-cross faces
@@ -1115,7 +1115,7 @@ Cross-vehicle durable record (which project won each, links to the three): vault
      name (`animDamper`, `wheelHub`, and peers) against the candidate `.p3d`; the
      reference is inherited even when the named bone or selection is absent.
 
-21. **REDIRECT CAMBIO-1 (familia B):** `../rip-vehicle-import/cookbooks/family-b/attach-invisible.md`.
+21. **REDIRECT CAMBIO-1 (familia B):** `../dayz-rip-vehicle-import/cookbooks/family-b/attach-invisible.md`.
 22. **An attached item with its OWN radial actions (CarDoor open/close, hood, trunk) needs a raycast-visible ViewGeometry — point flags 0x0000003F — or the action NEVER appears (SUB_BRZ s38).** The action chain resolves the TARGET by raycast: `ActionCarDoorsOutside.ActionCondition` casts `target.GetObject()` to CarDoor and reads the selections of the hit VG COMPONENT of the ITEM (`actioncardoorsoutside.c:34-46`); a VG whose points carry flags 0x0 is not hit by `RaycastRV(ObjIntersectView)` — the same mechanism as the seat-cube blocker (preflight #4, in-game verified SUB_BRZ s9 + MercedesAMGLF s12) — so the item under the cursor never resolves and the radial is silently filtered, with config, script overrides, slots, bones and anim sources all CORRECT. Contract for the item's VG: (a) componentNN dual-tagged with a selection named EXACTLY what the vehicle's `GetAnimSourceFromSelection` expects (e.g. `doors_driver`); (b) every VG point flags 0x0000003F; (c) inward winding (copy a fixed seat cube as control). Symptom signature: attachment renders/attaches/damages fine, `GetCarDoorsState` works, but no open/close radial (and hence no get-in-through-door). Diagnose offline in seconds: census the item's VG point flags vs a working control BEFORE touching config or scripts. Origin: SUB_BRZ s38 D4e; the door fix's own in-game gate CLOSED 2026-08-24 (the radial action DOES appear on the attached panel), but the raycast mechanism is the twice-verified #4 one.
 
 23. **`componentNN` dual-tag is the confirmed fix for simultaneous seat/wheel selection failures; ascending LOD order is match-vanilla practice, not a proven cause (LFHeli OH-1 v2, 2026-07-17).** Sorted-without-dual-tag still failed; sorted-plus-dual-tag spawned; dual-tag-without-sort was never isolated. Therefore a py3d/hand-assembled model with `seat_* not found` / `wheel ... no proper selection` must be checked for collision-selection dual-tag first. `model.lods.sort(key=resolution)` may remain as deterministic authoring hygiene, but no gate may report that sorting fixed the defect. `binarize` accepts either order silently.
@@ -1485,7 +1485,7 @@ dropped them in the 2026-06-05 migration):
   vehicles already in flight. Nothing here is current doctrine; the findings that used to sit
   under that heading and still are (SP-247/248/249) now have their own sections above.
 
-> REDIRECT CAMBIO-1: sole symptom→cookbook index for family B is in `../rip-vehicle-import/SKILL.md`.
+> REDIRECT CAMBIO-1: sole symptom→cookbook index for family B is in `../dayz-rip-vehicle-import/SKILL.md`.
 - `references/rip-geometry-and-winding.md` - rip geometry: retopo, winding, and face surgery.
 - `references/proxies-and-get-in.md` - proxies, get-in, and detachable parts: the contract.
 - `references/doors-and-panel-edges.md` - doors: open edge, caps, and detachables that are not doors.

@@ -563,6 +563,18 @@ def validate_skills(root: Path) -> list[dict[str, object]]:
         if skills_root.is_dir()
         else set()
     )
+    for folder in sorted(existing_skill_dirs):
+        if folder == "_shared" or folder.startswith("dayz-"):
+            continue
+        findings.append(
+            finding(
+                "SKILL-NAME-PREFIX",
+                path=f"skills/{folder}",
+                line=0,
+                message="Every folder directly under skills/ except _shared must start with 'dayz-'.",
+                evidence=folder,
+            )
+        )
     for skill_path in sorted(skills_root.rglob("SKILL.md")):
         relative = skill_path.relative_to(root).as_posix()
         try:

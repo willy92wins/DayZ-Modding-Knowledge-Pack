@@ -108,7 +108,7 @@ proto native bool		SurfaceIsHole(float x, float z);
 
 - Buldozer 1.30 brings four new inputs: `UABuldLinkCamToTerrain`,
   `UABuldCopyTileCoord`, `UABuldMarkUnderground`, and `UABuldRemoveUnderground`
-  (`exp\bin\bin\constants.xml:282-285`, cited in `enforce-script-reference`; the last
+  (`exp\bin\bin\constants.xml:282-285`, cited in `dayz-enforce-script-reference`; the last
   two also appear in `DayZDiag_x64.exe` 1.30).
 - Changelog 1.30, Terrain Builder section: the Buldozer camera can be unlinked from
   terrain height to edit below the surface (key 8 by default), and each object
@@ -235,7 +235,7 @@ DayZDiag 1.30 (`dayz-test-ingame`, `dayz-mcp-verify`):
 | Base building parts, reconstruction, locks | `dayz-basebuilding` |
 | Bunker broadcast state file | `dayz-persistence` |
 | Trigger editor within general mod workflow | `dayz-mod-workflow` |
-| Buldozer inputs and Enforce 1.30 API | `enforce-script-reference` |
+| Buldozer inputs and Enforce 1.30 API | `dayz-enforce-script-reference` |
 | Launch game and verify with screenshots | `dayz-test-ingame` + `dayz-mcp-verify` |
 | Sandstorm and heat of Nasdara | `dayz-environment-hazards` |
 

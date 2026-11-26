@@ -409,7 +409,7 @@ All start from spawn. `world_spawn(type=<classname>, pos=[x,y,z])` → PASS if `
   The `normal` of a default `rvproxy` reply is not a face normal (added 2026-10-02, two runs)
   [EXACT][CLAIM-MCPV-RVPROXY-NORMAL]: the bridge copies the engine's `RaycastRVResult.dir`
   (`MCPBridge.c:2958`), for a ray the "direction and size of the intersection"
-  (`scripts/3_game/global/dayzphysics.c:104`), as `enforce-script-reference` ("Surface normals")
+  (`scripts/3_game/global/dayzphysics.c:104`), as `dayz-enforce-script-reference` ("Surface normals")
   found on house walls. In this run and in run cf2d6bb3 it lay along the ray in all 190 `rvproxy`
   hits on an object, the box yawed about 10 degrees included ((-1.963, 0, 0) and (-1.966, 0, 0)),
   and its length is the ray's path through the object: (-2.1, 0, 0) across a 2 m box is its width

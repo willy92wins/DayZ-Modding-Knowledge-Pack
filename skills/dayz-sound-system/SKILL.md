@@ -247,7 +247,7 @@ g_Game.GetNoiseSystem().AddNoiseTarget(pos, 30, np, 2.0);
 
 ## Cross-skill pointers
 
-- `enforce-script-reference` — SyncVars/OnVariablesSynchronized mechanics, CfgSoundSets params table
+- `dayz-enforce-script-reference` — SyncVars/OnVariablesSynchronized mechanics, CfgSoundSets params table
   (Llama extraction section), config.cpp rules.
 - `dayz-physics-engine` — contact events that typically drive impact sounds.
 - `dayz-particles` — SEffectManager also owns particles; same lifecycle/leak rules.

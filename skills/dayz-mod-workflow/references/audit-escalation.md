@@ -2,7 +2,7 @@
 
 > Extracted from dayz-mod-workflow/SKILL.md 2026-07-07 (F3).
 >
-> Sectioned §8 (severity inflation in audit reports) and §9 (multi-agent audit context isolation) from the core SKILL.md. These OVERLAP the `rigorous-data-audit` skill (the operational 7-step, multi-auditor workflow) — use that skill to RUN a data-critical audit; this file is the workflow-protocol note on labelling severity and keeping parallel auditors independent.
+> Sectioned §8 (severity inflation in audit reports) and §9 (multi-agent audit context isolation) from the core SKILL.md. These OVERLAP the `dayz-rigorous-data-audit` skill (the operational 7-step, multi-auditor workflow) — use that skill to RUN a data-critical audit; this file is the workflow-protocol note on labelling severity and keeping parallel auditors independent.
 
 ---
 

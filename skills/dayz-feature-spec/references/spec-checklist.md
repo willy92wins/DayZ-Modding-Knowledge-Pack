@@ -1,6 +1,6 @@
 # Spec Quality Checklist ("unit tests for English")
 
-Run against the feature spec BEFORE writing code. This checks the spec the way tests check code. A spec that fails is not Ready-to-implement. This is a gate on the English; `rigorous-data-audit` is the gate on the code.
+Run against the feature spec BEFORE writing code. This checks the spec the way tests check code. A spec that fails is not Ready-to-implement. This is a gate on the English; `dayz-rigorous-data-audit` is the gate on the code.
 
 Mark each `[x]` pass / `[ ]` fail. Any fail → fix the spec, do not proceed to code.
 
@@ -36,7 +36,7 @@ Mark each `[x]` pass / `[ ]` fail. Any fail → fix the spec, do not proceed to 
 
 ## Data-critical escalation
 
-- [ ] CHK016 If the feature touches persistence / progression / async queues / admin commands: crash-recovery and admin-intervention scenarios (R8) are present, AND `rigorous-data-audit` is queued before release.
+- [ ] CHK016 If the feature touches persistence / progression / async queues / admin commands: crash-recovery and admin-intervention scenarios (R8) are present, AND `dayz-rigorous-data-audit` is queued before release.
 
 ## Falsifiability (added 2026-08-16)
 

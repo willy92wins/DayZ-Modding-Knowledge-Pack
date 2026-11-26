@@ -101,7 +101,7 @@ helicopter stayed where it was parked (0.010 and 0.014 mm from its parked height
 level within 0.07°) and later rose with the platform. The 2 s pass was kept to bind
 what already exists and created nothing twice. The builds before and after differed in
 other ways too; what ties the fall to the timing is the order of those two log lines.
-This matches `enforce-script-reference` SP-LFS-3: stored entities are created after
+This matches `dayz-enforce-script-reference` SP-LFS-3: stored entities are created after
 `OnMissionStart` returns. Rule: a structure the mod rebuilds from its own sidecar, if
 stored entities can rest on it (a floor, a platform, a hangar), is created
 synchronously in `OnMissionStart`, as long as nothing it needs comes from the game's
@@ -196,7 +196,7 @@ before it returned. Measured with three batteries of the LFPowerGrid mod whose l
 rejected the battery's own record as an old version: all three stayed, with their wires (the generator kept its
 four outputs and each lamp its input), and their stored energy started at 0 (about 90 s later they read 116, 116
 and 182, from charging). The same RPT line is the one listed for a save and load order mismatch
-(`enforce-script-reference/references/pitfalls-advanced.md`), so the line alone does not tell a deliberate
+(`dayz-enforce-script-reference/references/pitfalls-advanced.md`), so the line alone does not tell a deliberate
 rejection from a desync.
 
 - A version rejection in `OnStoreLoad` loses the script state, not the entity. To remove the entity, delete it
@@ -298,7 +298,7 @@ three ways to cross that binding.
    [EXACT][CLAIM-PERS-SHUTDOWN-QUEUE]. Read in the code; the shutdown order in game is not confirmed.
 
 Every entry point that creates or deletes such an entity has to honour the first rule; the
-inventory to walk is in `rigorous-data-audit`, `references/entry-point-audit.md`.
+inventory to walk is in `dayz-rigorous-data-audit`, `references/entry-point-audit.md`.
 
 ## DayZ 1.30
 

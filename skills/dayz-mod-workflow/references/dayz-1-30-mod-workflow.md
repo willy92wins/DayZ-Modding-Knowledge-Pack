@@ -75,7 +75,7 @@ pond action. `ActionWashHandsWater` constructs `CCTLiquid`:
 action that never starts is often `CanBeStarted()==false`, not a broken CCT.
 
 `ActionFillBottleBase` is `[Obsolete]` in 1.30 (replaced by
-`ActionObtainLiquidBase`) — domain detail in `enforce-script-reference` /
+`ActionObtainLiquidBase`) — domain detail in `dayz-enforce-script-reference` /
 `dayz-basebuilding`. Workflow implication: do not `modded` an obsolete
 vanilla action that `ActionConstructor` no longer registers.
 
@@ -207,7 +207,7 @@ enum NVTypes
 
 [DESIGN] Custom NV cameras: handle the new values or call vanilla
 `ResolveNVType` instead of applying `rawType` directly. Domain cameras:
-`enforce-script-reference`.
+`dayz-enforce-script-reference`.
 
 ## Headless vs dedicated guards
 

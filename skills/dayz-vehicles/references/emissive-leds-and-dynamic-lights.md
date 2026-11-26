@@ -329,5 +329,5 @@ object is removed.
 - `dayz-3d-viewer` — preview emissive RVMATs in Three.js (the RVMAT parser
   honors `emissive[]`).
 - `dayz-ui-development` — if the LED state is user-driven from a menu.
-- `enforce-script-reference` — SyncVars + OnVariablesSynchronized for state
+- `dayz-enforce-script-reference` — SyncVars + OnVariablesSynchronized for state
   propagation.

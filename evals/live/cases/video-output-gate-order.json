@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "case_id": "video-output-gate-order",
-  "family": "blender-animation",
-  "skill_under_test": "blender-animation",
+  "family": "dayz-blender-animation",
+  "skill_under_test": "dayz-blender-animation",
   "question": "fixture/render_turntable.py configures a 6-second product turntable preview and raises TypeError on the marked line under Blender 5.x, on a build where video output is available. Diagnose the failure precisely: name the image-settings attribute that gates video output, state the order the assignments must take, and explain why the current order fails while the same code worked on an earlier Blender. Then state how the script should verify at runtime that this build can encode video at all instead of assuming MP4 output exists. Separately, the orbit in this script is a perfect constant-velocity circle; name the f-curve mechanism that introduces human imperfection into it and the measurement that distinguishes a varied orbit from a metronomic one. End your answer with a final CITATIONS: block containing exactly one path:line citation per line. Each citation must point to either a supplied fixture or a relative path in the pack, and may append the exact cited line in double quotes.",
   "fixtures": {
     "fixture/render_turntable.py": "import bpy\n\nscene = bpy.context.scene\nscene.frame_start = 1\nscene.frame_end = 180\nscene.render.fps = 30\n\nims = scene.render.image_settings\nims.file_format = 'FFMPEG'          # <-- TypeError raised here\nscene.render.ffmpeg.format = 'MPEG4'\nscene.render.ffmpeg.codec = 'H264'\nscene.render.filepath = '/tmp/turntable.mp4'\n\npivot = bpy.data.objects['OrbitPivot']\npivot.rotation_euler = (0.0, 0.0, 0.0)\npivot.keyframe_insert('rotation_euler', frame=1)\npivot.rotation_euler = (0.0, 0.0, 6.283185)\npivot.keyframe_insert('rotation_euler', frame=180)\nfor fcu in pivot.animation_data.action.fcurves:\n    for kp in fcu.keyframe_points:\n        kp.interpolation = 'LINEAR'\n"

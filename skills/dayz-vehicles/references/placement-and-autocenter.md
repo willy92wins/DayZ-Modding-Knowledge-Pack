@@ -128,4 +128,4 @@ the LOD's own center. In practice, for DayZ mod kits you should assume
   non-visual LOD.
 - `dayz-p3d-inspector` — `p3d_inspector_build.py` does NOT auto-add
   `autocenter`; Recipe JSON `properties` is authoritative.
-- `enforce-script-reference` — config.cpp conventions for placeable items.
+- `dayz-enforce-script-reference` — config.cpp conventions for placeable items.

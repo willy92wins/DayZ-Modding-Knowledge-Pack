@@ -105,7 +105,7 @@ Vehicle doors do **not** use the building `class Doors` contract documented here
   `SetDoorOpen`/`IsDoorOpen` plus `model.cfg` `AnimationSources`.
 
 Route vehicle work through `dayz-vehicles`: invariant #21 redirects to the public
-`rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md` **DOOR MECHANISM SELECTOR**, and
+`dayz-rip-vehicle-import/cookbooks/family-b/radial-puerta-ausente.md` **DOOR MECHANISM SELECTOR**, and
 invariant #22 carries the attachment ViewGeometry rule. Applying building `class Doors` to a
 vehicle will not produce a working radial, even though both mechanisms use names such as `source`,
 `component`, and `axis`.

@@ -13,7 +13,7 @@
 ## ⚠️ ERRATA permanente (CORRECTED / DOWNGRADED) — no reintroducir
 
 - **`CfgStamina` is NOT a vanilla class.** Verified 2026-07-06: NOTHING in user skills/vault/repo
-  asserts it (grep empty); `enforce-script-reference` cites actual vanilla `staminahandler.c:797`
+  asserts it (grep empty); `dayz-enforce-script-reference` cites actual vanilla `staminahandler.c:797`
   (legitimate, distinct). Stamina/temperature/wetness are configured via **`cfggameplay.json` keys** +
   `globals.xml WorldWetTempUpdate`, not via a `CfgStamina` class.
 - `Stamina.c` / `StaminaHandler.c` / `environment.c` / `m_HeatComfort` / `UniversalTemperatureSource`
@@ -128,6 +128,6 @@ assets. URLs: `/wiki/DayZ:End_User_License_Agreement_for_DayZ_Tools`, `bohemia.n
 ## Cross-ref
 - [[dayz-objectbuilder-lod-conventions]] — doors/ladders/LOD (MODELING part, verified vanilla).
 - `DAYZ_INFRA.md` — user operational server infra (launch, ports, BattlEye, allowFilePatching).
-- Skills: `enforce-script-reference` (config.cpp, vanilla stamina APIs), `dayz-particles`,
+- Skills: `dayz-enforce-script-reference` (config.cpp, vanilla stamina APIs), `dayz-particles`,
   `dayz-texture-pipeline`, `dayz-physics-engine`.
 - Origin: session 2026-07-06 (deep-research Wiki Sweep #2).

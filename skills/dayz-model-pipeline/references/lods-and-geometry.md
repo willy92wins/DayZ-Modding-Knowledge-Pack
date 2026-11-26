@@ -169,7 +169,7 @@ which leaves the original order (`references/py3d-direct-generation.md`, "Blende
 Z-up → DayZ Y-up Rotation").
 
 **In Blender:** a GLB/glTF import needs no flip. Before export, faces should show
-blue from outside in the Face Orientation overlay (`blender-visual-review`). If some
+blue from outside in the Face Orientation overlay (`dayz-blender-visual-review`). If some
 show red, select all of the mesh's faces (not the proxy triangles), use Mesh →
 Normals → Recalculate Outside and check the overlay again: on an open mesh it can
 guess wrong. Mesh → Normals → Flip turns the selected faces inward, and Rule 12's map

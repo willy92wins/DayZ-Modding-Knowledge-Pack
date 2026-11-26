@@ -1,6 +1,6 @@
 ---
 name: dayz-animation-pipeline
-description: "Use when: DayZ animations, model.cfg AnimationSources, SetAnimationPhase, RTM, SEAnim, anim graph, CMD_Death, vehicle rider pose. Config-driven and skeletal. Not Blender .txa authoring: blender-animation; not Mixamo: mixamo-retarget."
+description: "Use when: DayZ animations, model.cfg AnimationSources, SetAnimationPhase, RTM, SEAnim, anim graph, CMD_Death, vehicle rider pose. Config-driven and skeletal. Not Blender .txa authoring: dayz-blender-animation; not Mixamo: dayz-mixamo-retarget."
 ---
 
 # DayZ Animation Pipeline
@@ -65,7 +65,7 @@ Ask first: is this **object/prop animation** or **skeletal animation**?
 | A legacy prop/man RTM animation, or to use FBXToRTM / Arma3ObjectBuilder | Skeletal — RTM | `references/skeletal-rtm.md` |
 | Strict SEAnim v1 or unbinarized RTM read/write/inspect, bounded parsing or deterministic JSON | Interchange tooling | Knowledge Pack `tools/dayz-animation-formats/README.md` |
 | To author keyframes from scratch or retarget in Blender | Authoring | `references/blender-authoring.md` |
-| To apply Mixamo (or any FBX) mocap onto a rig — auto bone mapping, retarget, NLA — as a keyframe SOURCE for Layer 2 | Sibling skill | invoke `mixamo-retarget` (runs via Blender MCP); output feeds the SEAnim path below. Mixamo FBX download is manual (no API) |
+| To apply Mixamo (or any FBX) mocap onto a rig — auto bone mapping, retarget, NLA — as a keyframe SOURCE for Layer 2 | Sibling skill | invoke `dayz-mixamo-retarget` (runs via Blender MCP); output feeds the SEAnim path below. Mixamo FBX download is manual (no API) |
 | To know which tool does what, the walls, and signing | Tooling | `references/tooling-and-walls.md` |
 | Anim graph / state machine for a creature or for the player; CMD_* commands; ASI structure; weapon state names (`FireCocked`, `ReloadMagazineDetach`); Workbench Animation Editor `#eventtable` mechanism | Anim graph (Layer 2/3) | `references/anim-graph.md` |
 | Player skeleton bone catalog by zone (core/legs/arms/IK helpers/weapon attachment); `RightHand_Dummy`, `LeftHand_Dummy`, `EntityPosition`, `LookAt`; twist bones at every joint and the measured 148-bone parent table (`references/ofp2-manskeleton-parents.txt`); the frame an ikpose keys `LeftHandIKTarget` in, and which SEAnim axis is a held object's vertical | Skeleton bones | `references/player-skeleton.md` |
@@ -114,7 +114,7 @@ export). The viewer reads `bone.quaternion` directly, so the
 
 For skeletal work Claude can take you partway. Read `references/skeletal-anm-enfusion.md` and `references/blender-authoring.md`, then:
 
-1. Author or edit keyframes — either Blender headless (`bpy`) against the DayZ skeleton, or by writing strict **SEAnim v1** / unbinarized **RTM_0101** through `dayz-animation-formats`. A third source: retarget Mixamo/FBX mocap onto the DayZ skeleton with the `mixamo-retarget` skill, then treat the baked action as the keyframe input here (mind its rest-pose caveat).
+1. Author or edit keyframes — either Blender headless (`bpy`) against the DayZ skeleton, or by writing strict **SEAnim v1** / unbinarized **RTM_0101** through `dayz-animation-formats`. A third source: retarget Mixamo/FBX mocap onto the DayZ skeleton with the `dayz-mixamo-retarget` skill, then treat the baked action as the keyframe input here (mind its rest-pose caveat).
 2. Hand the intermediate to the closed converter the user runs: SEAnim → `.anm` via **DayZATool** (`--generate-anim`), or FBX → `.rtm` via **FBXToRTMGui.exe**, or `.txa` → `.anm` via **Workbench**.
 3. Bone names MUST match `OFP2_ManSkeleton` exactly or the RPT logs `Bone X doesn't exist`. Verify the target skeleton's bone list before authoring.
 

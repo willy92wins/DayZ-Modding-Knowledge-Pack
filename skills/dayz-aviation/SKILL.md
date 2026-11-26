@@ -10,7 +10,7 @@ description: >
   aileron, rudder, throttle, autopilot, seaplane/flying boat, axis_thruster,
   dial_horizon/dial_altitude, stall warning, Cessna, Spitfire, Catalina,
   Tigermoth or biplane. Always invoke before authoring/debugging aviation
-  entity code or config; compose with enforce-script-reference and
+  entity code or config; compose with dayz-enforce-script-reference and
   dayz-model-pipeline.
 ---
 
@@ -613,7 +613,7 @@ Load a topic reference on-demand when the task touches it (all under `references
 ## Cross-references
 
 - [[dayz-vehicles]] — CarScript packaging/deploy failures that pass filepatching but break on dedicated (binarize dropping config-only textures, ODOL-vs-MLOD model.cfg semantics) live in `dayz-vehicles/references/build-packaging-and-debug.md` and apply to CarScript aircraft too. Amphibians boundary: hull/car base in `dayz-vehicles`; Buoyancy/flight layer here.
-- [[enforce-script-reference]] — general Enforce Script patterns (config.cpp, CfgMods, modded class, RPC, persistence)
+- [[dayz-enforce-script-reference]] — general Enforce Script patterns (config.cpp, CfgMods, modded class, RPC, persistence)
 - [[dayz-model-pipeline]] — rvmat patterns, .p3d Object Builder workflow, materials
 - [[dayz-mod-workflow]] — workflow protocol (use ALONGSIDE this skill)
 - [[dayz-particles]] — Enfusion .ptc format (used for crash/impact effects)

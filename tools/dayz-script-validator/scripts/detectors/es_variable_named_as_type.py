@@ -41,12 +41,12 @@ ES_VARIABLE_NAMED_AS_TYPE_RULE_ID = "ES-VARIABLE-NAMED-AS-TYPE"
 #   local   `Widget map = root.FindAnyWidget("mapWidget")`:
 #           `Variable name 'map' already used as type name`, then
 #           `Can't compile "Mission" script module!`
-#           (enforce-script-reference pitfalls-advanced.md, SP-317).
+#           (dayz-enforce-script-reference pitfalls-advanced.md, SP-317).
 #
 # Parameters, and names that are an enum or a typedef rather than a class,
 # have no failure on record; they are judged the same way because the error
 # names a type, not a class. The match is exact case: Enforce identifiers are
-# case-sensitive (enforce-script-reference SKILL.md, "A method named exactly
+# case-sensitive (dayz-enforce-script-reference SKILL.md, "A method named exactly
 # like a vanilla class"), and no failure with a case-only match is on record,
 # so a member `debug` is not reported.
 #

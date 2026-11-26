@@ -129,11 +129,11 @@ if missing:
 
 ## Relacionado
 
-- `enforce-script-reference` Rule 24: override parameter names MUST match
+- `dayz-enforce-script-reference` Rule 24: override parameter names MUST match
   exactly. Applies when adding base stubs — use same names as server.
 - DayZ engine compile lifecycle: client + server load the same
   `Scripts/4_World/` tree, divergence only via `#ifdef SERVER`.
-- Skill `enforce-script-reference` covers the layer architecture (3_Game /
+- Skill `dayz-enforce-script-reference` covers the layer architecture (3_Game /
   4_World / 5_Mission) but NOT this specific pattern — candidate to
   add if bug recurs in another mod.
 - [[dayz-enforce-script-reference]] — Rule 24 + `modded class` rules (do not add member vars, coexistence of declarations).

@@ -36,7 +36,7 @@ description: >
 | PC-17| Group targets: distribution by tracking  | `eAIGroup.c:726`, `eAIBase.c:3497-3505` |
 | PC-18| Formation positions: cached + jitter 2-4s| `eAIGroup.c:822-830`                    |
 
-Server-side scheduling/throttling principles (budget-per-frame, FPS-adaptive interval, rolling average, modulo-gating): canonical server-perf write-up: `enforce-script-reference/references/server-performance.md` (PC-2/PC-7/PC-9b in THIS skill are the eAI-specific instances). For `#ifdef SERVER` vs `IsServer()` side checks and ScriptInvoker lifecycle, `enforce-script-reference` does apply (hard rules 17-20, 28).
+Server-side scheduling/throttling principles (budget-per-frame, FPS-adaptive interval, rolling average, modulo-gating): canonical server-perf write-up: `dayz-enforce-script-reference/references/server-performance.md` (PC-2/PC-7/PC-9b in THIS skill are the eAI-specific instances). For `#ifdef SERVER` vs `IsServer()` side checks and ScriptInvoker lifecycle, `dayz-enforce-script-reference` does apply (hard rules 17-20, 28).
 
 ---
 
@@ -163,7 +163,7 @@ else
 
 When no player is within the AI's visibility range, its update interval degrades from ~50 ms to ~250 ms. Logic is not disabled — it runs at one-fifth frequency. Condition is AI-local: each unit decides its own backoff independently.
 
-This is the AI-specific implementation of the backoff principle (degrade frequency by relevance). Canonical server-perf write-up: `enforce-script-reference/references/server-performance.md` (PC-2/PC-7/PC-9b are the eAI-specific instances).
+This is the AI-specific implementation of the backoff principle (degrade frequency by relevance). Canonical server-perf write-up: `dayz-enforce-script-reference/references/server-performance.md` (PC-2/PC-7/PC-9b are the eAI-specific instances).
 
 ---
 

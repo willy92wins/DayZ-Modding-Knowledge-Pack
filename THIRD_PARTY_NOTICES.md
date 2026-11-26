@@ -27,14 +27,14 @@ The plugin repository itself is GPL; only the contributed parts listed above are
 
 ### obra/superpowers systematic-debugging
 
-- Component: `skills/systematic-debugging/`
+- Component: `skills/dayz-systematic-debugging/`
 - Upstream: [obra/superpowers](https://github.com/obra/superpowers), `skills/systematic-debugging`
 - License: MIT
 - Copyright: © 2025 Jesse Vincent
-- Local license: [`skills/systematic-debugging/LICENSE`](skills/systematic-debugging/LICENSE)
+- Local license: [`skills/dayz-systematic-debugging/LICENSE`](skills/dayz-systematic-debugging/LICENSE)
 
 The skill is unmodified; what was fetched and what was left out is in
-[`skills/systematic-debugging/SOURCE.md`](skills/systematic-debugging/SOURCE.md).
+[`skills/dayz-systematic-debugging/SOURCE.md`](skills/dayz-systematic-debugging/SOURCE.md).
 
 ## Adaptation attribution
 
@@ -53,17 +53,17 @@ on the BI Community Wiki. No third-party C source is bundled.
 
 ### img2threejs
 
-`skills/blender-visual-review/` and the detail-scan protocol in
-`skills/blender-assembly/SKILL.md` adapt staged-review methodology from
+`skills/dayz-blender-visual-review/` and the detail-scan protocol in
+`skills/dayz-blender-assembly/SKILL.md` adapt staged-review methodology from
 [img2threejs/img2threejs](https://github.com/img2threejs/img2threejs) commit
 `9a8ecf129a58c1b557a1f03f7727f6295672cd51` (v1.4.3, Apache-2.0).
 `correction_loop.py` is a verbatim copy; `vr_delta.py` is an adaptation.
 Per-file provenance is in
-`skills/blender-visual-review/references/NOTICE-img2threejs.md`.
+`skills/dayz-blender-visual-review/references/NOTICE-img2threejs.md`.
 
 ### Dev-GOM blender-toolkit
 
-`skills/mixamo-retarget/scripts/retargeting.py` and `bone_matching.py` are
+`skills/dayz-mixamo-retarget/scripts/retargeting.py` and `bone_matching.py` are
 adapted from [Dev-GOM/claude-code-marketplace](https://github.com/Dev-GOM/claude-code-marketplace)
 `plugins/blender-toolkit` (Apache-2.0). Relative imports were flattened and
 the logger replaced with stdlib logging. The original WebSocket CLI and UI
@@ -79,13 +79,13 @@ in the tool.
 
 ### rebelytics One Skill to Rule Them All
 
-`skills/task-observer/` adapts the task-observer skill of
+`skills/dayz-task-observer/` adapts the task-observer skill of
 [rebelytics/one-skill-to-rule-them-all](https://github.com/rebelytics/one-skill-to-rule-them-all)
 (Eoghan Henn, CC BY 4.0) and modifies it: the session-start trigger in its
 description is softened, so it observes only while work is in progress. The
-license text is in [`skills/task-observer/LICENSE`](skills/task-observer/LICENSE),
+license text is in [`skills/dayz-task-observer/LICENSE`](skills/dayz-task-observer/LICENSE),
 and what changed and what was left out in
-[`skills/task-observer/SOURCE.md`](skills/task-observer/SOURCE.md).
+[`skills/dayz-task-observer/SOURCE.md`](skills/dayz-task-observer/SOURCE.md).
 
 ## First-party binary fixtures
 
@@ -118,13 +118,13 @@ redistributed by this pack:
 | [ScripyZz/BisDLL-Arma-3](https://github.com/ScripyZz/BisDLL-Arma-3/tree/5600bad995c89154b4f6700ef087f86ef4c49315) | compatible ODOL parser backend; loaded externally through a pinned manifest | no license/redistribution grant observed |
 | DayZ Expansion, TraderPlus and TraderX | UI/layout comparison corpora | not redistributed; license not asserted here |
 | [salutesh/DayZ-Expansion-Scripts](https://github.com/salutesh/DayZ-Expansion-Scripts) @ `8f75d554fda209b257c00deb8f01c181e67c980a` | eAI pattern evidence cited by `dayz-ai-patterns` | not redistributed |
-| PartUV / PartField ([EricWang12/PartUV](https://github.com/EricWang12/PartUV); NVIDIA-derived checkpoint) | UV-AI pilot cited by `uv-clean-atlas` | not redistributed; no weights or PartUV source shipped |
-| [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r128) | runtime dependency of the `rip-vehicle-import` classify viewer (`three.min.js`, `GLTFLoader.js`, `OrbitControls.js`, r128 UMD) | MIT; **not redistributed** — the viewer's README says where to fetch them |
+| PartUV / PartField ([EricWang12/PartUV](https://github.com/EricWang12/PartUV); NVIDIA-derived checkpoint) | UV-AI pilot cited by `dayz-uv-clean-atlas` | not redistributed; no weights or PartUV source shipped |
+| [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r128) | runtime dependency of the `dayz-rip-vehicle-import` classify viewer (`three.min.js`, `GLTFLoader.js`, `OrbitControls.js`, r128 UMD) | MIT; **not redistributed** — the viewer's README says where to fetch them |
 | [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r160) | runtime dependency of `tools/dayz-3d-viewer` generated HTML (`three.module.js`, `GLTFLoader.js`, `OrbitControls.js`, r160 ESM via jsDelivr `three@0.160.0`) | MIT; **not redistributed** — the tool README names the CDN URL |
 | [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/r147) | runtime CDN of `dayz-p3d-inspector` and `dayz-proxy-align` generated HTML (UMD r0.147.0, last UMD examples build) | MIT; **not redistributed** |
-| Mixamo / Adobe Mixamo | mocap / FBX / character assets referenced by `mixamo-retarget` | not redistributed; only the retargeting flow ships |
+| Mixamo / Adobe Mixamo | mocap / FBX / character assets referenced by `dayz-mixamo-retarget` | not redistributed; only the retargeting flow ships |
 | Dabs Framework, LBmaster Groups | UI/script pattern research cited by `dayz-ui-development` | not redistributed; license not asserted here |
-| LM_Planes (Steam workshop 3730564764) | Enforce/config pattern extraction in `enforce-script-reference` | not redistributed; workshop terms |
+| LM_Planes (Steam workshop 3730564764) | Enforce/config pattern extraction in `dayz-enforce-script-reference` | not redistributed; workshop terms |
 | DayZ Modders Discord via [AnswerOverflow](https://www.answeroverflow.com) | Community snippets in `dayz-ui-development` and `dayz-particles`, spot-checked against vanilla | Discord/AnswerOverflow terms; snippets rewritten against `P:\scripts` |
 | IMPWMODPart2, DoorLockSystem | Audio prior-art citations in `dayz-sound-system` | not redistributed |
 | novoGOD's door tutorial *Doors_Buttons_Lesson* (a Discord attachment, files dated 2025-04-23) | The three door examples that `dayz-doors` describes and cites by path and line | no license or redistribution grant observed; not redistributed since 2026-10-02 (v1.3.0 to v1.5.0 shipped its nine example files under `skills/dayz-doors/assets/`, mislabelled as author-owned MIT) |

@@ -8,7 +8,7 @@ This file is the exception. It is for the **human who just cloned** and needs
 a map: what to install, which way the work flows, and which skill or tool to
 open for a given job. It is an index, not a tutorial. If a paragraph starts
 explaining how to write `config.cpp` or Enforce Script, it has gone too far —
-that lives in `enforce-script-reference`.
+that lives in `dayz-enforce-script-reference`.
 
 Two jobs, two doors:
 
@@ -112,7 +112,7 @@ There is no pack command for this step. The agent greps vanilla under
 Skill: [`skills/dayz-mod-workflow/SKILL.md`](skills/dayz-mod-workflow/SKILL.md)
 for *how* (client/server map before any feature, anti-confabulation,
 checklists). Domain knowledge stays in the domain skill.
-[`skills/enforce-script-reference/SKILL.md`](skills/enforce-script-reference/SKILL.md)
+[`skills/dayz-enforce-script-reference/SKILL.md`](skills/dayz-enforce-script-reference/SKILL.md)
 is the Enforce Script / `config.cpp` reference — load it before writing
 script or config. That skill is where those languages are taught; this file
 does not repeat them.
@@ -263,9 +263,9 @@ plan.
 | Check the box is ready | `dayz-preflight` → `python skills/dayz-preflight/preflight.py` |
 | Spec a non-trivial feature first | `dayz-feature-spec` |
 | Implement or debug *how* | `dayz-mod-workflow` |
-| Write Enforce Script or `config.cpp` | `enforce-script-reference` |
+| Write Enforce Script or `config.cpp` | `dayz-enforce-script-reference` |
 | A car, truck, quad, bike or boat | `dayz-vehicles` |
-| A racing-game rip into a drivable car | `rip-vehicle-import` (then `dayz-vehicles`) |
+| A racing-game rip into a drivable car | `dayz-rip-vehicle-import` (then `dayz-vehicles`) |
 | A plane, seaplane or helicopter | `dayz-aviation` |
 | A firearm (entity / `CfgWeapons`) | `dayz-weapons` |
 | A zombie, survivor or human NPC | `dayz-characters` |
@@ -286,24 +286,24 @@ plan.
 | Preview an MLOD `.p3d` without launching DayZ | `dayz-3d-viewer` (`TOOLS.md`; install that tool first) |
 | Animation never plays / inspect an RTM | `dayz-animation-pipeline` + `dayz-animation-formats` (`TOOLS.md`) |
 | Realistic motion gates | `dayz-realistic-animation-director` |
-| Animate in Blender | `blender-animation` |
+| Animate in Blender | `dayz-blender-animation` |
 | Expansion eAI | `dayz-ai-patterns` |
 | Learn from someone else's PBO | `dayz-pbo-reverse-engineering` |
 | Pack / "is this addon ready" | `dayz-pbo-build` + the linter in §2 |
 | Launch DayZDiag with the mod | `dayz-test-ingame` (template, not a pack-root CLI) |
 | Auto-test in-game via MCP | `dayz-mcp-verify` + `README.md` §8 |
-| Audit persistence / data-loss risk | `rigorous-data-audit` |
+| Audit persistence / data-loss risk | `dayz-rigorous-data-audit` |
 | Compare two binarized models | `dayz-odol-strict` (`TOOLS.md`; backend is external) |
 | Vehicle proxy graph / fit | `dayz-vehicle-proxy-contract` (`TOOLS.md`) |
-| AI-generated mesh into DayZ | `ai-3d-to-dayz` |
+| AI-generated mesh into DayZ | `dayz-ai-3d-to-dayz` |
 | See the pack tools on a synthetic `.p3d` | `examples/end-to-end/README.md` |
 | What is true of a skill on which build | [`compatibility-matrix.md`](compatibility-matrix.md) |
 | Touch a linter rule | `python tools/dayz-script-validator/scripts/vanilla_control.py` |
 | Change *this repository* | [§4](#4-what-this-file-is-not) |
 
 Forty-two playbooks sit under `skills/`. The table above is the frequent
-routes. The rest (`blender-assembly`, `uv-clean-atlas`, `mixamo-retarget`,
-`ardy-motion-generation`, …) still apply when their `description:` matches —
+routes. The rest (`dayz-blender-assembly`, `dayz-uv-clean-atlas`, `dayz-mixamo-retarget`,
+`dayz-ardy-motion-generation`, …) still apply when their `description:` matches —
 read front-matter, then that `SKILL.md`.
 
 ---

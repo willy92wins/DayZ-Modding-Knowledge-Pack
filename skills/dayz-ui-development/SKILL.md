@@ -1,6 +1,6 @@
 ---
 name: dayz-ui-development
-description: "Use when: DayZ UI, menu, .layout, widget, HUD, CreateWidgets, ShowScriptedMenu, UI doesn't look like the design. Full UI/layout/Dabs. Not general Enforce: enforce-script-reference; not in-game launch: dayz-test-ingame."
+description: "Use when: DayZ UI, menu, .layout, widget, HUD, CreateWidgets, ShowScriptedMenu, UI doesn't look like the design. Full UI/layout/Dabs. Not general Enforce: dayz-enforce-script-reference; not in-game launch: dayz-test-ingame."
 ---
 
 # DayZ UI Development — Verified Reference (v3)
@@ -31,7 +31,7 @@ vanilla scripts at `<dayz-projects>\scripts\`, vanilla GUI data at
 | Incline/tilt a panel onto a world surface (widget rotation/transform) | `references/widget-api.md` | — |
 | Map/canvas/3D-markers/admin windows | `references/lbgroups-patterns.md`, `references/admin-ui-patterns.md` ⚠️ | — |
 | Recolor/retheme requests | THEME REALITY section below (scope it before estimating) | — |
-| Keybind to open the UI (`inputs.xml` schema, config.cpp `inputs=`) | **`enforce-script-reference` skill** (outside this skill's verified corpus) | vanilla-menus-map.md §4 for the OnUpdate polling pattern |
+| Keybind to open the UI (`inputs.xml` schema, config.cpp `inputs=`) | **`dayz-enforce-script-reference` skill** (outside this skill's verified corpus) | vanilla-menus-map.md §4 for the OnUpdate polling pattern |
 
 ⚠️ = files with confabulated/unverified code: `advanced-patterns.md` (3 broken APIs — read its
 CORRECTIONS banner first), `admin-ui-patterns.md` + `lbgroups-patterns.md` (zero path:line cites —

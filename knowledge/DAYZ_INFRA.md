@@ -246,7 +246,7 @@ Standard layout under `<mission>/`:
 ## Tooling realities
 
 - **DayZ does NOT have a unit test runner for Enforce Script.** The quality lever
-  is strict adherence to `enforce-script-reference` (style guide +
+  is strict adherence to `dayz-enforce-script-reference` (style guide +
   pitfalls). Hence R5 (batch in-game tests) — each iteration is expensive
   (rebuild PBO ~30s + connect ~30s + scenario setup 1-3 min).
 - **`shutil.rmtree` on Windows recurses INSIDE junction targets.** If you have

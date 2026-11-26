@@ -6,7 +6,7 @@ Blender headless ([LFInfectedBig ✓] 2026-06-25). The gotchas below each cost a
 
 The decisive gate is not "the map looks purple" — it is a **lit preview of the low with the normal applied,
 compared to the high**, plus numeric checks (UV stretch spread, % black pixels, AO surface mean). Render and
-look (`blender-visual-review`); the raw map is not the test.
+look (`dayz-blender-visual-review`); the raw map is not the test.
 
 ## 1. UV-unwrap — Smart UV on quads, then triangulate
 

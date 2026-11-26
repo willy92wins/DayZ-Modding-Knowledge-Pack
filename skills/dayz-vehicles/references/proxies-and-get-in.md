@@ -97,7 +97,7 @@ special LODs, not an empty Geometry. Measured: `Landrover_Driver_Door.p3d` = vis
 Geometry `32/24`, Memory `7/0`, ViewGeo `32/24`, FireGeo `72/56`, with `autocenter=0` on the visual
 LOD and on Geometry. Budget the item LODs before promising the feature.
 
-Custom inventory slots are the T148506 family (`enforce-script-reference`): if the slot name and the
+Custom inventory slots are the T148506 family (`dayz-enforce-script-reference`): if the slot name and the
 `inventorySlot` string diverge, the item never attaches and the proxy never draws.
 
 > REDIRECT CAMBIO-1: the SP-093 correction now occupies the original location of SP-093.

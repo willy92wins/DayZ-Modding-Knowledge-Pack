@@ -101,11 +101,11 @@ def test_gate_requires_external_skills_ref_when_skills_exist(
 ) -> None:
     root = repo_factory(
         {
-            "skills/demo/SKILL.md": (
-                "---\nname: demo\ndescription: Gate fixture.\n---\n# Demo\n"
+            "skills/dayz-demo/SKILL.md": (
+                "---\nname: dayz-demo\ndescription: Gate fixture.\n---\n# Demo\n"
             )
         },
-        payload={"LICENSE", "README.md", "skills/demo/SKILL.md"},
+        payload={"LICENSE", "README.md", "skills/dayz-demo/SKILL.md"},
     )
     monkeypatch.delenv("PACK_SKILLS_REF_ROOT", raising=False)
 
@@ -180,8 +180,8 @@ def test_gate_fails_when_a_skill_test_fails(
 ) -> None:
     root = repo_factory(
         {
-            "skills/bad/tests/test_bad.py": FAILING_SUITE,
-            "skills/good/tests/test_good.py": PASSING_SUITE,
+            "skills/dayz-bad/tests/test_bad.py": FAILING_SUITE,
+            "skills/dayz-good/tests/test_good.py": PASSING_SUITE,
         },
         payload={"LICENSE", "README.md"},
     )
@@ -197,12 +197,12 @@ def test_gate_fails_when_a_skill_test_fails(
         "verdict": "FAIL",
         "suite_count": 2,
         "suites": {
-            "bad": {"verdict": "FAIL", "returncode": 1},
-            "good": {"verdict": "PASS", "returncode": 0},
+            "dayz-bad": {"verdict": "FAIL", "returncode": 1},
+            "dayz-good": {"verdict": "PASS", "returncode": 0},
         },
     }
-    assert "bad (exit 1)" in report["findings"][0]["evidence"]
-    assert "1 failed" in (report_dir / "skill-tests" / "bad.txt").read_text(
+    assert "dayz-bad (exit 1)" in report["findings"][0]["evidence"]
+    assert "1 failed" in (report_dir / "skill-tests" / "dayz-bad.txt").read_text(
         encoding="utf-8"
     )
 
@@ -244,9 +244,9 @@ def test_gate_passes_same_named_and_cleanly_skipped_suites(
     # gate ran these folders.
     root = repo_factory(
         {
-            "skills/alpha/tests/test_install.py": PASSING_SUITE,
-            "skills/beta/tests/test_install.py": PASSING_SUITE,
-            "skills/blender/tests/test_needs_blender.py": SKIPPED_SUITE,
+            "skills/dayz-alpha/tests/test_install.py": PASSING_SUITE,
+            "skills/dayz-beta/tests/test_install.py": PASSING_SUITE,
+            "skills/dayz-blender/tests/test_needs_blender.py": SKIPPED_SUITE,
             "tools/demo/tests/test_install.py": PASSING_SUITE,
         },
         payload={"LICENSE", "README.md"},
@@ -256,9 +256,9 @@ def test_gate_passes_same_named_and_cleanly_skipped_suites(
 
     assert report["verdict"] == "PASS"
     assert report["checks"]["skill_tests"]["suites"] == {
-        "alpha": {"verdict": "PASS", "returncode": 0},
-        "beta": {"verdict": "PASS", "returncode": 0},
-        "blender": {"verdict": "PASS", "returncode": 5},
+        "dayz-alpha": {"verdict": "PASS", "returncode": 0},
+        "dayz-beta": {"verdict": "PASS", "returncode": 0},
+        "dayz-blender": {"verdict": "PASS", "returncode": 5},
     }
     assert report["checks"]["tool_tests"]["suites"] == {
         "demo": {"verdict": "PASS", "returncode": 0},
@@ -271,11 +271,11 @@ def test_gate_fails_test_folders_that_run_nothing_or_do_not_collect(
 ) -> None:
     root = repo_factory(
         {
-            "skills/broken/tests/test_broken.py": BROKEN_SUITE,
-            "skills/deselected/tests/conftest.py": DESELECT_ALL,
-            "skills/deselected/tests/test_bad.py": FAILING_SUITE,
-            "skills/deselected/tests/test_needs_blender.py": SKIPPED_SUITE,
-            "skills/script/tests/test_script.py": SCRIPT_SUITE,
+            "skills/dayz-broken/tests/test_broken.py": BROKEN_SUITE,
+            "skills/dayz-deselected/tests/conftest.py": DESELECT_ALL,
+            "skills/dayz-deselected/tests/test_bad.py": FAILING_SUITE,
+            "skills/dayz-deselected/tests/test_needs_blender.py": SKIPPED_SUITE,
+            "skills/dayz-script/tests/test_script.py": SCRIPT_SUITE,
         },
         payload={"LICENSE", "README.md"},
     )
@@ -288,9 +288,9 @@ def test_gate_fails_test_folders_that_run_nothing_or_do_not_collect(
     # "deselected" exits 5 with one skip recorded, like a clean skip: its
     # summary line, "1 skipped, 1 deselected", is what fails it.
     assert report["checks"]["skill_tests"]["suites"] == {
-        "broken": {"verdict": "FAIL", "returncode": 2},
-        "deselected": {"verdict": "FAIL", "returncode": 5},
-        "script": {"verdict": "FAIL", "returncode": 5},
+        "dayz-broken": {"verdict": "FAIL", "returncode": 2},
+        "dayz-deselected": {"verdict": "FAIL", "returncode": 5},
+        "dayz-script": {"verdict": "FAIL", "returncode": 5},
     }
 
 
@@ -303,14 +303,14 @@ def test_gate_ignores_pytest_addopts_from_the_environment(
     # nothing; the gate drops the variable, so the test runs and fails.
     monkeypatch.setenv("PYTEST_ADDOPTS", "--collect-only")
     root = repo_factory(
-        {"skills/bad/tests/test_bad.py": FAILING_SUITE},
+        {"skills/dayz-bad/tests/test_bad.py": FAILING_SUITE},
         payload={"LICENSE", "README.md"},
     )
 
     report = run_gate(root, tmp_path / "reports")
 
     assert report["checks"]["skill_tests"]["suites"] == {
-        "bad": {"verdict": "FAIL", "returncode": 1},
+        "dayz-bad": {"verdict": "FAIL", "returncode": 1},
     }
 
 
@@ -321,7 +321,7 @@ def test_gate_fails_a_collection_only_run_configured_in_the_repository(
     root = repo_factory(
         {
             "pytest.ini": "[pytest]\naddopts = --collect-only\n",
-            "skills/bad/tests/test_bad.py": FAILING_SUITE,
+            "skills/dayz-bad/tests/test_bad.py": FAILING_SUITE,
         },
         payload={"LICENSE", "README.md"},
     )
@@ -329,7 +329,7 @@ def test_gate_fails_a_collection_only_run_configured_in_the_repository(
     report = run_gate(root, tmp_path / "reports")
 
     assert report["checks"]["skill_tests"]["suites"] == {
-        "bad": {"verdict": "FAIL", "returncode": 0},
+        "dayz-bad": {"verdict": "FAIL", "returncode": 0},
     }
 
 
@@ -342,7 +342,7 @@ def test_gate_fails_tests_deselected_by_quiet_coloured_configuration(
     root = repo_factory(
         {
             "pytest.ini": "[pytest]\naddopts = -q -k test_passes --color=yes\n",
-            "skills/selected/tests/test_selected.py": (
+            "skills/dayz-selected/tests/test_selected.py": (
                 PASSING_SUITE + "\n\n" + FAILING_SUITE
             ),
         },
@@ -352,7 +352,7 @@ def test_gate_fails_tests_deselected_by_quiet_coloured_configuration(
     report = run_gate(root, tmp_path / "reports")
 
     assert report["checks"]["skill_tests"]["suites"] == {
-        "selected": {"verdict": "FAIL", "returncode": 0},
+        "dayz-selected": {"verdict": "FAIL", "returncode": 0},
     }
 
 
@@ -362,10 +362,10 @@ def test_gate_fails_tests_deselected_by_quiet_coloured_configuration(
         {"pytest.ini": "[pytest]\npython_files = test_needs_blender.py\n"},
         {
             "pytest.ini": (
-                "[pytest]\naddopts = --ignore=skills/narrowed/tests/test_bad.py\n"
+                "[pytest]\naddopts = --ignore=skills/dayz-narrowed/tests/test_bad.py\n"
             )
         },
-        {"skills/narrowed/tests/conftest.py": "collect_ignore = ['test_bad.py']\n"},
+        {"skills/dayz-narrowed/tests/conftest.py": "collect_ignore = ['test_bad.py']\n"},
     ],
     ids=["python_files", "ignore", "collect_ignore"],
 )
@@ -379,7 +379,7 @@ def test_gate_fails_a_test_module_kept_out_of_collection(
     root = repo_factory(
         {
             **{
-                f"skills/narrowed/{path}": content
+                f"skills/dayz-narrowed/{path}": content
                 for path, content in SKIP_AND_FAIL.items()
             },
             **narrowing,
@@ -390,7 +390,7 @@ def test_gate_fails_a_test_module_kept_out_of_collection(
     report = run_gate(root, tmp_path / "reports")
 
     assert report["checks"]["skill_tests"]["suites"] == {
-        "narrowed": {"verdict": "FAIL", "returncode": 5},
+        "dayz-narrowed": {"verdict": "FAIL", "returncode": 5},
     }
 
 
@@ -401,10 +401,10 @@ def test_gate_fails_a_run_ended_after_collection(
     root = repo_factory(
         {
             **{
-                f"skills/stopped/{path}": content
+                f"skills/dayz-stopped/{path}": content
                 for path, content in SKIP_AND_FAIL.items()
             },
-            "skills/stopped/tests/conftest.py": EXIT_AFTER_COLLECTION,
+            "skills/dayz-stopped/tests/conftest.py": EXIT_AFTER_COLLECTION,
         },
         payload={"LICENSE", "README.md"},
     )
@@ -412,7 +412,7 @@ def test_gate_fails_a_run_ended_after_collection(
     report = run_gate(root, tmp_path / "reports")
 
     assert report["checks"]["skill_tests"]["suites"] == {
-        "stopped": {"verdict": "FAIL", "returncode": 0},
+        "dayz-stopped": {"verdict": "FAIL", "returncode": 0},
     }
 
 
@@ -554,7 +554,7 @@ def test_gate_refuses_a_report_dir_inside_the_root_before_any_suite_runs(
     marker = tmp_path / "suite-ran.txt"
     root = repo_factory(
         {
-            "skills/demo/tests/test_marks.py": (
+            "skills/dayz-demo/tests/test_marks.py": (
                 "from pathlib import Path\n\n\n"
                 "def test_marks():\n"
                 f"    Path({str(marker)!r}).write_text('ran', encoding='utf-8')\n"

@@ -115,7 +115,7 @@ class CfgModels
   `GetSelectionPositionLS` / `MS` / `WS` return where a selection is **now**, with animations applied;
   `GetSelectionBasePositionLS(string name)` returns its rest position in local space with no animation
   applied, so a script can measure how far a part moved from its modelled pose.
-- Side discipline: drive state on the side that owns it (server for authoritative state) and let it replicate; for a purely cosmetic local toggle, client is fine. See `enforce-script-reference` for the IsDedicatedServer guards and the EEItemAttached/Detached lifecycle (used by hide-on-attach in `item-ik-and-hide.md`).
+- Side discipline: drive state on the side that owns it (server for authoritative state) and let it replicate; for a purely cosmetic local toggle, client is fine. See `dayz-enforce-script-reference` for the IsDedicatedServer guards and the EEItemAttached/Detached lifecycle (used by hide-on-attach in `item-ik-and-hide.md`).
 
 [TBD-verify: exact method signatures against `object.c` in the user's script module or DayZ Explorer — the source page was too large to line-read. Confirm before shipping if the phase semantics matter.]
 

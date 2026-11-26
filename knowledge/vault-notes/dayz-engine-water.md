@@ -45,7 +45,7 @@ A server read of the whole of vanilla Chernarus, 2026-10-03:
   and 30 of 384 stream pieces, while the water depth is positive for 365 of 375 and 312 of 384.
 
 So in a vanilla bed `SurfaceIsPond` false is the normal case and does not rule the water out; test
-the depth, as `enforce-script-reference` `references/pitfalls-advanced.md` advises. An acceptance
+the depth, as `dayz-enforce-script-reference` `references/pitfalls-advanced.md` advises. An acceptance
 test that demands `SurfaceIsPond` true pushes you to replace pitched beds with flat planes: on the
 Baltic map those stepped planes left visible steps and dry strips on the sloped stretches. The
 survey's streambed rows mix other surfaces and do not serve for the slope ratio
