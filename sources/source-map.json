@@ -5489,10 +5489,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-2b35147@2026-11-18",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion-adjudications 2026-11-27: the owner decided to adjudicate in favour of this repository the 20 targets that promote --check of 125d21f (#225), run from the root of receipt d99f73773867ca366c793b69, reported as PROMOTION-TARGET-UNEXPLAINED (its only findings), and to promote. They are ten skills, each in agents_user_skills and claude_user_skills through a junction, copied outside packctl after that receipt: dayz-mcp-verify, dayz-mod-workflow, dayz-model-pipeline, dayz-pbo-build and dayz-test-ingame as in 587006a (#220); dayz-motorbikes as in 587006a (#220) and dayz-texture-pipeline as in f51d56b (#221), both equal to the head's projection; dayz-ui-development as in 971fdb0 (#213); dayz-weapons as in 35fa81d (#216); dayz-vehicles as in 587006a except references/get-in-actions-and-proxy-pose.md, which is the version of 102be2c (#140). None has a line absent from this repository's history. 20 pairs re-pinned and 0 added, each at the digest packctl.common.tree_digest measured on 2026-11-27, equal to the check's actual digest. The file stays canonical JSON (packctl.common.canonical_json_bytes); promote reads artifact_id, target_id, observed_digest and a non-empty reason (packctl/promotion.py:1011-1047) and explains a target whose digest equals its adjudication (packctl/promotion.py:1805).",
+          "license": "MIT",
+          "source_hash": "5fcf13426c82e2761c4027402ad5e9b46515518b1aaaebe4e6cf386dab9efe06",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-adjudications@2026-11-27",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ddc69f7103df3a2c3b0a8e9a5053c9b4f548b2af6b06e4a0cf336d5dce4dc74b",
+      "output_hash": "5fcf13426c82e2761c4027402ad5e9b46515518b1aaaebe4e6cf386dab9efe06",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
