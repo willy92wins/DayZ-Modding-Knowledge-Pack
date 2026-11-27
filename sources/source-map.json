@@ -5499,10 +5499,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-adjudications@2026-11-27",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion of main 7f7e2ca (#226) on 2026-11-27, authorised by the owner on 2026-11-27 (update the installed Pack skills with packctl and retire the 13 folders with the old names). promote --check from the root of receipt d99f73773867ca366c793b69 (.worktrees/promotion-2b35147-20261118, detached at 7f7e2ca) with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=131, 139 operations (76 obsidian_snapshots and 63 skill destinations: 26 new ones for the 13 skills #225 renamed with the dayz- prefix, 29 that change for 26 skills and 8 unchanged for 7). promote --apply PASS, transaction 8988a9843487ad3f1ae3083c, COMMIT event 395, completed_at 2026-11-27T09:55:18.640145+00:00. Verified after the apply with packctl's own tree_digest: 139/139 destinations at their after_digest; the receipt's sha256 equals the COMMIT receipt_hash and its completed_at the COMMIT event's; its source_commit and its 139 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any target; the 29 transaction backups hold their before_digest, the 8 unchanged destinations needed none and the 102 others were new. Afterwards the 13 folders with the old names were moved, not deleted, out of both skill roots into the promotion backup root (orphans-20261127, with a manifest of their digests); 11 of them were junctions in agents_user_skills, removed as links only.",
+          "license": "MIT",
+          "source_hash": "882dd9112038101aefdc6581b62eae122b4c7cbf78fe1718e948e45bcd612f0f",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-7f7e2ca@2026-11-27",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "5fcf13426c82e2761c4027402ad5e9b46515518b1aaaebe4e6cf386dab9efe06",
+      "output_hash": "882dd9112038101aefdc6581b62eae122b4c7cbf78fe1718e948e45bcd612f0f",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -41954,6 +41964,28 @@
       "license": "MIT",
       "output_hash": "88a000f47c36a162c655ea79cfa957d45cecf54f3ed3c0a7992346fa5fb50cb0",
       "output_path": "promotions/receipts/d99f73773867ca366c793b69.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/8988a9843487ad3f1ae3083c.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "promotion of main 7f7e2ca (#226) on 2026-11-27, authorised by the owner on 2026-11-27 (update the installed Pack skills with packctl and retire the 13 folders with the old names). promote --check from the root of receipt d99f73773867ca366c793b69 (.worktrees/promotion-2b35147-20261118, detached at 7f7e2ca) with the unchanged local-targets.json (sha256 27c89b56...): WARN with only PROMOTION-DRIFT operation_count=131, 139 operations (76 obsidian_snapshots and 63 skill destinations: 26 new ones for the 13 skills #225 renamed with the dayz- prefix, 29 that change for 26 skills and 8 unchanged for 7). promote --apply PASS, transaction 8988a9843487ad3f1ae3083c, COMMIT event 395, completed_at 2026-11-27T09:55:18.640145+00:00. Verified after the apply with packctl's own tree_digest: 139/139 destinations at their after_digest; the receipt's sha256 equals the COMMIT receipt_hash and its completed_at the COMMIT event's; its source_commit and its 139 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any target; the 29 transaction backups hold their before_digest, the 8 unchanged destinations needed none and the 102 others were new. Afterwards the 13 folders with the old names were moved, not deleted, out of both skill roots into the promotion backup root (orphans-20261127, with a manifest of their digests); 11 of them were junctions in agents_user_skills, removed as links only.",
+          "license": "MIT",
+          "source_hash": "bad4ce313958ae8e5f719ee309496df7900be406c6da467bf30f04e3af5d06ed",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/8988a9843487ad3f1ae3083c.json",
+          "source_revision": "promotion-7f7e2ca@2026-11-27",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "bad4ce313958ae8e5f719ee309496df7900be406c6da467bf30f04e3af5d06ed",
+      "output_path": "promotions/receipts/8988a9843487ad3f1ae3083c.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
