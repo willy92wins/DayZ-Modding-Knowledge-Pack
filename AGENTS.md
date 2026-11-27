@@ -37,8 +37,9 @@ you don't.
    or later.
 3. Open a file under that skill's `references/` **only when the procedure names
    it**. They are large and deliberately not loaded up front.
-4. `skills/_shared/` holds conventions several skills cite. Keep it alongside
-   them wherever you install them.
+4. `skills/_shared/` is a support folder, not a skill: it holds conventions
+   several playbooks cite. Keep it alongside the playbooks. The Claude Code
+   bundle ships it inside `dayz/`; other hosts keep it next to `skills/`.
 
 `knowledge/` is consulted, not routed: open a note when a skill points at it or
 when you need a fact the skill assumes.
@@ -144,9 +145,27 @@ Obsidian's.
 
 ## Installing the skills for your agent
 
-**Claude Code** — copy `skills/*` into `~/.claude/skills/` (user-scoped) or
-`<project>/.claude/skills/` (project-scoped). Discovery is by front-matter;
-`/dayz-vehicles` also invokes one explicitly.
+**Claude Code** — install the pack with the packctl CLI:
+
+```bash
+pip install -e .                                              # once, from the repo root
+python3 -m packctl install --target ~/.claude/skills          # user-scoped
+python3 -m packctl install --target <project>/.claude/skills  # project-scoped
+```
+
+This builds one skill, `<target>/dayz/`: a generated `SKILL.md` (`name: dayz`,
+the only description Claude lists), `_shared/` (a support folder, not a skill)
+and the 45 `dayz-*/` playbook folders as siblings. Claude Code does not discover
+`SKILL.md` files nested in another folder, so the router points at each
+playbook, which the agent reads on demand. Invoke with `/dayz` (for example
+`/dayz vehicles`) or let the description trigger. Options: `--name` (default
+`dayz`), `--force` (replace a folder packctl did not create), `--dry-run`,
+`--root`. Rerun the command after pulling; it replaces the previous bundle.
+
+If the installer warns about leftover folders from the old install shape (top
+level `dayz-*` copies, `_shared`, pre-rename unprefixed names), remove them
+yourself. packctl never deletes them, and Claude Code lists them as separate
+skills next to `dayz`.
 
 **Any other agent** — there is nothing Claude-specific in the content. Use the
 routing procedure above. Some hosts read `AGENTS.md` from a project root; this

@@ -140,15 +140,20 @@ A skill is a folder with a `SKILL.md` (the procedure, with YAML front-matter: `n
 The `description` is written as **trigger conditions** — read it as "invoke me when…".
 
 ### If your assistant is Claude Code
-Copy the skill folders into a skills directory Claude Code reads:
+Install the pack with the CLI (`pip install -e .` once, from the repo root):
 
-- **Project-scoped:** `<your-project>/.claude/skills/`
-- **User-scoped (all projects):** `~/.claude/skills/` (Windows: `%USERPROFILE%\.claude\skills\`)
+```bash
+python3 -m packctl install --target ~/.claude/skills            # user-scoped
+python3 -m packctl install --target <your-project>/.claude/skills  # project-scoped
+```
 
-Copy the contents of `skills/` into one of those (keep `_shared/` alongside them — several
-skills reference `_shared/dayz-conventions.md` and `_shared/enscript-style.md`). Claude Code
-auto-discovers them by their front-matter and invokes them by trigger; you can also call one
-explicitly, e.g. `/dayz-vehicles`.
+On Windows the user-scoped path is `%USERPROFILE%\.claude\skills`.
+
+This creates one skill, `dayz/`: a generated router `SKILL.md` that Claude Code lists, next to
+`_shared/` and the 45 `dayz-*/` playbooks. Claude Code auto-discovers the router by its
+front-matter and invokes it by trigger; the router sends the agent to the matching playbook.
+You can also call it explicitly: `/dayz`, or `/dayz vehicles`. If the installer warns about
+folders from an older install, remove them yourself; it never deletes them.
 
 ### If your assistant is a different LLM / agent
 There is nothing Claude-specific about the content. Use them as **retrieval-and-follow**

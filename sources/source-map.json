@@ -309,10 +309,20 @@
           "source_path": "AGENTS.md",
           "source_revision": "dayz-mod-dev@2026-11-13",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Single routed install (2026-11-28): Claude Code install instructions now point at packctl install (one dayz skill, /dayz) instead of copying skills/*; AGENTS.md routing step 4 describes _shared/ as a support folder. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "2c087c38cbdea80b47e22d4a792bb649df4fae73ee06146c19c8f81cb385d113",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "ddb52a17c6063c42fd146e2dd8d11682288db64fd05a5a45dc7d5eb3ddbc3a79",
+      "output_hash": "2c087c38cbdea80b47e22d4a792bb649df4fae73ee06146c19c8f81cb385d113",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -2321,10 +2331,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Single routed install: packctl install builds <target>/dayz/ with a generated router SKILL.md (router_template.md plus every skills/dayz-* description), copies the sibling skills and _shared, and validate gains the router check (SKILL-ROUTER-*); tests in tests/packctl/test_install.py.",
+          "license": "MIT",
+          "source_hash": "0d5cd2bd69d9f92516d15a623808c2a931bdff8f566cf166647658550f067d64",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "6575c1aa6ef7009e6e17b7c49e809095478b2780c364e49bc7c259549d040bc9",
+      "output_hash": "0d5cd2bd69d9f92516d15a623808c2a931bdff8f566cf166647658550f067d64",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2343,10 +2363,20 @@
           "source_path": "CLAUDE.md",
           "source_revision": "r21-agent-entry-and-indexes@2026-08-15",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Single routed install (2026-11-28): Claude Code install instructions now point at packctl install (one dayz skill, /dayz) instead of copying skills/*; AGENTS.md routing step 4 describes _shared/ as a support folder. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "95a687a4c5e00da7eb65d88e4ea124d1e58905c7062f71044874c6e4412deee7",
+          "source_id": "pack-r21-authored",
+          "source_path": "CLAUDE.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4c302fa38487ece3f4a6f6a9ada49f51902837ebdf07f81921cfc32c8ec2ace9",
+      "output_hash": "95a687a4c5e00da7eb65d88e4ea124d1e58905c7062f71044874c6e4412deee7",
       "output_path": "CLAUDE.md",
       "routing_artifact_id": "root/claude",
       "verification_level": "cross_checked"
@@ -2519,10 +2549,20 @@
           "source_path": "GETTING-STARTED.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Single routed install (2026-11-28): Claude Code install instructions now point at packctl install (one dayz skill, /dayz) instead of copying skills/*; AGENTS.md routing step 4 describes _shared/ as a support folder. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "66c927188d3d2123d8348e4c790cdfb4e5cdf8b32af6be14947d81e5b00bf172",
+          "source_id": "pack-r21-authored",
+          "source_path": "GETTING-STARTED.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3306b2a07252bbc9e1f5d6b21dfccc2033584523be87920284bcf0ac6e0f7f54",
+      "output_hash": "66c927188d3d2123d8348e4c790cdfb4e5cdf8b32af6be14947d81e5b00bf172",
       "output_path": "GETTING-STARTED.md",
       "routing_artifact_id": "root/getting-started",
       "verification_level": "cross_checked"
@@ -2715,10 +2755,20 @@
           "source_path": "README.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Single routed install (2026-11-28): Claude Code install instructions now point at packctl install (one dayz skill, /dayz) instead of copying skills/*; AGENTS.md routing step 4 describes _shared/ as a support folder. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "3596dfb33135bc1dbb4b85e4bea0e438f4e5db49e585acb0094593c8b89793a0",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "4e6e1c980eede7a6e549e769898d4290426614f6f8fab0e02138502b9ece7e54",
+      "output_hash": "3596dfb33135bc1dbb4b85e4bea0e438f4e5db49e585acb0094593c8b89793a0",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -4802,10 +4852,20 @@
           "source_path": "packctl/cli.py",
           "source_revision": "kp-gate-skill-tests@2026-10-02",
           "verification_level": "cross_checked"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Single routed install: packctl install builds <target>/dayz/ with a generated router SKILL.md (router_template.md plus every skills/dayz-* description), copies the sibling skills and _shared, and validate gains the router check (SKILL-ROUTER-*); tests in tests/packctl/test_install.py.",
+          "license": "MIT",
+          "source_hash": "a084846dbd48c04b9f06640c4598b71958d43a37bcca4b2b862b4def829807ee",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/cli.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "82cfff86bb00028b8fba5b4e80288debf9717fcbc86afde9d4135fb8861942a6",
+      "output_hash": "a084846dbd48c04b9f06640c4598b71958d43a37bcca4b2b862b4def829807ee",
       "output_path": "packctl/cli.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -4914,10 +4974,20 @@
           "source_path": "packctl/live_evals.py",
           "source_revision": "r21-live-eval@2026-07-27",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Live evals mount the same dayz/ bundle that packctl install builds (build_bundle), and citations into .claude/skills/dayz/ resolve; tests in tests/packctl/test_live_evals.py.",
+          "license": "MIT",
+          "source_hash": "352ea8e55f5d6856fa88211c825841d604f4e03eaae8f50c73f317b484bc6161",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/live_evals.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "37ec09a0c48a8bfd1db6d538a0db5c90c10a19b15e3c9cac83c2b98251155a25",
+      "output_hash": "352ea8e55f5d6856fa88211c825841d604f4e03eaae8f50c73f317b484bc6161",
       "output_path": "packctl/live_evals.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -5083,10 +5153,20 @@
           "source_path": "packctl/validation.py",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Single routed install: packctl install builds <target>/dayz/ with a generated router SKILL.md (router_template.md plus every skills/dayz-* description), copies the sibling skills and _shared, and validate gains the router check (SKILL-ROUTER-*); tests in tests/packctl/test_install.py.",
+          "license": "MIT",
+          "source_hash": "f446253a3ccfdee33035a5bdedb937c609bb0d644d95eb472db4a865c1cfd4ba",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/validation.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d451a1a7774e322792a116be8d5a3a5226007ed2160448bd8cd4aa026b87a73c",
+      "output_hash": "f446253a3ccfdee33035a5bdedb937c609bb0d644d95eb472db4a865c1cfd4ba",
       "output_path": "packctl/validation.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -25449,10 +25529,20 @@
           "source_path": "tests/packctl/test_live_evals.py",
           "source_revision": "r21-live-eval@2026-07-27",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Live evals mount the same dayz/ bundle that packctl install builds (build_bundle), and citations into .claude/skills/dayz/ resolve; tests in tests/packctl/test_live_evals.py.",
+          "license": "MIT",
+          "source_hash": "274da64c21e3679ddc033994d6e3e05133e337289ab411ab46af536d49d95319",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_live_evals.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0c5c5fab9674cf0728ab9048dcc326b2309fb514d84f7754c1c6311782b810f6",
+      "output_hash": "274da64c21e3679ddc033994d6e3e05133e337289ab411ab46af536d49d95319",
       "output_path": "tests/packctl/test_live_evals.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
@@ -47913,6 +48003,75 @@
       "output_hash": "454ff0935242b9fe3da9083ffc4916dba45346687d76ebb1882c41e597ede7d2",
       "output_path": "skills/dayz-animation-pipeline/references/rig-bind-check.md",
       "routing_artifact_id": "skill/dayz-animation-pipeline",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/packctl/install.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Single routed install: packctl install builds <target>/dayz/ with a generated router SKILL.md (router_template.md plus every skills/dayz-* description), copies the sibling skills and _shared, and validate gains the router check (SKILL-ROUTER-*); tests in tests/packctl/test_install.py.",
+          "license": "MIT",
+          "source_hash": "604914a4bd193f2f7b0e5a5d69bbda20eb92f1e52f77570253f22a7eeb035e0f",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/install.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "604914a4bd193f2f7b0e5a5d69bbda20eb92f1e52f77570253f22a7eeb035e0f",
+      "output_path": "packctl/install.py",
+      "routing_artifact_id": "repo/packctl",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/tests/packctl/test_install.py",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Single routed install: packctl install builds <target>/dayz/ with a generated router SKILL.md (router_template.md plus every skills/dayz-* description), copies the sibling skills and _shared, and validate gains the router check (SKILL-ROUTER-*); tests in tests/packctl/test_install.py.",
+          "license": "MIT",
+          "source_hash": "d06c2191cad4f9387d5bd023c3f0138861f45d632e28830c18c9ddb6752d1761",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_install.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "d06c2191cad4f9387d5bd023c3f0138861f45d632e28830c18c9ddb6752d1761",
+      "output_path": "tests/packctl/test_install.py",
+      "routing_artifact_id": "repo/tests",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/packctl/router_template.md",
+      "distribution_reason": "Repository governance, validation, evaluation or promotion support; excluded from the public release payload.",
+      "distribution_role": "repo_only",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "Single routed install: packctl install builds <target>/dayz/ with a generated router SKILL.md (router_template.md plus every skills/dayz-* description), copies the sibling skills and _shared, and validate gains the router check (SKILL-ROUTER-*); tests in tests/packctl/test_install.py.",
+          "license": "MIT",
+          "source_hash": "147e48a870bef0550af3679984fb0babecb5d9899692665b73f3f4b5b0fc7aa7",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/router_template.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "147e48a870bef0550af3679984fb0babecb5d9899692665b73f3f4b5b0fc7aa7",
+      "output_path": "packctl/router_template.md",
+      "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
     }
   ],

@@ -7,6 +7,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `packctl install` (`packctl/install.py`, `packctl/router_template.md`) and `validate_router`
+  in `packctl/validation.py`: the pack now installs as one routed skill instead of 45 top-level
+  skills plus a `_shared` folder that sat among them like a skill. `python -m packctl install --target DIR
+  [--root .] [--name dayz] [--force] [--dry-run]` builds `<DIR>/dayz/` with a generated
+  `SKILL.md` (the only description Claude sees: front-matter `name: dayz`, a trigger
+  description under 1024 characters, usage rules, the four rules, and the full description of
+  every `skills/dayz-*` playbook, sorted) plus `_shared/` and every `dayz-*/` folder copied
+  as-is, so `../_shared/` and `../dayz-mod-dev/` links keep resolving. Claude Code does not
+  discover `SKILL.md` files nested in another skill folder, so the playbooks stay out of the
+  listing until the router points at them. `__pycache__`, `*.pyc` and the maintainer-only
+  `tests/` folders are not copied. A `.dayz-pack-bundle.json` marker (source commit, skill
+  list) lets a reinstall replace a previous bundle (built in a sibling temp folder, then
+  swapped); a `<name>` folder without the marker is refused unless `--force`. After the
+  install the target is scanned for folders of the old shape (any `dayz-*` name, `_shared`,
+  the pre-#214 unprefixed names) and they are listed in a warning, never deleted. The
+  repository layout under `skills/` is unchanged. The new `router` check in `packctl
+  validate` reports `SKILL-ROUTER-RENDER`, `SKILL-ROUTER-DESCRIPTION` (empty or over 1024
+  characters) and `SKILL-ROUTER-MISSING-SKILL`; tests in `tests/packctl/test_install.py`.
+  Skill-mounted live evals (`packctl/live_evals.py`) now mount the same bundle
+  (`.claude/skills/dayz/` via `build_bundle`, so `../_shared/` links resolve);
+  `skill_under_test` must exist in it, and `.claude/skills/dayz/...` citations resolve against
+  the mounted tree. The baseline arm still mounts nothing.
 - `skills/` and `packctl` (`validate_skills`) (#214): prefixed the 13 non-`dayz-` skill folders
   and names with `dayz-`, rewrote live references across skills, documentation, evals, tools,
   tests, `promotions/promotion-map.json`, `sources/source-map.json`, `sources/claims.json` and

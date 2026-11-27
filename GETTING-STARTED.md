@@ -65,10 +65,11 @@ Current fork version is **1.10.1**, the version the pinned wheel carries
 
 ### Give the pack to your agent
 
-Copy `skills/*` **including** `skills/_shared/` into the agent's skills
-directory (`<project>/.claude/skills/` or `~/.claude/skills/` on Claude Code;
-any other host: follow [`AGENTS.md`](AGENTS.md)). Keep `_shared/` next to the
-skills — several playbooks cite it.
+On Claude Code, run `pip install -e .` once from the repo root, then
+`python3 -m packctl install --target ~/.claude/skills` (or
+`<project>/.claude/skills`). It builds one skill, `dayz/`, invoked as `/dayz`,
+with the playbooks and `_shared/` inside it. Any other host: follow
+[`AGENTS.md`](AGENTS.md).
 
 Tell the agent to route from front-matter (`name` + `description`) and to
 open a `references/` file only when the playbook names it. Dumping the whole
