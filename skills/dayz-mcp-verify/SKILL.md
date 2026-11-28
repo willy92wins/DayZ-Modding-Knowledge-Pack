@@ -1006,6 +1006,39 @@ defending a fixture that **had never been used** (its own capture gave
    an open-ended dependency, and whoever offers it should release resource and request it
    again (relaunching takes minutes; a fixture is remade in two verbs).
 
+### Runs outside the MCP take a turn with `box_turn` (added 2026-11-28)
+
+Since dayz-mcp `39244a9` the box FIFO is one file shared by every instance on
+the machine, and anything that does not go through `dayz_test_run` (a test
+bench, another project's harness, a loose `DayZDiag_x64.exe`) can queue in it
+without an MCP client, a keyfile or a daemon
+(`tools/dayz_mcp/box_turn.py:440-457`):
+
+    python -m dayz_mcp.box_turn status --json
+    python -m dayz_mcp.box_turn run --purpose "<what>" --holder <who> --wait-s 1800 -- <command>
+
+- `status --json` returns `occupied`, `reason`, `holder` and `queue`. A daemon
+  that only listens on a TCP port does not occupy the box; `m1.espera` and an
+  unreadable queue do.
+- `run` waits until it is at the head with the box free, claims it, runs the
+  command in the foreground and releases the turn when the command exits. One
+  turn per game: the command must last as long as the game, so wrap a
+  WMI-launched DayZ in a script that waits on that process. `--wait-s`
+  defaults to 600 (`box_turn.py:50`).
+- Exit codes: the command's own code, unchanged; before it starts, `2` (bad
+  arguments), `75` (no turn within `--wait-s`) or `70` (unreadable queue or
+  indeterminate scan). The last stderr line says which:
+  `{"box_turn": "ran"|"wait_expired"|"bad_args"|"unreadable", "exit": N}`
+  (`box_turn.py:388-402`).
+- A `75` with `wait_expired` is not a failed test; queue again. A `70` stops:
+  do not delete the queue file or `m1.espera` to get past it.
+
+Measured on 2026-11-28 on the test PC (DayZ 1.30, main `39244a9`, real
+`LOCALAPPDATA`): a 20 s turn showed `occupied: true, holder: <holder>` while
+it ran and left the box free; a second turn queued behind a 60 s one and ran
+right after it; a third with `--wait-s 5` exited `75` with `wait_expired`. The
+agent's permission classifier did not block it.
+
 ### The oracle is the EFFECT, never the response
 
 `ok` does NOT mean success, and there are at least four different encodings coexisting.

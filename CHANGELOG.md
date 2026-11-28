@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `skills/dayz-mcp-verify/SKILL.md` and `skills/dayz-test-ingame/SKILL.md`: runs started outside the MCP take a turn in the shared box FIFO with `python -m dayz_mcp.box_turn run --purpose ... -- <command>` (dayz-mcp `39244a9`), with `status --json`, the exit codes (`75` no turn, `70` unreadable queue, `2` bad arguments, otherwise the command's own) and the 2026-11-28 measurement on the test PC. Claim ranges below the insertions moved and the three hashes in `sources/source-map.json` resealed.
 - `skills/` and `packctl` (`validate_skills`) (#214): prefixed the 13 non-`dayz-` skill folders
   and names with `dayz-`, rewrote live references across skills, documentation, evals, tools,
   tests, `promotions/promotion-map.json`, `sources/source-map.json`, `sources/claims.json` and
