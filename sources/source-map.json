@@ -5509,10 +5509,20 @@
           "source_path": "promotions/adjudications.json",
           "source_revision": "promotion-7f7e2ca@2026-11-27",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "promotion of main 23383a3 (#230) on 2026-11-28, authorised by the owner on 2026-11-28 (\"Instala las skills\": install the dayz-mcp-verify and dayz-test-ingame skills that #230 changed). promote --check from the root of receipt 8988a9843487ad3f1ae3083c (.worktrees/promotion-2b35147-20261118, detached at 23383a3) with the unchanged local-targets.json: WARN with only PROMOTION-DRIFT operation_count=78, 139 operations (76 obsidian_snapshots and 2 skill artifacts, dayz-mcp-verify and dayz-test-ingame, each to agents_user_skills and claude_user_skills). promote --apply PASS, transaction ba02f3072f3e90d797e676a7, completed_at 2026-11-28T10:04:52.609599+00:00. Verified after the apply with packctl's own projection digest: 168/168 destinations of the 139 operations at their after_digest; the receipt's source_commit and its 139 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any skill target.",
+          "license": "MIT",
+          "source_hash": "8b95bd5d306bc3560af092a2d39f119192e729b2cf046656aa78d886324add69",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/adjudications.json",
+          "source_revision": "promotion-23383a3@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "882dd9112038101aefdc6581b62eae122b4c7cbf78fe1718e948e45bcd612f0f",
+      "output_hash": "8b95bd5d306bc3560af092a2d39f119192e729b2cf046656aa78d886324add69",
       "output_path": "promotions/adjudications.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "cross_checked"
@@ -41986,6 +41996,28 @@
       "license": "MIT",
       "output_hash": "bad4ce313958ae8e5f719ee309496df7900be406c6da467bf30f04e3af5d06ed",
       "output_path": "promotions/receipts/8988a9843487ad3f1ae3083c.json",
+      "routing_artifact_id": "repo/promotions",
+      "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/promotions/receipts/ba02f3072f3e90d797e676a7.json",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "promotion of main 23383a3 (#230) on 2026-11-28, authorised by the owner on 2026-11-28 (\"Instala las skills\": install the dayz-mcp-verify and dayz-test-ingame skills that #230 changed). promote --check from the root of receipt 8988a9843487ad3f1ae3083c (.worktrees/promotion-2b35147-20261118, detached at 23383a3) with the unchanged local-targets.json: WARN with only PROMOTION-DRIFT operation_count=78, 139 operations (76 obsidian_snapshots and 2 skill artifacts, dayz-mcp-verify and dayz-test-ingame, each to agents_user_skills and claude_user_skills). promote --apply PASS, transaction ba02f3072f3e90d797e676a7, completed_at 2026-11-28T10:04:52.609599+00:00. Verified after the apply with packctl's own projection digest: 168/168 destinations of the 139 operations at their after_digest; the receipt's source_commit and its 139 operations equal the plan's; it holds no absolute path; no packctl stage, old or recover residue next to any skill target.",
+          "license": "MIT",
+          "source_hash": "2d1da73a66fb6f43c55904869a9f83466dd1f77beae3093424146c02bea3cb1f",
+          "source_id": "pack-r21-authored",
+          "source_path": "promotions/receipts/ba02f3072f3e90d797e676a7.json",
+          "source_revision": "promotion-23383a3@2026-11-28",
+          "verification_level": "offline_tested"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "2d1da73a66fb6f43c55904869a9f83466dd1f77beae3093424146c02bea3cb1f",
+      "output_path": "promotions/receipts/ba02f3072f3e90d797e676a7.json",
       "routing_artifact_id": "repo/promotions",
       "verification_level": "offline_tested"
     },
