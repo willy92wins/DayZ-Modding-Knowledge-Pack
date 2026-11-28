@@ -491,7 +491,10 @@ def validate_source_map(root: Path) -> list[dict[str, object]]:
 
 
 def _parse_frontmatter(path: Path) -> tuple[dict[str, object], int, str | None]:
-    text = path.read_text(encoding="utf-8")
+    return _parse_frontmatter_text(path.read_text(encoding="utf-8"))
+
+
+def _parse_frontmatter_text(text: str) -> tuple[dict[str, object], int, str | None]:
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
         return {}, 1, "missing opening delimiter"
@@ -1217,11 +1220,58 @@ def validate_conflict_markers(root: Path) -> list[dict[str, object]]:
     return sort_findings(findings)
 
 
+def validate_router(root: Path) -> list[dict[str, object]]:
+    """The generated install router renders, fits its description cap, lists every skill."""
+    from .install import DESCRIPTION_LIMIT, render_router, router_description, skill_folders
+
+    root = Path(root).resolve()
+    if not (root / "skills").is_dir():
+        return []
+    path = "packctl/router_template.md"
+    try:
+        rendered = render_router(root)
+        description = router_description(rendered)
+    except (OSError, UnicodeError, ValueError) as error:
+        return [
+            finding(
+                "SKILL-ROUTER-RENDER",
+                path=path,
+                line=0,
+                message="The install router could not be rendered.",
+                evidence=str(error),
+            )
+        ]
+    findings: list[dict[str, object]] = []
+    if not description or len(description) > DESCRIPTION_LIMIT:
+        findings.append(
+            finding(
+                "SKILL-ROUTER-DESCRIPTION",
+                path=path,
+                line=1,
+                message="The router description must be 1-1024 characters.",
+                evidence=f"length={len(description)} limit={DESCRIPTION_LIMIT}",
+            )
+        )
+    for folder in skill_folders(root):
+        if f"Read `{folder.name}/SKILL.md`" not in rendered:
+            findings.append(
+                finding(
+                    "SKILL-ROUTER-MISSING-SKILL",
+                    path=path,
+                    line=0,
+                    message="The rendered router does not list a skill folder.",
+                    evidence=folder.name,
+                )
+            )
+    return sort_findings(findings)
+
+
 def validate_repo(root: Path) -> dict[str, object]:
     root = Path(root).resolve()
     checks = {
         "source_map": validate_source_map(root),
         "skills": validate_skills(root),
+        "router": validate_router(root),
         "moved_exact": validate_moved_exact(root),
         "generated": validate_generated(root),
         "conflict_markers": validate_conflict_markers(root),

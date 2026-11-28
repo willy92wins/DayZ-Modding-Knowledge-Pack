@@ -153,7 +153,14 @@ def _run_scripted_case(
     root = tmp_path / "pack"
     skill = root / "skills" / "dayz-basebuilding" / "SKILL.md"
     skill.parent.mkdir(parents=True)
-    skill.write_text("# test skill\n", encoding="utf-8", newline="\n")
+    skill.write_text(
+        "---\nname: dayz-basebuilding\ndescription: Use when testing.\n---\n# test skill\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    shared = root / "skills" / "_shared" / "conventions.md"
+    shared.parent.mkdir(parents=True)
+    shared.write_text("shared\n", encoding="utf-8", newline="\n")
     case_path = _write_case(tmp_path, _valid_case())
     runner = _write_fake_runner(
         tmp_path,
@@ -318,7 +325,14 @@ def test_eval_live_subcommand_runs_case_and_writes_summary(tmp_path: Path) -> No
     root = tmp_path / "pack"
     skill = root / "skills" / "dayz-basebuilding" / "SKILL.md"
     skill.parent.mkdir(parents=True)
-    skill.write_text("# test skill\n", encoding="utf-8", newline="\n")
+    skill.write_text(
+        "---\nname: dayz-basebuilding\ndescription: Use when testing.\n---\n# test skill\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    shared = root / "skills" / "_shared" / "conventions.md"
+    shared.parent.mkdir(parents=True)
+    shared.write_text("shared\n", encoding="utf-8", newline="\n")
     case_path = _write_case(tmp_path, _valid_case())
     runner = _write_fake_runner(
         tmp_path,
@@ -423,3 +437,96 @@ def test_claude_code_adapter_builds_verified_isolated_command() -> None:
     ]
     assert "--max-turns" not in command
     assert "--skill" not in command
+
+
+def _fake_pack(tmp_path: Path) -> Path:
+    root = tmp_path / "pack"
+    for name in ("dayz-basebuilding", "dayz-other"):
+        skill = root / "skills" / name / "SKILL.md"
+        skill.parent.mkdir(parents=True)
+        skill.write_text(
+            f"---\nname: {name}\ndescription: Use when {name}.\n---\n# {name}\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+    shared = root / "skills" / "_shared" / "conventions.md"
+    shared.parent.mkdir(parents=True)
+    shared.write_text("shared\n", encoding="utf-8", newline="\n")
+    return root
+
+
+def test_mounted_workspace_matches_install_bundle(tmp_path: Path) -> None:
+    from packctl.install import install
+    from packctl.live_evals import _materialize_workspace, _skills_tree_sha256
+
+    root = _fake_pack(tmp_path)
+    case = _valid_case()
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    skills_root = _materialize_workspace(root, workspace, case, skill_mounted=True)
+
+    mounted = skills_root / "dayz"
+    assert (mounted / "SKILL.md").is_file()
+    assert (mounted / "_shared" / "conventions.md").is_file()
+    assert (mounted / "dayz-other" / "SKILL.md").is_file()
+    assert (mounted / "dayz-basebuilding" / "SKILL.md").is_file()
+
+    target = tmp_path / "target"
+    install(root, target)
+    installed = {
+        p.relative_to(target / "dayz").as_posix()
+        for p in (target / "dayz").rglob("*")
+        if p.is_file() and p.name != ".dayz-pack-bundle.json"
+    }
+    assert installed == {
+        p.relative_to(mounted).as_posix() for p in mounted.rglob("*") if p.is_file()
+    }
+    # deterministic: two materialisations hash identically
+    other = tmp_path / "ws2"
+    other.mkdir()
+    again = _materialize_workspace(root, other, case, skill_mounted=True)
+    assert _skills_tree_sha256(again) == _skills_tree_sha256(skills_root)
+
+
+def test_unknown_skill_under_test_is_rejected(tmp_path: Path) -> None:
+    from packctl.live_evals import _materialize_workspace
+
+    root = _fake_pack(tmp_path)
+    case = _valid_case()
+    case["skill_under_test"] = "dayz-missing"
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    with pytest.raises(FileNotFoundError):
+        _materialize_workspace(root, workspace, case, skill_mounted=True)
+
+
+def test_baseline_mounts_nothing(tmp_path: Path) -> None:
+    from packctl.live_evals import (
+        EMPTY_SKILLS_TREE_SHA256,
+        _materialize_workspace,
+        _skills_tree_sha256,
+    )
+
+    root = _fake_pack(tmp_path)
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    skills_root = _materialize_workspace(root, workspace, _valid_case(), skill_mounted=False)
+    assert _skills_tree_sha256(skills_root) == EMPTY_SKILLS_TREE_SHA256
+
+
+def test_citation_into_mounted_bundle_resolves(tmp_path: Path) -> None:
+    from packctl.live_evals import _materialize_workspace
+
+    root = _fake_pack(tmp_path)
+    case = _valid_case()
+    case["fixtures"] = {}
+    case["graders"] = [{"type": "citations_resolve"}]
+    answer = "x\nCITATIONS:\n.claude/skills/dayz/dayz-basebuilding/SKILL.md:5 \"# dayz-basebuilding\""
+    mounted = tmp_path / "mounted"
+    mounted.mkdir()
+    _materialize_workspace(root, mounted, case, skill_mounted=True)
+    assert _grade_answer(case, answer, root, mounted)[0]["passed"] is True
+    baseline = tmp_path / "baseline"
+    baseline.mkdir()
+    _materialize_workspace(root, baseline, case, skill_mounted=False)
+    assert _grade_answer(case, answer, root, baseline)[0]["passed"] is False

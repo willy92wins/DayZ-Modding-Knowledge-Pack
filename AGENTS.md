@@ -37,8 +37,9 @@ you don't.
    or later.
 3. Open a file under that skill's `references/` **only when the procedure names
    it**. They are large and deliberately not loaded up front.
-4. `skills/_shared/` holds conventions several skills cite. Keep it alongside
-   them wherever you install them.
+4. `skills/_shared/` is a support folder, not a skill: it holds conventions
+   several playbooks cite. Keep it alongside the playbooks. The Claude Code
+   bundle ships it inside `dayz/`; other hosts keep it next to `skills/`.
 
 `knowledge/` is consulted, not routed: open a note when a skill points at it or
 when you need a fact the skill assumes.
@@ -144,9 +145,61 @@ Obsidian's.
 
 ## Installing the skills for your agent
 
-**Claude Code** — copy `skills/*` into `~/.claude/skills/` (user-scoped) or
-`<project>/.claude/skills/` (project-scoped). Discovery is by front-matter;
-`/dayz-vehicles` also invokes one explicitly.
+**Claude Code** — one skill, `<target>/dayz/`, built from the repository. Three ways:
+
+*a. Download and unzip* `dayz-skill-<version>.zip` from the release (made by `packctl bundle`;
+a single top-level `dayz/` folder, marker included, so a later `packctl install` replaces it
+without `--force`):
+
+```bash
+unzip dayz-skill-<version>.zip -d ~/.claude/skills            # Linux / macOS
+```
+
+```powershell
+Expand-Archive -Path dayz-skill-<version>.zip -DestinationPath "$env:USERPROFILE\.claude\skills"
+```
+
+Update: delete the `dayz` folder, unzip the new one.
+
+*b. From a checkout*, at the repo root:
+
+```bash
+python3 -m packctl install --target ~/.claude/skills          # Linux / macOS, user-scoped
+python3 -m packctl install --target <project>/.claude/skills  # project-scoped
+```
+
+```powershell
+py -m packctl install --target "$env:USERPROFILE\.claude\skills"   # Windows, PowerShell
+```
+
+`pip install -e .` is optional: without it `python -m packctl` resolves only while the shell
+stands in the repository root; with it, `packctl` is importable from anywhere. Rerun after
+pulling; it replaces the previous bundle. If the replace fails with an access error on
+Windows, close Claude Code and anything else holding the folder, then retry.
+
+*c. Maintainers*: `python3 -m packctl install --link --target ~/.claude/skills` makes `dayz/`
+hold the generated `SKILL.md` and marker as real files and symlinks to `skills/_shared` and
+each `skills/dayz-*`. Skill edits show at once; rerun after changing any skill description,
+because the router is generated. Windows needs Developer Mode (or an elevated shell) for
+symlinks; without it `--link` fails and the copy install works.
+
+The Windows commands are untested (no Windows machine available). How non-Claude hosts
+(Codex, Gemini, Cursor, ...) behave with the bundle layout is unknown: they keep using the
+repo in place, routed per the Routing section above.
+
+The result is `dayz/SKILL.md` (`name: dayz`, the only description Claude lists), `_shared/`
+(a support folder, not a skill) and the 45 `dayz-*/` playbook folders as siblings. Claude Code
+does not discover `SKILL.md` files nested in another folder, so the router points at each
+playbook, which the agent reads on demand. Invoke with `/dayz` (for example `/dayz vehicles`)
+or let the description trigger. `install` options: `--name` (default `dayz`), `--force`
+(replace a folder packctl did not create), `--dry-run`, `--link`, `--root`. Releases attach
+the zip from `packctl bundle --output dayz-skill-<version>.zip` (from a clean tree, outside the
+repo); `packctl build` stays the payload archive and does not emit it.
+
+If the installer warns about leftover folders from the old install shape (top
+level `dayz-*` copies, `_shared`, pre-rename unprefixed names), remove them
+yourself. packctl never deletes them, and Claude Code lists them as separate
+skills next to `dayz`.
 
 **Any other agent** — there is nothing Claude-specific in the content. Use the
 routing procedure above. Some hosts read `AGENTS.md` from a project root; this

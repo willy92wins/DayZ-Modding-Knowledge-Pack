@@ -9,6 +9,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+from .install import build_bundle
 from .common import finding, is_relative_contract_path, load_json, sort_findings, write_json
 
 
@@ -192,6 +193,8 @@ def validate_live_eval_case(case_path: Path) -> list[dict[str, object]]:
     return sort_findings(findings)
 
 
+LIVE_BUNDLE_NAME = "dayz"
+LIVE_BUNDLE_PREFIX = f".claude/skills/{LIVE_BUNDLE_NAME}/"
 EMPTY_SKILLS_TREE_SHA256 = hashlib.sha256(b"").hexdigest()
 _CITATION_LINE = re.compile(
     r'^(?P<path>.+):(?P<line>[1-9][0-9]*)(?:\s+"(?P<quote>.*)")?$'
@@ -222,10 +225,14 @@ def _materialize_workspace(
     skills_root.mkdir(parents=True)
     if skill_mounted:
         skill_name = str(case["skill_under_test"])
-        source = root / "skills" / skill_name
-        if not source.is_dir():
+        # Mount exactly what `packctl install` builds: <skills>/dayz/ with the
+        # router SKILL.md, _shared/ and every dayz-* playbook as siblings.
+        # skill_under_test names the playbook the case exercises; it must exist
+        # in the bundle but no longer selects what is mounted.
+        bundle = skills_root / LIVE_BUNDLE_NAME
+        bundle.mkdir()
+        if skill_name not in build_bundle(root, bundle):
             raise FileNotFoundError(f"Skill not found: {skill_name}")
-        shutil.copytree(source, skills_root / skill_name)
     for relative, content in sorted(case["fixtures"].items()):
         destination = workspace / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -263,6 +270,17 @@ def _resolve_citations(
         if "fixture" in roots and relative in fixtures:
             source = workspace / relative
             source_kind = "fixture"
+        elif (
+            "pack" in roots
+            and relative.startswith(LIVE_BUNDLE_PREFIX)
+            and is_relative_contract_path(relative)
+        ):
+            # A citation into the mounted bundle; only a with_skill workspace has one.
+            candidate = (workspace / relative).resolve()
+            bundle_root = (workspace / LIVE_BUNDLE_PREFIX).resolve()
+            if candidate.is_relative_to(bundle_root) and candidate.is_file():
+                source = candidate
+                source_kind = "pack"
         elif "pack" in roots and is_relative_contract_path(relative):
             candidate = (root / relative).resolve()
             if candidate.is_relative_to(root_resolved) and candidate.is_file():

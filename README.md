@@ -140,15 +140,47 @@ A skill is a folder with a `SKILL.md` (the procedure, with YAML front-matter: `n
 The `description` is written as **trigger conditions** — read it as "invoke me when…".
 
 ### If your assistant is Claude Code
-Copy the skill folders into a skills directory Claude Code reads:
+The pack installs as one skill, `dayz/`: a generated router `SKILL.md` that Claude Code lists,
+next to `_shared/` and the 45 `dayz-*/` playbooks. Claude Code auto-discovers the router by its
+front-matter and invokes it by trigger; the router sends the agent to the matching playbook.
+You can also call it explicitly: `/dayz`, or `/dayz vehicles`. Three ways to get it:
 
-- **Project-scoped:** `<your-project>/.claude/skills/`
-- **User-scoped (all projects):** `~/.claude/skills/` (Windows: `%USERPROFILE%\.claude\skills\`)
+**a. Download and unzip** `dayz-skill-<version>.zip` from the release (built by
+`packctl bundle`; one top-level `dayz/` folder).
 
-Copy the contents of `skills/` into one of those (keep `_shared/` alongside them — several
-skills reference `_shared/dayz-conventions.md` and `_shared/enscript-style.md`). Claude Code
-auto-discovers them by their front-matter and invokes them by trigger; you can also call one
-explicitly, e.g. `/dayz-vehicles`.
+```bash
+unzip dayz-skill-<version>.zip -d ~/.claude/skills                                 # Linux / macOS
+```
+
+```powershell
+Expand-Archive -Path dayz-skill-<version>.zip -DestinationPath "$env:USERPROFILE\.claude\skills"
+```
+
+To update: delete the `dayz` folder, unzip the new one. (Project-scoped: use
+`<your-project>/.claude/skills` instead.)
+
+**b. From a checkout** (run from the repo root):
+
+```bash
+python3 -m packctl install --target ~/.claude/skills                 # Linux / macOS
+```
+
+```powershell
+py -m packctl install --target "$env:USERPROFILE\.claude\skills"     # Windows, PowerShell
+```
+
+`pip install -e .` is optional ([`AGENTS.md`](AGENTS.md) says why it helps); from the repo root
+the commands work without it. Rerunning replaces the previous bundle. If the installer warns
+about folders from an older install, remove them yourself; it never deletes them.
+
+**c. Maintainers**: `python3 -m packctl install --link --target ~/.claude/skills` symlinks
+`_shared/` and the playbooks into the checkout, so edits show at once (Windows needs Developer
+Mode for symlinks). The router is generated, so rerun the command after changing any skill
+description.
+
+The Windows commands above are untested (no Windows machine was available). How non-Claude
+hosts (Codex, Gemini, Cursor, ...) treat this bundle layout is unknown; they should keep using
+the repo in place, routed by [`AGENTS.md`](AGENTS.md).
 
 ### If your assistant is a different LLM / agent
 There is nothing Claude-specific about the content. Use them as **retrieval-and-follow**

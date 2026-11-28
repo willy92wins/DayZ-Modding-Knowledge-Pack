@@ -10,6 +10,7 @@ from .builder import build_archive
 from .common import exit_code_for, finding, make_report, write_json
 from .evals import run_eval_case
 from .live_evals import run_live_eval_case
+from .install import InstallError, install, write_bundle_zip
 from .gate import TEST_FOLDER_TREES, run_gate, run_test_folders
 from .promotion import apply_promotion, check_promotion, recover_promotion
 from .validation import validate_repo
@@ -27,6 +28,29 @@ def _parser() -> argparse.ArgumentParser:
     build.add_argument("--root", required=True, type=Path)
     build.add_argument("--output", required=True, type=Path)
     build.add_argument("--report", required=True, type=Path)
+
+    install_parser = commands.add_parser(
+        "install",
+        help="install the pack as one routed skill: <target>/<name>/SKILL.md plus sub-skills",
+    )
+    install_parser.add_argument("--root", type=Path, default=Path("."))
+    install_parser.add_argument("--target", required=True, type=Path)
+    install_parser.add_argument("--name", default="dayz")
+    install_parser.add_argument("--force", action="store_true")
+    install_parser.add_argument("--dry-run", action="store_true")
+    install_parser.add_argument(
+        "--link",
+        action="store_true",
+        help="developer mode: symlink _shared/ and dayz-*/ into this repo instead of copying",
+    )
+
+    bundle = commands.add_parser(
+        "bundle",
+        help="write a reproducible dayz-skill ZIP (one top-level dayz/ folder) for unzip-install",
+    )
+    bundle.add_argument("--root", type=Path, default=Path("."))
+    bundle.add_argument("--output", required=True, type=Path)
+    bundle.add_argument("--name", default="dayz")
 
     gate = commands.add_parser("gate")
     gate.add_argument("--root", required=True, type=Path)
@@ -115,6 +139,57 @@ def _resolve_api_source(root: Path, source_id: str) -> Path:
     return Path(value)
 
 
+def _run_install(args: argparse.Namespace) -> int:
+    try:
+        result = install(
+            args.root,
+            args.target,
+            name=args.name,
+            force=args.force,
+            dry_run=args.dry_run,
+            link=args.link,
+        )
+    except FileExistsError as error:
+        sys.stderr.write(f"packctl install: refused: {error}\n")
+        return 1
+    except InstallError as error:
+        sys.stderr.write(f"packctl install: {error}\n")
+        return 1
+    verb = "Would install" if args.dry_run else "Installed"
+    sys.stdout.write(
+        f"{verb} {len(result['skills'])} skills + _shared into {result['destination']}"
+        f" (router {result['router_bytes']} bytes, replaced: {result['replaced']},"
+        f" mode: {result['mode']})\n"
+    )
+    if args.link and not args.dry_run:
+        sys.stdout.write(
+            "Linked to this checkout: skill edits show up at once, but the router SKILL.md is"
+            " generated; rerun `packctl install --link` after changing any skill description.\n"
+        )
+    leftovers = result["leftovers"]
+    if leftovers:
+        sys.stderr.write(
+            f"warning: {args.target} still holds folders from the old install shape,"
+            " which Claude Code lists as separate skills next to the router:\n"
+        )
+        for item in leftovers:
+            sys.stderr.write(f"  {Path(args.target) / item}\n")
+        sys.stderr.write("Remove them yourself if you no longer need them; packctl never deletes them.\n")
+    return 0
+
+
+def _run_bundle(args: argparse.Namespace) -> int:
+    try:
+        result = write_bundle_zip(args.root, args.output, name=args.name)
+    except InstallError as error:
+        sys.stderr.write(f"packctl bundle: {error}\n")
+        return 1
+    sys.stdout.write(
+        f"Wrote {result['output']} ({result['members']} files, {len(result['skills'])} skills)\n"
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
@@ -125,6 +200,10 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "build":
             report = build_archive(args.root, args.output)
             report_path = args.report
+        elif args.command == "install":
+            return _run_install(args)
+        elif args.command == "bundle":
+            return _run_bundle(args)
         elif args.command == "gate":
             report = run_gate(args.root, args.report_dir)
             return exit_code_for(report)
