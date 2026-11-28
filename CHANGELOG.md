@@ -7,6 +7,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `skills/dayz-ai-patterns/references/eai-server-cost.md`: measured server cost per Expansion
+  eAI bot on DayZ 1.30 DayZDiag (2026-11-27). A Dormant bot is not distinguishable from noise;
+  a walking bot costs ~0.18 ms per frame near the player and ~0.05 ms 3 km away; `LOOP` groups
+  never go Dormant. Two `runtime_verified` claims (`CLAIM-EAI-SERVER-COST-ACTIVE-VS-DORMANT`,
+  `CLAIM-EAI-DORMANT-STATE-OBSERVED`) in `sources/claims.json`, and a link from the skill's
+  References.
+
 - `skills/` and `packctl` (`validate_skills`) (#214): prefixed the 13 non-`dayz-` skill folders
   and names with `dayz-`, rewrote live references across skills, documentation, evals, tools,
   tests, `promotions/promotion-map.json`, `sources/source-map.json`, `sources/claims.json` and

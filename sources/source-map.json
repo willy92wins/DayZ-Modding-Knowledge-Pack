@@ -2321,10 +2321,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-28: Unreleased/Added entry for skills/dayz-ai-patterns/references/eai-server-cost.md and its two claims. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "80222b92a65b178020513cd79cd4c94449254abf4121fad29c073406e2d58dd4",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "kp-update-eai-server-cost@2026-11-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "6575c1aa6ef7009e6e17b7c49e809095478b2780c364e49bc7c259549d040bc9",
+      "output_hash": "80222b92a65b178020513cd79cd4c94449254abf4121fad29c073406e2d58dd4",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -7366,10 +7376,20 @@
           "source_path": "skills/dayz-ai-patterns/SKILL.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-28: one line in References pointing to the new references/eai-server-cost.md; no other change. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "ae1574cdf476bd3a75fac63dd153b3912a093d89b1cd4164962d8469979f5365",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ai-patterns/SKILL.md",
+          "source_revision": "kp-update-eai-server-cost@2026-11-28",
+          "verification_level": "cross_checked"
         }
       ],
       "license": "MIT",
-      "output_hash": "7da26eb34aac15ae05cac0ec3be8b50704543c3a985675bc191e79cfe2074bd0",
+      "output_hash": "ae1574cdf476bd3a75fac63dd153b3912a093d89b1cd4164962d8469979f5365",
       "output_path": "skills/dayz-ai-patterns/SKILL.md",
       "routing_artifact_id": "skill/dayz-ai-patterns",
       "verification_level": "cross_checked"
@@ -24933,10 +24953,20 @@
           "source_path": "sources/claims.json",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "kp-update 2026-11-28: two runtime_verified claims on skills/dayz-ai-patterns/references/eai-server-cost.md (CLAIM-EAI-SERVER-COST-ACTIVE-VS-DORMANT, CLAIM-EAI-DORMANT-STATE-OBSERVED) with their evidence locators. claim_baseline_commit unchanged. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "715d34573f1b7fae7194d30962417d3e11582f6d03906a1766877f4b6a7d00dc",
+          "source_id": "pack-r21-authored",
+          "source_path": "sources/claims.json",
+          "source_revision": "kp-update-eai-server-cost@2026-11-28",
+          "verification_level": "runtime_verified"
         }
       ],
       "license": "MIT",
-      "output_hash": "a713d2723d29f46705648b0170723598aa8e1c3b448d8405869ccbd70de62cd9",
+      "output_hash": "715d34573f1b7fae7194d30962417d3e11582f6d03906a1766877f4b6a7d00dc",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"
@@ -40014,6 +40044,28 @@
       "output_path": "skills/dayz-ai-patterns/references/dayz-1-30-ai.md",
       "routing_artifact_id": "skill/dayz-ai-patterns",
       "verification_level": "historical"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ai-patterns/references/eai-server-cost.md",
+      "distribution_role": "payload",
+      "hash_policy": "sha256",
+      "inputs": [
+        {
+          "decision": "adopt",
+          "decision_evidence": "kp-update 2026-11-28: new reference with the eAI server-cost measurement of 2026-11-27 (dayz-mcp server_perf, Expansion AI via the MCP adapter); two runtime_verified claims, CLAIM-EAI-SERVER-COST-ACTIVE-VS-DORMANT and CLAIM-EAI-DORMANT-STATE-OBSERVED. Measured and written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "875af76d1a4b212f7f58aa817c34a74ee5afcfd09d4d8c486e5b9ac749c53726",
+          "source_id": "pack-r21-authored",
+          "source_path": "skills/dayz-ai-patterns/references/eai-server-cost.md",
+          "source_revision": "kp-update-eai-server-cost@2026-11-28",
+          "verification_level": "runtime_verified"
+        }
+      ],
+      "license": "MIT",
+      "output_hash": "875af76d1a4b212f7f58aa817c34a74ee5afcfd09d4d8c486e5b9ac749c53726",
+      "output_path": "skills/dayz-ai-patterns/references/eai-server-cost.md",
+      "routing_artifact_id": "skill/dayz-ai-patterns",
+      "verification_level": "runtime_verified"
     },
     {
       "artifact_id": "file/skills/dayz-aviation/references/dayz-1-30-aviation.md",

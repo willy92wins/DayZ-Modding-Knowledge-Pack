@@ -5278,6 +5278,32 @@
       "source_id": "pack-r21-authored",
       "source_revision": "gap-66306aa-workbench-gp7@2026-11-19",
       "verification_level": "offline_tested"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ai-patterns/references/eai-server-cost.md",
+      "claim_id": "CLAIM-EAI-SERVER-COST-ACTIVE-VS-DORMANT",
+      "evidence_locator": "VAULT/AI/10_Projects/Expansion_Study/research/2026-11-27-eai-server-cost/evidence.md \u00a7Mediciones rows 6-14 and \u00a7Lectura (server_perf, run b00a8d54, 24 Passive eAI LOOP vs HOLD, paired same-position windows)",
+      "license": "MIT",
+      "line_end": 30,
+      "line_start": 23,
+      "observed_at": "2026-11-27",
+      "promotion_artifact_id": "skill/dayz-ai-patterns",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-11-27",
+      "verification_level": "runtime_verified"
+    },
+    {
+      "artifact_id": "file/skills/dayz-ai-patterns/references/eai-server-cost.md",
+      "claim_id": "CLAIM-EAI-DORMANT-STATE-OBSERVED",
+      "evidence_locator": "VAULT/AI/10_Projects/Expansion_Study/research/2026-11-27-eai-server-cost/evidence.md \u00a7Estado FSM observado (ai_group_state groups 1000000000 LOOP and 1000000027 HOLD)",
+      "license": "MIT",
+      "line_end": 40,
+      "line_start": 32,
+      "observed_at": "2026-11-27",
+      "promotion_artifact_id": "skill/dayz-ai-patterns",
+      "source_id": "obsidian-knowledge",
+      "source_revision": "filesystem@2026-11-27",
+      "verification_level": "runtime_verified"
     }
   ],
   "schema_version": 1
