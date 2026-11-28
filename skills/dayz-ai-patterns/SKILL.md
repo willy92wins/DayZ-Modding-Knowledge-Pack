@@ -234,6 +234,7 @@ Nasdara ships native group-behaviour templates in `GroupBehaviourTemplates` (`ex
 - `references/eai-fsm-combat.md` — PC-5, PC-11, PC-13, PC-9a
 - `references/eai-pathfinding-groups.md` — PC-14, PC-7, PC-2, PC-9b, PC-15, PC-16, PC-17, PC-18
 - `references/dayz-1-30-ai.md` — 1.30: native noise attenuation, `MINDSTATE_COWER`, `AIParams`, animal group templates
+- `references/eai-server-cost.md` — measured server cost per eAI bot (2026-11-27): Dormant ≈ free, moving ~0.18 ms near / ~0.05 ms far, `LOOP` groups never go Dormant
 
 
 ## NoiseSystem — feeding noise the AI can hear (added 2026-06-06)
