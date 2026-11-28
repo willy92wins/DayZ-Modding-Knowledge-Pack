@@ -4,12 +4,18 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import os
 import re
 import shutil
 import tempfile
+import zipfile
 from pathlib import Path
 
-from .common import git_commit
+from .common import git_commit, git_is_dirty, git_output
+
+class InstallError(Exception):
+    """An install or bundle step failed in a way the user can act on."""
+
 
 MARKER = ".dayz-pack-bundle.json"
 TEMPLATE_PATH = Path(__file__).with_name("router_template.md")
@@ -112,6 +118,58 @@ def build_bundle(root: Path, destination: Path, *, router: str | None = None) ->
     return [f.name for f in folders]
 
 
+def build_link_bundle(root: Path, destination: Path, *, router: str | None = None) -> list[str]:
+    """Like build_bundle, but _shared/ and dayz-*/ are symlinks into the repo.
+
+    SKILL.md stays a real file: it is generated, not part of the repo.
+    """
+    root = Path(root).resolve()
+    router = render_router(root) if router is None else router
+    folders = skill_folders(root)
+    for folder in [root / "skills" / "_shared", *folders]:
+        try:
+            os.symlink(folder, Path(destination) / folder.name, target_is_directory=True)
+        except OSError as error:
+            raise InstallError(
+                f"cannot create a symlink ({error}). On Windows symlinks need Developer Mode"
+                " or an elevated shell; install without --link to copy the files instead."
+            ) from error
+    (Path(destination) / "SKILL.md").write_text(router, encoding="utf-8", newline="\n")
+    return [f.name for f in folders]
+
+
+def _marker_text(name: str, skills: list[str], source_commit: str, **extra: object) -> str:
+    data = {
+        "installer": "packctl install",
+        "name": name,
+        "source_commit": source_commit,
+        "skills": skills,
+        **extra,
+    }
+    return json.dumps(data, indent=2, sort_keys=True) + "\n"
+
+
+def _remove_tree(path: Path) -> None:
+    """Remove a bundle without ever following a symlink into the repo."""
+    if path.is_symlink() or path.is_file():
+        path.unlink()
+        return
+    for entry in path.iterdir():
+        if entry.is_symlink():
+            try:
+                entry.unlink()
+            except OSError:
+                entry.rmdir()  # Windows directory symlink / junction
+    shutil.rmtree(path, ignore_errors=True)
+
+
+def _busy(action: str, error: OSError) -> InstallError:
+    return InstallError(
+        f"could not {action} ({type(error).__name__}: {error}). Close Claude Code and any other"
+        " program using the skills folder (editors, antivirus scans, file explorers), then retry."
+    )
+
+
 def install(
     root: Path,
     target: Path,
@@ -119,6 +177,7 @@ def install(
     name: str = "dayz",
     force: bool = False,
     dry_run: bool = False,
+    link: bool = False,
 ) -> dict[str, object]:
     root = Path(root).resolve()
     target = Path(target)
@@ -145,6 +204,7 @@ def install(
         "router_bytes": len(router.encode("utf-8")),
         "replaced": previous,
         "dry_run": dry_run,
+        "mode": "link" if link else "copy",
         "leftovers": _leftovers(target, name, skill_names),
     }
     if dry_run:
@@ -153,39 +213,112 @@ def install(
     target.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix=f".{name}.new-", dir=target))
     try:
-        build_bundle(root, staging, router=router)
+        (build_link_bundle if link else build_bundle)(root, staging, router=router)
         (staging / MARKER).write_text(
-            json.dumps(
-                {
-                    "installer": "packctl install",
-                    "name": name,
-                    "source_commit": git_commit(root),
-                    "installed_at": _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "skills": skill_names,
-                },
-                indent=2,
-                sort_keys=True,
-            )
-            + "\n",
+            _marker_text(
+                name,
+                skill_names,
+                git_commit(root),
+                installed_at=_dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                mode="link" if link else "copy",
+            ),
             encoding="utf-8",
             newline="\n",
         )
         if destination.exists() or destination.is_symlink():
             old = Path(tempfile.mkdtemp(prefix=f".{name}.old-", dir=target))
             old.rmdir()
-            destination.rename(old)
+            try:
+                destination.rename(old)
+            except OSError as error:
+                raise _busy(f"move the existing {destination} aside", error) from error
             try:
                 staging.rename(destination)
-            except OSError:
-                old.rename(destination)
-                raise
-            if old.is_symlink() or old.is_file():
-                old.unlink()
-            else:
-                shutil.rmtree(old, ignore_errors=True)
+            except OSError as error:
+                try:
+                    old.rename(destination)
+                except OSError:
+                    raise InstallError(
+                        f"could not install the new bundle and could not restore the old one;"
+                        f" it is at {old}. Close Claude Code and any other program using the"
+                        " folder, then rename it back."
+                    ) from error
+                raise _busy(f"move the new bundle to {destination}", error) from error
+            _remove_tree(old)
         else:
-            staging.rename(destination)
+            try:
+                staging.rename(destination)
+            except OSError as error:
+                raise _busy(f"move the new bundle to {destination}", error) from error
     finally:
         if staging.exists():
-            shutil.rmtree(staging, ignore_errors=True)
+            _remove_tree(staging)
     return result
+
+
+FIXED_ZIP_TIME = (1980, 1, 1, 0, 0, 0)
+
+
+def _executable_paths(root: Path) -> set[str]:
+    out = git_output(root, "ls-files", "-s", "-z", "skills")
+    paths = set()
+    for item in out.split("\0"):
+        meta, _, path = item.partition("\t")
+        if meta.startswith("100755"):
+            paths.add(path)
+    return paths
+
+
+def write_bundle_zip(root: Path, output: Path, *, name: str = "dayz") -> dict[str, object]:
+    """Write a reproducible ZIP holding exactly the bundle tree under <name>/.
+
+    Same inputs, same bytes: members sorted, fixed timestamps, stored (no
+    compression), mode 0644 (0755 where git records the executable bit), no
+    timestamp in the marker. Requires a clean worktree, like `packctl build`;
+    the working tree is LF (`.gitattributes`: `* text eol=lf`).
+    """
+    root = Path(root).resolve()
+    output = Path(output).resolve()
+    if not SKILL_NAME_RE.fullmatch(name) or len(name) > 64:
+        raise ValueError(f"invalid bundle name: {name!r}")
+    if git_is_dirty(root):
+        raise InstallError("the bundle needs a clean Git worktree (git status --porcelain is non-empty)")
+    try:
+        output.relative_to(root)
+    except ValueError:
+        pass
+    else:
+        raise InstallError(f"the bundle output must be outside the source tree: {output}")
+    executable = _executable_paths(root)
+    scratch = Path(tempfile.mkdtemp(prefix="dayz-bundle-"))
+    temporary: Path | None = None
+    try:
+        skills = build_bundle(root, scratch)
+        (scratch / MARKER).write_bytes(
+            _marker_text(name, skills, git_commit(root), mode="copy").encode("utf-8")
+        )
+        members = sorted(
+            p.relative_to(scratch).as_posix() for p in scratch.rglob("*") if p.is_file()
+        )
+        output.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(
+            prefix=output.name + ".", suffix=".tmp", dir=output.parent, delete=False
+        ) as handle:
+            temporary = Path(handle.name)
+        with zipfile.ZipFile(temporary, "w", zipfile.ZIP_STORED, allowZip64=True) as archive:
+            for rel in members:
+                info = zipfile.ZipInfo(f"{name}/{rel}", date_time=FIXED_ZIP_TIME)
+                info.compress_type = zipfile.ZIP_STORED
+                info.create_system = 3
+                mode = 0o755 if f"skills/{rel}" in executable else 0o644
+                info.external_attr = (0o100000 | mode) << 16
+                info.flag_bits |= 0x800
+                archive.writestr(info, (scratch / rel).read_bytes())
+            archive.comment = b""
+        os.replace(temporary, output)
+        temporary = None
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+        shutil.rmtree(scratch, ignore_errors=True)
+    return {"output": str(output), "members": len(members), "skills": skills}

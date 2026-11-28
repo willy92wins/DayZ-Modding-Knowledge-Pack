@@ -65,11 +65,14 @@ Current fork version is **1.10.1**, the version the pinned wheel carries
 
 ### Give the pack to your agent
 
-On Claude Code, run `pip install -e .` once from the repo root, then
-`python3 -m packctl install --target ~/.claude/skills` (or
-`<project>/.claude/skills`). It builds one skill, `dayz/`, invoked as `/dayz`,
-with the playbooks and `_shared/` inside it. Any other host: follow
-[`AGENTS.md`](AGENTS.md).
+On Claude Code, the easiest route is the release zip: unzip `dayz-skill-<version>.zip` into
+`~/.claude/skills/` (`unzip ... -d ~/.claude/skills`; Windows PowerShell:
+`Expand-Archive -Path ... -DestinationPath "$env:USERPROFILE\.claude\skills"`). From a
+checkout instead, run `python3 -m packctl install --target ~/.claude/skills` (Windows:
+`py -m packctl install --target "$env:USERPROFILE\.claude\skills"`; `pip install -e .` is
+optional); maintainers add `--link`. Either way you get one skill, `dayz/`, invoked as
+`/dayz`, with the playbooks and `_shared/` inside it. The Windows commands are untested, and
+non-Claude hosts keep using the repo in place: follow [`AGENTS.md`](AGENTS.md).
 
 Tell the agent to route from front-matter (`name` + `description`) and to
 open a `references/` file only when the playbook names it. Dumping the whole

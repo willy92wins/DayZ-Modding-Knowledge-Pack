@@ -319,10 +319,20 @@
           "source_path": "AGENTS.md",
           "source_revision": "single-dayz-router-skill@2026-11-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Bundle zip and link install (2026-11-28): `packctl bundle` writes the reproducible dayz-skill ZIP, `packctl install --link` symlinks the playbooks for maintainers, a failed bundle swap rolls back with a close-Claude-Code message; docs list unzip, checkout and --link installs and state that Windows commands and non-Claude hosts are untested. Tests in tests/packctl/test_install.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "cd8d8acb9325c97e8a8f61510ffbeb2bf8c40a8e30c9337d8ba5394138df1a4a",
+          "source_id": "pack-r21-authored",
+          "source_path": "AGENTS.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "2c087c38cbdea80b47e22d4a792bb649df4fae73ee06146c19c8f81cb385d113",
+      "output_hash": "cd8d8acb9325c97e8a8f61510ffbeb2bf8c40a8e30c9337d8ba5394138df1a4a",
       "output_path": "AGENTS.md",
       "routing_artifact_id": "root/agents",
       "verification_level": "cross_checked"
@@ -2341,10 +2351,20 @@
           "source_path": "CHANGELOG.md",
           "source_revision": "single-dayz-router-skill@2026-11-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Bundle zip and link install (2026-11-28): `packctl bundle` writes the reproducible dayz-skill ZIP, `packctl install --link` symlinks the playbooks for maintainers, a failed bundle swap rolls back with a close-Claude-Code message; docs list unzip, checkout and --link installs and state that Windows commands and non-Claude hosts are untested. Tests in tests/packctl/test_install.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "5d3cc184e327ddcc42cf750f56575a2898c862c1a4cae62821f0750307e5834b",
+          "source_id": "pack-r21-authored",
+          "source_path": "CHANGELOG.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "0d5cd2bd69d9f92516d15a623808c2a931bdff8f566cf166647658550f067d64",
+      "output_hash": "5d3cc184e327ddcc42cf750f56575a2898c862c1a4cae62821f0750307e5834b",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -2373,10 +2393,20 @@
           "source_path": "CLAUDE.md",
           "source_revision": "single-dayz-router-skill@2026-11-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Bundle zip and link install (2026-11-28): `packctl bundle` writes the reproducible dayz-skill ZIP, `packctl install --link` symlinks the playbooks for maintainers, a failed bundle swap rolls back with a close-Claude-Code message; docs list unzip, checkout and --link installs and state that Windows commands and non-Claude hosts are untested. Tests in tests/packctl/test_install.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "a77aa058ec98be8621a16f9f5552d5f44c28bf962a7c165ecc1c3c9bc04d35d7",
+          "source_id": "pack-r21-authored",
+          "source_path": "CLAUDE.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "95a687a4c5e00da7eb65d88e4ea124d1e58905c7062f71044874c6e4412deee7",
+      "output_hash": "a77aa058ec98be8621a16f9f5552d5f44c28bf962a7c165ecc1c3c9bc04d35d7",
       "output_path": "CLAUDE.md",
       "routing_artifact_id": "root/claude",
       "verification_level": "cross_checked"
@@ -2559,10 +2589,20 @@
           "source_path": "GETTING-STARTED.md",
           "source_revision": "single-dayz-router-skill@2026-11-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Bundle zip and link install (2026-11-28): `packctl bundle` writes the reproducible dayz-skill ZIP, `packctl install --link` symlinks the playbooks for maintainers, a failed bundle swap rolls back with a close-Claude-Code message; docs list unzip, checkout and --link installs and state that Windows commands and non-Claude hosts are untested. Tests in tests/packctl/test_install.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "36d635b6b9507b0606e33a96d29225cb9b4957fe10b53849df3671f64112d57c",
+          "source_id": "pack-r21-authored",
+          "source_path": "GETTING-STARTED.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "66c927188d3d2123d8348e4c790cdfb4e5cdf8b32af6be14947d81e5b00bf172",
+      "output_hash": "36d635b6b9507b0606e33a96d29225cb9b4957fe10b53849df3671f64112d57c",
       "output_path": "GETTING-STARTED.md",
       "routing_artifact_id": "root/getting-started",
       "verification_level": "cross_checked"
@@ -2765,10 +2805,20 @@
           "source_path": "README.md",
           "source_revision": "single-dayz-router-skill@2026-11-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Bundle zip and link install (2026-11-28): `packctl bundle` writes the reproducible dayz-skill ZIP, `packctl install --link` symlinks the playbooks for maintainers, a failed bundle swap rolls back with a close-Claude-Code message; docs list unzip, checkout and --link installs and state that Windows commands and non-Claude hosts are untested. Tests in tests/packctl/test_install.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "be17f6f77fcc48fedb0f53be160a79ead1a64c09bea9a60a76c94dce61596814",
+          "source_id": "pack-r21-authored",
+          "source_path": "README.md",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "3596dfb33135bc1dbb4b85e4bea0e438f4e5db49e585acb0094593c8b89793a0",
+      "output_hash": "be17f6f77fcc48fedb0f53be160a79ead1a64c09bea9a60a76c94dce61596814",
       "output_path": "README.md",
       "routing_artifact_id": "root/readme",
       "verification_level": "cross_checked"
@@ -4862,10 +4912,20 @@
           "source_path": "packctl/cli.py",
           "source_revision": "single-dayz-router-skill@2026-11-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Bundle zip and link install (2026-11-28): `packctl bundle` writes the reproducible dayz-skill ZIP, `packctl install --link` symlinks the playbooks for maintainers, a failed bundle swap rolls back with a close-Claude-Code message; docs list unzip, checkout and --link installs and state that Windows commands and non-Claude hosts are untested. Tests in tests/packctl/test_install.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "55786c5dbb3238e19f39bcc77232a00529acb1835e94a28c5a583279186ebf14",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/cli.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "a084846dbd48c04b9f06640c4598b71958d43a37bcca4b2b862b4def829807ee",
+      "output_hash": "55786c5dbb3238e19f39bcc77232a00529acb1835e94a28c5a583279186ebf14",
       "output_path": "packctl/cli.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -48020,10 +48080,20 @@
           "source_path": "packctl/install.py",
           "source_revision": "single-dayz-router-skill@2026-11-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Bundle zip and link install (2026-11-28): `packctl bundle` writes the reproducible dayz-skill ZIP, `packctl install --link` symlinks the playbooks for maintainers, a failed bundle swap rolls back with a close-Claude-Code message; docs list unzip, checkout and --link installs and state that Windows commands and non-Claude hosts are untested. Tests in tests/packctl/test_install.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "511109967597d7307cb75bda5d5ab64e11b829a26455f9e48576a399711e8576",
+          "source_id": "pack-r21-authored",
+          "source_path": "packctl/install.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "604914a4bd193f2f7b0e5a5d69bbda20eb92f1e52f77570253f22a7eeb035e0f",
+      "output_hash": "511109967597d7307cb75bda5d5ab64e11b829a26455f9e48576a399711e8576",
       "output_path": "packctl/install.py",
       "routing_artifact_id": "repo/packctl",
       "verification_level": "offline_tested"
@@ -48043,10 +48113,20 @@
           "source_path": "tests/packctl/test_install.py",
           "source_revision": "single-dayz-router-skill@2026-11-28",
           "verification_level": "offline_tested"
+        },
+        {
+          "decision": "merge",
+          "decision_evidence": "Bundle zip and link install (2026-11-28): `packctl bundle` writes the reproducible dayz-skill ZIP, `packctl install --link` symlinks the playbooks for maintainers, a failed bundle swap rolls back with a close-Claude-Code message; docs list unzip, checkout and --link installs and state that Windows commands and non-Claude hosts are untested. Tests in tests/packctl/test_install.py. Written by Claude (Anthropic).",
+          "license": "MIT",
+          "source_hash": "9c50c3fc97a209eb98ce3eab907039c136d5faea1e3901a44f3e89b640821bf3",
+          "source_id": "pack-r21-authored",
+          "source_path": "tests/packctl/test_install.py",
+          "source_revision": "single-dayz-router-skill@2026-11-28",
+          "verification_level": "offline_tested"
         }
       ],
       "license": "MIT",
-      "output_hash": "d06c2191cad4f9387d5bd023c3f0138861f45d632e28830c18c9ddb6752d1761",
+      "output_hash": "9c50c3fc97a209eb98ce3eab907039c136d5faea1e3901a44f3e89b640821bf3",
       "output_path": "tests/packctl/test_install.py",
       "routing_artifact_id": "repo/tests",
       "verification_level": "offline_tested"
