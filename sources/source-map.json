@@ -2316,7 +2316,7 @@
           "decision": "merge",
           "decision_evidence": "#214: the 13 skills without the dayz- prefix are renamed dayz-<name> (folder and name:), and the references to them in this file follow the new names; no other change.",
           "license": "MIT",
-          "source_hash": "6575c1aa6ef7009e6e17b7c49e809095478b2780c364e49bc7c259549d040bc9",
+          "source_hash": "c31b9d99a3a449b4479b459eae82c4e2997f719a06ec237ed0f95a4c065c389f",
           "source_id": "pack-r21-authored",
           "source_path": "CHANGELOG.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
@@ -2324,7 +2324,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "6575c1aa6ef7009e6e17b7c49e809095478b2780c364e49bc7c259549d040bc9",
+      "output_hash": "c31b9d99a3a449b4479b459eae82c4e2997f719a06ec237ed0f95a4c065c389f",
       "output_path": "CHANGELOG.md",
       "routing_artifact_id": "root/changelog",
       "verification_level": "cross_checked"
@@ -11367,7 +11367,7 @@
           "decision": "merge",
           "decision_evidence": "#214: the 13 skills without the dayz- prefix are renamed dayz-<name> (folder and name:), and the references to them in this file follow the new names; no other change.",
           "license": "MIT",
-          "source_hash": "a4f8acadc5bf00e9bd5061e3aa253fa90794a93102152e35c22f50b710fd1d41",
+          "source_hash": "4938241d190035ee6f74c80d07beb60650a5ea48ea320cff2d85afc219facbb1",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-mcp-verify/SKILL.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
@@ -11375,7 +11375,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a4f8acadc5bf00e9bd5061e3aa253fa90794a93102152e35c22f50b710fd1d41",
+      "output_hash": "4938241d190035ee6f74c80d07beb60650a5ea48ea320cff2d85afc219facbb1",
       "output_path": "skills/dayz-mcp-verify/SKILL.md",
       "routing_artifact_id": "skill/dayz-mcp-verify",
       "verification_level": "cross_checked"
@@ -16775,7 +16775,7 @@
           "decision": "merge",
           "decision_evidence": "#214: the 13 skills without the dayz- prefix are renamed dayz-<name> (folder and name:), and the references to them in this file follow the new names; no other change.",
           "license": "MIT",
-          "source_hash": "4d9b3b8af0f130287805afde3b5e1dd7217d24d734b23de778089ab1ad27e1cd",
+          "source_hash": "bea68ef977b5a3ed022372614578f72907dcfdb8ec1c9ae5f9a5535019dfa83c",
           "source_id": "pack-r21-authored",
           "source_path": "skills/dayz-test-ingame/SKILL.md",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
@@ -16783,7 +16783,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "4d9b3b8af0f130287805afde3b5e1dd7217d24d734b23de778089ab1ad27e1cd",
+      "output_hash": "bea68ef977b5a3ed022372614578f72907dcfdb8ec1c9ae5f9a5535019dfa83c",
       "output_path": "skills/dayz-test-ingame/SKILL.md",
       "routing_artifact_id": "skill/dayz-test-ingame",
       "verification_level": "cross_checked"
@@ -24928,7 +24928,7 @@
           "decision": "merge",
           "decision_evidence": "#214: the 13 skills without the dayz- prefix are renamed dayz-<name> (folder and name:), and the references to them in this file follow the new names; no other change.",
           "license": "MIT",
-          "source_hash": "a713d2723d29f46705648b0170723598aa8e1c3b448d8405869ccbd70de62cd9",
+          "source_hash": "0a61da0117f5b4b4fdc0148a4ccb2645b93dbdd4ac8436153bd4bd037923e6cd",
           "source_id": "pack-r21-authored",
           "source_path": "sources/claims.json",
           "source_revision": "is-214-dayz-prefix@2026-11-26",
@@ -24936,7 +24936,7 @@
         }
       ],
       "license": "MIT",
-      "output_hash": "a713d2723d29f46705648b0170723598aa8e1c3b448d8405869ccbd70de62cd9",
+      "output_hash": "0a61da0117f5b4b4fdc0148a4ccb2645b93dbdd4ac8436153bd4bd037923e6cd",
       "output_path": "sources/claims.json",
       "routing_artifact_id": "repo/sources",
       "verification_level": "cross_checked"

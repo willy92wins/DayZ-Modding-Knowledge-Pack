@@ -54,6 +54,8 @@ Official launcher is Diag-only and enforces this matrix:
    managed server/client and `dayz_test_stop` for exact `run_id`. Those
    tools possess FIFO queue, lease, heartbeat, and release; DO NOT
    pre-acquire another lease around them.
+   A run you start outside the MCP takes its turn with
+   `python -m dayz_mcp.box_turn run` (`dayz-mcp-verify`, "Runs outside the MCP").
 3. `session_acquire`/`session_wait`/`session_heartbeat`/`session_release` remain
    for low-level mutations not encapsulated by public
    tools. (rev. 2026-09-06) And to ADOPT the run: upon completion, `dayz_test_run`
